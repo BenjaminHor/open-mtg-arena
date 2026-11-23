@@ -23,7 +23,8 @@ export interface TurnStatus {
  *
  * Composes the existing authorities rather than re-deriving: `waitingPlayer()`
  * resolves the semantic actor (Vote delegation, Assist helper) and
- * `useCanActForWaitingState()` resolves "is it mine" (turn-control-aware). It deliberately does NOT read raw `priority_player`
+ * `useCanActForWaitingState()` resolves "is it mine" (spectator- and
+ * turn-control-aware). It deliberately does NOT read raw `priority_player`
  * (the engine re-derives that to the authorized submitter) and does NOT route
  * `isMyTurn` through `usePerspectivePlayerId()` — turn ownership is raw seat
  * identity, kept separate from decision authority so turn-control effects
@@ -32,13 +33,15 @@ export interface TurnStatus {
 export function useTurnStatus(): TurnStatus {
   const gameState = useGameStore((s) => s.gameState);
   const waitingFor = useGameStore((s) => s.waitingFor);
+  const gameMode = useGameStore((s) => s.gameMode);
   const playerId = usePlayerId();
   const canIActNow = useCanActForWaitingState();
 
+  const spectating = gameMode === "spectate";
   const activePlayerId = gameState?.active_player ?? null;
   const waitingSeatId = waitingPlayer(waitingFor);
-  const isMyTurn = activePlayerId != null && activePlayerId === playerId;
-  const waitingOnOpponent = waitingSeatId != null && !canIActNow;
+  const isMyTurn = !spectating && activePlayerId != null && activePlayerId === playerId;
+  const waitingOnOpponent = waitingSeatId != null && !canIActNow && !spectating;
   const reason = waitingForReason(waitingFor, gameState ?? null);
 
   return { activePlayerId, waitingSeatId, isMyTurn, canIActNow, waitingOnOpponent, reason };

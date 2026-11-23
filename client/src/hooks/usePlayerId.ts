@@ -1,17 +1,39 @@
 import type { GameState, PlayerId, WaitingFor } from "../adapter/types";
-import { PLAYER_ID } from "../constants/game";
-import { useGameStore } from "../stores/gameStore";
+import { PLAYER_ID, SPECTATOR_PLAYER_ID } from "../constants/game";
+import type { GameMode } from "../stores/gameStore";
+import { seatSource, useGameStore } from "../stores/gameStore";
 
-/** React hook: the seat this client occupies. Every game is played from this
- *  client (against the AI, or hot-seat), and the local human sits in seat 0 by
- *  construction. */
+/**
+ * The one seat resolver both entry points below share. Which modes hold a seat
+ * is the census's question, not this file's: see `seatSource` in
+ * `stores/gameStore.ts`.
+ *
+ * `spectatorSeat` is the one place the two entry points legitimately differ,
+ * and it is a parameter so that the difference is stated rather than repeated.
+ * `getPlayerId()` answers `SPECTATOR_PLAYER_ID`, which `dispatch.ts` reads to
+ * refuse submitting actions. `usePlayerId()` answers `PLAYER_ID`, because
+ * display surfaces render a watched replay from seat 0's side. Widening the
+ * hook to 255 would empty every `players[playerId]` lookup on the replay board.
+ */
+function resolveLocalSeat(gameMode: GameMode | null, spectatorSeat: PlayerId): PlayerId {
+  switch (seatSource(gameMode)) {
+    case "no-seat":
+      return spectatorSeat;
+    case "seat-zero":
+      return PLAYER_ID;
+  }
+}
+
+/** React hook: the seat this client occupies. A game played here seats the
+ *  local human at 0 by construction. */
 export function usePlayerId(): PlayerId {
-  return PLAYER_ID;
+  const gameMode = useGameStore((s) => s.gameMode);
+  return resolveLocalSeat(gameMode, PLAYER_ID);
 }
 
 /** Non-React getter for use in plain functions (autoPass, gameLoopController). */
 export function getPlayerId(): PlayerId {
-  return PLAYER_ID;
+  return resolveLocalSeat(useGameStore.getState().gameMode, SPECTATOR_PLAYER_ID);
 }
 
 /**
@@ -55,12 +77,16 @@ export function waitingPlayer(waitingFor: WaitingFor | null): PlayerId | null {
 }
 
 function canActForWaitingState(
+  gameMode: GameMode | null,
   playerId: PlayerId,
   gameState: GameState | null,
   waitingFor: WaitingFor | null,
 ): boolean {
+  if (gameMode === "spectate") return false;
+
   const semanticPlayer = waitingPlayer(waitingFor);
   if (!gameState || semanticPlayer == null) return false;
+  if (playerId === SPECTATOR_PLAYER_ID) return false;
   if (semanticPlayer === playerId) return true;
   return gameState.turn_decision_controller === playerId && semanticPlayer === gameState.active_player;
 }
@@ -68,7 +94,12 @@ function canActForWaitingState(
 /** Synchronous authorization check for event handlers that must read the latest stores. */
 export function getCanActForWaitingState(): boolean {
   const gameStore = useGameStore.getState();
-  return canActForWaitingState(getPlayerId(), gameStore.gameState, gameStore.waitingFor);
+  return canActForWaitingState(
+    gameStore.gameMode,
+    resolveLocalSeat(gameStore.gameMode, SPECTATOR_PLAYER_ID),
+    gameStore.gameState,
+    gameStore.waitingFor,
+  );
 }
 
 export function usePerspectivePlayerId(): PlayerId {
@@ -79,9 +110,10 @@ export function usePerspectivePlayerId(): PlayerId {
 }
 
 export function useCanActForWaitingState(): boolean {
+  const gameMode = useGameStore((s) => s.gameMode);
   const playerId = usePlayerId();
   const gameState = useGameStore((s) => s.gameState);
   const waitingFor = useGameStore((s) => s.waitingFor);
 
-  return canActForWaitingState(playerId, gameState, waitingFor);
+  return canActForWaitingState(gameMode, playerId, gameState, waitingFor);
 }

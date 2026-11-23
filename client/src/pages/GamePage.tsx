@@ -243,17 +243,6 @@ type ZoneRailStyle = CSSProperties & {
   "--card-h": string;
 };
 
-function isDirectSoloRouteMode(rawMode: string | null): boolean {
-  return ![
-    "p2p-host",
-    "p2p-join",
-    "draft-match",
-    "spectate",
-    "host",
-    "join",
-  ].includes(rawMode ?? "");
-}
-
 function isDirectSetupFormat(format: GameFormat): boolean {
   const metadata = formatMetadata(format);
   return Boolean(metadata && isSetupFormat(metadata));
@@ -262,61 +251,21 @@ function isDirectSetupFormat(format: GameFormat): boolean {
 function directSetupFormatConfig(format: GameFormat | null) {
   if (!format) return undefined;
   if (!isDirectSetupFormat(format)) return undefined;
-  return FORMAT_DEFAULTS[format];
+  return formatMetadata(format)?.default_config;
 }
 
-/**
- * i18n keys for user-facing messages keyed by
- * `P2PAdapterEvent.hostingFailed.reason`. Typed as `Record<ReasonUnion, string>`
- * so adding a new reason to the adapter event union without adding a key here is
- * a compile error — the idiomatic TS replacement for a `switch`-with-`never`-default
- * when the union has a single arm today but will grow.
- */
-const HOSTING_FAILURE_MESSAGE_KEYS = {
-  room_still_claimed: "gamePage.toasts.roomStillClaimed",
-} as const satisfies Record<Extract<P2PAdapterEvent, { type: "hostingFailed" }>["reason"], ParseKeys<"game">>;
-
-/** The toast each takeback resolution shows; an approval's feedback is the restored board. */
-const TAKEBACK_RESOLUTION_TOAST_KEYS = {
-  approved: null,
-  declined: "takebackDialog.declinedToast",
-  cancelled: "takebackDialog.cancelledToast",
-  withdrawn: "takebackDialog.withdrawnToast",
-} as const satisfies Record<TakebackResolution, ParseKeys<"multiplayer"> | null>;
-
-/** The route's normalized game mode — the census key `seatSource` classifies. */
-type GamePageMode =
-  | "ai"
-  | "online"
-  | "local"
-  | "p2p-host"
-  | "p2p-join"
-  | "draft-match"
-  | "spectate";
+/** The route's normalized game mode: `ai` for a game against the AI,
+ *  `local` for hot-seat. */
+type GamePageMode = "ai" | "local";
 
 export function GamePage() {
-  const { t } = useTranslation(["game", "multiplayer"]);
   const navigate = useNavigate();
   const { id: gameId } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  // `useBroker` is threaded through React Router's location state from
-  // `MultiplayerPage` — intentionally not a URL param, so a hard refresh
-  // re-evaluates broker reachability instead of pinning the "no lobby"
-  // choice silently. On hard-refresh the location state is absent; fall
-  // back to the store's cached `serverInfo.mode` so the user only gets
-  // broker registration when the reachable server is actually `LobbyOnly`.
-  // Without this gate, refreshing `/game/<id>?mode=p2p-host` against a
-  // Full-mode server would attempt `openBrokerClient` and surface an
-  // "Expected LobbyOnly server, got Full" error to the user.
-  const locationState = location.state as
-    | { useBroker?: boolean; formatConfig?: FormatConfig }
-    | null;
-  const cachedServerMode = useMultiplayerStore((s) => s.serverInfo?.mode);
-  const useBroker = locationState?.useBroker ?? (cachedServerMode === "LobbyOnly");
+  const locationState = location.state as { formatConfig?: FormatConfig } | null;
   const rawMode = searchParams.get("mode");
   const difficulty = searchParams.get("difficulty") ?? "Medium";
-  const joinCode = searchParams.get("code") ?? "";
   const formatParam = searchParams.get("format") as GameFormat | null;
   // Which self-piloting Horde deck the survivors face (Horde format only).
   const hordeDeckParam = searchParams.get("hordeDeck") as ChallengeDeck | null;
@@ -324,15 +273,9 @@ export function GamePage() {
   const matchParam = searchParams.get("match");
   const loopParam = searchParams.get("loop");
   const firstParam = searchParams.get("first");
-  const roomNameParam = searchParams.get("roomName");
   const sourceParam = searchParams.get("source") ?? undefined;
   const draftIdParam = searchParams.get("draftId") ?? undefined;
   const pileParam = searchParams.get("pile") ?? undefined;
-  // The lobby authority this join/spectate was launched from. Produced by
-  // our own navigation from a canonical `LobbySource.url`; a hand-edited
-  // value surfaces through the adapter's existing handshake error path, the
-  // same way a hand-edited `code` does.
-  const serverParam = searchParams.get("server") ?? undefined;
   const playerCount = playersParam ? Number(playersParam) : undefined;
   const activeGameMeta = useMemo(
     () => (gameId ? loadActiveGame() : null),
@@ -343,34 +286,21 @@ export function GamePage() {
       ? activeGameMeta.formatConfig
       : undefined;
   // The setup screen's edited config (starting life), handed over on the
-  // navigation that started this game. `GameSetupPage`'s native-engine route
-  // writes no resume pointer, so router state is the only channel that
-  // reaches both engine routes; `savedFormatConfig` still wins because it
-  // survives a hard refresh, and the two agree whenever both are present.
+  // navigation that started this game. `savedFormatConfig` still wins because
+  // it survives a hard refresh, and the two agree whenever both are present.
   const setupFormatConfig = locationState?.formatConfig;
-  // Memoize so the `GameProvider` `useEffect` dep array doesn't
-  // tear-down/rebuild the P2P session on every parent re-render. Without
-  // `useMemo`, each render constructs a fresh object reference from
-  // `FORMAT_DEFAULTS[formatParam]` (its lookup returns a stable reference,
-  // but TypeScript's narrowing produces a fresh binding that the linter
-  // treats as new). The explicit memo makes the stability guarantee
-  // self-documenting.
+  // Memoized so the `GameProvider` `useEffect` dep array doesn't tear down and
+  // rebuild the game on every parent re-render.
   const formatConfig = useMemo(() => {
-    const base = (() => {
-      if (isDirectSoloRouteMode(rawMode)) {
-        if (savedFormatConfig && isDirectSetupFormat(savedFormatConfig.format)) {
-          return savedFormatConfig;
-        }
-        return setupFormatConfig ?? directSetupFormatConfig(formatParam);
-      }
-      return savedFormatConfig ?? (formatParam ? FORMAT_DEFAULTS[formatParam] : undefined);
-    })();
+    const base = savedFormatConfig && isDirectSetupFormat(savedFormatConfig.format)
+      ? savedFormatConfig
+      : setupFormatConfig ?? directSetupFormatConfig(formatParam);
     // Horde: apply the challenge deck picked on the setup screen. The engine owns
     // each deck's rules, so this swaps in that deck's whole `HordeRuleset` (wave
     // policy, setup turns, life deltas) rather than only the deck id — see
     // `withChallengeDeck`. No-ops for non-Horde formats and unknown decks.
     return base && hordeDeckParam ? withChallengeDeck(base, hordeDeckParam) : base;
-  }, [formatParam, rawMode, savedFormatConfig, setupFormatConfig, hordeDeckParam]);
+  }, [formatParam, savedFormatConfig, setupFormatConfig, hordeDeckParam]);
   // CR 103.1: 0 = play first, 1 = draw first, undefined = random
   const firstPlayer = firstParam === "play" ? 0 : firstParam === "draw" ? 1 : undefined;
   const matchConfig = useMemo<MatchConfig>(
@@ -383,473 +313,13 @@ export function GamePage() {
     [matchParam, loopParam],
   );
 
-  // Map URL modes to GameProvider modes
-  const mode: GamePageMode =
-    rawMode === "p2p-host"
-      ? "p2p-host"
-      : rawMode === "p2p-join"
-        ? "p2p-join"
-        : rawMode === "draft-match"
-          ? "draft-match"
-          : rawMode === "spectate"
-            ? "spectate"
-            : rawMode === "host" || rawMode === "join"
-              ? "online"
-              : rawMode === "ai"
-                ? "ai"
-                : "local";
-  const isOnlineMode = mode === "online" || mode === "spectate";
+  const mode: GamePageMode = rawMode === "ai" ? "ai" : "local";
 
   const [showCardDataMissing, setShowCardDataMissing] = useState(false);
 
   // cEDH bracket-violation blocking modal: set when the engine rejects a game
   // init because one or more decks are not declared cEDH at a cEDH table.
   const [bracketViolationError, setBracketViolationError] = useState<string | null>(null);
-
-  // Online multiplayer state
-  const [hostGameCode, setHostGameCode] = useState<string | null>(null);
-  const [waitingForOpponent, setWaitingForOpponent] = useState(false);
-  const [opponentDisconnected, setOpponentDisconnected] = useState(false);
-  const [reconnectState, setReconnectState] = useState<
-    | { status: "idle" }
-    | { status: "reconnecting"; attempt: number; maxAttempts: number }
-    | { status: "failed" }
-  >({ status: "idle" });
-
-  // P2P 3-4p multiplayer additions
-  const [disconnectChoice, setDisconnectChoice] = useState<
-    { playerId: number; gracePeriodMs: number } | null
-  >(null);
-  const [pauseReason, setPauseReason] = useState<string | null>(null);
-
-  // Multiplayer UX state
-  const [showConcedeDialog, setShowConcedeDialog] = useState(false);
-  const [receivedEmote, setReceivedEmote] = useState<string | null>(null);
-  const receivedEmoteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const [timerRemaining, setTimerRemaining] = useState<Record<number, number>>(
-    {},
-  );
-  const [gameStartedAt, setGameStartedAt] = useState<number | null>(null);
-  const [terminalReason, setTerminalReason] = useState<string | null>(null);
-  const hasConcededRef = useRef(false);
-  // The id of the game whose terminal result has been displayed. Keyed by game
-  // rather than a bare flag: Rematch navigates to a new game id on this same
-  // mounted page, and a transport failure of that new game must still surface
-  // the Connection Lost banner.
-  const endedGameIdRef = useRef<string | null>(null);
-  const markGameOver = useCallback(() => {
-    endedGameIdRef.current = gameId ?? null;
-  }, [gameId]);
-  const isGameOver = useCallback(
-    () => gameId !== undefined && endedGameIdRef.current === gameId,
-    [gameId],
-  );
-  // GH #1507: "request takeback" — the table-wide pending request, if any.
-  const [pendingTakeback, setPendingTakeback] = useState<
-    { requester: number; requesterName: string; voters: number[] } | null
-  >(null);
-
-  const handleTakebackEvent = useCallback((event: TakebackEvent) => {
-    switch (event.type) {
-      case "takebackRequested":
-        setPendingTakeback({
-          requester: event.requester,
-          requesterName: event.requesterName,
-          voters: event.voters,
-        });
-        break;
-      case "takebackResolved": {
-        setPendingTakeback(null);
-        const toastKey = TAKEBACK_RESOLUTION_TOAST_KEYS[event.resolution];
-        if (toastKey !== null) {
-          useMultiplayerStore.getState().showToast(t(toastKey, { ns: "multiplayer" }));
-        }
-        break;
-      }
-      case "requestRejected":
-        // The authority refused a request; the session is intact. Deliberately
-        // does NOT touch `reconnectState` — that is the whole point of this
-        // case existing beside `error` rather than being folded into it.
-        // `event.reason` is authority-authored and so passes through raw, per
-        // `client/src/i18n/README.md` ("a string gets `t()` if and only if the
-        // frontend authored it").
-        useMultiplayerStore.getState().showToast(event.reason);
-        break;
-    }
-  }, [t]);
-
-  const handleWsEvent = useCallback((event: WsAdapterEvent) => {
-    switch (event.type) {
-      case "gameCreated":
-        setHostGameCode(event.gameCode);
-        break;
-      case "waitingForOpponent":
-        setWaitingForOpponent(true);
-        break;
-      case "opponentDisconnected": {
-        setOpponentDisconnected(true);
-        // 2-player: mark the single opponent as disconnected
-        const myId = useMultiplayerStore.getState().activePlayerId ?? 0;
-        const oppId = myId === 0 ? 1 : 0;
-        useMultiplayerStore.getState().setPlayerDisconnected(oppId);
-        useMultiplayerStore.getState().showToast(
-          t("gamePage.toasts.playerDisconnected", { name: getOpponentDisplayName(oppId) }),
-          {
-            countdownSeconds: event.graceSeconds,
-            key: playerToastKey(oppId),
-          },
-        );
-        break;
-      }
-      case "opponentReconnected": {
-        setOpponentDisconnected(false);
-        // 2-player: clear disconnected status
-        const myId = useMultiplayerStore.getState().activePlayerId ?? 0;
-        const oppId = myId === 0 ? 1 : 0;
-        useMultiplayerStore.getState().setPlayerReconnected(oppId);
-        useMultiplayerStore.getState().clearToast(playerToastKey(oppId));
-        break;
-      }
-      case "reconnecting":
-        setReconnectState({
-          status: "reconnecting",
-          attempt: event.attempt,
-          maxAttempts: event.maxAttempts,
-        });
-        break;
-      case "reconnected":
-        setReconnectState({ status: "idle" });
-        break;
-      case "reconnectFailed":
-        if (!isGameOver()) {
-          setReconnectState({ status: "failed" });
-        }
-        break;
-      case "stateChanged":
-        // Record game start time on first state update
-        setGameStartedAt((prev) => prev ?? Date.now());
-        break;
-      case "conceded":
-        // If WE conceded, navigate to menu immediately
-        if (event.player === useMultiplayerStore.getState().activePlayerId) {
-          hasConcededRef.current = true;
-          clearPromptOverlayState();
-          if (gameId) void clearGame(gameId);
-          navigate("/");
-        }
-        break;
-      case "gameOver":
-        // Skip if we already navigated away from a self-concede — the server sends
-        // both Conceded and GameOver to all players, so this would race with navigate.
-        if (hasConcededRef.current) break;
-        markGameOver();
-        // Server-initiated game end (concede, disconnect timeout, etc.)
-        // Map the server's authoritative winner into the store so GameOverScreen renders.
-        clearPromptOverlayState();
-        if (gameId) clearGame(gameId);
-        useGameStore.setState({
-          waitingFor: { type: "GameOver", data: { winner: event.winner } },
-        });
-        break;
-      case "terminalDelivery":
-        markGameOver();
-        clearPromptOverlayState();
-        if (gameId) clearGame(gameId);
-        setTerminalReason(event.delivery.display.reason);
-        useGameStore.setState({
-          waitingFor: { type: "GameOver", data: { winner: event.delivery.display.winner } },
-          ...(event.delivery.finalView && isValidFinalView(event.delivery.finalView)
-            ? { gameState: event.delivery.finalView }
-            : {}),
-        });
-        break;
-      case "terminalUnavailable":
-        useMultiplayerStore.getState().showToast(event.message);
-        break;
-      case "emoteReceived":
-        setReceivedEmote(event.emote);
-        if (receivedEmoteTimerRef.current)
-          clearTimeout(receivedEmoteTimerRef.current);
-        receivedEmoteTimerRef.current = setTimeout(
-          () => setReceivedEmote(null),
-          3000,
-        );
-        break;
-      case "contestProgress":
-        useContestStore.getState().setProgress(event.contest, event.clicks);
-        break;
-      case "timerUpdate":
-        setTimerRemaining((prev) => ({
-          ...prev,
-          [event.player]: event.remainingSeconds,
-        }));
-        break;
-      case "takebackRequested":
-      case "takebackResolved":
-      case "requestRejected":
-        handleTakebackEvent(event);
-        break;
-      case "bootstrapDelivered":
-        setPendingTakeback(null);
-        break;
-      case "playerDisconnected":
-        // Multiplayer (3+ players): a specific player disconnected
-        setOpponentDisconnected(true);
-        useMultiplayerStore.getState().setPlayerDisconnected(event.playerId);
-        useMultiplayerStore.getState().showToast(
-          t("gamePage.toasts.playerDisconnected", { name: getPlayerDisplayName(event.playerId) }),
-          {
-            countdownSeconds: event.graceSeconds,
-            key: playerToastKey(event.playerId),
-          },
-        );
-        break;
-      case "playerReconnected":
-        useMultiplayerStore.getState().setPlayerReconnected(event.playerId);
-        useMultiplayerStore.getState().clearToast(playerToastKey(event.playerId));
-        if (useMultiplayerStore.getState().disconnectedPlayers.size === 0) {
-          setOpponentDisconnected(false);
-        }
-        break;
-      case "gamePaused":
-        setOpponentDisconnected(true);
-        useMultiplayerStore.getState().setPlayerDisconnected(event.disconnectedPlayer);
-        useMultiplayerStore.getState().showToast(
-          t("gamePage.toasts.gamePausedPlayerDisconnected", {
-            name: getPlayerDisplayName(event.disconnectedPlayer),
-          }),
-          {
-            countdownSeconds: event.timeoutSeconds,
-            key: playerToastKey(event.disconnectedPlayer),
-          },
-        );
-        break;
-      case "gameResumed":
-        setOpponentDisconnected(false);
-        // Clear per-player disconnect toasts only. Generic toasts (errors,
-        // connection warnings) are independent of the pause/resume cycle.
-        useMultiplayerStore.getState().clearPlayerToasts();
-        break;
-      case "playerEliminated":
-        // Store-level side effects (isSpectator, toast) already handled in ws-adapter
-        break;
-      case "spectatorJoined":
-        useMultiplayerStore.setState((s) => ({
-          spectators: s.spectators.includes(event.name)
-            ? s.spectators
-            : [...s.spectators, event.name],
-        }));
-        break;
-      case "operationFailed":
-        useMultiplayerStore.getState().showToast(event.message);
-        break;
-      case "error":
-        // Also the terminal surface for a native AI driver fault (the adapter
-        // emits `aiDriverFault`, then this `error`): the game cannot continue.
-        useMultiplayerStore.getState().showToast(event.message);
-        // Native engine sockets emit an error before close; the provider disposes
-        // that terminal adapter, so no reconnectFailed event follows.
-        if (!isOnlineMode && !isGameOver()) {
-          setReconnectState({ status: "failed" });
-        }
-        break;
-      case "deckRejected":
-        navigate("/multiplayer", {
-          state: {
-            deckRejected: true,
-            reason: event.reason,
-            joinCode,
-            // Carry the origin back: the retry must re-join the same server,
-            // not whichever one this client hosts on.
-            server: serverParam,
-          },
-        });
-        break;
-    }
-  }, [gameId, navigate, joinCode, serverParam, isOnlineMode, t, handleTakebackEvent, markGameOver, isGameOver]);
-
-  const handleP2PEvent = useCallback((event: P2PAdapterEvent) => {
-    switch (event.type) {
-      case "takebackRequested":
-      case "takebackResolved":
-      case "requestRejected":
-        handleTakebackEvent(event);
-        break;
-      case "bootstrapDelivered":
-        setPendingTakeback(null);
-        break;
-      case "roomCreated": {
-        setHostGameCode(event.roomCode);
-        const effectivePlayerCount = playerCount ?? formatConfig?.max_players ?? 2;
-        const slots: PlayerSlot[] = [
-          {
-            playerId: 0,
-            name: useMultiplayerStore.getState().displayName || "Host",
-            kind: { type: "HostHuman" },
-          },
-          ...Array.from({ length: effectivePlayerCount - 1 }, (_, i) => ({
-            playerId: i + 1,
-            name: "",
-            kind: { type: "WaitingHuman" as const },
-          })),
-        ];
-        useMultiplayerStore.setState({
-          hostGameCode: event.roomCode,
-          hostingStatus: "waiting",
-          hostSession: formatConfig
-            ? {
-                formatConfig,
-                timerSeconds: null,
-                matchType: matchConfig?.match_type === "Bo3" ? "Bo3" : "Bo1",
-              }
-            : null,
-          playerSlots: slots,
-        });
-        break;
-      }
-      case "waitingForGuest":
-        setWaitingForOpponent(true);
-        break;
-      case "guestConnected":
-        break;
-      case "roomFull":
-        useMultiplayerStore.getState().showToast(t("gamePage.toasts.roomFull"));
-        break;
-      case "opponentDisconnected":
-        setOpponentDisconnected(true);
-        break;
-      case "opponentDisconnectedWithChoice":
-        setDisconnectChoice({
-          playerId: event.playerId,
-          gracePeriodMs: event.gracePeriodMs,
-        });
-        setPauseReason(
-          t("gamePage.toasts.playerDisconnected", { name: getPlayerDisplayName(event.playerId) }),
-        );
-        break;
-      case "playerReconnected":
-        // Dismiss the disconnect modal if it was waiting on this player.
-        setDisconnectChoice((cur) => (cur?.playerId === event.playerId ? null : cur));
-        break;
-      case "gamePaused":
-        setPauseReason(event.reason);
-        break;
-      case "gameResumed":
-        setPauseReason(null);
-        setDisconnectChoice(null);
-        setOpponentDisconnected(false);
-        break;
-      case "playerKicked":
-        // If this was the player whose disconnect was prompting the dialog,
-        // dismiss it now that they're conceded.
-        setDisconnectChoice((cur) => (cur?.playerId === event.playerId ? null : cur));
-        break;
-      case "lobbyProgress": {
-        const { setLobbyProgress } = useGameStore.getState();
-        setLobbyProgress({ joined: event.joined, total: event.total });
-        // When all seats arrive, clear lobby UI — game_setup is about to fire.
-        if (event.joined >= event.total) {
-          setLobbyProgress(null);
-          setWaitingForOpponent(false);
-          useMultiplayerStore.setState({
-            hostGameCode: null,
-            hostingStatus: "idle",
-          });
-        }
-        break;
-      }
-      case "playerConceded":
-        // Treat conceded players the same as kicked for dialog dismissal.
-        setDisconnectChoice((cur) => (cur?.playerId === event.playerId ? null : cur));
-        break;
-      case "playerIdentity":
-        setReconnectState({ status: "idle" });
-        useMultiplayerStore.getState().clearToast();
-        break;
-      case "reconnecting":
-        setReconnectState({
-          status: "reconnecting",
-          attempt: event.attempt,
-          maxAttempts: 0,
-        });
-        useMultiplayerStore.getState().showToast(
-          t("gamePage.toasts.hostReconnecting", { attempt: event.attempt }),
-        );
-        break;
-      case "reconnectFailed":
-        if (!isGameOver()) {
-          setReconnectState({ status: "failed" });
-        }
-        break;
-      case "playerSlotsUpdated":
-        useMultiplayerStore.setState({ playerSlots: event.slots });
-        break;
-      case "gameOver":
-        markGameOver();
-        clearPromptOverlayState();
-        if (gameId) clearGame(gameId);
-        useGameStore.setState({
-          waitingFor: { type: "GameOver", data: { winner: event.winner } },
-        });
-        break;
-      case "terminalResult":
-        markGameOver();
-        clearPromptOverlayState();
-        // Display is independent of native guest convergence. The provider /
-        // adapter owns deletion after durable cleanup ownership is established.
-        setTerminalReason(event.result.display.reason);
-        useGameStore.setState({
-          waitingFor: { type: "GameOver", data: { winner: event.result.display.winner } },
-        });
-        break;
-      case "terminalUnavailable":
-        useMultiplayerStore.getState().showToast(event.message);
-        break;
-      case "deckRejected":
-        navigate("/multiplayer", {
-          state: {
-            deckRejected: true,
-            reason: event.reason,
-            format: event.format,
-            joinCode,
-          },
-        });
-        break;
-      case "operationFailed":
-        useMultiplayerStore.getState().showToast(event.message);
-        break;
-      case "error":
-        useMultiplayerStore.getState().showToast(event.message);
-        if (!isGameOver()) {
-          setReconnectState({ status: "failed" });
-        }
-        break;
-      case "hostingFailed": {
-        // Pre-game setup failure — distinct from `error` (catch-all for
-        // connection drops mid-game) because we haven't entered a game
-        // yet and `setReconnectState` would be semantically wrong (no
-        // connection to reconnect). Show the user what happened and
-        // send them back to the menu; the Resume button remains because
-        // `clearP2PHostSession` was NOT called — the persisted state is
-        // still valid, the signaling server just needs a moment.
-        //
-        // `HOSTING_FAILURE_MESSAGE_KEYS` is typed as `Record<ReasonUnion, string>`
-        // so adding a new `reason` to the P2PAdapterEvent union without
-        // adding a key here is a compile error.
-        useMultiplayerStore
-          .getState()
-          .showToast(t(HOSTING_FAILURE_MESSAGE_KEYS[event.reason]));
-        navigate("/");
-        break;
-      }
-    }
-  }, [navigate, formatConfig, matchConfig, playerCount, gameId, joinCode, t, handleTakebackEvent, markGameOver, isGameOver]);
-
-  const handleReady = useCallback(() => {
-    setWaitingForOpponent(false);
-  }, []);
 
   const handleNoDeck = useCallback((reason?: string, bracketViolation?: boolean) => {
     if (sourceParam === "draft" && draftIdParam) {
@@ -882,9 +352,6 @@ export function GamePage() {
     setResumeResetReason(reason);
   }, []);
 
-  const routesWsEvents = mode === "ai" || mode === "online" || mode === "spectate";
-  const routesP2PEvents = mode === "p2p-host" || mode === "p2p-join";
-
   if (!gameId) return null;
 
   return (
@@ -892,55 +359,24 @@ export function GamePage() {
       gameId={gameId}
       mode={mode}
       difficulty={difficulty}
-      joinCode={joinCode || undefined}
       formatConfig={formatConfig}
       playerCount={playerCount}
       matchConfig={matchConfig}
       firstPlayer={firstPlayer}
-      useBroker={useBroker}
-      roomName={roomNameParam ?? undefined}
       source={sourceParam}
       draftId={draftIdParam}
-      serverUrl={serverParam}
       pile={pileParam}
-      onWsEvent={routesWsEvents ? handleWsEvent : undefined}
-      onP2PEvent={routesP2PEvents ? handleP2PEvent : undefined}
-      onReady={
-        mode === "online" || mode === "spectate" || mode === "p2p-host" || mode === "p2p-join"
-          ? handleReady
-          : undefined
-      }
       onCardDataMissing={handleCardDataMissing}
       onNoDeck={handleNoDeck}
       onResumeReset={handleResumeReset}
     >
       <GamePageContent
         gameId={gameId}
-        mode={rawMode}
-        seatMode={mode}
-        isOnlineMode={isOnlineMode}
-        receivesAdapterEvents={routesWsEvents || routesP2PEvents}
-        hostGameCode={hostGameCode}
-        waitingForOpponent={waitingForOpponent}
-        opponentDisconnected={opponentDisconnected}
-        reconnectState={reconnectState}
+        mode={mode}
         showCardDataMissing={showCardDataMissing}
         onDismissCardDataMissing={() => setShowCardDataMissing(false)}
         resumeResetReason={resumeResetReason}
         onDismissResumeReset={() => setResumeResetReason(null)}
-        showConcedeDialog={showConcedeDialog}
-        onShowConcedeDialog={() => setShowConcedeDialog(true)}
-        onHideConcedeDialog={() => setShowConcedeDialog(false)}
-        receivedEmote={receivedEmote}
-        timerRemaining={timerRemaining}
-        gameStartedAt={gameStartedAt}
-        terminalReason={terminalReason}
-        pendingTakeback={pendingTakeback}
-        onCloseTakebackDialog={() => setPendingTakeback(null)}
-        disconnectChoice={disconnectChoice}
-        onDismissDisconnectChoice={() => setDisconnectChoice(null)}
-        pauseReason={pauseReason}
-        isP2PHost={mode === "p2p-host"}
         bracketViolationError={bracketViolationError}
         onDismissBracketViolation={() => {
           setBracketViolationError(null);
@@ -953,37 +389,11 @@ export function GamePage() {
 
 interface GamePageContentProps {
   gameId: string;
-  mode: string | null;
-  /** The normalized mode, for seat derivation a raw route mode cannot answer. */
-  seatMode: GamePageMode;
-  isOnlineMode: boolean;
-  /** Whether this page routes its adapter's events to a handler. */
-  receivesAdapterEvents: boolean;
-  hostGameCode: string | null;
-  waitingForOpponent: boolean;
-  opponentDisconnected: boolean;
-  reconnectState:
-    | { status: "idle" }
-    | { status: "reconnecting"; attempt: number; maxAttempts: number }
-    | { status: "failed" };
+  mode: GamePageMode;
   showCardDataMissing: boolean;
   onDismissCardDataMissing: () => void;
   resumeResetReason: string | null;
   onDismissResumeReset: () => void;
-  showConcedeDialog: boolean;
-  onShowConcedeDialog: () => void;
-  onHideConcedeDialog: () => void;
-  receivedEmote: string | null;
-  timerRemaining: Record<number, number>;
-  gameStartedAt: number | null;
-  terminalReason: string | null;
-  pendingTakeback: { requester: number; requesterName: string; voters: number[] } | null;
-  onCloseTakebackDialog: () => void;
-  // 3-4p P2P additions
-  disconnectChoice: { playerId: number; gracePeriodMs: number } | null;
-  onDismissDisconnectChoice: () => void;
-  pauseReason: string | null;
-  isP2PHost: boolean;
   /** Set when the engine rejected game init because a deck is not declared cEDH at a cEDH table. */
   bracketViolationError: string | null;
   /** Navigate back to setup and clear the bracket-violation modal. */
@@ -993,30 +403,10 @@ interface GamePageContentProps {
 function GamePageContent({
   gameId,
   mode,
-  seatMode,
-  isOnlineMode,
-  receivesAdapterEvents,
-  hostGameCode,
-  waitingForOpponent: _waitingForOpponent,
-  opponentDisconnected,
-  reconnectState,
   showCardDataMissing,
   onDismissCardDataMissing,
   resumeResetReason,
   onDismissResumeReset,
-  showConcedeDialog,
-  onShowConcedeDialog,
-  onHideConcedeDialog,
-  receivedEmote,
-  timerRemaining,
-  gameStartedAt,
-  terminalReason,
-  pendingTakeback,
-  onCloseTakebackDialog,
-  disconnectChoice,
-  onDismissDisconnectChoice,
-  pauseReason,
-  isP2PHost,
   bracketViolationError,
   onDismissBracketViolation,
 }: GamePageContentProps) {
@@ -1025,7 +415,6 @@ function GamePageContent({
   const containerRef = useRef<HTMLDivElement>(null);
 
   const waitingFor = useGameStore((s) => s.waitingFor);
-  const lobbyProgress = useGameStore((s) => s.lobbyProgress);
   const dispatch = useGameDispatch();
   const isMobile = useIsMobile();
   useGameViewportLock();
@@ -1033,8 +422,6 @@ function GamePageContent({
   const splitGridTemplateRows = useResolvedSplitGridRows();
   const gameState = useGameStore((s) => s.gameState);
   const isBestOfThree = gameState?.match_config?.match_type === "Bo3";
-  const draftMatchPairing = useMultiplayerDraftStore((s) => s.matchPairing);
-  const submitIntergameCommand = useMultiplayerDraftStore((s) => s.submitIntergameCommand);
   const objects = useGameStore((s) => s.gameState?.objects);
   const turnNumber = useGameStore((s) => s.gameState?.turn_number);
   // Store `waitingFor`, not `gameState.waiting_for`: only the store's own field is
@@ -1113,9 +500,8 @@ function GamePageContent({
 
   const playerId = usePlayerId();
   const perspectivePlayerId = usePerspectivePlayerId();
-  const isSpectatorMode = useSpectatorMode();
-  // Card-report picker is valid in a live, participating game (never spectate).
-  const canReportCard = gameState != null && !isSpectatorMode;
+  // Card-report picker is valid in a live game.
+  const canReportCard = gameState != null;
   const canActForWaitingState = useCanActForWaitingState();
   const boardChoiceLayerActive = useMemo(() => {
     const choice = getBoardChoiceView(waitingFor, objects, gameState?.allows_cancel_cast);
@@ -1143,14 +529,12 @@ function GamePageContent({
   const toggleDebugClickModeButtonVisible = useUiStore(
     (s) => s.toggleDebugClickModeButtonVisible,
   );
-  const opponentDisplayName = useMultiplayerStore((s) => s.opponentDisplayName);
-  const stateWithheld = useMultiplayerStore((s) => s.stateWithheld);
   const adapter = useGameStore((s) => s.adapter);
   const aiDecisionCaptureEnabled = useUiStore((s) => s.aiDecisionCaptureEnabled);
   const setAiDecisionCaptureEnabled = useUiStore((s) => s.setAiDecisionCaptureEnabled);
   const [aiDecisionReceipt, setAiDecisionReceipt] = useState<AiDecisionDiagnosticReceipt | null>(null);
   // GamePage owns the only local diagnostic subscription. Adapter events remain
-  // gameplay-only so no receipt can enter P2P/server state or wire traffic.
+  // gameplay-only so no receipt can enter game state.
   useEffect(() => {
     setAiDecisionReceipt(null);
     if (!supportsAiDecisionDiagnostics(adapter)) {
@@ -1167,10 +551,6 @@ function GamePageContent({
     };
   }, [adapter, aiDecisionCaptureEnabled]);
   useDebugHandReveal(showAiHand);
-  // The AUTHORITATIVE game mode. The URL-derived `mode` prop structurally
-  // cannot contain `native-ai` (desktop solo arrives as `rawMode === "ai"`), so
-  // it cannot answer "is anyone else at this table?".
-  const storeGameMode = useGameStore((s) => s.gameMode);
   const focusedOpponent = useUiStore((s) => s.focusedOpponent);
   const opponents = useMemo(() => {
     return getOpponentIds(gameState, perspectivePlayerId);
@@ -1213,16 +593,6 @@ function GamePageContent({
     !untapForcedSplit &&
     !multiplayerSplitLayoutNudgeDismissed;
   const gridTemplateRows = splitBoardActive ? splitGridTemplateRows : focusedGridTemplateRows;
-  const handleKickPlayer = useCallback((pid: number) => {
-    const adapter = useGameStore.getState().adapter as
-      | { kickPlayer?: (pid: number) => Promise<void> }
-      | null;
-    void adapter?.kickPlayer?.(pid);
-  }, []);
-  const handleResumeP2P = useCallback(() => {
-    if (adapter instanceof P2PHostAdapter) adapter.requestResume();
-  }, [adapter]);
-
   // Memoize the HUD elements passed to GameBoard. GameBoard is wrapped in
   // React.memo, which shallow-compares props; without stable element
   // references these inline JSX nodes would be new on every GamePageContent
@@ -1230,13 +600,9 @@ function GamePageContent({
   // when GamePageContent re-renders for reasons that don't touch these props.
   const oppHud = useMemo(
     () => (
-      <OpponentHud
-        opponentName={isOnlineMode ? opponentDisplayName : undefined}
-        splitOverview={splitBoardActive}
-        onKickPlayer={isP2PHost ? handleKickPlayer : undefined}
-      />
+      <OpponentHud splitOverview={splitBoardActive} />
     ),
-    [handleKickPlayer, isOnlineMode, opponentDisplayName, isP2PHost, splitBoardActive],
+    [splitBoardActive],
   );
   // The action rail's status row keeps clear of the HUD on short landscape
   // screens, so it needs the HUD's node. A callback ref into state (the setter
@@ -1255,73 +621,16 @@ function GamePageContent({
     audioManager.setBattlefieldPhase(phase);
   }, [turnNumber]);
 
-  const handleConcede = useCallback(() => {
-    if (adapter) {
-      if (adapter instanceof WebSocketAdapter) {
-        adapter.sendConcede();
-      } else if ("sendConcede" in adapter && typeof adapter.sendConcede === "function") {
-        void (adapter.sendConcede as () => void | Promise<void>)();
-      }
-    }
-    onHideConcedeDialog();
-  }, [adapter, onHideConcedeDialog]);
-
-  const handleMatchConcede = useCallback(() => {
-    if (supportsMatchConcede(adapter)) {
-      adapter.sendMatchConcede();
-    }
-    onHideConcedeDialog();
-  }, [adapter, onHideConcedeDialog]);
-
-  const handleSendEmote = useCallback(
-    (emote: string) => {
-      if (adapter && adapter instanceof WebSocketAdapter) {
-        adapter.sendEmote(emote);
-      }
-    },
-    [adapter],
-  );
-
-  // GH #1507: "request takeback" — ask every other human player to approve
-  // rolling the game back to before this player's last action.
-  const handleRequestTakeback = useCallback(() => {
-    if (supportsTakeback(adapter)) {
-      adapter.sendRequestTakeback();
-    }
-  }, [adapter]);
-
-  const handleRespondTakeback = useCallback(
-    (approve: boolean) => {
-      if (supportsTakeback(adapter)) {
-        adapter.sendRespondTakeback(approve);
-      }
-      onCloseTakebackDialog();
-    },
-    [adapter, onCloseTakebackDialog],
-  );
-
-  const handleCancelTakeback = useCallback(() => {
-    if (supportsTakeback(adapter)) {
-      adapter.sendCancelTakeback();
-    }
-    onCloseTakebackDialog();
-  }, [adapter, onCloseTakebackDialog]);
-
   // Issue #311 safety net: when the engine emits a WaitingFor variant the
   // frontend has no UI for, this handler is the user's escape hatch.
-  // - Online: concede (server forfeits the seat, opponents see GameOver).
-  // - AI / local: clear local state + navigate home (no opponent to notify).
+  // It clears local state and navigates home (no opponent to notify).
   const handleUnhandledExit = useCallback(() => {
-    if (isOnlineMode) {
-      handleConcede();
-      return;
-    }
     clearPromptOverlayState();
     if (gameId) {
       void clearGame(gameId);
     }
     navigate("/");
-  }, [isOnlineMode, gameId, handleConcede, navigate]);
+  }, [gameId, navigate]);
 
   const sandboxToolsAvailable = mode === "ai" || mode === "local" || isSandboxGame;
   useKeyboardShortcuts({ sandboxToolsAvailable });
@@ -1457,38 +766,26 @@ function GamePageContent({
 
   const handleSubmitSideboard = useCallback(
     (main: DeckCardCount[], sideboard: DeckCardCount[]) => {
-      if (draftMatchPairing?.matchConfig.match_type === "Bo3") {
-        void submitIntergameCommand({ type: "SubmitSideboard", main, sideboard });
-        return;
-      }
       dispatch({
         type: "SubmitSideboard",
         data: { main, sideboard },
       });
     },
-    [dispatch, draftMatchPairing, submitIntergameCommand],
+    [dispatch],
   );
 
   const handleChoosePlayDraw = useCallback(
     (playFirst: boolean) => {
-      if (draftMatchPairing?.matchConfig.match_type === "Bo3") {
-        void submitIntergameCommand({ type: "ChoosePlayDraw", playFirst });
-        return;
-      }
       dispatch({
         type: "ChoosePlayDraw",
         data: { play_first: playFirst },
       });
     },
-    [dispatch, draftMatchPairing, submitIntergameCommand],
+    [dispatch],
   );
 
-
-
-  const isReconnecting = reconnectState.status !== "idle";
-  const topOverlayOffsetPx = reconnectState.status === "idle" ? 0 : 56;
   const gamePageStyle = {
-    "--game-top-overlay-offset": `${topOverlayOffsetPx}px`,
+    "--game-top-overlay-offset": "0px",
     "--game-split-safe-top": "0px",
     "--game-left-rail-offset": "0px",
     // Where the targeting prompt starts, which is the only part of its
@@ -1526,10 +823,6 @@ function GamePageContent({
     boardContextMenu == null &&
     !showCardDataMissing &&
     resumeResetReason == null &&
-    !showConcedeDialog &&
-    disconnectChoice == null &&
-    pauseReason == null &&
-    reconnectState.status === "idle" &&
     waitingFor?.type === "Priority" &&
     waitingFor.data.player === playerId &&
     canActForWaitingState &&
@@ -1549,10 +842,6 @@ function GamePageContent({
     boardContextMenu == null &&
     !showCardDataMissing &&
     resumeResetReason == null &&
-    !showConcedeDialog &&
-    disconnectChoice == null &&
-    pauseReason == null &&
-    reconnectState.status === "idle" &&
     waitingFor?.type === "Priority" &&
     waitingFor.data.player === playerId &&
     canActForWaitingState &&
@@ -1574,10 +863,6 @@ function GamePageContent({
     boardContextMenu == null &&
     !showCardDataMissing &&
     resumeResetReason == null &&
-    !showConcedeDialog &&
-    disconnectChoice == null &&
-    pauseReason == null &&
-    reconnectState.status === "idle" &&
     waitingFor?.type === "Priority" &&
     waitingFor.data.player === playerId &&
     canActForWaitingState &&
@@ -1606,7 +891,6 @@ function GamePageContent({
         setBoardContextMenu({ x: e.clientX, y: e.clientY });
       }}
     >
-      <SpectatorChrome />
       <BattlefieldBackground key={`${boardBackground}-${playerId}`} />
       <StackDisplay effectiveMultiplayerBoardLayout={effectiveMultiplayerBoardLayout} />
 
@@ -1619,42 +903,6 @@ function GamePageContent({
           aria-label={t("gamePage.sandbox.bannerAria")}
         >
           {t("gamePage.sandbox.banner")}
-        </div>
-      )}
-
-      {/* Adapter-supplied reason, shown raw; non-interactive so the menu stays reachable. */}
-      {stateWithheld && (
-        <div
-          className="pointer-events-none fixed left-0 right-0 top-0 z-30 select-none bg-amber-600 px-4 py-1 text-center text-xs font-bold text-white shadow-md"
-          role="status"
-          data-testid="state-withheld-banner"
-        >
-          {stateWithheld.reason}
-        </div>
-      )}
-
-      {/* Reconnecting banner */}
-      {reconnectState.status === "reconnecting" && (
-        <div className="fixed left-0 right-0 top-0 z-40 bg-amber-600 px-4 py-2 text-center text-sm font-semibold text-white">
-          {reconnectState.maxAttempts > 0
-            ? t("gamePage.reconnect.bannerWithMax", {
-                attempt: reconnectState.attempt,
-                maxAttempts: reconnectState.maxAttempts,
-              })
-            : t("gamePage.reconnect.banner", { attempt: reconnectState.attempt })}
-        </div>
-      )}
-
-      {/* Connection lost banner */}
-      {reconnectState.status === "failed" && (
-        <div className="fixed left-0 right-0 top-0 z-40 flex items-center justify-center gap-4 bg-red-700 px-4 py-2 text-sm font-semibold text-white">
-          <span>{t("gamePage.reconnect.connectionLost")}</span>
-          <button
-            onClick={() => navigate("/")}
-            className="rounded bg-white/20 px-3 py-1 text-xs font-semibold hover:bg-white/30"
-          >
-            {t("gamePage.actions.returnToMenu")}
-          </button>
         </div>
       )}
 
@@ -1865,7 +1113,6 @@ function GamePageContent({
       <GameMenu
         gameId={gameId}
         isAiMode={mode === "ai" && supportsDebugHandReveal(adapter)}
-        isOnlineMode={isOnlineMode}
         showAiHand={showAiHand}
         onToggleAiHand={() => setShowAiHand((v) => !v)}
         logPanelOpen={logPanelOpen}
@@ -1886,14 +1133,6 @@ function GamePageContent({
         onSettingsClick={() => openPreferences()}
         menuTriggerRef={gameMenuTriggerRef}
         onHelpClick={() => setHelpSheetOpen(true)}
-        onConcede={onShowConcedeDialog}
-        // Offered when the adapter carries takeback and this page renders its takeback events.
-        onRequestTakeback={
-          supportsTakeback(adapter) && receivesAdapterEvents && mode !== "spectate"
-            ? handleRequestTakeback
-            : undefined
-        }
-        takebackAudience={hasRemoteHumans(storeGameMode) ? "table" : "solo"}
         showSandboxTools={sandboxToolsAvailable}
         onSandboxToolsClick={() => useUiStore.getState().openSandboxTools()}
         debugInteractionMode={debugInteractionMode}
@@ -1909,76 +1148,6 @@ function GamePageContent({
         <div className="game-no-select text-white" style={gamePageStyle}>
           <HelpSheet />
           <CardReportDialog returnFocusRef={gameMenuTriggerRef} />
-
-          {/* The page's toast surface, not an online-only one: solo games raise
-              toasts too (the native-engine fallback notice). Only online games get
-              a Retry — reloading re-dials the server, but a solo game has nothing
-              to re-dial and would just restart itself. */}
-          <ConnectionToast
-            onRetry={isOnlineMode ? () => window.location.reload() : undefined}
-            onSettings={() => openPreferences()}
-          />
-
-
-
-          {/*
-            Opponent-disconnected overlay for server (WS) games. The live
-            "N seconds to forfeit" countdown lives on `ConnectionToast`, keyed
-            by player — this modal just communicates the blocking/paused state
-            of the game screen. P2P games use `DisconnectChoiceDialog` +
-            `PausedBanner` instead (see adapter §4).
-          */}
-          {opponentDisconnected && !pauseReason && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center">
-              <div className="absolute inset-0 bg-black/60" />
-              <div className="relative z-10 w-full max-w-sm rounded-[12px] border border-yellow-400/30 bg-[#0b1020] p-6 text-center shadow-[0_18px_48px_rgba(0,0,0,0.48)]">
-                <h2 className="mb-2 text-lg font-bold text-yellow-400">
-                  {t("gamePage.opponentDisconnected.title")}
-                </h2>
-                <p className="text-sm text-gray-300">
-                  {t("gamePage.opponentDisconnected.body")}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* P2P pause banner — visible to everyone while paused. */}
-          <PausedBanner
-            isVisible={pauseReason !== null}
-            reason={pauseReason ?? ""}
-            onResume={isP2PHost && adapter instanceof P2PHostAdapter ? handleResumeP2P : undefined}
-          />
-
-          {/* P2P host-only disconnect decision modal. */}
-          {isP2PHost && disconnectChoice !== null && (
-            <DisconnectChoiceDialog
-              isOpen
-              playerLabel={getOpponentDisplayName(disconnectChoice.playerId)}
-              gracePeriodMs={disconnectChoice.gracePeriodMs}
-              onPauseAndWait={() => {
-                const adapter = useGameStore.getState().adapter as
-                  | { holdForReconnect?: (pid: number) => void }
-                  | null;
-                adapter?.holdForReconnect?.(disconnectChoice.playerId);
-              }}
-              onContinueWithout={() => {
-                const adapter = useGameStore.getState().adapter as
-                  | { concedeDisconnected?: (pid: number) => Promise<void> }
-                  | null;
-                void adapter?.concedeDisconnected?.(disconnectChoice.playerId);
-              }}
-              onDismiss={onDismissDisconnectChoice}
-            />
-          )}
-
-          {/* Pre-game lobby progress (3-4p P2P only). */}
-          {lobbyProgress !== null && (
-            <LobbyProgress
-              joined={lobbyProgress.joined}
-              total={lobbyProgress.total}
-              roomCode={hostGameCode ?? undefined}
-            />
-          )}
 
           {/* Card data missing modal */}
           {showCardDataMissing && (
@@ -2427,66 +1596,8 @@ function GamePageContent({
               </div>
             )}
 
-          {/* Multiplayer UX overlays */}
-          <TakebackRequestDialog
-            isOpen={pendingTakeback !== null
-              && (pendingTakeback.requester === playerId || pendingTakeback.voters.includes(playerId))}
-            requesterName={pendingTakeback?.requesterName ?? ""}
-            isOwnRequest={pendingTakeback?.requester === playerId}
-            onApprove={() => handleRespondTakeback(true)}
-            onDecline={() => handleRespondTakeback(false)}
-            onCancel={handleCancelTakeback}
-          />
-          {isOnlineMode && (
-            <>
-              <ConcedeDialog
-                isOpen={showConcedeDialog}
-                gameAction={{
-                  kind: "game",
-                  consequence: isBestOfThree ? "best-of-three-game" : "ordinary-game",
-                  onConfirm: handleConcede,
-                }}
-                matchAction={
-                  supportsMatchConcede(adapter) && isBestOfThree
-                    ? { kind: "match", onConfirm: handleMatchConcede }
-                    : undefined
-                }
-                onCancel={onHideConcedeDialog}
-                returnFocusRef={gameMenuTriggerRef}
-              />
-              {!isSpectatorMode && (
-                <EmoteOverlay
-                  onSendEmote={handleSendEmote}
-                  receivedEmote={receivedEmote}
-                />
-              )}
-              {/* Per-player timer display */}
-              {Object.entries(timerRemaining).map(([pid, secs]) =>
-                secs > 0 ? (
-                  <div
-                    key={pid}
-                    className={`fixed z-30 text-xs font-mono font-bold ${
-                      Number(pid) === playerId
-                        ? "bottom-40 left-1/2 -translate-x-1/2 text-amber-400"
-                        : "top-16 left-1/2 -translate-x-1/2 text-red-400"
-                    }`}
-                  >
-                    {Math.floor(secs / 60)}:{String(secs % 60).padStart(2, "0")}
-                  </div>
-                ) : null,
-              )}
-            </>
-          )}
-
           {waitingFor?.type === "GameOver" && (
-            <GameOverScreen
-              winner={waitingFor.data.winner}
-              mode={mode}
-              seatMode={seatMode}
-              isOnlineMode={isOnlineMode}
-              gameStartedAt={gameStartedAt}
-              terminalReason={terminalReason}
-            />
+            <GameOverScreen winner={waitingFor.data.winner} />
           )}
 
           {/* Issue #311: Fail-loud safety net for orphan WaitingFor states.
@@ -2496,7 +1607,7 @@ function GamePageContent({
               with no way to escape — see UnhandledWaitingForModal for details. */}
           <UnhandledWaitingForModal
             onExit={handleUnhandledExit}
-            exitLabel={isOnlineMode ? t("gamePage.actions.concedeGame") : t("gamePage.actions.returnToMenuLower")}
+            exitLabel={t("gamePage.actions.returnToMenuLower")}
           />
         </div>,
         document.body,

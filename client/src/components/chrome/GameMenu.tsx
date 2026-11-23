@@ -8,31 +8,19 @@ import {
 import { useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 
-import { ConnectionDot } from "../multiplayer/ConnectionDot.tsx";
 import { FullscreenButton } from "./FullscreenButton.tsx";
 import { VolumeControl } from "./VolumeControl.tsx";
 import { clearGame } from "../../stores/gameStore.ts";
 import { useDraftStore } from "../../stores/draftStore.ts";
-import { useMultiplayerDraftStore } from "../../stores/multiplayerDraftStore.ts";
 import { displayedBuildHash } from "../../services/buildInfo.ts";
 import { useCardDataMeta } from "../../hooks/useCardDataMeta.ts";
 import { useConcedeHandler } from "../../hooks/useConcedeHandler.ts";
 import type { ResolvedMultiplayerBoardLayout } from "../../stores/preferencesStore.ts";
 
-/**
- * Who a rollback request is addressed to. A string union rather than a boolean
- * because the axis is *who the audience is*, not a yes/no: at a table the
- * request is a proposal every other human votes on; solo vs. AI there is nobody
- * to ask and it is simply an undo. Only the label differs — the wire request is
- * the same either way.
- */
-export type TakebackAudience = "table" | "solo";
-
 interface GameMenuProps {
   gameId: string;
   /** Offers the "Show AI Hand" toggle: an AI game whose transport can honor it. */
   isAiMode: boolean;
-  isOnlineMode: boolean;
   showAiHand: boolean;
   onToggleAiHand: () => void;
   logPanelOpen: boolean;
@@ -47,13 +35,6 @@ interface GameMenuProps {
   /** Optional shared authority for the persistent hamburger launcher. */
   menuTriggerRef?: RefObject<HTMLButtonElement | null>;
   onHelpClick: () => void;
-  onConcede?: () => void;
-  /** GH #1507: ask every other human player to approve rolling the game
-   * back to the state before this player's last action. Online-only. */
-  onRequestTakeback?: () => void;
-  /** Label axis for the entry above. Defaults to `"table"`, which is the
-   *  pre-existing wording. */
-  takebackAudience?: TakebackAudience;
   /** Show the always-visible Sandbox Tools button. Gated by the caller to
    *  game modes where debug actions actually work (vs-AI, local, or a
    *  multiplayer sandbox). */
@@ -74,7 +55,6 @@ interface GameMenuProps {
 export function GameMenu({
   gameId,
   isAiMode,
-  isOnlineMode,
   showAiHand,
   onToggleAiHand,
   logPanelOpen,
@@ -87,9 +67,6 @@ export function GameMenu({
   onSettingsClick,
   menuTriggerRef,
   onHelpClick,
-  onConcede,
-  onRequestTakeback,
-  takebackAudience = "table",
   showSandboxTools,
   onSandboxToolsClick,
   debugInteractionMode = false,
@@ -109,7 +86,6 @@ export function GameMenu({
   const cardDataMeta = useCardDataMeta();
   const buildHash = displayedBuildHash();
   const isDraft = searchParams.get("source") === "draft" && !!searchParams.get("draftId");
-  const isDraftPodMatch = searchParams.get("mode") === "draft-match";
   const boardLayoutToggleLabel = multiplayerBoardLayout === "split"
     ? t("gameMenu.boardLayoutSplit")
     : t("gameMenu.boardLayoutLegacy");
@@ -117,13 +93,7 @@ export function GameMenu({
     ? t("gameMenu.switchToLegacyView")
     : t("gameMenu.switchToSplitView");
 
-  const handleConcede = useConcedeHandler({
-    gameId,
-    isOnlineMode,
-    isDraft,
-    isDraftPodMatch,
-    onConcede,
-  });
+  const handleConcede = useConcedeHandler({ gameId, isDraft });
 
   const openSurfaceFromMenu = (openSurface: () => void) => {
     // The selected menu item unmounts as this dropdown closes. Move focus to
@@ -198,7 +168,6 @@ export function GameMenu({
           <div className="mb-1 flex items-center gap-1 border-b border-gray-700/80 px-2 pb-1">
             <VolumeControl variant="game" />
             <FullscreenButton variant="game" />
-            {isOnlineMode && <ConnectionDot />}
           </div>
           <MenuSectionLabel label={t("gameMenu.sections.view")} />
           {multiplayerBoardLayout && onToggleMultiplayerBoardLayout && (
@@ -314,41 +283,19 @@ export function GameMenu({
               }}
             />
           )}
-          {/* The prop's presence is the authority, matching `showSandboxTools`
-              two blocks above. A menu should not re-derive when an action is
-              legal — GamePage decides, from the transport that implements it. */}
-          {onRequestTakeback && (
-            <MenuButton
-              label={t(
-                takebackAudience === "solo"
-                  ? "gameMenu.undoLastAction"
-                  : "gameMenu.requestTakeback",
-              )}
-              onClick={() => {
-                setOpen(false);
-                onRequestTakeback();
-              }}
-            />
-          )}
           <div className="my-1 border-t border-gray-700" />
           <MenuButton
             label={t("gameMenu.concede")}
             variant="danger"
             onClick={() => {
-              // Online concedes route through the confirmation dialog
-              // (`onConcede` opens it). All other modes go straight through
-              // the unified concede hook, which dispatches `Concede` to the
-              // engine before clearing local state — see useConcedeHandler.
-              if (isOnlineMode && onConcede) {
-                openSurfaceFromMenu(onConcede);
-                return;
-              }
+              // The unified concede hook dispatches `Concede` to the engine
+              // before clearing local state — see useConcedeHandler.
               setOpen(false);
               handleConcede();
             }}
           />
           <MenuButton
-            label={isDraft || isDraftPodMatch ? t("gameMenu.backToDraft") : t("gameMenu.mainMenu")}
+            label={isDraft ? t("gameMenu.backToDraft") : t("gameMenu.mainMenu")}
             onClick={() => {
               setOpen(false);
               if (isDraft) {
@@ -356,25 +303,6 @@ export function GameMenu({
                   clearGame(gameId);
                   navigate("/draft/quick?resume=1");
                 });
-              } else if (isDraftPodMatch) {
-                // One of THREE exits from a `draft-match` game — this menu
-                // entry, `GamePage`'s game-over button, and Concede — and all
-                // three ask the same question, so all three ask
-                // `endCommanderSession`. It owns the answer and the reasoning:
-                // a pairwise pod match is mid-tournament and must survive being
-                // left, a Commander launch is the pod's last act and must not.
-                // Do not re-inline the condition here; a second copy of that
-                // rationale is how the two drift apart.
-                //
-                // This entry is reachable for the WHOLE game, not just at game
-                // over, so it is the likeliest of the three routes.
-                //
-                // `finally`, not `then` — a teardown that rejects must not
-                // strand the player in a game they have left.
-                void useMultiplayerDraftStore
-                  .getState()
-                  .endCommanderSession()
-                  .finally(() => navigate("/draft-pod"));
               } else {
                 navigate("/");
               }

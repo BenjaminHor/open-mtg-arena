@@ -59,10 +59,64 @@ export {
   clearActiveGame,
 } from "../services/gamePersistence";
 
-/** How the current game is played: against the AI, or hot-seat (`local`, two
- *  humans at one screen). Either way this client owns the engine state and the
- *  local human sits in seat 0. */
-export type GameMode = "ai" | "local";
+/** How the current game is shown: played against the AI, played hot-seat
+ *  (`local`, two humans at one screen), or watched (`spectate`, the Replay
+ *  Viewer: read-only, no seat). */
+export type GameMode = "ai" | "local" | "spectate";
+
+/** Where the authoritative engine state lives. `"replay"` means the game being
+ *  shown is a recording this client only steps through, so it must never
+ *  rewind or record undo history of its own. */
+export type EngineAuthority = "client" | "replay";
+
+/** Where this client's OWN seat number comes from.
+ *
+ * `"seat-zero"` — a game played here. The local human sits at 0 by
+ * construction.
+ *
+ * `"no-seat"` — a watcher holds no seat at all. The two seat resolvers in
+ * `usePlayerId.ts` deliberately answer this case differently; see the comment
+ * there for the contract `HudBadges.tsx` depends on. */
+export type SeatSource = "seat-zero" | "no-seat";
+
+interface GameModeTraits {
+  readonly authority: EngineAuthority;
+  readonly seat: SeatSource;
+  /** Whether this client can export the unredacted engine state. */
+  readonly mayExportAuthoritativeState: boolean;
+}
+
+/**
+ * The questions call sites ask about a mode, answered once per mode.
+ * Exhaustive by construction: a new `GameMode` fails to compile until it
+ * declares every axis. Never widen a predicate with an `|| mode === "..."` at a
+ * call site; ask the predicate.
+ */
+export const GAME_MODE_TRAITS: Record<GameMode, GameModeTraits> = {
+  "ai": { authority: "client", seat: "seat-zero", mayExportAuthoritativeState: true },
+  "local": { authority: "client", seat: "seat-zero", mayExportAuthoritativeState: true },
+  "spectate": { authority: "replay", seat: "no-seat", mayExportAuthoritativeState: false },
+};
+
+/** True when this client does not own the game state it shows (a replay). Such
+ *  a client must not rewind its own view (`stateHistory`/`undoLastAction`). */
+export function isAuthorityRemote(mode: GameMode | null): boolean {
+  return mode !== null && GAME_MODE_TRAITS[mode].authority !== "client";
+}
+
+/** Whether this client may download the engine's unredacted persistence envelope. */
+export function canExportAuthoritativeState(mode: GameMode | null): boolean {
+  return mode !== null && GAME_MODE_TRAITS[mode].mayExportAuthoritativeState;
+}
+
+/**
+ * The seat axis of the census: where this client's own seat number comes from.
+ * `null` — no game yet — is `"seat-zero"`: nothing has assigned this client
+ * anything.
+ */
+export function seatSource(mode: GameMode | null): SeatSource {
+  return mode === null ? "seat-zero" : GAME_MODE_TRAITS[mode].seat;
+}
 
 /**
  * One step of the undo ring: a trusted pre-action checkpoint, and where the game
@@ -307,6 +361,7 @@ export function canUndo(store: GameStore): store is GameStore & { adapter: Engin
   return (
     store.adapter !== null
     && store.pendingUndoId === null
+    && !isAuthorityRemote(store.gameMode)
     && store.stateHistory.length > 0
   );
 }
@@ -521,13 +576,15 @@ export const useGameStore = create<GameStore>()(
         return [];
       }
 
-      // Save current state for undo. Two conditions must hold:
+      // Save current state for undo. Three conditions must hold:
       // 1. Action type is in UNDOABLE_ACTIONS (no hidden-info leaks).
-      // 2. Stack is empty. Checkpoints exist only at stack-empty boundaries
+      // 2. This client owns the game state (not a replay being watched).
+      // 3. Stack is empty. Checkpoints exist only at stack-empty boundaries
       //    so undo always lands the player before the most recent
       //    activation/trigger sequence, never mid-resolution.
       const shouldSaveHistory =
         UNDOABLE_ACTIONS.has(submittedAction.type) &&
+        !isAuthorityRemote(gameMode) &&
         gameState.stack.length === 0;
 
       // Fire the trusted-envelope capture WITHOUT awaiting it: both engine
