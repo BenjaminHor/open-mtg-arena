@@ -517,7 +517,7 @@
     "endpoint": "Endpoint",
     "endpointPlaceholder": "https://your-server/v1",
     "jevEndpointPlaceholder": "Defaults to your multiplayer server",
-    "jevEndpointHint": "Jev is reached through a phase multiplayer server, which relays each request to TypeSafe. Your key travels only inside that request. It is never stored on the server.",
+    "jevEndpointHint": "TypeSafe refuses requests made straight from a browser, so Jev needs a relay: enter the address of one you run. Your key travels only inside each request.",
     "apiKey": "API key",
     "apiKeyPlaceholder": "Paste your API key",
     "apiKeyOptional": "Optional for local servers",

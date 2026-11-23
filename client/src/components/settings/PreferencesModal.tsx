@@ -55,10 +55,7 @@ import { ModalPanelShell } from "../ui/ModalPanelShell";
 import { MenuSelect } from "../ui/MenuSelect";
 import { downloadBackup, importBackupFromFile, type ImportMode } from "../../services/backup.ts";
 import { attemptSavedDeckWrite } from "../../services/savedDeckWriteFailure.ts";
-import { isDesktopTauri } from "../../services/platform.ts";
-import { useCloudSyncStore } from "../../stores/cloudSyncStore.ts";
 import { useSetCatalog } from "../../hooks/useSetSymbols.ts";
-import { DiscordIcon, GoogleIcon } from "../ui/ProviderIcons";
 import { VisualPackManager } from "./visual-packs/VisualPackManager.tsx";
 import { OfflinePreparationSection } from "./OfflinePreparationSection.tsx";
 import { LlmOpponentsSection } from "./LlmOpponentsSection.tsx";
@@ -231,8 +228,6 @@ export function PreferencesModal({
   const setSfxVolume = usePreferencesStore((s) => s.setSfxVolume);
   const setMusicVolume = usePreferencesStore((s) => s.setMusicVolume);
   const setAnimationSpeedMultiplier = usePreferencesStore((s) => s.setAnimationSpeedMultiplier);
-  const nativeEngineEnabled = usePreferencesStore((s) => s.nativeEngineEnabled);
-  const setNativeEngineEnabled = usePreferencesStore((s) => s.setNativeEngineEnabled);
   const showKeywordStrip = usePreferencesStore((s) => s.showKeywordStrip) ?? true;
   const setShowKeywordStrip = usePreferencesStore((s) => s.setShowKeywordStrip);
   const battlefieldPeekOnHover = usePreferencesStore((s) => s.battlefieldPeekOnHover) ?? true;
@@ -516,23 +511,6 @@ export function PreferencesModal({
                       renderLabel={(option) => t(`gameplay.spellPaymentOptions.${option}`)}
                     />
                   </SettingGroup>
-
-                  {isDesktopTauri() && (
-                    <label className="mt-1 flex min-h-11 items-start gap-2">
-                      <input
-                        type="checkbox"
-                        checked={nativeEngineEnabled}
-                        onChange={(e) => setNativeEngineEnabled(e.target.checked)}
-                        className="mt-1 accent-cyan-500"
-                      />
-                      <span className="text-sm text-slate-200">
-                        {t("gameplay.nativeEngine")}
-                        <span className="mt-0.5 block text-xs text-slate-400">
-                          {t("gameplay.nativeEngineDescription")}
-                        </span>
-                      </span>
-                    </label>
-                  )}
 
                   <div
                     ref={boardBackgroundRef}
@@ -926,15 +904,11 @@ export function PreferencesModal({
 
               {activeTab === "data" && (
         <>
-          {/* Not gated on the desktop shell. The service worker precaches the
-              app shell, engine WASM and card data for the browser too, so a
-              readiness checklist is meaningful there — and the browser is where
-              a player is most likely to be surprised by a broken offline
-              session. The native-engine row reports "not applicable" off
-              desktop, which is exactly what it is. */}
-          <OfflinePreparationSection nativeEngineEnabled={nativeEngineEnabled} />
+          {/* The service worker precaches the app shell, engine WASM and card
+              data, so a readiness checklist tells the player what an offline
+              session will have. */}
+          <OfflinePreparationSection />
           <VisualPackManager />
-          <CloudSyncSection />
           <DataSection />
         </>
       )}
@@ -1033,213 +1007,8 @@ function ResetAllFooter({
   );
 }
 
-function SyncSpinner() {
-  return (
-    <svg
-      className="h-3.5 w-3.5 animate-spin"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      />
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z"
-      />
-    </svg>
-  );
-}
-
-const SYNC_BUTTON_CLASS =
-  "rounded-[14px] border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50";
-
-function CloudSyncSection() {
-  const { t } = useTranslation("settings");
-  const available = useCloudSyncStore((s) => s.available);
-  const identity = useCloudSyncStore((s) => s.identity);
-  const sessionResolved = useCloudSyncStore((s) => s.sessionResolved);
-  const paused = useCloudSyncStore((s) => s.paused);
-  const status = useCloudSyncStore((s) => s.status);
-  const error = useCloudSyncStore((s) => s.error);
-  const lastSyncedAt = useCloudSyncStore((s) => s.lastSyncedAt);
-  const conflict = useCloudSyncStore((s) => s.conflict);
-  const conflictDiff = useCloudSyncStore((s) => s.conflictDiff);
-  const signIn = useCloudSyncStore((s) => s.signIn);
-  const signOut = useCloudSyncStore((s) => s.signOut);
-  const syncNow = useCloudSyncStore((s) => s.syncNow);
-  const resolveConflict = useCloudSyncStore((s) => s.resolveConflict);
-
-  // Hidden entirely on deployments without a configured provider (self-hosters),
-  // who keep file backup as their data-portability path.
-  if (!available) return null;
-
-  const syncing = !paused && status === "syncing";
-
-  const statusDetail =
-    status === "error" ? (
-      <span className="text-rose-400">
-        {t("sync.statusError")}
-        {error ? `: ${error}` : ""}
-      </span>
-    ) : syncing ? (
-      t("sync.statusSyncing")
-    ) : (
-      t("sync.lastSynced", {
-        time: lastSyncedAt
-          ? new Date(lastSyncedAt).toLocaleString()
-          : t("sync.never"),
-      })
-    );
-
-  const statusLine = paused ? t("sync.statusPaused") : statusDetail;
-
-  return (
-    <SettingsSection title={t("sync.title")}>
-      <p className="text-xs text-slate-400">{t("sync.description")}</p>
-      <p className="text-xs text-slate-500">{t("sync.savesNote")}</p>
-
-      {!sessionResolved ? (
-        // Session restore in flight — withhold the sign-in CTA so a signed-in
-        // user doesn't see the prompt flash before identity adopts.
-        <p className="text-xs text-slate-500">
-          {paused ? statusLine : t("sync.statusSyncing")}
-        </p>
-      ) : !identity ? (
-        <div className="flex flex-col gap-3">
-          {paused && <p className="text-xs text-slate-500">{statusLine}</p>}
-          <div className="flex flex-wrap gap-2">
-            <button
-              className={SYNC_BUTTON_CLASS}
-              disabled={paused}
-              onClick={() => void signIn("discord")}
-            >
-              <span className="flex items-center gap-2">
-                <DiscordIcon className="h-4 w-4" />
-                {t("sync.signInWith", { provider: t("sync.providerDiscord") })}
-              </span>
-            </button>
-            <button
-              className={SYNC_BUTTON_CLASS}
-              disabled={paused}
-              onClick={() => void signIn("google")}
-            >
-              <span className="flex items-center gap-2">
-                <GoogleIcon className="h-4 w-4" />
-                {t("sync.signInWith", { provider: t("sync.providerGoogle") })}
-              </span>
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2">
-            {identity.avatarUrl && (
-              <img
-                src={identity.avatarUrl}
-                alt=""
-                className="h-6 w-6 rounded-full"
-                referrerPolicy="no-referrer"
-              />
-            )}
-            <span className="text-sm text-slate-200">
-              {t("sync.signedInAs", { name: identity.label })}
-            </span>
-          </div>
-
-          {conflict ? (
-            <div className="flex flex-col gap-2 rounded-[14px] border border-amber-400/30 bg-amber-400/10 p-3">
-              <p className="text-sm font-medium text-amber-200">
-                {t("sync.conflictTitle")}
-              </p>
-              <p className="text-xs text-amber-100/80">
-                {t("sync.conflictBody")}
-              </p>
-              {conflictDiff && (
-                <ul className="space-y-0.5 text-xs text-amber-100/70">
-                  {(conflictDiff.decksAdded > 0 ||
-                    conflictDiff.decksModified > 0 ||
-                    conflictDiff.decksRemoved > 0) && (
-                    <li>
-                      {t("sync.diffDecks", {
-                        added: conflictDiff.decksAdded,
-                        modified: conflictDiff.decksModified,
-                        removed: conflictDiff.decksRemoved,
-                      })}
-                    </li>
-                  )}
-                  {conflictDiff.prefsChanged && <li>{t("sync.diffPrefs")}</li>}
-                  {conflictDiff.feedsChanged && <li>{t("sync.diffFeeds")}</li>}
-                  {conflictDiff.otherChanged && <li>{t("sync.diffOther")}</li>}
-                </ul>
-              )}
-              <div className="flex flex-wrap gap-2">
-                <button
-                  className={SYNC_BUTTON_CLASS}
-                  disabled={paused}
-                  onClick={() => void resolveConflict("cloud")}
-                >
-                  {t("sync.keepCloud")}
-                </button>
-                <button
-                  className={SYNC_BUTTON_CLASS}
-                  disabled={paused}
-                  onClick={() => void resolveConflict("local")}
-                >
-                  {t("sync.keepLocal")}
-                </button>
-                <button
-                  className={SYNC_BUTTON_CLASS}
-                  disabled={paused}
-                  onClick={() => void resolveConflict("merge")}
-                >
-                  {t("sync.keepBothDecks")}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                className={SYNC_BUTTON_CLASS}
-                disabled={syncing || paused}
-                onClick={() => void syncNow()}
-              >
-                <span className="flex items-center gap-2">
-                  {syncing && <SyncSpinner />}
-                  {t("sync.syncNow")}
-                </span>
-              </button>
-              <button
-                className={SYNC_BUTTON_CLASS}
-                disabled={paused}
-                onClick={() => void signOut()}
-              >
-                {t("sync.signOut")}
-              </button>
-            </div>
-          )}
-
-          <div className="flex flex-col gap-1 text-xs text-slate-500">
-            <p>{statusLine}</p>
-            {paused && <p>{statusDetail}</p>}
-          </div>
-        </div>
-      )}
-    </SettingsSection>
-  );
-}
-
 function DataSection() {
   const { t } = useTranslation("settings");
-  const telemetryEnabled = usePreferencesStore((s) => s.telemetryEnabled);
-  const setTelemetryEnabled = usePreferencesStore((s) => s.setTelemetryEnabled);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const importButtonRef = useRef<HTMLButtonElement>(null);
   const [status, setStatus] = useState<string | null>(null);
@@ -1346,18 +1115,6 @@ function DataSection() {
       />
       {status && <p className="text-xs text-emerald-400">{status}</p>}
       {error && <p className="text-xs text-rose-400">{error}</p>}
-      <label className="mt-1 flex min-h-11 items-start gap-2">
-        <input
-          type="checkbox"
-          checked={telemetryEnabled}
-          onChange={(e) => setTelemetryEnabled(e.target.checked)}
-          className="mt-1 accent-cyan-500"
-        />
-        <span className="text-sm text-slate-200">
-          {t("data.telemetry")}
-          <span className="mt-0.5 block text-xs text-slate-400">{t("data.telemetryDescription")}</span>
-        </span>
-      </label>
     </SettingsSection>
   );
 }

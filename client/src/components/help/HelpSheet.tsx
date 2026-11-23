@@ -249,17 +249,8 @@ export function HelpSheet() {
     if (!canExportAuthoritative || !adapter?.exportPersistenceState) return;
     exportAuthoritativeGameStateZip(adapter)
       .then((result) => {
-        // Only the desktop shell can say where the file actually landed, and
-        // only once it has landed; a browser knows nothing past the filename.
-        if (result.kind === "failed") return setStatus(t("help.status.exportFailed"));
-        if (result.kind === "requested") {
-          return setStatus(t("help.status.exportRequested", { filename: result.filename }));
-        }
-        setStatus(
-          result.path
-            ? t("help.status.exportedTo", { path: result.path })
-            : t("help.status.exported", { filename: result.filename }),
-        );
+        // A browser knows nothing past the filename.
+        setStatus(t("help.status.exported", { filename: result.filename }));
       })
       .catch((err: unknown) => {
         if (err instanceof DOMException && err.name === "AbortError") return;
@@ -272,17 +263,7 @@ export function HelpSheet() {
     downloadCurrentReplay()
       .then((result) => {
         if (!result) return setStatus(t("help.status.replayExportUnavailable"));
-        // Same ladder as the state export above: only the shell can say where
-        // the file landed, and a shell that said nothing has not saved it yet.
-        if (result.kind === "failed") return setStatus(t("help.status.replayExportFailed"));
-        if (result.kind === "requested") {
-          return setStatus(t("help.status.exportRequested", { filename: result.filename }));
-        }
-        setStatus(
-          result.path
-            ? t("help.status.exportedTo", { path: result.path })
-            : t("help.status.replayExported", { filename: result.filename }),
-        );
+        setStatus(t("help.status.replayExported", { filename: result.filename }));
       })
       .catch((err: unknown) => {
         if (err instanceof DOMException && err.name === "AbortError") return;

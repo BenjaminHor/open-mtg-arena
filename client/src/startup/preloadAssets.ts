@@ -1,5 +1,4 @@
 import { audioManager, initAudioOnInteraction, type SfxPreloadResult } from "../audio/AudioManager";
-import { audioDeviceSafe } from "../services/audioHealth";
 import { useAudioHealthStore } from "../stores/audioHealthStore";
 
 export interface PreloadProgress {
@@ -73,14 +72,12 @@ function awaitSfxPreload(
 }
 
 /**
- * Actionable line for the terminal, per outcome. Only called once boot has
+ * Actionable line for the console, per outcome. Only called once boot has
  * concluded the host cannot play sound at all.
  *
  * Not routed through `t()` on purpose: `i18n/README.md` puts console output on
- * the never-translate list, and this line's counterpart is the shell's English
- * stderr from `src-tauri/src/media_stack.rs` — the two are read together in one
- * terminal. The user-facing half of this state is localized, in the volume
- * control's `volume.mediaUnavailable`.
+ * the never-translate list. The user-facing half of this state is localized, in
+ * the volume control's `volume.mediaUnavailable`.
  */
 function sfxFailureDiagnostic(outcome: Exclude<SfxPreloadOutcome, "ready">): string {
   const cause =
@@ -88,10 +85,8 @@ function sfxFailureDiagnostic(outcome: Exclude<SfxPreloadOutcome, "ready">): str
       ? `no sound finished decoding within ${SFX_PRELOAD_DEADLINE_MS}ms`
       : "no sound could be decoded";
   return (
-    `[audio] Starting without audio: ${cause}. This platform's media pipeline cannot ` +
-    "play sound. On Linux that means WebKit found no usable GStreamer plugins — run " +
-    "the app from a terminal, where the shell lists exactly which plugins are missing " +
-    "and the packages that provide them."
+    `[audio] Starting without audio: ${cause}. This browser's media pipeline cannot ` +
+    "play sound."
   );
 }
 
@@ -112,15 +107,6 @@ export function ensurePreload(): Promise<void> {
   preloadPromise = (async () => {
     emit({ phase: "audio", percent: 10 });
 
-    // Ask the shell whether the OS audio device is safe to open BEFORE any
-    // audio wiring: on a wedged audio server, WebKitGTK's synchronous device
-    // open inside `new AudioContext()` would freeze the whole page (see
-    // services/audioHealth.ts). Gesture listeners are registered only after
-    // the verdict so a click cannot reach warmUp() early.
-    if (!(await audioDeviceSafe())) {
-      audioManager.disable();
-      useAudioHealthStore.getState().setUnavailable("device-wedged");
-    }
     audioManager.armDeviceOpen();
     initAudioOnInteraction();
 

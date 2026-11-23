@@ -1,24 +1,18 @@
 import { lazy, StrictMode, Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
-import { BrowserRouter, Routes, Route, useSearchParams } from "react-router";
+import { BrowserRouter, Routes, Route } from "react-router";
 
 import { AppShell } from "./components/chrome/AppShell";
 import { AppToast } from "./components/chrome/AppToast";
-import { NativeEngineProgressOverlay } from "./components/chrome/NativeEngineProgressOverlay";
-import { RouteTelemetry } from "./components/chrome/RouteTelemetry";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { HostControlTile } from "./components/chrome/HostControlTile";
 import { EngineLostModal } from "./components/modal/EngineLostModal";
 import { NonFatalPanicToast } from "./components/modal/NonFatalPanicToast";
 import { StuckDecisionToast } from "./components/modal/StuckDecisionToast";
 import { SplashScreen } from "./components/splash/SplashScreen";
 import { useFeedInitialization } from "./hooks/useFeedInitialization";
-import { useDesktopDeepLinks } from "./hooks/useDesktopDeepLinks";
-import { useHostingSession } from "./hooks/useHostingSession";
 import { canonicalizeSavedDeckNames, migrateSavedDecks } from "./services/deckMigrations";
 import { useDeckLibraryAutoSync } from "./services/visualPacks/deckLibraryAutoSync";
 import { ensurePreload, subscribePreload } from "./startup/preloadAssets";
 import { useCardDataStore } from "./stores/cardDataStore";
-import { useCloudSyncStore } from "./stores/cloudSyncStore";
 import { useEffectiveOffline } from "./stores/connectivityStore";
 import { MenuPage } from "./pages/MenuPage";
 
@@ -28,38 +22,18 @@ const GamePage = lazy(() =>
 const GameSetupPage = lazy(() =>
   import("./pages/GameSetupPage").then((m) => ({ default: m.GameSetupPage })),
 );
-const MultiplayerPage = lazy(() => import("./pages/MultiplayerPage").then((m) => ({ default: m.MultiplayerPage })));
 const DeckBuilderPage = lazy(() => import("./pages/DeckBuilderPage").then((m) => ({ default: m.DeckBuilderPage })));
 const MyDecksPage = lazy(() => import("./pages/MyDecksPage").then((m) => ({ default: m.MyDecksPage })));
 const CoveragePage = lazy(() => import("./pages/CoveragePage").then((m) => ({ default: m.CoveragePage })));
 const DraftLandingPage = lazy(() => import("./pages/DraftLandingPage").then((m) => ({ default: m.DraftLandingPage })));
 const DraftPage = lazy(() => import("./pages/DraftPage").then((m) => ({ default: m.DraftPage })));
-const DraftPodPage = lazy(() => import("./pages/DraftPodPage").then((m) => ({ default: m.DraftPodPage })));
-const DraftSpectatorPage = lazy(() =>
-  import("./pages/DraftSpectatorPage").then((m) => ({ default: m.DraftSpectatorPage })),
-);
 const ReplayPage = lazy(() => import("./pages/ReplayPage").then((m) => ({ default: m.ReplayPage })));
-const OpenDesktopPage = lazy(() => import("./pages/OpenDesktopPage").then((m) => ({ default: m.OpenDesktopPage })));
-const TournamentLandingPage = lazy(() => import("./pages/TournamentLandingPage").then((m) => ({ default: m.TournamentLandingPage })));
-const TournamentPage = lazy(() => import("./pages/TournamentPage").then((m) => ({ default: m.TournamentPage })));
 
 function DevStrict({ children }: { children: ReactNode }) {
   if (!import.meta.env.DEV) return children;
   return <StrictMode>{children}</StrictMode>;
 }
 
-function GameRouteElement() {
-  const [searchParams] = useSearchParams();
-  const mode = searchParams.get("mode");
-  const isP2PGame = mode === "p2p-host" || mode === "p2p-join";
-
-  if (isP2PGame) return <GamePage />;
-  return (
-    <DevStrict>
-      <GamePage />
-    </DevStrict>
-  );
-}
 
 export function App() {
   return (
@@ -72,12 +46,8 @@ export function App() {
 function AppContent() {
   const effectiveOffline = useEffectiveOffline();
   const feedInitializationReady = useFeedInitialization(effectiveOffline);
-  useHostingSession();
-  useDesktopDeepLinks();
 
-  // One-shot localStorage migrations. Must run before cloud-sync init so the
-  // first sync sees the canonical (repaired) deck shapes and doesn't push a
-  // tab full of "changed" decks that are byte-identical after repair.
+  // One-shot localStorage migrations: repair saved deck shapes once per load.
   useEffect(() => {
     migrateSavedDecks();
   }, []);
@@ -87,17 +57,6 @@ function AppContent() {
     if (cardDataStatus !== "ready") return;
     void canonicalizeSavedDeckNames().catch(() => {/* best-effort; saved names still resolve */});
   }, [cardDataStatus]);
-
-  // Connectivity policy is the sole lifecycle authority. Offline mode keeps
-  // local dirty observation alive through pause(); only online generations own
-  // a cleanup function.
-  useEffect(() => {
-    if (effectiveOffline) {
-      useCloudSyncStore.getState().pause();
-      return;
-    }
-    return useCloudSyncStore.getState().init();
-  }, [effectiveOffline]);
 
   useDeckLibraryAutoSync(effectiveOffline, feedInitializationReady);
 
@@ -124,7 +83,6 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
-      <RouteTelemetry />
       {showSplash && (
         <SplashScreen progress={progress} onComplete={handleSplashComplete} label={loadLabel} />
       )}
@@ -136,26 +94,18 @@ function AppContent() {
           <Route element={<AppShell />}>
             <Route path="/" element={<DevStrict><MenuPage /></DevStrict>} />
             <Route path="/setup" element={<DevStrict><GameSetupPage /></DevStrict>} />
-            <Route path="/multiplayer" element={<DevStrict><MultiplayerPage /></DevStrict>} />
             <Route path="/my-decks" element={<DevStrict><MyDecksPage /></DevStrict>} />
             <Route path="/deck-builder" element={<DevStrict><DeckBuilderPage /></DevStrict>} />
             <Route path="/coverage" element={<DevStrict><CoveragePage /></DevStrict>} />
             <Route path="/draft" element={<DevStrict><DraftLandingPage /></DevStrict>} />
             <Route path="/draft/quick" element={<DevStrict><DraftPage /></DevStrict>} />
-            <Route path="/tournament" element={<DevStrict><TournamentLandingPage /></DevStrict>} />
-            <Route path="/tournament/:code" element={<DevStrict><TournamentPage /></DevStrict>} />
-            <Route path="/draft-pod" element={<DraftPodPage />} />
-            <Route path="/draft-spectator" element={<DraftSpectatorPage />} />
           </Route>
-          <Route path="/game/:id" element={<GameRouteElement />} />
+          <Route path="/game/:id" element={<DevStrict><GamePage /></DevStrict>} />
           <Route path="/replay" element={<ReplayPage />} />
-          <Route path="/open-desktop" element={<OpenDesktopPage />} />
         </Routes>
       </Suspense>
       </ErrorBoundary>
-      <HostControlTile />
       <AppToast />
-      <NativeEngineProgressOverlay />
       <EngineLostModal />
       <NonFatalPanicToast />
       <StuckDecisionToast />

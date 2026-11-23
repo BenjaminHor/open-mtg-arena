@@ -9,7 +9,6 @@ import { useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import { ConnectionDot } from "../multiplayer/ConnectionDot.tsx";
-import { EngineModeBadge } from "./EngineModeBadge.tsx";
 import { FullscreenButton } from "./FullscreenButton.tsx";
 import { VolumeControl } from "./VolumeControl.tsx";
 import { clearGame } from "../../stores/gameStore.ts";
@@ -191,7 +190,6 @@ export function GameMenu({
           </svg>
         </button>
       </div>
-      <EngineModeBadge />
       {open && (
         <div
           aria-label={t("gameMenu.menu")}

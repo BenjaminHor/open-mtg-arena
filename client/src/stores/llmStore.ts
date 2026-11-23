@@ -2,14 +2,12 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import { LLM_ENDPOINTS_KEY } from "../constants/storage";
-import { defaultJevRelayOrigin } from "../services/llm/relayOrigin";
 import type {
   LlmDecisionContext,
   LlmProfile,
   LlmProviderCatalogEntry,
   LlmProviderId,
 } from "../services/llm/types";
-import { useMultiplayerStore } from "./multiplayerStore";
 
 /**
  * How a profile is persisted to `localStorage`: everything except the
@@ -501,42 +499,6 @@ export function draftProfile(
   return state.profiles.find((profile) => isProfileUsable(profile, catalog));
 }
 
-/**
- * A key is scoped to the endpoint it was entered for. A Jev profile with no
- * endpoint of its own relays through the hosting server, so that server IS the
- * key's destination, and `updateProfile`'s retarget rule cannot see it move: the
- * profile does not change when the player picks another server. Without this, a
- * key typed while hosting on server A would be sent to a custom server B on the
- * next probe, game or draft.
- *
- * So the key is dropped whenever the derived relay origin changes, the same
- * consequence `updateProfile` applies when the provider or an explicit endpoint
- * changes. A profile with an explicit endpoint is unaffected: its destination
- * does not depend on the hosting server. Subscribing here, beside the store the
- * keys live in, means it holds whichever surface holds the key.
- */
-function dropRelayKeysOnOriginChange(): void {
-  // Test doubles for the multiplayer store may not implement `subscribe`.
-  if (typeof useMultiplayerStore?.subscribe !== "function") return;
-  useMultiplayerStore.subscribe((state, previous) => {
-    if (
-      defaultJevRelayOrigin(state.hostingServer) === defaultJevRelayOrigin(previous.hostingServer)
-    ) {
-      return;
-    }
-    const derivesRelay = (profile: LlmProfile) =>
-      profile.provider === "Jev" && !profile.baseUrl?.trim() && profile.apiKey !== "";
-    if (!useLlmStore.getState().profiles.some(derivesRelay)) return;
-    useLlmStore.setState((current) => ({
-      profiles: current.profiles.map((profile) =>
-        derivesRelay(profile) ? { ...profile, apiKey: "" } : profile,
-      ),
-    }));
-  });
-}
-
-dropRelayKeysOnOriginChange();
-
 // ── Session-persisted API keys: sessionStorage, not localStorage ───────────────
 //
 // When a player opts in via `rememberApiKey`, both that tab-local preference
@@ -552,7 +514,6 @@ dropRelayKeysOnOriginChange();
 //
 // Every existing clear rule applies to the stored copy too:
 // - Changing provider or endpoint clears it (handled in `updateProfile`)
-// - Changing the Jev relay origin clears it (handled in `dropRelayKeysOnOriginChange`)
 // - Destination mismatch on reload (e.g. relay or endpoint edited in another
 //   tab) refuses restoration and prunes the stale entry (handled in
 //   `hydrateSessionApiKeys`)
@@ -572,16 +533,15 @@ type SessionApiKeyMap = Record<string, SessionApiKeyEntry>;
 
 /**
  * The destination a profile's key is bound to: its explicit `baseUrl` when set,
- * the resolved Jev relay origin when `provider === "Jev"` without an explicit
- * `baseUrl`, or `""` for a provider's default endpoint. Returns `null` when a
- * Jev relay origin cannot be derived.
+ * or `""` for a provider's default endpoint. Returns `null` for a Jev profile
+ * without an explicit `baseUrl`, which has no destination.
  */
 function effectiveEndpointOf(profile: LlmProfile): string | null {
   const explicit = normalizedBaseUrl(profile.baseUrl);
   if (explicit) return explicit;
-  if (profile.provider === "Jev") {
-    return defaultJevRelayOrigin(useMultiplayerStore.getState().hostingServer) ?? null;
-  }
+  // A Jev profile has no default endpoint to bind to (it needs a relay; see
+  // `services/llm/endpoint.ts`).
+  if (profile.provider === "Jev") return null;
   return "";
 }
 

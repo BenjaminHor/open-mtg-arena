@@ -1,5 +1,3 @@
-import { isTauri } from "./platform";
-
 /** The single URL authority for document and direct external-link routing. */
 export function isOpenableExternalUrl(url: string): boolean {
   try {
@@ -14,13 +12,5 @@ export function isOpenableExternalUrl(url: string): boolean {
 export function openExternal(url: string): void {
   if (!isOpenableExternalUrl(url)) return;
 
-  if (isTauri()) {
-    void import("@tauri-apps/plugin-opener")
-      .then(({ openUrl }) => openUrl(url))
-      .catch((err: unknown) => {
-        console.warn("[phase.rs] Failed to open external URL via Tauri opener.", err);
-      });
-  } else {
-    window.open(url, "_blank", "noopener,noreferrer");
-  }
+  window.open(url, "_blank", "noopener,noreferrer");
 }

@@ -18,7 +18,6 @@ const CAPABILITIES: readonly OfflinePreparationCapabilityName[] = [
   "bundledAiCatalog",
   "deckLibrary",
   "coreVisuals",
-  "nativeEngine",
 ];
 
 type PreparationIntent = "prepare" | "enable-offline";
@@ -34,14 +33,13 @@ function reconnectRequiredResult(): OfflinePreparationResult {
       bundledAiCatalog: { status: "not-ready" },
       deckLibrary: { status: "not-ready" },
       coreVisuals: { status: "not-ready" },
-      nativeEngine: { status: "not-applicable" },
     },
     visualPacks: { status: "not-installed", installedPacks: [] },
     requiredGaps: [],
   };
 }
 
-export function OfflinePreparationSection({ nativeEngineEnabled }: { nativeEngineEnabled: boolean }) {
+export function OfflinePreparationSection() {
   const { t } = useTranslation("settings");
   const forcedOffline = useConnectivityStore((state) => state.forcedOffline);
   const setForcedOffline = useConnectivityStore((state) => state.setForcedOffline);
@@ -69,7 +67,7 @@ export function OfflinePreparationSection({ nativeEngineEnabled }: { nativeEngin
     const generation = ++requestGeneration.current;
     setPreparing(true);
     setConfirming(false);
-    const next = await prepareForOffline({ nativeEngineEnabled });
+    const next = await prepareForOffline();
     if (!mounted.current || generation !== requestGeneration.current) return;
     activeIntent.current = null;
     setPreparing(false);
@@ -80,7 +78,7 @@ export function OfflinePreparationSection({ nativeEngineEnabled }: { nativeEngin
       return;
     }
     if (next.status !== "reconnect-required") setConfirming(true);
-  }, [nativeEngineEnabled, setForcedOffline]);
+  }, [setForcedOffline]);
 
   const toggleOffline = (checked: boolean) => {
     if (!checked) {

@@ -48,8 +48,6 @@ import { withSavedDeckLibraryOrSkip } from "../services/savedDeckTransaction";
 import { useCardImage } from "../hooks/useCardImage";
 import { BRACKET_LABEL } from "../types/bracket";
 import { effectiveAiDifficulty, isDeckCedhLegal } from "../services/cedhLock";
-import { canAttemptNativeEngine } from "../services/nativeEngine";
-import { FORMAT_DEFAULTS } from "../stores/multiplayerStore";
 import { usePreferencesStore } from "../stores/preferencesStore";
 import { useCardDataStore } from "../stores/cardDataStore";
 import { saveActiveGame, useGameStore } from "../stores/gameStore";
@@ -172,7 +170,7 @@ export function GameSetupPage() {
     // Restore last-used format, or default to Commander
     const restoredLastFormat = lastFormat && setupDefaults(lastFormat) ? lastFormat : null;
     const fmt = restoredLastFormat ?? "Commander";
-    const defaults = setupDefaults(fmt) ?? FORMAT_DEFAULTS.Commander;
+    const defaults = setupDefaults(fmt) ?? formatMetadata("Commander")!.default_config;
     setSelectedFormat(fmt);
     setFormatConfig(defaults);
     // A co-Horde pick (e.g. Two Towers) stored from a prior session needs its
@@ -273,11 +271,7 @@ export function GameSetupPage() {
       deckId: s.deckId === "Random" ? null : s.deckId,
     }));
     const headDifficulty = aiSeats[0]?.difficulty ?? "Medium";
-    // The native server owns a fresh AI session and v1 deliberately has no
-    // resume contract. Preserve the existing pointer only for the WASM route.
-    if (!canAttemptNativeEngine(prefs.nativeEngineEnabled) || firstPlayer !== "random") {
-      saveActiveGame({ id: gameId, mode: "ai", difficulty: headDifficulty, aiSeats, formatConfig });
-    }
+    saveActiveGame({ id: gameId, mode: "ai", difficulty: headDifficulty, aiSeats, formatConfig });
     useGameStore.setState({ gameId });
     const firstParam = firstPlayer !== "random" ? `&first=${firstPlayer}` : "";
     // CR 732.2a: carry the creation-time combo-detector opt-in into the game URL;
@@ -294,9 +288,8 @@ export function GameSetupPage() {
     const pileParam = pileName ? `&pile=${encodeURIComponent(pileName)}` : "";
     // The URL carries the format NAME only, so the edited config (starting
     // life) has to ride along out-of-band or GamePage re-derives it from
-    // `FORMAT_DEFAULTS` and silently discards the edit. Router state — the
-    // same channel `useBroker` uses — rather than a URL param, because the
-    // native-engine route above deliberately writes no resume pointer.
+    // the format defaults and silently discards the edit. Router state rather
+    // than a URL param keeps the URL to the format name.
     navigate(
       `/game/${gameId}?mode=ai&difficulty=${headDifficulty}&format=${formatConfig.format}&players=${playerCount}&match=${effectiveMatchType.toLowerCase()}${loopParam}${firstParam}${pileParam}${hordeDeckParam}`,
       { state: { formatConfig } },

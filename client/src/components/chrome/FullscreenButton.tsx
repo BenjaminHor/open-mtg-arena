@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { isDesktopTauri, isTauri } from "../../services/platform";
-
 function EnterFullscreenIcon({ className }: { className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className ?? "w-5 h-5"}>
@@ -26,69 +24,17 @@ interface FullscreenButtonProps {
 export function FullscreenButton({ variant }: FullscreenButtonProps) {
   const { t } = useTranslation();
   const [isFullscreen, setIsFullscreen] = useState(!!document.fullscreenElement);
-  const desktopTauri = isDesktopTauri();
-  const unknownOrMobileTauri = isTauri() && !desktopTauri;
 
   useEffect(() => {
-    if (desktopTauri) {
-      let active = true;
-      let unlisten: (() => void) | undefined;
-
-      void (async () => {
-        try {
-          const { getCurrentWindow } = await import("@tauri-apps/api/window");
-          const appWindow = getCurrentWindow();
-          const syncFullscreen = async () => {
-            try {
-              const fullscreen = await appWindow.isFullscreen();
-              if (active) setIsFullscreen(fullscreen);
-            } catch (error) {
-              console.warn("[phase.rs] Could not synchronize Tauri fullscreen state.", error);
-            }
-          };
-
-          await syncFullscreen();
-          const removeResizeListener = await appWindow.onResized(() => {
-            void syncFullscreen();
-          });
-          if (active) {
-            unlisten = removeResizeListener;
-          } else {
-            removeResizeListener();
-          }
-        } catch (error) {
-          console.warn("[phase.rs] Could not synchronize Tauri fullscreen state.", error);
-        }
-      })();
-
-      return () => {
-        active = false;
-        unlisten?.();
-      };
-    }
-
-    if (unknownOrMobileTauri) return;
-
     function onChange() {
       setIsFullscreen(!!document.fullscreenElement);
     }
     document.addEventListener("fullscreenchange", onChange);
     return () => document.removeEventListener("fullscreenchange", onChange);
-  }, [desktopTauri, unknownOrMobileTauri]);
+  }, []);
 
   const toggle = useCallback(async () => {
     try {
-      if (desktopTauri) {
-        const { getCurrentWindow } = await import("@tauri-apps/api/window");
-        const appWindow = getCurrentWindow();
-        const nextFullscreen = !(await appWindow.isFullscreen());
-        await appWindow.setFullscreen(nextFullscreen);
-        setIsFullscreen(nextFullscreen);
-        return;
-      }
-
-      if (unknownOrMobileTauri) return;
-
       if (document.fullscreenElement) {
         await document.exitFullscreen();
       } else {
@@ -97,12 +43,10 @@ export function FullscreenButton({ variant }: FullscreenButtonProps) {
     } catch (error) {
       console.warn("[phase.rs] Could not toggle fullscreen.", error);
     }
-  }, [desktopTauri, unknownOrMobileTauri]);
+  }, []);
 
   const Icon = isFullscreen ? ExitFullscreenIcon : EnterFullscreenIcon;
   const label = isFullscreen ? t("fullscreen.exit") : t("fullscreen.enter");
-
-  if (unknownOrMobileTauri) return null;
 
   if (variant === "game") {
     return (

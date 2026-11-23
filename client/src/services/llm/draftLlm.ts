@@ -15,9 +15,8 @@ import type { LlmDraftResponsePayload } from "../../adapter/draft-adapter";
 import { ensureSetCatalog } from "../setCatalog";
 import { reportLlmFailure } from "./diagnostics";
 import { executeLlmRequest } from "./llmClient";
-import { resolvedEndpointOf } from "./endpoint";
 import { recordLlmUsage } from "./usage";
-import { type LlmDraftOutcome, type LlmDraftPickRequest, type LlmProfile } from "./types";
+import { endpointOf, type LlmDraftOutcome, type LlmDraftPickRequest, type LlmProfile } from "./types";
 
 /**
  * Per-seat ceiling for a draft pick.
@@ -191,7 +190,7 @@ export async function collectLlmDraftResponses(
     // client-side classification of the same thing -- free to drift, and
     // drifting toward disclosing a human seat's private pool.
     requests = await withDraftEngineOperation((lease) =>
-      lease.buildLlmDraftPickRequests(JSON.stringify(resolvedEndpointOf(profile)), setNames),
+      lease.buildLlmDraftPickRequests(JSON.stringify(endpointOf(profile)), setNames),
     );
   } catch (error) {
     // A run the draft lifecycle cancelled (abandon, new draft, resume) will

@@ -12,8 +12,8 @@
 
 import { getSharedAdapter } from "../../adapter/wasm-adapter";
 import { executeLlmRequest, LlmTransportError } from "./llmClient";
-import { resolvedEndpointOf } from "./endpoint";
 import {
+  endpointOf,
   type LlmFailure,
   type LlmHttpRequestSpec,
   type LlmProfile,
@@ -44,7 +44,7 @@ export async function testLlmEndpoint(
   try {
     built = (await getSharedAdapter().query(
       "buildLlmProbeRequest",
-      JSON.stringify(resolvedEndpointOf(profile)),
+      JSON.stringify(endpointOf(profile)),
     )) as ProbeRequestResult;
   } catch (error) {
     return { ok: false, code: "engineUnavailable", detail: describe(error) };

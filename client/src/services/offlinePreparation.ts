@@ -1,4 +1,3 @@
-import { canAttemptNativeEngine, nativeEngineKeyForCurrentOrigin, prepareNativeEngineForOffline } from "./nativeEngine.ts";
 import { prepareOfflineAssets, type OfflineAssetsReadiness } from "./offlineAssets.ts";
 import { loadVisualPackBackend } from "./platform.ts";
 import { MANA_SYMBOL_SHARDS } from "./scryfall.ts";
@@ -41,8 +40,7 @@ export type OfflinePreparationCapabilityName =
   | "preconCatalog"
   | "bundledAiCatalog"
   | "deckLibrary"
-  | "coreVisuals"
-  | "nativeEngine";
+  | "coreVisuals";
 
 export type OfflinePreparationCapabilityStatus =
   | "ready"
@@ -89,7 +87,6 @@ function unavailableCapabilities(): Record<OfflinePreparationCapabilityName, Off
     bundledAiCatalog: { status: "not-ready" },
     deckLibrary: { status: "not-ready" },
     coreVisuals: { status: "not-ready" },
-    nativeEngine: { status: "not-applicable" },
   };
 }
 
@@ -109,7 +106,7 @@ function shellResult(readiness: AppShellReadiness, final = false): OfflinePrepar
 }
 
 function assetCapabilities(readiness: OfflineAssetsReadiness): Record<
-  Exclude<OfflinePreparationCapabilityName, "appShell" | "coreVisuals" | "nativeEngine">,
+  Exclude<OfflinePreparationCapabilityName, "appShell" | "coreVisuals">,
   OfflinePreparationCapability
 > {
   return {
@@ -291,13 +288,12 @@ function requiredGaps(
  * Runs the existing, release-specific preparation authorities once and reports
  * their fresh result. It deliberately never writes connectivity policy.
  *
- * "Prepare" means prepare: like the native engine and the deck-library pack,
- * the core visual pack is INSTALLED here when missing rather than merely
+ * "Prepare" means prepare: like the deck-library pack, the core visual pack is INSTALLED here when missing rather than merely
  * reported, so that a green checklist means the next offline session actually
  * works. Card art is the one thing left to the user, and it is now named
  * rather than silently omitted.
  */
-export async function prepareForOffline({ nativeEngineEnabled }: { nativeEngineEnabled: boolean }): Promise<OfflinePreparationResult> {
+export async function prepareForOffline(): Promise<OfflinePreparationResult> {
   if (getEffectiveOffline()) {
     return {
       status: "reconnect-required",
@@ -317,29 +313,11 @@ export async function prepareForOffline({ nativeEngineEnabled }: { nativeEngineE
   const visualPackAccess = await accessVisualPacks();
   const coreVisuals = await prepareCoreVisuals(visualPackAccess);
   const visualPacks = await prepareVisualPacks(visualPackAccess);
-  let nativeEngine: OfflinePreparationCapability = (() => {
-    if (!nativeEngineEnabled || !canAttemptNativeEngine(true)) return { status: "not-applicable" };
-    return { status: "not-ready" };
-  })();
-  if (nativeEngine.status === "not-ready") {
-    const key = nativeEngineKeyForCurrentOrigin();
-    if (key) {
-      try {
-        await prepareNativeEngineForOffline(key);
-        nativeEngine = { status: "ready" };
-      } catch {
-        // The named capability is the user-facing diagnostic; transport owns details.
-      }
-    } else {
-      nativeEngine = { status: "not-applicable" };
-    }
-  }
 
   const capabilities: Record<OfflinePreparationCapabilityName, OfflinePreparationCapability> = {
     appShell: { status: "ready" },
     ...assetCapabilities(assets),
     coreVisuals,
-    nativeEngine,
   };
   const finalShell = await checkAppShellReadiness();
   const finalShellResult = shellResult(finalShell, true);

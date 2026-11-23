@@ -1,5 +1,3 @@
-import { isDesktopTauri } from "./platform";
-
 interface FileSystemWritableFileStream {
   write: (data: Blob) => Promise<void>;
   close: () => Promise<void>;
@@ -22,84 +20,10 @@ type WindowWithSaveFilePicker = Window & {
 };
 
 /**
- * What became of a download. Only the desktop shell learns where a
- * browser-style download actually landed, so `path` appears only there, and it
- * arrives home-relative so the page is never told the user's home path. On
- * Windows WebView2 offers `showSaveFilePicker`, so the picker branch runs
- * and the shell wait is never reached.
+ * What became of a download. A browser never learns where an anchor download
+ * landed, so the result only names the file.
  */
-export type DownloadResult =
-  | { kind: "saved"; filename: string; path?: string }
-  | { kind: "requested"; filename: string }
-  | { kind: "failed"; filename: string; path?: string };
-
-/** Payload of the shell's `shell-download` event (`ShellDownload` in `src-tauri`). */
-interface ShellDownload {
-  url: string;
-  path: string | null;
-  outcome: "saved" | "unknown" | "failed";
-}
-
-const SHELL_DOWNLOAD_EVENT = "shell-download";
-
-/**
- * How long to wait for the shell to report a finished download before saying
- * only that it was requested. Nothing cancels the download at this point; we
- * just stop claiming to know where it went.
- */
-const SHELL_DOWNLOAD_TIMEOUT_MS = 10_000;
-
-/**
- * Click the anchor under the desktop shell and wait for the shell to say where
- * the file landed. The subscription has to exist before the click: a small
- * download can finish before a listener registered afterwards would hear it.
- * `url` is the blob URL being clicked, and it is what tells this download's
- * report apart from a concurrent one's.
- */
-async function clickThroughShell(
-  filename: string,
-  url: string,
-  click: () => void,
-): Promise<DownloadResult> {
-  let settle!: (result: DownloadResult) => void;
-  const finished = new Promise<DownloadResult>((resolve) => {
-    settle = resolve;
-  });
-  // Only the setup may fail softly, and only because nothing has been clicked
-  // yet: a chunk that would not load must cost the user the destination, never
-  // the export itself. Past this point the click has happened exactly once and
-  // must not be repeated, so the wait below is deliberately not guarded.
-  const unlisten = await import("@tauri-apps/api/event")
-    .then(({ listen }) =>
-      listen<ShellDownload>(SHELL_DOWNLOAD_EVENT, ({ payload }) => {
-        // The event is broadcast to the page, so another export or a log dump
-        // finishing inside this wait would otherwise hand us its path. The
-        // timeout stays the fallback for a report that never arrives.
-        if (payload.url !== url) return;
-        settle(
-          // The shell reports "unknown" when it cannot tell a written file from
-          // a truncated one, which is the same thing we know after the wait runs
-          // out: the download was requested and nothing confirmed it.
-          payload.outcome === "unknown"
-            ? { kind: "requested", filename }
-            : { kind: payload.outcome, filename, path: payload.path ?? undefined },
-        );
-      }),
-    )
-    .catch(() => null);
-  if (!unlisten) {
-    click();
-    return { kind: "requested", filename };
-  }
-  const timer = setTimeout(() => settle({ kind: "requested", filename }), SHELL_DOWNLOAD_TIMEOUT_MS);
-  try {
-    click();
-    return await finished;
-  } finally {
-    clearTimeout(timer);
-    unlisten();
-  }
-}
+export type DownloadResult = { kind: "saved"; filename: string };
 
 /**
  * Save a blob to disk, preferring the File System Access "save as" picker
@@ -144,13 +68,8 @@ export async function downloadBlob(
   anchor.download = filename;
   document.body.appendChild(anchor);
   try {
-    // Off the shell nothing can report a destination, so a click is as much as
-    // a browser ever knows.
-    if (!isDesktopTauri()) {
-      anchor.click();
-      return { kind: "saved", filename };
-    }
-    return await clickThroughShell(filename, url, () => anchor.click());
+    anchor.click();
+    return { kind: "saved", filename };
   } finally {
     document.body.removeChild(anchor);
     URL.revokeObjectURL(url);

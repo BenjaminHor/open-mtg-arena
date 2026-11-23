@@ -181,18 +181,8 @@ export function DebugPanel({
     if (!exported) return;
     exported
       .then((result) => {
-        // Under the desktop shell the message waits for the real destination;
-        // a browser can only ever name the file it asked for.
-        if (result.kind === "failed") {
-          return setStatus({ type: "error", message: t("help.status.exportFailed") });
-        }
-        const message =
-          result.kind === "requested"
-            ? t("help.status.exportRequested", { filename: result.filename })
-            : result.path
-              ? t("help.status.exportedTo", { path: result.path })
-              : t("help.status.exported", { filename: result.filename });
-        setStatus({ type: "success", message });
+        // A browser can only ever name the file it asked for.
+        setStatus({ type: "success", message: t("help.status.exported", { filename: result.filename }) });
       })
       .catch((err: unknown) => {
         if (err instanceof DOMException && err.name === "AbortError") return;

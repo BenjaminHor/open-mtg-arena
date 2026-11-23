@@ -6,7 +6,6 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { LLM_ENDPOINTS_KEY } from "../../constants/storage";
 import { draftProfile, isMissingApiKey, isProfileUsable, profileForSeat, useLlmStore } from "../llmStore";
-import { useMultiplayerStore } from "../multiplayerStore";
 import type { LlmProfile, LlmProviderCatalogEntry } from "../../services/llm/types";
 
 const CATALOG: readonly LlmProviderCatalogEntry[] = [
@@ -549,22 +548,6 @@ describe("llmStore", () => {
 
     useLlmStore.getState().updateProfile(id, { baseUrl: "https://proxy.internal/v1" });
     // When the last key is removed, the sessionStorage key is deleted entirely.
-    expect(sessionStorage.getItem("phase-llm-api-keys")).toBeNull();
-  });
-
-  it("stores Jev relay origin and clears sessionStorage key when relay changes", () => {
-    useMultiplayerStore.setState({ hostingServer: "wss://relay-a.example" });
-    const id = useLlmStore.getState().addProfile({
-      provider: "Jev", model: "jev-latest", apiKey: "jev-key", enabled: true, rememberApiKey: true,
-    });
-    const sessionKeys = JSON.parse(sessionStorage.getItem("phase-llm-api-keys")!);
-    expect(sessionKeys[id]).toEqual({
-      apiKey: "jev-key",
-      provider: "Jev",
-      endpoint: "https://relay-a.example",
-    });
-
-    useMultiplayerStore.setState({ hostingServer: "wss://relay-b.example" });
     expect(sessionStorage.getItem("phase-llm-api-keys")).toBeNull();
   });
 

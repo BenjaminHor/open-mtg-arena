@@ -10,7 +10,6 @@ import { executeLlmRequest } from "../../services/llm/llmClient";
 import { loadProviderCatalog } from "../../services/llm/catalog";
 import { reportLlmFailure } from "../../services/llm/diagnostics";
 import { recordLlmUsage } from "../../services/llm/usage";
-import { resolvedEndpointOf } from "../../services/llm/endpoint";
 import { endpointOf } from "../../services/llm/types";
 import type { AiActionProposal, GameAction, GameState, WaitingFor } from "../../adapter/types";
 import { AdapterError, AdapterErrorCode } from "../../adapter/types";
@@ -207,7 +206,7 @@ async function llmActionProposal(
   }
 
   const history = (logHistory ?? []).slice(-LLM_HISTORY_TRANSFER_LIMIT);
-  const endpointJson = JSON.stringify(resolvedEndpointOf(profile));
+  const endpointJson = JSON.stringify(endpointOf(profile));
   const historyJson = JSON.stringify(history);
   // The seat's settings can change during any await below: message threads
   // turned off, or another endpoint, model or key. A request is built and sent
@@ -222,7 +221,7 @@ async function llmActionProposal(
     if (
       settingsRevision() === revision
       && current
-      && JSON.stringify(resolvedEndpointOf(current)) === endpointJson
+      && JSON.stringify(endpointOf(current)) === endpointJson
     ) {
       return false;
     }

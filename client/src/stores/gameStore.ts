@@ -45,7 +45,7 @@ export function legalResultState(result: LegalActionsResult): Pick<GameStoreStat
 }
 
 // Re-export persistence API so existing imports keep working
-export type { ActiveGameMeta, PersistedP2PHostSession } from "../services/gamePersistence";
+export type { ActiveGameMeta } from "../services/gamePersistence";
 export {
   saveGame,
   saveAuthoritativeGame,
@@ -57,142 +57,12 @@ export {
   saveActiveGame,
   loadActiveGame,
   clearActiveGame,
-  saveP2PHostSession,
-  loadP2PHostSession,
-  clearP2PHostSession,
 } from "../services/gamePersistence";
 
-export type GameMode =
-  | "ai"
-  | "native-ai"
-  | "online"
-  | "local"
-  | "p2p-host"
-  | "p2p-join"
-  | "draft-match"
-  | "spectate";
-
-/** Where the authoritative engine state lives. `"wire"` means some process
- *  other than this client owns it, so this client must never rewind: a local
- *  rewind desyncs from the authority on the next exchange. */
-export type EngineAuthority = "client" | "wire";
-
-/** Whether humans on OTHER clients share this game. `"solo"` covers hot-seat
- *  `local` too: two humans at one screen share one client and one state, so
- *  nothing they do can desync a peer or leak hidden info across a wire. */
-export type TableCompany = "solo" | "remote-humans";
-
-/** Where this client's OWN seat number comes from.
- *
- * `"seat-zero"` — a solo game. There is one local human and the engine seats
- * them at 0 by construction; nothing on a wire can say otherwise, so a stale
- * `activePlayerId` left behind by an earlier online game must not be read.
- *
- * `"wire-assigned"` — somebody else hands this client its seat: a server
- * (`playerIdentity` from `WebSocketAdapter`), a P2P host (`game_setup`'s
- * `assignedPlayerId`), or the pod that paired this match
- * (`setupDraftMatchAvatars`). `multiplayerStore.activePlayerId` carries it.
- *
- * `"no-seat"` — a spectator holds no seat at all. The two seat resolvers in
- * `usePlayerId.ts` deliberately answer this case differently; see the comment
- * there for the contract `HudBadges.tsx` depends on. */
-export type SeatSource = "seat-zero" | "wire-assigned" | "no-seat";
-
-interface GameModeTraits {
-  readonly authority: EngineAuthority;
-  readonly company: TableCompany;
-  readonly seat: SeatSource;
-  /** Whether this client can request the unredacted state from its authority. */
-  readonly mayExportAuthoritativeState: boolean;
-}
-
-/**
- * The two questions the old `isMultiplayerMode` answered with one bit, split
- * and answered separately for every mode. Exhaustive by construction: a new
- * `GameMode` fails to compile until it declares both axes.
- *
- * This table is the census. Never widen a predicate with an `|| mode === "..."`
- * at a call site — that is how the conflation this file exists to undo comes
- * back, one call site at a time.
- *
- * `spectate` is `remote-humans` by the *game* it observes, not by the observer.
- */
-export const GAME_MODE_TRAITS: Record<GameMode, GameModeTraits> = {
-  "ai": { authority: "client", company: "solo", seat: "seat-zero", mayExportAuthoritativeState: true },
-  "local": { authority: "client", company: "solo", seat: "seat-zero", mayExportAuthoritativeState: true },
-  "native-ai": { authority: "wire", company: "solo", seat: "seat-zero", mayExportAuthoritativeState: true },
-  "online": { authority: "wire", company: "remote-humans", seat: "wire-assigned", mayExportAuthoritativeState: false },
-  "p2p-host": { authority: "wire", company: "remote-humans", seat: "seat-zero", mayExportAuthoritativeState: true },
-  "p2p-join": { authority: "wire", company: "remote-humans", seat: "wire-assigned", mayExportAuthoritativeState: false },
-  "draft-match": { authority: "wire", company: "remote-humans", seat: "wire-assigned", mayExportAuthoritativeState: false },
-  "spectate": { authority: "wire", company: "remote-humans", seat: "no-seat", mayExportAuthoritativeState: false },
-};
-
-/** True when the authoritative engine state lives off this client — i.e. the
- *  authority is REMOTE. Such a client must not rewind its own view
- *  (`stateHistory`/`undoLastAction`); see `WebSocketAdapter.restoreState`, which rejects
- *  it at the transport. This is deliberately NOT "is this multiplayer":
- *  desktop solo-vs-AI (`native-ai`) is a wire-authoritative game with no other
- *  humans in it, and every one of this predicate's seven call sites wants the
- *  authority question, not the company one. */
-export function isAuthorityRemote(mode: GameMode | null): boolean {
-  return mode !== null && GAME_MODE_TRAITS[mode].authority === "wire";
-}
-
-/**
- * True when humans on other clients share this game. Local-only affordances
- * are safe when false — there is nobody else's game to disturb and no hidden
- * info to leak across a wire.
- *
- * **First and only production consumer: `GamePage`'s `takebackAudience`.**
- * `GamePage` passes `hasRemoteHumans(storeGameMode) ? "table" : "solo"` to
- * `GameMenu`, which is what makes the desktop solo-vs-AI menu entry read "Undo
- * Last Action" rather than "Request Takeback". That gate is the company
- * question, not the authority one: `native-ai` is `authority: "wire"` (the
- * sidecar owns the state) but has no other human at the table, and asking
- * `isAuthorityRemote` there would label a solo undo as a request to somebody.
- * That mislabelling is exactly what the merged predicate got wrong, and
- * splitting the two axes is the fix.
- *
- * Every *other* gate that reads `gameMode` still asks the authority question
- * above; keep it that way. Reach for this one only when the question really is
- * "are other humans watching?", and prefer calling it over appending an `||` to
- * a mode list — the string union is frozen taxonomy, and a hand-rolled list
- * silently misses the next mode added.
- *
- * Do not repurpose it for transport questions: `canRestoreCheckpoints`
- * (`DebugPanel.tsx`) looks like a company gate but is really "does this
- * adapter implement `restoreState`", and `native-ai`'s does not.
- */
-export function hasRemoteHumans(mode: GameMode | null): boolean {
-  return mode !== null && GAME_MODE_TRAITS[mode].company === "remote-humans";
-}
-
-/**
- * Whether this client may download the engine's unredacted persistence envelope.
- * Only the client that owns the P2P authority may export from a shared table.
- * Guests and spectators receive redacted views, while the host's local WASM
- * engine or native server owns the unredacted persistence envelope.
- */
-export function canExportAuthoritativeState(mode: GameMode | null): boolean {
-  return mode !== null && GAME_MODE_TRAITS[mode].mayExportAuthoritativeState;
-}
-
-/**
- * The seat axis of the census: where this client's own seat number comes from.
- *
- * Read this instead of testing `gameMode` against a list at the call site. The
- * list form is what seated a pod-draft guest at 0: `"draft-match"` joined the
- * union long after `usePlayerId`'s list was written, and nothing made the two
- * meet. A mode added to `GAME_MODE_TRAITS` cannot compile without declaring
- * its seat source, so it can never again default into somebody else's chair.
- *
- * `null` — no game yet — is `"seat-zero"`: nothing has assigned this client
- * anything.
- */
-export function seatSource(mode: GameMode | null): SeatSource {
-  return mode === null ? "seat-zero" : GAME_MODE_TRAITS[mode].seat;
-}
+/** How the current game is played: against the AI, or hot-seat (`local`, two
+ *  humans at one screen). Either way this client owns the engine state and the
+ *  local human sits in seat 0. */
+export type GameMode = "ai" | "local";
 
 /**
  * One step of the undo ring: a trusted pre-action checkpoint, and where the game
@@ -216,10 +86,6 @@ export interface UndoCheckpoint {
 interface GameStoreState {
   gameId: string | null;
   gameMode: GameMode | null;
-  /** Transport selected for the current solo-AI game. F.5 telemetry reads this
-   * alongside `nativeEngineFallbackReason`; neither field drives game rules. */
-  engineMode: "native" | "wasm" | null;
-  nativeEngineFallbackReason: string | null;
   gameState: GameState | null;
   events: GameEvent[];
   eventHistory: GameEvent[];
@@ -283,13 +149,6 @@ interface GameStoreState {
    * `SingleUser` phase-server sidecar).
    */
   rewindTargets: RewindOption[];
-  /**
-   * Pre-game P2P lobby fill state, populated by the `lobbyProgress` adapter
-   * event and cleared when `game_setup` arrives (game starts). `null` when
-   * not in a pre-game P2P lobby (i.e. during AI/online games or after the
-   * game has started).
-   */
-  lobbyProgress: { joined: number; total: number } | null;
   /** One-shot engine-authored summary of automation completed during a restore. */
   restoredStackAutomation: RestoredStackAutomationPresentation | null;
   /**
@@ -304,8 +163,7 @@ interface GameStoreState {
   /**
    * PlayerIds bound to AI controllers this game. Client-owned lobby/session
    * config (NOT game-state derivation): set at game init from the resolved AI
-   * seat bindings and cleared on `reset`. Empty for human-only games (online /
-   * p2p). Consumed by telemetry `game_end` to classify `winner_kind`.
+   * seat bindings and cleared on `reset`. Empty for hot-seat games.
    */
   aiSeatIds: PlayerId[];
   /**
@@ -362,21 +220,6 @@ interface GameStoreActions {
     initialSave?: "best-effort" | "strict",
   ) => Promise<void>;
   resumeGame: (gameId: string, adapter: EngineAdapter, savedState: PersistedGameState) => Promise<void>;
-  /**
-   * Resume a P2P host game. Distinct from `resumeGame` because the
-   * adapter already loaded engine state internally via
-   * `wasm.resumeMultiplayerHostState` in `initialize()` — calling
-   * `adapter.restoreState(savedState)` here would hit the adapter's
-   * "Undo not supported in P2P games" guard.
-   */
-  resumeP2PHost: (gameId: string, adapter: EngineAdapter) => Promise<void>;
-  /**
-   * Resume a native-engine solo (AI) game. Like `resumeP2PHost` the game is
-   * server-authoritative — the local phase-server holds the state and the
-   * reconnecting adapter's `initialize()` yields it — so there is no local
-   * snapshot to `restoreState` and no undo history to rebuild.
-   */
-  resumeNativeSolo: (gameId: string, adapter: EngineAdapter) => Promise<void>;
   dispatch: (action: GameAction) => Promise<GameEvent[]>;
   /**
    * Replace the server-published rollback targets. Only `dispatch.ts` calls
@@ -438,8 +281,6 @@ interface GameStoreActions {
     },
   ) => boolean;
   setGameMode: (mode: GameMode) => void;
-  setEngineMode: (mode: "native" | "wasm" | null, fallbackReason?: string | null) => void;
-  setLobbyProgress: (progress: { joined: number; total: number } | null) => void;
   dismissRestoredStackAutomation: () => void;
   setManaPaymentPreviewSourceIds: (sourceIds: ObjectId[]) => void;
   clearManaPaymentPreview: () => void;
@@ -466,53 +307,13 @@ export function canUndo(store: GameStore): store is GameStore & { adapter: Engin
   return (
     store.adapter !== null
     && store.pendingUndoId === null
-    && !isAuthorityRemote(store.gameMode)
     && store.stateHistory.length > 0
   );
-}
-
-/**
- * Seed the store from a server-authoritative adapter whose `initialize()` has
- * already produced the current game state (resumed P2P host, or a reconnected
- * native solo game). These games have no client-side undo history and no local
- * checkpoints — the server owns the state — so `stateHistory`/`turnCheckpoints`
- * stay empty. Shared by `resumeP2PHost` and `resumeNativeSolo`.
- */
-async function seedResumedServerGame(
-  get: () => GameStore,
-  gameId: string,
-  adapter: EngineAdapter,
-): Promise<void> {
-  // Reset stack-pacing throughput — resuming may load a different game than the
-  // one just played; stale churn must not carry across.
-  resetStackThroughput();
-  await adapter.initialize();
-  const resumed = await adapter.resumeRestoredGameState?.() ?? null;
-  // P2P host initialization completes its persisted automation before a guest
-  // reconnects. Consume that exact pair rather than making a second read.
-  const snapshot = resumed?.snapshot ?? await adapter.getSnapshot();
-  get().commitEngineSnapshot(snapshot, {
-    extraState: {
-      gameId,
-      adapter,
-      gameSessionGeneration: nextGameSessionGeneration(),
-      events: [],
-      eventHistory: [],
-      logHistory: [],
-      nextLogSeq: 0,
-      stateHistory: [],
-      turnCheckpoints: [],
-      rewindTargets: [],
-      restoredStackAutomation: resumed?.presentation ?? null,
-    },
-  });
 }
 
 const initialState: GameStoreState = {
   gameId: null,
   gameMode: null,
-  engineMode: null,
-  nativeEngineFallbackReason: null,
   gameState: null,
   events: [],
   eventHistory: [],
@@ -534,7 +335,6 @@ const initialState: GameStoreState = {
   pendingUndoId: null,
   turnCheckpoints: [],
   rewindTargets: [],
-  lobbyProgress: null,
   restoredStackAutomation: null,
   startingContest: null,
   aiSeatIds: [],
@@ -707,22 +507,6 @@ export const useGameStore = create<GameStore>()(
       await saveAuthoritativeGame(gameId, adapter, snapshot.state);
     },
 
-    resumeP2PHost: async (gameId, adapter) => {
-      // `adapter.initialize()` on a resumed P2PHostAdapter already called
-      // `wasm.resumeMultiplayerHostState(savedState)` — the engine is populated
-      // and in multiplayer mode — so the shared helper just pulls the state out
-      // and seeds the store. No stateHistory (multiplayer = no undo); no
-      // checkpoints (P2P never saved them).
-      await seedResumedServerGame(get, gameId, adapter);
-    },
-
-    resumeNativeSolo: async (gameId, adapter) => {
-      // The reconnecting native adapter's `initialize()` sends a reconnect frame
-      // and resolves once the phase-server replays the current GameStarted
-      // state; the shared helper then seeds the store from that authority.
-      await seedResumedServerGame(get, gameId, adapter);
-    },
-
     dispatch: async (action) => {
       const submittedAction = applySpellPaymentPreference(action);
       const { adapter, gameState, gameId, gameMode, gameSessionGeneration, pendingUndoId } = get();
@@ -737,17 +521,13 @@ export const useGameStore = create<GameStore>()(
         return [];
       }
 
-      // Save current state for undo. Three conditions must hold:
+      // Save current state for undo. Two conditions must hold:
       // 1. Action type is in UNDOABLE_ACTIONS (no hidden-info leaks).
-      // 2. Single-player mode — multiplayer sessions can't undo because
-      //    rewinding this client's view would desync from the authoritative
-      //    game state on the wire.
-      // 3. Stack is empty. Checkpoints exist only at stack-empty boundaries
+      // 2. Stack is empty. Checkpoints exist only at stack-empty boundaries
       //    so undo always lands the player before the most recent
       //    activation/trigger sequence, never mid-resolution.
       const shouldSaveHistory =
         UNDOABLE_ACTIONS.has(submittedAction.type) &&
-        !isAuthorityRemote(gameMode) &&
         gameState.stack.length === 0;
 
       // Fire the trusted-envelope capture WITHOUT awaiting it: both engine
@@ -822,13 +602,7 @@ export const useGameStore = create<GameStore>()(
       set({ gameMode: mode });
     },
 
-    setEngineMode: (mode, fallbackReason = null) => {
-      set({ engineMode: mode, nativeEngineFallbackReason: fallbackReason });
-    },
 
-    setLobbyProgress: (progress) => {
-      set({ lobbyProgress: progress });
-    },
 
     dismissRestoredStackAutomation: () => {
       set({ restoredStackAutomation: null });

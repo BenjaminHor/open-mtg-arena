@@ -1,62 +1,17 @@
 import type { GameState, PlayerId, WaitingFor } from "../adapter/types";
-import { PLAYER_ID, SPECTATOR_PLAYER_ID } from "../constants/game";
-import type { GameMode } from "../stores/gameStore";
-import { seatSource, useGameStore } from "../stores/gameStore";
-import { useMultiplayerStore } from "../stores/multiplayerStore";
+import { PLAYER_ID } from "../constants/game";
+import { useGameStore } from "../stores/gameStore";
 
-/**
- * The one seat resolver both entry points below share, so they cannot drift the
- * way the two hand-typed mode lists they replace did. Which modes take their
- * seat off a wire is the census's question, not this file's: see `seatSource`
- * in `stores/gameStore.ts`.
- *
- * `spectatorSeat` is the one place the two entry points legitimately differ,
- * and it is a parameter so that the difference is stated rather than repeated.
- * `getPlayerId()` answers `SPECTATOR_PLAYER_ID`, which `dispatch.ts` reads to
- * refuse submitting actions. `usePlayerId()` answers `PLAYER_ID`, because
- * display surfaces render a spectated game from seat 0's side — `HudBadges.tsx`
- * states that contract outright and gates its second-person copy on
- * `useSpectatorMode()` because of it. Widening the hook to 255 would empty
- * every `players[playerId]` lookup on the spectator board.
- */
-function resolveLocalSeat(
-  gameMode: GameMode | null,
-  activePlayerId: PlayerId | null,
-  spectatorSeat: PlayerId,
-): PlayerId {
-  switch (seatSource(gameMode)) {
-    case "wire-assigned":
-      // Seat not delivered yet (setup still in flight): seat 0 is what every
-      // caller read before the assignment arrived, so this changes nothing.
-      return activePlayerId ?? PLAYER_ID;
-    case "no-seat":
-      return spectatorSeat;
-    case "seat-zero":
-      return PLAYER_ID;
-  }
-}
-
-function currentLocalPlayerId(): PlayerId {
-  return resolveLocalSeat(
-    useGameStore.getState().gameMode,
-    useMultiplayerStore.getState().activePlayerId,
-    SPECTATOR_PLAYER_ID,
-  );
-}
-
-/** React hook: the seat this client occupies. Solo modes are seat 0 by
- *  construction; every mode that takes its seat off a wire reads the assignment
- *  the server, P2P host, or draft pod delivered. */
+/** React hook: the seat this client occupies. Every game is played from this
+ *  client (against the AI, or hot-seat), and the local human sits in seat 0 by
+ *  construction. */
 export function usePlayerId(): PlayerId {
-  const gameMode = useGameStore((s) => s.gameMode);
-  const activePlayerId = useMultiplayerStore((s) => s.activePlayerId);
-
-  return resolveLocalSeat(gameMode, activePlayerId, PLAYER_ID);
+  return PLAYER_ID;
 }
 
 /** Non-React getter for use in plain functions (autoPass, gameLoopController). */
 export function getPlayerId(): PlayerId {
-  return currentLocalPlayerId();
+  return PLAYER_ID;
 }
 
 /**
@@ -100,17 +55,12 @@ export function waitingPlayer(waitingFor: WaitingFor | null): PlayerId | null {
 }
 
 function canActForWaitingState(
-  gameMode: GameMode | null,
-  isSpectator: boolean,
   playerId: PlayerId,
   gameState: GameState | null,
   waitingFor: WaitingFor | null,
 ): boolean {
-  if (gameMode === "spectate" || isSpectator) return false;
-
   const semanticPlayer = waitingPlayer(waitingFor);
   if (!gameState || semanticPlayer == null) return false;
-  if (playerId === SPECTATOR_PLAYER_ID) return false;
   if (semanticPlayer === playerId) return true;
   return gameState.turn_decision_controller === playerId && semanticPlayer === gameState.active_player;
 }
@@ -118,20 +68,7 @@ function canActForWaitingState(
 /** Synchronous authorization check for event handlers that must read the latest stores. */
 export function getCanActForWaitingState(): boolean {
   const gameStore = useGameStore.getState();
-  const multiplayerStore = useMultiplayerStore.getState();
-  const playerId = resolveLocalSeat(
-    gameStore.gameMode,
-    multiplayerStore.activePlayerId,
-    SPECTATOR_PLAYER_ID,
-  );
-
-  return canActForWaitingState(
-    gameStore.gameMode,
-    multiplayerStore.isSpectator,
-    playerId,
-    gameStore.gameState,
-    gameStore.waitingFor,
-  );
+  return canActForWaitingState(getPlayerId(), gameStore.gameState, gameStore.waitingFor);
 }
 
 export function usePerspectivePlayerId(): PlayerId {
@@ -142,11 +79,9 @@ export function usePerspectivePlayerId(): PlayerId {
 }
 
 export function useCanActForWaitingState(): boolean {
-  const gameMode = useGameStore((s) => s.gameMode);
-  const isSpectator = useMultiplayerStore((s) => s.isSpectator);
   const playerId = usePlayerId();
   const gameState = useGameStore((s) => s.gameState);
   const waitingFor = useGameStore((s) => s.waitingFor);
 
-  return canActForWaitingState(gameMode, isSpectator, playerId, gameState, waitingFor);
+  return canActForWaitingState(playerId, gameState, waitingFor);
 }

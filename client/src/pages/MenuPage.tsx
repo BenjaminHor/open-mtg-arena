@@ -7,7 +7,6 @@ import { useAudioContext } from "../audio/useAudioContext";
 import { PreviewBadge } from "../components/chrome/PreviewBadge";
 import { LoadGameStateModal } from "../components/menu/LoadGameStateModal";
 import { HomeDashboard } from "../components/menu/home/HomeDashboard";
-import { isDesktopTauri } from "../services/platform";
 import { buildLegalAiDeckCatalog } from "../services/aiDeckCatalog";
 import { saveActiveGame, saveGame, useGameStore } from "../stores/gameStore";
 import { useCardDataStore } from "../stores/cardDataStore";
@@ -80,17 +79,6 @@ export function MenuPage() {
           <span className="font-semibold text-ember-soft/90">{t("home.alpha.label")}</span>
           {t("home.alpha.message")}
         </div>
-
-        {isDesktopTauri() && (
-          <button
-            onClick={() => {
-              import("@tauri-apps/plugin-process").then((m) => m.exit(0));
-            }}
-            className="rounded-[8px] border border-hairline-strong bg-slate-950/72 px-5 py-1.5 text-xs font-medium text-fg-meta transition-colors hover:border-red-500/30 hover:bg-slate-900 hover:text-red-400"
-          >
-            {t("home.exit")}
-          </button>
-        )}
 
         <p className="max-w-2xl text-balance text-center text-[0.68rem] leading-5 text-slate-500/70">
           {t("shell.disclaimer")}

@@ -117,12 +117,11 @@ class AudioManager {
   }
 
   /**
-   * Allow device-open. Until the boot gate has a verdict, every warmUp()
-   * caller — gesture handlers, VolumeControl restart/ensurePlayback, future
-   * callers — is a no-op, so no UI path (e.g. Tab+Enter through the splash
-   * overlay, which blocks pointers but is not a focus trap) can open the
-   * device before audioDeviceSafe() resolves. ensurePreload() arms this
-   * right after the verdict, on every platform.
+   * Allow device-open. Until boot arms it, every warmUp() caller — gesture
+   * handlers, VolumeControl restart/ensurePlayback, future callers — is a
+   * no-op, so no UI path (e.g. Tab+Enter through the splash overlay, which
+   * blocks pointers but is not a focus trap) can open the device before
+   * ensurePreload() has started the audio sequence.
    */
   armDeviceOpen(): void {
     this.deviceOpenArmed = true;

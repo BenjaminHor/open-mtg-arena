@@ -53,7 +53,7 @@ export function EngineLostModal() {
   const [snapshot, setSnapshot] = useState<EngineLostSnapshot | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [exportOutcome, setExportOutcome] = useState<DownloadResult["kind"] | null>(null);
+  const [exportOutcome, setExportOutcome] = useState<DownloadResult["kind"] | "failed" | null>(null);
   // One export at a time: two in flight would resolve in either order.
   const [isExporting, setIsExporting] = useState(false);
   // A later click lands inside the previous one's clear window, so each label
@@ -144,11 +144,9 @@ export function EngineLostModal() {
 
   const handleExport = async () => {
     if (!snapshot.gameState) return;
-    // "requested" keeps its own label: this is the recovery path, so a snapshot
-    // nothing has confirmed must not read as one the player can go find.
-    const show = (kind: DownloadResult["kind"]) => {
-      // The reachable case: under the shell the export waits up to ten seconds,
-      // so this can arm a timer past the cleanup that would have cleared it.
+    const show = (kind: DownloadResult["kind"] | "failed") => {
+      // The save picker can stay open past unmount, so this can arm a timer
+      // past the cleanup that would have cleared it.
       if (!mountedRef.current) return;
       setExportOutcome(kind);
       if (exportResetRef.current !== null) window.clearTimeout(exportResetRef.current);
@@ -233,11 +231,9 @@ export function EngineLostModal() {
           >
             {exportOutcome === "failed"
               ? t("engineLost.exportFailed")
-              : exportOutcome === "requested"
-                ? t("engineLost.exportRequested")
-                : exportOutcome === "saved"
-                  ? t("engineLost.exported")
-                  : t("engineLost.exportClientSnapshot")}
+              : exportOutcome === "saved"
+                ? t("engineLost.exported")
+                : t("engineLost.exportClientSnapshot")}
           </button>
           {isPanic && (
             <>

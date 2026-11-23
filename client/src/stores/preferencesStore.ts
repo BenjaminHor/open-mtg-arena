@@ -354,8 +354,6 @@ function buildDefaultPreferences(): PreferencesState {
     artChain: [] as ArtChainEntry[],
     artOverrides: {} as Record<string, CardArtOverride>,
     flexLayout: defaultFlexLayout(),
-    telemetryEnabled: true,
-    nativeEngineEnabled: true,
   };
 }
 
@@ -496,14 +494,6 @@ interface PreferencesState {
   /** Persisted board layout (grid bands + per-widget offsets + active preset).
    *  See {@link FlexLayoutConfig}. Edited only in Flex Layout mode. */
   flexLayout: FlexLayoutConfig;
-  /** Whether anonymous, identity-free crash & usage telemetry may be sent.
-   *  Default on. Gates every send at enqueue time so a mid-session toggle takes
-   *  effect immediately. Builds without a `__TELEMETRY_URL__` define never send
-   *  regardless. See `services/telemetry.ts`. */
-  telemetryEnabled: boolean;
-  /** Prefer the shell-managed native engine for eligible desktop local games
-   * and P2P games hosted through a lobby. */
-  nativeEngineEnabled: boolean;
 }
 
 interface PreferencesActions {
@@ -620,9 +610,6 @@ interface PreferencesActions {
   applyFlexPreset: (config: FlexLayoutConfig) => void;
   /** Reset the layout to the default preset (clears all offsets). */
   resetFlexLayout: () => void;
-  /** Toggle anonymous crash & usage telemetry. */
-  setTelemetryEnabled: (enabled: boolean) => void;
-  setNativeEngineEnabled: (enabled: boolean) => void;
 }
 
 type LegacyFlatAiPrefs = Partial<{
@@ -898,8 +885,6 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
         })),
       applyFlexPreset: (config) => set({ flexLayout: cloneFlexLayout(config) }),
       resetFlexLayout: () => set({ flexLayout: defaultFlexLayout() }),
-      setTelemetryEnabled: (enabled) => set({ telemetryEnabled: enabled }),
-      setNativeEngineEnabled: (enabled) => set({ nativeEngineEnabled: enabled }),
     }),
     {
       name: "phase-preferences",

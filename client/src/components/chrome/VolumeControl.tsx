@@ -31,7 +31,6 @@ function SpeakerLowIcon({ className }: { className?: string }) {
 
 /** The message that explains each way boot can leave audio switched off. */
 const UNAVAILABLE_MESSAGE = {
-  "device-wedged": "volume.deviceBlocked",
   "media-unavailable": "volume.mediaUnavailable",
 } as const satisfies Record<AudioUnavailableReason, string>;
 
