@@ -18,6 +18,14 @@ test("casts a spell by taps: open the hand, lift the card, tap it again, pick a 
   await page.getByRole("button", { name: /^Lightning Bolt: lift/ }).click();
   await page.getByRole("button", { name: /^Lightning Bolt: Cast/ }).click();
   await expect(page.getByText("Choose a target")).toBeVisible();
+  // The spell on the stack is drawn over the board: a tap on it lands on it, never on a card's button underneath.
+  const shield = await page.locator(".tap-shield").first().boundingBox();
+  if (shield === null) throw new Error("no card on the stack");
+  const hit = await page.evaluate(
+    ([x, y]) => document.elementFromPoint(x as number, y as number)?.className,
+    [shield.x + shield.width / 2, shield.y + shield.height / 2],
+  );
+  expect(hit).toBe("tap-shield");
   await page.getByRole("button", { name: /^Elite Vanguard: Target/ }).click();
   // Three damage to a 3/3: it's gone.
   await expect.poll(async () => (await board(page))?.cards.some((c) => c.name === "Elite Vanguard")).toBe(false);

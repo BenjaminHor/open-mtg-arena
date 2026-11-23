@@ -26,8 +26,10 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
   // A lifted hand card that a second tap plays: say so on it, "Tap again to cast" (the UX review's cue).
   const lifted = model.cards.find((c) => c.zone === "hand" && c.id === selection);
   const again = selection === null ? undefined : controls.cards[selection]?.tap;
+  // One layer of its own (a stacking context), so the regions' z-indexes order them among themselves only, under the
+  // menus, prompt and buttons the HUD draws after it.
   return (
-    <>
+    <div className="tap-layer">
       {inReadingOrder(model.regions).map(({ id, rect, members, layer }) => {
         // A pile acts through its front card, or the next card in it that has something to do.
         const actor = members.find((m) => controls.cards[m] !== undefined);
@@ -65,7 +67,7 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
           // biome-ignore lint/a11y/useKeyWithClickEvents: nothing to do from the keyboard
           <div key={`stack-${c.id}`} className="tap-shield" style={place(c)} onClick={(e) => e.stopPropagation()} />
         ))}
-    </>
+    </div>
   );
 }
 

@@ -302,11 +302,23 @@ body,
   font-weight: 700;
   white-space: nowrap;
   pointer-events: none;
-  z-index: 1000;
+  z-index: 100001;
 }
 
+/* The tap regions' own layer (hud/CardButtons.tsx): their z-indexes stay inside it. */
+.hud .tap-layer {
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.hud .tap-layer > * {
+  position: absolute;
+}
+
+/* Above every region: a tap on the stack's card lands on nothing under it. */
 .hud .tap-shield {
   pointer-events: auto;
+  z-index: 100000;
 }
 
 .hud .tap-region:active {
