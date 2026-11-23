@@ -2458,7 +2458,7 @@ owner's answer to the D-089 open question, option (a))
 
 **D-161: The card view (M3-04c)** · 2026-11-23 · accepted
 - Arena's "Examined" view: a long-press (400 ms, touch), a right-click, or "i" on a focused card opens it full; a
-  mouse resting 300 ms on a card previews it (D-160; first 600, halved by the owner). `interaction/card-details.ts` builds what it shows from the seat
+  mouse resting 250 ms on a card previews it (D-160; first 600, then the owner's 250). `interaction/card-details.ts` builds what it shows from the seat
   view alone (D-062): the card, and a hanger per thing its face doesn't say. No rulings, as Arena has none.
 - The view holds the card's id, not a copy of its details: it's re-read from the seat view each render, so it follows
   the game while open and closes when the object is gone (a zone change makes a new object, CR 400.7). The same shape as
