@@ -292,6 +292,10 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
         `--accent` a soft peach, `--muted`): plain life numbers on a dark disc, flat portraits with an accent ring
         for the active player, a flat accent main button (full control a flat blue-violet), flat icon ladders (text
         labels don't fit at phone width, ui.md), flat prompts, menus and buttons, plain dark card backs and badges.
+  - **M3-04c slice 4a done (2026-11-23): badges on a permanent (D-166).** `board-model/badges.ts` (pure, tested in
+    test/badges.test.ts), `BoardCard.badges`, `renderer/badge-marks.ts` (keyword icons, the ellipsis, "zz", counters,
+    the loyalty shield), placed by `battlefield-tile.ts`; a `badges` fixture shows them all. Next: 4b, Auras and
+    Equipment beside their host.
   - M3-04c slice 4 (was 3; renumbered after the restyle took 3) (2026-11-23, written before starting): badges, then
     attachments, two PRs. The slices after it are now 5 zones, 6 the stack, 7 finishing. The badges are re-sited for
     the frameless tile (the name now runs along the bottom left): keyword icons as small round icons at the top left,

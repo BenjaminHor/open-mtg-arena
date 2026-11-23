@@ -1,6 +1,7 @@
 // One seen card as the board draws it, at a given rectangle. Shared by the battlefield and the hand.
 
 import type { Color, ObjectId, SeenCard } from "@mtg/engine";
+import { NO_BADGES } from "./badges.ts";
 import type { BoardCard, Rect } from "./board-model.ts";
 import { cardInfo, manaSymbols } from "./card-info.ts";
 
@@ -57,6 +58,8 @@ export function boardCard(
     printed: { power: info?.power ?? null, toughness: info?.toughness ?? null },
     damage: card.damage,
     pileCount: look.pileCount ?? null,
+    // Filled in by the board model, which knows whose turn it is (`badges.ts`).
+    badges: NO_BADGES,
   };
 }
 

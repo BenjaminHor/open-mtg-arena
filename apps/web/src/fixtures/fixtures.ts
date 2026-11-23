@@ -207,6 +207,38 @@ const FIXTURES: Record<string, Fixture> = {
     },
   },
   /** Siege-Gang Commander to cast (three Goblin tokens), and colourless permanents: frames of every kind. */
+  /** Badges (M3-04c): keywords, an ellipsis, protection, counters, loyalty, a sick creature. */
+  badges: {
+    turn: { number: 6, activePlayer: "p1", step: "precombatMain" },
+    players: {
+      p1: {
+        life: 20,
+        hand: ["Lightning Bolt"],
+        battlefield: [
+          "Mountain",
+          "Forest",
+          { card: "Llanowar Elves", sick: true },
+          { card: "Grizzly Bears", counters: { "+1/+1": 2 } },
+          "Serra Angel",
+          { card: "Garruk Wildspeaker", counters: { loyalty: 3 } },
+        ],
+        library: many("Forest", 20),
+      },
+      p2: {
+        life: 20,
+        hand: ["Plains"],
+        battlefield: [
+          "Plains",
+          "Plains",
+          "Baneslayer Angel",
+          "White Knight",
+          { card: "Elite Vanguard", sick: true },
+          { card: "Ajani Goldmane", counters: { loyalty: 4 } },
+        ],
+        library: many("Plains", 20),
+      },
+    },
+  },
   tokens: {
     turn: { number: 6, activePlayer: "p1", step: "precombatMain" },
     players: {

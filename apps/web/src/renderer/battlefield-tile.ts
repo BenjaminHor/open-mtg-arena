@@ -6,7 +6,8 @@
 
 import { Container, FillGradient, Graphics, Sprite, Text } from "pixi.js";
 import type { BoardCard } from "../board-model/board-model.ts";
-import { combatBadge, tapMark } from "./card-marks.ts";
+import { counterBadge, iconRow, loyaltyShield } from "./badge-marks.ts";
+import { combatBadge, combatBadgeRadius, tapMark } from "./card-marks.ts";
 import { ART_LABEL, type Face } from "./face.ts";
 import { type ColorSymbol, colorGlyph } from "./mana-symbols.ts";
 import { frameColor, mix, PALETTE } from "./palette.ts";
@@ -44,7 +45,9 @@ export function drawTile(card: BoardCard): Face {
     mark.y = -h * 0.08;
     tile.addChild(mark);
   }
-  if (card.attacking || card.blocking.length > 0) tile.addChild(combatBadge(card.attacking ? "attack" : "block", w, h));
+  const inCombat = card.attacking || card.blocking.length > 0;
+  if (inCombat) tile.addChild(combatBadge(card.attacking ? "attack" : "block", w, h));
+  if (!card.behind) tile.addChild(...badgeMarks(card, w, h, inCombat));
   return {
     container: tile,
     showArt: (texture) => {
@@ -133,7 +136,14 @@ function fallback(card: BoardCard, shape: (g: Graphics) => Graphics, w: number, 
  */
 function nameAndStats(card: BoardCard, w: number, h: number): Container[] {
   const pad = Math.max(2, w * 0.03);
-  const pill = card.power !== null && card.toughness !== null ? ptPill(card, h) : null;
+  // A creature's power/toughness, or a planeswalker's loyalty in its place [R].
+  const loyalty = card.badges.loyalty;
+  const pill =
+    card.power !== null && card.toughness !== null
+      ? ptPill(card, h)
+      : loyalty !== null
+        ? loyaltyShield(loyalty, Math.min(18, Math.max(12, h * 0.24)))
+        : null;
   const name = new Text({
     text: card.name,
     style: {
@@ -245,4 +255,34 @@ function ptPill(card: BoardCard, h: number): Container {
     pill.addChild(new Graphics().rect(t.x, ph / 2 + size * 0.5, t.width, Math.max(1.2, size * 0.1)).fill(LOWERED));
   }
   return pill;
+}
+
+/**
+ * Its badges (board-model/badges.ts): the icons along the top left, counters at the top right, left of a combat badge
+ * when there is one; a planeswalker that's also a creature shows its loyalty there too, its P/T taking the bottom [R].
+ */
+function badgeMarks(card: BoardCard, w: number, h: number, inCombat: boolean): Container[] {
+  const { badges } = card;
+  const r = Math.min(10, Math.max(6, Math.min(w, h) * 0.11));
+  const inset = Math.max(2, r * 0.35);
+  const marks: Container[] = [];
+  const row = iconRow(badges, r);
+  // A token's arched top rises at the corners less than in the middle: the row sits a little lower on one.
+  row.position.set(-w / 2 + inset, -h / 2 + inset + (card.token ? h * 0.05 : 0));
+  marks.push(row);
+  let right = w / 2 - inset - (inCombat ? combatBadgeRadius(h) * 2 : 0);
+  const top = -h / 2 + inset;
+  if (badges.loyalty !== null && card.power !== null) {
+    const shield = loyaltyShield(badges.loyalty, r * 2);
+    right -= shield.width;
+    shield.position.set(right, top);
+    marks.push(shield);
+    right -= 2;
+  }
+  if (badges.counter !== null) {
+    const counter = counterBadge(badges.counter, r * 2);
+    counter.position.set(right, top);
+    marks.push(counter);
+  }
+  return marks;
 }

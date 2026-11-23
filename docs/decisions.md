@@ -2523,3 +2523,17 @@ owner's answer to the D-089 open question, option (a))
   opponent's tools rely on. After the trade-offs, the owner: "never mind then, we'll strive towards finishing our own
   rules engine." D-051 stands: the engine is the end goal. Card coverage grows a mechanic at a time.
 
+
+**D-166: Badges on a permanent (M3-04c slice 4)** · 2026-11-23 · accepted
+- What a permanent wears besides its name and P/T, decided in `board-model/badges.ts` (pure, tested) and drawn by
+  `renderer/badge-marks.ts`, our own shapes (D-140), light on small dark discs, in the minimal style (D-162):
+  - keyword icons along the top left [R] (the name now has the bottom): at most two; with more, one and an ellipsis,
+    the card view listing them all [R]. Most telling first: flying, reach, first/double strike, deathtouch, trample,
+    lifelink, vigilance, haste, protection, indestructible, shroud, landwalk, defender. Flash has none (it does
+    nothing on the battlefield). Protection is an icon of its own (a shield outline; a blocker's badge is filled);
+  - counters as a small badge at the top right [R], left of a combat badge: "+2", "−1", or another kind's count;
+  - a planeswalker's loyalty (CR 306.5c) in a shield where a creature's P/T goes [R]; one that's also a creature
+    shows it at the top right;
+  - summoning sickness (CR 302.6) as a "zz" mark first in the icon row [R: Arena has an overlay], only on its
+    controller's turn: on the other player's turn it can still block, and a "can't" mark would mislead.
+- Protection now splits a pile, as keywords and counters do. Loyalty isn't a counter badge.

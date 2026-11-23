@@ -54,7 +54,7 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   badges, pile counts, the tap mark), `mana-symbols.ts` (mana symbols as shapes), `card-back.ts`, `text-fit.ts`,
   `art.ts`, `palette.ts`. Draws the board model, no game logic or layout math; puts the model on `window.__board`
   (and `window.__artShown()`) in development and test builds.
-- `src/fixtures/`: fixture boards written by card name (`mid-game`, `crowded`, `attack`, `block`, `tokens`, `prompts`), for tests
+- `src/fixtures/`: fixture boards written by card name (`mid-game`, `crowded`, `attack`, `block`, `tokens`, `prompts`, `badges`), for tests
   and screenshots; `setupOf` turns a board a test writes itself into a game setup.
 - `src/worker/`: the match host in a Web Worker (architecture.md, "Match host"). `protocol.ts` is the typed message
   protocol (plain JSON; the UI only ever gets the person's `SeatView` and the events they saw), `match-session.ts` the

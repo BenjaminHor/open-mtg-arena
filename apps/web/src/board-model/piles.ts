@@ -11,8 +11,8 @@ import type { BoardCard, Rect } from "./board-model.ts";
 export const PILE_DEPTH = 3;
 
 /**
- * Two permanents look the same, so they can share a pile: the same name, power/toughness, colours, types and
- * keywords as they are now, both tapped or both not, no counters, damage or regeneration shields, the same choice
+ * Two permanents look the same, so they can share a pile: the same name, power/toughness, colours, types,
+ * keywords and protections as they are now, both tapped or both not, no counters, damage or regeneration shields, the same choice
  * made as they entered, both tokens or both cards, nothing attached either way, not in combat, not picked. Null for a
  * permanent that stands alone (`apart` holds those something is attached to, and the picked ones).
  */
@@ -35,6 +35,7 @@ export function pileKey(card: SeenCard, apart: ReadonlySet<string>): string | nu
     c.types,
     c.subtypes,
     c.keywords,
+    c.protections,
     card.chosen,
     card.tapped,
     card.summoningSick,

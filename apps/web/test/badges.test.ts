@@ -4,7 +4,8 @@
 import type { SeatView, SeenCard } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { badgesOf } from "../src/board-model/badges.ts";
-import { boardView } from "./fixture-views.ts";
+import { boardModel } from "../src/board-model/board-model.ts";
+import { boardView, fixtureView } from "./fixture-views.ts";
 
 const LIBRARY = Array.from({ length: 10 }, () => "Plains");
 
@@ -67,5 +68,15 @@ describe("badgesOf", () => {
     // The opponent's new creature, on the person's turn: it can still block, so no mark.
     expect(badgesOf(card(board, "Elite Vanguard"), "p1").sick).toBe(false);
     expect(badgesOf(card(board, "Elite Vanguard"), "p2").sick).toBe(true);
+  });
+
+  it("puts each permanent's badges on its board card, and none on a hand card", () => {
+    const model = boardModel(fixtureView("badges"), { width: 812, height: 375 });
+    const on = (name: string) => model.cards.find((c) => c.name === name && c.zone === "battlefield")?.badges;
+    expect(on("Grizzly Bears")?.counter).toBe("+2");
+    expect(on("Garruk Wildspeaker")?.loyalty).toBe(3);
+    expect(on("Llanowar Elves")?.sick).toBe(true);
+    expect(on("Elite Vanguard")?.sick).toBe(false);
+    expect(model.cards.find((c) => c.zone === "hand")?.badges.icons).toEqual([]);
   });
 });
