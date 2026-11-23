@@ -374,6 +374,13 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     - Strip map (client/src, non-test files): peer-to-peer in about 70 files, the lobby in about 79, Tauri APIs in 15,
       the updater in 17, telemetry in 25, Supabase in 2, the feeds in 1, Ko-fi in 1: the online pages and services go,
       then type errors lead to each remaining use.
+    - Build facts (this container, 4 cores, 15 GB): the release engine WASM compiles from scratch in about 20 minutes
+      (`cargo build -p engine-wasm --target wasm32-unknown-unknown --release`); wasm-bindgen-cli 0.2.121 (their
+      lockfile's) installs with cargo; the client's packages install from their lockfile in seconds (pnpm 9.15.9).
+    - Subpath: their client assumes the site's root (`BrowserRouter` with no basename; about 90 root-absolute paths
+      such as `/audio/...`, `/card-data.json`; the manifest's `start_url` "/"). For GitHub Pages at /open-mtg-arena/:
+      Vite `base`, the router's basename, one helper that prefixes `import.meta.env.BASE_URL` to asset paths, a copy
+      of index.html as 404.html for deep links, and a relative manifest.
   - **M3-05 merged (PR #115, squash, 2026-11-23).** Paused after it: the owner is weighing building on phase-rs
     (Open questions; docs/phase-rs-evaluation.md).
   - **M3-05 built (2026-11-23, D-176): the full layout, picked by size, switching live.** `layout/full.ts`,
