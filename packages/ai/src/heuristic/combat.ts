@@ -12,6 +12,7 @@ import type {
   CardDatabase,
   Keyword,
   ObjectId,
+  PlayerId,
   SeatView,
   SeenCard,
 } from "@mtg/engine";
@@ -103,20 +104,13 @@ function attackPlan(shown: SeatView, chosen: readonly Attack[], cards: CardDatab
   const blockers = opponents(shown)
     .flatMap((p) => creaturesOf(shown, p))
     .filter((c) => !c.tapped);
-  const evades = (c: SeenCard) => unblockable(shown, c, cards);
-  if (
-    isLethalAnyway(
-      shown,
-      attacks.map((a) => a.card),
-      blockers,
-      evades,
-    )
-  )
-    return attacks.map((a) => a.attack);
-  return attacks
-    .filter((a) => power(a.card) > 0 && (evades(a.card) || attackIsSafe(a.card, blockers)))
-    .map((a) => a.attack);
+  const evades = (a: Planned) => unblockable(shown, a.card, a.attack.defender, cards);
+  if (isLethalAnyway(shown, attacks, blockers, evades)) return attacks.map((a) => a.attack);
+  return attacks.filter((a) => power(a.card) > 0 && (evades(a) || attackIsSafe(a.card, blockers))).map((a) => a.attack);
 }
+
+/** An attack it plans, with the creature making it. */
+type Planned = { attack: Attack; card: SeenCard };
 
 /** No blocker that could block it would kill it and live. */
 function attackIsSafe(attacker: SeenCard, blockers: readonly SeenCard[]): boolean {
@@ -124,19 +118,19 @@ function attackIsSafe(attacker: SeenCard, blockers: readonly SeenCard[]): boolea
 }
 
 /**
- * All in is lethal even if each of their untapped creatures blocks one of the biggest attackers it could block. An
- * attacker no one can block always gets through.
+ * All in is lethal even if each of their untapped creatures blocks one of the biggest attackers (whether it could block
+ * that one isn't asked: erring toward not attacking). An attacker no one can block always gets through.
  */
 function isLethalAnyway(
   shown: SeatView,
-  attackers: readonly SeenCard[],
+  attacks: readonly Planned[],
   blockers: readonly SeenCard[],
-  evades: (c: SeenCard) => boolean,
+  evades: (a: Planned) => boolean,
 ): boolean {
-  const through = attackers.filter(evades).reduce((sum, a) => sum + damageDealt(a), 0);
-  const powers = attackers
+  const through = attacks.filter(evades).reduce((sum, a) => sum + damageDealt(a.card), 0);
+  const powers = attacks
     .filter((a) => !evades(a))
-    .map(damageDealt)
+    .map((a) => damageDealt(a.card))
     .sort((a, b) => b - a);
   const unblocked = through + powers.slice(blockers.length).reduce((sum, p) => sum + p, 0);
   return opponents(shown).some((p) => unblocked >= lifeOf(shown, p));
@@ -144,10 +138,10 @@ function isLethalAnyway(
 
 /**
  * Whether no creature can block it: "can't be blocked" on the card or from what's attached to it (Whispersilk Cloak),
- * or landwalk when a defender controls a land of that type (CR 509.1b, 702.14c). Read from the cards as printed (later:
+ * or landwalk when the defending player controls a land of that type (CR 509.1b, 702.14c). Read from the cards as printed (later:
  * from the seat view, once effects grant such abilities).
  */
-function unblockable(shown: SeatView, attacker: SeenCard, cards: CardDatabase): boolean {
+function unblockable(shown: SeatView, attacker: SeenCard, defender: PlayerId, cards: CardDatabase): boolean {
   const printed = cardData(attacker, cards)?.def.statics ?? [];
   if (printed.some((st) => st.kind === "cantBeBlocked" && st.except === undefined)) return true;
   const attached = permanents(shown).filter((c) => c.attachedTo === attacker.id);
@@ -160,9 +154,7 @@ function unblockable(shown: SeatView, attacker: SeenCard, cards: CardDatabase): 
     ["forestwalk", "Forest"],
     ["swampwalk", "Swamp"],
   ];
-  const theirLands = opponents(shown)
-    .flatMap((p) => controlledBy(shown, p))
-    .filter(isLand);
+  const theirLands = controlledBy(shown, defender).filter(isLand);
   return walks.some(
     ([k, type]) => has(attacker, k) && theirLands.some((l) => l.characteristics.subtypes.includes(type)),
   );
@@ -259,11 +251,13 @@ function gangBlock(attacker: SeenCard, candidates: readonly SeenCard[]): [SeenCa
   let best: { pair: [SeenCard, SeenCard]; cost: number } | null = null;
   for (const [i, a] of candidates.entries()) {
     for (const b of candidates.slice(i + 1)) {
-      const deathtouch = has(a, "deathtouch") || has(b, "deathtouch");
-      if (!deathtouch && damageDealt(a) + damageDealt(b) < toughnessLeft(attacker)) continue;
-      const damage = has(attacker, "deathtouch") ? Number.POSITIVE_INFINITY : damageDealt(attacker);
-      const killable = [a, b].filter((x) => damage >= toughnessLeft(x));
-      const both = damage >= toughnessLeft(a) + toughnessLeft(b) || (has(attacker, "deathtouch") && damage >= 2);
+      const deadly = (x: SeenCard) => has(x, "deathtouch") && damageDealt(x) > 0;
+      if (!deadly(a) && !deadly(b) && damageDealt(a) + damageDealt(b) < toughnessLeft(attacker)) continue;
+      // What the attacker needs to assign to kill each: 1 with deathtouch (CR 702.2c), else its toughness left.
+      const need = (x: SeenCard) => (has(attacker, "deathtouch") ? 1 : toughnessLeft(x));
+      const damage = damageDealt(attacker);
+      const killable = [a, b].filter((x) => damage >= need(x));
+      const both = damage >= need(a) + need(b);
       const cost = both ? creatureValue(a) + creatureValue(b) : Math.max(0, ...killable.map(creatureValue));
       if (cost < creatureValue(attacker) && (best === null || cost < best.cost)) best = { pair: [a, b], cost };
     }

@@ -8,7 +8,7 @@ export function damageDealt(creature: SeenCard): number {
   return has(creature, "double strike") ? 2 * power(creature) : power(creature);
 }
 
-/** Flying can be blocked only by flying or reach (CR 702.9b, 702.17b); other evasion isn't weighed yet. */
+/** Flying can be blocked only by flying or reach (CR 702.9b, 702.17b); evasion that no creature gets past is in `combat.ts`. */
 export function canBlock(blocker: SeenCard, attacker: SeenCard): boolean {
   if (has(attacker, "flying")) return has(blocker, "flying") || has(blocker, "reach");
   return true;

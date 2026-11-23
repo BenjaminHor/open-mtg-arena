@@ -12,6 +12,7 @@ import {
   isManaAbility,
   legalTargets,
   mightPay,
+  mightPayFor,
   type ObjectFilter,
   type ObjectId,
   type PlayerId,
@@ -78,7 +79,7 @@ function detail(state: GameState, viewer: PlayerId, action: Action, cards: CardD
       const mana = isManaAbility(ability.def);
       return {
         cost: ability.def.cost.map(costPartText).join(", "),
-        payable: manaPart === null || manaPart.length === 0 ? null : mightPay(state, viewer, manaPart, cards),
+        payable: manaPart === null || manaPart.length === 0 ? null : mightPayFor(state, viewer, action, cards),
         targets: targetChoices(state, viewer, action.object, ability.def.targets, cards),
         mana,
       };

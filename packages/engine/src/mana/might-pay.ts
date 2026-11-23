@@ -33,6 +33,25 @@ export function actionManaCost(state: GameState, action: Action, cards: CardData
   }
 }
 
+/**
+ * The state to ask about paying for an action in: for an ability whose cost also taps its source (Gargoyle Castle's
+ * "{5}, {T}"), with that source tapped, as it can't be tapped for the mana too (CR 602.1a, 107.5).
+ */
+export function payingState(state: GameState, action: Action, cards: CardDatabase): GameState {
+  if (action.type !== "ACTIVATE_ABILITY") return state;
+  const found = abilitiesOf(state, action.object, cards).find((a) => sameAbilityRef(a.ref, action.ability));
+  const obj = state.objects[action.object];
+  if (found?.def.cost.some((c) => c.kind === "tap") !== true || obj?.kind !== "card") return state;
+  return { ...state, objects: { ...state.objects, [action.object]: { ...obj, tapped: true } } };
+}
+
+/** `mightPay` for an action's mana (`actionManaCost`), from its `payingState`; null when it has no mana to pay. */
+export function mightPayFor(state: GameState, player: PlayerId, action: Action, cards: CardDatabase): boolean | null {
+  const cost = actionManaCost(state, action, cards);
+  if (cost === null) return null;
+  return mightPay(payingState(state, action, cards), player, cost, cards);
+}
+
 /** Whether the player's pool and untapped sources might pay this mana now, X as 0 (CR 107.3a). */
 export function mightPay(state: GameState, player: PlayerId, cost: ManaCost, cards: CardDatabase): boolean {
   const withoutX = cost.filter((s) => s.kind !== "x");

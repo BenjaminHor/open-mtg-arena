@@ -14,6 +14,9 @@ import {
   type SeenCard,
 } from "@mtg/engine";
 
+/** What winning (or losing) the game is worth, against which everything else is small. */
+export const LETHAL = 100;
+
 export function seenCard(shown: SeatView, id: ObjectId): SeenCard | null {
   const seen = shown.seen[id];
   return seen?.kind === "card" ? seen : null;

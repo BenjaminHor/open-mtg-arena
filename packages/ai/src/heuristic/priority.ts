@@ -104,7 +104,15 @@ function abilityValue(shown: SeatView, option: ActionOption, cards: CardDatabase
     return effect >= WORTH_CASTING ? effect - spent / 2 : null;
   }
   const x = xEstimate(shown, option.manaCost, undefined, cards);
-  const gained = effectsValue(shown, option, abilityIntents(ability, x), ability.effects, x, cards);
+  const gained = effectsValue(
+    shown,
+    option,
+    abilityIntents(ability, x),
+    ability.effects,
+    x,
+    cards,
+    repeatsOf(shown, option),
+  );
   const value = gained === null ? null : gained - given;
   // An ability's cost is usually smaller than a card's, so less is enough: pinging a player with a {T} ability.
   return value !== null && value >= WORTH_CASTING / 2 ? value : null;
@@ -121,9 +129,10 @@ function effectsValue(
   effects: readonly Effect[],
   x: number,
   cards: CardDatabase,
+  repeats = 1,
 ): number | null {
   const source = option.action.type === "ACTIVATE_ABILITY" ? seenCard(shown, option.action.object) : null;
-  let value = untargetedValue(shown, effects, x, source, cards);
+  let value = untargetedValue(shown, effects, x, source, cards, repeats);
   for (const [i, legal] of option.targets.entries()) {
     const intent = intents[i] ?? { kind: "neutral" };
     const best = bestTarget(shown, legal, intent, cards);
@@ -131,6 +140,19 @@ function effectsValue(
     value += best.score;
   }
   return value;
+}
+
+/**
+ * How many times an ability that costs only mana could be activated with the untapped lands (Firebreathing's "{R}"
+ * three times with three Mountains), at least once: each activation is weighed by what all of them lead to. A guess:
+ * the lands' colors aren't matched to the cost.
+ */
+function repeatsOf(shown: SeatView, option: ActionOption): number {
+  const ability = option.ability;
+  const cost = option.manaCost ?? [];
+  if (ability === null || cost.length === 0 || ability.cost.some((c) => c.kind !== "mana")) return 1;
+  const untapped = controlledBy(shown, shown.player).filter((c) => isLand(c) && !c.tapped).length;
+  return Math.max(1, Math.floor(untapped / Math.max(1, manaValue(cost))));
 }
 
 /**

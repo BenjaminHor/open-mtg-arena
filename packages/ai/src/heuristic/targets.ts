@@ -3,15 +3,12 @@
 // where it kills (a creature, a planeswalker) or hits a player.
 
 import type { CardDatabase, PlayerId, SeatView, SeenCard, Target } from "@mtg/engine";
-import { lifeOf, permanentValue, toughnessLeft } from "./board.ts";
+import { LETHAL, lifeOf, permanentValue, toughnessLeft } from "./board.ts";
 import { type Intent, stackIntents } from "./intents.ts";
 import { pumpsValue } from "./tricks.ts";
 
 /** Below this, a harmful spell isn't worth casting: it would only scratch something. */
 export const WORTH_CASTING = 1;
-
-/** What winning (or losing) the game is worth, against which everything else is small. */
-const LETHAL = 100;
 
 /** A player at this much life or less is in burn range. */
 const LOW_LIFE = 5;

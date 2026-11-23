@@ -8,7 +8,7 @@ import type { AbilityDef, CardDatabase, ManaCost } from "../cards/types.ts";
 import { attackObeys, attacksCanFinish, blockObeys, blocksCanFinish } from "../combat/declaration-rules.ts";
 import { legalActions } from "../game/legal-actions.ts";
 import { autoPay } from "../mana/auto-pay.ts";
-import { actionManaCost, mightPay } from "../mana/might-pay.ts";
+import { actionManaCost, mightPay, payingState } from "../mana/might-pay.ts";
 import { abilitiesOf, sameAbilityRef } from "../rules/abilities.ts";
 import { totalCost } from "../rules/costs.ts";
 import { legalTargets, targetSpecsOf } from "../rules/targets.ts";
@@ -70,8 +70,7 @@ function actionOption(state: GameState, player: PlayerId, action: Action, cards:
   const manaCost =
     action.type === "ANSWER" ? announcedCost(state, action, cards) : actionManaCost(state, action, cards);
   const paying = manaCost === null || manaCost.length === 0 ? null : manaCost.filter((s) => s.kind !== "x");
-  // An ability whose cost also taps its source (Gargoyle Castle's "{5}, {T}") can't tap that source for mana too.
-  const payingFrom = tapsOwnSource(state, action, cards) ? withSourceTapped(state, action) : state;
+  const payingFrom = payingState(state, action, cards);
   const base = {
     action,
     manaCost,
@@ -99,21 +98,6 @@ function actionOption(state: GameState, player: PlayerId, action: Action, cards:
     case "CONCEDE":
       return { ...base, targets: [], ability: null, finishable, obeys };
   }
-}
-
-/** An activation whose cost includes {T} (CR 602.2b, 107.5). */
-function tapsOwnSource(state: GameState, action: Action, cards: CardDatabase): boolean {
-  if (action.type !== "ACTIVATE_ABILITY") return false;
-  const found = abilitiesOf(state, action.object, cards).find((a) => sameAbilityRef(a.ref, action.ability));
-  return found?.def.cost.some((c) => c.kind === "tap") === true;
-}
-
-/** The state with the activation's source tapped, to ask what the rest of the mana could pay. */
-function withSourceTapped(state: GameState, action: Action): GameState {
-  if (action.type !== "ACTIVATE_ABILITY") return state;
-  const obj = state.objects[action.object];
-  if (obj?.kind !== "card") return state;
-  return { ...state, objects: { ...state.objects, [action.object]: { ...obj, tapped: true } } };
 }
 
 /** The cost of the spell being cast with this X announced; null for any other answer, or no mana to pay. */

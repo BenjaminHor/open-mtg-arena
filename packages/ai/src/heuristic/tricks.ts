@@ -4,23 +4,28 @@
 // worth nothing and the heuristic keeps it in hand.
 
 import type { PlayerId, SeatView, SeenCard } from "@mtg/engine";
-import { creatureValue, has, lifeOf, permanents, seenCard, toughnessLeft } from "./board.ts";
+import { creatureValue, has, LETHAL, lifeOf, permanents, seenCard, toughnessLeft } from "./board.ts";
 import { damageDealt, kills, type Pump, pumped } from "./fights.ts";
 
 /** A pump for one creature. */
 export type Pumping = { creature: SeenCard; pump: Pump };
 
-const LETHAL = 100;
-
-/** What these pumps, together, are worth to the heuristic now. */
+/**
+ * What these pumps, together, are worth to the heuristic now: in combat once blockers are declared, by the fights and
+ * the damage through; before its own combat (a sorcery, Overrun), the game if it makes attacking with everything lethal.
+ */
 export function pumpsValue(shown: SeatView, pumps: readonly Pumping[]): number {
-  if (shown.view.turn?.step !== "declareBlockers" || shown.view.combat === null) return 0;
   const mine = pumps.filter((p) => p.creature.characteristics.controller === shown.player);
   if (mine.length === 0) return 0;
   const after = (c: SeenCard) => {
     const p = mine.find((m) => m.creature.id === c.id);
     return p === undefined ? c : pumped(c, p.pump);
   };
+  const turn = shown.view.turn;
+  if (turn?.step === "precombatMain" && turn.activePlayer === shown.player) {
+    return !allInIsLethal(shown, (c) => c) && allInIsLethal(shown, after) ? LETHAL : 0;
+  }
+  if (turn?.step !== "declareBlockers" || shown.view.combat === null) return 0;
   const fights = mine.reduce((sum, p) => sum + fightGain(shown, p.creature, after(p.creature)), 0);
   return becomesLethal(shown, after) ? LETHAL + fights : fights;
 }
@@ -93,4 +98,27 @@ function damageThrough(shown: SeatView, attacker: SeenCard, original: SeenCard):
   if (!has(attacker, "trample")) return 0;
   const absorbed = blockers.reduce((sum, b) => sum + (has(attacker, "deathtouch") ? 1 : toughnessLeft(b)), 0);
   return Math.max(0, damageDealt(attacker) - absorbed);
+}
+
+/**
+ * Attacking with every creature that can is lethal even if each of their untapped creatures blocks one of the biggest
+ * (taking its toughness out of a trampler, CR 702.19b, and all of anything else).
+ */
+function allInIsLethal(shown: SeatView, as: (c: SeenCard) => SeenCard): boolean {
+  const attackers = permanents(shown)
+    .filter((c) => c.characteristics.controller === shown.player && c.characteristics.types.includes("creature"))
+    .filter((c) => !c.tapped && !c.summoningSick && !has(c, "defender"))
+    .map(as)
+    .sort((a, b) => damageDealt(b) - damageDealt(a));
+  const blockers = permanents(shown)
+    .filter(
+      (c) => c.characteristics.controller !== shown.player && c.characteristics.types.includes("creature") && !c.tapped,
+    )
+    .sort((a, b) => toughnessLeft(b) - toughnessLeft(a));
+  const through = attackers.reduce((sum, a, i) => {
+    const blocker = blockers[i];
+    if (blocker === undefined) return sum + damageDealt(a);
+    return has(a, "trample") ? sum + Math.max(0, damageDealt(a) - toughnessLeft(blocker)) : sum;
+  }, 0);
+  return shown.view.turnOrder.filter((p) => p !== shown.player).some((p) => through >= lifeOf(shown, p));
 }

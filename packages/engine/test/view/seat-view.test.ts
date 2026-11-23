@@ -3,7 +3,7 @@
 // what each option says.
 
 import { describe, expect, it } from "vitest";
-import { applyAction, type ObjectId, seatView } from "../../src/index.ts";
+import { applyAction, type CardDatabase, createGame, type ObjectId, seatView } from "../../src/index.ts";
 import { BEARS, FOREST, LONER, MOUNTAIN, PINGER, SHOCK, TEST_CARDS, X_BOLT } from "../support/cards.ts";
 import { passBoth, playerSetup, start } from "../support/game.ts";
 
@@ -98,6 +98,65 @@ describe("seatView", () => {
         payable: true,
       },
     ]);
+  });
+
+  it("judges an ability whose cost taps its source as if the source were tapped (CR 602.1a, 107.5)", () => {
+    // A land like Gargoyle Castle: "{T}: Add {C}" and "{2}, {T}: you gain 1 life".
+    const castle = "test-castle";
+    const withCastle: CardDatabase = {
+      ...TEST_CARDS,
+      [castle]: {
+        oracleId: castle,
+        printed: {
+          name: "Test Castle",
+          manaCost: null,
+          colors: [],
+          colorIndicator: [],
+          supertypes: [],
+          types: ["land"],
+          subtypes: [],
+          power: null,
+          toughness: null,
+        },
+        def: {
+          name: "Test Castle",
+          oracle: "",
+          abilities: [
+            {
+              kind: "activated",
+              cost: [{ kind: "tap" }],
+              targets: [],
+              effects: [{ op: "addMana", mana: "C", amount: 1 }],
+            },
+            {
+              kind: "activated",
+              cost: [{ kind: "mana", cost: [{ kind: "generic", amount: 2 }] }, { kind: "tap" }],
+              targets: [],
+              effects: [{ op: "gainLife", who: "you", amount: 1 }],
+            },
+          ],
+        },
+      },
+    };
+    const lifeAbility = (mountains: number) => {
+      const battlefield = [permanent(castle), ...Array.from({ length: mountains }, () => permanent(MOUNTAIN))];
+      const created = createGame(
+        {
+          seed: 1,
+          players: [playerSetup("p1", { library: [FOREST], battlefield }), playerSetup("p2", { library: [FOREST] })],
+          opening: { kind: "fixed", turn: { number: 3, activePlayer: "p1", step: "precombatMain" } },
+          ruleModifiers: [],
+        },
+        withCastle,
+      );
+      if (!created.ok) throw new Error(created.error.message);
+      return seatView(created.state, "p1", withCastle).options.find(
+        (o) => o.action.type === "ACTIVATE_ABILITY" && o.ability?.effects[0]?.op === "gainLife",
+      );
+    };
+    // With one Mountain, {2} needs the land itself, which taps for the cost: no. With two, yes.
+    expect(lifeAbility(1)).toMatchObject({ payable: false, mightPay: false });
+    expect(lifeAbility(2)).toMatchObject({ payable: true, mightPay: true });
   });
 
   it("lists no options while another player decides", () => {

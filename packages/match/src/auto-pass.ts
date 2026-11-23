@@ -3,15 +3,7 @@
 // could act, as Arena does (arena-research.md, "smart priority"). One pure function of the decision, the player's own
 // options and their settings, used for every seat alike, the AI's too (D-137). It errs toward stopping.
 
-import {
-  type Action,
-  actionManaCost,
-  type CardDatabase,
-  controllerOf,
-  type GameState,
-  mightPay,
-  type PlayerId,
-} from "@mtg/engine";
+import { type Action, type CardDatabase, controllerOf, type GameState, mightPayFor, type PlayerId } from "@mtg/engine";
 import type { SeatSettings } from "./match-state.ts";
 
 /**
@@ -38,8 +30,6 @@ export function autoPasses(
 function isMeaningful(state: GameState, player: PlayerId, action: Action, cards: CardDatabase): boolean {
   if (action.type === "PLAY_LAND") return true;
   if (action.type !== "CAST_SPELL" && action.type !== "ACTIVATE_ABILITY") return false;
-  const cost = actionManaCost(state, action, cards);
   // A spell with no mana cost has a cost that can't be paid (CR 118.6); a mana ability isn't a reason to stop.
-  if (cost === null) return false;
-  return mightPay(state, player, cost, cards);
+  return mightPayFor(state, player, action, cards) === true;
 }

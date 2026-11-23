@@ -2,20 +2,62 @@
 // bodies made, life and damage. Effects it doesn't weigh yet count as nothing, so they never make it cast a spell.
 
 import type { CardDatabase, Effect, EffectSubject, SeatView, SeenCard } from "@mtg/engine";
-import { controlledBy, creaturesOf, creatureValue, lifeOf, opponents, seenCard, toughnessLeft } from "./board.ts";
+import {
+  controlledBy,
+  creaturesOf,
+  creatureValue,
+  LETHAL,
+  lifeOf,
+  opponents,
+  seenCard,
+  toughnessLeft,
+} from "./board.ts";
 import type { Pump } from "./fights.ts";
 import { stackIntents } from "./intents.ts";
 import { losesFight, type Pumping, pumpsValue } from "./tricks.ts";
 
-/** `source`: the permanent whose ability this is ("this creature", "enchanted creature"); null for a spell. */
+/**
+ * `source`: the permanent whose ability this is ("this creature", "enchanted creature"); null for a spell. `repeats`:
+ * how many times it can be done now (Firebreathing's "{R}: +1/+0" with three Mountains untapped): its pumps are weighed
+ * all together, as one activation is worth what the activations it starts lead to. The pumps until end of turn of one
+ * spell are weighed together too (Overrun's +3/+3 and trample), as their worth lies in what they do at once.
+ */
 export function untargetedValue(
   shown: SeatView,
   effects: readonly Effect[],
   x: number,
   source: SeenCard | null,
   cards: CardDatabase,
+  repeats = 1,
 ): number {
-  return effects.reduce((sum, effect) => sum + effectValue(shown, effect, x, source, cards), 0);
+  const rest = effects.reduce((sum, effect) => sum + effectValue(shown, effect, x, source, cards), 0);
+  const pumps = untilEndOfTurnPumps(shown, effects, source, repeats);
+  return rest + (pumps.length === 0 ? 0 : pumpsValue(shown, pumps));
+}
+
+/** Every pump until end of turn in these effects, merged into one per creature, `repeats` times over. */
+function untilEndOfTurnPumps(shown: SeatView, effects: readonly Effect[], source: SeenCard | null, repeats: number) {
+  const merged: Pumping[] = [];
+  const add = (subject: EffectSubject, pump: Pump) => {
+    for (const creature of subjectCreatures(shown, subject, source)) {
+      const at = merged.findIndex((m) => m.creature.id === creature.id);
+      const was = at === -1 ? NO_PUMP : (merged[at] as Pumping).pump;
+      const now = {
+        power: was.power + pump.power * repeats,
+        toughness: was.toughness + pump.toughness * repeats,
+        keywords: [...was.keywords, ...pump.keywords],
+      };
+      if (at === -1) merged.push({ creature, pump: now });
+      else merged[at] = { creature, pump: now };
+    }
+  };
+  for (const e of effects) {
+    if (e.op === "modifyPT" && e.duration === "endOfTurn")
+      add(e.of, { power: e.power, toughness: e.toughness, keywords: [] });
+    if (e.op === "gainKeywords" && e.duration === "endOfTurn")
+      add(e.of, { power: 0, toughness: 0, keywords: e.keywords });
+  }
+  return merged;
 }
 
 type Amount = Extract<Effect, { op: "draw" }>["amount"];
@@ -26,7 +68,7 @@ function effectValue(shown: SeatView, effect: Effect, x: number, source: SeenCar
     case "draw":
       return effect.who === "you" ? 1.5 * amount(effect.amount) : 0;
     case "createTokens": {
-      // Each token about as much as a creature of its size (a "*" one, as a 1/1).
+      // Each token worth about half a creature of its size, at least 1 (a "*" one, as a 1/1): a body on the table.
       const { power, toughness } = effect.token;
       const size = 1.5 * (typeof power === "number" ? power : 1) + (typeof toughness === "number" ? toughness : 1);
       return amount(effect.amount) * Math.max(1, size / 2);
@@ -49,21 +91,12 @@ function effectValue(shown: SeatView, effect: Effect, x: number, source: SeenCar
     case "if":
       // Its condition isn't weighed: half of what it would do.
       return untargetedValue(shown, effect.effects, x, source, cards) / 2;
-    case "modifyPT":
-      if (effect.duration !== "endOfTurn") return 0;
-      return pumpsValue(
-        shown,
-        pumpedBy(shown, effect.of, source, { power: effect.power, toughness: effect.toughness, keywords: [] }),
-      );
-    case "gainKeywords":
-      if (effect.duration !== "endOfTurn") return 0;
-      return pumpsValue(
-        shown,
-        pumpedBy(shown, effect.of, source, { power: 0, toughness: 0, keywords: effect.keywords }),
-      );
-    // Targeted (weighed by `targets.ts`), or not weighed yet.
     case "regenerate":
-      return regenerateValue(shown, pumpedBy(shown, effect.of, source, NO_PUMP)[0]?.creature ?? null, cards);
+      return regenerateValue(shown, subjectCreatures(shown, effect.of, source)[0] ?? null, cards);
+    // Pumps until end of turn, weighed all together (`untilEndOfTurnPumps`); targeted effects, weighed by `targets.ts`;
+    // and what isn't weighed yet.
+    case "modifyPT":
+    case "gainKeywords":
     case "addMana":
     case "cantBlock":
     case "cantBeBlocked":
@@ -107,20 +140,19 @@ function effectValue(shown: SeatView, effect: Effect, x: number, source: SeenCar
 }
 
 /**
- * The creatures an untargeted pump gives to, among the heuristic's own: "this creature", "enchanted creature", or "creatures
- * you control" (Overrun). Targeted ones are weighed with their target (`targets.ts`).
+ * The heuristic's own creatures an untargeted effect is about: "this creature", "enchanted creature", "creatures you
+ * control" (Overrun), "attacking creatures" (Trumpet Blast). Targeted ones are weighed with their target (`targets.ts`).
  */
-function pumpedBy(shown: SeatView, subject: EffectSubject, source: SeenCard | null, pump: Pump): Pumping[] {
+function subjectCreatures(shown: SeatView, subject: EffectSubject, source: SeenCard | null): SeenCard[] {
   const mine = creaturesOf(shown, shown.player);
-  const of = (c: SeenCard | null | undefined): Pumping[] =>
-    c === null || c === undefined ? [] : [{ creature: c, pump }];
-  if (subject === "self") return of(source);
-  if (subject === "attached")
-    return of(source?.attachedTo === null || source === null ? null : seenCard(shown, source.attachedTo));
-  if (typeof subject === "object" && "each" in subject && subject.each.controller === "you") {
-    return mine.map((creature) => ({ creature, pump }));
-  }
-  return [];
+  const one = (c: SeenCard | null | undefined) => (c === null || c === undefined ? [] : [c]);
+  if (subject === "self") return one(source);
+  if (subject === "attached") return one(source?.attachedTo == null ? null : seenCard(shown, source.attachedTo));
+  if (typeof subject !== "object" || !("each" in subject)) return [];
+  const filter = subject.each;
+  if (filter.controller !== undefined && filter.controller !== "you") return [];
+  if (filter.combat === "attacking") return mine.filter((c) => c.attacking !== null);
+  return filter.controller === "you" ? mine : [];
 }
 
 const NO_PUMP: Pump = { power: 0, toughness: 0, keywords: [] };
@@ -156,14 +188,14 @@ function aimedAt(shown: SeatView, creature: SeenCard, cards: CardDatabase): bool
 /** Life loss for every player, the heuristic too (Howling Banshee): never when its own share is lethal. */
 function toEveryone(shown: SeatView, amount: number): number {
   const mine = lifeOf(shown, shown.player);
-  if (mine <= amount) return -100;
+  if (mine <= amount) return -LETHAL;
   const ownLoss = mine - amount <= 5 ? amount : amount / 2;
   return toOpponents(shown, amount) - ownLoss;
 }
 
 /** Damage or life loss for each opponent: the game when it's lethal, half a point a point before. */
 function toOpponents(shown: SeatView, amount: number): number {
-  return opponents(shown).some((p) => lifeOf(shown, p) <= amount) ? 100 : amount / 2;
+  return opponents(shown).some((p) => lifeOf(shown, p) <= amount) ? LETHAL : amount / 2;
 }
 
 /** "Destroy all creatures": worth what the opponents lose less what it costs the heuristic. */

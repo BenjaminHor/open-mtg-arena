@@ -2213,7 +2213,7 @@ owner's answer to the D-089 open question, option (a))
   announced before its targets, and an X the engine can't pay leaves only a cancel, then the same cast again.
 - The two-worlds checks (`brief.test.ts`, the fuzzer's `viewsLeakNothing`) compare whole seat views.
 
-**D-145: How the heuristic AI's "95% against random with each deck" is measured (M3-02)** · 2026-11-22 · accepted
+**D-145: How the heuristic AI's "95% against random with each deck" is measured (M3-02)** · 2026-11-22 · accepted (void games added 2026-11-23, part 2)
 - `pnpm eval --deck <name> --games 500 --seed 1`: the heuristic with that deck against the `random` agent with each
   prebuilt deck in turn (all five, the mirror included); the heuristic's seat changes every five games and who plays
   first every ten, so every pairing is played from both seats and both sides of the play.
@@ -2254,7 +2254,7 @@ owner's answer to the D-089 open question, option (a))
 
 **D-149: M3-02's 95% is a target, not a hard bar (owner, 2026-11-23)** · 2026-11-23 · accepted
 - The owner: "We don't have to be so strict with the 95%." The heuristic AI was at 99.6% (white-soldiers), 97.4%
-  (green-stompy), 97.2% (red-green-beats), 96.4% (red-aggro) and 94.0% (blue-black-control) on the acceptance run
+  (green-stompy), 96.6% (red-green-beats), 96.4% (red-aggro) and 94.0% (blue-black-control) on the acceptance run
   (`pnpm eval --games 500 --seed 1`), and 94.8% for blue-black-control on 2,000 held-out games (seeds from 10,001),
   within a standard error of the mark. M3-02 is accepted on those numbers; tuning more for the random agent has
   stopped paying (the last tries changed a handful of games either way), and the app is waiting.

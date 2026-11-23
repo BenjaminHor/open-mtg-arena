@@ -44,6 +44,8 @@ export function playEvalGame(game: EvalGame, clock: () => number, cards: CardDat
     try {
       match = advance(match, cards);
     } catch (error) {
+      // Only the agent's seat and the host's own passing and tapping go through `advance`: the heuristic's decisions are
+      // made below, one `submit` each, and a heuristic going round in circles hits `MOST_DECISIONS` instead.
       if (error instanceof HostStuck) return { outcome: "void", turns: match.state.turn?.number ?? 0, decisionMs };
       throw error;
     }

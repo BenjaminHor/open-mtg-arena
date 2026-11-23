@@ -47,7 +47,9 @@ function intentFor(index: number, effects: readonly Effect[], x: number | null):
   for (const effect of effects) {
     const { subjects, intent } = effectOn(effect, x, index);
     if (!subjects.some((s) => isTarget(s, index))) continue;
-    if (effect.op === "loseLife") lifeLoss += typeof effect.amount === "number" ? effect.amount : 1;
+    if (effect.op === "loseLife") {
+      lifeLoss += typeof effect.amount === "number" ? effect.amount : effect.amount === "X" ? (x ?? 0) : 1;
+    }
     if (found.kind === "neutral" && intent.kind !== "neutral") found = intent;
   }
   return found.kind === "help" && lifeLoss > 0 ? { ...found, lifeLoss } : found;
@@ -74,7 +76,11 @@ function effectOn(effect: Effect, x: number | null, index: number): EffectOn {
       return { subjects: [effect.to, ...(effect.and ?? []).map((a) => a.to)], intent: { kind: "harm", damage } };
     }
     case "destroy":
-      return { subjects: [effect.of], intent: { kind: "harm", damage: null, destroys: true } };
+      // `destroys`: what a regeneration shield answers, unless it "can't be regenerated" (Polymorph, CR 701.19c).
+      return {
+        subjects: [effect.of],
+        intent: effect.noRegeneration === true ? HARM : { kind: "harm", damage: null, destroys: true },
+      };
     case "exile":
     case "tap":
     case "returnToHand":
