@@ -126,6 +126,7 @@ export function Hud(props: HudProps) {
           prompt={controls.prompt}
           title={deciding ? promptTitle(shown, props.selection) : null}
           layout={promptLayout(shown)}
+          decision={view.decision?.id ?? null}
           busy={busy}
           act={act}
         />

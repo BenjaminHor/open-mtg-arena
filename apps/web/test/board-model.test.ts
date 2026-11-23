@@ -429,4 +429,18 @@ describe("the compact board model", () => {
   it("draws an opening hand of seven before the first turn", () => {
     expect(boardModel(mulliganView(), PHONE).cards.filter((c) => c.zone === "hand")).toHaveLength(7);
   });
+
+  it("puts the prompt in the open table between the rows, and high, under the opponent's crest, while the hand is open", () => {
+    const shown = fixtureView("mid-game");
+    const closed = boardModel(shown, PHONE);
+    const crest = closed.overlay.life.opponent;
+    const theirs = closed.cards.filter((c) => c.row === "creatures" && !c.mine);
+    const mine = closed.cards.filter((c) => c.row === "creatures" && c.mine);
+    const prompt = closed.overlay.prompt;
+    expect(prompt.y).toBeGreaterThan(Math.max(...theirs.map((c) => c.y + c.height)));
+    expect(prompt.y).toBeLessThan(Math.min(...mine.map((c) => c.y)));
+    // The open hand rises over the lower half: the prompt goes up, just under the crest, clear of the cards.
+    const open = boardModel(shown, PHONE, undefined, { handOpen: true });
+    expect(open.overlay.prompt.y).toBeLessThan(crest.y + crest.height + COMPACT.promptHeight);
+  });
 });

@@ -265,14 +265,32 @@ function promptPlace(
   if (kind === "declareAttackers" || kind === "declareBlockers") return underCrest;
   // Naming a card is a long list with a filter box: it starts high, so the list has the screen's height to use. An
   // open hand rises over the lower half (a mulligan, a discard): the prompt goes high, clear of the cards' names.
-  if (kind === "chooseName" || handOpen) return underCrest;
+  const decision = shown.view.decision;
+  if ((decision?.kind === "chooseName" && decision.what === "cardName") || handOpen) return underCrest;
+  // In the gap between the rows, the title fits, and so does a row of choices under it when the prompt has them.
+  const needed = layout.promptHeight + (answeredOnCards(kind) ? 0 : layout.promptChoicesHeight);
   const creatures = field.filter((c) => c.row === "creatures");
   const theirs = creatures.filter((c) => !c.mine).map((c) => c.y + c.height);
   const mine = creatures.filter((c) => c.mine).map((c) => c.y);
   const top = theirs.length === 0 ? area.y + layout.band.y * area.height - 30 : Math.max(...theirs);
   const bottom = mine.length === 0 ? area.y + layout.band.y * area.height + 30 : Math.min(...mine);
-  if (bottom - top >= layout.promptHeight) return { x: area.x + area.width / 2, y: (top + bottom) / 2 };
+  if (bottom - top >= needed)
+    return { x: area.x + area.width / 2, y: top + (bottom - top - needed) / 2 + layout.promptHeight / 2 };
   return underCrest;
+}
+
+/** Decisions answered by tapping cards (or the main button): their prompt is a title alone, with no choices under it. */
+function answeredOnCards(kind: string | undefined): boolean {
+  return (
+    kind === undefined ||
+    kind === "priority" ||
+    kind === "declareAttackers" ||
+    kind === "declareBlockers" ||
+    kind === "chooseTarget" ||
+    kind === "mulliganBottom" ||
+    kind === "discardToHandSize" ||
+    kind === "chooseSacrifice"
+  );
 }
 
 /** The part of the screen the hand covers: from its leftmost card to its rightmost, its costs to the bottom edge. */

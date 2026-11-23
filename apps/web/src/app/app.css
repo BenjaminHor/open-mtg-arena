@@ -354,7 +354,8 @@ body,
 }
 
 /* What the game waits for, between the battlefields [R]: words on a dark band, choices under them. */
-/* The title is centred on the anchor (the open table between the rows); choices hang below it, never above. */
+/* The title is centred on the anchor (the open table between the rows); choices hang below it, never above. 13px is
+   half the title's height (`promptHeight` in layout/compact.ts). */
 .prompt-anchor {
   transform: translate(-50%, -13px);
 }

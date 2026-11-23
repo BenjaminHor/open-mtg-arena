@@ -47,7 +47,8 @@ function keyboardFocused(): boolean {
   const focused = document.activeElement;
   if (!(focused instanceof HTMLElement) || focused === document.body) return false;
   // A text box (the prompt's filter) takes every key typed into it, a space included.
-  return focused instanceof HTMLInputElement || focused.matches(":focus-visible");
+  const typing = focused instanceof HTMLInputElement && (focused.type === "search" || focused.type === "text");
+  return typing || focused.matches(":focus-visible");
 }
 
 export function App() {

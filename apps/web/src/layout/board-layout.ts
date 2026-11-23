@@ -57,6 +57,8 @@ export type BoardLayout = {
   combat: { advance: number; gangOverlap: number };
   /** px: the height the prompt's words need, to find room for them between the battlefields. */
   promptHeight: number;
+  /** px: a row of a prompt's choices under its title (44 px buttons and a gap), budgeted when placing it. */
+  promptChoicesHeight: number;
   /** px: the small buttons beside the main one ("Undo", "Cancel"). */
   secondary: { width: number; height: number; gap: number };
   /**

@@ -5,9 +5,9 @@
 // too many to show at once (naming a card: every name in the database).
 
 import type { Action } from "@mtg/engine";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Choice, Controls } from "../interaction/controls.ts";
-import type { PromptLayout } from "../interaction/prompt-text.ts";
+import { type PromptLayout, rankByLabel } from "../interaction/prompt-text.ts";
 import { ManaText } from "./ManaText.tsx";
 
 /** How many matches a filtered list shows at once: more is a cue to type more, not a wall of buttons. */
@@ -17,12 +17,15 @@ export function Prompt({
   prompt,
   title,
   layout,
+  decision,
   busy,
   act,
 }: {
   prompt: Controls["prompt"];
   title: string | null;
   layout: PromptLayout;
+  /** The decision's id: a new decision starts with an empty filter. */
+  decision: string | null;
   busy: boolean;
   act: (action: Action) => void;
 }) {
@@ -35,7 +38,7 @@ export function Prompt({
       </p>
       {prompt !== null &&
         (layout === "filtered" ? (
-          <FilteredChoices choices={prompt.choices} busy={busy} act={act} />
+          <FilteredChoices key={decision} choices={prompt.choices} busy={busy} act={act} />
         ) : (
           <Choices choices={prompt.choices} numbers={layout === "numbers"} busy={busy} act={act} />
         ))}
@@ -61,17 +64,20 @@ function Choices(props: { choices: Choice[]; numbers: boolean; busy: boolean; ac
   );
 }
 
-/** A long list: a filter box (focused, so typing starts at once) and the first matches under it. */
+/** A long list: a filter box and the best matches under it (`rankByLabel`). */
 function FilteredChoices(props: { choices: Choice[]; busy: boolean; act: (action: Action) => void }) {
   const [filter, setFilter] = useState("");
-  const [input, setInput] = useState<HTMLInputElement | null>(null);
-  useEffect(() => input?.focus(), [input]);
-  const wanted = filter.trim().toLowerCase();
-  const matches = props.choices.filter((c) => c.label.toLowerCase().includes(wanted));
+  const input = useRef<HTMLInputElement>(null);
+  // With a mouse and keyboard, typing starts at once. On touch it waits for a tap on the box: focusing it would raise
+  // the on-screen keyboard over most of a phone in landscape before the person has seen the list.
+  useEffect(() => {
+    if (window.matchMedia("(pointer: fine)").matches) input.current?.focus();
+  }, []);
+  const matches = rankByLabel(props.choices, filter);
   return (
     <div className="prompt-filtered">
       <input
-        ref={setInput}
+        ref={input}
         type="search"
         className="prompt-filter"
         placeholder="Type to find it"
@@ -79,9 +85,13 @@ function FilteredChoices(props: { choices: Choice[]; busy: boolean; act: (action
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
         onKeyDown={(e) => {
-          // Enter takes the only match, or the first, as a search box does.
+          // Enter takes the best match, as a search box does; never with nothing typed (it would name the first card
+          // in the list), and not while an input method is still composing a word.
           const first = matches[0];
-          if (e.key === "Enter" && first !== undefined && !props.busy) props.act(first.action);
+          const typed = filter.trim() !== "";
+          if (e.key === "Enter" && typed && !e.nativeEvent.isComposing && first !== undefined && !props.busy) {
+            props.act(first.action);
+          }
         }}
       />
       <Choices choices={matches.slice(0, MOST_SHOWN)} numbers={false} busy={props.busy} act={props.act} />

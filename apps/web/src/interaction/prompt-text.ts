@@ -1,8 +1,8 @@
 // What a prompt says (M3-04b slice 2; ui.md "Clarity": always say what the game is waiting for): its title, and each
-// choice's label, from the decision waiting and what it's for: "Choose X for Fireball", "How much of 5 damage to
-// Grizzly Bears?", "Keep 7". Pure, so a test can check every decision kind.
+// choice's label, from the decision waiting and what it's for: "Choose X for Fireball", "How much of 3 to Elite
+// Vanguard?", "Keep 7". Pure, so a test can check every decision kind.
 
-import type { Action, ObjectId, OracleId, SeatView, Target } from "@mtg/engine";
+import type { Action, ObjectId, SeatView, Target } from "@mtg/engine";
 import { optionLabel } from "../app/option-label.ts";
 import { nameOf } from "../board-model/card-info.ts";
 import { mainButton, mustDeclare } from "../hud/main-button.ts";
@@ -38,7 +38,7 @@ function decisionTitle(shown: SeatView, d: Decision, name: (id: ObjectId) => str
       return "Who goes first?";
     case "mulligan":
       // A mulligan's cards go to the bottom as it's taken (CR 103.5), so the hand asked about is the hand kept.
-      return `Keep these ${hand} cards?`;
+      return hand === 1 ? "Keep this card?" : `Keep these ${hand} cards?`;
     case "mulliganBottom":
       return `Put ${d.remaining} card${d.remaining === 1 ? "" : "s"} on the bottom of your library`;
     case "discardToHandSize":
@@ -66,7 +66,13 @@ function decisionTitle(shown: SeatView, d: Decision, name: (id: ObjectId) => str
     case "chooseSacrifice":
       return `Choose what to sacrifice for ${name(d.object)}`;
     case "chooseCards":
-      return chooseCardsTitle(d.purpose, d.min, d.max, d.endsOnlyOnFinish);
+      return chooseCardsTitle(
+        d.purpose,
+        d.min,
+        d.max,
+        d.endsOnlyOnFinish,
+        d.for === null ? null : nameOf(d.for.oracleId),
+      );
     case "orderTriggers":
       // The one put on the stack first resolves last (CR 603.3b, 405.5).
       return "Which goes on the stack first? It resolves last";
@@ -89,8 +95,18 @@ function decisionTitle(shown: SeatView, d: Decision, name: (id: ObjectId) => str
   }
 }
 
-function chooseCardsTitle(purpose: string, min: number, max: number, anyNumber: boolean): string {
-  const count = anyNumber ? "any number of cards" : min === max ? `${max} card${max === 1 ? "" : "s"}` : "cards";
+type ChoosePurpose = Extract<Decision, { kind: "chooseCards" }>["purpose"];
+
+function chooseCardsTitle(
+  purpose: ChoosePurpose,
+  min: number,
+  max: number,
+  anyNumber: boolean,
+  forName: string | null,
+): string {
+  // "Any number" hides the most there could be (D-062); otherwise the most is the text's own ("up to one").
+  const cards = `card${max === 1 ? "" : "s"}`;
+  const count = anyNumber ? "any number of cards" : min === max ? `${max} ${cards}` : `up to ${max} ${cards}`;
   switch (purpose) {
     case "discard":
       return `Discard ${count}`;
@@ -105,10 +121,10 @@ function chooseCardsTitle(purpose: string, min: number, max: number, anyNumber: 
     case "sacrifice":
       return `Choose ${count} to sacrifice`;
     case "enchant":
-      return "Choose what it enchants";
+      return `Choose what ${forName ?? "it"} enchants`;
     case "copy":
-      return "Choose what to copy";
-    default:
+      return `Choose what ${forName ?? "it"} copies`;
+    case "choose":
       return `Choose ${count}`;
   }
 }
@@ -123,8 +139,9 @@ export function promptLabel(shown: SeatView, action: Action): string {
       // Arena's buttons [R]: "Keep 7", "Mulligan"; after a mulligan, the smaller hand (CR 103.5).
       return a.choice === "keep" ? `Keep ${shown.view.zones.players[shown.player]?.hand?.length ?? 0}` : "Mulligan";
     case "announceX":
+      return String(a.value);
     case "chooseTargetCount":
-      return String(a.kind === "announceX" ? a.value : a.count);
+      return String(a.count);
     case "divide":
       return String(a.amount);
     case "assignDamage": {
@@ -134,7 +151,10 @@ export function promptLabel(shown: SeatView, action: Action): string {
     }
     case "orderTrigger": {
       const trigger = d.kind === "orderTriggers" ? d.batch[a.index] : undefined;
-      return trigger === undefined ? optionLabel(shown, action) : `${objectName(shown, trigger.source)} trigger`;
+      if (trigger === undefined) return optionLabel(shown, action);
+      // A dies trigger's source has a new id in the graveyard (CR 400.7): named by its card when it's out of sight.
+      const source = shown.seen[trigger.source] === undefined ? nameOf(trigger.sourceOracleId) : null;
+      return `${source ?? objectName(shown, trigger.source)} trigger`;
     }
     case "chooseCard": {
       if (d.kind === "keepLegend") {
@@ -143,7 +163,9 @@ export function promptLabel(shown: SeatView, action: Action): string {
       }
       if (d.kind !== "chooseCards") return optionLabel(shown, action);
       const option = d.options[a.option];
-      return option === undefined ? optionLabel(shown, action) : (nameOf(option.oracleId as OracleId) ?? "a card");
+      if (option === undefined) return optionLabel(shown, action);
+      // A card in sight by its name as it is now (a token has no oracle name); one by identity only, by its oracle name.
+      return option.object !== null ? objectName(shown, option.object) : (nameOf(option.oracleId) ?? "a card");
     }
     case "chooseReplacement": {
       if (d.kind !== "chooseReplacement") return optionLabel(shown, action);
@@ -159,9 +181,11 @@ export function promptLabel(shown: SeatView, action: Action): string {
 
 /** How a prompt lays out its choices: a long list of names gets a filter box, small numbers a compact row. */
 export function promptLayout(shown: SeatView): PromptLayout {
-  switch (shown.view.decision?.kind) {
+  const d = shown.view.decision;
+  switch (d?.kind) {
     case "chooseName":
-      return "filtered";
+      // Every card name is a long list; the five basic land types are buttons.
+      return d.what === "cardName" ? "filtered" : "buttons";
     case "announceX":
     case "chooseTargetCount":
     case "divide":
@@ -175,7 +199,11 @@ export function promptLayout(shown: SeatView): PromptLayout {
 function objectName(shown: SeatView, id: ObjectId): string {
   const seen = shown.seen[id];
   if (seen?.kind === "card") return seen.characteristics.name;
-  if (seen?.kind === "ability") return `${objectName(shown, seen.source)} ability`;
+  // An ability whose source has left (sacrificed for its cost, CR 400.7) is named by the card it came from.
+  if (seen?.kind === "ability") {
+    const source = shown.seen[seen.source] === undefined ? nameOf(seen.sourceOracleId) : null;
+    return `${source ?? objectName(shown, seen.source)} ability`;
+  }
   return "it";
 }
 
@@ -192,17 +220,32 @@ function resolving(shown: SeatView): string {
 
 type ReplacementRef = Extract<Decision, { kind: "chooseReplacement" }>["options"][number];
 
-/** A replacement effect by where it comes from: the permanent with the text, the shield, the resolved spell. */
+/** A replacement effect by where it comes from: the permanent with the text, its shield or protection, a spell's. */
 function replacementSource(shown: SeatView, ref: ReplacementRef): string {
   switch (ref.kind) {
     case "ownText":
+      return objectName(shown, ref.object);
     case "regenerationShield":
-      return ref.kind === "regenerationShield"
-        ? `${objectName(shown, ref.object)}'s regeneration`
-        : objectName(shown, ref.object);
+      return `${objectName(shown, ref.object)}'s regeneration`;
+    case "protection":
+      return `${objectName(shown, ref.object)}'s protection`;
     case "resolvedEffect":
-      return objectName(shown, ref.id);
-    default:
-      return "Another effect";
+      // A resolved spell's effect (Fog's prevention) has an id of its own, not shown with its source: say what it is.
+      return "A prevention effect";
   }
+}
+
+/**
+ * The choices whose label matches what's typed, best first: the exact name, then names that start with it, then the
+ * rest that contain it, each group in its own order. So "Shatter" puts Shatter before Mind Shatter, and a short name
+ * is never hidden behind longer ones that merely contain it.
+ */
+export function rankByLabel<T extends { label: string }>(choices: readonly T[], typed: string): T[] {
+  const wanted = typed.trim().toLowerCase();
+  const rank = (label: string) => (label === wanted ? 0 : label.startsWith(wanted) ? 1 : 2);
+  return choices
+    .map((choice) => ({ choice, label: choice.label.toLowerCase() }))
+    .filter(({ label }) => label.includes(wanted))
+    .sort((a, b) => rank(a.label) - rank(b.label))
+    .map(({ choice }) => choice);
 }

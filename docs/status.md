@@ -240,9 +240,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     - `interaction/prompt-text.ts` (pure): the prompt's title and each choice's label from the decision.
       - Mulligan: "Keep 7" / "Mulligan" [R].
       - X: "Choose X for Fireball".
-      - Dividing: "How much of 5 damage to Grizzly Bears?".
+      - Dividing: "How much of 3 to Elite Vanguard?" (no "damage": CR 601.2d divides counters too).
       - Combat damage: the source, the amount and who gets it, with lethal marked.
-      - Paying: the spell and its cost.
+      - Paying: "Pay for" the spell (the payment screen with its cost is later).
       - Choosing cards: the cards' names.
       - Trigger order: each trigger by its source ("goes on the stack first, resolves last").
       - Yes/no: the spell or ability resolving.
@@ -258,8 +258,16 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     Choices that read the same are numbered ("Forest", "Forest 2"). X and damage shares are a compact row of
     numbers; naming a card has a filter box (Enter takes the first match; 8 shown, the rest by typing). The prompt's
     title sits on its anchor with the choices below; it goes high while the hand is open (a mulligan, a discard) or
-    for naming a card. A `prompts` fixture (Fireball, Ignite Disorder, Pithing Needle) and an e2e for all three; a
-    unit test per decision kind.
+    for naming a card. A `prompts` fixture (Fireball, Ignite Disorder, Pithing Needle) and an e2e for all three; unit
+    tests for every decision kind's title and the labels that need context.
+    After the code review: the filter ranks the exact name first, then prefixes, then the rest (so "Shatter" doesn't
+    name Mind Shatter), Enter does nothing on an empty box, the box empties for each new decision, and it's focused
+    only with a mouse (on touch it would raise the on-screen keyboard over a folded phone). Replacement order names
+    each effect by its source ("X's regeneration", "X's protection"; a resolved spell's prevention is "A prevention
+    effect", as the view doesn't carry its source: a known gap). A trigger or ability whose source has left is named by
+    its card. Choosing a basic land type is five buttons, not a filter. The prompt goes in the gap between the rows
+    only if a row of choices fits there too. Debug screenshots committed by mistake are removed, and PNGs at the root
+    and in `apps/web/src` are now ignored.
   - M3-04b slice 3 (2026-11-23, in the same PR as slice 1, as both are on one branch): smart stops (D-157). Auto-pass
     keeps D-143's rule and adds Arena's skips: your own upkeep, draw step and end step with an empty stack, unless
     mana is left in your pool. Full control is a switch in the settings menu (the main button turns blue-violet). The

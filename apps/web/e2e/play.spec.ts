@@ -165,11 +165,11 @@ test("prompts say what they're for: dividing damage, X as a row of numbers, nami
   // Ignite Disorder: how many targets, the targets, then how much of the 3 damage goes to the first (CR 601.2d).
   await cast("Ignite Disorder");
   await expect(page.getByText("How many targets for Ignite Disorder?")).toBeVisible();
-  await page.locator(".prompt-choices button", { hasText: "2" }).click();
+  await page.getByRole("button", { name: "2", exact: true }).click();
   await page.getByRole("button", { name: /^Elite Vanguard: Target/ }).click();
   await page.getByRole("button", { name: /^Veteran Armorsmith: Target/ }).click();
   await expect(page.getByText("How much of 3 to Elite Vanguard?")).toBeVisible();
-  await page.locator(".prompt-choices button", { hasText: "2" }).click();
+  await page.getByRole("button", { name: "2", exact: true }).click();
   // Two to the 2/2, one to the 2/3: the Vanguard dies.
   await expect.poll(async () => (await board(page))?.cards.some((c) => c.name === "Elite Vanguard")).toBe(false);
 
@@ -191,7 +191,7 @@ test("prompts say what they're for: dividing damage, X as a row of numbers, nami
   }
   await expect(page.getByText("Name a card")).toBeVisible();
   await page.getByRole("searchbox", { name: "Filter the choices" }).fill("shivan");
-  await page.locator(".prompt-choices button", { hasText: "Shivan Dragon" }).click();
+  await page.getByRole("button", { name: "Shivan Dragon", exact: true }).click();
   await expect(page.getByText("Name a card")).toBeHidden();
   await expect.poll(async () => (await board(page))?.cards.some((c) => c.name === "Pithing Needle")).toBe(true);
 });
