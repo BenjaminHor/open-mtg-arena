@@ -2707,3 +2707,11 @@ owner's answer to the D-089 open question, option (a))
 - The owner then: "If it's due later then that's fine. I just wanted to bring it up in case we didn't know." Kept
   forward anyway: it's the most confusing part of play-testing now (this and the "two lands" report), and every later
   slice is tried through it.
+
+**D-173: The owner's feedback on the pacing slice (2026-11-23)** · 2026-11-23 · accepted
+- The owner, after trying the live site: "speed seems fine so far" (the D-172 holds stay); "phase bar should mirror
+  what mtg arena does" (the ladder during the opponent's run does as Arena's does, researched first); "card spacing is
+  okay for now, we'll revisit later" (the zone browser, D-168); and "when there's something on the stack to resolve,
+  it's not immediately obvious that there's something on the stack. maybe the UI can represent this in more clear,
+  clean, and minimal way". The last two come next, before M3-05: the stack made obvious, and the ladder as Arena's.
+

@@ -2248,9 +2248,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 ## Open questions
 
-- (2026-11-23, pacing, D-172) Should the phase ladder step through each step a frame passes over (Arena lights each
-  step briefly as it passes [unverified]), or jump to where the frame is, as now? Proceeding with "jump" until the
-  owner says; their feedback on the live pacing will settle it.
+- Answered (2026-11-23, pacing, D-172): should the phase ladder step through each step a frame passes over, or jump?
+  The owner: "phase bar should mirror what mtg arena does" (D-173).
 
 - Smart stops (2026-11-23, D-157): the host stops wherever you could act, except in your own upkeep, draw step and
   end step. Proposal, not built: also skip your own beginning of combat, combat damage and end of combat unless an
@@ -2327,6 +2326,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   and the opponent acts, and the screen jumps to the result with nothing shown in between. The plan's answer is
   opponent-action pacing and step-by-step showing (ui.md "Pacing for the opponent"; M3-07, M3-12), pulled forward to
   come right after M3-04c (D-172).
+- (2026-11-23, owner, after trying the pacing) "something I noticed is that when there's something on the stack to
+  resolve, it's not immediately obvious that there's something on the stack. maybe the UI can represent this in more
+  clear, clean, and minimal way". Next task (D-173).
+- (2026-11-23, owner) On the zone browser's spacing after the fix: "card spacing is okay for now, we'll revisit
+  later". Left open for a later look; not blocking.
 - (2026-11-23, owner) "I noticed that the cards in the hand, graveyard, exile view are spaced really far apart": the
   zone browser's row (D-168). Chromium draws it tight (140 px cards 8 px apart), so most likely the owner's Safari: the
   card was sized by `aspect-ratio` on a button and its image by a percentage height inside it, either of which Safari
