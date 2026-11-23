@@ -6,7 +6,7 @@
 import type { ObjectId } from "@mtg/engine";
 import type { BoardModel } from "../board-model/board-model.ts";
 import type { Controls } from "../interaction/controls.ts";
-import { useHandDrag } from "./hand-drag.ts";
+import { type HandDragCallbacks, useHandDrag } from "./hand-drag.ts";
 import { place } from "./place.ts";
 
 type Props = {
@@ -21,7 +21,7 @@ type Props = {
   /** The lifted hand card, if any: it says what a second tap does. */
   selection: ObjectId | null;
   /** Drag to play (`hand-drag.ts`): a hand card lifted by a drag, let go on the table, or put down. */
-  drag: { lift: (id: ObjectId) => void; drop: (id: ObjectId) => void; cancel: () => void };
+  drag: HandDragCallbacks;
 };
 
 export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, selection, drag }: Props) {
@@ -49,7 +49,7 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
             aria-label={spoken(control.label)}
             aria-disabled={busy}
             onClick={() => !busy && onTap(actor)}
-            onPointerDown={inHand.has(id) && !busy ? handDrag.onPointerDown : undefined}
+            onPointerDown={inHand.has(id) && !busy ? (e) => handDrag.onPointerDown(e, actor) : undefined}
           />
         );
       })}
@@ -61,7 +61,7 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
           style={place(hand)}
           aria-label="Open your hand"
           onClick={onHand}
-          onPointerDown={busy ? undefined : handDrag.onPointerDown}
+          onPointerDown={busy ? undefined : (e) => handDrag.onPointerDown(e)}
         />
       )}
       {lifted !== undefined && again?.kind === "send" && (

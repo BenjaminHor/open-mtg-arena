@@ -234,7 +234,9 @@ test("prompts say what they're for: dividing damage, X as a row of numbers, nami
   await expect.poll(async () => (await board(page))?.cards.some((c) => c.name === "Pithing Needle")).toBe(true);
 });
 
-test("All Attack picks every creature that can attack; the main button then finishes", async ({ page }) => {
+test("All Attack picks every creature that can attack, a double tap included; the main button then finishes", async ({
+  page,
+}) => {
   await page.goto("/?fixture=attack");
   for (let i = 0; i < 5; i++) {
     if (await page.getByRole("button", { name: "All Attack" }).count()) break;
@@ -244,7 +246,10 @@ test("All Attack picks every creature that can attack; the main button then fini
       .catch(() => undefined);
     await page.waitForTimeout(300);
   }
-  await page.getByRole("button", { name: "All Attack" }).click();
+  // A double tap: the second lands where Undo appears once a creature is attacking. It mustn't take one back.
+  await page.getByRole("button", { name: "All Attack" }).dblclick();
+  await expect(page.getByRole("button", { name: /^4 Attackers/ })).toBeEnabled();
+  await page.waitForTimeout(400);
   await expect(page.getByRole("button", { name: /^4 Attackers/ })).toBeEnabled();
   await page.getByRole("button", { name: /^4 Attackers/ }).click();
   await expect.poll(async () => (await board(page))?.cards.filter((c) => c.mine && c.attacking).length).toBe(4);

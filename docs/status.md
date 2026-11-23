@@ -211,8 +211,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     - All Attack: during the declaration, a button left of the main one [R] (Arena's "All Attack"). It picks every
       creature that can attack the opponent, one pick at a time as the engine offers them (each pick is its own
       action; the engine re-checks after each), skipping planeswalkers as targets. Then the declaration stays open to
-      adjust, and the main button finishes it. `controls.ts` says when it's offered (two or more creatures could
-      attack); App sends the picks in turn.
+      adjust, and the main button finishes it. `interaction/all-attack.ts` says when it's offered (two or more
+      creatures could attack, all at the same player); App sends the picks in turn (D-158).
     - Drag to play: press a hand card and move it up past a threshold; the card lifts as it starts, "Release to cast"
       shows, and letting go above the line plays or casts it as the second tap would (the same action, from
       `controls`). Let go below the line, or press Escape, and it's put down. Pointer events, so mouse and touch

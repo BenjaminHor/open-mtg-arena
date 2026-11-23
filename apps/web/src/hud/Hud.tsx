@@ -11,6 +11,7 @@ import type { Choice, Controls } from "../interaction/controls.ts";
 import { promptLayout, promptTitle } from "../interaction/prompt-text.ts";
 import { CardButtons } from "./CardButtons.tsx";
 import { ChoiceMenu } from "./ChoiceMenu.tsx";
+import type { HandDragCallbacks } from "./hand-drag.ts";
 import { ManaText } from "./ManaText.tsx";
 import { mainButton } from "./main-button.ts";
 import { PhaseLadder } from "./PhaseLadder.tsx";
@@ -34,7 +35,7 @@ type HudProps = {
   fullControl: boolean;
   setFullControl: (on: boolean) => void;
   /** Drag to play: a hand card lifted by a drag, let go on the table, or put down (`hand-drag.ts`). */
-  drag: { lift: (id: ObjectId) => void; drop: (id: ObjectId) => void; cancel: () => void };
+  drag: HandDragCallbacks;
   /** All Attack (`interaction/all-attack.ts`): offered now, and what pressing it starts. */
   allAttack: { offered: boolean; start: () => void };
 };

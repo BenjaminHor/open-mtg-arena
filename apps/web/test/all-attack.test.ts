@@ -2,8 +2,10 @@
 
 import type { Action, ObjectId, SeatView } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
+import { fixtureSetup } from "../src/fixtures/fixtures.ts";
 import { allAttackOffered, nextAllAttackPick } from "../src/interaction/all-attack.ts";
-import { fixtureView } from "./fixture-views.ts";
+import { handle } from "../src/worker/match-session.ts";
+import { cards, fixtureView } from "./fixture-views.ts";
 
 const midGame = fixtureView("mid-game");
 
@@ -63,5 +65,34 @@ describe("All Attack", () => {
     expect(allAttackOffered(declaring([pick("o1"), pick("o2")]))).toBe(true);
     expect(allAttackOffered(declaring([pick("o1"), pick("o1", "o9")]))).toBe(false);
     expect(allAttackOffered(midGame)).toBe(false);
+  });
+
+  it("through the real engine: from the attack fixture, picks every creature until none is left, and can finish", () => {
+    const setup = fixtureSetup("attack");
+    if (setup === null) throw new Error("no attack fixture");
+    let step = handle(null, { type: "startFrom", setup, human: "p1" }, cards);
+    const shownNow = () => {
+      if (step.reply.type !== "update") throw new Error(step.reply.message);
+      return step.reply.shown;
+    };
+    // On to the declaration.
+    for (let i = 0; i < 6 && shownNow().view.decision?.kind !== "declareAttackers"; i++) {
+      const pass = shownNow().options.find((o) => o.action.type === "PASS_PRIORITY");
+      if (pass === undefined) throw new Error("no pass");
+      step = handle(step.session, { type: "act", action: pass.action }, cards);
+    }
+    expect(allAttackOffered(shownNow())).toBe(true);
+    for (let i = 0; i < 10; i++) {
+      const pick = nextAllAttackPick(shownNow());
+      if (pick === null) break;
+      step = handle(step.session, { type: "act", action: pick }, cards);
+    }
+    const decision = shownNow().view.decision;
+    expect(decision?.kind === "declareAttackers" ? decision.chosen.length : 0).toBe(4);
+    // Every requirement obeyed (Berserkers of Blood Ridge attacks each combat): the declaration can be finished.
+    expect(
+      shownNow().options.some((o) => o.action.type === "ANSWER" && o.action.answer.kind === "finishDeclaring"),
+    ).toBe(true);
+    expect(allAttackOffered(shownNow())).toBe(false);
   });
 });

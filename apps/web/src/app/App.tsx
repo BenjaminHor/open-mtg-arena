@@ -63,8 +63,10 @@ export function App() {
   // The UI's own side of a choice under way (interaction/controls.ts): a lifted hand card or a picked blocker, a card's
   // menu open, and an action on its way to the worker (no second press until the next update, ui.md).
   const [selection, setSelection] = useState<Selection>(null);
-  // All Attack under way: one pick is sent per update, until no creature is left to pick.
+  // All Attack under way: one pick is sent per update, until no creature is left to pick. `picked` is how many attackers
+  // the declaration held when the last pick went out: if the next update holds no more (an error, an Undo), it stops.
   const [attackingAll, setAttackingAll] = useState(false);
+  const picked = useRef<number | null>(null);
   // An open menu is only which card it's for: its choices are always read from the current controls.
   const [menuFor, setMenuFor] = useState<ObjectId | null>(null);
   const [busy, setBusy] = useState(false);
@@ -87,7 +89,11 @@ export function App() {
         settlePress.current = false;
         setUpdate(reply);
         setError(null);
-      } else setError(reply.message);
+      } else {
+        setError(reply.message);
+        // A refused pick would only be sent again: All Attack stops, and the person carries on by hand.
+        setAttackingAll(false);
+      }
     });
     client.current = started;
     const start = startFromUrl();
@@ -167,9 +173,19 @@ export function App() {
   // is left or the declaration is over; then the person adjusts or finishes it with the main button.
   useEffect(() => {
     if (!attackingAll || busy || shown === null) return;
+    const decision = shown.view.decision;
+    const chosen = decision?.kind === "declareAttackers" ? decision.chosen.length : null;
     const pick = nextAllAttackPick(shown);
-    if (pick === null) setAttackingAll(false);
-    else act(pick);
+    // Done: nothing left to pick, the declaration's over, or the last pick didn't land (refused, or taken back).
+    if (pick === null || chosen === null || (picked.current !== null && chosen <= picked.current)) {
+      setAttackingAll(false);
+      picked.current = null;
+      // A second tap on All Attack would land on Undo, now in its place: the settle moment starts here (ui.md "Never").
+      updatedAt.current = performance.now();
+      return;
+    }
+    picked.current = chosen;
+    act(pick);
   }, [attackingAll, busy, shown, act]);
   const menuTap = menuFor === null ? undefined : controlsNow?.cards[menuFor]?.tap;
   const menu = menuFor !== null && menuTap?.kind === "menu" ? { id: menuFor, choices: menuTap.choices } : null;
@@ -245,7 +261,15 @@ export function App() {
           fullControl={update?.fullControl ?? false}
           // Only turning it off moves the game on (as Next does), so only that press waits out the moment.
           setFullControl={(on) => send({ type: "fullControl", on }, !on)}
-          allAttack={{ offered: !attackingAll && allAttackOffered(shown), start: () => setAttackingAll(true) }}
+          allAttack={{
+            offered: !attackingAll && allAttackOffered(shown),
+            // A press a moment after a button's reply was aimed at what was there before (the settle guard, above).
+            start: () => {
+              if (busyNow.current || performance.now() - updatedAt.current < SETTLE_MS) return;
+              picked.current = null;
+              setAttackingAll(true);
+            },
+          }}
           drag={{
             // The card lifts as the drag starts, out of the collapsed hand too.
             lift: (id) => {

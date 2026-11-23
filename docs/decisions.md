@@ -2411,3 +2411,16 @@ owner's answer to the D-089 open question, option (a))
   auto-tap. Ours doesn't yet: paying by hand needs slice 2's payment prompt.
 - Not built, an open question for the owner: wider skips on your own turn (beginning of combat, combat damage, end
   of combat) and per-step stops on the phase ladder.
+
+**D-158: All Attack and drag to play are the UI's, made from the engine's own options (M3-04c)** · 2026-11-23 · accepted
+- The owner asked for both of Arena's shortcuts. The engine gets neither: a declaration is one pick per attacker
+  (CR 508.1a), and playing a card is the same action whether it's tapped or dragged.
+- All Attack sends the engine's listed picks one at a time, one per reply, each at a player, never a planeswalker
+  (that's chosen on the card). It skips any pick the seat view marks unfinishable. It's offered only while two or more
+  creatures could still attack and every pick is at the same player: with several players to attack (CR 802), "all"
+  wouldn't say whom. It stops when nothing is left, when a reply is an error, or when a reply holds no more attackers
+  than before (a refused pick, an Undo). Its end starts the double-tap guard, since Undo takes its place.
+- Drag to play: a press on a hand card (open or collapsed hand) that moves 12 px up lifts the card, and one let go
+  60 px up plays it, as a second tap would [guess, both distances]. Escape or a shorter drag puts it down. One pointer
+  and the main button only; the drag is followed on the window, since lifting the card redraws the hand; the click a
+  release fires is swallowed. The card following the finger is M3-07's.
