@@ -16,9 +16,9 @@ export const HOLD = {
   /** Something resolved, damage dealt, a creature died: the board changed. */
   outcome: 600,
   /** A land played. */
-  land: 500,
-  /** A new turn: the banner says whose. */
-  turn: 700,
+  land: 700,
+  /** The opponent's new turn: the banner says whose, long enough that a quiet turn is seen to pass. */
+  turn: 1000,
 } as const;
 
 /**
@@ -52,8 +52,11 @@ export function eventHold(e: ViewEvent, me: PlayerId): number {
       return e.player === me ? 0 : HOLD.combat;
     case "LAND_PLAYED":
       return e.player === me ? 0 : HOLD.land;
+    // The person's own spell resolving: its effects (damage, a death, tokens) are held themselves; their turn waits
+    // for nothing more (UX review).
     case "SPELL_RESOLVED":
     case "ABILITY_RESOLVED":
+      return e.controller === me ? 0 : HOLD.outcome;
     case "SPELL_COUNTERED":
     case "ABILITY_COUNTERED":
     case "SPELL_DID_NOT_RESOLVE":
@@ -63,8 +66,9 @@ export function eventHold(e: ViewEvent, me: PlayerId): number {
     case "PERMANENT_SACRIFICED":
     case "TOKEN_CREATED":
       return HOLD.outcome;
+    // The person's own turn starts at once, the banner running while they act; the opponent's is held.
     case "TURN_BEGAN":
-      return HOLD.turn;
+      return e.activePlayer === me ? 0 : HOLD.turn;
     // Steps pass without a pause of their own (an empty turn would be a dozen of them): the ladder shows each as the
     // frames around it move on. The rest are details of something held above, or not shown on the board at all.
     case "STEP_BEGAN":

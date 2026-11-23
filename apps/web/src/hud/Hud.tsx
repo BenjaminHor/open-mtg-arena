@@ -204,28 +204,31 @@ export function Hud(props: HudProps) {
       />
       {/* Over everything else: what's being looked at. */}
       {/* Not over a finished game: the result says what matters then. */}
-      {props.banner !== null && result === null && (
-        // At the middle of the open table, over nothing a tap needs; read out once by a screen reader.
-        <p
-          // A new element for each turn's banner, so its fade plays again.
-          key={props.banner}
-          className="turn-banner"
-          role="status"
-          style={{ left: model.band.x + model.band.width / 2, top: model.band.y + model.band.height / 2 }}
-        >
-          {props.banner}
-        </p>
-      )}
-      {/* What the frame on screen shows, under the turn's banner: "Your opponent cast Lightning Bolt" (D-172). */}
-      {props.line !== null && result === null && (
+      {/* One place at the middle of the open table, over nothing a tap needs: what the frame on screen shows ("Your
+          opponent cast Lightning Bolt", D-172), else a new turn's banner; each line takes the banner's place. The
+          line shows over a game's end too, so the blow that ended it is named; read out once by a screen reader. */}
+      {props.line !== null ? (
         <p
           key={props.line}
           className="event-line"
           role="status"
-          style={{ left: model.band.x + model.band.width / 2, top: model.band.y + model.band.height / 2 + 26 }}
+          style={{ left: model.band.x + model.band.width / 2, top: model.band.y + model.band.height / 2 }}
         >
           {props.line}
         </p>
+      ) : (
+        props.banner !== null &&
+        result === null && (
+          <p
+            // A new element for each turn's banner, so its fade plays again.
+            key={props.banner}
+            className="turn-banner"
+            role="status"
+            style={{ left: model.band.x + model.band.width / 2, top: model.band.y + model.band.height / 2 }}
+          >
+            {props.banner}
+          </p>
+        )
       )}
       {anchors.stackMore !== null && (
         <button

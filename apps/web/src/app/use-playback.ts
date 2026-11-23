@@ -29,7 +29,11 @@ export type Playback = {
   skip: () => void;
 };
 
-export function usePlayback(update: Update | null, pace: Pace): Playback {
+/**
+ * `paused`: the person is looking (a card view or the zone browser open): the frame on screen holds until they're done,
+ * then its whole hold again, so looking never lets the game move on unseen (UX review).
+ */
+export function usePlayback(update: Update | null, pace: Pace, paused: boolean): Playback {
   const [at, setAt] = useState<Position | null>(null);
   // A new reply starts at its first frame worth holding; at instant pace, at its end.
   useEffect(() => {
@@ -40,13 +44,13 @@ export function usePlayback(update: Update | null, pace: Pace): Playback {
   const frame = current === null ? undefined : current.update.frames[current.index];
   const holdMs = frame === undefined ? 0 : frameHold(frame.events, frame.shown.player);
   useEffect(() => {
-    if (current === null || frame === undefined) return;
+    if (current === null || frame === undefined || paused) return;
     const next = setTimeout(
       () => setAt({ ...current, index: firstHeld(current.update, current.index + 1, pace) }),
       holdMs,
     );
     return () => clearTimeout(next);
-  }, [current, frame, holdMs, pace]);
+  }, [current, frame, holdMs, pace, paused]);
   const skip = useCallback(() => {
     if (update !== null) setAt((was) => ({ update, index: update.frames.length, before: was?.before ?? null }));
   }, [update]);

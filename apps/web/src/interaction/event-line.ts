@@ -16,10 +16,39 @@ export function eventLine(events: readonly ViewEvent[], before: SeatView | null,
   for (const e of events) {
     const hold = eventHold(e, me);
     if (hold === 0 || (best !== null && hold <= best.hold)) continue;
-    const line = lineOf(e, before, after, moved);
+    const line = summed(e, events, after) ?? lineOf(e, before, after, moved);
     if (line !== null) best = { line, hold };
   }
   return best?.line ?? null;
+}
+
+/**
+ * What several events of a kind in one frame add up to, said as one line: combat damage from several attackers as
+ * what a player took in all ("Your opponent took 8 damage"), several tokens as their count ("Your opponent created 3
+ * Soldier Tokens"). Null when the event stands alone (`lineOf` says it).
+ */
+function summed(e: ViewEvent, events: readonly ViewEvent[], after: SeatView): string | null {
+  if (e.type === "DAMAGE_DEALT" && e.to.kind === "player") {
+    const to = e.to.player;
+    const hits = events.filter((d) => d.type === "DAMAGE_DEALT" && d.to.kind === "player" && d.to.player === to);
+    if (hits.length < 2) return null;
+    const total = hits.reduce((sum, d) => sum + (d.type === "DAMAGE_DEALT" ? d.amount : 0), 0);
+    return `${who(after, to)} took ${total} damage`;
+  }
+  if (e.type === "TOKEN_CREATED") {
+    const made = events.filter((t) => t.type === "TOKEN_CREATED" && t.player === e.player);
+    if (made.length < 2) return null;
+    // Named when they're all the same seen token ("Soldier Tokens"), else just "tokens".
+    const names = new Set(
+      made.map((t) => {
+        const seen = t.type === "TOKEN_CREATED" ? after.seen[t.object] : undefined;
+        return seen?.kind === "card" ? seen.characteristics.name : null;
+      }),
+    );
+    const [name] = names;
+    return `${who(after, e.player)} created ${made.length} ${names.size === 1 && typeof name === "string" ? `${name}s` : "tokens"}`;
+  }
+  return null;
 }
 
 /**

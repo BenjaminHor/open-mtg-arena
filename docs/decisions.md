@@ -2695,6 +2695,15 @@ owner's answer to the D-089 open question, option (a))
   Skip and the main button are different elements, so a press meant for Skip never lands on Next; frames carry no
   options; the person's own action that begins a turn is a frame of its own; a frame's line comes from its most telling
   event that has one, and names an object that moved in it (a spell that resolved) from the move.
+- After the UX review: the holds retuned (an opponent's spell 1 s, a land 0.7 s, an attack or block 0.9 s, an
+  outcome 0.6 s, the opponent's new turn 1 s; the person's own turn start and their own spell resolving aren't held:
+  the banner runs while they act, and what their spell did is held itself) [guess, to tune with the owner]; several
+  hits on a player in one frame say the total ("You took 8 damage"), several tokens their count; playback pauses while
+  the person looks (the full card view, a zone browser); the hand closes when playback starts; the line and the turn
+  banner share one place at the band's centre (a line takes the banner's place), in the banner's style; Skip is a quiet
+  button, not the main button's colour. Left: playback's position logic as pure functions; the worker builds frames
+  even at instant pace; no performance trace of playback yet; whether the phase ladder should step through the steps
+  a frame skips (Open questions).
 - The owner then: "If it's due later then that's fine. I just wanted to bring it up in case we didn't know." Kept
   forward anyway: it's the most confusing part of play-testing now (this and the "two lands" report), and every later
   slice is tried through it.

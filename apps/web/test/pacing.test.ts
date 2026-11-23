@@ -47,6 +47,17 @@ describe("how long a frame holds", () => {
     expect(HOLD.opponentStack).toBeGreaterThanOrEqual(400);
   });
 
+  it("holds the opponent's new turn, and not the person's own: they act while its banner runs", () => {
+    const turn = (activePlayer: "p1" | "p2"): ViewEvent => ({
+      type: "TURN_BEGAN",
+      turn: 4,
+      activePlayer,
+      extra: false,
+    });
+    expect(eventHold(turn("p2"), "p1")).toBe(HOLD.turn);
+    expect(eventHold(turn("p1"), "p1")).toBe(0);
+  });
+
   it("gives an empty step no pause of its own, so a quiet turn doesn't drag", () => {
     const step: ViewEvent = { type: "STEP_BEGAN", turn: 3, step: "upkeep", activePlayer: "p2" };
     expect(frameHold([step, { type: "PRIORITY_PASSED", player: "p2" }], "p1")).toBe(0);
@@ -85,6 +96,28 @@ describe("the line a frame shows", () => {
         if (move) expect(eventLine(frame.events, before, frame.shown), `${seed}`).toBeTruthy();
       }
     }
+  });
+
+  it("sums the damage a player took from several sources in one frame, and counts the tokens made", () => {
+    const { frame } = framesOfAGame()[0] ?? {};
+    if (frame === undefined) throw new Error("a frame");
+    const hit = (source: string, amount: number): ViewEvent => ({
+      type: "DAMAGE_DEALT",
+      source: source as ViewEvent extends { source: infer S } ? S : never,
+      to: { kind: "player", player: "p1" },
+      amount,
+      combat: true,
+    });
+    expect(eventLine([hit("o1", 2), hit("o2", 3)], null, frame.shown)).toBe("You took 5 damage");
+    const token = (object: string): ViewEvent => ({
+      type: "TOKEN_CREATED",
+      player: "p2",
+      object: object as never,
+      cardId: "c1" as never,
+    });
+    expect(eventLine([token("o1"), token("o2"), token("o3")], null, frame.shown)).toBe(
+      "Your opponent created 3 tokens",
+    );
   });
 
   it("lets a new turn (its banner says it) never hide the move made in the same frame", () => {

@@ -205,7 +205,7 @@ export function App() {
 
   // What the host did on the way here, shown in order before the person's decision (D-172): `shown` is what's drawn,
   // a frame while one holds. Nothing sends a game action meanwhile (`send`); a skip jumps to the end.
-  const playback = usePlayback(update, pace);
+  const playback = usePlayback(update, pace, inspected?.mode === "full" || browsing !== null);
   playingNow.current = playback.playing;
   const shown = playback.drawn;
   // When playback ends, on its own or by a skip, the decision it uncovers is new: the settle moment starts there, so a
@@ -213,6 +213,8 @@ export function App() {
   const wasPlaying = useRef(false);
   useEffect(() => {
     if (wasPlaying.current && !playback.playing) updatedAt.current = performance.now();
+    // The hand goes down as what happened starts to play (it's still open from the mulligan, say): the board shows.
+    if (!wasPlaying.current && playback.playing) setHandOpen(false);
     wasPlaying.current = playback.playing;
   }, [playback.playing]);
   const skip = useCallback(() => {

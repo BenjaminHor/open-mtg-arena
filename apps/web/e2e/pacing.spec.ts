@@ -30,21 +30,23 @@ test("shows each new turn's banner, the later ones too", async ({ page }) => {
   await page.getByRole("button", { name: /^Keep \d/ }).click();
   await expect(page.locator(".turn-banner")).toHaveText("Turn 1 · Opponent's turn", { timeout: 5_000 });
   await expect(page.locator(".turn-banner")).toHaveText("Turn 2 · Your turn", { timeout: 15_000 });
-  // On to the opponent's next turn: its banner shows too (it once stayed hidden after the first).
+  // On to the opponent's next turn: its banner shows too (it once stayed hidden after the first). It shows until the
+  // turn's first line takes its place, so it's caught as it shows, not waited for.
   const banner = page.locator(".turn-banner");
   const next = page.getByRole("button", { name: /^Next/ });
-  for (let i = 0; i < 12; i++) {
-    // Read without waiting: the banner is there only a moment at a time.
-    if ((await banner.allInnerTexts()).some((t) => t.startsWith("Turn 3"))) break;
+  let sawTurn3 = false;
+  for (let i = 0; i < 60 && !sawTurn3; i++) {
+    sawTurn3 = (await banner.allInnerTexts()).some((t) => t === "Turn 3 · Opponent's turn");
+    if (sawTurn3) break;
     if (await next.isVisible()) await next.click({ timeout: 1_000 }).catch(() => undefined);
     // Passing with a full hand: the cleanup discard (CR 514.1) asks for a card first.
     const discard = page.getByRole("button", { name: /: Discard/ }).first();
     if (await discard.isVisible().catch(() => false)) await discard.click({ timeout: 1_000 }).catch(() => undefined);
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(100);
   }
-  await expect(page.locator(".turn-banner")).toHaveText("Turn 3 · Opponent's turn", { timeout: 15_000 });
+  expect(sawTurn3).toBe(true);
   // And it goes after its moment, as each one does (once, one stayed for good, faded out, and the next never showed).
-  await expect(page.locator(".turn-banner")).toHaveCount(0, { timeout: 4_000 });
+  await expect(banner).toHaveCount(0, { timeout: 4_000 });
 });
 
 test("takes no game action from a tap while what happened plays", async ({ page }) => {
