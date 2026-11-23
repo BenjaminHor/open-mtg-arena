@@ -2355,3 +2355,8 @@ owner's answer to the D-089 open question, option (a))
 - The values (`combat.advance`, `combat.gangOverlap`) are in the layout data. Moving cards between the old and new
   places is M3-07's animation; the board model only says where each card is now.
 
+**D-155: Art credit on the board** · 2026-11-23 · accepted
+- data-sources.md asks for the artist's credit in the same view as an art crop. Permanents on the board show art crops
+  without one, as Arena does; the owner ruled that the long-press view (M3-04c), which shows the full card image with
+  its artist credit, is enough. No credits line on the board. Hand cards are full card images, credit included.
+

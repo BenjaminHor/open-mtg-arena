@@ -26,6 +26,8 @@ API docs: https://scryfall.com/docs/api. Key points to follow:
   only for cards in the pool, and only once (cached).
 - Don't crop out, cover or alter the artist name and copyright on images. When showing an art crop,
   show the artist credit elsewhere in the same view. The long-press card view always shows the full card image.
+  On the board, permanents show art crops without a credit (as Arena does): the owner ruled (2026-11-23, D-155) that
+  the long-press view, with the full card image and its artist credit, is enough.
 - Don't use the Scryfall name or logo in a way that implies endorsement.
 - Which cards come after M2 (D-089): Scryfall's `in:arena in:paper -is:alchemy` (the owner's filter, and the
   definition). Offline, the bulk `default-cards` file approximates it with no API calls: a card with some printing whose

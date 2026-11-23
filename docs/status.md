@@ -1817,9 +1817,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 ## Open questions
 
-- Art credit on the battlefield (2026-11-23): data-sources.md says an art crop needs the artist's credit elsewhere in
-  the same view. Permanents show art crops without it (as Arena does); the long-press details (M3-04c) will show the
-  full image with its credit. Is that enough, or should the board carry a credits line or panel too?
 - Desktop hover (2026-11-23): should hovering a card with a mouse show a large preview, as Arena's desktop client
   does? On touch, long-press shows the details (M3-04c) either way. for the owner
 - (2026-11-23, after M3) What follows M3? The owner says M4 (deckbuilding) is up for debate and likes Legends of
