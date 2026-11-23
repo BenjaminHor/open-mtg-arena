@@ -1,7 +1,9 @@
 // The stack at the right [R: arena-research.md §5, "The stack sits on the right, mid-height, as a large readable card
 // for the top item"]: the top object large, so the person sees the spell they're choosing targets for or the one the
-// opponent cast, and the objects under it peeking out above it by a name strip each, the deepest highest, each still
-// reachable for the card view; a "Stack n" button lists them all in the zone browser.
+// opponent cast, and the objects under it peeking out above it by a strip each, the deepest highest, each still
+// reachable for the card view. A header over it ("Stack · n") says it's the stack from one object on and lists them all
+// in the zone browser; the HUD labels each object with whose it is and names the ones under the top in words (D-174:
+// the owner found a lone spell there "not immediately obvious", and asked for Forge's stack list "but more polished").
 // A spell is its card; an ability is a card-shaped panel with its source's name and art, its kind and its own text [R:
 // "drawn as card-shaped panels with the source's art, an 'Ability' type line, the ability text"], drawn from its
 // source's printed card when the source has left (a "dies" trigger).
@@ -30,9 +32,10 @@ export function stackCards(shown: SeatView, area: Rect, layout: BoardLayout, sma
   if (stack.length === 0) return [];
   const block = stackBlock(shown, area, layout, small);
   const under = Math.min(stack.length - 1, MOST_UNDER);
-  // The card's height, and the strip each one under it shows (at least a readable name, 14 px).
+  // The card's height, and the strip each one under it shows: a row with its name in words (the HUD's), at least 20 px
+  // while large; while small, 14 px, so the top still shows its art.
   const first = block.height / (1 + layout.stack.peek * under);
-  const peek = Math.max(14, layout.stack.peek * first);
+  const peek = Math.max(small || choosingOwn(shown) ? 14 : 20, layout.stack.peek * first);
   const height = block.height - under * peek;
   const width = height * layout.ratio.hand;
   const x = Math.min(block.x, area.x + area.width - 8 - width);
@@ -58,14 +61,19 @@ export function stackIsSmall(shown: SeatView, smallFor: ObjectId | null): boolea
 }
 
 /**
- * A button above the stack once two or more objects are on it, saying how many and listing them all top first in the
- * zone browser: the strips are a name's height, smaller than a finger, so this is the sure way to each (UX review).
+ * The stack's header, above it whenever anything is on it: it says this is the stack and how much is on it, and lists
+ * them all top first in the zone browser. The strips are smaller than a finger, so it's also the sure way to each.
  */
-export function stackMore(shown: SeatView, drawn: readonly BoardCard[]): Rect | null {
+export function stackHeader(drawn: readonly BoardCard[]): Rect | null {
   const deepest = drawn[0];
   const top = drawn.at(-1);
-  if (deepest === undefined || top === undefined || shown.view.zones.stack.length < 2) return null;
+  if (deepest === undefined || top === undefined) return null;
   return { x: top.x, y: deepest.y - 34, width: Math.min(top.width, 96), height: 28 };
+}
+
+/** While the person chooses for their own spell, the stack is small at the right edge, clear of the targets [R]. */
+function choosingOwn(shown: SeatView): boolean {
+  return shown.view.casting !== null && shown.view.casting.player === shown.player;
 }
 
 /**
@@ -84,7 +92,7 @@ function stackBlock(shown: SeatView, area: Rect, layout: BoardLayout, small: boo
   const smallH = Math.min(layout.stack.smallH * area.height, layout.stack.smallMaxH);
   const smallW = smallH * layout.ratio.hand;
   // While the person chooses for their own spell: at the right edge, clear of the targets [R].
-  if (shown.view.casting !== null && shown.view.casting.player === shown.player) {
+  if (choosingOwn(shown)) {
     return { x: right - smallW, y: area.y + layout.stack.smallY * area.height, width: smallW, height: smallH };
   }
   // Made small by a tap: in the large one's top right corner, so a second tap where the first was makes it large again.

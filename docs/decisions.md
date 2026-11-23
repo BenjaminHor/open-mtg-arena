@@ -2722,3 +2722,23 @@ owner's answer to the D-089 open question, option (a))
   Arena's ladder walks through each passed step or jumps wasn't found [U]; the combat steps appear "when you enter
   combat" [R: mtgarena.pro, "Updated Phase Ladder", 2018].
 
+**D-174: The stack reads as the stack: a header, whose each object is, a list (owner feedback, 2026-11-23)** · 2026-11-23 · accepted
+- The owner (D-173): a lone object on the stack isn't "immediately obvious"; and Forge's side list of the stack, "but
+  more polished". What they saw: the opponent's spell held at the right edge as a bare card, nothing saying it's the
+  stack, whose it is, or that it waits; only the main button's "Resolve" said so.
+- Arena's large top card at the right stays (D-169) [R]. Added (`hud/StackLabels.tsx`, placed at the board model's
+  rects, `board-model/stack.ts`):
+  - a "Stack · n" header above it from one object on (it was the "Stack n" button from two), a tap listing them all;
+  - the top object ringed in its controller's colour with a tag under it, "Yours" or "Opponent's";
+  - each object under the top a row: "You"/"Opp" and its name in Inter over its strip (the card frame's own title was
+    too small to read there), strips at least 20 px while the stack is large (14 px while small, where a narrow row
+    keeps only the name).
+  - Orange (the app's accent) is the person's, a calm blue the opponent's, as Arena's turn colours [R: arena-research.md,
+    "orange on your turn and blue on the opponent's"], never without the words.
+- The labels stand down only where the open hand would cover them; the rows take no taps (the strips' own regions do,
+  so a counterspell's target is still picked by a tap on its strip).
+- Not changed: Arena's large-card shape. A Forge-style list in place of the large card doesn't fit a 375 px-tall
+  board beside the ladder and the main button; the rows give the list's reading without the room.
+- Future impact: none on the engine. "Opponent's" assumes one opponent; with more players the tag names the controller
+  (`who()` in `names.ts`), as the rest of the HUD will. M3-07's animations bring objects into this column.
+

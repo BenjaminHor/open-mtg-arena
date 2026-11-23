@@ -83,8 +83,26 @@ describe("the stack", () => {
     const block = { top: bolt.y, bottom: top.y + top.height };
     expect(block.bottom - block.top).toBeCloseTo(COMPACT.stack.h * PHONE.height, 5);
     // The whole stack a tap away, above it.
-    const more = boardModel(shown, PHONE).overlay.stackMore;
-    expect(more?.y ?? 0).toBeLessThan(bolt.y);
+    const header = boardModel(shown, PHONE).overlay.stackHeader;
+    expect(header?.y ?? 0).toBeLessThan(bolt.y);
+  });
+
+  // The owner: "when there's something on the stack to resolve, it's not immediately obvious that there's something on
+  // the stack" (D-174).
+  it("has its header from one object on, so a lone spell reads as the stack, and none when it's empty", () => {
+    const one = structuredClone(shown);
+    one.view.zones.stack = one.view.zones.stack.slice(-1);
+    const model = boardModel(one, PHONE);
+    const top = model.cards.find((c) => c.zone === "stack");
+    if (top === undefined) throw new Error("one on the stack");
+    expect(model.overlay.stackHeader?.y ?? Number.POSITIVE_INFINITY).toBeLessThan(top.y);
+    const empty = structuredClone(shown);
+    empty.view.zones.stack = [];
+    expect(boardModel(empty, PHONE).overlay.stackHeader).toBeNull();
+  });
+
+  it("gives each object under the top a strip tall enough for its name in words (a row, D-174)", () => {
+    for (const under of stack.slice(0, -1)) expect(under.shows?.height ?? 0).toBeGreaterThanOrEqual(20);
   });
 
   it("draws an ability as a panel: its source's name and art, its kind, its own text", () => {
@@ -110,17 +128,13 @@ describe("the stack", () => {
   it(`shows at most ${MOST_UNDER} under the top, the rest in the browser`, () => {
     const deep = structuredClone(shown);
     const extra = Array.from({ length: 4 }, (_, i) => `o-extra-${i}` as ObjectId);
-    // One object alone has no button: nothing is hidden under it.
-    const one = structuredClone(shown);
-    one.view.zones.stack = one.view.zones.stack.slice(-1);
-    expect(boardModel(one, PHONE).overlay.stackMore).toBeNull();
     const bolt = deep.view.zones.stack[0];
     if (bolt === undefined) throw new Error("a stack");
     for (const id of extra) deep.seen[id] = { ...(deep.seen[bolt] as object), id } as SeatView["seen"][ObjectId];
     deep.view.zones.stack = [...extra, ...deep.view.zones.stack];
     const cards = boardModel(deep, PHONE).cards.filter((c) => c.zone === "stack");
     expect(cards).toHaveLength(MOST_UNDER + 1);
-    expect(boardModel(deep, PHONE).overlay.stackMore).not.toBeNull();
+    expect(boardModel(deep, PHONE).overlay.stackHeader).not.toBeNull();
     expect(stackCards(deep)).toHaveLength(7);
     expect(stackCards(deep)[0]?.name).toBe("Prodigal Pyromancer ability");
     // The top five are drawn, not the bottom five.

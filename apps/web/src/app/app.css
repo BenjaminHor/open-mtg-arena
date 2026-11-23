@@ -1097,21 +1097,91 @@ body,
   filter: brightness(1.15);
 }
 
-/* Under the stack's top object when more is on it than the board draws (hud/Hud.tsx): the whole stack in the browser. */
-.hud .stack-more {
+/* The stack's header and labels (hud/StackLabels.tsx, D-174): it reads as the stack from one object on, and says whose
+   each object is in words and colour. */
+.hud {
+  --yours: var(--accent);
+  --theirs: #8fb4e0;
+}
+.hud .stack-header {
   z-index: 100001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   border: 1px solid var(--edge);
   border-radius: 8px;
   background: var(--panel);
   color: #f4f1ec;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.hud .stack-count {
+  min-width: 18px;
+  padding: 1px 5px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 11px;
 }
 /* A 44 px tap height without a taller button. */
-.hud .stack-more::before {
+.hud .stack-header::before {
   content: "";
   position: absolute;
   inset: -7px 0;
+}
+/* The top object, waiting to resolve: a ring and a soft glow in its controller's colour. */
+.hud .stack-ring {
+  z-index: 1;
+  margin: -3px;
+  padding: 3px;
+  border: 2px solid var(--whose);
+  border-radius: 8px;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--whose) 45%, transparent);
+  box-sizing: content-box;
+  pointer-events: none;
+}
+.hud .stack-tag {
+  z-index: 1;
+  color: var(--whose);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  pointer-events: none;
+}
+/* Each object under the top: a row of a list, its controller's mark and its name. */
+.hud .stack-row {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-sizing: border-box;
+  padding: 0 6px 0 4px;
+  border-left: 3px solid var(--whose);
+  border-radius: 4px 4px 0 0;
+  background: var(--panel);
+  color: #f4f1ec;
+  font-size: 11px;
+  font-weight: 500;
+  overflow: hidden;
+  pointer-events: none;
+}
+.hud .stack-whose {
+  flex: none;
+  color: var(--whose);
+  font-size: 10px;
+  font-weight: 700;
+}
+.hud .stack-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hud .stack-yours {
+  --whose: var(--yours);
+}
+.hud .stack-theirs {
+  --whose: var(--theirs);
 }
 
 /* The stack browser's first card resolves next: said on it, not left to the order. */

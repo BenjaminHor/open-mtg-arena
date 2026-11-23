@@ -23,6 +23,7 @@ import { PlayerInfo } from "./PlayerInfo.tsx";
 import { Prompt } from "./Prompt.tsx";
 import { place } from "./place.ts";
 import { SettingsMenu } from "./SettingsMenu.tsx";
+import { StackLabels } from "./StackLabels.tsx";
 import { type Browsing, ZoneBrowser } from "./ZoneBrowser.tsx";
 
 type HudProps = {
@@ -230,17 +231,7 @@ export function Hud(props: HudProps) {
           </p>
         )
       )}
-      {anchors.stackMore !== null && (
-        <button
-          type="button"
-          className="stack-more"
-          style={place(anchors.stackMore)}
-          aria-label={`The stack, ${view.zones.stack.length} objects: show them all`}
-          onClick={() => props.browse({ kind: "stack" })}
-        >
-          Stack {view.zones.stack.length}
-        </button>
-      )}
+      <StackLabels shown={shown} model={model} handOpen={props.handOpen} browse={props.browse} />
       {props.browsing !== null && (
         <ZoneBrowser
           shown={shown}

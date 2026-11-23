@@ -208,6 +208,12 @@ UI quality has to be checked like rules correctness, not assumed:
     prompt over the paused match.
   - **Full** (unfolded, tablets, desktop): an Arena-like board with both battlefields, hand,
     stack and log visible at once.
+- **The stack reads as the stack (owner, 2026-11-23, D-174):** "when there's something on the stack to resolve, it's
+  not immediately obvious that there's something on the stack. maybe the UI can represent this in more clear, clean,
+  and minimal way", and Forge's stack list, "but more polished". Arena's large top card at the right stays [R]; over it
+  a "Stack · n" header from one object on (a tap lists them all); the top ringed and tagged with whose it is; each
+  object under it a row of a list, whose it is and its name in words. Orange is the person's, blue the opponent's, as
+  Arena colours the turn [R], always with words beside the colour.
 - **Folding or unfolding mid-game must just work.** Listen for resize/orientation changes, re-lay out
   with no state loss, and keep any in-progress selection (such as chosen targets).
 - Respect safe areas (`env(safe-area-inset-*)`) and the fold/notch areas.

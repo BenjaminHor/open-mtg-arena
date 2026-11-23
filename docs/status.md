@@ -334,6 +334,26 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - **Stack slice done (2026-11-23, D-174): a "Stack · n" header from one object, the top ringed and tagged with whose
+    it is, the ones under it as readable rows.** `hud/StackLabels.tsx`, `board-model/stack.ts` (`stackHeader`, 20 px
+    strips while large); tests: test/stack.test.ts (header from one, row heights), e2e/stack.spec.ts (rows and tags,
+    the opponent's lone spell at seed 7 labelled as it's held). Next: the reviews, the PR, then the ladder question
+    to the owner.
+  - Stack slice plan (D-174, 2026-11-23, written before starting; the owner: "it's not immediately obvious that there's
+    something on the stack", and Forge's stack list "but more polished"):
+    - What they saw: an opponent's spell held at the right edge as a bare card; nothing says it's the stack, whose it
+      is, or that it waits on them (only the main button's "Resolve" does).
+    - A header over the stack from one object on: "Stack · n", a tap lists them all, top first (the old "Stack n"
+      button, which showed only from two).
+    - Whose each object is, in words and colour (never colour alone): the top object ringed in its controller's
+      colour (orange yours, blue the opponent's, Arena's turn colours [R]) with a "Yours"/"Opponent's" tag; each one
+      under it a readable row (a tag and its name, in Inter) over its strip instead of the card's tiny frame text,
+      strips at least 20 px while large.
+    - The board model keeps every rect (the header, the strips' `shows`); the HUD only places at them.
+    - Tests: board-model (the header from one object, row heights, the tag from the controller), e2e (the opponent's
+      spell at seed 7 shows the header and "Opponent's" while it's held), the existing stack tests updated.
+    - Future impact: none on the engine; M3-07 animates objects into this column.
+    - The ladder walking through passed steps waits on the owner (what Arena does wasn't found).
   - **Pacing slice merged (PR #112, squash, 2026-11-23).** Next: the owner tries the live site (pacing timings,
     the zone browser's spacing on their phone), then M3-05 with their feedback taken in first.
   - **Pacing slice done (2026-11-23, D-172): the host's run shown frame by frame, a line saying what happened, Skip.**
