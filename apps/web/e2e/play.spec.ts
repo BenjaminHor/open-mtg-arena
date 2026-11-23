@@ -182,9 +182,11 @@ test("prompts say what they're for: dividing damage, X as a row of numbers, nami
 
   // Pithing Needle: as it enters, name a card, every name in the database, found by typing.
   await cast("Pithing Needle");
-  for (let i = 0; i < 4 && !(await page.getByText("Name a card").count()); i++) {
+  // It usually resolves by itself (the host passes for the caster, the opponent lets it resolve); if a stop asks
+  // first, pass it. A pass button can be gone by the time it's pressed: then the loop looks again.
+  for (let i = 0; i < 8 && !(await page.getByText("Name a card").count()); i++) {
     const pass = page.getByRole("button", { name: /^(Resolve|Pass|Next)/ });
-    if (await pass.count()) await pass.click();
+    if (await pass.count()) await pass.click({ timeout: 2_000 }).catch(() => undefined);
     await page.waitForTimeout(400);
   }
   await expect(page.getByText("Name a card")).toBeVisible();
