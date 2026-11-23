@@ -2303,8 +2303,8 @@ owner's answer to the D-089 open question, option (a))
   compact.ts`), each value tagged [R] (from the screenshots) or [guess], so the look changes in one place (D-012) and
   the full layout (M3-05) is a second object of the same shape.
 - A tapped permanent tilts about 8°, dims and carries a curved-arrow tap mark, as in the screenshots, rather than
-  turning 90°: the rules only need tapped to be visible (CR 701.26a), and a tilt keeps the rows from reflowing when a
-  card taps. The mark is a shape, so tapped never shows by dimming alone (ui.md).
+  turning 90°. CR 701.26a describes a paper card turned sideways; on a screen what matters is that the tapped state
+  is plain to see, and a tilt keeps the rows from reflowing when a card taps. The mark is a shape, so tapped never shows by dimming alone (ui.md).
 - Lands pile when they're interchangeable to look at: same name, same tapped state, no counters or damage, nothing
   attached either way. A pile shows its front card with an "×N" badge; each land keeps its own rectangle in the model
   (offset under the front), so a later touch can pick one.
