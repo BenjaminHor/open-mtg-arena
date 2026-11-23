@@ -42,14 +42,15 @@ export function createCardSprite(card: BoardCard, root: Container, changed: () =
   };
   const hasArt = () => current?.getChildByLabel(ART_LABEL, true) != null;
   let currentFace: ReturnType<typeof drawFace> | null = null;
-  let asking = false;
+  // The face a load is under way for: one request per face, and a redrawn face always asks for its own.
+  let askingFor: ReturnType<typeof drawFace> | null = null;
   const showArtWhenLoaded = (url: string) => {
-    if (asking) return;
-    asking = true;
     const face = currentFace;
+    if (face === null || askingFor === face) return;
+    askingFor = face;
     loadArt(url).then((texture) => {
-      asking = false;
-      if (face !== null && current === face.container && texture !== null && !hasArt()) {
+      if (askingFor === face) askingFor = null;
+      if (current === face.container && texture !== null && !hasArt()) {
         face.showArt(texture);
         changed();
       }
