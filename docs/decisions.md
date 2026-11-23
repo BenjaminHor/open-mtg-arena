@@ -2537,3 +2537,5 @@ owner's answer to the D-089 open question, option (a))
   - summoning sickness (CR 302.6) as a "zz" mark first in the icon row [R: Arena has an overlay], only on its
     controller's turn: on the other player's turn it can still block, and a "can't" mark would mislead.
 - Protection now splits a pile, as keywords and counters do. Loyalty isn't a counter badge.
+- A sick creature is also dimmed (0.32, less than a tapped card's 0.45), as Arena shows it (the owner, ui.md
+  "Summoning sickness, dimmed"); its badges stay bright over the dimming.

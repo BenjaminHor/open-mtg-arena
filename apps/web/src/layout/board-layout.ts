@@ -34,6 +34,8 @@ export type BoardLayout = {
   rowGap: number;
   /** A tapped permanent's tilt (radians) and how dark it's shaded (0 to 1). */
   tapped: { tilt: number; dim: number };
+  /** How dark a summoning-sick creature is shaded (0 to 1), on its controller's turn. */
+  sick: { dim: number };
   /** The person's hand collapsed [R], and opened by a tap [R] (`HandLayout`). */
   hand: HandLayout;
   handOpen: HandLayout;

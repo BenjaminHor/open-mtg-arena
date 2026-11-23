@@ -30,7 +30,10 @@ textured playmat, not a flat colour. **Superseded on the battlefield by D-162 (m
 is now its art only, its name in white over a dark fade at the bottom left, power/toughness in a small dark pill at the
 bottom right, on a flat dark table; the layout, piles, tilt and tap mark stay. **Name and P/T on one line (owner,
 2026-11-23):** "the card name and power/toughness should be on the same line if that makes sense, look at the reference
-screenshots i sent." The name always sits on the pill's line, shrinking to fit beside it; it never moves above it. **Long names (owner,
+screenshots i sent." The name always sits on the pill's line, shrinking to fit beside it; it never moves above it. **Summoning sickness, dimmed (owner, 2026-11-23):** "I like the badges so far - I do think that if a creature has
+something like summoning sickness, it may benefit from having a more dimmed view like in mtga." A creature that can't
+attack or tap yet is drawn dimmed, as Arena does, besides its "zz" badge (D-166); less than a tapped card, which also
+tilts and carries its arrow. **Long names (owner,
 2026-11-23):** asked which rule gives on a phone's 72 px tiles (same line, never cut off, readable), the owner chose
 "Fade under the pill": a name shrinks to 7 px at the least, and the end of one that still doesn't fit fades out at the
 pill. The full name is in the card view. This bends "names are never cut off" on the battlefield only. **The font (owner,

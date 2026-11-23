@@ -272,11 +272,14 @@ test("drag to play: a land dragged up onto the table is played, a spell is cast,
 }) => {
   await page.goto("/?fixture=mid-game");
   await expect(page.getByRole("button", { name: /^Next/ })).toBeVisible();
+  // The canvas draws on the next frame after the HUD shows (`window.__board` with it): wait for the card to be drawn.
   const handCard = async (name: string) => {
-    const cards = (await board(page))?.cards ?? [];
-    const card = cards.find((c) => c.name === name && c.zone === "hand") as unknown as
-      | { x: number; y: number; width: number }
-      | undefined;
+    const find = async () =>
+      (await board(page))?.cards.find((c) => c.name === name && c.zone === "hand") as unknown as
+        | { x: number; y: number; width: number }
+        | undefined;
+    await expect.poll(async () => (await find()) !== undefined, { message: `${name} in hand` }).toBe(true);
+    const card = await find();
     if (card === undefined) throw new Error(`no ${name} in hand`);
     return { x: card.x + card.width / 2, y: card.y + 20 };
   };
@@ -306,10 +309,14 @@ test("the card view: a right-click or a long-press shows a card large with its h
 }) => {
   await page.goto("/?fixture=mid-game");
   await expect(page.getByRole("button", { name: /^Next/ })).toBeVisible();
+  // Waits for the card to be drawn: the canvas draws on the frame after the HUD shows.
   const onBoard = async (name: string, zone = "battlefield") => {
-    const card = (await board(page))?.cards.find((c) => c.name === name && c.zone === zone) as unknown as
-      | { x: number; y: number; width: number; height: number; tapped: boolean }
-      | undefined;
+    const find = async () =>
+      (await board(page))?.cards.find((c) => c.name === name && c.zone === zone) as unknown as
+        | { x: number; y: number; width: number; height: number; tapped: boolean }
+        | undefined;
+    await expect.poll(async () => (await find()) !== undefined, { message: `${name} in ${zone}` }).toBe(true);
+    const card = await find();
     if (card === undefined) throw new Error(`no ${name} in ${zone}`);
     return { x: card.x + card.width / 2, y: card.y + Math.min(card.height / 2, 30), tapped: card.tapped };
   };

@@ -178,13 +178,18 @@ export function boardModel(
   const targets = targetIds(shown);
   const hand = handCards(shown, area, layout, ui.handOpen, ui.selected ?? null);
   const stack = stackTop(shown, area, layout);
-  const cards = [...field.cards, ...stack, ...hand].map((c) => ({
-    ...c,
-    playable: playable.has(c.id),
-    badges: c.zone === "battlefield" ? badgesOfId(shown, c.id as ObjectId, turn?.activePlayer ?? null) : NO_BADGES,
-    targetable: targets.has(c.id) || (ui.highlight ?? []).includes(c.id),
-    picked: c.picked || c.id === ui.selected,
-  }));
+  const cards = [...field.cards, ...stack, ...hand]
+    .map((c) => {
+      const badges =
+        c.zone === "battlefield" ? badgesOfId(shown, c.id as ObjectId, turn?.activePlayer ?? null) : NO_BADGES;
+      return withSickDim({ ...c, badges }, layout);
+    })
+    .map((c) => ({
+      ...c,
+      playable: playable.has(c.id),
+      targetable: targets.has(c.id) || (ui.highlight ?? []).includes(c.id),
+      picked: c.picked || c.id === ui.selected,
+    }));
   return {
     width: size.width,
     height: size.height,
@@ -319,4 +324,12 @@ function handArea(hand: readonly BoardCard[], area: Rect): Rect | null {
 function badgesOfId(shown: SeatView, id: ObjectId, activePlayer: PlayerId | null): Badges {
   const seen = shown.seen[id];
   return seen?.kind === "card" ? badgesOf(seen, activePlayer) : NO_BADGES;
+}
+
+/**
+ * A creature that can't attack or tap yet is dimmed, as Arena shows it (the owner, ui.md "Summoning sickness,
+ * dimmed"), besides its "zz" badge; less than a tapped card, which also tilts and carries its arrow.
+ */
+function withSickDim(card: BoardCard, layout: BoardLayout): BoardCard {
+  return card.badges.sick ? { ...card, dim: Math.max(card.dim, layout.sick.dim) } : card;
 }

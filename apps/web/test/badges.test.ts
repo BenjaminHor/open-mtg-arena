@@ -78,5 +78,10 @@ describe("badgesOf", () => {
     expect(on("Llanowar Elves")?.sick).toBe(true);
     expect(on("Elite Vanguard")?.sick).toBe(false);
     expect(model.cards.find((c) => c.zone === "hand")?.badges.icons).toEqual([]);
+    // Dimmed while sick, as Arena shows it (the owner); the opponent's new creature isn't, on the person's turn.
+    const dim = (name: string) => model.cards.find((c) => c.name === name && c.zone === "battlefield")?.dim;
+    expect(dim("Llanowar Elves")).toBeGreaterThan(0);
+    expect(dim("Grizzly Bears")).toBe(0);
+    expect(dim("Elite Vanguard")).toBe(0);
   });
 });
