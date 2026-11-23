@@ -334,6 +334,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - The owner on the live stack labels and ladder walk (2026-11-23): "Seems fine at the moment, move forward with
+    M3-05". Next: M3-05.
   - **Ladder walk merged (PR #114, squash, 2026-11-23).** Next: the owner tries the live site (the stack's labels,
     the walking ladder, the opponent's phase moments); then M3-05 with their feedback taken in first.
   - **Ladder walk done (2026-11-23, D-175): the lit rung moves through each phase passed, never jumping.**

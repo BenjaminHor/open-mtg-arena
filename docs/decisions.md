@@ -2773,6 +2773,8 @@ owner's answer to the D-089 open question, option (a))
   `test/pacing.test.ts` (the phase hold); an e2e watches every change of the lit rung through the opponent's first
   turn and the start of the person's, and checks each goes to the next phase or a new turn's beginning
   (mutation-checked: with the walk off, or without the phase holds, it fails).
+- The owner, after trying the stack labels (D-174) and the walking ladder live: "Seems fine at the moment, move
+  forward with M3-05".
 - Future impact: M3-07's animation director can drive the same walk from its own clock; the walk reads only events,
   so extra turns (CR 500.7) and skipped steps (CR 508.8) walk as the engine played them.
 
