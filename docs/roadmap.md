@@ -48,7 +48,8 @@ progression and save slots. Built in `packages/meta` on top of the unchanged eng
   the browser bridge, by hand where no library exists (serde, `im`, nom, wasm-bindgen). If taken up: move the tests'
   scenarios to a language-neutral form first, then port subsystem by subsystem behind the same browser bridge,
   checked against the Rust engine on the same games; a cheap first look is porting one small subsystem (combat
-  damage) and comparing compile time and clarity.
+  damage) and comparing compile time and clarity. The owner: "the Odin rewrite would have to be its own set of
+  milestones for sure", so it gets its own milestones when it's scheduled.
 
 ## Always
 - Grow the card pool steadily with the `add-cards` skill, and with it the rules, toward every rule two-player games
