@@ -50,6 +50,9 @@ progression and save slots. Built in `packages/meta` on top of the unchanged eng
   checked against the Rust engine on the same games; a cheap first look is porting one small subsystem (combat
   damage) and comparing compile time and clarity. The owner: "the Odin rewrite would have to be its own set of
   milestones for sure", so it gets its own milestones when it's scheduled.
+  Then (2026-11-23): "Honestly, once everything checks out let's just say yolo and plan out the rust to odin
+  rewrite". So once the import is merged, deployed and checked, the next piece of work is a written plan for the
+  rewrite (its milestones, a first spike), for the owner to approve before any of it starts.
 
 ## Always
 - Grow the card pool steadily with the `add-cards` skill, and with it the rules, toward every rule two-player games

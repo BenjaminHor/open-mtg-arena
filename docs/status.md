@@ -2388,6 +2388,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 ## Open questions
 
+- (2026-11-23) After the import (D-177) is merged and checked: plan the Rust to Odin engine rewrite as its own
+  milestones (roadmap.md, "Ideas for later"; the owner: "let's just say yolo and plan out the rust to odin rewrite").
+  To settle with the plan: its order against the LLM opponent and the RPG.
+
 - (2026-11-23, owner) Fork phase-rs and build on it instead? The owner: "Are you familiar with phase-rs the open source
   engine and client", then "im actually considering that we fork the repo and build upon that instead...is that too
   much?". phase-rs/phase: a Rust MTG rules engine compiled to native and WASM (desktop app, browser PWA, WebSocket
