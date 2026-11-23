@@ -1711,6 +1711,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions for the owner
+- (2026-11-23, after M3) What follows M3? The owner says M4 (deckbuilding) is up for debate and likes Legends of
+  Runeterra's roguelike mode (Path of Champions). Discuss once M3 is done: a roguelike run, the Shandalar-style RPG, or
+  deckbuilding first, and how they share the engine, the AI and the card pool (vision.md).
 - (Asked 2026-11-21, D-114) Master of the Wild Hunt is the one M2-14 card with a part no Arena card has: the target
   creature's controller divides its damage among the Wolves. Options: (a) set it aside, like Harm's Way (recommended,
   by D-089's option (a); proceeding with this); (b) script it last in M2-14 anyway; (c) script only after M2.
