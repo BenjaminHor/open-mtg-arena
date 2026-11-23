@@ -6,6 +6,7 @@ import type { Action, ObjectId, SeatView } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { boardModel } from "../src/board-model/board-model.ts";
 import { MOST_UNDER } from "../src/board-model/stack.ts";
+import { stackLabels } from "../src/board-model/stack-labels.ts";
 import type { Fixture } from "../src/fixtures/fixtures.ts";
 import { cardDetails } from "../src/interaction/card-details.ts";
 import { stackCards } from "../src/interaction/zones.ts";
@@ -83,8 +84,26 @@ describe("the stack", () => {
     const block = { top: bolt.y, bottom: top.y + top.height };
     expect(block.bottom - block.top).toBeCloseTo(COMPACT.stack.h * PHONE.height, 5);
     // The whole stack a tap away, above it.
-    const more = boardModel(shown, PHONE).overlay.stackMore;
-    expect(more?.y ?? 0).toBeLessThan(bolt.y);
+    const header = boardModel(shown, PHONE).overlay.stack?.header;
+    expect(header?.y ?? 0).toBeLessThan(bolt.y);
+  });
+
+  // The owner: "when there's something on the stack to resolve, it's not immediately obvious that there's something on
+  // the stack" (D-174).
+  it("has its header from one object on, so a lone spell reads as the stack, and none when it's empty", () => {
+    const one = structuredClone(shown);
+    one.view.zones.stack = one.view.zones.stack.slice(-1);
+    const model = boardModel(one, PHONE);
+    const top = model.cards.find((c) => c.zone === "stack");
+    if (top === undefined) throw new Error("one on the stack");
+    expect(model.overlay.stack?.header.y ?? Number.POSITIVE_INFINITY).toBeLessThan(top.y);
+    const empty = structuredClone(shown);
+    empty.view.zones.stack = [];
+    expect(boardModel(empty, PHONE).overlay.stack).toBeNull();
+  });
+
+  it("gives each object under the top a strip tall enough for its name in words (a row, D-174)", () => {
+    for (const under of stack.slice(0, -1)) expect(under.shows?.height ?? 0).toBeGreaterThanOrEqual(20);
   });
 
   it("draws an ability as a panel: its source's name and art, its kind, its own text", () => {
@@ -110,17 +129,13 @@ describe("the stack", () => {
   it(`shows at most ${MOST_UNDER} under the top, the rest in the browser`, () => {
     const deep = structuredClone(shown);
     const extra = Array.from({ length: 4 }, (_, i) => `o-extra-${i}` as ObjectId);
-    // One object alone has no button: nothing is hidden under it.
-    const one = structuredClone(shown);
-    one.view.zones.stack = one.view.zones.stack.slice(-1);
-    expect(boardModel(one, PHONE).overlay.stackMore).toBeNull();
     const bolt = deep.view.zones.stack[0];
     if (bolt === undefined) throw new Error("a stack");
     for (const id of extra) deep.seen[id] = { ...(deep.seen[bolt] as object), id } as SeatView["seen"][ObjectId];
     deep.view.zones.stack = [...extra, ...deep.view.zones.stack];
     const cards = boardModel(deep, PHONE).cards.filter((c) => c.zone === "stack");
     expect(cards).toHaveLength(MOST_UNDER + 1);
-    expect(boardModel(deep, PHONE).overlay.stackMore).not.toBeNull();
+    expect(boardModel(deep, PHONE).overlay.stack).not.toBeNull();
     expect(stackCards(deep)).toHaveLength(7);
     expect(stackCards(deep)[0]?.name).toBe("Prodigal Pyromancer ability");
     // The top five are drawn, not the bottom five.
@@ -233,5 +248,64 @@ describe("the stack while the person chooses", () => {
     expect((top?.y ?? 0) + (top?.height ?? 0) - (under?.y ?? 0)).toBeLessThanOrEqual(112.001);
     expect((top?.x ?? 0) + (top?.width ?? 0)).toBeGreaterThan(PHONE.width - 20);
     expect(under?.y).toBeLessThan(top?.y ?? 0);
+    // Small: a strip too short for a name keeps its card frame (no row); no ring competes with the targets being chosen;
+    // the header still says it's the stack.
+    const labels = boardModel(choosing, PHONE).overlay.stack;
+    expect(under?.shows?.height).toBeGreaterThanOrEqual(14);
+    expect(labels?.rows).toEqual([]);
+    expect(labels?.ring).toBeNull();
+    expect(labels?.tag).toBeNull();
+    expect(labels?.header.width).toBeGreaterThanOrEqual(76);
+  });
+});
+
+// D-174: where the stack's labels go (the HUD only places them).
+describe("the stack's labels", () => {
+  const shown = threeOnTheStack();
+  const model = boardModel(shown, PHONE);
+  const stack = model.cards.filter((c) => c.zone === "stack");
+  const area = { x: 0, y: 0, ...PHONE };
+  const labels = stackLabels(stack, [], area, false);
+  const top = stack.at(-1);
+  if (labels === null || top === undefined) throw new Error("labels for three objects");
+
+  it("rings the top object clear of the card, the tag under the ring, the header above the deepest", () => {
+    const ring = labels.ring?.rect;
+    if (ring === undefined) throw new Error("a ring");
+    expect(ring.x).toBeLessThan(top.x);
+    expect(ring.x + ring.width).toBeGreaterThan(top.x + top.width);
+    expect(labels.tag?.y ?? 0).toBeGreaterThanOrEqual(ring.y + ring.height);
+    expect(labels.header.y + labels.header.height).toBeLessThanOrEqual(stack[0]?.y ?? 0);
+    expect(labels.header.x + labels.header.width).toBeLessThanOrEqual(PHONE.width);
+  });
+
+  it("names each row under the top while large, and says whose only when both players have objects on it", () => {
+    expect(labels.rows.map((r) => r.id)).toEqual(stack.slice(0, -1).map((c) => c.id));
+    expect(labels.rowsSayWhose).toBe(false);
+    const mixed = stack.map((c, i) => (i === 0 ? { ...c, mine: false } : c));
+    expect(stackLabels(mixed, [], area, false)?.rowsSayWhose).toBe(true);
+  });
+
+  it("keeps whose the top is by its controller, not its owner (the card model's `mine`)", () => {
+    const bolt = shown.view.zones.stack[0] as ObjectId;
+    const theirs = structuredClone(shown);
+    const seen = theirs.seen[bolt];
+    if (seen?.kind !== "card") throw new Error("Lightning Bolt");
+    seen.characteristics.controller = "p2";
+    expect(boardModel(theirs, PHONE).cards.find((c) => c.id === bolt)?.mine).toBe(false);
+  });
+
+  it("stands the ring, tag and rows down where the open hand would sit on them; the header stays", () => {
+    const covering = { ...top, zone: "hand" as const, y: top.y + top.height - 10 };
+    const covered = stackLabels(stack, [covering], area, false);
+    expect(covered?.ring).toBeNull();
+    expect(covered?.tag).toBeNull();
+    expect(covered?.rows).toEqual([]);
+    expect(covered?.header).toEqual(labels.header);
+  });
+
+  it(`leaves the top object most of the block with ${MOST_UNDER} under it`, () => {
+    const block = top.y + top.height - (stack[0]?.y ?? 0);
+    expect(top.height / block).toBeGreaterThan(0.65);
   });
 });

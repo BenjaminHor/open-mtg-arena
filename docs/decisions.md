@@ -2707,3 +2707,46 @@ owner's answer to the D-089 open question, option (a))
 - The owner then: "If it's due later then that's fine. I just wanted to bring it up in case we didn't know." Kept
   forward anyway: it's the most confusing part of play-testing now (this and the "two lands" report), and every later
   slice is tried through it.
+
+**D-173: The owner's feedback on the pacing slice (2026-11-23)** · 2026-11-23 · accepted
+- The owner, after trying the live site: "speed seems fine so far" (the D-172 holds stay); "phase bar should mirror
+  what mtg arena does" (the ladder during the opponent's run does as Arena's does, researched first); "card spacing is
+  okay for now, we'll revisit later" (the zone browser, D-168); and "when there's something on the stack to resolve,
+  it's not immediately obvious that there's something on the stack. maybe the UI can represent this in more clear,
+  clean, and minimal way". The last two come next, before M3-05: the stack made obvious, and the ladder as Arena's.
+- Then: "I know that forge mtg has a UI on the side that shows a list of things on the stack that need resolution - I
+  wonder if we could have something similar but more polished lol". Taken into the stack's design (Forge, an open
+  source MTG client, lists the stack as a side panel of entries).
+- The ladder, asked directly (Arena's wasn't found): "it steps through each phase as it passes - we should avoid
+  immediate jumps between the \"main\" phases - this probably would be largely solved with animations". So the lit
+  rung walks through each step a frame passes, never jumping from main 1 to main 2 or across a turn (D-175).
+- Research (a web search; page fetches were blocked, so only search summaries): Arena passes priority for you after
+  you cast your own spell, whatever you hold [R: Steam thread, cardgamebase]; ours already does (D-157). Whether
+  Arena's ladder walks through each passed step or jumps wasn't found [U]; the combat steps appear "when you enter
+  combat" [R: mtgarena.pro, "Updated Phase Ladder", 2018].
+
+**D-174: The stack reads as the stack: a header, whose each object is, a list (owner feedback, 2026-11-23)** · 2026-11-23 · accepted
+- The owner (D-173): a lone object on the stack isn't "immediately obvious"; and Forge's side list of the stack, "but
+  more polished". What they saw: the opponent's spell held at the right edge as a bare card, nothing saying it's the
+  stack, whose it is, or that it waits; only the main button's "Resolve" said so.
+- Arena's large top card at the right stays (D-169) [R]. Added (`hud/StackLabels.tsx`, placed at the rects of
+  `board-model/stack-labels.ts`):
+  - a "Stack n" header above it from one object on (it was the "Stack n" button from two), a tap listing them all;
+    its spoken label says whose object is on top ("..., opponent's Elite Vanguard on top");
+  - the top object ringed in a neutral light, with a tag under it, "Yours" or "Opponent's";
+  - each object under the top a row with its name in Inter over its strip (the card frame's own title was too small to
+    read there), strips at least 20 px while the stack is large. A row says "You"/"Opp" only when both players have
+    objects on the stack (else the tag has said it). A small stack's strips are too short for a name and keep their
+    card frames.
+- First drafted with Arena's turn colours (orange the person's, blue the opponent's) on the ring and rows; the UX
+  review found orange already means "whose turn" here (the player info's marker), orange lost on red frames and blue
+  close to the cyan targets. So the ring is neutral and whose is said in words only.
+- No ring or tag while the person chooses targets for their own spell (they'd compete with the targets); labels stand
+  down where the open hand would sit on them (the header stays); the rows take no taps (the strips' own regions do,
+  so a counterspell's target is still picked by a tap on its strip). The ring and tag fade in (not with reduced
+  motion); fading out with the card waits for M3-07's animations.
+- Not changed: Arena's large-card shape. A Forge-style list in place of the large card doesn't fit a 375 px-tall
+  board beside the ladder and the main button; the rows give the list's reading without the room.
+- Future impact: none on the engine. "Opponent's" assumes one opponent; with more players the tag names the controller
+  (`who()` in `names.ts`), as the rest of the HUD will. M3-07's animations bring objects into this column.
+

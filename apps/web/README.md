@@ -48,7 +48,7 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
 - `src/hud/`: the DOM layer over the board, placed only by the model's anchors: buttons over the cards a tap acts on
   (`CardButtons.tsx`), each player's info in a left corner (`PlayerInfo.tsx`: life and zone counts, targetable as a
   player, a tap or a long-press opening their zones, and what of theirs is revealed beside it), the zone browser
-  (`ZoneBrowser.tsx`: graveyard, exile and revealed cards in tabs, D-168; `long-press.ts` its long-press), the phase ladders (`PhaseLadder.tsx`), the main
+  (`ZoneBrowser.tsx`: graveyard, exile and revealed cards in tabs, D-168; `long-press.ts` its long-press), the phase ladders (`PhaseLadder.tsx`), the stack's header and labels (`StackLabels.tsx`, D-174), the main
   button (`main-button.ts` decides what it says and does) and the small ones beside it, the prompt (`Prompt.tsx`), a
   card's menu of choices (`ChoiceMenu.tsx`) and the settings cog with Concede and full control (`SettingsMenu.tsx`).
   `hand-drag.ts`: drag a hand card up onto the table to play it, followed on the window so lifting it can't lose it.

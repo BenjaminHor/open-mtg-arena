@@ -334,6 +334,29 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - **Stack slice done (2026-11-23, D-174): a "Stack n" header from one object, the top ringed and tagged with whose
+    it is, the ones under it as readable rows.** `hud/StackLabels.tsx`, `board-model/stack-labels.ts`, 20 px strips
+    while large (`stack.ts`); tests: test/stack.test.ts (the header from one, the ring, tag and rows, standing down
+    under the open hand, row heights, controller not owner), e2e/stack.spec.ts (rows and tags, the opponent's lone
+    spell at seed 7 labelled as it's held). Code and UX reviews done and applied (in D-174). Next: the PR, then the
+    walking ladder (D-175).
+  - Stack slice plan (D-174, 2026-11-23, written before starting; the owner: "it's not immediately obvious that there's
+    something on the stack", and Forge's stack list "but more polished"):
+    - What they saw: an opponent's spell held at the right edge as a bare card; nothing says it's the stack, whose it
+      is, or that it waits on them (only the main button's "Resolve" does).
+    - A header over the stack from one object on: "Stack · n", a tap lists them all, top first (the old "Stack n"
+      button, which showed only from two).
+    - Whose each object is, in words and colour (never colour alone): the top object ringed in its controller's
+      colour (orange yours, blue the opponent's, Arena's turn colours [R]) with a "Yours"/"Opponent's" tag; each one
+      under it a readable row (a tag and its name, in Inter) over its strip instead of the card's tiny frame text,
+      strips at least 20 px while large.
+    - The board model keeps every rect (the header, the strips' `shows`); the HUD only places at them.
+    - Tests: board-model (the header from one object, row heights, the tag from the controller), e2e (the opponent's
+      spell at seed 7 shows the header and "Opponent's" while it's held), the existing stack tests updated.
+    - Future impact: none on the engine; M3-07 animates objects into this column.
+    - The ladder walking through passed steps waits on the owner (what Arena does wasn't found).
+  - **Pacing slice merged (PR #112, squash, 2026-11-23).** Next: the owner tries the live site (pacing timings,
+    the zone browser's spacing on their phone), then M3-05 with their feedback taken in first.
   - **Pacing slice done (2026-11-23, D-172): the host's run shown frame by frame, a line saying what happened, Skip.**
     `advanceOne` (packages/match), frames in the worker's reply, `interaction/pacing.ts`, `interaction/event-line.ts`,
     `app/use-playback.ts`; tests: test/match-session.test.ts (frames, no event lost), test/pacing.test.ts,
@@ -2246,9 +2269,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 ## Open questions
 
-- (2026-11-23, pacing, D-172) Should the phase ladder step through each step a frame passes over (Arena lights each
-  step briefly as it passes [unverified]), or jump to where the frame is, as now? Proceeding with "jump" until the
-  owner says; their feedback on the live pacing will settle it.
+- Answered (2026-11-23, pacing, D-172): should the phase ladder step through each step a frame passes over, or jump?
+  The owner: "phase bar should mirror what mtg arena does" (D-173), then: "it steps through each phase as it passes -
+  we should avoid immediate jumps between the "main" phases - this probably would be largely solved with animations".
 
 - Smart stops (2026-11-23, D-157): the host stops wherever you could act, except in your own upkeep, draw step and
   end step. Proposal, not built: also skip your own beginning of combat, combat damage and end of combat unless an
@@ -2325,6 +2348,13 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   and the opponent acts, and the screen jumps to the result with nothing shown in between. The plan's answer is
   opponent-action pacing and step-by-step showing (ui.md "Pacing for the opponent"; M3-07, M3-12), pulled forward to
   come right after M3-04c (D-172).
+- (2026-11-23, owner, after trying the pacing) "something I noticed is that when there's something on the stack to
+  resolve, it's not immediately obvious that there's something on the stack. maybe the UI can represent this in more
+  clear, clean, and minimal way". Next task (D-173).
+  Then: "I know that forge mtg has a UI on the side that shows a list of things on the stack that need resolution - I
+  wonder if we could have something similar but more polished lol" (D-173).
+- (2026-11-23, owner) On the zone browser's spacing after the fix: "card spacing is okay for now, we'll revisit
+  later". Left open for a later look; not blocking.
 - (2026-11-23, owner) "I noticed that the cards in the hand, graveyard, exile view are spaced really far apart": the
   zone browser's row (D-168). Chromium draws it tight (140 px cards 8 px apart), so most likely the owner's Safari: the
   card was sized by `aspect-ratio` on a button and its image by a percentage height inside it, either of which Safari
