@@ -394,6 +394,14 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       one; two console errors ("reading 'startsWith'" of undefined) to trace.
     - The owner, on the strip: "we can probably remove any online multiplayer related frontend client code and
       tests" (as D-177 has it).
+    - **A. Import committed (ed49f34, 2026-11-23)** on the working branch, not yet in a PR: their tree at 57c647e by
+      `git archive` (none of the local build outputs), minus the exclusion list in the commit message; their docs in
+      docs/engine/; our CR scripts in tools/rules/; LICENSE-MIT with both copyright lines, NOTICE with the origin and
+      the Kevin MacLeod credit; new CLAUDE.md, README and CI (.github/workflows/ci.yml: client type-check and unit
+      tests, `cargo check` of the engine WASM). No Pages workflow yet (main still has the old app). A scan of the
+      import for keys and tokens found none; its largest file is 6.5 MB. Their client type-check passes here (about
+      a minute). `.claude/settings.json` still allows `node scripts/rule.mjs`: editing permissions isn't Claude's to
+      do, so the moved script may prompt.
     - Subpath: their client assumes the site's root (`BrowserRouter` with no basename; about 90 root-absolute paths
       such as `/audio/...`, `/card-data.json`; the manifest's `start_url` "/"). For GitHub Pages at /open-mtg-arena/:
       Vite `base`, the router's basename, one helper that prefixes `import.meta.env.BASE_URL` to asset paths, a copy
