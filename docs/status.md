@@ -183,6 +183,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - Owner (2026-11-23), for M3-04b: "this app should be compatible with mouse/keyboard controls as well as touch
     devices." Recorded in ui.md ("Mouse and keyboard too"): pointer events serve touch and mouse alike, the long-press
     view also opens with a mouse, and the keyboard can do everything (focus, Enter/Space, Escape, a main-button key).
+  - Owner (2026-11-23): the actions menu feels strange; they expect to click and drag cards. Confirmed it's temporary:
+    M3-04b replaces it with direct play on the cards and removes it.
   - **M3-04b, touch, mouse and keyboard.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:
