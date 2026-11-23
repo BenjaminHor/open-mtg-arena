@@ -331,6 +331,7 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     objects, strip-sized tap regions, panel art credited and offline-safe, panels in Inter, the pool test compares exact
     costs, `Browsing` a union, one `names.ts`. Next PR: target arrows and the collapse tap. Not done: X drawn on the
     spell itself [R] (it's in the card view); canvas text shows "{T}" as letters (hand cards too, pre-existing).
+  - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - Slice 6 plan (2026-11-23, written before starting): the whole stack [R: arena-research.md §5, "The stack"]:
     - `board-model/stack.ts` draws every object, top first: the top large at the right as now, the ones under it
       peeking out to its left in a cascade (drawn behind it), at most four, then a count. Small while the person
