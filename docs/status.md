@@ -104,6 +104,30 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     M3-04 must make the board look like Arena from its first screenshot (arena-research.md, the owner's phone
     screenshots: hand fan, lands row, life and portraits, phase indicator, the pass button, real card frames), and
     show the owner the layout early, before the details.
+  - **M3-03 done, merged (PR #95).**
+  M3-04 plan (the compact board, the folded phone in landscape, about 812×375 CSS px), three PRs, the look first:
+  - **M3-04a, the layout and the look.** Arena's phone layout (arena-research.md §1–2, "Layout from screenshots",
+    the owner's phone screenshots): the opponent's half on top, the person's below; on each side lands at the back
+    left, other non-creature permanents at the back right, creatures toward the centre line, planeswalkers at the right
+    edge; library and graveyard piles in the outer corners with counts; portraits with life totals on the centre line
+    of each half; the phase ladder (five steps, combat expanding) lit on the current step; the person's hand fanned
+    along the bottom edge, half off screen; the opponent's hand as card backs at the top. Original card frames drawn
+    in Pixi (D-140): a color by the card's colors, a name bar with mana symbols as shapes, the type line, a
+    power/toughness box; on the battlefield a compact frame; tapped as Arena does it (a small tilt, darkened, a tap
+    mark). Layout and look values in one tokens file (D-012). The big main button (React) bottom right. The options
+    list stays for now as a drawer. **Screenshot to the owner before M3-04b.**
+  - **M3-04b, touch.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
+    tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
+    creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:
+    combat"); prompts (React) for the rest: mulligan, X, choosing cards, yes/no, dividing damage, the order of
+    triggers, damage assignment, naming a card; the options drawer goes.
+  - **M3-04c, everything M2's pool puts on the board.** The stack at the side with its targets, counters and loyalty,
+    attached Auras and Equipment tucked behind their permanent, tokens, damage, summoning sickness, graveyard and
+    exile browsers, revealed hands and library tops, long-press for the card's details, the "turn your phone"
+    prompt in portrait. *Accept (M3-04):* a full game playable at the folded phone's size in landscape, as a
+    Playwright test.
+  - Future impact: M3-05 adds the full layout beside the compact one (the board model takes the layout as data);
+    M3-07 animates between board models; M3-08 puts art in the frames.
 - M2 Rules depth (`docs/milestones/m2-rules-depth.md`), started 2026-11-19. M1 is closed: the owner skipped the CLI
   spot checks and asked to start M2; tagging `m1` on `main` is left to the owner.
 - M2-01 Hidden information fix: done, merged (PR #21, D-054).
