@@ -6,6 +6,7 @@ import { POOL } from "@mtg/cards/pool";
 import type { OracleId } from "@mtg/engine";
 
 export type CardInfo = {
+  name: string;
   /** For example "{1}{R}"; empty for a land. A copy shows what it copied (its oracle id is the copied card's). */
   manaCost: string;
   typeLine: string;
@@ -15,6 +16,8 @@ export type CardInfo = {
   artCrop: string;
   /** Scryfall's full card image, for a card in hand (ui.md, "Hand cards are the real card image"). */
   image: string;
+  /** The same, larger (672 px wide): the card view shows it at up to 520 px tall, sharp on a dense screen. */
+  largeImage: string;
   artist: string;
   /** Printed power and toughness as numbers; null for none or a "*" value (CR 208.2). */
   power: number | null;
@@ -27,11 +30,13 @@ const BY_ORACLE_ID = new Map<OracleId, CardInfo>(
   POOL.cards.map((c) => [
     c.oracleId,
     {
+      name: c.name,
       manaCost: c.manaCost,
       typeLine: c.typeLine,
       oracleText: c.oracleText,
       artCrop: c.images.artCrop,
       image: c.images.normal,
+      largeImage: c.images.large,
       artist: c.artist,
       power: number(c.power),
       toughness: number(c.toughness),

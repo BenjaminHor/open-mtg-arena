@@ -299,3 +299,115 @@ test("drag to play: a land dragged up onto the table is played, a spell is cast,
   await drag("Lightning Bolt");
   await expect(page.getByText("Choose a target for Lightning Bolt")).toBeVisible();
 });
+
+test("the card view: a right-click or a long-press shows a card large with its hangers; Escape or a tap closes it; a resting mouse previews", async ({
+  page,
+  isMobile,
+}) => {
+  await page.goto("/?fixture=mid-game");
+  await expect(page.getByRole("button", { name: /^Next/ })).toBeVisible();
+  const onBoard = async (name: string, zone = "battlefield") => {
+    const card = (await board(page))?.cards.find((c) => c.name === name && c.zone === zone) as unknown as
+      | { x: number; y: number; width: number; height: number; tapped: boolean }
+      | undefined;
+    if (card === undefined) throw new Error(`no ${name} in ${zone}`);
+    return { x: card.x + card.width / 2, y: card.y + Math.min(card.height / 2, 30), tapped: card.tapped };
+  };
+  const view = (name: string) => page.getByRole("dialog", { name });
+  if (isMobile) {
+    // A long-press: touch events through the browser's own input, as a finger would (Playwright's touchscreen only taps).
+    const cdp = await page.context().newCDPSession(page);
+    const longPress = async (at: { x: number; y: number }) => {
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: at.x, y: at.y }] });
+      await page.waitForTimeout(600);
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+      await page.waitForTimeout(400);
+    };
+    // Android fires a context menu during a long hold, by then over the view's backdrop: it mustn't close the view.
+    const recluseAt = await onBoard("Deadly Recluse");
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [recluseAt] });
+    await expect(view("Deadly Recluse")).toBeVisible();
+    await page.evaluate(
+      ({ x, y }) => {
+        const menu = new PointerEvent("contextmenu", {
+          bubbles: true,
+          cancelable: true,
+          clientX: x,
+          clientY: y,
+          pointerType: "touch",
+        });
+        document.elementFromPoint(x, y)?.dispatchEvent(menu);
+      },
+      { x: recluseAt.x, y: recluseAt.y },
+    );
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await page.waitForTimeout(400);
+    // Letting go doesn't close it.
+    await expect(view("Deadly Recluse")).toBeVisible();
+    await expect(view("Deadly Recluse").getByText("Summoning sick")).toBeVisible();
+    await expect(view("Deadly Recluse").getByText("Deathtouch", { exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Close" }).tap();
+    await expect(view("Deadly Recluse")).toHaveCount(0);
+    // On a card a tap acts on (Llanowar Elves taps for mana): the release is looking, never also a tap.
+    await longPress(await onBoard("Llanowar Elves"));
+    await expect(view("Llanowar Elves")).toBeVisible();
+    expect((await onBoard("Llanowar Elves")).tapped).toBe(false);
+    await page.getByRole("button", { name: "Close" }).tap();
+    // A hand card, with the hand open: looking neither lifts it nor, once closed by a tap on the backdrop, the hand.
+    await page.getByRole("button", { name: "Open your hand" }).tap();
+    await longPress(await onBoard("Giant Growth", "hand"));
+    await expect(view("Giant Growth")).toBeVisible();
+    await page.touchscreen.tap(20, 200);
+    await expect(view("Giant Growth")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Open your hand" })).toHaveCount(0);
+    await expect(page.getByText(/^Tap again/)).toHaveCount(0);
+    return;
+  }
+  const recluse = await onBoard("Deadly Recluse");
+  await page.mouse.click(recluse.x, recluse.y, { button: "right" });
+  await expect(view("Deadly Recluse")).toBeVisible();
+  await expect(view("Deadly Recluse").getByText("Summoning sick")).toBeVisible();
+  await expect(view("Deadly Recluse").getByText("Reach", { exact: true })).toBeVisible();
+  // Focus is on Close, so a key press can't reach a card behind the view: Space closes the view, and the main button
+  // behind it isn't pressed (the step doesn't move on).
+  await expect(page.getByRole("button", { name: "Close" })).toBeFocused();
+  const step = await page.getByRole("button", { name: /^Next/ }).textContent();
+  await page.keyboard.press("Space");
+  await expect(view("Deadly Recluse")).toHaveCount(0);
+  await page.waitForTimeout(300);
+  expect(await page.getByRole("button", { name: /^Next/ }).textContent()).toBe(step);
+  // Nothing was picked or opened by the right-click: the card's own menu didn't come up.
+  await expect(page.getByRole("menu")).toHaveCount(0);
+  // The keyboard: "i" on a focused card, even one no tap acts on (the opponent's), and focus comes back after.
+  const vanguard = page.getByRole("img", { name: "Elite Vanguard" });
+  await vanguard.focus();
+  await page.keyboard.press("i");
+  await expect(view("Elite Vanguard")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(view("Elite Vanguard")).toHaveCount(0);
+  await expect(vanguard).toBeFocused();
+  // "i" on a card a key would act on (Llanowar Elves taps for mana), then Enter: it closes the view, never taps the card.
+  await page.getByRole("button", { name: /^Llanowar Elves/ }).focus();
+  await page.keyboard.press("i");
+  await expect(view("Llanowar Elves")).toBeVisible();
+  await page.keyboard.press("Enter");
+  await expect(view("Llanowar Elves")).toHaveCount(0);
+  expect((await onBoard("Llanowar Elves")).tapped).toBe(false);
+  // A mouse resting on a card shows the same as a preview, gone when the mouse leaves.
+  const elves = await onBoard("Llanowar Elves");
+  await page.mouse.move(elves.x, elves.y);
+  await expect(page.locator(".card-view.preview")).toBeVisible();
+  // Art is blocked in these tests (offline, as it were): the card is shown as its text, never a broken image.
+  await expect(page.locator(".card-view.preview .card-view-name span").first()).toHaveText("Llanowar Elves");
+  await expect(page.locator(".card-view.preview img")).toHaveCount(0);
+  await page.mouse.move(400, 5);
+  await expect(page.locator(".card-view.preview")).toHaveCount(0);
+  // Escape with a preview up does what it would without one: here, close the open hand.
+  await page.getByRole("button", { name: "Open your hand" }).click();
+  const bolt = await onBoard("Lightning Bolt", "hand");
+  await page.mouse.move(bolt.x, bolt.y);
+  await expect(page.locator(".card-view.preview")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".card-view.preview")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Open your hand" })).toBeVisible();
+});

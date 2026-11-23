@@ -5,6 +5,8 @@ import type { Action, GameSetup, ObjectId, SeatView } from "@mtg/engine";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type BoardSize, boardModel, type Insets, NO_INSETS } from "../board-model/board-model.ts";
 import { fixtureSetup } from "../fixtures/fixtures.ts";
+import type { Inspected } from "../hud/CardView.tsx";
+import { cardAt } from "../hud/card-inspect.ts";
 import { Hud } from "../hud/Hud.tsx";
 import {
   allAttackGoal,
@@ -13,6 +15,7 @@ import {
   type WantedAttack,
   withoutAttacker,
 } from "../interaction/all-attack.ts";
+import { cardDetails } from "../interaction/card-details.ts";
 import { controls, type Selection } from "../interaction/controls.ts";
 import { BoardCanvas } from "../renderer/BoardCanvas.tsx";
 import { type MatchClient, startMatchWorker } from "../worker/client.ts";
@@ -79,6 +82,8 @@ function keyboardFocused(): boolean {
   if (!(focused instanceof HTMLElement) || focused === document.body) return false;
   // A text box (the prompt's filter) takes every key typed into it, a space included.
   const typing = focused instanceof HTMLInputElement && (focused.type === "search" || focused.type === "text");
+  // A card that's only there to be looked at ("i") has nothing to press: Space still presses the main button.
+  if (focused.matches(".inspect-region, .tap-shield")) return false;
   return typing || focused.matches(":focus-visible");
 }
 
@@ -100,6 +105,8 @@ export function App() {
   const lastStep = useRef<string | null>(null);
   // The batch button's label while the app works toward its goal: kept as pressed, not flipping as attackers come and go.
   const runningLabel = useRef("All Attack");
+  // The card being looked at (the card view, M3-04c): a full view, or a mouse's preview.
+  const [inspected, setInspected] = useState<Inspected | null>(null);
   // Whether the hand was open when a drag lifted a card from it, to put it back that way if the drag is cancelled.
   const handBeforeDrag = useRef(false);
   // An open menu is only which card it's for: its choices are always read from the current controls.
@@ -256,6 +263,26 @@ export function App() {
     },
     [controlsNow, act, shown],
   );
+  // What the card view shows, read from the seat view as it is now. A card that has gone (it died, it changed zones and
+  // so is a new object, CR 400.7) closes the view.
+  const looking = inspected === null || shown === null ? null : cardDetails(shown, inspected.id);
+  useEffect(() => {
+    if (inspected !== null && looking === null) setInspected(null);
+  }, [inspected, looking]);
+  // A preview goes when the mouse leaves its card. The card's region may go first (redrawn, or the card gone) with no
+  // "leave" to say so, so while a preview shows, any move away from that card ends it.
+  // Checked against the view as it is when the move arrives: a sweep to the next card has already swapped it.
+  const previewing = inspected?.mode === "preview";
+  useEffect(() => {
+    if (!previewing) return;
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      const under = cardAt(e.clientX, e.clientY);
+      setInspected((now) => (now?.mode === "preview" && under !== now.id ? null : now));
+    };
+    window.addEventListener("pointermove", onMove);
+    return () => window.removeEventListener("pointermove", onMove);
+  }, [previewing]);
   // A tap on the table, not on a control, puts things down: the menu, then the selection, then the open hand.
   const onTable = (event: React.MouseEvent) => {
     if ((event.target as HTMLElement).closest("button") !== null) return;
@@ -267,6 +294,19 @@ export function App() {
   // Space presses the main button when no other control has focus.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      // Escape closes a full view and nothing else; a preview goes, and the Escape does what it would without one.
+      if (event.key === "Escape" && inspected !== null) {
+        setInspected(null);
+        if (inspected.mode === "full") return;
+      }
+      // Behind a full view nothing takes a key: its Close button has focus and handles its own.
+      if (inspected?.mode === "full") return;
+      // "i" looks at the focused card, the keyboard's way to the card view (a long-press or a right-click otherwise).
+      if (event.key === "i" && !event.repeat && shown !== null) {
+        const id = (document.activeElement as HTMLElement | null)?.dataset.card as ObjectId | undefined;
+        if (id !== undefined && cardDetails(shown, id) !== null) setInspected({ mode: "full", id });
+        return;
+      }
       if (event.key === "Escape") {
         const cancel = controlsNow?.secondary.find(
           (c) => c.action.type === "ANSWER" && c.action.answer.kind === "cancelCast",
@@ -282,7 +322,7 @@ export function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [controlsNow, menu, selection, handOpen, act]);
+  }, [controlsNow, menu, selection, handOpen, act, inspected, shown]);
 
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: the keyboard's way to put things down is Escape (above)
@@ -305,10 +345,27 @@ export function App() {
           fullControl={update?.fullControl ?? false}
           // Only turning it off moves the game on (as Next does), so only that press waits out the moment.
           setFullControl={(on) => send({ type: "fullControl", on }, !on)}
+          inspect={{
+            open: (id, mode) => {
+              // A hover never replaces a view opened on purpose.
+              if (cardDetails(shown, id) !== null && !(mode === "preview" && inspected?.mode === "full"))
+                setInspected({ mode, id });
+            },
+            closePreview: () => setInspected((now) => (now?.mode === "preview" ? null : now)),
+            prefetch: (id) => {
+              const image = cardDetails(shown, id)?.image;
+              // The browser keeps it: the view's own <img> then finds it loaded, or on its way.
+              if (image != null) new Image().src = image;
+            },
+          }}
+          inspected={inspected === null || looking === null ? null : { ...inspected, details: looking }}
+          closeInspected={() => setInspected(null)}
           attackBatch={attackBatch(shown, attackGoal === null ? null : runningLabel.current, aimAttack)}
           drag={{
             // The card lifts as the drag starts, out of the collapsed hand too.
             lift: (id) => {
+              // A long-press opened the card view: looking, not playing.
+              if (inspected?.mode === "full") return;
               setMenuFor(null);
               handBeforeDrag.current = handOpen;
               setHandOpen(true);
@@ -316,6 +373,7 @@ export function App() {
             },
             // Let go on the table: what a second tap on the lifted card would do.
             drop: (id) => {
+              if (inspected?.mode === "full") return;
               const tap = controls(shown, id).cards[id]?.tap;
               if (tap?.kind === "send") act(tap.choice.action);
               else if (tap?.kind === "menu") setMenuFor(id);

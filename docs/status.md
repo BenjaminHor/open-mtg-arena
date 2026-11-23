@@ -157,7 +157,7 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     between the battlefields"): smaller creature cards and an open gap between the rows, as in their screenshots.
   - Owner (2026-11-23): hand cards in Arena are whole cards (type line and rules text too); recorded in ui.md, drawn
     so in this slice. Asked what hovering over a battlefield card does: answered (long-press details, M3-04c); the
-    desktop hover preview is an open question below.
+    desktop hover preview was settled by D-160 (a preview, as Arena's desktop client shows).
   - Owner (2026-11-23): Arena doesn't cut off card names; recorded in ui.md, names now shrink to fit.
   - Owner (2026-11-23): mana costs should overlap the hand card's top edge slightly; recorded in ui.md, done.
   - Owner (2026-11-23): "how does the expanded view of your hand look like". Not built yet (it was 04b's); built now in
@@ -206,6 +206,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     a check of `/api/v1/key` answered 200), and the plain `OPENROUTER_API_KEY` variable is removed. Code that wants a
     key in a variable (M3-02b) sets a placeholder such as `proxy-injected`; the proxy replaces the header. Tests and
     CI never call it.
+  - Owner (2026-11-23): "continue until you need feedback on open questions. I would stress that mtg arena is the
+    North Star so if there's a question, do what arena would do" (D-160). So the desktop hover question is closed:
+    hovering a card shows a large preview, as Arena's desktop client does.
+  - Owner (2026-11-23, after trying the live site on the phone): "looks good so far but feels a bit buggy"; will give
+    suggestions and questions once M3-04c is finished. Ask for them then, with the live link.
   - Owner (2026-11-23): wants to follow progress on the phone: the app is published to GitHub Pages from `main`
     (D-159), at https://benjaminhor.github.io/open-mtg-arena/. The owner enables it once (Settings → Pages → Source:
     "GitHub Actions"); each merged pull request is live a few minutes later.
@@ -214,6 +219,48 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - Owner (2026-11-23, morning) on M3-07: will likely provide screen recordings of Arena for the animation study.
   - **M3-04c first slice merged (PR #100, squash, 2026-11-23): All Attack, Clear Attacks, taking one attacker out,
     and drag to play.** Waiting on the owner's phone check (a real finger, iOS Safari).
+  - **M3-04c slice 2 done (2026-11-23): the card view**, Arena's "Examined" view. A long-press (400ms, touch), a
+    right-click, or "i" on a focused card shows it large with its full image (or its text, for a token; the image's
+    printed credit is the artist's credit, so no caption: owner, D-155), and beside it a hanger for each thing the
+    face doesn't say: each keyword's reminder in our own words, protection, summoning sickness, counters, damage,
+    regeneration shields, what it's attached to or what's attached to it, control vs ownership, a chosen name or type, token, copy, and power/toughness against the printed
+    card. A tap anywhere, Close or Escape closes it. A mouse resting 600ms on a card shows the same as a preview that
+    passes taps through. No rulings: Arena has none (D-160). An ability on the stack shows its source card.
+    `interaction/card-details.ts` (pure, tested), `hud/CardView.tsx`, `hud/card-inspect.ts`; e2e on both sizes.
+    Code review fixes: the view holds the card's id and reads it from the seat view as drawn (it follows the game, and
+    closes when the card is gone); a backdrop tap no longer also "puts things down"; a long-press waits for its release
+    on the window (the region may be redrawn) and stops a drag starting; the full view takes focus to Close and gives
+    it back; every card region is focusable for "i"; Escape over a preview does its usual job; a preview ends when the
+    mouse is off its card even if the region went; summoning sickness worded from CR 302.6; an ability whose source
+    left shows the printed source; a token's type line has its subtypes.
+    UX review fixes: no key reaches the board behind a full view; the card's text shows until its image loads (and
+    stays if it can't, offline), the image starts loading on the press, and it's the large one (sharp at DPR 2–3); a
+    held card shows a ring filling over the 400 ms at once; the view fades and grows in (160 ms; only fades with reduced
+    motion); the card has a fixed place at the left (Arena's) with a fixed-width hanger column, so it never shifts; a
+    preview goes on the half of the screen away from the card hovered; sweeping from card to card swaps the preview at
+    once; a long hanger list fades at its end; no iOS "Save image" sheet or image drag; a right-click on the backdrop
+    closes the view; the stack's card is focusable for "i"; the token text card puts its P/T at the bottom right.
+    Left for the slices that own them (UX review): the P/T hanger naming its sources ("+1/+1 from Honor of the Pure")
+    and a current-P/T pill over the image's printed box (slice 3); an ability on the stack shown with its own text and
+    targets, not only its source card, and the stack's large card hiding the creatures under it from the view (slice
+    5); a hover over the collapsed hand previewing the card under the mouse, and a hand card enlarging in place on
+    hover as Arena's does (slice 6); a token's card drawn in its colours.
+    Advisor pass: a touch's context menu (Android, during a long hold) neither opens nor closes the view; the view
+    clears the safe-area insets; the large image is fetched only 120 ms into a hold or rest (not on every tap or
+    sweep); a preview swap doesn't replay the fade; Space on a card only there to be looked at still presses the main
+    button. Design recorded as D-161.
+  - M3-04c plan for the rest (2026-11-23, written before starting), each slice its own squash-merged PR, live on Pages
+    as it merges; the owner gives feedback at the end:
+    2. **The card view:** long-press (touch) or right-click/hover-hold (mouse) shows a card large, with its full
+       image, its text, its counters and what's attached, keyword reminders, and the artist's credit (D-155).
+    3. **What's on a permanent:** keyword badges at the bottom-left, counters and loyalty, damage marked, summoning
+       sickness, Auras and Equipment beside their permanent with a link mark.
+    4. **Zones:** graveyard and exile piles by each player with a count, tapped to browse; revealed hands and library
+       tops (Telepathy, Vampire Nocturnus).
+    5. **The stack:** every object at the side, top first, with its targets marked on the board; a tap on the
+       opponent's large card shrinks it.
+    6. **Finishing:** the "turn your phone" prompt in portrait, the remaining UX-review items listed above, and the
+       acceptance test (a full game at the folded phone's size). Then ask the owner for their feedback.
   - M3-04c first slice plan (2026-11-23): "All Attack" and drag to play, one PR.
     - All Attack: during the declaration, a button left of the main one [R] (Arena's "All Attack"). It picks every
       creature that can attack the opponent, one pick at a time as the engine offers them (each pick is its own
@@ -1993,8 +2040,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   opponent's object is on the stack, and add one-shot stops by tapping a step on the phase ladder, as Arena does.
   Worth it if playtesting shows too many stops with an instant in hand.
 
-- Desktop hover (2026-11-23): should hovering a card with a mouse show a large preview, as Arena's desktop client
-  does? On touch, long-press shows the details (M3-04c) either way.
 - (2026-11-23, after M3) What follows M3? The owner says M4 (deckbuilding) is up for debate and likes Legends of
   Runeterra's roguelike mode (Path of Champions). Discuss once M3 is done: a roguelike run, the Shandalar-style RPG, or
   deckbuilding first, and how they share the engine, the AI and the card pool (vision.md).
@@ -2057,6 +2102,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- (2026-11-23, M3-04c card view code review) A token's card view shows its name, type line and keywords, but not its
+  other abilities' text: the seat view carries no rules text for a token (its abilities are data from the effect that
+  made it). Ajani Goldmane's Avatar's "power and toughness are each equal to your life total" is the case in the pool.
+  Later: carry a token's rules text in the seat view (the effect that makes it has it), and show it.
 - Fixed (2026-11-23, owner): "When I only had a mountain played, llanowar elves (1 green mana card) was available as an
   action to cast, which is incorrect." The engine may list a spell the player can't pay for: beginning to cast needs
   only permission (CR 601.3), and a cost that can't be paid rewinds the cast (CR 601.2h, 734). The app greys out what

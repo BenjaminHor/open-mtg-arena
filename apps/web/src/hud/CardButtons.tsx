@@ -6,6 +6,7 @@
 import type { ObjectId } from "@mtg/engine";
 import type { BoardModel } from "../board-model/board-model.ts";
 import type { Controls } from "../interaction/controls.ts";
+import { type InspectCallbacks, useCardInspect } from "./card-inspect.ts";
 import { type HandDragCallbacks, useHandDrag } from "./hand-drag.ts";
 import { place } from "./place.ts";
 
@@ -22,11 +23,22 @@ type Props = {
   selection: ObjectId | null;
   /** Drag to play (`hand-drag.ts`): a hand card lifted by a drag, let go on the table, or put down. */
   drag: HandDragCallbacks;
+  /** The card view (`card-inspect.ts`): open it for a card, or close a hover's preview. */
+  inspect: InspectCallbacks;
 };
 
-export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, selection, drag }: Props) {
+export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, selection, drag, inspect }: Props) {
   const hand = model.overlay.hand;
   const handDrag = useHandDrag(model, drag);
+  const inspectOn = useCardInspect({
+    ...inspect,
+    open: (id, mode) => {
+      // A long-press on a hand card is looking, not the start of a drag.
+      if (mode === "full") handDrag.abort();
+      inspect.open(id, mode);
+    },
+  });
+  const names = new Map(model.cards.map((c) => [c.id, c.name]));
   const inHand = new Set(model.cards.filter((c) => c.zone === "hand").map((c) => c.id));
   // A lifted hand card that a second tap plays: say so on it, "Tap again to cast" (the UX review's cue).
   const lifted = model.cards.find((c) => c.zone === "hand" && c.id === selection);
@@ -39,7 +51,24 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
         // A pile acts through its front card, or the next card in it that has something to do.
         const actor = members.find((m) => controls.cards[m] !== undefined);
         const control = actor === undefined ? undefined : controls.cards[actor];
-        if (actor === undefined || control === undefined) return null;
+        // Every card can be looked at (long-press, right-click, hover): the one a tap acts on, else the pile's front.
+        const looked = (actor ?? members[0] ?? id) as ObjectId;
+        const look = inspectOn(looked);
+        if (actor === undefined || control === undefined) {
+          return (
+            // Focusable, so the keyboard can look at any card ("i"), not only the ones a tap acts on (ui.md).
+            <div
+              key={id}
+              className="inspect-region"
+              role="img"
+              // biome-ignore lint/a11y/noNoninteractiveTabindex: focus is how the keyboard picks a card to look at
+              tabIndex={0}
+              aria-label={names.get(looked) ?? "Card"}
+              style={{ ...place(rect), zIndex: layer }}
+              {...look}
+            />
+          );
+        }
         return (
           <button
             key={id}
@@ -49,7 +78,11 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
             aria-label={spoken(control.label)}
             aria-disabled={busy}
             onClick={() => !busy && onTap(actor)}
-            onPointerDown={inHand.has(id) && !busy ? (e) => handDrag.onPointerDown(e, actor) : undefined}
+            {...look}
+            onPointerDown={(e) => {
+              look.onPointerDown(e);
+              if (inHand.has(id) && !busy) handDrag.onPointerDown(e, actor);
+            }}
           />
         );
       })}
@@ -78,7 +111,17 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
         .map((c) => (
           // biome-ignore lint/a11y/noStaticElementInteractions: it only stops a tap; the card has no action of its own
           // biome-ignore lint/a11y/useKeyWithClickEvents: nothing to do from the keyboard
-          <div key={`stack-${c.id}`} className="tap-shield" style={place(c)} onClick={(e) => e.stopPropagation()} />
+          <div
+            key={`stack-${c.id}`}
+            className="tap-shield"
+            role="img"
+            // biome-ignore lint/a11y/noNoninteractiveTabindex: focus is how the keyboard picks a card to look at ("i")
+            tabIndex={0}
+            aria-label={c.name}
+            style={place(c)}
+            onClick={(e) => e.stopPropagation()}
+            {...inspectOn(c.id as ObjectId)}
+          />
         ))}
     </div>
   );

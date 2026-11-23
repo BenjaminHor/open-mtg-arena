@@ -2361,6 +2361,8 @@ owner's answer to the D-089 open question, option (a))
 - data-sources.md asks for the artist's credit in the same view as an art crop. Permanents on the board show art crops
   without one, as Arena does; the owner ruled that the long-press view (M3-04c), which shows the full card image with
   its artist credit, is enough. No credits line on the board. Hand cards are full card images, credit included.
+- Owner (2026-11-23, on the card view): "The artist credit is already on the card itself, no need for the credit
+  below it." The view shows the full card image, whose printed credit is the credit; no "Illustrated by" line.
 
 **D-156: Acting on the board: controls from the options, buttons over the canvas (M3-04b)** · 2026-11-23 · accepted
 - `interaction/controls.ts` turns the seat view's options into controls: a tap on a card (lift a hand card then play
@@ -2443,3 +2445,29 @@ owner's answer to the D-089 open question, option (a))
   Local builds and the tests keep `/`.
 - It's public, as the repository is. Card art is still fetched from Scryfall at runtime and never published with the
   app (D-007, data-sources.md).
+
+**D-160: When a UI question comes up, do what Arena does; don't stop to ask (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner: "mtg arena is the North Star so if there's a question, do what arena would do", and "continue until you
+  need feedback on open questions". This sharpens D-140: for interaction and layout questions, Arena's behaviour is
+  the answer, found in `arena-research.md` (researched further when it's silent), and the work goes on.
+- Still asked: anything Arena can't answer (rules interpretations go to the CR, D-020; scope, priorities, money,
+  publishing), and anything where copying Arena would mean copying its assets (D-140's line stands).
+- First use: a mouse hovering a card shows a large preview, as Arena's desktop client does.
+
+**D-161: The card view (M3-04c)** · 2026-11-23 · accepted
+- Arena's "Examined" view: a long-press (400 ms, touch), a right-click, or "i" on a focused card opens it full; a
+  mouse resting 600 ms on a card previews it (D-160). `interaction/card-details.ts` builds what it shows from the seat
+  view alone (D-062): the card, and a hanger per thing its face doesn't say. No rulings, as Arena has none.
+- The view holds the card's id, not a copy of its details: it's re-read from the seat view each render, so it follows
+  the game while open and closes when the object is gone (a zone change makes a new object, CR 400.7). The same shape as
+  a card's menu (`menuFor`).
+- The card has a fixed place at the left, as Arena's, and the hangers a fixed-width column beside it, so a hanger
+  appearing never moves the card. A preview goes on the half of the screen away from the hovered card; moving from
+  card to card swaps it at once.
+- It shows Scryfall's large image (672 px, sharp at a phone's DPR 2–3), loading from a moment into the press, and the
+  card as text until it has loaded, or for good if it can't (offline, D-007): never a broken image.
+- A long-press waits for its release on the window, not the card's region (which the game may redraw meanwhile), to
+  swallow the click that follows; it also stops a hand drag from starting under the view. A touch's context menu
+  (Android fires one during a long hold) neither opens nor closes the view: the long-press's own timer does that.
+- The full view is modal: focus goes to Close and stays there, and no key reaches the board behind it. Every card's
+  region is focusable, so "i" reaches cards no tap acts on.
