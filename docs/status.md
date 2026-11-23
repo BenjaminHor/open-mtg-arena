@@ -334,6 +334,22 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - **Import plan (D-177, 2026-11-23, written before starting).** phase-rs v0.131.0 (57c647e) replaces our engine
+    and client; the repo diverges freely; "Open MTG Arena" on screen; no multiplayer, servers, cloud sync or desktop
+    app. Phases, each its own commit, one PR:
+    - A. Import: their tree copied in; ours (apps/, packages/, our scripts and configs) removed. Kept: docs/ (project
+      memory; their docs into docs/engine/), rules/ (the CR), .claude/ (updated), the license (with their copyright
+      line kept, as MIT and Apache-2.0 require) and a NOTICE crediting the origin.
+    - B. Strip: the server crates, lobby, peer-to-peer, Supabase, Tauri and its updater, telemetry, the MTGGoldfish
+      scraper and feeds, their deploy and infra files, their agent configs, Ko-fi/Discord/DMCA contacts, and assets
+      without a known source (kept only with a source and any credit it needs).
+    - C. Rebrand: every phase-rs name, logo, domain and string in the app, the PWA manifest, i18n, crate and package
+      names; the Magic words "phase" and "phasing" stay.
+    - D. Build and CI: the pinned nightly Rust, the WASM engine, card data from MTGJSON, the client; GitHub Actions
+      to test and deploy to GitHub Pages at the same address.
+    - E. Verify: the build plays a match against the AI in a browser at the folded and unfolded sizes.
+    - F. Docs: CLAUDE.md, README, architecture, roadmap and status rewritten for the new base and the next goals (the
+      LLM opponent, the single-player RPG or roguelike).
   - **M3-05 merged (PR #115, squash, 2026-11-23).** Paused after it: the owner is weighing building on phase-rs
     (Open questions; docs/phase-rs-evaluation.md).
   - **M3-05 built (2026-11-23, D-176): the full layout, picked by size, switching live.** `layout/full.ts`,
