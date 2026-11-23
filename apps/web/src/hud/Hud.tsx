@@ -188,7 +188,6 @@ export function Hud(props: HudProps) {
           id={props.inspected.id}
           mode={props.inspected.mode}
           details={props.inspected.details}
-          side={previewSide(model, props.inspected.id)}
           close={props.closeInspected}
         />
       )}
@@ -231,10 +230,4 @@ function ManaPoolChip({ pool, above }: { pool: Record<string, number> | undefine
  */
 function detailSize(text: string, buttonWidth: number): number {
   return Math.max(7, Math.min(11, (buttonWidth - 22) / (text.length * 0.55)));
-}
-
-/** The half of the screen a preview goes on: the one away from the card, so the card stays in sight. */
-function previewSide(model: BoardModel, id: ObjectId): "left" | "right" {
-  const card = model.cards.find((c) => c.id === id);
-  return card !== undefined && card.x + card.width / 2 < model.width / 2 ? "right" : "left";
 }

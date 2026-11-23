@@ -19,12 +19,10 @@ type Props = {
   id: ObjectId;
   mode: Inspected["mode"];
   details: CardDetails;
-  /** Where a preview goes: the half of the screen away from the card the mouse is on, so it never covers it. */
-  side: "left" | "right";
   close: () => void;
 };
 
-export function CardView({ id, mode, details, side, close }: Props) {
+export function CardView({ id, mode, details, close }: Props) {
   // The full view is modal: focus moves to its Close button, so Enter or Space can't press a card behind it, and goes
   // back where it was when the view closes (ui.md, "Mouse and keyboard too").
   const closeButton = useRef<HTMLButtonElement>(null);
@@ -49,7 +47,8 @@ export function CardView({ id, mode, details, side, close }: Props) {
       )}
     </div>
   );
-  if (mode === "preview") return <div className={`card-view preview ${side}`}>{body}</div>;
+  // A preview is at the left, always, where the full view is (the owner: "it should stick to just one side").
+  if (mode === "preview") return <div className="card-view preview">{body}</div>;
   return (
     // A tap anywhere closes it: the view is for reading, nothing in it is pressed. The click stops here: the table under
     // it mustn't also take it as "put things down" (App's `onTable`). A right-click closes it too, as it opened it.

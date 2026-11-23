@@ -2464,8 +2464,8 @@ owner's answer to the D-089 open question, option (a))
   the game while open and closes when the object is gone (a zone change makes a new object, CR 400.7). The same shape as
   a card's menu (`menuFor`).
 - The card has a fixed place at the left, as Arena's, and the hangers a fixed-width column beside it, so a hanger
-  appearing never moves the card. A preview goes on the half of the screen away from the hovered card; moving from
-  card to card swaps it at once.
+  appearing never moves the card. A preview is at the left too, always (the owner: "it should stick to just one
+  side"; it first went on the half away from the hovered card); moving from card to card swaps it at once.
 - It shows Scryfall's large image (672 px, sharp at a phone's DPR 2–3), loading from a moment into the press, and the
   card as text until it has loaded, or for good if it can't (offline, D-007): never a broken image.
 - A long-press waits for its release on the window, not the card's region (which the game may redraw meanwhile), to

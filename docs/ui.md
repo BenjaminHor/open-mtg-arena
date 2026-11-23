@@ -30,7 +30,11 @@ textured playmat, not a flat colour. **Superseded on the battlefield by D-162 (m
 is now its art only, its name in white over a dark fade at the bottom left, power/toughness in a small dark pill at the
 bottom right, on a flat dark table; the layout, piles, tilt and tap mark stay. **Name and P/T on one line (owner,
 2026-11-23):** "the card name and power/toughness should be on the same line if that makes sense, look at the reference
-screenshots i sent." The name always sits on the pill's line, shrinking to fit beside it; it never moves above it. **Hover preview, sooner (owner, 2026-11-23):** "I think the hover preview should come up faster, maybe twice as fast
+screenshots i sent." The name always sits on the pill's line, shrinking to fit beside it; it never moves above it. **Hover preview, one side (owner, 2026-11-23):** "I don't like how the card preview shows up on the left or right
+side, it should stick to just one side." The preview is always at the left, where the full card view is (D-161
+first put it on the half away from the hovered card).
+
+**Hover preview, sooner (owner, 2026-11-23):** "I think the hover preview should come up faster, maybe twice as fast
 as it currently does." Then: "250ms". A mouse resting on a card previews it after 250 ms (it was 600).
 
 **Summoning sickness, dimmed (owner, 2026-11-23):** "I like the badges so far - I do think that if a creature has
