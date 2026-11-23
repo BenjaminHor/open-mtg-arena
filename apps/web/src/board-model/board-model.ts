@@ -6,6 +6,7 @@
 import type { Color, ObjectId, PlayerId, SeatView, Step } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
 import { COMPACT } from "../layout/compact.ts";
+import { attachedByHost, withAttachments } from "./attachments.ts";
 import { type Badges, badgesOf, NO_BADGES } from "./badges.ts";
 import { battlefieldCards } from "./battlefield.ts";
 import { withCombat } from "./combat.ts";
@@ -90,6 +91,8 @@ export type BoardCard = {
   pileCount: number | null;
   /** A permanent's keyword icons, counters, loyalty and summoning sickness (`badges.ts`); none off the battlefield. */
   badges: Badges;
+  /** How many Auras and Equipment sit beside it (`attachments.ts`): its link mark shows when there are any. */
+  attachments: number;
 };
 
 /** A face-down card the person can't see: one of the opponent's hand (CR 402.3). */
@@ -173,7 +176,14 @@ export function boardModel(
   };
   const turn = shown.view.turn;
   const overlay = overlayAnchors(area, layout, turn?.step ?? null, turn?.activePlayer === opponent);
-  const field = withCombat(withPicks(shown, battlefieldCards(shown, area, me, layout, overlay)), area, layout);
+  const attached = attachedByHost(shown);
+  const combat = withCombat(
+    withPicks(shown, battlefieldCards(shown, area, me, layout, overlay, attached)),
+    area,
+    layout,
+  );
+  // Beside their hosts where combat left them, so an attacker's Aura steps forward with it.
+  const field = { ...combat, cards: withAttachments(combat.cards, attached, me, layout) };
   const playable = playableIds(shown);
   const targets = targetIds(shown);
   const hand = handCards(shown, area, layout, ui.handOpen, ui.selected ?? null);

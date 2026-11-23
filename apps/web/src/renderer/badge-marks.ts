@@ -260,3 +260,19 @@ function sword(g: Graphics, s: number, dx: number, line: { width: number; color:
     .lineTo(dx + s * 0.38, s * 0.35)
     .stroke(line);
 }
+
+/**
+ * Two links of a chain on a small dark disc, at a host's left edge: what peeks out beside it is attached to it [R: the
+ * owner's screenshot, "joined by a small link mark"].
+ */
+export function linkMark(r: number): Container {
+  const mark = new Container();
+  mark.addChild(
+    new Graphics().circle(0, 0, r).fill({ color: DISC, alpha: 0.9 }).stroke({ width: 1, color: INK, alpha: 0.35 }),
+    new Graphics()
+      .roundRect(-r * 0.62, -r * 0.28, r * 0.72, r * 0.56, r * 0.28)
+      .roundRect(-r * 0.1, -r * 0.28, r * 0.72, r * 0.56, r * 0.28)
+      .stroke({ width: Math.max(1.2, r * 0.18), color: INK }),
+  );
+  return mark;
+}

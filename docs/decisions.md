@@ -2549,3 +2549,13 @@ owner's answer to the D-089 open question, option (a))
   card view.
 - A sick creature is also dimmed (0.32, less than a tapped card's 0.45), as Arena shows it (the owner, ui.md
   "Summoning sickness, dimmed"); its badges stay bright over the dimming.
+
+**D-167: Auras and Equipment beside their host (M3-04c slice 4b)** · 2026-11-23 · accepted
+- An attached permanent (CR 301.5, 303.4) leaves its own row and sits just left of its host, behind it, 42% of its
+  width peeking out (its art and the start of its name), joined by a link mark on the host's left edge [R: the
+  owner's screenshot]. On the host's side of the table, whoever controls it (a Pacifism by the opponent's creature),
+  as Arena shows it. `board-model/attachments.ts`.
+- The host's row keeps room for it (the creature row's pile width, the land row's slot width), so nothing moves
+  under it. It's placed after combat has moved the cards, so it follows an attacker or a blocker.
+- Hosts in the others row (an enchantment or a planeswalker; none in today's pool) keep today's placement: the
+  attachment stays in the others row.

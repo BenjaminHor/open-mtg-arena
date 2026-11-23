@@ -6,7 +6,7 @@
 
 import { Container, FillGradient, Graphics, Sprite, Text } from "pixi.js";
 import type { BoardCard } from "../board-model/board-model.ts";
-import { counterBadge, iconRow, loyaltyShield } from "./badge-marks.ts";
+import { counterBadge, iconRow, linkMark, loyaltyShield } from "./badge-marks.ts";
 import { combatBadge, combatBadgeRadius, tapMark } from "./card-marks.ts";
 import { ART_LABEL, type Face } from "./face.ts";
 import { type ColorSymbol, colorGlyph } from "./mana-symbols.ts";
@@ -50,6 +50,12 @@ export function drawTile(card: BoardCard): Face {
   if (inCombat) tile.addChild(combatBadge(card.attacking ? "attack" : "block", w, h));
   // Over the dimming of a tapped or sick card: its badges stay bright, the thing still worth reading.
   if (!card.behind) tile.addChild(...badgeMarks(card, w, h, inCombat));
+  // What's attached to it peeks out at its left (board-model/attachments.ts): a link mark joins them.
+  if (card.attachments > 0) {
+    const link = linkMark(Math.min(9, Math.max(6, Math.min(w, h) * 0.09)));
+    link.position.set(-w / 2, 0);
+    tile.addChild(link);
+  }
   return {
     container: tile,
     showArt: (texture) => {

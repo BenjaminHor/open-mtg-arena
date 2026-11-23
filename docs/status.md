@@ -304,6 +304,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     the settings cog covers the far-right opponent permanent at 812x375 (pre-existing); a counter of another kind is
     a bare number (none in the pool yet). Next: 4b, Auras and Equipment beside their host.
   - **M3-04c slice 4a merged (PR #105, squash, 2026-11-23).**
+  - **Slice 4b done (2026-11-23, D-167): Auras and Equipment beside their host**, with a link mark; an
+    `attachments` fixture and test/attachments.test.ts. The plan it followed:
   - Slice 4b plan (2026-11-23, written before starting): Auras and Equipment beside their host [R: the owner's
     screenshot, "an Aura sits as its own card just left of the creature it enchants, joined by a small link mark"].
     - The board model leaves an attached permanent (CR 301.5, 303.4) out of its own row when its host is a creature
