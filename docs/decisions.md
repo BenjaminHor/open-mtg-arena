@@ -2675,3 +2675,6 @@ owner's answer to the D-089 open question, option (a))
   the phase ladder stepping, a short line saying what happened), skippable with a tap, an "instant" speed for tests.
   Arena holds each opponent stack item for a minimum time [R: 0.4 s since 2018]. It's built in a shape M3-07's
   animation director grows from (a queue of shown steps), not a throwaway.
+- The owner then: "If it's due later then that's fine. I just wanted to bring it up in case we didn't know." Kept
+  forward anyway: it's the most confusing part of play-testing now (this and the "two lands" report), and every later
+  slice is tried through it.
