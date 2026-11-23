@@ -332,6 +332,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     costs, `Browsing` a union, one `names.ts`. Next PR: target arrows and the collapse tap. Not done: X drawn on the
     spell itself [R] (it's in the card view); canvas text shows "{T}" as letters (hand cards too, pre-existing).
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
+  - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
+    a full game at phone size), then ask the owner for feedback with the live link.
   - **Slice 6b done (2026-11-23, D-170): arrows from the top of the stack to its targets, a tap to make the stack
     small and large again, a spell a counterspell targets outlined and picked in the prompt.**
     `board-model/target-arrows.ts`, test/stack-targets.test.ts, e2e/stack.spec.ts (the `stack` fixture now has Cancel).
