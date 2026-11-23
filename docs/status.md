@@ -386,6 +386,14 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       about 21 minutes using about 8 GB, but carries debug info (an 818 MB .wasm) that wasm-bindgen can't load in
       the memory left; stripping the `.debug_*` custom sections first (a small node script) leaves 271 MB, which
       binds. The release build is the one to ship; its size is still to measure on CI.
+    - Untouched build plays (2026-11-23): card data generated in about 15 minutes (MTGJSON cached): 36,406 cards,
+      29,622 fully supported (81.4%), 1,396 decks (681 fully playable); `card-data.json` is 98 MB (7.6 MB brotli),
+      so it's generated in CI, never committed (GitHub's file limit is 100 MB). The client builds in about 5
+      minutes (`pnpm build`). Served locally, a match against the AI at 812x375 ran from the die roll through the
+      mulligan and several turns to the cleanup discard, with every phase-rs host blocked and no request made to
+      one; two console errors ("reading 'startsWith'" of undefined) to trace.
+    - The owner, on the strip: "we can probably remove any online multiplayer related frontend client code and
+      tests" (as D-177 has it).
     - Subpath: their client assumes the site's root (`BrowserRouter` with no basename; about 90 root-absolute paths
       such as `/audio/...`, `/card-data.json`; the manifest's `start_url` "/"). For GitHub Pages at /open-mtg-arena/:
       Vite `base`, the router's basename, one helper that prefixes `import.meta.env.BASE_URL` to asset paths, a copy
