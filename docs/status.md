@@ -206,6 +206,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     a check of `/api/v1/key` answered 200), and the plain `OPENROUTER_API_KEY` variable is removed. Code that wants a
     key in a variable (M3-02b) sets a placeholder such as `proxy-injected`; the proxy replaces the header. Tests and
     CI never call it.
+  - Owner (2026-11-23, after trying the live site on the phone): "looks good so far but feels a bit buggy"; will give
+    suggestions and questions once M3-04c is finished. Ask for them then, with the live link.
   - Owner (2026-11-23): wants to follow progress on the phone: the app is published to GitHub Pages from `main`
     (D-159), at https://benjaminhor.github.io/open-mtg-arena/. The owner enables it once (Settings → Pages → Source:
     "GitHub Actions"); each merged pull request is live a few minutes later.
@@ -214,6 +216,18 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - Owner (2026-11-23, morning) on M3-07: will likely provide screen recordings of Arena for the animation study.
   - **M3-04c first slice merged (PR #100, squash, 2026-11-23): All Attack, Clear Attacks, taking one attacker out,
     and drag to play.** Waiting on the owner's phone check (a real finger, iOS Safari).
+  - M3-04c plan for the rest (2026-11-23, written before starting), each slice its own squash-merged PR, live on Pages
+    as it merges; the owner gives feedback at the end:
+    2. **The card view:** long-press (touch) or right-click/hover-hold (mouse) shows a card large, with its full
+       image, its text, its counters and what's attached, keyword reminders, and the artist's credit (D-155).
+    3. **What's on a permanent:** keyword badges at the bottom-left, counters and loyalty, damage marked, summoning
+       sickness, Auras and Equipment beside their permanent with a link mark.
+    4. **Zones:** graveyard and exile piles by each player with a count, tapped to browse; revealed hands and library
+       tops (Telepathy, Vampire Nocturnus).
+    5. **The stack:** every object at the side, top first, with its targets marked on the board; a tap on the
+       opponent's large card shrinks it.
+    6. **Finishing:** the "turn your phone" prompt in portrait, the remaining UX-review items listed above, and the
+       acceptance test (a full game at the folded phone's size). Then ask the owner for their feedback.
   - M3-04c first slice plan (2026-11-23): "All Attack" and drag to play, one PR.
     - All Attack: during the declaration, a button left of the main one [R] (Arena's "All Attack"). It picks every
       creature that can attack the opponent, one pick at a time as the engine offers them (each pick is its own
