@@ -10,6 +10,7 @@ import type { BoardModel, Rect } from "../board-model/board-model.ts";
 import type { CardDetails } from "../interaction/card-details.ts";
 import type { Choice, Controls } from "../interaction/controls.ts";
 import { promptLayout, promptTitle } from "../interaction/prompt-text.ts";
+import type { ZoneName } from "../interaction/zones.ts";
 import { CardButtons } from "./CardButtons.tsx";
 import { CardView, type Inspected } from "./CardView.tsx";
 import { ChoiceMenu } from "./ChoiceMenu.tsx";
@@ -22,6 +23,7 @@ import { PlayerInfo } from "./PlayerInfo.tsx";
 import { Prompt } from "./Prompt.tsx";
 import { place } from "./place.ts";
 import { SettingsMenu } from "./SettingsMenu.tsx";
+import { type Browsing, ZoneBrowser } from "./ZoneBrowser.tsx";
 
 type HudProps = {
   shown: SeatView;
@@ -47,6 +49,9 @@ type HudProps = {
   /** A new turn's banner ("Turn 6 · Your turn"), for a moment, or null. */
   banner: string | null;
   closeInspected: () => void;
+  /** The zone browser, if open: whose zones and which tab (`ZoneBrowser.tsx`). */
+  browsing: Browsing | null;
+  browse: (browsing: Browsing | null) => void;
   /** The declaration's batch button, "All Attack" or "Clear Attacks" (App.tsx, `all-attack.ts`), or none now. */
   attackBatch: { label: string; run: () => void; running: boolean } | null;
 };
@@ -84,6 +89,7 @@ export function Hud(props: HudProps) {
         active={active === opponent}
         targets={controls.players[opponent] ?? []}
         act={act}
+        browse={(zone) => props.browse({ player: opponent, zone })}
       />
       <PlayerInfo
         shown={shown}
@@ -93,6 +99,7 @@ export function Hud(props: HudProps) {
         active={active === me}
         targets={controls.players[me] ?? []}
         act={act}
+        browse={(zone) => props.browse({ player: me, zone })}
       />
       {/* The open hand rises over where it sits; the pool is back when the hand is put down. */}
       {!props.handOpen && <ManaPoolChip pool={view.players[me]?.manaPool} above={anchors.player.mine} />}
@@ -181,11 +188,19 @@ export function Hud(props: HudProps) {
           {props.banner}
         </p>
       )}
+      {props.browsing !== null && (
+        <ZoneBrowser
+          shown={shown}
+          browsing={props.browsing}
+          choose={(zone: ZoneName) => props.browse({ player: props.browsing?.player ?? me, zone })}
+          close={() => props.browse(null)}
+        />
+      )}
       {props.inspected !== null && (
         <CardView
           // A preview made full is a new view (the full one takes focus); a preview swapped to another card isn't.
           key={props.inspected.mode}
-          id={props.inspected.id}
+          viewKey={props.inspected.id}
           mode={props.inspected.mode}
           details={props.inspected.details}
           close={props.closeInspected}

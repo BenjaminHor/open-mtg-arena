@@ -8,6 +8,7 @@ import { fixtureSetup } from "../fixtures/fixtures.ts";
 import type { Inspected } from "../hud/CardView.tsx";
 import { cardAt } from "../hud/card-inspect.ts";
 import { Hud } from "../hud/Hud.tsx";
+import type { Browsing } from "../hud/ZoneBrowser.tsx";
 import {
   allAttackGoal,
   allAttackOffered,
@@ -111,6 +112,8 @@ export function App() {
   const runningLabel = useRef("All Attack");
   // The card being looked at (the card view, M3-04c): a full view, or a mouse's preview.
   const [inspected, setInspected] = useState<Inspected | null>(null);
+  // A player's zones being browsed (M3-04c slice 5), or null.
+  const [browsing, setBrowsing] = useState<Browsing | null>(null);
   // Whether the hand was open when a drag lifted a card from it, to put it back that way if the drag is cancelled.
   const handBeforeDrag = useRef(false);
   // An open menu is only which card it's for: its choices are always read from the current controls.
@@ -311,6 +314,8 @@ export function App() {
   // Space presses the main button when no other control has focus.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      // The zone browser is modal and handles its own keys (Escape: its card view, then itself).
+      if (browsing !== null) return;
       // Escape closes a full view and nothing else; a preview goes, and the Escape does what it would without one.
       if (event.key === "Escape" && inspected !== null) {
         setInspected(null);
@@ -339,7 +344,7 @@ export function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [controlsNow, menu, selection, handOpen, act, inspected, shown]);
+  }, [controlsNow, menu, selection, handOpen, act, inspected, shown, browsing]);
 
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: the keyboard's way to put things down is Escape (above)
@@ -378,6 +383,12 @@ export function App() {
           inspected={inspected === null || looking === null ? null : { ...inspected, details: looking }}
           banner={banner}
           closeInspected={() => setInspected(null)}
+          browsing={browsing}
+          browse={(next) => {
+            // Looking through zones is reading: a preview goes, and nothing else changes.
+            setInspected(null);
+            setBrowsing(next);
+          }}
           attackBatch={attackBatch(shown, attackGoal === null ? null : runningLabel.current, aimAttack)}
           drag={{
             // The card lifts as the drag starts, out of the collapsed hand too.

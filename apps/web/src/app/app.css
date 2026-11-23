@@ -778,3 +778,165 @@ body,
   border: 1px solid var(--edge);
   background: var(--panel);
 }
+
+/* The zone browser (hud/ZoneBrowser.tsx): a sheet over the dimmed board, its tabs along the top and the cards in a row
+   that scrolls sideways (a swipe on a phone), each large enough to recognise; a tap shows one in the card view. */
+.hud .zone-browser {
+  inset: 0;
+  z-index: 190000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 6, 8, 0.72);
+  pointer-events: auto;
+  /* The row scrolls with a finger (the board itself takes no browser gestures). */
+  touch-action: pan-x;
+  animation: card-view-fade 160ms ease-out;
+}
+.zone-browser > section {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: calc(100% - 2 * max(12px, env(safe-area-inset-left), env(safe-area-inset-right)));
+  max-width: 1100px;
+  padding: 10px 0 12px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  background: var(--panel);
+}
+.zone-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 0 12px;
+}
+.zone-tabs button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+.zone-tabs button[aria-selected="true"] {
+  background: #f4f1ec;
+  color: var(--ink);
+}
+.zone-tabs .zone-close {
+  margin-left: auto;
+  color: #f4f1ec;
+}
+.zone-row {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 2px 12px 6px;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior: contain;
+}
+.zone-row li {
+  flex: none;
+}
+/* The row's end keeps its padding when scrolled there (a flex row's own end padding is lost). */
+.zone-row::after {
+  content: "";
+  flex: none;
+  width: 4px;
+}
+.zone-card {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: none;
+  border-radius: 4.5%;
+  background: #2b2a27;
+  overflow: hidden;
+  /* Large enough to read its name and art, and a whole card in the phone's height. */
+  height: min(52vh, 300px);
+  aspect-ratio: 63 / 88;
+  -webkit-touch-callout: none;
+}
+.zone-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.zone-card img.loading {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+/* Until its image has loaded (or offline): its name on a plain card. */
+.zone-card-name {
+  position: absolute;
+  inset: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  color: #f4f1ec;
+}
+.zone-empty {
+  margin: 0;
+  padding: 24px 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+/* A card looked at from the browser is over it. */
+.zone-browser .card-view {
+  position: absolute;
+}
+
+/* What of a player's is revealed (hud/PlayerInfo.tsx): beside their info block, in the outer column. */
+.hud .revealed-marks {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+.hud .revealed-marks.opponent {
+  align-items: flex-start;
+}
+.hud .revealed-top {
+  position: relative;
+  width: 74px;
+  height: 56px;
+  padding: 0;
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  background: #2b2a27;
+  overflow: hidden;
+}
+.revealed-top img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.revealed-top span {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 10px 4px 2px;
+  font-size: 9px;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+}
+.hud .revealed-hand {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  background: var(--panel);
+  color: #f4f1ec;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}

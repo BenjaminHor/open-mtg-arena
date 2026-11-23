@@ -306,6 +306,39 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **M3-04c slice 4a merged (PR #105, squash, 2026-11-23).**
   - **Slice 4b done (2026-11-23, D-167): Auras and Equipment beside their host**, with a link mark; an
     `attachments` fixture and test/attachments.test.ts. The plan it followed:
+  - **Slice 4b merged (PR #106, squash, 2026-11-23).**
+  - **Slice 5 done (2026-11-23, D-168): graveyards, exile and revealed cards.** A tap on a player's info block opens
+    the zone browser (tabs Graveyard / Exile / Hand / Library top, a sideways-scrolling row, the card view over it); a
+    long-press, right-click or "i" opens it even while the player is a target. A revealed library top shows as a
+    small art tile by its player's block, a revealed hand as an eye chip. `interaction/zones.ts` (test/zones.test.ts),
+    `hud/ZoneBrowser.tsx`, `hud/long-press.ts`, a `zones` fixture, e2e/zones.spec.ts (both sizes; a real touch
+    long-press, whose click-swallow a mutation check confirmed the test catches).
+  - Slice 5 plan (2026-11-23, written before starting): graveyards, exile and revealed cards
+    [R: arena-research.md "Library, graveyard, exile", "Zones: tapping a zone opens a browser of its known cards with
+    a count"; "revealed cards are shown face up" [U]]:
+    - **One pure module, `interaction/zones.ts`,** gives each player's counts (library, hand, graveyard, exile by owner)
+      and the browser's tabs from the seat view, so the counts and the browser can't disagree. Graveyard top first
+      (CR 404.2: anyone may look, the order is kept), exile newest first, face-up only (CR 406.3), a revealed hand
+      (CR 701.20a, Telepathy) and a revealed library top (CR 401.5, Vampire Nocturnus) by identity only (D-062),
+      keyed by position, never mapped back to object ids.
+    - **The browser** (`hud/ZoneBrowser.tsx`): a modal sheet with a tab per zone ("Graveyard 4", "Exile 1", and
+      "Hand 5" / "Library top" while revealed), a horizontally scrolling row of card images (text until loaded), a tap
+      on a card opens the card view over it, closing that returns to the browser. Opened by a tap on a player's info
+      block, or by a long-press, right-click or "i" on it, which work even while the player is a target (then the tap
+      picks them). Escape closes the card view first, then the browser. Focus moves in and back, no key reaches the
+      board. Held as `{player, zone}` and re-read from the seat view each draw (D-161), so it follows the game; it
+      falls back to the graveyard tab when a reveal ends. A decision arriving keeps it open (it's for reading).
+    - **At a glance, without a tap:** a revealed library top shows as a small face-up tile by its player's info block
+      (the outer column, where Arena's library pile is); a revealed hand shows an eye chip by the block ("Hand
+      revealed", for either player; a tap on the opponent's opens the browser at their hand).
+    - Graveyard choices (Raise Dead's target, Gravedigger's) stay in the prompt this slice; the browser opens over it.
+      Arena picks them in a browser [R]: later, recorded in future-rules.
+    - The card view takes a printed card by oracle id too, for revealed cards (`printedDetails`).
+    - Tests first: `test/zones.test.ts` (orders, exile by owner, face-down excluded, reveals, counts); e2e on a `zones`
+      fixture (30-card graveyard, exile, Telepathy, Nocturnus): open, tabs, scroll, card view and back, Escape order,
+      keys blocked, target-time long-press.
+    - Future impact: the stack slice and graveyard picks reuse the browser's card row; face-down exile (later: CR
+      406.3a) shows a back by its owner's choice, which the seat view will have to describe first (it has only cards and abilities today).
   - Slice 4b plan (2026-11-23, written before starting): Auras and Equipment beside their host [R: the owner's
     screenshot, "an Aura sits as its own card just left of the creature it enchants, joined by a small link mark"].
     - The board model leaves an attached permanent (CR 301.5, 303.4) out of its own row when its host is a creature

@@ -2564,3 +2564,25 @@ owner's answer to the D-089 open question, option (a))
   attachment's `mine` is its controller, its side the host's). Known and accepted: the peeking strip is about 30 px
   wide on a phone's creature (23 on a land), under the 44 px target, as a pile's strips already are; the card view and
   the host's own tap reach the same things. A tapped attachment's tilted corner can poke a few px past its room.
+
+**D-168: Graveyards, exile and revealed cards (M3-04c slice 5)** · 2026-11-23 · accepted
+- A tap on a player's info block opens the zone browser [R: "tapping a zone opens a browser of its known cards with a
+  count", the opponent's too]: a modal sheet with a tab per zone ("Graveyard 31", "Exile 2", and "Hand 3" / "Library
+  top" while revealed), the cards in a row that scrolls sideways (a swipe, or a mouse wheel), a tap on one showing it
+  in the card view over the sheet. Escape closes the card view, then the sheet; focus is kept inside and goes back to
+  the block. The block is the zone's place because there's no pile to tap any more (D-164); the whole block (172×40),
+  not a count, so it's a fair touch target.
+- While the player is a target, a tap picks them, as Arena's avatar does; a long-press, right-click or "i" on the block
+  always opens the browser (`hud/long-press.ts`), so a graveyard can be read while choosing.
+- `interaction/zones.ts` (pure) gives both the counts and the browser's lists, so they can't disagree: a graveyard top
+  first (CR 404.2), exile by owner newest first (CR 406.3), a revealed hand (CR 701.20a) and library top (CR 401.5) by
+  identity only (D-062), keyed by position. The browser holds only `{player, zone}` and re-reads them each draw, as the
+  card view does (D-161); a reveal that ends takes its tab, back to the graveyard. It's for reading, so a decision
+  arriving leaves it open. The card view shows a revealed card by its printed face (`printedDetails`).
+- Revealed cards show without a tap [U: "revealed cards are shown face up"]: a library's revealed top card as a small
+  face-up art tile beside its player's block (in the outer column, where Arena keeps a library pile), and an eye chip
+  "Hand revealed" for a revealed hand, either player's; a tap on the opponent's opens the browser there. The opponent's
+  card backs at the top stay backs: only their bottom edge is on screen, and a revealed hand's order isn't its real
+  order (D-062).
+- Picking a card in a graveyard (Gravedigger's target) stays in the prompt: Arena opens a browser of the cards to
+  choose [R], later (future-rules.md).

@@ -16,13 +16,14 @@ import { ManaText } from "./ManaText.tsx";
 export type Inspected = { mode: "full" | "preview"; id: ObjectId };
 
 type Props = {
-  id: ObjectId;
+  /** What's shown, so a different card starts its image afresh: an object's id, or a revealed card's place. */
+  viewKey: string;
   mode: Inspected["mode"];
   details: CardDetails;
   close: () => void;
 };
 
-export function CardView({ id, mode, details, close }: Props) {
+export function CardView({ viewKey, mode, details, close }: Props) {
   // The full view is modal: focus moves to its Close button, so Enter or Space can't press a card behind it, and goes
   // back where it was when the view closes (ui.md, "Mouse and keyboard too").
   const closeButton = useRef<HTMLButtonElement>(null);
@@ -34,7 +35,7 @@ export function CardView({ id, mode, details, close }: Props) {
   }, [mode]);
   const body = (
     <div className="card-view-body">
-      <CardFace key={id} details={details} />
+      <CardFace key={viewKey} details={details} />
       {details.hangers.length > 0 && (
         <ul className="card-view-hangers">
           {details.hangers.map((hanger) => (

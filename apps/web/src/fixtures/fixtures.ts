@@ -20,7 +20,14 @@ export type Permanent =
       attachedTo?: number;
       chosenLandType?: BasicLandType;
     };
-export type Side = { life: number; hand: string[]; battlefield: Permanent[]; graveyard?: string[]; library: string[] };
+export type Side = {
+  life: number;
+  hand: string[];
+  battlefield: Permanent[];
+  graveyard?: string[];
+  exile?: string[];
+  library: string[];
+};
 export type Fixture = { turn: Turn; players: { p1: Side; p2: Side } };
 
 const ID_BY_NAME = new Map<string, OracleId>(POOL.cards.map((c) => [c.name, c.oracleId]));
@@ -285,6 +292,37 @@ const FIXTURES: Record<string, Fixture> = {
       },
     },
   },
+  /**
+   * Graveyards, exile and revealed cards (M3-04c slice 5): a long graveyard to scroll, exiled cards of both players,
+   * a Telepathy on each side (both hands revealed) and the opponent's Vampire Nocturnus (their library top revealed).
+   */
+  zones: {
+    turn: { number: 9, activePlayer: "p1", step: "precombatMain" },
+    players: {
+      p1: {
+        life: 14,
+        hand: ["Lightning Bolt", "Giant Growth"],
+        battlefield: [...many("Forest", 3), ...many("Mountain", 2), "Telepathy", "Grizzly Bears"],
+        graveyard: ["Shock", "Llanowar Elves", "Giant Growth"],
+        exile: ["Serra Angel"],
+        library: many("Forest", 20),
+      },
+      p2: {
+        life: 11,
+        hand: ["Plains", "Pacifism", "Plains"],
+        battlefield: [...many("Swamp", 4), "Telepathy", "Vampire Nocturnus"],
+        graveyard: [
+          ...many("Elite Vanguard", 8),
+          ...many("Pacifism", 6),
+          ...many("Grizzly Bears", 8),
+          ...many("Shock", 8),
+          "Serra Angel",
+        ],
+        exile: ["Veteran Armorsmith", "Lightning Bolt"],
+        library: ["Shock", ...many("Swamp", 19)],
+      },
+    },
+  },
   /** Siege-Gang Commander to cast (three Goblin tokens), and colourless permanents: frames of every kind. */
   tokens: {
     turn: { number: 6, activePlayer: "p1", step: "precombatMain" },
@@ -326,7 +364,7 @@ export function setupOf(fixture: Fixture): GameSetup {
       hand: side.hand.map(id),
       battlefield: side.battlefield.map((p) => permanent(p, player)),
       graveyard: (side.graveyard ?? []).map(id),
-      exile: [],
+      exile: (side.exile ?? []).map(id),
       manaPool: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 },
     }),
   );
