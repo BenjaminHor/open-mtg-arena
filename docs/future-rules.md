@@ -461,6 +461,30 @@ and at resolution, as printed triggers have.
 - `seatView`'s X answers carry the cost only for spells: an ability with {X} in its mana cost needs `costOf` with the
   answered X (`packages/engine/src/view/seat-view.ts`, `announcedCost`).
 
+### Beyond Magic 2010: what two of the owner's cards would need (2026-11-23)
+
+The owner asked what the engine needs as cards are added, with Cloud, Ex-SOLDIER and Tidus, Yuna's Guardian (Final
+Fantasy Commander) as examples. Most of each card is built already; the rest, smallest first:
+
+- **Small, new data on existing systems.** An ObjectFilter field "equipped" (Cloud's "for each equipped attacking
+  creature you control"; `combat: "attacking"` and `count` amounts exist) and "with counters on it" (Tidus's Cheer). An
+  `EffectCondition` on the source's power as the ability resolves ("if Cloud has power 7 or greater", CR 608.2h). An
+  attach effect the other way round: attach the *target* Equipment to this creature (`attachSelf` attaches the
+  source). "Up to one target" and "at the beginning of combat on your turn" exist.
+- **Counters of any kind, moved.** Counters are typed `"+1/+1" | "-1/-1"` in effects (loyalty apart). Tidus moves "a
+  counter" of any kind (CR 122), so the counter kind becomes an open string chosen as it resolves, and two targets
+  that must differ ("a second target creature", CR 115.3). Player counters too (poison, rad, CR 122.1).
+- **Proliferate** (CR 701.34): choose any number of players and permanents that have counters, each gets one more of
+  each kind it has. A choice over permanents *and* players: `chooseCards` covers objects only.
+- **Batched triggers and once-a-turn triggers.** "Whenever one or more creatures you control ... deal combat damage to
+  a player" triggers once for the whole batch (CR 603.2c), not once per creature as `selfDealsDamageToPlayer` does.
+  "Do this only once each turn" (CR 603.2h) checks this turn's history as it triggers (`turnHistory`, D-078).
+- **Treasure** (CR 111.10): a predefined artifact token with "{T}, Sacrifice this token: Add one mana of any color".
+  Tokens need activated abilities, a mana ability can have a sacrifice cost, and `autoPay` must choose whether to
+  spend a Treasure (as a person would: last), with the UI able to say no.
+- **Commander** (CR 903): these are Commander cards. 100-card singleton decks, the command zone, commander tax,
+  color identity, commander damage, and four players: the multiplayer items above, a big step of its own.
+
 ## App and game features
 
 **AI search (after M3).** *Needs now:* the reducer stays pure and fast, and state cloning is cheap (structural sharing).
