@@ -175,6 +175,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     summoning sick, attacking, blocking whom, regeneration shields, a choice made as it entered). A hit test finds the
     topmost card under a point; a hold of about 400 ms opens a dark overlay (card large at the left, panels at the
     right, the artist credit, D-155), and the click after a long-press is swallowed so it doesn't also toggle the hand.
+  - Owner (2026-11-23): "Is the opponent health upside down" — its blades were mirrored to point down; both crests'
+    blades now sweep up, as in their screenshots.
   - Still to do in M3-04a: the frames for colourless, multicolour and tokens (ui.md); the HUD polish (ui.md, "The rest
     of the HUD"); then code and UX reviews, the PR, and screenshots of everything to the owner.
   - **M3-04b, touch.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,

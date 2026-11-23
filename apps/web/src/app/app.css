@@ -150,7 +150,8 @@ body,
   z-index: -1;
 }
 
-/* The blades point outward and up on the person's crest, outward and down on the opponent's. */
+/* The blades sweep outward and up on both crests, as in the owner's screenshots [R]: mirrored on the opponent's, the
+   crest read as upside down (owner, 2026-11-23). */
 .life::before {
   right: 100%;
   margin-right: -6px;
@@ -163,14 +164,6 @@ body,
   margin-left: -6px;
   clip-path: polygon(0 0, 0 100%, 100% 30%);
   transform: translateY(-80%) rotate(-14deg);
-}
-
-.life-opponent::before {
-  transform: translateY(-20%) rotate(-14deg) scaleY(-1);
-}
-
-.life-opponent::after {
-  transform: translateY(-20%) rotate(14deg) scaleY(-1);
 }
 
 /* The opponent's crest as their ladder's combat rung: blue light while they're in combat [R]. */
