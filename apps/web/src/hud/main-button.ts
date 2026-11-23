@@ -39,7 +39,12 @@ export function mainButton(shown: SeatView): MainButton {
     return { label: "Resolve", detail: name, action: pass, hidden: false };
   }
   if (!myTurn) return { label: "Pass", detail: null, action: pass, hidden: false };
-  return { label: "Next", detail: view.turn === null ? null : nextStop(view.turn.step), action: pass, hidden: false };
+  return {
+    label: "Next",
+    detail: view.turn === null ? null : nextStop(view.turn.step, (view.combat?.attacks.length ?? 0) > 0),
+    action: pass,
+    hidden: false,
+  };
 }
 
 /**
@@ -58,7 +63,8 @@ function declarationButton(shown: SeatView): MainButton | null {
     const n = decision.chosen.length;
     return {
       label: n === 0 ? "No Attacks" : `${n} Attacker${n === 1 ? "" : "s"}`,
-      detail: action === null ? `Not yet: ${mustCount(shown)} must attack` : "To Blockers",
+      // No attackers: the blockers and damage steps are skipped (CR 508.8).
+      detail: action === null ? `Not yet: ${mustCount(shown)} must attack` : n === 0 ? "To Main 2" : "To Blockers",
       action,
       hidden: false,
     };
@@ -103,7 +109,7 @@ function abilitySource(shown: SeatView, source: ObjectId): string {
 }
 
 /** Where passing on an empty stack heads in the person's own turn, named as the phase ladder names it. */
-function nextStop(step: Step): string {
+function nextStop(step: Step, attacked: boolean): string {
   switch (step) {
     case "untap":
     case "upkeep":
@@ -113,14 +119,16 @@ function nextStop(step: Step): string {
       return "To Combat";
     case "beginningOfCombat":
       return "To Attackers";
+    // With no creature declared as an attacker, the declare blockers and combat damage steps are skipped (CR 508.8).
     case "declareAttackers":
-      return "To Blockers";
+      return attacked ? "To Blockers" : "To Main 2";
     case "declareBlockers":
       return "To Damage";
     case "combatDamage":
     case "endOfCombat":
       return "To Main 2";
     case "postcombatMain":
+      return "To End";
     case "end":
     case "cleanup":
       return "End Turn";

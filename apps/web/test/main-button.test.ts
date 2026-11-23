@@ -37,14 +37,29 @@ describe("the main button", () => {
   it("names the next stop in combat, step by step", () => {
     const turn = midGame.view.turn;
     if (turn === null) throw new Error("no turn");
-    const at = (step: "beginningOfCombat" | "declareAttackers" | "declareBlockers" | "combatDamage") =>
-      mainButton({ ...midGame, view: { ...midGame.view, turn: { ...turn, step } } }).detail;
-    expect([at("beginningOfCombat"), at("declareAttackers"), at("declareBlockers"), at("combatDamage")]).toEqual([
-      "To Attackers",
-      "To Blockers",
-      "To Damage",
-      "To Main 2",
-    ]);
+    const attacker = { attacker: "o1", attacked: "p2" };
+    const combat = { attacks: [attacker], blocks: [] } as unknown as SeatView["view"]["combat"];
+    const at = (
+      step: "beginningOfCombat" | "declareAttackers" | "declareBlockers" | "combatDamage" | "postcombatMain",
+    ) => mainButton({ ...midGame, view: { ...midGame.view, combat, turn: { ...turn, step } } }).detail;
+    expect([
+      at("beginningOfCombat"),
+      at("declareAttackers"),
+      at("declareBlockers"),
+      at("combatDamage"),
+      at("postcombatMain"),
+    ]).toEqual(["To Attackers", "To Blockers", "To Damage", "To Main 2", "To End"]);
+  });
+
+  it("heads to main 2 when no creature attacked: blockers and damage are skipped (CR 508.8)", () => {
+    const turn = midGame.view.turn;
+    if (turn === null) throw new Error("no turn");
+    const none = { attacks: [], blocks: [] } as unknown as SeatView["view"]["combat"];
+    const shown: SeatView = {
+      ...midGame,
+      view: { ...midGame.view, combat: none, turn: { ...turn, step: "declareAttackers" } },
+    };
+    expect(mainButton(shown).detail).toBe("To Main 2");
   });
 
   it("says Pass on the opponent's turn", () => {

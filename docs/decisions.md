@@ -2380,3 +2380,21 @@ owner's answer to the D-089 open question, option (a))
 - Left for later: drag to play (taps do everything a drag would), "All Attack", bespoke prompts for X, dividing
   damage and damage assignment (slice 2), smart stops (slice 3).
 
+
+**D-157: Arena's default skips on top of D-143: no stop in your own upkeep, draw step or end step (M3-04b)** · 2026-11-23 · accepted
+- The M3-04b plan in `status.md` proposed stopping only at a list of steps (main phases, the combat declarations,
+  the opponent's spells and attacks). That is the design D-143 rejected, because a combat trick lost its window
+  after blockers. The research's [R] lines say Arena stops wherever you hold something you can cast. So D-143 stays.
+- What's added is only what an official source backs (Wizards, Oct 27 2025, in `arena-research.md` "Default
+  auto-passing"): Arena doesn't give you priority in your own upkeep or end step, and the beginning phase runs on to
+  main 1. So with auto-pass on and an empty stack, the host passes for you in your own upkeep, draw step and end
+  step, even with an instant in hand. An opponent's object on the stack still stops you there.
+- One of Arena's smart stops is kept, because it's cheap and loses nothing: mana left in your pool stops you in your
+  own end step, as the pool empties when the step ends (CR 500.5).
+- It applies to every seat (D-137), the AI's too. `pnpm eval` before and after shows the heuristic AI unaffected
+  (it never acted in those steps).
+- Full control turns auto-pass off (D-143's `autoPass: false`): a switch in the settings menu, and a `fullControl`
+  worker message. While it's on, the main button turns Arena's blue-violet [R]. Arena's full control also turns off
+  auto-tap. Ours doesn't yet: paying by hand needs slice 2's payment prompt.
+- Not built, an open question for the owner: wider skips on your own turn (beginning of combat, combat damage, end
+  of combat) and per-step stops on the phase ladder.

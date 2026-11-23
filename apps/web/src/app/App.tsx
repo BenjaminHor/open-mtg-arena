@@ -219,6 +219,8 @@ export function App() {
           handOpen={handOpen}
           openHand={() => setHandOpen(true)}
           selection={selection}
+          fullControl={update?.fullControl ?? false}
+          setFullControl={(on) => client.current?.send({ type: "fullControl", on })}
         />
       )}
       {error !== null && (

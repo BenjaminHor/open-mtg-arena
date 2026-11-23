@@ -1,10 +1,18 @@
-// The settings button at the top right [R] (a cog in Arena), for now holding only conceding, which is always possible
+// The settings button at the top right [R] (a cog in Arena): full control, and conceding, which is always possible
 // (CR 104.3a) and so asks once more before it's sent.
 
 import type { Action } from "@mtg/engine";
 import { useEffect, useState } from "react";
 
-export function SettingsMenu({ concede, act }: { concede: Action | null; act: (action: Action) => void }) {
+type Props = {
+  concede: Action | null;
+  act: (action: Action) => void;
+  /** Full control (arena-research.md): the host never passes priority for the person while it's on. */
+  fullControl: boolean;
+  setFullControl: (on: boolean) => void;
+};
+
+export function SettingsMenu({ concede, act, fullControl, setFullControl }: Props) {
   const [open, setOpen] = useState(false);
   const [sure, setSure] = useState(false);
   const close = () => {
@@ -40,6 +48,16 @@ export function SettingsMenu({ concede, act }: { concede: Action | null; act: (a
         <div className="settings-menu">
           <button
             type="button"
+            className="full-control"
+            role="switch"
+            aria-checked={fullControl}
+            onClick={() => setFullControl(!fullControl)}
+          >
+            Full control: {fullControl ? "on" : "off"}
+          </button>
+          <button
+            type="button"
+            className="concede"
             onClick={() => {
               if (!sure) setSure(true);
               else {

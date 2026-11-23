@@ -214,9 +214,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
        count, dividing damage, damage assignment, trigger order, choosing cards, yes/no, replacement order, naming a
        card, the starting player, cancel or pay during a cast), Arena-like, at the top centre with a title saying what's
        awaited; the actions drawer goes.
-    3. **Smart stops.** The host stops for priority only where Arena does by default (own main phases, declaring
-       attackers and blockers, when the opponent puts something on the stack or attacks), not at every step where an
-       instant could be cast; a full-control toggle.
+    3. **Smart stops.** Corrected after reading D-143 again: the host keeps stopping wherever the person could act
+       (a stops list would cost combat tricks their window), plus Arena's documented skips: no stop in your own
+       upkeep, draw step or end step (D-157); a full-control switch.
     Accept: a full game playable at 812×375 by touch alone, and by keyboard alone, as Playwright tests.
   - M3-04b slice 1 progress (2026-11-23): built `interaction/controls.ts` (every option to a control; a property test
     over 24 seeded games checks no option is orphaned and every control is legal), tap regions from the board model
@@ -240,7 +240,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     triggers, damage assignment, naming a card; the options drawer goes.
   - Added to M3-04c from the final UX review (2026-11-23): keyword badges at a permanent's bottom-left corner
     (flying, reach, deathtouch, first strike...: ui.md "The cards", both screenshot sets); keep the main button's slot
-    as a label naming any decision it can't answer ("Assign Damage", "Pay {R}"); the open hand showing less (about 60%) and the collapsed hand more.
+    as a label naming any decision it can't answer ("Assign Damage", "Pay {R}"). From the second UX review of
+    slice 1: a tap on the opponent's large stack card should shrink it to the side (Arena lets you minimise it)
+    rather than swallow the tap, as it can cover a creature whose ability you'd use in response; the blocker being
+    picked needs a stronger mark than blockers already assigned (both gold now); the stack's count badge can sit on a
+    creature's name strip; a performance-trace test (ui.md asks for one). The open hand showing less (about 60%) and the collapsed hand more.
   - **M3-04c, everything M2's pool puts on the board.** The stack at the side with its targets, counters and loyalty,
     attached Auras and Equipment beside their permanent with a link mark (the owner's screenshots), tokens, damage, summoning sickness, graveyard and
     exile browsers, revealed hands and library tops, long-press for the card's details, the "turn your phone"
@@ -1883,6 +1887,14 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions
+
+- Smart stops (2026-11-23, D-157): the host stops wherever you could act, except in your own upkeep, draw step and
+  end step. Proposal, not built: also skip your own beginning of combat, combat damage and end of combat unless an
+  opponent's object is on the stack, and add one-shot stops by tapping a step on the phase ladder, as Arena does.
+  Worth it if playtesting shows too many stops with an instant in hand.
+- "All Attack" and drag to play (2026-11-23, M3-04b): Arena has both. "All Attack" isn't an engine option (each
+  attacker is its own pick), so it would be a UI shortcut sending several picks. Taps already do all a drag would.
+  Wanted now, or later?
 
 - Desktop hover (2026-11-23): should hovering a card with a mouse show a large preview, as Arena's desktop client
   does? On touch, long-press shows the details (M3-04c) either way.

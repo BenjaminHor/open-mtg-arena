@@ -10,11 +10,41 @@ const human = { kind: "human" } as const;
 const people = { p1: human, p2: human };
 
 describe("auto-pass", () => {
-  it("stops at any window where the player could act: the upkeep, holding a Lightning Bolt they can pay for", () => {
-    const setup = handMade({ hand: ["Lightning Bolt"], battlefield: ["Mountain"] }, {}, "upkeep");
+  it("stops at any window where the player could act: the opponent's upkeep, holding a Lightning Bolt they can pay for", () => {
+    const setup = handMade({}, { hand: ["Lightning Bolt"], battlefield: ["Mountain"] }, "upkeep");
     const match = advance(startMatch(setup, people, cards), cards);
-    expect(waitingOn(match, cards)).toBe("p1");
+    // p1, the active player, has nothing to do and is passed for; p2 is stopped in p1's upkeep.
+    expect(waitingOn(match, cards)).toBe("p2");
     expect(match.state.turn?.step).toBe("upkeep");
+  });
+
+  it("skips the player's own upkeep, draw step and end step, as Arena does, even holding a spell (D-157)", () => {
+    const setup = handMade({ hand: ["Lightning Bolt"], battlefield: ["Mountain"], library: "Plains" }, {}, "upkeep");
+    let match = advance(startMatch(setup, people, cards), cards);
+    // Straight on to their first main phase.
+    expect([waitingOn(match, cards), match.state.turn?.step]).toStrictEqual(["p1", "precombatMain"]);
+    // Then on through combat to the second main phase, and on from there past their own end step to the opponent's
+    // turn: p2, who has nothing to do, is passed for in every step of it, back to p1's next first main phase.
+    const steps: string[] = [];
+    for (let i = 0; i < 12 && match.state.turn?.number === 3; i++) {
+      steps.push(match.state.turn?.step ?? "");
+      match = act(match, passes);
+    }
+    expect(steps).not.toContain("end");
+    expect(match.state.turn?.number).toBeGreaterThan(3);
+  });
+
+  it("stops in the player's own end step while mana is left in their pool, which empties as the step ends (CR 500.5)", () => {
+    const setup = handMade({ hand: ["Lightning Bolt"], battlefield: ["Mountain"] }, {}, "end");
+    const withMana: typeof setup = {
+      ...setup,
+      players: setup.players.map((p) => (p.id === "p1" ? { ...p, manaPool: { ...p.manaPool, R: 1 } } : p)),
+    };
+    const match = advance(startMatch(withMana, people, cards), cards);
+    expect([waitingOn(match, cards), match.state.turn?.step]).toStrictEqual(["p1", "end"]);
+    // Without the mana, the same end step goes by.
+    const without = advance(startMatch(setup, people, cards), cards);
+    expect(without.state.turn?.step === "end" && waitingOn(without, cards) === "p1").toBe(false);
   });
 
   it("never stops a player who can't pay for anything", () => {

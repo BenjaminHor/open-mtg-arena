@@ -139,3 +139,16 @@ test("concedes from the settings menu, after asking once more", async ({ page })
   await page.getByRole("button", { name: "Concede? Tap again" }).click();
   await expect(page.getByRole("status")).toHaveText("You lose");
 });
+
+test("full control from the settings menu: the main button turns blue-violet, and back", async ({ page }) => {
+  await page.goto("/?fixture=mid-game");
+  await page.getByRole("button", { name: "Settings" }).click();
+  const toggle = page.getByRole("switch", { name: /Full control/ });
+  await expect(toggle).toHaveAttribute("aria-checked", "false");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-checked", "true");
+  await expect(page.locator(".main-button")).toHaveClass(/full-control/);
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-checked", "false");
+  await expect(page.locator(".main-button")).not.toHaveClass(/full-control/);
+});

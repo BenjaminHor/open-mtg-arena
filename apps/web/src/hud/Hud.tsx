@@ -30,6 +30,8 @@ type HudProps = {
   handOpen: boolean;
   openHand: () => void;
   selection: ObjectId | null;
+  fullControl: boolean;
+  setFullControl: (on: boolean) => void;
 };
 
 export function Hud(props: HudProps) {
@@ -87,7 +89,8 @@ export function Hud(props: HudProps) {
       {!button.hidden && (
         <button
           type="button"
-          className={`main-button${button.action === null ? " waiting" : ""}`}
+          // In full control the button turns blue-violet, as Arena's does [R], so it's plain the game won't pass for you.
+          className={`main-button${button.action === null ? " waiting" : ""}${props.fullControl ? " full-control" : ""}`}
           style={place(anchors.mainButton)}
           // Disabled only when it has nothing to do; while an action is on its way it keeps focus (aria-disabled).
           disabled={button.action === null}
@@ -128,7 +131,12 @@ export function Hud(props: HudProps) {
       {props.menu !== null && menuAt !== undefined && menuAt !== null && (
         <ChoiceMenu at={menuAt} choices={props.menu.choices} act={act} close={props.closeMenu} />
       )}
-      <SettingsMenu concede={controls.concede} act={act} />
+      <SettingsMenu
+        concede={controls.concede}
+        act={act}
+        fullControl={props.fullControl}
+        setFullControl={props.setFullControl}
+      />
       {result !== null && (
         <p role="status" className="result">
           {result.winner === me ? "You win" : result.winner === null ? "Draw" : "You lose"}

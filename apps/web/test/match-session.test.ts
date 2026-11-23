@@ -3,7 +3,7 @@
 import { cardDatabase } from "@mtg/cards";
 import type { Action } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
-import { FIXTURE_NAMES, fixtureSetup } from "../src/fixtures/fixtures.ts";
+import { FIXTURE_NAMES, fixtureSetup, setupOf } from "../src/fixtures/fixtures.ts";
 import { handle, type Session } from "../src/worker/match-session.ts";
 import type { FromWorker, ToWorker } from "../src/worker/protocol.ts";
 
@@ -16,6 +16,34 @@ function update(reply: FromWorker): Extract<FromWorker, { type: "update" }> {
 }
 
 describe("the match worker's session", () => {
+  it("turns full control on and off: on, it stops at every priority; off, it passes where the person can't act", () => {
+    const many = (card: string, n: number) => Array.from({ length: n }, () => card);
+    // A main phase with nothing in hand: auto-pass has nothing to stop for until the opponent's turn.
+    const setup = setupOf({
+      turn: { number: 3, activePlayer: "p1", step: "precombatMain" },
+      players: {
+        p1: { life: 20, hand: [], battlefield: ["Plains"], library: many("Plains", 10) },
+        p2: { life: 20, hand: [], battlefield: [], library: many("Plains", 10) },
+      },
+    });
+    const started = handle(null, { type: "startFrom", setup, human: "p1" }, cards);
+    expect(update(started.reply).fullControl).toBe(false);
+    const on = handle(started.session, { type: "fullControl", on: true }, cards);
+    expect(update(on.reply).fullControl).toBe(true);
+    const pass = (s: ReturnType<typeof handle>) => {
+      const option = update(s.reply).shown.options.find((o) => o.action.type === "PASS_PRIORITY");
+      if (option === undefined) throw new Error("no pass");
+      return handle(s.session, { type: "act", action: option.action }, cards);
+    };
+    // Full control: the very next step, the beginning of combat, stops the person.
+    const next = pass(on);
+    expect(update(next.reply).shown.view.turn?.step).toBe("beginningOfCombat");
+    // Off again: the host passes on from here at once, as there's nothing the person could do.
+    const off = handle(next.session, { type: "fullControl", on: false }, cards);
+    expect(update(off.reply).fullControl).toBe(false);
+    expect(update(off.reply).shown.view.turn?.step).not.toBe("beginningOfCombat");
+  });
+
   it("starts a match and stops at the person's first decision, their mulligan", () => {
     const { session, reply } = handle(null, start, cards);
     const shown = update(reply).shown;
