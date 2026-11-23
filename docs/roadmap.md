@@ -53,6 +53,10 @@ progression and save slots. Built in `packages/meta` on top of the unchanged eng
   Then (2026-11-23): "Honestly, once everything checks out let's just say yolo and plan out the rust to odin
   rewrite". So once the import is merged, deployed and checked, the next piece of work is a written plan for the
   rewrite (its milestones, a first spike), for the owner to approve before any of it starts.
+  The approach the owner agreed to (2026-11-23, "Those two main ideas sound great"): safely, by recording many games
+  against the Rust engine (seeds, decks, every action and the state after it) as a reference every ported piece
+  must reproduce exactly; quickly, by porting in vertical slices behind the interface the client already calls, so
+  the client never notices the swap.
 
 ## Always
 - Grow the card pool steadily with the `add-cards` skill, and with it the rules, toward every rule two-player games
