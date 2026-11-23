@@ -72,6 +72,47 @@ describe("the main button", () => {
     expect(mainButton(declaring([...twice, { blocker: "o2", attacker: "o7" }])).label).toBe("2 Blockers");
   });
 
+  it("names the creature that must still attack, while the declaration can't finish (CR 508.1d)", () => {
+    const creature = midGame.view.zones.battlefield.find((id) => {
+      const seen = midGame.seen[id];
+      return seen?.kind === "card" && seen.characteristics.types.includes("creature");
+    });
+    if (creature === undefined) throw new Error("no creature on the battlefield");
+    const seen = midGame.seen[creature];
+    const name = seen?.kind === "card" ? seen.characteristics.name : "";
+    const attack = {
+      type: "ANSWER",
+      decisionId: "d1",
+      player: "p1",
+      answer: { kind: "declareAttacker", attack: { attacker: creature, attacked: null } },
+    } as unknown as SeatView["options"][number]["action"];
+    const option = { ...(midGame.options[0] as SeatView["options"][number]), action: attack, obeys: 1 };
+    const declaring: SeatView = {
+      ...midGame,
+      // Another creature could attack too, but obeys nothing by it: only the one that must is named.
+      options: [
+        option,
+        {
+          ...option,
+          action: {
+            ...attack,
+            answer: { kind: "declareAttacker", attack: { attacker: "o999", attacked: null } },
+          } as unknown as typeof attack,
+          obeys: 0,
+        },
+      ],
+      view: {
+        ...midGame.view,
+        decision: { kind: "declareAttackers", chosen: [] } as unknown as SeatView["view"]["decision"],
+      },
+    };
+    expect(mainButton(declaring)).toMatchObject({
+      label: "No Attacks",
+      detail: `Not yet: ${name} must attack`,
+      action: null,
+    });
+  });
+
   it("sends nothing while a decision other than priority waits", () => {
     expect(mainButton(mulliganView())).toEqual({ label: "Choose", detail: null, action: null, hidden: true });
   });

@@ -155,7 +155,7 @@ export const NO_INSETS: Insets = { top: 0, right: 0, bottom: 0, left: 0 };
  * What the person has opened or chosen on screen, apart from the game: the hand open or not, and the card lifted
  * from it or the blocker picked (interaction/controls.ts), which the board lays out differently.
  */
-export type BoardUi = { handOpen: boolean; selected?: ObjectId | null };
+export type BoardUi = { handOpen: boolean; selected?: ObjectId | null; highlight?: readonly ObjectId[] };
 
 export function boardModel(
   shown: SeatView,
@@ -182,7 +182,7 @@ export function boardModel(
   const stack = stackTop(shown, area, layout);
   const cards = [...field.cards, ...stack, ...hand].map((c) => ({
     ...c,
-    playable: playable.has(c.id),
+    playable: playable.has(c.id) || (ui.highlight ?? []).includes(c.id),
     picked: c.picked || c.id === ui.selected,
   }));
   return {
@@ -198,7 +198,7 @@ export function boardModel(
       height: layout.band.h * area.height,
     },
     links: field.links,
-    overlay: { ...overlay, hand: handArea(hand, area) },
+    overlay: { ...overlay, hand: handArea(hand, area), prompt: promptPlace(field.cards, overlay, area, layout) },
     regions: tapRegions(field.cards, hand, ui.handOpen, ui.selected ?? null),
   };
 }
@@ -238,6 +238,22 @@ function overlayAnchors(area: Rect, layout: BoardLayout, step: Step | null, oppo
     })),
     prompt: { x: area.x + area.width / 2, y: area.y + layout.band.y * area.height },
   };
+}
+
+/**
+ * Where the words of what the game waits for go: in the open table between the two creature rows, where nothing is
+ * drawn; or, when combat has filled that gap (attackers step into it), under the opponent's life crest, so the banner
+ * never covers a card's power/toughness.
+ */
+function promptPlace(field: readonly BoardCard[], overlay: OverlayAnchors, area: Rect, layout: BoardLayout): Point {
+  const creatures = field.filter((c) => c.row === "creatures");
+  const theirs = creatures.filter((c) => !c.mine).map((c) => c.y + c.height);
+  const mine = creatures.filter((c) => c.mine).map((c) => c.y);
+  const top = theirs.length === 0 ? area.y + layout.band.y * area.height - 30 : Math.max(...theirs);
+  const bottom = mine.length === 0 ? area.y + layout.band.y * area.height + 30 : Math.min(...mine);
+  if (bottom - top >= layout.promptHeight) return { x: area.x + area.width / 2, y: (top + bottom) / 2 };
+  const crest = overlay.life.opponent;
+  return { x: area.x + area.width / 2, y: crest.y + crest.height + layout.promptHeight / 2 + 4 };
 }
 
 /** The part of the screen the hand covers: from its leftmost card to its rightmost, its costs to the bottom edge. */

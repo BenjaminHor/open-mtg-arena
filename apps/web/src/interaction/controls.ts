@@ -41,6 +41,8 @@ export type Controls = {
   prompt: { title: string; choices: Choice[] } | null;
   /** Conceding is always possible (CR 104.3a): a control of its own, in the settings menu. */
   concede: Action | null;
+  /** Cards the current selection can act on next, to glow as targets do: the attackers a picked blocker can block. */
+  highlight: ObjectId[];
 };
 
 export function controls(shown: SeatView, selection: Selection): Controls {
@@ -113,11 +115,13 @@ export function controls(shown: SeatView, selection: Selection): Controls {
     else if (selection === blocker) cards[blocker] = { label: `${name(blocker)}: put down`, tap: { kind: "deselect" } };
     else cards[blocker] = { label: `${name(blocker)}: pick to block`, tap: { kind: "select" } };
   }
+  const highlight: ObjectId[] = [];
   if (selection !== null && blocks.has(selection)) {
     for (const choice of blocks.get(selection) ?? []) {
       if (choice.action.type !== "ANSWER" || choice.action.answer.kind !== "declareBlocker") continue;
       const attacker = choice.action.answer.block.attacker;
       cards[attacker] = { label: `${name(attacker)}: blocked by ${name(selection)}`, tap: { kind: "send", choice } };
+      highlight.push(attacker);
     }
   }
   // Any other hand card lifts too, to be read, while priority waits; a second tap puts it down.
@@ -135,9 +139,10 @@ export function controls(shown: SeatView, selection: Selection): Controls {
     players,
     main,
     secondary,
-    prompt: leftover.length === 0 ? null : { title: promptTitle(shown), choices: leftover },
+    prompt: leftover.length === 0 ? null : { title: promptTitle(shown, selection), choices: leftover },
     // A player may concede at any time (CR 104.3a); the engine doesn't list it among the options (D-042).
     concede: shown.view.result === null ? { type: "CONCEDE", player: shown.player } : null,
+    highlight,
   };
 }
 
@@ -200,8 +205,12 @@ function attackLabel(planeswalker: ObjectId | null, name: (id: ObjectId) => stri
 }
 
 /** What the prompt asks, by the decision waiting (ui.md: always say what the game is waiting for). */
-export function promptTitle(shown: SeatView): string {
+export function promptTitle(shown: SeatView, selection: Selection = null): string {
   const kind = shown.view.decision?.kind;
+  const picked = selection === null ? undefined : shown.seen[selection];
+  if (kind === "declareBlockers" && picked?.kind === "card") {
+    return `Choose what ${picked.characteristics.name} blocks`;
+  }
   switch (kind) {
     case "chooseStartingPlayer":
       return "Who goes first?";

@@ -35,7 +35,9 @@ test("attacks by tapping creatures, and finishes with the main button", async ({
   await expect(page.getByRole("button", { name: /^1 Attacker/ })).toBeVisible();
   await page.getByRole("button", { name: /^Shivan Dragon: Attack/ }).click();
   // Berserkers of Blood Ridge attacks each combat if able (CR 508.1d): until it does, the button says why it can't finish.
-  await expect(page.getByRole("button", { name: /^2 Attackers.*must attack/ })).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: /^2 Attackers.*Berserkers of Blood Ridge must attack/ }),
+  ).toBeDisabled();
   await page.getByRole("button", { name: /^Berserkers of Blood Ridge: Attack/ }).click();
   await page.getByRole("button", { name: /^3 Attackers/ }).click();
   const attacking = async () =>

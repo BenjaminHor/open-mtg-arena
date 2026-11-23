@@ -6,6 +6,7 @@ import type { Action } from "@mtg/engine";
 import { useEffect, useRef } from "react";
 import type { Rect } from "../board-model/board-model.ts";
 import type { Choice } from "../interaction/controls.ts";
+import { ManaText } from "./ManaText.tsx";
 
 export function ChoiceMenu(props: { at: Rect; choices: Choice[]; act: (action: Action) => void; close: () => void }) {
   const first = useRef<HTMLButtonElement>(null);
@@ -27,7 +28,7 @@ export function ChoiceMenu(props: { at: Rect; choices: Choice[]; act: (action: A
             props.act(choice.action);
           }}
         >
-          {choice.label}
+          <ManaText text={choice.label} />
         </button>
       ))}
     </fieldset>

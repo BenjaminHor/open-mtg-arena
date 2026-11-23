@@ -10,6 +10,7 @@ import type { BoardModel, Rect } from "../board-model/board-model.ts";
 import { type Choice, type Controls, promptTitle } from "../interaction/controls.ts";
 import { CardButtons } from "./CardButtons.tsx";
 import { ChoiceMenu } from "./ChoiceMenu.tsx";
+import { ManaText } from "./ManaText.tsx";
 import { mainButton } from "./main-button.ts";
 import { PhaseLadder } from "./PhaseLadder.tsx";
 import { Prompt } from "./Prompt.tsx";
@@ -21,12 +22,14 @@ type HudProps = {
   model: BoardModel;
   controls: Controls;
   busy: boolean;
-  act: (action: Action) => void;
+  /** Sends an action; `settle` ignores it when it comes a moment after the last update (App.tsx, SETTLE_MS). */
+  act: (action: Action, settle?: boolean) => void;
   onTap: (id: ObjectId) => void;
   menu: { id: ObjectId; choices: Choice[] } | null;
   closeMenu: () => void;
   handOpen: boolean;
   openHand: () => void;
+  selection: ObjectId | null;
 };
 
 export function Hud(props: HudProps) {
@@ -51,6 +54,7 @@ export function Hud(props: HudProps) {
         onTap={props.onTap}
         onHand={props.openHand}
         handOpen={props.handOpen}
+        selection={props.selection}
       />
       <Portrait
         rect={anchors.portrait.opponent}
@@ -68,6 +72,7 @@ export function Hud(props: HudProps) {
         targets={controls.players[me] ?? []}
         act={act}
       />
+      <ManaPoolChip pool={view.players[me]?.manaPool} beside={anchors.portrait.mine} />
       <PhaseLadder ladder={anchors.ladder} label={active === me ? "Your turn" : "Opponent's turn"} />
       {anchors.opponentLadder !== null && <PhaseLadder ladder={anchors.opponentLadder} label={null} />}
       <LifeCrest
@@ -86,7 +91,7 @@ export function Hud(props: HudProps) {
           // Disabled only when it has nothing to do; while an action is on its way it keeps focus (aria-disabled).
           disabled={button.action === null}
           aria-disabled={busy}
-          onClick={() => button.action !== null && !busy && act(button.action)}
+          onClick={() => button.action !== null && !busy && act(button.action, true)}
         >
           <span className="main-label">{button.label}</span>
           {button.detail !== null && (
@@ -105,14 +110,19 @@ export function Hud(props: HudProps) {
             className="secondary-button"
             style={place(at)}
             aria-disabled={busy}
-            onClick={() => !busy && act(choice.action)}
+            onClick={() => !busy && act(choice.action, true)}
           >
             {choice.label}
           </button>
         );
       })}
       <div className="prompt-anchor" style={{ left: anchors.prompt.x, top: anchors.prompt.y }}>
-        <Prompt prompt={controls.prompt} title={deciding ? promptTitle(shown) : null} busy={busy} act={act} />
+        <Prompt
+          prompt={controls.prompt}
+          title={deciding ? promptTitle(shown, props.selection) : null}
+          busy={busy}
+          act={act}
+        />
       </div>
       {props.menu !== null && menuAt !== undefined && menuAt !== null && (
         <ChoiceMenu at={menuAt} choices={props.menu.choices} act={act} close={props.closeMenu} />
@@ -124,6 +134,30 @@ export function Hud(props: HudProps) {
         </p>
       )}
     </section>
+  );
+}
+
+/**
+ * The mana in the person's pool (CR 106.4), beside their portrait while there is any: one symbol per type with how much,
+ * so mana made by tapping a land for a cost that needs more is in sight until it's spent or empties (CR 500.4).
+ */
+function ManaPoolChip({ pool, beside }: { pool: Record<string, number> | undefined; beside: Rect }) {
+  const held = Object.entries(pool ?? {}).filter(([, n]) => n > 0);
+  if (held.length === 0) return null;
+  return (
+    <div
+      className="mana-pool"
+      style={{ left: beside.x + beside.width + 8, top: beside.y + beside.height / 2 - 14 }}
+      role="img"
+      aria-label={`Mana pool: ${held.map(([type, n]) => `${n} ${type}`).join(", ")}`}
+    >
+      {held.map(([type, n]) => (
+        <span key={type}>
+          <ManaText text={`{${type}}`} />
+          {n > 1 && <span className="mana-count">×{n}</span>}
+        </span>
+      ))}
+    </div>
   );
 }
 

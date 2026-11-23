@@ -54,12 +54,11 @@ function declarationButton(shown: SeatView): MainButton | null {
   const action = finish?.action ?? null;
   // The picks so far are the declaration under way, before it's finished. Until it obeys every requirement (CR 508.1d,
   // 509.1c: a creature that attacks each combat, one all must block), finishing isn't offered: the button says why.
-  const notYet = "Not yet: one more must";
   if (decision.kind === "declareAttackers") {
     const n = decision.chosen.length;
     return {
       label: n === 0 ? "No Attacks" : `${n} Attacker${n === 1 ? "" : "s"}`,
-      detail: action === null ? `${notYet} attack` : "To Blockers",
+      detail: action === null ? `Not yet: ${whoMust(shown)} attack` : "To Blockers",
       action,
       hidden: false,
     };
@@ -68,10 +67,28 @@ function declarationButton(shown: SeatView): MainButton | null {
   const n = new Set(decision.chosen.map((b) => b.blocker)).size;
   return {
     label: n === 0 ? "No Blocks" : `${n} Blocker${n === 1 ? "" : "s"}`,
-    detail: action === null ? `${notYet} block` : "To Damage",
+    detail: action === null ? `Not yet: ${whoMust(shown)} block` : "To Damage",
     action,
     hidden: false,
   };
+}
+
+/**
+ * Who must still be picked before the declaration can finish: the creature whose pick obeys a requirement (the seat
+ * view's `obeys`, CR 508.1d, 509.1c: "attacks each combat if able"), named when there's just one, as "Berserkers of
+ * Blood Ridge must"; else "one more must".
+ */
+function whoMust(shown: SeatView): string {
+  const most = Math.max(0, ...shown.options.map((o) => o.obeys ?? 0));
+  const names = new Set<string>();
+  for (const o of shown.options) {
+    if (most === 0 || o.obeys !== most || o.action.type !== "ANSWER") continue;
+    const a = o.action.answer;
+    const id = a.kind === "declareAttacker" ? a.attack.attacker : a.kind === "declareBlocker" ? a.block.blocker : null;
+    const seen = id === null ? undefined : shown.seen[id];
+    if (seen?.kind === "card") names.add(seen.characteristics.name);
+  }
+  return names.size === 1 ? `${[...names][0]} must` : "one more must";
 }
 
 /** An ability on the stack is named by where it came from: "Ajani Goldmane ability". */

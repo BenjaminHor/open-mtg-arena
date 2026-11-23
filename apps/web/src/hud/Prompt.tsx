@@ -5,6 +5,7 @@
 
 import type { Action } from "@mtg/engine";
 import type { Controls } from "../interaction/controls.ts";
+import { ManaText } from "./ManaText.tsx";
 
 export function Prompt({
   prompt,
@@ -35,7 +36,7 @@ export function Prompt({
               aria-disabled={busy}
               onClick={() => !busy && act(choice.action)}
             >
-              {choice.label}
+              <ManaText text={choice.label} />
             </button>
           ))}
         </div>

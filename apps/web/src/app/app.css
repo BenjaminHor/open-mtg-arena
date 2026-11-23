@@ -289,13 +289,35 @@ body,
   cursor: pointer;
 }
 
+/* Over the lifted hand card's lower edge: what a second tap on it does. Taps go through it to the card. */
+.hud .tap-again {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  background: rgba(10, 12, 16, 0.85);
+  border: 1px solid var(--gold);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.hud .tap-shield {
+  pointer-events: auto;
+}
+
 .hud .tap-region:active {
   background: rgba(255, 255, 255, 0.12);
 }
 
+/* Keyboard focus: white with a dark halo, so it reads on any art and never looks like the yellow of a picked card. */
 .hud button:focus-visible {
-  outline: 3px solid #ffd76a;
+  outline: 3px solid #ffffff;
   outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.75);
 }
 
 /* A player who can be targeted: a cyan outline, as a targetable card has, and a pointer. */
@@ -462,4 +484,48 @@ body,
   display: grid;
   place-items: center;
   margin: 0;
+}
+
+/* Mana symbols in HUD text (hud/ManaText.tsx): the renderer's colours (palette.ts MANA_COLORS), the letter on each,
+   so the shape and letter carry it, not the colour alone. */
+.mana-sym {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15em;
+  height: 1.15em;
+  margin: 0 0.08em;
+  border-radius: 50%;
+  border: 1px solid #0c0d10;
+  background: #c4c0b8;
+  color: #1a1a1a;
+  font-size: 0.85em;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: -0.15em;
+}
+.mana-W { background: #eee6c9; }
+.mana-U { background: #4a8fd4; }
+.mana-B { background: #8a8090; }
+.mana-R { background: #d65a42; }
+.mana-G { background: #4d9a5c; }
+.mana-T { background: #e8e4da; }
+
+/* The person's mana pool, beside their portrait. */
+.hud .mana-pool {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 14px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+}
+.hud .mana-count {
+  margin-left: 2px;
+  font-size: 12px;
 }

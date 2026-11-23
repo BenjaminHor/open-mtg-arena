@@ -36,6 +36,9 @@ function startFromUrl(): ToWorker | { error: string } {
   };
 }
 
+/** How long after an update a press is taken as meant for it, not for what was on screen before. */
+const SETTLE_MS = 300;
+
 /**
  * Whether a control has the keyboard's focus: then Space is that control's, not the main button's. A button a tap or
  * click left focused doesn't count (it shows no focus ring), so Space after a tap still presses the main button.
@@ -61,12 +64,17 @@ export function App() {
   const [busy, setBusy] = useState(false);
   // The guard itself, so two presses in the same moment can't both send: the state above only draws it.
   const busyNow = useRef(false);
+  // When the last update arrived: a press of the main button or one beside it within a moment of it was aimed at what
+  // was there before (a double-tap on Next would otherwise pass the next step too, ui.md "Never"), so it's ignored.
+  // Taps on cards and targets aren't held back: each says on it what it does, and a quick player shouldn't lose one.
+  const updatedAt = useRef(0);
 
   useEffect(() => {
     const started = startMatchWorker((reply) => {
       busyNow.current = false;
       setBusy(false);
       if (reply.type === "update") {
+        updatedAt.current = performance.now();
         setUpdate(reply);
         setError(null);
       } else setError(reply.message);
@@ -115,11 +123,18 @@ export function App() {
       setSelection(null);
   }, [shown, selection]);
   const model = useMemo(
-    () => (shown !== null && size !== null ? boardModel(shown, size, insets, { handOpen, selected: selection }) : null),
-    [shown, size, insets, handOpen, selection],
+    () =>
+      shown !== null && size !== null
+        ? boardModel(shown, size, insets, {
+            handOpen,
+            selected: selection,
+            highlight: controlsNow?.highlight ?? [],
+          })
+        : null,
+    [shown, size, insets, handOpen, selection, controlsNow],
   );
-  const act = useCallback((action: Action) => {
-    if (busyNow.current) return;
+  const act = useCallback((action: Action, settle = false) => {
+    if (busyNow.current || (settle && performance.now() - updatedAt.current < SETTLE_MS)) return;
     busyNow.current = true;
     setBusy(true);
     setMenuFor(null);
@@ -174,7 +189,7 @@ export function App() {
         else if (handOpen) setHandOpen(false);
       } else if (event.key === " " && !event.repeat && !keyboardFocused()) {
         event.preventDefault();
-        if (controlsNow?.main != null) act(controlsNow.main);
+        if (controlsNow?.main != null) act(controlsNow.main, true);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -198,6 +213,7 @@ export function App() {
           closeMenu={() => setMenuFor(null)}
           handOpen={handOpen}
           openHand={() => setHandOpen(true)}
+          selection={selection}
         />
       )}
       {error !== null && (

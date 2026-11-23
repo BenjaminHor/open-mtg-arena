@@ -15,9 +15,14 @@ export function stackTop(shown: SeatView, area: Rect, layout: BoardLayout): Boar
   if (top === undefined) return [];
   const card = top.kind === "card" ? top : shown.seen[top.source];
   if (card?.kind !== "card") return [];
-  const height = layout.stack.h * area.height;
+  // While the person chooses for it (targets, X, paying), it's small at the right edge, never over a target [R].
+  const choosing = shown.view.casting !== null && shown.view.casting.player === shown.player;
+  const height = (choosing ? layout.stack.smallH : layout.stack.h) * area.height;
   const width = height * layout.ratio.hand;
-  const rect = { x: area.x + layout.stack.x * area.width, y: area.y + layout.stack.y * area.height, width, height };
+  const right = area.x + area.width - 8;
+  const x = choosing ? right - width : Math.min(area.x + layout.stack.x * area.width, right - width);
+  const y = area.y + (choosing ? layout.stack.smallY : layout.stack.y) * area.height;
+  const rect = { x, y, width, height };
   const shownCard = boardCard(card, "stack", card.characteristics.controller === shown.player, rect, {
     rotation: 0,
     dim: 0,
