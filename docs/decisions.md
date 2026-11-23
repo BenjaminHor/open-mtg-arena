@@ -2361,6 +2361,8 @@ owner's answer to the D-089 open question, option (a))
 - data-sources.md asks for the artist's credit in the same view as an art crop. Permanents on the board show art crops
   without one, as Arena does; the owner ruled that the long-press view (M3-04c), which shows the full card image with
   its artist credit, is enough. No credits line on the board. Hand cards are full card images, credit included.
+- Owner (2026-11-23, on the card view): "The artist credit is already on the card itself, no need for the credit
+  below it." The view shows the full card image, whose printed credit is the credit; no "Illustrated by" line.
 
 **D-156: Acting on the board: controls from the options, buttons over the canvas (M3-04b)** · 2026-11-23 · accepted
 - `interaction/controls.ts` turns the seat view's options into controls: a tap on a card (lift a hand card then play

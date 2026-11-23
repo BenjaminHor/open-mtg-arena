@@ -1,7 +1,8 @@
 // The card view (M3-04c; arena-research.md, "The Examined view"): a card shown large, with its hangers beside it
-// (`interaction/card-details.ts`) and the artist's credit (D-155). Opened by a long-press, a right-click or the "i" key
-// as a full view, closed by a tap anywhere or Escape; a mouse resting on a card shows the same as a preview that
-// passes taps through and goes when the mouse leaves, as Arena's desktop client does (D-160).
+// (`interaction/card-details.ts`). The full image's printed credit is the artist's credit (D-155). Opened by a
+// long-press, a right-click or the "i" key as a full view, closed by a tap anywhere or Escape; a mouse resting on a
+// card shows the same as a preview that passes taps through and goes when the mouse leaves, as Arena's desktop client
+// does (D-160).
 
 import type { CardDetails } from "../interaction/card-details.ts";
 import { ManaText } from "./ManaText.tsx";
@@ -31,7 +32,6 @@ export function CardView({ inspected, close }: { inspected: Inspected; close: ()
             {details.powerToughness !== null && <p className="card-view-pt">{details.powerToughness}</p>}
           </div>
         )}
-        {details.artist !== null && <figcaption>Illustrated by {details.artist}</figcaption>}
       </figure>
       {details.hangers.length > 0 && (
         <ul className="card-view-hangers">

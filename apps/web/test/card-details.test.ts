@@ -35,13 +35,12 @@ function idOf(shown: SeatView, name: string): ObjectId {
 const titles = (id: ObjectId) => cardDetails(board, id)?.hangers.map((h) => h.title);
 
 describe("cardDetails", () => {
-  it("shows the card's own text, image and artist", () => {
+  it("shows the card's own text and image", () => {
     const angel = cardDetails(board, idOf(board, "Serra Angel"));
     expect(angel?.name).toBe("Serra Angel");
     expect(angel?.typeLine).toContain("Angel");
     expect(angel?.oracleText).toContain("Flying");
     expect(angel?.image).not.toBeNull();
-    expect(angel?.artist).not.toBeNull();
   });
 
   it("explains each keyword in a hanger of its own", () => {

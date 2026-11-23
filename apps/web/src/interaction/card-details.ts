@@ -15,7 +15,6 @@ export type CardDetails = {
   oracleText: string;
   /** Power/toughness now, when it's a creature: "5/5". */
   powerToughness: string | null;
-  artist: string | null;
   /** The hangers: a heading and a line each, in the order they're shown. */
   hangers: { title: string; text: string }[];
 };
@@ -108,7 +107,6 @@ export function cardDetails(shown: SeatView, id: ObjectId): CardDetails | null {
     typeLine: info?.typeLine ?? [...c.supertypes, ...c.types].join(" "),
     oracleText: info?.oracleText ?? "",
     powerToughness: now,
-    artist: info?.artist ?? null,
     hangers,
   };
 }

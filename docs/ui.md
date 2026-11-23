@@ -167,7 +167,7 @@ action must also work with a mouse and with a keyboard:
 
 - **Tap** to select; **tap again or tap a target** to confirm. **Drag** a card from hand onto the board
   to play it (with tap-to-play as the equivalent, since dragging should never be the only way).
-- **Long-press** (about 400 ms) shows the full card image, Oracle text and artist credit, with a panel beside it
+- **Long-press** (about 400 ms) shows the full card image (its printed artist credit included), with a panel beside it
   for each keyword's reminder, counters, damage, attachments and control. No rulings: Arena's view has none (D-160).
   There's no hover anywhere, because touch has none.
 - Hit targets are at least 44×44 points. Spacing prevents mis-taps on dense boards.
