@@ -59,7 +59,10 @@ export type BoardCard = {
   frameColors: readonly Color[];
   /** True for a land: drawn with a land's frame. */
   land: boolean;
-  /** The art to draw, loaded at runtime (D-007); null for a token, which has none yet. */
+  /**
+   * The image to draw, loaded at runtime (D-007): a permanent's art crop, a hand card's full card image. Null for a
+   * token, which has none yet.
+   */
   art: string | null;
   /** A hand card's type line and rules text, drawn whole as a printed card is (ui.md); empty on the battlefield. */
   typeLine: string;
@@ -103,6 +106,8 @@ export type OverlayAnchors = {
   opponentLadder: Ladder | null;
   /** The opponent's crest takes their ladder's combat slot, and glows while they're in combat [R]. */
   opponentInCombat: boolean;
+  /** Where the hand shows on screen, its mana costs included: a tap there opens or closes it. Null with no hand. */
+  hand: Rect | null;
 };
 
 export type BoardModel = {
@@ -128,10 +133,14 @@ export type Insets = { top: number; right: number; bottom: number; left: number 
 
 export const NO_INSETS: Insets = { top: 0, right: 0, bottom: 0, left: 0 };
 
+/** What the person has opened or chosen on screen, apart from the game: the board lays out differently for it. */
+export type BoardUi = { handOpen: boolean };
+
 export function boardModel(
   shown: SeatView,
   size: BoardSize,
   insets: Insets = NO_INSETS,
+  ui: BoardUi = { handOpen: false },
   layout: BoardLayout = COMPACT,
 ): BoardModel {
   const me = shown.player;
@@ -148,10 +157,8 @@ export function boardModel(
   const overlay = overlayAnchors(area, layout, turn?.step ?? null, turn?.activePlayer === opponent);
   const field = withCombat(withPicks(shown, battlefieldCards(shown, area, me, layout, overlay)), area, layout);
   const playable = playableIds(shown);
-  const cards = [...field.cards, ...handCards(shown, area, layout)].map((c) => ({
-    ...c,
-    playable: playable.has(c.id),
-  }));
+  const hand = handCards(shown, area, layout, ui.handOpen);
+  const cards = [...field.cards, ...hand].map((c) => ({ ...c, playable: playable.has(c.id) }));
   return {
     width: size.width,
     height: size.height,
@@ -165,7 +172,7 @@ export function boardModel(
       height: layout.band.h * area.height,
     },
     links: field.links,
-    overlay,
+    overlay: { ...overlay, hand: handArea(hand, area) },
   };
 }
 
@@ -195,5 +202,15 @@ function overlayAnchors(area: Rect, layout: BoardLayout, step: Step | null, oppo
     ladder: ladderOver(button, step, layout),
     opponentLadder: opponentsTurn ? ladderAroundCrest(opponentCrest, step, layout) : null,
     opponentInCombat: opponentsTurn && step !== null && inCombat(step),
+    hand: null,
   };
+}
+
+/** The part of the screen the hand covers: from its leftmost card to its rightmost, its costs to the bottom edge. */
+function handArea(hand: readonly BoardCard[], area: Rect): Rect | null {
+  if (hand.length === 0) return null;
+  const left = Math.min(...hand.map((c) => c.x));
+  const right = Math.max(...hand.map((c) => c.x + c.width));
+  const top = Math.min(...hand.map((c) => c.y - 2 * c.costRadius));
+  return { x: left, y: top, width: right - left, height: area.y + area.height - top };
 }

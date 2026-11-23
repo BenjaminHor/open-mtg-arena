@@ -34,23 +34,9 @@ export type BoardLayout = {
   rowGap: number;
   /** A tapped permanent's tilt (radians) and how dark it's shaded (0 to 1). */
   tapped: { tilt: number; dim: number };
-  /**
-   * The person's hand, collapsed: `shown` of each card's height on screen, between `left` and `right`, parted
-   * `crestGap` px around the person's life crest. Each card's mana cost floats above it, symbols of radius `cost` px,
-   * smaller (to `minCost`) when its strip of the hand is narrow.
-   */
-  hand: {
-    h: number;
-    shown: number;
-    left: number;
-    right: number;
-    mostStep: number;
-    fan: number;
-    arcDrop: number;
-    crestGap: number;
-    cost: number;
-    minCost: number;
-  };
+  /** The person's hand collapsed [R], and opened by a tap [R] (`HandLayout`). */
+  hand: HandLayout;
+  handOpen: HandLayout;
   /** The opponent's hand as backs along the top edge, `shown` of their height on screen, centred at `centre`. */
   opponentHand: { h: number; shown: number; centre: number; step: number };
   /** Each library pile: its centre `x` and how much of it is on screen. */
@@ -70,4 +56,24 @@ export type BoardLayout = {
   combat: { advance: number; gangOverlap: number };
   /** px: the space kept between the outer rows and the life crests. */
   crestClearance: number;
+};
+
+/**
+ * The person's hand: cards `h` of the height tall, `shown` of each card's height on screen, between `left` and `right`
+ * (shares of the width), each card at most `mostStep` (of W) after the last, in a fan of `fan` radians a card dropping
+ * `arcDrop` (of H) per card squared from the middle, parted `crestGap` px around the person's life crest (0 to let the
+ * crest sit over the cards). Each card's mana cost floats over its top edge, symbols of radius `cost` px, smaller (to
+ * `minCost`) when its strip is narrow.
+ */
+export type HandLayout = {
+  h: number;
+  shown: number;
+  left: number;
+  right: number;
+  mostStep: number;
+  fan: number;
+  arcDrop: number;
+  crestGap: number;
+  cost: number;
+  minCost: number;
 };

@@ -11,7 +11,15 @@ import { OptionsDrawer } from "./OptionsDrawer.tsx";
 import { PhaseLadder } from "./PhaseLadder.tsx";
 import { place } from "./place.ts";
 
-export function Hud({ shown, model, act }: { shown: SeatView; model: BoardModel; act: (action: Action) => void }) {
+type HudProps = {
+  shown: SeatView;
+  model: BoardModel;
+  act: (action: Action) => void;
+  handOpen: boolean;
+  toggleHand: () => void;
+};
+
+export function Hud({ shown, model, act, handOpen, toggleHand }: HudProps) {
   const view = shown.view;
   const me = shown.player;
   const opponent = view.turnOrder.find((p) => p !== me) ?? me;
@@ -46,6 +54,17 @@ export function Hud({ shown, model, act }: { shown: SeatView; model: BoardModel;
           <span className="main-label">{button.label}</span>
           {button.detail !== null && <span className="main-detail">{button.detail}</span>}
         </button>
+      )}
+      {anchors.hand !== null && (
+        // A tap on the hand opens it, and on the open hand closes it [R]. Playing a card from it is M3-04b.
+        <button
+          type="button"
+          className="hand-toggle"
+          style={place(anchors.hand)}
+          aria-label={handOpen ? "Close your hand" : "Open your hand"}
+          aria-expanded={handOpen}
+          onClick={toggleHand}
+        />
       )}
       <OptionsDrawer shown={shown} act={act} />
       {result !== null && (

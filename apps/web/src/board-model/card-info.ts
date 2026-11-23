@@ -13,6 +13,8 @@ export type CardInfo = {
   oracleText: string;
   /** Scryfall's art crop, loaded at runtime and never bundled (D-007). */
   artCrop: string;
+  /** Scryfall's full card image, for a card in hand (ui.md, "Hand cards are the real card image"). */
+  image: string;
   artist: string;
   /** Printed power and toughness as numbers; null for none or a "*" value (CR 208.2). */
   power: number | null;
@@ -29,6 +31,7 @@ const BY_ORACLE_ID = new Map<OracleId, CardInfo>(
       typeLine: c.typeLine,
       oracleText: c.oracleText,
       artCrop: c.images.artCrop,
+      image: c.images.normal,
       artist: c.artist,
       power: number(c.power),
       toughness: number(c.toughness),

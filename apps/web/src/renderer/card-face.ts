@@ -63,6 +63,9 @@ export function drawFace(card: BoardCard): Face {
   if (card.tapped && !card.behind && !card.attacking) face.addChild(tapMark(Math.min(w, h)));
   if (card.attacking || card.blocking.length > 0) face.addChild(combatBadge(card.attacking ? "attack" : "block", w, h));
   if (card.pileCount !== null) face.addChild(pileBadge(card.pileCount, w, h));
+  // A hand card's full image covers the drawn card once it loads, under the floating cost.
+  const fullLayer = new Container();
+  face.addChild(fullLayer);
   if (card.manaCost.length > 0 && card.costRadius > 0) {
     const row = manaCostRow(card.manaCost, card.costRadius);
     // Over the card's top edge, overlapping the frame a little (the owner, ui.md "Mana costs overlap the card").
@@ -74,6 +77,16 @@ export function drawFace(card: BoardCard): Face {
     showArt: (texture) => {
       const sprite = new Sprite(texture);
       sprite.label = ART_LABEL;
+      if (card.zone === "hand") {
+        // The whole card image, unaltered (data-sources.md), its corners rounded as the card's are.
+        sprite.width = w;
+        sprite.height = h;
+        sprite.position.set(-w / 2, -h / 2);
+        const corners = new Graphics().roundRect(-w / 2, -h / 2, w, h, radius).fill(0xffffff);
+        sprite.mask = corners;
+        fullLayer.addChild(corners, sprite);
+        return;
+      }
       // Cover the window, keeping the art's shape, centred; the mask trims what's outside it.
       const scale = Math.max(art.w / texture.width, art.h / texture.height);
       sprite.scale.set(scale);

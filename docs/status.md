@@ -162,6 +162,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - Owner (2026-11-23): "how does the expanded view of your hand look like". Not built yet (it was 04b's); built now in
     this slice: the open hand's layout (arena-research.md, "The hand, opened") and a tap on the hand to open or close
     it. Playing a card from it stays 04b.
+  - Owner (2026-11-23): cards in hand can be the actual card image; recorded in ui.md, done (Scryfall's full image at
+    runtime, our drawn card as the fallback).
   - **M3-04b, touch.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:
@@ -1810,6 +1812,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 ## Open questions
 
+- Art credit on the battlefield (2026-11-23): data-sources.md says an art crop needs the artist's credit elsewhere in
+  the same view. Permanents show art crops without it (as Arena does); the long-press details (M3-04c) will show the
+  full image with its credit. Is that enough, or should the board carry a credits line or panel too?
 - Desktop hover (2026-11-23): should hovering a card with a mouse show a large preview, as Arena's desktop client
   does? On touch, long-press shows the details (M3-04c) either way. for the owner
 - (2026-11-23, after M3) What follows M3? The owner says M4 (deckbuilding) is up for debate and likes Legends of

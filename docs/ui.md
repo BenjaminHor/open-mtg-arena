@@ -37,6 +37,11 @@ untapped ones (D-153).
 more detailed. You see the entire card." A card in hand is drawn whole: name and mana cost, art, type line, rules
 text, and power/toughness in a box at the bottom right, as a printed card is laid out (our own drawing, D-140).
 
+**Hand cards are the real card image (owner, 2026-11-23):** "I feel like the cards in hand can just be the actual card
+art itself." A card in hand shows Scryfall's full card image (loaded at runtime, D-007), whole and unaltered, its
+artist credit and copyright included (data-sources.md); our drawn whole card is the fallback until it loads, offline
+and in the tests (D-153).
+
 **Names are never cut off (owner, 2026-11-23):** "It also seems like arena doesn't cut off card names." A card's name
 shrinks to fit its strip instead of ending in an ellipsis.
 

@@ -42,6 +42,7 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
   const [size, setSize] = useState<BoardSize | null>(null);
   const [insets, setInsets] = useState<Insets>(NO_INSETS);
+  const [handOpen, setHandOpen] = useState(false);
 
   useEffect(() => {
     const started = startMatchWorker((reply) => {
@@ -79,8 +80,8 @@ export function App() {
   }, []);
 
   const model = useMemo(
-    () => (update !== null && size !== null ? boardModel(update.shown, size, insets) : null),
-    [update, size, insets],
+    () => (update !== null && size !== null ? boardModel(update.shown, size, insets, { handOpen }) : null),
+    [update, size, insets, handOpen],
   );
   const act = useCallback((action: Action) => client.current?.send({ type: "act", action }), []);
 
@@ -88,7 +89,15 @@ export function App() {
     <main className="app" ref={main}>
       <BoardCanvas model={model} onError={setError} />
       {update === null && error === null && <p className="loading">Starting a match…</p>}
-      {update !== null && model !== null && <Hud shown={update.shown} model={model} act={act} />}
+      {update !== null && model !== null && (
+        <Hud
+          shown={update.shown}
+          model={model}
+          act={act}
+          handOpen={handOpen}
+          toggleHand={() => setHandOpen((open) => !open)}
+        />
+      )}
       {error !== null && (
         <p role="alert" className="toast">
           {error}

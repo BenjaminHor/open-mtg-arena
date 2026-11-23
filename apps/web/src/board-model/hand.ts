@@ -1,7 +1,7 @@
 // The person's hand, collapsed [R]: overlapped across the bottom centre in a slight fan, only the top of each card
 // showing (its name strip and the top of its art), its mana cost floating above it. The life crest sits over the
-// middle of the hand [R], so the hand parts around it rather than hide a card under it. Tapping the hand to fan it
-// open is M3-04b.
+// middle of the hand [R], so the hand parts around it rather than hide a card under it. Opened (a tap on it), the hand
+// fans up across most of the width with the crest in front [R].
 
 import type { SeatView } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
@@ -9,8 +9,9 @@ import { boardCard } from "./board-card.ts";
 import type { BoardCard, Rect } from "./board-model.ts";
 import { cardInfo, manaSymbols } from "./card-info.ts";
 
-export function handCards(shown: SeatView, area: Rect, layout: BoardLayout): BoardCard[] {
-  const { hand, ratio } = layout;
+export function handCards(shown: SeatView, area: Rect, layout: BoardLayout, open: boolean): BoardCard[] {
+  const hand = open ? layout.handOpen : layout.hand;
+  const { ratio } = layout;
   const cards = (shown.view.zones.players[shown.player]?.hand ?? []).flatMap((id) => {
     const seen = shown.seen[id];
     return seen?.kind === "card" ? [seen] : [];

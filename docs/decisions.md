@@ -2334,6 +2334,9 @@ owner's answer to the D-089 open question, option (a))
   row is drawn right to left so each card keeps its power/toughness in sight.
 - The hand parts around the person's life crest rather than hide a card under it, and each card's floating cost
   shrinks to fit its strip of the hand.
+- A card in hand is Scryfall's full card image (the owner, 2026-11-23), shown whole and unaltered with its artist
+  credit and copyright (data-sources.md); overlapping in the fanned hand is how a hand is shown, not an alteration of
+  the image. Our drawn whole card stands in until it loads.
 - Without its art (loading, offline, the browser tests) a card shows a dark field tinted by its frame with its colour's
   glyph as a watermark, not a flat slab.
 - The board model takes the layout as a parameter (`BoardLayout`, the compact one by default), and gives the HUD every

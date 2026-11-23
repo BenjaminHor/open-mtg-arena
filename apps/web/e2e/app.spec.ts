@@ -45,6 +45,23 @@ test("draws a fixture board: permanents, the hand, the opponent's hand as backs,
   expect(drawn?.backs).toHaveLength(4);
 });
 
+test("opens the hand with a tap, and closes it with another", async ({ page }) => {
+  await page.goto("/?fixture=mid-game");
+  const handTop = async () => {
+    const b = await page.evaluate(
+      () => (window as unknown as { __board?: { height: number; cards: { zone: string; y: number }[] } }).__board,
+    );
+    const ys = (b?.cards ?? []).filter((c) => c.zone === "hand").map((c) => c.y);
+    return ys.length === 0 ? null : Math.min(...ys) / (b?.height ?? 1);
+  };
+  await expect.poll(handTop).toBeGreaterThan(0.8);
+  await page.getByRole("button", { name: "Open your hand" }).click();
+  // Open, the cards rise well up the screen to be read [R].
+  await expect.poll(handTop).toBeLessThan(0.7);
+  await page.getByRole("button", { name: "Close your hand" }).click();
+  await expect.poll(handTop).toBeGreaterThan(0.8);
+});
+
 test("draws each card's art when it loads, and the art-less frame when it can't", async ({ page }) => {
   await page.goto("/?fixture=mid-game");
   await expect(page.getByRole("img", { name: "Your life 17" })).toBeVisible();

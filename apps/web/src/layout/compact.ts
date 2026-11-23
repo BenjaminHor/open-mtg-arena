@@ -37,6 +37,20 @@ export const COMPACT: BoardLayout = {
     cost: 7,
     minCost: 4.5,
   },
+  // Opened by a tap [R]: the cards fan up across the width short of the main button, enough of each showing to read
+  // its type line and the start of its text; the life crest stays in front at the bottom centre [R].
+  handOpen: {
+    h: 0.58,
+    shown: 0.72,
+    left: 0.06,
+    right: 0.82,
+    mostStep: 0.16,
+    fan: (3.5 * Math.PI) / 180,
+    arcDrop: 0.006,
+    crestGap: 0,
+    cost: 9,
+    minCost: 6,
+  },
   // Backs along the top edge, left of centre, mostly off screen [R]; clear of the ladder on the opponent's turn.
   opponentHand: { h: 0.2, shown: 0.42, centre: 0.3, step: 0.022 },
   // The opponent's library at the top edge near 67% W, the person's near 24% W [R].

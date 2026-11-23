@@ -59,6 +59,15 @@ body,
   color: inherit;
 }
 
+/* An invisible button over the hand: the cards themselves are drawn on the canvas below it. */
+.hud .hand-toggle {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
 .portrait {
   box-sizing: border-box;
   border-radius: 8px;
