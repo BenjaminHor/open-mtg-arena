@@ -51,6 +51,9 @@ export type BoardCard = {
   land: boolean;
   /** The art to draw, loaded at runtime (D-007); null for a token, which has none yet. */
   art: string | null;
+  /** A hand card's type line and rules text, drawn whole as a printed card is (ui.md); empty on the battlefield. */
+  typeLine: string;
+  text: string;
   /** The printed mana cost's symbols, shown over a hand card (CR 107.4). Empty on the battlefield. */
   manaCost: string[];
   power: number | null;

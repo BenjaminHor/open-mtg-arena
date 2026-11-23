@@ -33,6 +33,22 @@ just taps them within the stack visually. I think if they're tapped then they sh
 that makes sense. So it doesn't look messy." A pile's tapped cards gather on top of it, together, in front of its
 untapped ones (D-153).
 
+**Hand cards are whole cards (owner, 2026-11-23):** "it might not be obvious but cards in hand are actually a little
+more detailed. You see the entire card." A card in hand is drawn whole: name and mana cost, art, type line, rules
+text, and power/toughness in a box at the bottom right, as a printed card is laid out (our own drawing, D-140).
+
+**Names are never cut off (owner, 2026-11-23):** "It also seems like arena doesn't cut off card names." A card's name
+shrinks to fit its strip instead of ending in an ellipsis.
+
+**Mana costs overlap the card (owner, 2026-11-23):** "I think mana costs can overload ever so slightly instead of just
+hovering above the card." A hand card's floating cost sits over its top edge, overlapping the frame a little, as in
+the owner's screenshots, rather than clear above it.
+
+**Hover and long-press (owner's question, 2026-11-23):** "I'm also curious what hovering over a card does on the
+battlefield." Touch has no hover, so on the phone a long-press opens the card's details (arena-research.md, "Examine
+(long-press)": the card large, and a panel per ability or effect on it), planned for M3-04c. Whether a desktop mouse
+hover should also show a large preview, as Arena's desktop client does, is an open question for the owner.
+
 **Room between the battlefields (owner, 2026-11-23):** "the space between my battlefield and the opponents
 battlefield seems really cramped compared to mtg arena." In the owner's recent screenshots a creature is about 13% of
 the screen's height tall, and about 9% of the height of open table separates the two creature rows; nothing is drawn

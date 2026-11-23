@@ -9,6 +9,8 @@ export type CardInfo = {
   /** For example "{1}{R}"; empty for a land. A copy shows what it copied (its oracle id is the copied card's). */
   manaCost: string;
   typeLine: string;
+  /** The Oracle rules text, lines split by "\n". */
+  oracleText: string;
   /** Scryfall's art crop, loaded at runtime and never bundled (D-007). */
   artCrop: string;
   artist: string;
@@ -25,6 +27,7 @@ const BY_ORACLE_ID = new Map<OracleId, CardInfo>(
     {
       manaCost: c.manaCost,
       typeLine: c.typeLine,
+      oracleText: c.oracleText,
       artCrop: c.images.artCrop,
       artist: c.artist,
       power: number(c.power),

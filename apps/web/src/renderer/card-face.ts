@@ -6,8 +6,11 @@
 
 import { Container, Graphics, Sprite, Text, type Texture } from "pixi.js";
 import type { BoardCard } from "../board-model/board-model.ts";
-import { type ColorSymbol, colorGlyph, manaCostRow } from "./mana-symbols.ts";
-import { FRAME, frameColor, mix, PALETTE } from "./palette.ts";
+import { combatBadge, combatBadgeRadius, pileBadge, tapMark } from "./card-marks.ts";
+import { handLower, ptBox } from "./hand-face.ts";
+import { type ColorSymbol, colorGlyph, manaCostRow, manaSymbol } from "./mana-symbols.ts";
+import { frameColor, mix, PALETTE } from "./palette.ts";
+import { fitText } from "./text-fit.ts";
 
 export const ART_LABEL = "art";
 
@@ -34,7 +37,7 @@ export function drawFace(card: BoardCard): Face {
   );
   const inner = { x: -w / 2 + border, y: -h / 2 + border, w: w - 2 * border };
   const nameH = Math.max(13, h * (card.zone === "hand" ? 0.1 : 0.17));
-  const artBottom = card.zone === "hand" ? -h / 2 + h * 0.56 : h / 2 - border;
+  const artBottom = card.zone === "hand" ? -h / 2 + h * 0.5 : h / 2 - border;
   const art = { x: inner.x, y: inner.y + nameH + 1, w: inner.w, h: artBottom - (inner.y + nameH + 1) };
   const fallback = artFallback(card, art);
   face.addChild(fallback);
@@ -47,7 +50,9 @@ export function drawFace(card: BoardCard): Face {
   } else {
     face.addChild(nameStrip(card, color, inner.x, inner.y, inner.w, nameH));
     if (card.zone === "hand") face.addChild(handLower(card, color, inner, artBottom, border));
-    if (card.power !== null && card.toughness !== null) face.addChild(ptPill(card, color, h));
+    if (card.power !== null && card.toughness !== null) {
+      face.addChild(card.zone === "hand" ? ptBox(card, color, inner, border) : ptPill(card, color, h));
+    }
   }
   if (card.dim > 0) {
     face.addChild(new Graphics().roundRect(-w / 2, -h / 2, w, h, radius).fill({ color: 0x000000, alpha: card.dim }));
@@ -58,7 +63,8 @@ export function drawFace(card: BoardCard): Face {
   if (card.pileCount !== null) face.addChild(pileBadge(card.pileCount, w, h));
   if (card.manaCost.length > 0 && card.costRadius > 0) {
     const row = manaCostRow(card.manaCost, card.costRadius);
-    row.position.set(-w / 2 + 1, -h / 2 - card.costRadius - 2);
+    // Over the card's top edge, overlapping the frame a little (the owner, ui.md "Mana costs overlap the card").
+    row.position.set(-w / 2 + 1, -h / 2 - card.costRadius * 0.45);
     face.addChild(row);
   }
   return {
@@ -104,12 +110,13 @@ function nameStrip(card: BoardCard, color: number, x: number, y: number, w: numb
       .lineTo(x + w, y + h)
       .stroke({ width: 1, color: PALETTE.rim, alpha: 0.6 }),
   );
-  const glyphR = h * 0.34;
-  // A hand card's colours are in its floating mana cost; a permanent shows them here.
+  const glyphR = h * 0.32;
+  // A hand card's colours are in its floating mana cost; a permanent shows them here, as small mana symbols (a
+  // coloured disc with its dark glyph), which read on any strip.
   const glyphs = card.zone === "battlefield" ? card.colors : [];
   glyphs.forEach((c, i) => {
-    const g = colorGlyph(c as ColorSymbol, glyphR, FRAME[c]);
-    g.position.set(x + w - glyphR - 2 - i * (glyphR * 2 + 1), y + h / 2);
+    const g = manaSymbol(c, glyphR);
+    g.position.set(x + w - glyphR - 1.5 - i * (glyphR * 2 + 1), y + h / 2);
     strip.addChild(g);
   });
   // In combat the badge sits on the strip's left end, so the name starts after it.
@@ -124,22 +131,6 @@ function nameStrip(card: BoardCard, color: number, x: number, y: number, w: numb
   text.position.set(x + 3 + indent, y + h / 2 + 0.5);
   strip.addChild(text);
   return strip;
-}
-
-/** A hand card below its art: the type strip and the text box, blank until the hand fans open (M3-04b). */
-function handLower(
-  card: BoardCard,
-  color: number,
-  inner: { x: number; w: number },
-  top: number,
-  border: number,
-): Graphics {
-  const typeH = card.height * 0.08;
-  return new Graphics()
-    .rect(inner.x, top, inner.w, typeH)
-    .fill(mix(PALETTE.parchment, color, 0.12))
-    .rect(inner.x, top + typeH + 1, inner.w, card.height / 2 - border - (top + typeH + 1))
-    .fill(mix(PALETTE.parchment, color, 0.06));
 }
 
 /**
@@ -184,102 +175,4 @@ function ptPill(card: BoardCard, color: number, h: number): Container {
     pill.addChild(new Graphics().rect(t.x, y + ph * 0.32, t.width, Math.max(1.5, ph * 0.1)).fill(PALETTE.lowered));
   }
   return pill;
-}
-
-/**
- * An attacker's crossed swords or a blocker's shield, on a round badge at the card's top-left corner: two shapes, so
- * which side of combat a card is on never rests on the badge's colour.
- */
-function combatBadge(kind: "attack" | "block", w: number, h: number): Container {
-  const badge = new Container();
-  const r = combatBadgeRadius(h);
-  const ring = kind === "attack" ? PALETTE.attack : PALETTE.block;
-  badge.addChild(new Graphics().circle(0, 0, r).fill(PALETTE.rim).stroke({ width: 2, color: ring }));
-  const s = r * 0.55;
-  const icon = new Graphics();
-  if (kind === "attack") {
-    icon
-      .moveTo(-s, -s)
-      .lineTo(s, s)
-      .moveTo(s, -s)
-      .lineTo(-s, s)
-      .moveTo(s * 0.35, s * 0.85)
-      .lineTo(s * 0.85, s * 0.35)
-      .moveTo(-s * 0.35, s * 0.85)
-      .lineTo(-s * 0.85, s * 0.35)
-      .stroke({ width: Math.max(1.5, r * 0.2), color: PALETTE.badgeText, cap: "round" });
-  } else {
-    icon
-      .moveTo(0, -s)
-      .lineTo(s * 0.9, -s * 0.6)
-      .bezierCurveTo(s * 0.9, s * 0.3, s * 0.4, s * 0.8, 0, s * 1.05)
-      .bezierCurveTo(-s * 0.4, s * 0.8, -s * 0.9, s * 0.3, -s * 0.9, -s * 0.6)
-      .closePath()
-      .fill(PALETTE.badgeText);
-  }
-  badge.addChild(icon);
-  // At the top-left corner: clear of the name, and of the power/toughness pills of the cards across the band.
-  badge.position.set(-w / 2 + r * 0.7, -h / 2 + r * 0.7);
-  return badge;
-}
-
-function combatBadgeRadius(h: number): number {
-  return Math.max(8, h * 0.13);
-}
-
-/** "x4" above a pile's front card, at its top left, as Arena counts a pile of tokens. */
-function pileBadge(count: number, w: number, h: number): Container {
-  const badge = new Container();
-  const text = new Text({
-    text: `x${count}`,
-    style: { fontFamily: "system-ui, sans-serif", fontWeight: "800", fontSize: 11, fill: PALETTE.badgeText },
-  });
-  text.anchor.set(0.5);
-  const bw = text.width + 8;
-  const bh = text.height + 1;
-  badge.addChild(
-    new Graphics()
-      .roundRect(-bw / 2, -bh / 2, bw, bh, 3)
-      .fill(PALETTE.badge)
-      .stroke({ width: 1, color: 0x6b7385 }),
-    text,
-  );
-  // Above the card's top-left corner, clear of its name.
-  badge.position.set(-w / 2 + bw / 2, -h / 2 - bh / 2 + 2);
-  return badge;
-}
-
-/** A large curved arrow over a tapped permanent [R], light with a dark edge: tapped shows by shape, not by shade. */
-function tapMark(size: number): Graphics {
-  const r = size * 0.27;
-  const start = -Math.PI * 0.95;
-  const end = Math.PI * 0.4;
-  const tip = { x: Math.cos(end) * r, y: Math.sin(end) * r };
-  const head = r * 0.55;
-  const along = end + Math.PI / 2;
-  const g = new Graphics();
-  for (const [width, color, alpha] of [
-    [size * 0.13, PALETTE.rim, 0.7],
-    [size * 0.08, PALETTE.tapMark, 0.85],
-  ] as const) {
-    g.arc(0, 0, r, start, end).stroke({ width, color, alpha, cap: "round" });
-    g.poly([
-      tip.x + Math.cos(along) * head,
-      tip.y + Math.sin(along) * head,
-      tip.x + Math.cos(along + 2.3) * head * 0.85,
-      tip.y + Math.sin(along + 2.3) * head * 0.85,
-      tip.x + Math.cos(along - 2.3) * head * 0.85,
-      tip.y + Math.sin(along - 2.3) * head * 0.85,
-    ]).fill({ color, alpha });
-  }
-  return g;
-}
-
-/** Shortens the text with an ellipsis until it fits the width. */
-function fitText(text: Text, full: string, width: number): void {
-  let shown = full;
-  while (shown.length > 1 && text.width > width) {
-    shown = shown.slice(0, -1);
-    text.text = `${shown.trimEnd()}…`;
-  }
 }

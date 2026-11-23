@@ -154,6 +154,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     during the choice, "Cancel Blocks", the "Choose blockers." prompt, the fast-forward button.
   - Owner (2026-11-23): the space between the two battlefields feels cramped next to Arena. Recorded in ui.md ("Room
     between the battlefields"): smaller creature cards and an open gap between the rows, as in their screenshots.
+  - Owner (2026-11-23): hand cards in Arena are whole cards (type line and rules text too); recorded in ui.md, drawn
+    so in this slice. Asked what hovering over a battlefield card does: answered (long-press details, M3-04c); the
+    desktop hover preview is an open question below.
+  - Owner (2026-11-23): Arena doesn't cut off card names; recorded in ui.md, names now shrink to fit.
+  - Owner (2026-11-23): mana costs should overlap the hand card's top edge slightly; recorded in ui.md, done.
   - **M3-04b, touch.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:
@@ -1800,7 +1805,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   failed, 26 minutes); mutants breaking views, events, life, zones and legal actions are caught. One known issue left
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
-## Open questions for the owner
+## Open questions
+
+- Desktop hover (2026-11-23): should hovering a card with a mouse show a large preview, as Arena's desktop client
+  does? On touch, long-press shows the details (M3-04c) either way. for the owner
 - (2026-11-23, after M3) What follows M3? The owner says M4 (deckbuilding) is up for debate and likes Legends of
   Runeterra's roguelike mode (Path of Champions). Discuss once M3 is done: a roguelike run, the Shandalar-style RPG, or
   deckbuilding first, and how they share the engine, the AI and the card pool (vision.md).

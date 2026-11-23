@@ -41,6 +41,9 @@ export function boardCard(
     frameColors: c.colors.length > 0 || !c.types.includes("land") ? c.colors : basicLandColors(c.subtypes),
     land: c.types.includes("land"),
     art: info?.artCrop ?? null,
+    // A hand card is drawn whole (ui.md, "Hand cards are whole cards"); a permanent shows its art and name.
+    typeLine: zone === "hand" ? (info?.typeLine ?? "") : "",
+    text: zone === "hand" ? (info?.oracleText ?? "") : "",
     // The cost floats over a hand card [R]; a permanent's isn't shown.
     manaCost: zone === "hand" ? manaSymbols(info?.manaCost ?? "") : [],
     power: c.power,
