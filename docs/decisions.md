@@ -2391,8 +2391,14 @@ owner's answer to the D-089 open question, option (a))
   step, even with an instant in hand. An opponent's object on the stack still stops you there.
 - One of Arena's smart stops is kept, because it's cheap and loses nothing: mana left in your pool stops you in your
   own end step, as the pool empties when the step ends (CR 500.5).
-- It applies to every seat (D-137), the AI's too. `pnpm eval` before and after shows the heuristic AI unaffected
-  (it never acted in those steps).
+- It applies to every seat (D-137), the AI's too. `pnpm eval --games 500 --seed 1` after it:
+  - white-soldiers 99.6%
+  - red-aggro 96.8%: 97.4% with the old auto-pass on the same seeds, so a difference of 3 games in 500
+  - green-stompy 97.0%
+  - red-green-beats 97.2%
+  - blue-black-control 94.4%
+  These are within noise of M3-02's 99.6, 97.4, 97.4, 97.4 and 94.0. The few games over the turn cap ("capped")
+  happen with the old auto-pass too.
 - Full control turns auto-pass off (D-143's `autoPass: false`): a switch in the settings menu, and a `fullControl`
   worker message. While it's on, the main button turns Arena's blue-violet [R]. Arena's full control also turns off
   auto-tap. Ours doesn't yet: paying by hand needs slice 2's payment prompt.
