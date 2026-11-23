@@ -2251,3 +2251,15 @@ owner's answer to the D-089 open question, option (a))
   agent, from both seats and both sides of the play, and reports the win rate with the tokens and time each game cost.
   It's how we'll judge whether the LLM opponent earns its cost and latency over the free, offline heuristic.
 - `pnpm eval` already seats any agent against the heuristic; the LLM seat joins it there (an outside seat, as in M3-01).
+
+**D-149: M3-02's 95% is a target, not a hard bar (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner: "We don't have to be so strict with the 95%." The heuristic AI was at 99.6% (white-soldiers), 97.4%
+  (green-stompy), 97.2% (red-green-beats), 96.4% (red-aggro) and 94.0% (blue-black-control) on the acceptance run
+  (`pnpm eval --games 500 --seed 1`), and 94.8% for blue-black-control on 2,000 held-out games (seeds from 10,001),
+  within a standard error of the mark. M3-02 is accepted on those numbers; tuning more for the random agent has
+  stopped paying (the last tries changed a handful of games either way), and the app is waiting.
+- What's left for blue-black-control, from a study of its 104 held-out losses: half are against white-soldiers, a
+  third end flooded (eight or more lands, an empty hand), and many hold a counterspell it never had the mana for
+  (holding mana back measured worse). Stronger play later comes from search (architecture.md, "AI"), not more rules.
+- How tuning is measured from now on: on held-out seeds, by games that flip between two versions, the acceptance seeds
+  kept for the final run.
