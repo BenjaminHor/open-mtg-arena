@@ -15,6 +15,7 @@ export const PALETTE = {
   badge: 0x0c0d10,
   badgeText: 0xf4f0e6,
   tapMark: 0xe9e6df,
+  playable: 0x3fd4ff,
   attack: 0xd9503a,
   block: 0x6f9fd8,
   back: 0x24304a,

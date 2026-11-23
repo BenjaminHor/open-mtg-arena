@@ -23,6 +23,7 @@ export function drawFace(card: BoardCard): Face {
   const color = frameColor(card.frameColors);
   const radius = Math.min(w, h) * 0.07;
   const border = Math.max(3, Math.min(w, h) * 0.07);
+  if (card.playable && !card.behind) face.addChild(playableGlow(w, h, radius));
   // The shadow on the table, then the frame: a dark edge, the colour, a light bevel inside it.
   face.addChild(
     new Graphics()
@@ -82,6 +83,27 @@ export function drawFace(card: BoardCard): Face {
       fallback.visible = false;
     },
   };
+}
+
+/**
+ * The cyan outline around what can be played or used now [R]: a thick bright edge (a shape, not only a hue) fading
+ * out into a glow.
+ */
+function playableGlow(w: number, h: number, radius: number): Graphics {
+  const g = new Graphics();
+  for (const [grow, alpha] of [
+    [7, 0.12],
+    [5, 0.25],
+    [3, 0.5],
+  ] as const) {
+    g.roundRect(-w / 2 - grow, -h / 2 - grow, w + 2 * grow, h + 2 * grow, radius + grow).fill({
+      color: PALETTE.playable,
+      alpha,
+    });
+  }
+  return g
+    .roundRect(-w / 2 - 1.5, -h / 2 - 1.5, w + 3, h + 3, radius + 1.5)
+    .stroke({ width: 2, color: PALETTE.playable });
 }
 
 /** Until the art loads (or offline): a dark field tinted by the frame, its colour's glyph large in the middle. */

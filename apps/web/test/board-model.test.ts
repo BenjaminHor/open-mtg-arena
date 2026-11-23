@@ -327,6 +327,22 @@ describe("the compact board model", () => {
     expect(combat?.x).toBeGreaterThanOrEqual(crest.x + crest.width);
   });
 
+  it("outlines what the person can play now, from the options, and not lands for their mana", () => {
+    const model = boardModel(midGame, PHONE);
+    const lit = (name: string, zone: BoardCard["zone"]) =>
+      model.cards.find((c) => c.name === name && c.zone === zone)?.playable;
+    // In hand: the land drop and the spells their lands can pay for.
+    expect(lit("Mountain", "hand")).toBe(true);
+    expect(lit("Lightning Bolt", "hand")).toBe(true);
+    expect(lit("Shivan Dragon", "hand")).toBe(false);
+    // On the battlefield: the Pyromancer's ping, but not the lands or the Elves for their mana.
+    expect(lit("Prodigal Pyromancer", "battlefield")).toBe(true);
+    expect(lit("Forest", "battlefield")).toBe(false);
+    expect(lit("Llanowar Elves", "battlefield")).toBe(false);
+    // Nothing of the opponent's.
+    expect(model.cards.some((c) => !c.mine && c.playable)).toBe(false);
+  });
+
   it("counts each library", () => {
     const model = boardModel(midGame, PHONE);
     const mine = model.libraries.find((l) => l.mine);

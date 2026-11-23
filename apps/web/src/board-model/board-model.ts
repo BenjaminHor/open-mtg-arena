@@ -10,6 +10,7 @@ import { battlefieldCards } from "./battlefield.ts";
 import { withCombat } from "./combat.ts";
 import { handCards } from "./hand.ts";
 import { cardBacks, libraryPiles } from "./hidden-cards.ts";
+import { playableIds } from "./playable.ts";
 
 export type BoardCard = {
   id: ObjectId;
@@ -19,6 +20,8 @@ export type BoardCard = {
   row: "creatures" | "lands" | "others" | "hand";
   /** The front card of the pile it's in (its own id when it stands alone): a pile moves as one. */
   pileOf: ObjectId;
+  /** Something the person can act with now: play, cast, activate, attack or block with (`playable.ts`). */
+  playable: boolean;
   /** An attacking creature (CR 508.1). */
   attacking: boolean;
   /** The planeswalker it attacks, when it attacks one (CR 508.1b); null otherwise. */
@@ -138,7 +141,11 @@ export function boardModel(
   };
   const overlay = overlayAnchors(area, layout, shown.view.turn?.activePlayer === opponent);
   const field = withCombat(battlefieldCards(shown, area, me, layout, overlay), area, layout);
-  const cards = [...field.cards, ...handCards(shown, area, layout)];
+  const playable = playableIds(shown);
+  const cards = [...field.cards, ...handCards(shown, area, layout)].map((c) => ({
+    ...c,
+    playable: playable.has(c.id),
+  }));
   return {
     width: size.width,
     height: size.height,
