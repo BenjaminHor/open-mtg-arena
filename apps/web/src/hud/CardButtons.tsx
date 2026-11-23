@@ -28,9 +28,14 @@ type Props = {
 };
 
 export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, selection, drag, inspect }: Props) {
-  const inspectOn = useCardInspect(inspect.open, inspect.closePreview);
   const hand = model.overlay.hand;
   const handDrag = useHandDrag(model, drag);
+  const inspectOn = useCardInspect((id, mode) => {
+    // A long-press on a hand card is looking, not the start of a drag.
+    if (mode === "full") handDrag.abort();
+    inspect.open(id, mode);
+  }, inspect.closePreview);
+  const names = new Map(model.cards.map((c) => [c.id, c.name]));
   const inHand = new Set(model.cards.filter((c) => c.zone === "hand").map((c) => c.id));
   // A lifted hand card that a second tap plays: say so on it, "Tap again to cast" (the UX review's cue).
   const lifted = model.cards.find((c) => c.zone === "hand" && c.id === selection);
@@ -47,14 +52,25 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
         const looked = (actor ?? members[0] ?? id) as ObjectId;
         const look = inspectOn(looked);
         if (actor === undefined || control === undefined) {
-          return <div key={id} className="inspect-region" style={{ ...place(rect), zIndex: layer }} {...look} />;
+          return (
+            // Focusable, so the keyboard can look at any card ("i"), not only the ones a tap acts on (ui.md).
+            <div
+              key={id}
+              className="inspect-region"
+              role="img"
+              // biome-ignore lint/a11y/noNoninteractiveTabindex: focus is how the keyboard picks a card to look at
+              tabIndex={0}
+              aria-label={names.get(looked) ?? "Card"}
+              style={{ ...place(rect), zIndex: layer }}
+              {...look}
+            />
+          );
         }
         return (
           <button
             key={id}
             type="button"
             className="tap-region"
-            data-card={looked}
             style={{ ...place(rect), zIndex: layer }}
             aria-label={spoken(control.label)}
             aria-disabled={busy}

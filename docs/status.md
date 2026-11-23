@@ -157,7 +157,7 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     between the battlefields"): smaller creature cards and an open gap between the rows, as in their screenshots.
   - Owner (2026-11-23): hand cards in Arena are whole cards (type line and rules text too); recorded in ui.md, drawn
     so in this slice. Asked what hovering over a battlefield card does: answered (long-press details, M3-04c); the
-    desktop hover preview is an open question below.
+    desktop hover preview was settled by D-160 (a preview, as Arena's desktop client shows).
   - Owner (2026-11-23): Arena doesn't cut off card names; recorded in ui.md, names now shrink to fit.
   - Owner (2026-11-23): mana costs should overlap the hand card's top edge slightly; recorded in ui.md, done.
   - Owner (2026-11-23): "how does the expanded view of your hand look like". Not built yet (it was 04b's); built now in
@@ -227,6 +227,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     card. A tap anywhere, Close or Escape closes it. A mouse resting 600ms on a card shows the same as a preview that
     passes taps through. No rulings: Arena has none (D-160). An ability on the stack shows its source card.
     `interaction/card-details.ts` (pure, tested), `hud/CardView.tsx`, `hud/card-inspect.ts`; e2e on both sizes.
+    Code review fixes: the view holds the card's id and reads it from the seat view as drawn (it follows the game, and
+    closes when the card is gone); a backdrop tap no longer also "puts things down"; a long-press waits for its release
+    on the window (the region may be redrawn) and stops a drag starting; the full view takes focus to Close and gives
+    it back; every card region is focusable for "i"; Escape over a preview does its usual job; a preview ends when the
+    mouse is off its card even if the region went; summoning sickness worded from CR 302.6; an ability whose source
+    left shows the printed source; a token's type line has its subtypes.
   - M3-04c plan for the rest (2026-11-23, written before starting), each slice its own squash-merged PR, live on Pages
     as it merges; the owner gives feedback at the end:
     2. **The card view:** long-press (touch) or right-click/hover-hold (mouse) shows a card large, with its full
@@ -2080,6 +2086,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- (2026-11-23, M3-04c card view code review) A token's card view shows its name, type line and keywords, but not its
+  other abilities' text: the seat view carries no rules text for a token (its abilities are data from the effect that
+  made it). Ajani Goldmane's Avatar's "power and toughness are each equal to your life total" is the case in the pool.
+  Later: carry a token's rules text in the seat view (the effect that makes it has it), and show it.
 - Fixed (2026-11-23, owner): "When I only had a mountain played, llanowar elves (1 green mana card) was available as an
   action to cast, which is incorrect." The engine may list a spell the player can't pay for: beginning to cast needs
   only permission (CR 601.3), and a cost that can't be paid rewinds the cast (CR 601.2h, 734). The app greys out what

@@ -7,6 +7,7 @@
 
 import type { Action, ObjectId, PlayerId, SeatView } from "@mtg/engine";
 import type { BoardModel, Rect } from "../board-model/board-model.ts";
+import type { CardDetails } from "../interaction/card-details.ts";
 import type { Choice, Controls } from "../interaction/controls.ts";
 import { promptLayout, promptTitle } from "../interaction/prompt-text.ts";
 import { CardButtons } from "./CardButtons.tsx";
@@ -40,7 +41,8 @@ type HudProps = {
   drag: HandDragCallbacks;
   /** The card view: how a card's region opens it, and what's being looked at now. */
   inspect: { open: InspectOpen; closePreview: () => void };
-  inspected: Inspected | null;
+  /** The card view, if one is open: how, and what it shows (read from the seat view as it is now). */
+  inspected: { mode: Inspected["mode"]; details: CardDetails } | null;
   closeInspected: () => void;
   /** The declaration's batch button, "All Attack" or "Clear Attacks" (App.tsx, `all-attack.ts`), or none now. */
   attackBatch: { label: string; run: () => void; running: boolean } | null;
@@ -167,7 +169,9 @@ export function Hud(props: HudProps) {
         setFullControl={props.setFullControl}
       />
       {/* Over everything else: what's being looked at. */}
-      {props.inspected !== null && <CardView inspected={props.inspected} close={props.closeInspected} />}
+      {props.inspected !== null && (
+        <CardView mode={props.inspected.mode} details={props.inspected.details} close={props.closeInspected} />
+      )}
       {result !== null && (
         <p role="status" className="result">
           {result.winner === me ? "You win" : result.winner === null ? "Draw" : "You lose"}

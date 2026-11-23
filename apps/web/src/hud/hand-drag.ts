@@ -6,6 +6,7 @@
 import type { ObjectId } from "@mtg/engine";
 import { useEffect, useRef, useState } from "react";
 import type { BoardModel } from "../board-model/board-model.ts";
+import { swallowNextClick } from "./swallow-click.ts";
 
 /**
  * px: how far up a press must move to be a drag at all; how far at least to be let go "on the table", which also
@@ -26,6 +27,8 @@ export type HandDrag = {
    * where it's drawn): a press there may become a drag.
    */
   onPointerDown: (e: React.PointerEvent<HTMLElement>, id?: ObjectId) => void;
+  /** Forget a press that hasn't become a drag yet: a long-press opened the card view, so it's looking, not playing. */
+  abort: () => void;
 };
 
 export function useHandDrag(model: BoardModel, on: HandDragCallbacks): HandDrag {
@@ -41,6 +44,7 @@ export function useHandDrag(model: BoardModel, on: HandDragCallbacks): HandDrag 
   useEffect(() => () => stopRef.current?.(), []);
   return {
     dragging,
+    abort: () => stopRef.current?.(),
     onPointerDown: (e, given) => {
       // One finger, or the mouse's main button: a second finger or a right-click is never a drag.
       if (e.button !== 0 || !e.isPrimary || stopRef.current !== null) return;
@@ -103,26 +107,6 @@ export function useHandDrag(model: BoardModel, on: HandDragCallbacks): HandDrag 
       window.addEventListener("keydown", onEscape, { capture: true });
     },
   };
-}
-
-/**
- * A drag's release can also fire a click, on the card or on the table where it was let go: a tap on the card, or the
- * table's "put things down". Neither is meant, so that click is stopped before anything sees it. A touch release often
- * fires none: then the next press, or a moment's wait, takes the listener away, so a real click is never eaten.
- */
-export function swallowNextClick(): void {
-  const stop = (e: Event) => {
-    e.stopPropagation();
-    e.preventDefault();
-    done();
-  };
-  const done = () => {
-    window.removeEventListener("click", stop, { capture: true });
-    window.removeEventListener("pointerdown", done, { capture: true });
-  };
-  window.addEventListener("click", stop, { capture: true });
-  window.addEventListener("pointerdown", done, { capture: true });
-  setTimeout(done, 300);
 }
 
 /** The hand card under the pointer, the front-most where cards overlap (the model lists them back to front). */

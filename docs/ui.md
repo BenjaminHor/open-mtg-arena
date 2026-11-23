@@ -169,7 +169,7 @@ action must also work with a mouse and with a keyboard:
   to play it (with tap-to-play as the equivalent, since dragging should never be the only way).
 - **Long-press** (about 400 ms) shows the full card image (its printed artist credit included), with a panel beside it
   for each keyword's reminder, counters, damage, attachments and control. No rulings: Arena's view has none (D-160).
-  There's no hover anywhere, because touch has none.
+  On touch there's no hover, so nothing depends on it; a mouse resting on a card previews it (D-160).
 - Hit targets are at least 44×44 points. Spacing prevents mis-taps on dense boards.
 - Prompts for decisions come from the engine's `PendingDecision`. The UI renders them; it never
   invents its own legality. Illegal choices are visibly disabled, not hidden.

@@ -3,7 +3,7 @@
 // counters and damage, what's attached to it, that it entered this turn, who controls it. Pure, from the seat view, so
 // it shows only what the person may see (D-062). No rulings: Arena's view has none (D-160).
 
-import type { Keyword, ObjectId, SeatView } from "@mtg/engine";
+import type { Keyword, ObjectId, OracleId, SeatView } from "@mtg/engine";
 import { cardInfo } from "../board-model/card-info.ts";
 
 export type CardDetails = {
@@ -31,7 +31,7 @@ const REMINDERS: Record<Keyword, string> = {
   flash: "It can be cast any time you could cast an instant.",
   flying: "It can be blocked only by creatures with flying or reach.",
   forestwalk: "It can't be blocked while the defending player controls a Forest.",
-  haste: "It can attack and use its {T} abilities the turn it comes under your control.",
+  haste: "It can attack and use its {T} abilities the turn it comes under its controller's control.",
   indestructible: 'Damage and effects that say "destroy" don\'t destroy it.',
   lifelink: "Damage it deals also makes its controller gain that much life.",
   reach: "It can block creatures with flying.",
@@ -41,11 +41,17 @@ const REMINDERS: Record<Keyword, string> = {
   vigilance: "Attacking doesn't cause it to tap.",
 };
 
-/** The card view's contents for an object the person can see, or null for one they can't (or an ability). */
+/**
+ * The card view's contents for an object the person can see, or null for one they can't. An ability on the stack shows
+ * the card it came from, as the stack draws it; when that card has left (a "dies" trigger), its printed card.
+ */
 export function cardDetails(shown: SeatView, id: ObjectId): CardDetails | null {
   const object = shown.seen[id];
-  // An ability on the stack is shown as the card it came from, as the stack draws it.
-  const seen = object?.kind === "ability" ? shown.seen[object.source] : object;
+  if (object?.kind === "ability") {
+    const source = shown.seen[object.source];
+    return source?.kind === "card" ? cardDetails(shown, source.id) : printedDetails(object.sourceOracleId);
+  }
+  const seen = object;
   if (seen?.kind !== "card") return null;
   const c = seen.characteristics;
   const info = cardInfo(seen.oracleId);
@@ -60,10 +66,12 @@ export function cardDetails(shown: SeatView, id: ObjectId): CardDetails | null {
   }
   const onBattlefield = shown.view.zones.battlefield.includes(seen.id);
   if (onBattlefield) {
+    // CR 302.6: true from when it comes under its controller's control until their next turn begins, so also through
+    // the opponent's turn in between.
     if (seen.summoningSick) {
       hangers.push({
         title: "Summoning sick",
-        text: "It came under its controller's control this turn: it can't attack or use {T} abilities yet.",
+        text: "Its controller hasn't controlled it since their turn began: it can't attack or use {T} abilities yet.",
       });
     }
     for (const [kind, count] of Object.entries(seen.counters)) {
@@ -87,7 +95,7 @@ export function cardDetails(shown: SeatView, id: ObjectId): CardDetails | null {
     if (c.controller !== seen.owner) {
       hangers.push({
         title: "Control",
-        text: `${who(shown, c.controller)} control${c.controller === shown.player ? "" : "s"} it; ${who(shown, seen.owner)} own${seen.owner === shown.player ? "" : "s"} it.`,
+        text: `${who(shown, c.controller)} control${c.controller === shown.player ? "" : "s"} it; ${who(shown, seen.owner).toLowerCase()} own${seen.owner === shown.player ? "" : "s"} it.`,
       });
     }
   }
@@ -95,7 +103,9 @@ export function cardDetails(shown: SeatView, id: ObjectId): CardDetails | null {
   if (seen.token)
     hangers.push({ title: "Token", text: "Not a card: it ceases to exist when it leaves the battlefield." });
   if (seen.copy) hangers.push({ title: "Copy", text: "A copy of a spell, not a card." });
-  const printed = info === null ? null : `${info.power ?? "?"}/${info.toughness ?? "?"}`;
+  // Against the printed numbers only when there are some: not for a printed "*" or a noncreature made a creature.
+  const printed =
+    info === null || info.power === null || info.toughness === null ? null : `${info.power}/${info.toughness}`;
   const now = c.power === null || c.toughness === null ? null : `${c.power}/${c.toughness}`;
   if (now !== null && printed !== null && now !== printed && onBattlefield) {
     hangers.push({ title: "Power/toughness", text: `${now} now (printed ${printed})` });
@@ -104,11 +114,35 @@ export function cardDetails(shown: SeatView, id: ObjectId): CardDetails | null {
     name: c.name,
     image: info?.image ?? null,
     manaCost: info?.manaCost ?? "",
-    typeLine: info?.typeLine ?? [...c.supertypes, ...c.types].join(" "),
+    typeLine: info?.typeLine ?? typeLine(c.supertypes, c.types, c.subtypes),
     oracleText: info?.oracleText ?? "",
     powerToughness: now,
     hangers,
   };
+}
+
+/** A card by its printed face alone: an ability's source that has left the zones the person can see. */
+function printedDetails(oracleId: OracleId): CardDetails | null {
+  const info = cardInfo(oracleId);
+  if (info === null) return null;
+  return {
+    name: info.name,
+    image: info.image,
+    manaCost: info.manaCost,
+    typeLine: info.typeLine,
+    oracleText: info.oracleText,
+    powerToughness: info.power === null || info.toughness === null ? null : `${info.power}/${info.toughness}`,
+    hangers: [],
+  };
+}
+
+/**
+ * A type line from the characteristics, for a card with no printed one (a token): "Creature — Soldier" (CR 205.1).
+ * Later: a token's ability text, which the seat view doesn't carry yet (status.md, Known issues).
+ */
+function typeLine(supertypes: readonly string[], types: readonly string[], subtypes: readonly string[]): string {
+  const front = [...supertypes, ...types].map(capitalize).join(" ");
+  return subtypes.length === 0 ? front : `${front} — ${subtypes.join(" ")}`;
 }
 
 function nameOf(shown: SeatView, id: ObjectId): string {
@@ -116,6 +150,7 @@ function nameOf(shown: SeatView, id: ObjectId): string {
   return seen?.kind === "card" ? seen.characteristics.name : "a hidden card";
 }
 
+/** A player as the person reads them. Two players for now: later, with more (CR 800), by name. */
 function who(shown: SeatView, player: string): string {
   return player === shown.player ? "You" : "Your opponent";
 }

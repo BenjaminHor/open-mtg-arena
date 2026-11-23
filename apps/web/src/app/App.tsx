@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type BoardSize, boardModel, type Insets, NO_INSETS } from "../board-model/board-model.ts";
 import { fixtureSetup } from "../fixtures/fixtures.ts";
 import type { Inspected } from "../hud/CardView.tsx";
+import { cardAt } from "../hud/card-inspect.ts";
 import { Hud } from "../hud/Hud.tsx";
 import {
   allAttackGoal,
@@ -260,6 +261,22 @@ export function App() {
     },
     [controlsNow, act, shown],
   );
+  // What the card view shows, read from the seat view as it is now. A card that has gone (it died, it changed zones and
+  // so is a new object, CR 400.7) closes the view.
+  const looking = inspected === null || shown === null ? null : cardDetails(shown, inspected.id);
+  useEffect(() => {
+    if (inspected !== null && looking === null) setInspected(null);
+  }, [inspected, looking]);
+  // A preview goes when the mouse leaves its card. The card's region may go first (redrawn, or the card gone) with no
+  // "leave" to say so, so while a preview shows, any move away from that card ends it.
+  useEffect(() => {
+    if (inspected?.mode !== "preview") return;
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType === "mouse" && cardAt(e.clientX, e.clientY) !== inspected.id) setInspected(null);
+    };
+    window.addEventListener("pointermove", onMove);
+    return () => window.removeEventListener("pointermove", onMove);
+  }, [inspected]);
   // A tap on the table, not on a control, puts things down: the menu, then the selection, then the open hand.
   const onTable = (event: React.MouseEvent) => {
     if ((event.target as HTMLElement).closest("button") !== null) return;
@@ -271,15 +288,15 @@ export function App() {
   // Space presses the main button when no other control has focus.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      // Escape closes a full view and nothing else; a preview goes, and the Escape does what it would without one.
       if (event.key === "Escape" && inspected !== null) {
         setInspected(null);
-        return;
+        if (inspected.mode === "full") return;
       }
       // "i" looks at the focused card, the keyboard's way to the card view (a long-press or a right-click otherwise).
       if (event.key === "i" && !event.repeat && shown !== null) {
-        const id = (document.activeElement as HTMLElement | null)?.dataset.card;
-        const details = id === undefined ? null : cardDetails(shown, id as ObjectId);
-        if (details !== null) setInspected({ mode: "full", details });
+        const id = (document.activeElement as HTMLElement | null)?.dataset.card as ObjectId | undefined;
+        if (id !== undefined && cardDetails(shown, id) !== null) setInspected({ mode: "full", id });
         return;
       }
       if (event.key === "Escape") {
@@ -322,14 +339,13 @@ export function App() {
           setFullControl={(on) => send({ type: "fullControl", on }, !on)}
           inspect={{
             open: (id, mode) => {
-              const details = cardDetails(shown, id);
               // A hover never replaces a view opened on purpose.
-              if (details !== null && !(mode === "preview" && inspected?.mode === "full"))
-                setInspected({ mode, details });
+              if (cardDetails(shown, id) !== null && !(mode === "preview" && inspected?.mode === "full"))
+                setInspected({ mode, id });
             },
             closePreview: () => setInspected((now) => (now?.mode === "preview" ? null : now)),
           }}
-          inspected={inspected}
+          inspected={inspected === null || looking === null ? null : { mode: inspected.mode, details: looking }}
           closeInspected={() => setInspected(null)}
           attackBatch={attackBatch(shown, attackGoal === null ? null : runningLabel.current, aimAttack)}
           drag={{

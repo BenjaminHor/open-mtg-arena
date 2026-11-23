@@ -306,43 +306,77 @@ test("the card view: a right-click or a long-press shows a card large with its h
 }) => {
   await page.goto("/?fixture=mid-game");
   await expect(page.getByRole("button", { name: /^Next/ })).toBeVisible();
-  const centre = async (name: string) => {
-    const card = (await board(page))?.cards.find((c) => c.name === name && c.zone === "battlefield") as unknown as
-      | { x: number; y: number; width: number; height: number }
+  const onBoard = async (name: string, zone = "battlefield") => {
+    const card = (await board(page))?.cards.find((c) => c.name === name && c.zone === zone) as unknown as
+      | { x: number; y: number; width: number; height: number; tapped: boolean }
       | undefined;
-    if (card === undefined) throw new Error(`no ${name} on the battlefield`);
-    return { x: card.x + card.width / 2, y: card.y + card.height / 2 };
+    if (card === undefined) throw new Error(`no ${name} in ${zone}`);
+    return { x: card.x + card.width / 2, y: card.y + Math.min(card.height / 2, 30), tapped: card.tapped };
   };
-  const view = page.getByRole("dialog", { name: "Deadly Recluse" });
-  const recluse = await centre("Deadly Recluse");
+  const view = (name: string) => page.getByRole("dialog", { name });
   if (isMobile) {
     // A long-press: touch events through the browser's own input, as a finger would (Playwright's touchscreen only taps).
     const cdp = await page.context().newCDPSession(page);
-    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [recluse] });
-    await expect(view).toBeVisible();
-    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
-    // Letting go doesn't close it: the release's click is swallowed.
-    await page.waitForTimeout(400);
-    await expect(view).toBeVisible();
-    await expect(view.getByText("Summoning sick")).toBeVisible();
-    await expect(view.getByText("Deathtouch", { exact: true })).toBeVisible();
+    const longPress = async (at: { x: number; y: number }) => {
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: at.x, y: at.y }] });
+      await page.waitForTimeout(600);
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+      await page.waitForTimeout(400);
+    };
+    await longPress(await onBoard("Deadly Recluse"));
+    // Letting go doesn't close it.
+    await expect(view("Deadly Recluse")).toBeVisible();
+    await expect(view("Deadly Recluse").getByText("Summoning sick")).toBeVisible();
+    await expect(view("Deadly Recluse").getByText("Deathtouch", { exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Close" }).tap();
-    await expect(view).toHaveCount(0);
+    await expect(view("Deadly Recluse")).toHaveCount(0);
+    // On a card a tap acts on (Llanowar Elves taps for mana): the release is looking, never also a tap.
+    await longPress(await onBoard("Llanowar Elves"));
+    await expect(view("Llanowar Elves")).toBeVisible();
+    expect((await onBoard("Llanowar Elves")).tapped).toBe(false);
+    await page.getByRole("button", { name: "Close" }).tap();
+    // A hand card, with the hand open: looking neither lifts it nor, once closed by a tap on the backdrop, the hand.
+    await page.getByRole("button", { name: "Open your hand" }).tap();
+    await longPress(await onBoard("Giant Growth", "hand"));
+    await expect(view("Giant Growth")).toBeVisible();
+    await page.touchscreen.tap(20, 200);
+    await expect(view("Giant Growth")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Open your hand" })).toHaveCount(0);
+    await expect(page.getByText(/^Tap again/)).toHaveCount(0);
     return;
   }
+  const recluse = await onBoard("Deadly Recluse");
   await page.mouse.click(recluse.x, recluse.y, { button: "right" });
-  await expect(view).toBeVisible();
-  await expect(view.getByText("Summoning sick")).toBeVisible();
-  await expect(view.getByText("Reach", { exact: true })).toBeVisible();
+  await expect(view("Deadly Recluse")).toBeVisible();
+  await expect(view("Deadly Recluse").getByText("Summoning sick")).toBeVisible();
+  await expect(view("Deadly Recluse").getByText("Reach", { exact: true })).toBeVisible();
+  // Focus is on Close, so a key press can't reach a card behind the view.
+  await expect(page.getByRole("button", { name: "Close" })).toBeFocused();
   await page.keyboard.press("Escape");
-  await expect(view).toHaveCount(0);
+  await expect(view("Deadly Recluse")).toHaveCount(0);
   // Nothing was picked or opened by the right-click: the card's own menu didn't come up.
   await expect(page.getByRole("menu")).toHaveCount(0);
+  // The keyboard: "i" on a focused card, even one no tap acts on (the opponent's), and focus comes back after.
+  const vanguard = page.getByRole("img", { name: "Elite Vanguard" });
+  await vanguard.focus();
+  await page.keyboard.press("i");
+  await expect(view("Elite Vanguard")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(view("Elite Vanguard")).toHaveCount(0);
+  await expect(vanguard).toBeFocused();
   // A mouse resting on a card shows the same as a preview, gone when the mouse leaves.
-  const elves = await centre("Llanowar Elves");
+  const elves = await onBoard("Llanowar Elves");
   await page.mouse.move(elves.x, elves.y);
   await expect(page.locator(".card-view.preview")).toBeVisible();
   await expect(page.locator('.card-view.preview img[alt="Llanowar Elves"]')).toHaveCount(1);
   await page.mouse.move(400, 5);
   await expect(page.locator(".card-view.preview")).toHaveCount(0);
+  // Escape with a preview up does what it would without one: here, close the open hand.
+  await page.getByRole("button", { name: "Open your hand" }).click();
+  const bolt = await onBoard("Lightning Bolt", "hand");
+  await page.mouse.move(bolt.x, bolt.y);
+  await expect(page.locator(".card-view.preview")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".card-view.preview")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Open your hand" })).toBeVisible();
 });

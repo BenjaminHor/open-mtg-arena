@@ -1,7 +1,7 @@
 // The card view's contents (M3-04c; arena-research.md, "The Examined view"): the card's own text and image, and the
 // hangers beside it for what the face doesn't say. Built from boards the test writes, through the worker's session.
 
-import type { ObjectId, SeatView } from "@mtg/engine";
+import type { ObjectId, OracleId, SeatView } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { cardDetails } from "../src/interaction/card-details.ts";
 import { boardView, fixtureView } from "./fixture-views.ts";
@@ -86,5 +86,65 @@ describe("cardDetails", () => {
     const ability = crowded.seen[top];
     expect(ability?.kind).toBe("ability");
     expect(cardDetails(crowded, top)?.name).toBe("Ajani Goldmane");
+  });
+
+  it("words summoning sickness as CR 302.6 does, so it's also true on the opponent's turn", () => {
+    // Sick from when it comes under its controller's control until their next turn begins, the opponent's turn
+    // between included: "this turn" would be wrong then.
+    const hangers = cardDetails(board, idOf(board, "Llanowar Elves"))?.hangers ?? [];
+    expect(hangers.find((h) => h.title === "Summoning sick")?.text).toMatch(/since their turn began/);
+  });
+
+  it("names what a creature has protection from", () => {
+    const knight = boardView({
+      turn: { number: 4, activePlayer: "p1", step: "precombatMain" },
+      players: {
+        p1: { life: 20, hand: [], battlefield: ["White Knight"], library: LIBRARY },
+        p2: { life: 20, hand: [], battlefield: [], library: LIBRARY },
+      },
+    });
+    expect(cardDetails(knight, idOf(knight, "White Knight"))?.hangers.map((h) => h.title)).toContain(
+      "Protection from black",
+    );
+  });
+
+  // Situations the fixtures can't set up directly (a token, a stolen creature, a source that left): the seat view
+  // edited to what the engine would show then.
+  it("shows a token by its characteristics: a type line with its subtypes, no image", () => {
+    const shown = structuredClone(board);
+    const id = idOf(shown, "Elite Vanguard");
+    const seen = shown.seen[id];
+    if (seen?.kind !== "card") throw new Error("a card");
+    seen.token = true;
+    seen.oracleId = "token-soldier" as OracleId;
+    const token = cardDetails(shown, id);
+    expect(token?.image).toBeNull();
+    expect(token?.typeLine).toBe("Creature — Human Soldier");
+    expect(token?.hangers.map((h) => h.title)).toContain("Token");
+    // No printed numbers to compare with.
+    expect(token?.hangers.map((h) => h.title)).not.toContain("Power/toughness");
+  });
+
+  it("says who controls a creature and who owns it, when they differ", () => {
+    const shown = structuredClone(board);
+    const id = idOf(shown, "Elite Vanguard");
+    const seen = shown.seen[id];
+    if (seen?.kind !== "card") throw new Error("a card");
+    seen.characteristics = { ...seen.characteristics, controller: "p1" };
+    expect(cardDetails(shown, id)?.hangers).toContainEqual({
+      title: "Control",
+      text: "You control it; your opponent owns it.",
+    });
+  });
+
+  it("shows an ability whose source has left by the source's printed card", () => {
+    const crowded = structuredClone(fixtureView("crowded"));
+    const top = crowded.view.zones.stack.at(-1);
+    const ability = top === undefined ? undefined : crowded.seen[top];
+    if (top === undefined || ability?.kind !== "ability") throw new Error("an ability on the stack");
+    delete crowded.seen[ability.source];
+    const shown = cardDetails(crowded, top);
+    expect(shown?.name).toBe("Ajani Goldmane");
+    expect(shown?.hangers).toEqual([]);
   });
 });

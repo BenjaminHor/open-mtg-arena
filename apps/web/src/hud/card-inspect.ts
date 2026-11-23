@@ -1,11 +1,10 @@
 // How the card view opens (M3-04c; arena-research.md, "The Examined view"): a long-press on touch, a right-click with
 // a mouse, or a mouse resting on a card for a moment (a preview that goes when it leaves), as Arena does (D-160). Each
-// card's region gets these handlers; a long-press that opened the view swallows the click its release fires, so it's
-// never also a tap.
+// card's region gets these handlers, and its card id as `data-card` (the "i" key and the preview's end both read it).
 
 import type { ObjectId } from "@mtg/engine";
 import { useEffect, useRef } from "react";
-import { swallowNextClick } from "./hand-drag.ts";
+import { swallowNextClick } from "./swallow-click.ts";
 
 /** ms: a press held this long without moving is a long-press (ui.md: about 400 ms); a mouse resting this long, a hover. */
 const LONG_PRESS = 400;
@@ -16,6 +15,7 @@ const SLOP = 8;
 export type InspectOpen = (id: ObjectId, mode: "full" | "preview") => void;
 
 export type InspectHandlers = {
+  "data-card": ObjectId;
   onPointerDown: (e: React.PointerEvent) => void;
   onPointerMove: (e: React.PointerEvent) => void;
   onPointerUp: () => void;
@@ -25,54 +25,79 @@ export type InspectHandlers = {
   onContextMenu: (e: React.MouseEvent) => void;
 };
 
+/** The card whose region is at a point on the screen, by its `data-card`, or null. */
+export function cardAt(x: number, y: number): string | null {
+  return document.elementFromPoint(x, y)?.closest<HTMLElement>("[data-card]")?.dataset.card ?? null;
+}
+
 export function useCardInspect(open: InspectOpen, closePreview: () => void): (id: ObjectId) => InspectHandlers {
+  // One timer at a time: a press's or a hover's. `at` is where the pointer is, for a press's slop and a hover's check.
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const start = useRef<{ x: number; y: number } | null>(null);
-  // A long-press opened the view: the click its release fires (however long after) is swallowed, so it neither taps
-  // the card nor closes the view straight away.
-  const opened = useRef(false);
+  const at = useRef<{ x: number; y: number } | null>(null);
+  // A long-press that opened the view waits for its release on the window, not on the card: the card's region may be
+  // redrawn or gone by then (the game moves on while the finger is down), and its click must still be swallowed.
+  const waiting = useRef<(() => void) | null>(null);
   const latest = useRef({ open, closePreview });
   latest.current = { open, closePreview };
   const clear = () => {
     if (timer.current !== null) clearTimeout(timer.current);
     timer.current = null;
-    start.current = null;
   };
-  // No timer outlives the board: an unmount mid-press leaves nothing to open later.
+  // Nothing outlives the board: no timer to open a view later, no listener for a release.
   useEffect(
     () => () => {
       if (timer.current !== null) clearTimeout(timer.current);
+      waiting.current?.();
     },
     [],
   );
+  const swallowRelease = (pointer: number) => {
+    waiting.current?.();
+    const end = (e: PointerEvent) => {
+      if (e.pointerId !== pointer) return;
+      stop();
+      if (e.type === "pointerup") swallowNextClick();
+    };
+    const stop = () => {
+      window.removeEventListener("pointerup", end, { capture: true });
+      window.removeEventListener("pointercancel", end, { capture: true });
+      waiting.current = null;
+    };
+    window.addEventListener("pointerup", end, { capture: true });
+    window.addEventListener("pointercancel", end, { capture: true });
+    waiting.current = stop;
+  };
   return (id) => ({
+    "data-card": id,
     onPointerDown: (e) => {
-      if (e.pointerType === "mouse" || !e.isPrimary) return;
       clear();
-      start.current = { x: e.clientX, y: e.clientY };
+      // A click is not a hover: no preview pops up a moment after it.
+      if (e.pointerType === "mouse" || !e.isPrimary) return;
+      at.current = { x: e.clientX, y: e.clientY };
+      const pointer = e.pointerId;
       timer.current = setTimeout(() => {
-        clear();
-        opened.current = true;
+        timer.current = null;
+        swallowRelease(pointer);
         latest.current.open(id, "full");
       }, LONG_PRESS);
     },
     onPointerMove: (e) => {
-      const from = start.current;
-      if (from !== null && Math.hypot(e.clientX - from.x, e.clientY - from.y) > SLOP) clear();
+      const from = at.current;
+      if (e.pointerType === "mouse") at.current = { x: e.clientX, y: e.clientY };
+      else if (from !== null && Math.hypot(e.clientX - from.x, e.clientY - from.y) > SLOP) clear();
     },
-    onPointerUp: () => {
-      clear();
-      if (opened.current) swallowNextClick();
-      opened.current = false;
-    },
-    onPointerCancel: () => {
-      clear();
-      opened.current = false;
-    },
+    onPointerUp: clear,
+    onPointerCancel: clear,
     onPointerEnter: (e) => {
       if (e.pointerType !== "mouse" || e.buttons !== 0) return;
       clear();
-      timer.current = setTimeout(() => latest.current.open(id, "preview"), HOVER);
+      at.current = { x: e.clientX, y: e.clientY };
+      timer.current = setTimeout(() => {
+        timer.current = null;
+        // Only if the mouse is still on this card: its region may have gone meanwhile, with no "leave" to say so.
+        const where = at.current;
+        if (where !== null && cardAt(where.x, where.y) === id) latest.current.open(id, "preview");
+      }, HOVER);
     },
     onPointerLeave: (e) => {
       if (e.pointerType !== "mouse") return;

@@ -337,7 +337,8 @@ body,
 }
 
 /* Keyboard focus: white with a dark halo, so it reads on any art and never looks like the yellow of a picked card. */
-.hud button:focus-visible {
+.hud button:focus-visible,
+.hud .inspect-region:focus-visible {
   outline: 3px solid #ffffff;
   outline-offset: 2px;
   box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.75);

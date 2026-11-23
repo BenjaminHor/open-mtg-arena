@@ -6,6 +6,7 @@ import { POOL } from "@mtg/cards/pool";
 import type { OracleId } from "@mtg/engine";
 
 export type CardInfo = {
+  name: string;
   /** For example "{1}{R}"; empty for a land. A copy shows what it copied (its oracle id is the copied card's). */
   manaCost: string;
   typeLine: string;
@@ -27,6 +28,7 @@ const BY_ORACLE_ID = new Map<OracleId, CardInfo>(
   POOL.cards.map((c) => [
     c.oracleId,
     {
+      name: c.name,
       manaCost: c.manaCost,
       typeLine: c.typeLine,
       oracleText: c.oracleText,
