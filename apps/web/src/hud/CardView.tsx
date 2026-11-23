@@ -2,10 +2,10 @@
 // (`interaction/card-details.ts`). The full image's printed credit is the artist's credit (D-155). Opened by a
 // long-press, a right-click or the "i" key as a full view, closed by a tap anywhere or Escape; a mouse resting on a
 // card shows the same as a preview that passes taps through and goes when the mouse leaves, as Arena's desktop client
-// does (D-160).
+// does (D-160). The card keeps a fixed place (Arena's, at the left), so a hanger coming or going never moves it.
 
 import type { ObjectId } from "@mtg/engine";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CardDetails } from "../interaction/card-details.ts";
 import { ManaText } from "./ManaText.tsx";
 
@@ -15,9 +15,15 @@ import { ManaText } from "./ManaText.tsx";
  */
 export type Inspected = { mode: "full" | "preview"; id: ObjectId };
 
-type Props = { mode: Inspected["mode"]; details: CardDetails; close: () => void };
+type Props = {
+  mode: Inspected["mode"];
+  details: CardDetails;
+  /** Where a preview goes: the half of the screen away from the card the mouse is on, so it never covers it. */
+  side: "left" | "right";
+  close: () => void;
+};
 
-export function CardView({ mode, details, close }: Props) {
+export function CardView({ mode, details, side, close }: Props) {
   // The full view is modal: focus moves to its Close button, so Enter or Space can't press a card behind it, and goes
   // back where it was when the view closes (ui.md, "Mouse and keyboard too").
   const closeButton = useRef<HTMLButtonElement>(null);
@@ -29,27 +35,7 @@ export function CardView({ mode, details, close }: Props) {
   }, [mode]);
   const body = (
     <div className="card-view-body">
-      <figure className="card-view-card">
-        {details.image !== null ? (
-          <img src={details.image} alt={details.name} />
-        ) : (
-          // No image (a token): the card as text, in its frame.
-          <div className="card-view-text">
-            <p className="card-view-name">
-              <span>{details.name}</span>
-              <ManaText text={details.manaCost} />
-            </p>
-            <p className="card-view-type">{details.typeLine}</p>
-            {details.oracleText.split("\n").map((line, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: the lines are fixed text, never reordered
-              <p key={i}>
-                <ManaText text={line} />
-              </p>
-            ))}
-            {details.powerToughness !== null && <p className="card-view-pt">{details.powerToughness}</p>}
-          </div>
-        )}
-      </figure>
+      <CardFace details={details} />
       {details.hangers.length > 0 && (
         <ul className="card-view-hangers">
           {details.hangers.map((hanger) => (
@@ -62,15 +48,20 @@ export function CardView({ mode, details, close }: Props) {
       )}
     </div>
   );
-  if (mode === "preview") return <div className="card-view preview">{body}</div>;
+  if (mode === "preview") return <div className={`card-view preview ${side}`}>{body}</div>;
   return (
     // A tap anywhere closes it: the view is for reading, nothing in it is pressed. The click stops here: the table under
-    // it mustn't also take it as "put things down" (App's `onTable`).
+    // it mustn't also take it as "put things down" (App's `onTable`). A right-click closes it too, as it opened it.
     // biome-ignore lint/a11y/useKeyWithClickEvents: Escape closes it (App.tsx), as the close button does
     // biome-ignore lint/a11y/noStaticElementInteractions: the backdrop only closes the view
     <div
       className="card-view full"
       onClick={(e) => {
+        e.stopPropagation();
+        close();
+      }}
+      onContextMenu={(e) => {
+        e.preventDefault();
         e.stopPropagation();
         close();
       }}
@@ -88,5 +79,44 @@ export function CardView({ mode, details, close }: Props) {
         </button>
       </section>
     </div>
+  );
+}
+
+/**
+ * The card itself: its image, and until that has loaded (or if it can't, offline), the card as text in its frame, as
+ * the hand draws its own fallback (ui.md). A token has no image, so it's always the text.
+ */
+function CardFace({ details }: { details: CardDetails }) {
+  const [image, setImage] = useState<"loading" | "loaded" | "failed">("loading");
+  const showImage = details.image !== null && image !== "failed";
+  return (
+    <figure className="card-view-card">
+      {(!showImage || image === "loading") && (
+        <div className="card-view-text">
+          <p className="card-view-name">
+            <span>{details.name}</span>
+            <ManaText text={details.manaCost} />
+          </p>
+          <p className="card-view-type">{details.typeLine}</p>
+          {details.oracleText.split("\n").map((line, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: the lines are fixed text, never reordered
+            <p key={i}>
+              <ManaText text={line} />
+            </p>
+          ))}
+          {details.powerToughness !== null && <p className="card-view-pt">{details.powerToughness}</p>}
+        </div>
+      )}
+      {showImage && details.image !== null && (
+        <img
+          className={image === "loaded" ? undefined : "loading"}
+          src={details.image}
+          alt={details.name}
+          draggable={false}
+          onLoad={() => setImage("loaded")}
+          onError={() => setImage("failed")}
+        />
+      )}
+    </figure>
   );
 }

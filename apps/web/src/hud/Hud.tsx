@@ -13,7 +13,7 @@ import { promptLayout, promptTitle } from "../interaction/prompt-text.ts";
 import { CardButtons } from "./CardButtons.tsx";
 import { CardView, type Inspected } from "./CardView.tsx";
 import { ChoiceMenu } from "./ChoiceMenu.tsx";
-import type { InspectOpen } from "./card-inspect.ts";
+import type { InspectCallbacks } from "./card-inspect.ts";
 import type { HandDragCallbacks } from "./hand-drag.ts";
 import { ManaText } from "./ManaText.tsx";
 import { mainButton } from "./main-button.ts";
@@ -40,9 +40,9 @@ type HudProps = {
   /** Drag to play: a hand card lifted by a drag, let go on the table, or put down (`hand-drag.ts`). */
   drag: HandDragCallbacks;
   /** The card view: how a card's region opens it, and what's being looked at now. */
-  inspect: { open: InspectOpen; closePreview: () => void };
+  inspect: InspectCallbacks;
   /** The card view, if one is open: how, and what it shows (read from the seat view as it is now). */
-  inspected: { mode: Inspected["mode"]; details: CardDetails } | null;
+  inspected: (Inspected & { details: CardDetails }) | null;
   closeInspected: () => void;
   /** The declaration's batch button, "All Attack" or "Clear Attacks" (App.tsx, `all-attack.ts`), or none now. */
   attackBatch: { label: string; run: () => void; running: boolean } | null;
@@ -170,7 +170,14 @@ export function Hud(props: HudProps) {
       />
       {/* Over everything else: what's being looked at. */}
       {props.inspected !== null && (
-        <CardView mode={props.inspected.mode} details={props.inspected.details} close={props.closeInspected} />
+        <CardView
+          // A new card, or a preview made full, is a new view: its image loads afresh, and the full view takes focus.
+          key={`${props.inspected.id} ${props.inspected.mode}`}
+          mode={props.inspected.mode}
+          details={props.inspected.details}
+          side={previewSide(model, props.inspected.id)}
+          close={props.closeInspected}
+        />
       )}
       {result !== null && (
         <p role="status" className="result">
@@ -266,4 +273,10 @@ function LifeCrest(props: { rect: Rect; life: number; label: string; side: "mine
  */
 function detailSize(text: string, buttonWidth: number): number {
   return Math.max(7, Math.min(11, (buttonWidth - 22) / (text.length * 0.55)));
+}
+
+/** The half of the screen a preview goes on: the one away from the card, so the card stays in sight. */
+function previewSide(model: BoardModel, id: ObjectId): "left" | "right" {
+  const card = model.cards.find((c) => c.id === id);
+  return card !== undefined && card.x + card.width / 2 < model.width / 2 ? "right" : "left";
 }

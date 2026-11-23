@@ -233,6 +233,18 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     it back; every card region is focusable for "i"; Escape over a preview does its usual job; a preview ends when the
     mouse is off its card even if the region went; summoning sickness worded from CR 302.6; an ability whose source
     left shows the printed source; a token's type line has its subtypes.
+    UX review fixes: no key reaches the board behind a full view; the card's text shows until its image loads (and
+    stays if it can't, offline), the image starts loading on the press, and it's the large one (sharp at DPR 2–3); a
+    held card shows a ring filling over the 400 ms at once; the view fades and grows in (160 ms; only fades with reduced
+    motion); the card has a fixed place at the left (Arena's) with a fixed-width hanger column, so it never shifts; a
+    preview goes on the half of the screen away from the card hovered; sweeping from card to card swaps the preview at
+    once; a long hanger list fades at its end; no iOS "Save image" sheet or image drag; a right-click on the backdrop
+    closes the view; the stack's card is focusable for "i"; the token text card puts its P/T at the bottom right.
+    Left for the slices that own them (UX review): the P/T hanger naming its sources ("+1/+1 from Honor of the Pure")
+    and a current-P/T pill over the image's printed box (slice 3); an ability on the stack shown with its own text and
+    targets, not only its source card, and the stack's large card hiding the creatures under it from the view (slice
+    5); a hover over the collapsed hand previewing the card under the mouse, and a hand card enlarging in place on
+    hover as Arena's does (slice 6); a token's card drawn in its colours.
   - M3-04c plan for the rest (2026-11-23, written before starting), each slice its own squash-merged PR, live on Pages
     as it merges; the owner gives feedback at the end:
     2. **The card view:** long-press (touch) or right-click/hover-hold (mouse) shows a card large, with its full

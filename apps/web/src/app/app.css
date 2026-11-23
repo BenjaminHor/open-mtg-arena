@@ -325,6 +325,7 @@ body,
 /* A card with nothing to do now still takes a long-press, a right-click or a hover, to be looked at. */
 .hud .inspect-region {
   pointer-events: auto;
+  border-radius: 6px;
 }
 
 .hud .tap-shield {
@@ -332,13 +333,31 @@ body,
   z-index: 100000;
 }
 
-.hud .tap-region:active {
+/* Held: the press shows at once (ui.md: feedback within 100 ms), on a card a tap acts on or one only looked at. */
+.hud .tap-region:active,
+.hud .inspect-region:active {
   background: rgba(255, 255, 255, 0.12);
+}
+
+/* A touch held on a card: a ring that fills in over the long-press's 400 ms, so the hold shows at once and says it's
+   on its way to the card view. */
+.hud .held {
+  background: rgba(255, 255, 255, 0.12);
+  animation: held-ring 400ms linear forwards;
+}
+@keyframes held-ring {
+  from {
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.25);
+  }
+  to {
+    box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.9);
+  }
 }
 
 /* Keyboard focus: white with a dark halo, so it reads on any art and never looks like the yellow of a picked card. */
 .hud button:focus-visible,
-.hud .inspect-region:focus-visible {
+.hud .inspect-region:focus-visible,
+.hud .tap-shield:focus-visible {
   outline: 3px solid #ffffff;
   outline-offset: 2px;
   box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.75);
@@ -642,49 +661,80 @@ body,
   font-size: 12px;
 }
 
-/* The card view (hud/CardView.tsx): a card large, its hangers beside it. Full: over a dimmed board, closed by a tap.
-   Preview (a mouse resting on a card): at the left, passing taps through. */
+/* The card view (hud/CardView.tsx): a card large, its hangers beside it. Full: over a dimmed board, closed by a tap;
+   the card at a fixed place at the left, as Arena's, with the hangers in a fixed-width column to its right, so neither
+   moves as hangers come and go. Preview (a mouse resting on a card): on the half away from that card, passing taps
+   through. It comes in with a short fade and grow (ui.md, "Feel"); only the fade when motion is reduced. */
 .hud .card-view {
   inset: 0;
   z-index: 200000;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding: 0 4vw;
+  animation: card-view-fade 160ms ease-out;
 }
 .hud .card-view.full {
   background: rgba(5, 6, 8, 0.72);
   pointer-events: auto;
 }
 .hud .card-view.preview {
-  justify-content: flex-start;
-  padding-left: 12px;
   pointer-events: none;
+  padding: 0 12px;
+}
+.hud .card-view.preview.right {
+  justify-content: flex-end;
+}
+.card-view.preview.right .card-view-body {
+  flex-direction: row-reverse;
 }
 .card-view section {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
 }
 .card-view-body {
   display: flex;
   align-items: center;
   gap: 14px;
-  max-width: 94vw;
+  animation: card-view-grow 160ms ease-out;
+}
+@keyframes card-view-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes card-view-grow {
+  from {
+    transform: scale(0.92);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-view-body {
+    animation: none;
+  }
 }
 .card-view-card {
+  position: relative;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  /* A long-press on the image is still looking: no "Save image" sheet on iOS Safari. */
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 .card-view-card img,
 .card-view-text {
+  display: block;
   height: min(78vh, 520px);
   aspect-ratio: 63 / 88;
   border-radius: 4.5%;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+/* Loading behind the text card, shown once it's there. */
+.card-view-card img.loading {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
 }
 .card-view.preview .card-view-card img,
 .card-view.preview .card-view-text {
@@ -692,6 +742,8 @@ body,
 }
 .card-view-text {
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   padding: 6%;
   border: 6px solid #2b2e35;
   background: #e9e3d3;
@@ -715,23 +767,32 @@ body,
   padding: 2px 0;
   font-style: italic;
 }
-.card-view-pt {
+/* At the bottom right, where a card prints it. */
+.card-view-text .card-view-pt {
+  margin: auto 0 0;
   text-align: right;
   font-weight: 700;
   font-size: 18px;
 }
+/* A column of fixed width; a long list scrolls (in the full view), its end faded so it reads as more. */
 .card-view-hangers {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 20px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-width: 260px;
-  max-height: 80vh;
+  width: min(260px, 40vw);
+  max-height: min(78vh, 520px);
   overflow-y: auto;
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 20px), transparent);
+}
+.card-view.preview .card-view-hangers {
+  max-height: min(62vh, 420px);
+  overflow: hidden;
 }
 .card-view-hangers li {
+  flex-shrink: 0;
   padding: 6px 10px;
   border-radius: 8px;
   border: 1px solid var(--edge);
@@ -743,9 +804,7 @@ body,
 .card-view-hangers strong {
   display: block;
   color: var(--gold);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-size: 13px;
 }
 .card-view-close {
   min-height: 44px;

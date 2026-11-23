@@ -6,7 +6,7 @@
 import type { ObjectId } from "@mtg/engine";
 import type { BoardModel } from "../board-model/board-model.ts";
 import type { Controls } from "../interaction/controls.ts";
-import { type InspectOpen, useCardInspect } from "./card-inspect.ts";
+import { type InspectCallbacks, useCardInspect } from "./card-inspect.ts";
 import { type HandDragCallbacks, useHandDrag } from "./hand-drag.ts";
 import { place } from "./place.ts";
 
@@ -24,17 +24,20 @@ type Props = {
   /** Drag to play (`hand-drag.ts`): a hand card lifted by a drag, let go on the table, or put down. */
   drag: HandDragCallbacks;
   /** The card view (`card-inspect.ts`): open it for a card, or close a hover's preview. */
-  inspect: { open: InspectOpen; closePreview: () => void };
+  inspect: InspectCallbacks;
 };
 
 export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, selection, drag, inspect }: Props) {
   const hand = model.overlay.hand;
   const handDrag = useHandDrag(model, drag);
-  const inspectOn = useCardInspect((id, mode) => {
-    // A long-press on a hand card is looking, not the start of a drag.
-    if (mode === "full") handDrag.abort();
-    inspect.open(id, mode);
-  }, inspect.closePreview);
+  const inspectOn = useCardInspect({
+    ...inspect,
+    open: (id, mode) => {
+      // A long-press on a hand card is looking, not the start of a drag.
+      if (mode === "full") handDrag.abort();
+      inspect.open(id, mode);
+    },
+  });
   const names = new Map(model.cards.map((c) => [c.id, c.name]));
   const inHand = new Set(model.cards.filter((c) => c.zone === "hand").map((c) => c.id));
   // A lifted hand card that a second tap plays: say so on it, "Tap again to cast" (the UX review's cue).
@@ -111,6 +114,10 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
           <div
             key={`stack-${c.id}`}
             className="tap-shield"
+            role="img"
+            // biome-ignore lint/a11y/noNoninteractiveTabindex: focus is how the keyboard picks a card to look at ("i")
+            tabIndex={0}
+            aria-label={c.name}
             style={place(c)}
             onClick={(e) => e.stopPropagation()}
             {...inspectOn(c.id as ObjectId)}

@@ -112,7 +112,7 @@ export function cardDetails(shown: SeatView, id: ObjectId): CardDetails | null {
   }
   return {
     name: c.name,
-    image: info?.image ?? null,
+    image: info?.largeImage ?? null,
     manaCost: info?.manaCost ?? "",
     typeLine: info?.typeLine ?? typeLine(c.supertypes, c.types, c.subtypes),
     oracleText: info?.oracleText ?? "",
@@ -127,7 +127,7 @@ function printedDetails(oracleId: OracleId): CardDetails | null {
   if (info === null) return null;
   return {
     name: info.name,
-    image: info.image,
+    image: info.largeImage,
     manaCost: info.manaCost,
     typeLine: info.typeLine,
     oracleText: info.oracleText,

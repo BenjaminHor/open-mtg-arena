@@ -269,14 +269,18 @@ export function App() {
   }, [inspected, looking]);
   // A preview goes when the mouse leaves its card. The card's region may go first (redrawn, or the card gone) with no
   // "leave" to say so, so while a preview shows, any move away from that card ends it.
+  // Checked against the view as it is when the move arrives: a sweep to the next card has already swapped it.
+  const previewing = inspected?.mode === "preview";
   useEffect(() => {
-    if (inspected?.mode !== "preview") return;
+    if (!previewing) return;
     const onMove = (e: PointerEvent) => {
-      if (e.pointerType === "mouse" && cardAt(e.clientX, e.clientY) !== inspected.id) setInspected(null);
+      if (e.pointerType !== "mouse") return;
+      const under = cardAt(e.clientX, e.clientY);
+      setInspected((now) => (now?.mode === "preview" && under !== now.id ? null : now));
     };
     window.addEventListener("pointermove", onMove);
     return () => window.removeEventListener("pointermove", onMove);
-  }, [inspected]);
+  }, [previewing]);
   // A tap on the table, not on a control, puts things down: the menu, then the selection, then the open hand.
   const onTable = (event: React.MouseEvent) => {
     if ((event.target as HTMLElement).closest("button") !== null) return;
@@ -293,6 +297,8 @@ export function App() {
         setInspected(null);
         if (inspected.mode === "full") return;
       }
+      // Behind a full view nothing takes a key: its Close button has focus and handles its own.
+      if (inspected?.mode === "full") return;
       // "i" looks at the focused card, the keyboard's way to the card view (a long-press or a right-click otherwise).
       if (event.key === "i" && !event.repeat && shown !== null) {
         const id = (document.activeElement as HTMLElement | null)?.dataset.card as ObjectId | undefined;
@@ -344,8 +350,13 @@ export function App() {
                 setInspected({ mode, id });
             },
             closePreview: () => setInspected((now) => (now?.mode === "preview" ? null : now)),
+            prefetch: (id) => {
+              const image = cardDetails(shown, id)?.image;
+              // The browser keeps it: the view's own <img> then finds it loaded, or on its way.
+              if (image != null) new Image().src = image;
+            },
           }}
-          inspected={inspected === null || looking === null ? null : { mode: inspected.mode, details: looking }}
+          inspected={inspected === null || looking === null ? null : { ...inspected, details: looking }}
           closeInspected={() => setInspected(null)}
           attackBatch={attackBatch(shown, attackGoal === null ? null : runningLabel.current, aimAttack)}
           drag={{

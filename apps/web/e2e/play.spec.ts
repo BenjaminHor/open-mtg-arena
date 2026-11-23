@@ -368,7 +368,9 @@ test("the card view: a right-click or a long-press shows a card large with its h
   const elves = await onBoard("Llanowar Elves");
   await page.mouse.move(elves.x, elves.y);
   await expect(page.locator(".card-view.preview")).toBeVisible();
-  await expect(page.locator('.card-view.preview img[alt="Llanowar Elves"]')).toHaveCount(1);
+  // Art is blocked in these tests (offline, as it were): the card is shown as its text, never a broken image.
+  await expect(page.locator(".card-view.preview .card-view-name span").first()).toHaveText("Llanowar Elves");
+  await expect(page.locator(".card-view.preview img")).toHaveCount(0);
   await page.mouse.move(400, 5);
   await expect(page.locator(".card-view.preview")).toHaveCount(0);
   // Escape with a preview up does what it would without one: here, close the open hand.
