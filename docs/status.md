@@ -268,6 +268,21 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     its card. Choosing a basic land type is five buttons, not a filter. The prompt goes in the gap between the rows
     only if a row of choices fits there too. Debug screenshots committed by mistake are removed, and PNGs at the root
     and in `apps/web/src` are now ignored.
+    After the UX review: a prompt with choices is one dark panel (title and choices), in the gap between the rows if
+    it fits there with all its rows, else over the middle of the table, as Arena's choice dialogs are; an open hand no
+    longer lifts a numbers prompt onto the targets; the filter's text is 16 px (iOS zooms into smaller).
+    Left for M3-04c from that review:
+    - A share with one possible value (dividing 3 among 3) still asks, because Cancel is also legal: answer it
+      without asking.
+    - Screen-reader names for the number buttons ("X = 3"), and a live match count in the filter.
+    - Dividing: say where the rest goes, and ring the target being asked about.
+    - A stepper (− 7 + Max) for X beyond about 10 values.
+    - A pressed look for prompt buttons, and a dimmed look while busy.
+    - "Choose target 2 of 3".
+    - In the filter: word-start matches ranked first, and the cards in sight suggested before A–Z.
+    - Titles allowed to wrap to two lines.
+    - Escape closes the open hand before it cancels a cast.
+    - The phone's on-screen keyboard while naming a card, and focus on the first number when a numbers prompt opens.
   - M3-04b slice 3 (2026-11-23, in the same PR as slice 1, as both are on one branch): smart stops (D-157). Auto-pass
     keeps D-143's rule and adds Arena's skips: your own upkeep, draw step and end step with an empty stack, unless
     mana is left in your pool. Full control is a switch in the settings menu (the main button turns blue-violet). The

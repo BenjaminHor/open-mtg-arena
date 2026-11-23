@@ -31,7 +31,10 @@ export function Prompt({
 }) {
   if (prompt === null && title === null) return null;
   return (
-    <section className="prompt" aria-label={prompt?.title ?? title ?? undefined}>
+    <section
+      className={`prompt${prompt !== null ? " with-choices" : ""}`}
+      aria-label={prompt?.title ?? title ?? undefined}
+    >
       {/* Announced as it changes, so a screen reader hears what the game waits for. */}
       <p className="prompt-title" aria-live="polite">
         {prompt?.title ?? title}

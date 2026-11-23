@@ -78,7 +78,7 @@ const FIXTURES: Record<string, Fixture> = {
       p1: {
         life: 20,
         hand: ["Fireball", "Ignite Disorder", "Pithing Needle"],
-        battlefield: many("Mountain", 7),
+        battlefield: [...many("Mountain", 7), "Llanowar Elves", "Deadly Recluse", "Prodigal Pyromancer"],
         library: many("Mountain", 20),
       },
       p2: {
