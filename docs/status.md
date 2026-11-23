@@ -233,6 +233,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     again to cast" on a lifted card; a white focus ring; Tab in screen order. "All Attack" is left for later: it isn't
     an engine option (each attacker is its own pick), so it would be a UI macro of several picks; to raise with the
     owner, with drag to play, at review time.
+  - **M3-04b slices 1 and 3 merged (PR #97, 2026-11-23).** CI green, a 300-game fuzz clean. Next: slice 2, bespoke
+    prompts.
   - M3-04b slice 3 (2026-11-23, in the same PR as slice 1, as both are on one branch): smart stops (D-157). Auto-pass
     keeps D-143's rule and adds Arena's skips: your own upkeep, draw step and end step with an empty stack, unless
     mana is left in your pool. Full control is a switch in the settings menu (the main button turns blue-violet). The
