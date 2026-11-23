@@ -2514,3 +2514,12 @@ owner's answer to the D-089 open question, option (a))
   its combat rungs as on the person's; a prompt that can't go between the rows sits near the top (`promptTop`).
 - Exile counts the cards each player owns that can be seen there; graveyard and exile browsing come with the zones
   slice.
+
+**D-165: We keep and finish our own rules engine, not Forge's (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner asked whether to adapt the web frontend to Forge's open-source engine (github.com/Card-Forge/forge)
+  rather than build our own. Forge has far more cards ("over 99%" of all cards), but it is Java with no web build,
+  GPL-3.0 (our repo is MIT), and would need a server (or Java running in the browser) for our app, losing offline play
+  and "no server" (vision.md), and the pure-reducer design that replays, fuzzing, the CR-cited tests and the LLM
+  opponent's tools rely on. After the trade-offs, the owner: "never mind then, we'll strive towards finishing our own
+  rules engine." D-051 stands: the engine is the end goal. Card coverage grows a mechanic at a time.
+

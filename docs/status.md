@@ -2096,12 +2096,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 ## Open questions
 
-- Owner (2026-11-23): "are you familiar with forge mtg? ... im curious if we're wasting our time creating our own
-  rules engine when this is open source. would it be possible to adapt our frontend to use forge's rules engine?"
-  Forge (github.com/Card-Forge/forge): Java 17, Maven, GPL-3.0, "over 99%" of all cards, desktop/Android/iOS,
-  no web build found, engine in forge-game/forge-core apart from the forge-gui-* front ends, online multiplayer
-  "functional" but error-prone. Answered with the trade-offs (no server and offline in the browser, GPL vs our MIT,
-  the pure-reducer design the LLM opponent and tests rely on, card coverage); the owner decides.
 - Smart stops (2026-11-23, D-157): the host stops wherever you could act, except in your own upkeep, draw step and
   end step. Proposal, not built: also skip your own beginning of combat, combat damage and end of combat unless an
   opponent's object is on the stack, and add one-shot stops by tapping a step on the phase ladder, as Arena does.
