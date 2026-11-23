@@ -43,8 +43,9 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   button (`main-button.ts` decides what it says and does) and the small ones beside it, the prompt (`Prompt.tsx`), a
   card's menu of choices (`ChoiceMenu.tsx`) and the settings cog with Concede and full control (`SettingsMenu.tsx`).
   `hand-drag.ts`: drag a hand card up onto the table to play it, followed on the window so lifting it can't lose it.
-  The card view (`CardView.tsx`, opened by `card-inspect.ts`): a long-press, a right-click or "i" shows a card large;
-  a mouse resting on a card previews it.
+  The card view (`CardView.tsx`, opened by `card-inspect.ts`, D-161): a long-press, a right-click or "i" shows a card
+  large; a mouse resting on a card previews it. `swallow-click.ts`: stops the click a drag's or a long-press's release
+  fires, so neither also counts as a tap.
 - `src/renderer/`: the PixiJS scene (`board-scene.ts`, sprites kept by object id, drawn on demand) and its React
   component (`BoardCanvas.tsx`). `card-sprite.ts` (a card's lifetime and art loading), `card-face.ts` (a card's face:
   frame, art window, name strip, power/toughness), `hand-face.ts` (a hand card's lower half), `card-marks.ts` (combat

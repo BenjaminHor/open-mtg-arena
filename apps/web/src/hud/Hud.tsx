@@ -171,8 +171,9 @@ export function Hud(props: HudProps) {
       {/* Over everything else: what's being looked at. */}
       {props.inspected !== null && (
         <CardView
-          // A new card, or a preview made full, is a new view: its image loads afresh, and the full view takes focus.
-          key={`${props.inspected.id} ${props.inspected.mode}`}
+          // A preview made full is a new view (the full one takes focus); a preview swapped to another card isn't.
+          key={props.inspected.mode}
+          id={props.inspected.id}
           mode={props.inspected.mode}
           details={props.inspected.details}
           side={previewSide(model, props.inspected.id)}

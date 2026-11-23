@@ -245,6 +245,10 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     targets, not only its source card, and the stack's large card hiding the creatures under it from the view (slice
     5); a hover over the collapsed hand previewing the card under the mouse, and a hand card enlarging in place on
     hover as Arena's does (slice 6); a token's card drawn in its colours.
+    Advisor pass: a touch's context menu (Android, during a long hold) neither opens nor closes the view; the view
+    clears the safe-area insets; the large image is fetched only 120 ms into a hold or rest (not on every tap or
+    sweep); a preview swap doesn't replay the fade; Space on a card only there to be looked at still presses the main
+    button. Design recorded as D-161.
   - M3-04c plan for the rest (2026-11-23, written before starting), each slice its own squash-merged PR, live on Pages
     as it merges; the owner gives feedback at the end:
     2. **The card view:** long-press (touch) or right-click/hover-hold (mouse) shows a card large, with its full

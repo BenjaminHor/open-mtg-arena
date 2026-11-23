@@ -82,6 +82,8 @@ function keyboardFocused(): boolean {
   if (!(focused instanceof HTMLElement) || focused === document.body) return false;
   // A text box (the prompt's filter) takes every key typed into it, a space included.
   const typing = focused instanceof HTMLInputElement && (focused.type === "search" || focused.type === "text");
+  // A card that's only there to be looked at ("i") has nothing to press: Space still presses the main button.
+  if (focused.matches(".inspect-region, .tap-shield")) return false;
   return typing || focused.matches(":focus-visible");
 }
 

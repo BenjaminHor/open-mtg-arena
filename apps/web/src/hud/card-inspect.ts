@@ -4,6 +4,7 @@
 
 import type { ObjectId } from "@mtg/engine";
 import { useEffect, useRef } from "react";
+import { isTouch } from "./CardView.tsx";
 import { swallowNextClick } from "./swallow-click.ts";
 
 /** ms: a press held this long without moving is a long-press (ui.md: about 400 ms); a mouse resting this long, a hover. */
@@ -13,6 +14,8 @@ const HOVER = 600;
 const SLOP = 8;
 /** ms: a mouse moving from one card to the next within this long swaps the preview at once, as Arena's does. */
 const SWAP = 150;
+/** ms: how long a press or a rest lasts before the card's large image starts loading (a tap or a sweep loads none). */
+const PREFETCH = 120;
 
 export type InspectOpen = (id: ObjectId, mode: "full" | "preview") => void;
 
@@ -50,9 +53,16 @@ export function useCardInspect(on: InspectCallbacks): (id: ObjectId) => InspectH
   // The region being held: marked at once, a ring filling over the hold (ui.md: feedback within 100 ms). A class set
   // on the element directly, not through React, so a press never redraws the board.
   const held = useRef<Element | null>(null);
+  // A prefetch waiting for a press or a rest to last (`PREFETCH`), cancelled with it.
+  const early = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prefetchSoon = (id: ObjectId) => {
+    early.current = setTimeout(() => latest.current.prefetch(id), PREFETCH);
+  };
   const clear = () => {
     if (timer.current !== null) clearTimeout(timer.current);
     timer.current = null;
+    if (early.current !== null) clearTimeout(early.current);
+    early.current = null;
     held.current?.classList.remove("held");
     held.current = null;
   };
@@ -60,6 +70,7 @@ export function useCardInspect(on: InspectCallbacks): (id: ObjectId) => InspectH
   useEffect(
     () => () => {
       if (timer.current !== null) clearTimeout(timer.current);
+      if (early.current !== null) clearTimeout(early.current);
       waiting.current?.();
     },
     [],
@@ -89,9 +100,9 @@ export function useCardInspect(on: InspectCallbacks): (id: ObjectId) => InspectH
       at.current = { x: e.clientX, y: e.clientY };
       held.current = e.currentTarget;
       held.current.classList.add("held");
-      // The image the view will show starts loading now: the 400 ms hold is its head start.
-      latest.current.prefetch(id);
       const pointer = e.pointerId;
+      // The image the view will show starts loading a moment into the hold, its head start: not on every tap.
+      prefetchSoon(id);
       timer.current = setTimeout(() => {
         clear();
         swallowRelease(pointer);
@@ -109,7 +120,6 @@ export function useCardInspect(on: InspectCallbacks): (id: ObjectId) => InspectH
       if (e.pointerType !== "mouse" || e.buttons !== 0) return;
       clear();
       at.current = { x: e.clientX, y: e.clientY };
-      latest.current.prefetch(id);
       const show = () => {
         timer.current = null;
         // Only if the mouse is still on this card: its region may have gone meanwhile, with no "leave" to say so.
@@ -120,7 +130,10 @@ export function useCardInspect(on: InspectCallbacks): (id: ObjectId) => InspectH
       };
       // Sweeping across cards: once a preview shows, the next card's replaces it with no wait.
       if (performance.now() < swapUntil.current) show();
-      else timer.current = setTimeout(show, HOVER);
+      else {
+        prefetchSoon(id);
+        timer.current = setTimeout(show, HOVER);
+      }
     },
     onPointerLeave: (e) => {
       if (e.pointerType !== "mouse") return;
@@ -131,6 +144,8 @@ export function useCardInspect(on: InspectCallbacks): (id: ObjectId) => InspectH
     },
     onContextMenu: (e) => {
       e.preventDefault();
+      // A long hold fires one too (Android): the long-press's own timer opens the view, with its release swallowed.
+      if (isTouch(e)) return;
       clear();
       latest.current.open(id, "full");
     },

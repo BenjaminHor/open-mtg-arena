@@ -671,7 +671,8 @@ body,
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 0 4vw;
+  /* Clear of a notch at either side in landscape. */
+  padding: 0 max(4vw, env(safe-area-inset-right)) 0 max(4vw, env(safe-area-inset-left));
   animation: card-view-fade 160ms ease-out;
 }
 .hud .card-view.full {
@@ -680,7 +681,7 @@ body,
 }
 .hud .card-view.preview {
   pointer-events: none;
-  padding: 0 12px;
+  padding: 0 max(12px, env(safe-area-inset-right)) 0 max(12px, env(safe-area-inset-left));
 }
 .hud .card-view.preview.right {
   justify-content: flex-end;

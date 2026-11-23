@@ -323,7 +323,25 @@ test("the card view: a right-click or a long-press shows a card large with its h
       await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
       await page.waitForTimeout(400);
     };
-    await longPress(await onBoard("Deadly Recluse"));
+    // Android fires a context menu during a long hold, by then over the view's backdrop: it mustn't close the view.
+    const recluseAt = await onBoard("Deadly Recluse");
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [recluseAt] });
+    await expect(view("Deadly Recluse")).toBeVisible();
+    await page.evaluate(
+      ({ x, y }) => {
+        const menu = new PointerEvent("contextmenu", {
+          bubbles: true,
+          cancelable: true,
+          clientX: x,
+          clientY: y,
+          pointerType: "touch",
+        });
+        document.elementFromPoint(x, y)?.dispatchEvent(menu);
+      },
+      { x: recluseAt.x, y: recluseAt.y },
+    );
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await page.waitForTimeout(400);
     // Letting go doesn't close it.
     await expect(view("Deadly Recluse")).toBeVisible();
     await expect(view("Deadly Recluse").getByText("Summoning sick")).toBeVisible();
@@ -350,10 +368,14 @@ test("the card view: a right-click or a long-press shows a card large with its h
   await expect(view("Deadly Recluse")).toBeVisible();
   await expect(view("Deadly Recluse").getByText("Summoning sick")).toBeVisible();
   await expect(view("Deadly Recluse").getByText("Reach", { exact: true })).toBeVisible();
-  // Focus is on Close, so a key press can't reach a card behind the view.
+  // Focus is on Close, so a key press can't reach a card behind the view: Space closes the view, and the main button
+  // behind it isn't pressed (the step doesn't move on).
   await expect(page.getByRole("button", { name: "Close" })).toBeFocused();
-  await page.keyboard.press("Escape");
+  const step = await page.getByRole("button", { name: /^Next/ }).textContent();
+  await page.keyboard.press("Space");
   await expect(view("Deadly Recluse")).toHaveCount(0);
+  await page.waitForTimeout(300);
+  expect(await page.getByRole("button", { name: /^Next/ }).textContent()).toBe(step);
   // Nothing was picked or opened by the right-click: the card's own menu didn't come up.
   await expect(page.getByRole("menu")).toHaveCount(0);
   // The keyboard: "i" on a focused card, even one no tap acts on (the opponent's), and focus comes back after.
@@ -364,6 +386,13 @@ test("the card view: a right-click or a long-press shows a card large with its h
   await page.keyboard.press("Escape");
   await expect(view("Elite Vanguard")).toHaveCount(0);
   await expect(vanguard).toBeFocused();
+  // "i" on a card a key would act on (Llanowar Elves taps for mana), then Enter: it closes the view, never taps the card.
+  await page.getByRole("button", { name: /^Llanowar Elves/ }).focus();
+  await page.keyboard.press("i");
+  await expect(view("Llanowar Elves")).toBeVisible();
+  await page.keyboard.press("Enter");
+  await expect(view("Llanowar Elves")).toHaveCount(0);
+  expect((await onBoard("Llanowar Elves")).tapped).toBe(false);
   // A mouse resting on a card shows the same as a preview, gone when the mouse leaves.
   const elves = await onBoard("Llanowar Elves");
   await page.mouse.move(elves.x, elves.y);

@@ -16,6 +16,7 @@ import { ManaText } from "./ManaText.tsx";
 export type Inspected = { mode: "full" | "preview"; id: ObjectId };
 
 type Props = {
+  id: ObjectId;
   mode: Inspected["mode"];
   details: CardDetails;
   /** Where a preview goes: the half of the screen away from the card the mouse is on, so it never covers it. */
@@ -23,7 +24,7 @@ type Props = {
   close: () => void;
 };
 
-export function CardView({ mode, details, side, close }: Props) {
+export function CardView({ id, mode, details, side, close }: Props) {
   // The full view is modal: focus moves to its Close button, so Enter or Space can't press a card behind it, and goes
   // back where it was when the view closes (ui.md, "Mouse and keyboard too").
   const closeButton = useRef<HTMLButtonElement>(null);
@@ -35,7 +36,7 @@ export function CardView({ mode, details, side, close }: Props) {
   }, [mode]);
   const body = (
     <div className="card-view-body">
-      <CardFace details={details} />
+      <CardFace key={id} details={details} />
       {details.hangers.length > 0 && (
         <ul className="card-view-hangers">
           {details.hangers.map((hanger) => (
@@ -63,7 +64,8 @@ export function CardView({ mode, details, side, close }: Props) {
       onContextMenu={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        close();
+        // Android fires one during a long hold too, by then over this backdrop: only a mouse's right-click closes it.
+        if (!isTouch(e)) close();
       }}
     >
       <section
@@ -80,6 +82,12 @@ export function CardView({ mode, details, side, close }: Props) {
       </section>
     </div>
   );
+}
+
+/** Whether a context menu came from a finger or a pen (a long hold), not a mouse's right button. */
+export function isTouch(e: React.MouseEvent): boolean {
+  const type = (e.nativeEvent as Partial<PointerEvent>).pointerType;
+  return type === "touch" || type === "pen";
 }
 
 /**
