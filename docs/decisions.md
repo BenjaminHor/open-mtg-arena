@@ -2837,4 +2837,7 @@ owner's answer to the D-089 open question, option (a))
 - Branding: every phase-rs name, logo, domain, link, contact and service is removed or replaced. Their copyright and
   license notices stay, as MIT and Apache-2.0 require: the license files keep their copyright line, and a NOTICE
   credits the code's origin. That's attribution in the license files, not branding in the app.
+- The owner's answers (2026-11-23): the app is called "Open MTG Arena" on screen too; online multiplayer, its servers,
+  the lobby, peer-to-peer and Supabase cloud sync are removed (offline only: the AI, the LLM opponent, the RPG); the
+  Tauri desktop app and its updater are removed (the web app installs as a PWA).
 
