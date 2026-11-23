@@ -2219,6 +2219,9 @@ owner's answer to the D-089 open question, option (a))
   first every ten, so every pairing is played from both seats and both sides of the play.
 - Both seats go through the match host with its auto-pass and auto-tap, as in the app: the random agent is asked only
   where a person would be, and picks uniformly there. A game past turn 40 counts as not won (`capped`), as does a draw.
+  A game where the random agent goes round in circles until the host gives up (adding and taking back blocks under
+  Prized Unicorn's requirement for 100,000 actions, `HostStuck`) counts as `void`, not won; it's reported, and rare
+  (about one game in 1,500).
 - Each decision is timed with the `seatView` build included, as the app will see it; the report gives the mean and the
   slowest, with its seed. Ten fixed games per deck run in `pnpm check` (`packages/cli/test/eval.test.ts`, at least seven
   won), so a regression shows without the full run.

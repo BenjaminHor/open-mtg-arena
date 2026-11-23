@@ -111,6 +111,20 @@ const named = (state: GameState, name: string, owner: PlayerId): ObjectId => {
   return found;
 };
 
+/** p2 attacks with `attacker`; what p1's heuristic blocks with (CR 509.1). */
+function blocks(p1: Side, attackers: string[]): { blocks: Action[]; state: GameState } {
+  let state = until(table(p1, { battlefield: attackers }, "p2", "precombatMain"), "declareAttackers");
+  for (const name of attackers) {
+    state = answering(state, {
+      kind: "declareAttacker",
+      attack: { attacker: named(state, name, "p2"), defender: "p1" },
+    });
+  }
+  state = until(answering(state, { kind: "finishDeclaring" }), "declareBlockers");
+  const acted = heuristicActs(state, "p1");
+  const picks = acted.actions.filter((a) => a.type === "ANSWER" && a.answer.kind === "declareBlocker");
+  return { blocks: picks, state: acted.state };
+}
 describe("the heuristic's main phase", () => {
   it("plays a land first", () => {
     const state = table({ hand: ["Forest", "Grizzly Bears"] }, {}, "p1", "precombatMain");
@@ -264,21 +278,6 @@ describe("the heuristic in combat", () => {
     expect(picks[0]).toMatchObject({ answer: { attack: { attacker: berserkers } } });
   });
 
-  /** p2 attacks with `attacker`; what p1's heuristic blocks with (CR 509.1). */
-  function blocks(p1: Side, attackers: string[]): { blocks: Action[]; state: GameState } {
-    let state = until(table(p1, { battlefield: attackers }, "p2", "precombatMain"), "declareAttackers");
-    for (const name of attackers) {
-      state = answering(state, {
-        kind: "declareAttacker",
-        attack: { attacker: named(state, name, "p2"), defender: "p1" },
-      });
-    }
-    state = until(answering(state, { kind: "finishDeclaring" }), "declareBlockers");
-    const acted = heuristicActs(state, "p1");
-    const picks = acted.actions.filter((a) => a.type === "ANSWER" && a.answer.kind === "declareBlocker");
-    return { blocks: picks, state: acted.state };
-  }
-
   it("blocks with a creature that kills the attacker and survives", () => {
     expect(blocks({ battlefield: ["Centaur Courser"] }, ["Gray Ogre"]).blocks).toHaveLength(1);
   });
@@ -336,6 +335,63 @@ describe("the heuristic's combat damage", () => {
     const firstBlocker = state.objects[pending.recipients[0]?.object as ObjectId] as { oracleId: OracleId };
     const toughness = cards[firstBlocker.oracleId]?.printed.toughness;
     expect(first).toMatchObject({ answer: { kind: "assignDamage", amount: toughness } });
+  });
+});
+
+describe("the heuristic's combat tricks and costs", () => {
+  it("keeps a pump spell in its main phase, and casts it once its blocked creature would lose the fight (CR 509)", () => {
+    const start = table(
+      { battlefield: ["Grizzly Bears", "Forest"], hand: ["Giant Growth"] },
+      { battlefield: ["Hill Giant"] },
+      "p1",
+      "precombatMain",
+    );
+    expect(decide(start).type).toBe("PASS_PRIORITY");
+    let state = until(start, "declareAttackers");
+    const bears = named(state, "Grizzly Bears", "p1");
+    state = answering(state, { kind: "declareAttacker", attack: { attacker: bears, defender: "p2" } });
+    state = until(answering(state, { kind: "finishDeclaring" }), "declareBlockers");
+    state = answering(state, {
+      kind: "declareBlocker",
+      block: { blocker: named(state, "Hill Giant", "p2"), attacker: bears },
+    });
+    state = answering(state, { kind: "finishDeclaring" });
+    expect(state.pending).toMatchObject({ player: "p1", kind: "priority" });
+    expect(decide(state)).toMatchObject({ type: "CAST_SPELL" });
+  });
+
+  it("cracks a fetch land: its own land is worth less than the land it finds (CR 701.23)", () => {
+    const state = table({ battlefield: ["Terramorphic Expanse"] }, {}, "p1", "precombatMain");
+    expect(decide(state)).toMatchObject({ type: "ACTIVATE_ABILITY" });
+  });
+
+  it("blocks a big attacker with two creatures that kill it together, losing at most one (CR 509.1a, 510.1c)", () => {
+    const { blocks: picks, state } = blocks({ battlefield: ["Giant Spider", "Hill Giant"] }, ["Craw Wurm"]);
+    const wurm = named(state, "Craw Wurm", "p2");
+    expect(picks).toHaveLength(2);
+    for (const pick of picks) expect(pick).toMatchObject({ answer: { block: { attacker: wurm } } });
+  });
+
+  it("spreads chump blocks over the attackers instead of piling them on one", () => {
+    const { blocks: picks } = blocks({ battlefield: ["Grizzly Bears", "Llanowar Elves"], life: 3 }, [
+      "Hill Giant",
+      "Gray Ogre",
+    ]);
+    const attackers = picks.map((p) =>
+      p.type === "ANSWER" && p.answer.kind === "declareBlocker" ? p.answer.block.attacker : null,
+    );
+    expect(picks).toHaveLength(2);
+    expect(new Set(attackers).size).toBe(2);
+  });
+
+  it("doesn't pay its last life to draw cards (Sign in Blood at 2 life)", () => {
+    const state = table(
+      { hand: ["Sign in Blood"], battlefield: ["Swamp", "Swamp", "Swamp"], life: 2 },
+      {},
+      "p1",
+      "precombatMain",
+    );
+    expect(decide(state).type).toBe("PASS_PRIORITY");
   });
 });
 

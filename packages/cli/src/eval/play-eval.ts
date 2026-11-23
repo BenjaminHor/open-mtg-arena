@@ -6,7 +6,7 @@
 import { type AgentName, heuristicAction } from "@mtg/ai";
 import type { DeckList } from "@mtg/cards";
 import { type CardDatabase, type PlayerId, seatView } from "@mtg/engine";
-import { advance, deckGameSetup, type MatchState, startMatch, submit, waitingOn } from "@mtg/match";
+import { advance, deckGameSetup, HostStuck, type MatchState, startMatch, submit, waitingOn } from "@mtg/match";
 
 export type EvalGame = {
   heroDeck: DeckList;
@@ -21,7 +21,8 @@ export type EvalGame = {
 };
 
 export type EvalOutcome = {
-  outcome: "won" | "lost" | "drawn" | "capped";
+  /** `void`: the simple agent went round in circles until the host gave up (`HostStuck`); not a win either. */
+  outcome: "won" | "lost" | "drawn" | "capped" | "void";
   turns: number;
   /** How long each of the heuristic's decisions took, in milliseconds. */
   decisionMs: number[];
@@ -40,7 +41,12 @@ export function playEvalGame(game: EvalGame, clock: () => number, cards: CardDat
   let match = startMatch(deckGameSetup(decks, game.seed, game.firstPlayer), seats, cards);
   const decisionMs: number[] = [];
   for (;;) {
-    match = advance(match, cards);
+    try {
+      match = advance(match, cards);
+    } catch (error) {
+      if (error instanceof HostStuck) return { outcome: "void", turns: match.state.turn?.number ?? 0, decisionMs };
+      throw error;
+    }
     const { state } = match;
     const turns = state.turn?.number ?? 0;
     if (state.result !== null) {

@@ -17,10 +17,12 @@ import type {
 } from "@mtg/engine";
 import { cardDataByOracleId } from "@mtg/engine";
 import { cardData } from "./board.ts";
+import type { Pump } from "./fights.ts";
 
 export type Intent =
   | { kind: "harm"; damage: number | null }
-  | { kind: "help"; untilEndOfTurn: boolean }
+  /** `pump`: what it gives a creature until end of turn, a combat trick's worth (`tricks.ts`). */
+  | { kind: "help"; untilEndOfTurn: boolean; pump?: Pump; lifeLoss?: number }
   /** A target the effect neither harms nor helps in a way the heuristic knows: any legal one will do. */
   | { kind: "neutral" };
 
@@ -33,12 +35,21 @@ export function effectIntents(targetCount: number, effects: readonly Effect[], x
   return Array.from({ length: targetCount }, (_, i) => intentFor(i, effects, x));
 }
 
+/**
+ * The first thing the effects do to target `index` decides it, with one exception: help that also costs the target
+ * life (Sign in Blood: "target player draws two cards and loses 2 life") carries the loss, so a player low on life
+ * doesn't aim it at itself.
+ */
 function intentFor(index: number, effects: readonly Effect[], x: number | null): Intent {
+  let found: Intent = NEUTRAL;
+  let lifeLoss = 0;
   for (const effect of effects) {
     const { subjects, intent } = effectOn(effect, x, index);
-    if (intent.kind !== "neutral" && subjects.some((s) => isTarget(s, index))) return intent;
+    if (!subjects.some((s) => isTarget(s, index))) continue;
+    if (effect.op === "loseLife") lifeLoss += typeof effect.amount === "number" ? effect.amount : 1;
+    if (found.kind === "neutral" && intent.kind !== "neutral") found = intent;
   }
-  return NEUTRAL;
+  return found.kind === "help" && lifeLoss > 0 ? { ...found, lifeLoss } : found;
 }
 
 /** "Target ...", "target creature's controller", "each creature target player controls": instance `index`. */
@@ -84,12 +95,16 @@ function effectOn(effect: Effect, x: number | null, index: number): EffectOn {
       return { subjects: [effect.who], intent: HARM };
     case "modifyPT": {
       const help = effect.power + effect.toughness >= 0;
-      const intent = help ? { kind: "help" as const, untilEndOfTurn: effect.duration === "endOfTurn" } : HARM;
+      const pump = { power: effect.power, toughness: effect.toughness, keywords: [] };
+      const intent = help ? { kind: "help" as const, untilEndOfTurn: effect.duration === "endOfTurn", pump } : HARM;
       return { subjects: [effect.of], intent };
     }
     case "putCounters":
       return { subjects: [effect.of], intent: effect.counter === "+1/+1" ? HELP : HARM };
-    case "gainKeywords":
+    case "gainKeywords": {
+      const pump = { power: 0, toughness: 0, keywords: effect.keywords };
+      return { subjects: [effect.of], intent: { kind: "help", untilEndOfTurn: effect.duration === "endOfTurn", pump } };
+    }
     case "cantBeBlocked":
       return { subjects: [effect.of], intent: { kind: "help", untilEndOfTurn: effect.duration === "endOfTurn" } };
     case "untap":

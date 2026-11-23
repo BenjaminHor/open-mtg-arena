@@ -16,7 +16,7 @@ import type {
   SeenCard,
 } from "@mtg/engine";
 import { isManaAbility, manaValue } from "@mtg/engine";
-import { cardData, controlledBy, creatureValue, isLand, manaValueOf, seenCard } from "./board.ts";
+import { cardData, controlledBy, creatureValue, isLand, manaValueOf, permanentValue, seenCard } from "./board.ts";
 import { untargetedValue } from "./effect-value.ts";
 import { abilityIntents, cardIntents, type Intent } from "./intents.ts";
 import { bestLand, landColors } from "./lands.ts";
@@ -76,9 +76,12 @@ function spellValue(shown: SeatView, option: ActionOption, card: SeenCard, def: 
 function abilityValue(shown: SeatView, option: ActionOption, cards: CardDatabase): number | null {
   const ability = option.ability;
   if (ability === null || isManaAbility(ability) || option.action.type !== "ACTIVATE_ABILITY") return null;
-  // A cost that gives up a permanent is left to people for now (later: weigh what's sacrificed).
-  if (ability.cost.some((c) => c.kind === "sacrifice" || c.kind === "sacrificeSelf")) return null;
+  // Sacrificing another permanent is left to people for now (later: weigh which one goes).
+  if (ability.cost.some((c) => c.kind === "sacrifice")) return null;
   const source = seenCard(shown, option.action.object);
+  // Sacrificing its own source (a fetch land, Gargoyle Castle) costs what the source is worth.
+  const sacrificed = ability.cost.some((c) => c.kind === "sacrificeSelf") && source !== null;
+  const given = sacrificed ? permanentValue(source, cards) : 0;
   // Moving Equipment that's already on a creature only shuffles it around.
   const attached = source !== null && source.attachedTo !== null;
   if (ability.keyword === "equip" && attached) return null;
@@ -96,14 +99,15 @@ function abilityValue(shown: SeatView, option: ActionOption, cards: CardDatabase
     return effect >= WORTH_CASTING ? effect - spent / 2 : null;
   }
   const x = xEstimate(shown, option.manaCost, undefined, cards);
-  const value = effectsValue(shown, option, abilityIntents(ability, x), ability.effects, x, cards);
+  const gained = effectsValue(shown, option, abilityIntents(ability, x), ability.effects, x, cards);
+  const value = gained === null ? null : gained - given;
   // An ability's cost is usually smaller than a card's, so less is enough: pinging a player with a {T} ability.
   return value !== null && value >= WORTH_CASTING / 2 ? value : null;
 }
 
 /**
- * Its targets' best scores plus what its untargeted effects do. Null when it has a target with no legal choice, or is a
- * combat trick (a pump until end of turn), which a main phase would waste (later: cast it in combat).
+ * Its targets' best scores plus what its untargeted effects do; null when it has a target with no legal choice. A combat
+ * trick scores only in combat (`tricks.ts`), so a main phase never wastes one.
  */
 function effectsValue(
   shown: SeatView,
@@ -113,10 +117,10 @@ function effectsValue(
   x: number,
   cards: CardDatabase,
 ): number | null {
-  let value = untargetedValue(shown, effects, x);
+  const source = option.action.type === "ACTIVATE_ABILITY" ? seenCard(shown, option.action.object) : null;
+  let value = untargetedValue(shown, effects, x, source);
   for (const [i, legal] of option.targets.entries()) {
     const intent = intents[i] ?? { kind: "neutral" };
-    if (intent.kind === "help" && intent.untilEndOfTurn) return null;
     const best = bestTarget(shown, legal, intent, cards);
     if (best === null) return null;
     value += best.score;

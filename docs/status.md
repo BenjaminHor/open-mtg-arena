@@ -61,6 +61,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     0.13-0.16 ms, slowest 40.4 ms (seed 433, red-green-beats). PR 2 brings each deck to 95%.
   - **PR 2: tricks and tuning.** Pump spells and firebreathing in combat, burn to the face when lethal, then tune until
     `eval` shows ≥95% of 500 games per deck, no illegal action, ≤50 ms per decision.
+    PR 2 plan (after a loss study: most losses are long games against white-soldiers; late in games the heuristic holds
+    Giant Growth, Overrun, Fireball and Lightning Bolt while able to pay, and big creatures it can't pay for, partly as
+    Terramorphic Expanse is never used): (1) `tricks.ts`: a pump until end of turn (a spell, Overrun, Firebreathing) is
+    worth casting once blockers are declared, where it saves a creature, kills a blocker or attacker, or makes the
+    unblocked damage lethal; (2) abilities that sacrifice their own source (fetch lands, Gargoyle Castle) when what they
+    do outweighs the permanent; (3) then tune with `pnpm eval` until each deck reaches 95% of 500 games.
   - Future impact: the LLM seat (M3-02b) reads the same `SeatView`; search later (MCTS) starts from it plus sampled
     worlds. No engine rule changes.
   - Future impact: the LLM seat (M3-02b) plugs in as an outside seat; the web Worker (M3-03) calls `advance`/`submit`
