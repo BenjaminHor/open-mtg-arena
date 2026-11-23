@@ -1897,6 +1897,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- (2026-11-23, owner) "When I only had a mountain played, llanowar elves (1 green mana card) was available as an action
+  to cast, which is incorrect." Being investigated: reproduce as a failing test first (fix-bug).
 - (2026-11-22, M3-02 code review) The `random` agent can spend tens of thousands of actions under Prized Unicorn's
   block requirement, adding and taking back blocks at random, until the host gives up (`HostStuck`, 100,000 actions):
   about one game in 1,500 of `pnpm eval`, which counts it void (D-145). Only the test agents do this (the heuristic
