@@ -199,6 +199,13 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - Owner (2026-11-23): saved an OpenRouter API key in this cloud environment's variables, for the LLM opponent
     (M3-02b). Not used yet. Before using it, suggest moving it to a network secret (request_credential), which the
     proxy injects per request, rather than a plain-text variable.
+  - Owner (2026-11-23, morning): wants both "All Attack" and drag to play. "All Attack" isn't an engine option (each
+    attacker is its own pick): a button beside the main one during the declaration, sending a pick for every creature
+    that can attack, one at a time, then leaving the declaration open to adjust. Drag to play: drag a hand card up onto
+    the table to play or cast it, as the second tap does. Both go into M3-04c, first.
+  - Owner (2026-11-23, morning): asked to move the OpenRouter key to a network secret; the key in the environment's
+    variables should then be removed (Settings, the environment's variables).
+  - Owner (2026-11-23, morning) on M3-07: will likely provide screen recordings of Arena for the animation study.
   - **M3-04a done, merged (PR #96, 2026-11-23).** CI green, a 300-game fuzz clean. The owner can try it locally:
     `pnpm dev`, `?fixture=mid-game|crowded|attack|block|tokens`.
   - M3-04b plan (2026-11-23, written before starting): pulls M3-06's touch work forward. Slices, each its own PR:
@@ -1961,9 +1968,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   end step. Proposal, not built: also skip your own beginning of combat, combat damage and end of combat unless an
   opponent's object is on the stack, and add one-shot stops by tapping a step on the phase ladder, as Arena does.
   Worth it if playtesting shows too many stops with an instant in hand.
-- "All Attack" and drag to play (2026-11-23, M3-04b): Arena has both. "All Attack" isn't an engine option (each
-  attacker is its own pick), so it would be a UI shortcut sending several picks. Taps already do all a drag would.
-  Wanted now, or later?
 
 - Desktop hover (2026-11-23): should hovering a card with a mouse show a large preview, as Arena's desktop client
   does? On touch, long-press shows the details (M3-04c) either way.
