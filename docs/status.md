@@ -236,7 +236,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **M3-04b slices 1 and 3 merged (PR #97, 2026-11-23).** CI green, a 300-game fuzz clean.
   - **M3-04b slice 2 merged (PR #98, squash, 2026-11-23). M3-04b is done.** The branch's own history still holds five
     debug screenshots that a squash kept out of `main`: squash-merge the next PR from this branch too (a force-push to
-    restart the branch was refused). Next: M3-04c (everything M2's pool puts on the board), with the lists above.
+    restart the branch was refused). Acceptance: Playwright plays a whole seeded game by touch taps alone (the phone
+    project), by mouse clicks alone, and by the keyboard alone (each control focused and pressed with Enter; true
+    Tab-by-Tab traversal is the shorter keyboard test). Not yet done: a UX review of slice 3's full-control switch, a
+    run on a real phone, and D-157's approval (Open questions). Next: M3-04c (everything M2's pool puts on the board),
+    with the lists above.
   - M3-04b slice 2 plan (2026-11-23, written before starting): every prompt says what it's for, with the decision's
     own context, and the long ones are easy to use. Web only, no engine change.
     - `interaction/prompt-text.ts` (pure): the prompt's title and each choice's label from the decision.
@@ -1946,6 +1950,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions
+
+- **D-157, awaiting the owner (2026-11-23).** Overnight, auto-pass gained Arena's skips of your own upkeep, draw step
+  and end step (with an empty stack, unless mana is floating), even with an instant in hand. D-143 said per-step
+  changes would wait for playtesting, so this needs your yes. The upkeep and end-step skips are from Wizards; the draw
+  step rests on a community source. To undo it, delete `skipsOwnStep` in `packages/match/src/auto-pass.ts` and its
+  three tests. Keep it, or revert?
 
 - Smart stops (2026-11-23, D-157): the host stops wherever you could act, except in your own upkeep, draw step and
   end step. Proposal, not built: also skip your own beginning of combat, combat damage and end of combat unless an
