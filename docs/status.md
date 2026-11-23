@@ -321,6 +321,7 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     Left from the reviews: the board model doesn't reserve the marks' room (they fit the outer column at every size
     measured); the card view over the browser is barely larger than a row card on a phone (ask the owner at the end);
     the tabs have no arrow-key movement; a settings menu left open under the sheet takes the first Escape.
+  - **Slice 5 merged (PR #107, squash, 2026-11-23).** Next: slice 6, the stack.
   - Slice 5 plan (2026-11-23, written before starting): graveyards, exile and revealed cards
     [R: arena-research.md "Library, graveyard, exile", "Zones: tapping a zone opens a browser of its known cards with
     a count"; "revealed cards are shown face up" [U]]:
