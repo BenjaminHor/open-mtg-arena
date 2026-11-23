@@ -85,7 +85,7 @@ function keyboardFocused(): boolean {
   // A text box (the prompt's filter) takes every key typed into it, a space included.
   const typing = focused instanceof HTMLInputElement && (focused.type === "search" || focused.type === "text");
   // A card that's only there to be looked at ("i") has nothing to press: Space still presses the main button.
-  if (focused.matches(".inspect-region, .tap-shield")) return false;
+  if (focused.matches(".inspect-region")) return false;
   return typing || focused.matches(":focus-visible");
 }
 
@@ -114,6 +114,8 @@ export function App() {
   const [inspected, setInspected] = useState<Inspected | null>(null);
   // A player's zones being browsed (M3-04c slice 5), or null.
   const [browsing, setBrowsing] = useState<Browsing | null>(null);
+  // The stack made small by a tap, for the object on top then: a new object on top shows large again (D-170).
+  const [stackSmallFor, setStackSmallFor] = useState<ObjectId | null>(null);
   // Whether the hand was open when a drag lifted a card from it, to put it back that way if the drag is cancelled.
   const handBeforeDrag = useRef(false);
   // An open menu is only which card it's for: its choices are always read from the current controls.
@@ -207,9 +209,10 @@ export function App() {
             handOpen,
             selected: selection,
             highlight: controlsNow?.highlight ?? [],
+            stackSmall: stackSmallFor !== null && shown.view.zones.stack.at(-1) === stackSmallFor,
           })
         : null,
-    [shown, size, insets, handOpen, selection, controlsNow],
+    [shown, size, insets, handOpen, selection, controlsNow, stackSmallFor],
   );
   // Every message that can move the game goes through one guard: one at a time, and a button's press ignored a moment
   // after the reply to the last one.
@@ -383,6 +386,15 @@ export function App() {
           inspected={inspected === null || looking === null ? null : { ...inspected, details: looking }}
           banner={banner}
           closeInspected={() => setInspected(null)}
+          // A tap on the stack makes it small or large again, but not while it's small to choose for it.
+          toggleStack={
+            shown.view.casting?.player === shown.player
+              ? null
+              : () => {
+                  const top = shown.view.zones.stack.at(-1) ?? null;
+                  setStackSmallFor((now) => (now === top ? null : top));
+                }
+          }
           browsing={browsing}
           browse={(next) => {
             // Looking through zones is reading: a preview goes, and nothing else changes.

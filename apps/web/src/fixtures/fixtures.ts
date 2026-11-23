@@ -325,15 +325,22 @@ const FIXTURES: Record<string, Fixture> = {
   },
   /**
    * The stack (M3-04c slice 6): with full control on, Lightning Bolt, Giant Growth in response and Prodigal
-   * Pyromancer's ability on top make three objects, a spell's targets and an ability's own panel.
+   * Pyromancer's ability on top make three objects, a spell's targets and an ability's own panel; Cancel targets a
+   * spell on the stack.
    */
   stack: {
     turn: { number: 6, activePlayer: "p1", step: "precombatMain" },
     players: {
       p1: {
         life: 20,
-        hand: ["Lightning Bolt", "Giant Growth"],
-        battlefield: [...many("Mountain", 4), ...many("Forest", 2), "Prodigal Pyromancer", "Grizzly Bears"],
+        hand: ["Lightning Bolt", "Giant Growth", "Cancel"],
+        battlefield: [
+          ...many("Mountain", 4),
+          ...many("Forest", 2),
+          ...many("Island", 3),
+          "Prodigal Pyromancer",
+          "Grizzly Bears",
+        ],
         library: many("Forest", 20),
       },
       p2: {

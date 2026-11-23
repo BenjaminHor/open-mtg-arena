@@ -25,9 +25,12 @@ type Props = {
   drag: HandDragCallbacks;
   /** The card view (`card-inspect.ts`): open it for a card, or close a hover's preview. */
   inspect: InspectCallbacks;
+  /** Makes the large stack small, or large again (Arena's collapse tab [R]); null while it's small to choose for it. */
+  onStack: (() => void) | null;
 };
 
-export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, selection, drag, inspect }: Props) {
+export function CardButtons(props: Props) {
+  const { model, controls, busy, onTap, onHand, handOpen, selection, drag, inspect, onStack } = props;
   const hand = model.overlay.hand;
   const handDrag = useHandDrag(model, drag);
   const inspectOn = useCardInspect({
@@ -106,23 +109,38 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
         </div>
       )}
       {/* Each object on the stack takes a tap for itself, so a tap on it never lands on a card hidden under it; one under
-          the top only where it shows, its name strip, so its focus ring and its tap are where it's seen. */}
-      {stackStrips(model.cards).map(({ card: c, rect }) => (
-        // biome-ignore lint/a11y/noStaticElementInteractions: it only stops a tap; the card has no action of its own
-        // biome-ignore lint/a11y/useKeyWithClickEvents: nothing to do from the keyboard
-        <div
-          key={`stack-${c.id}`}
-          className="tap-shield"
-          role="img"
-          // biome-ignore lint/a11y/noNoninteractiveTabindex: focus is how the keyboard picks a card to look at ("i")
-          tabIndex={0}
-          // An ability is named as everywhere else (names.ts): "Prodigal Pyromancer ability".
-          aria-label={c.ability ? `${c.name} ability` : c.name}
-          style={place(rect)}
-          onClick={(e) => e.stopPropagation()}
-          {...inspectOn(c.id as ObjectId)}
-        />
-      ))}
+          the top only where it shows, its name strip, so its focus ring and its tap are where it's seen. A tap picks it
+          when it's a target (a counterspell's); otherwise it makes the stack small, or large again [R]. */}
+      {stackStrips(model.cards).map(({ card: c, rect }) => {
+        const control = controls.cards[c.id];
+        const press = () => {
+          if (busy) return;
+          if (control !== undefined) onTap(c.id);
+          else onStack?.();
+        };
+        // An ability is named as everywhere else (names.ts): "Prodigal Pyromancer ability".
+        const name = c.ability ? `${c.name} ability` : c.name;
+        return (
+          <button
+            type="button"
+            key={`stack-${c.id}`}
+            className={`tap-shield${control !== undefined ? " tap-region" : ""}`}
+            aria-label={
+              control !== undefined
+                ? control.label
+                : onStack === null
+                  ? name
+                  : `${name}: make the stack smaller or larger`
+            }
+            style={place(rect)}
+            onClick={(e) => {
+              e.stopPropagation();
+              press();
+            }}
+            {...inspectOn(c.id as ObjectId)}
+          />
+        );
+      })}
     </div>
   );
 }

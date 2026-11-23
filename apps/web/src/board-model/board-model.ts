@@ -17,6 +17,7 @@ import { withPicks } from "./picks.ts";
 import { playableIds, targetIds } from "./playable.ts";
 import { tapRegions } from "./regions.ts";
 import { stackCards, stackMore } from "./stack.ts";
+import { type TargetArrow, targetArrows } from "./target-arrows.ts";
 
 export type BoardCard = {
   id: ObjectId;
@@ -141,6 +142,8 @@ export type BoardModel = {
    * an attacker to the planeswalker it attacks (D-154).
    */
   links: CombatLink[];
+  /** Arrows from the top of the stack to each of its targets the board shows (`target-arrows.ts`). */
+  arrows: TargetArrow[];
   overlay: OverlayAnchors;
   /**
    * Where a tap lands on what, topmost last: a pile is one region (its front card's), an open hand card its visible
@@ -162,7 +165,13 @@ export const NO_INSETS: Insets = { top: 0, right: 0, bottom: 0, left: 0 };
  * What the person has opened or chosen on screen, apart from the game: the hand open or not, and the card lifted
  * from it or the blocker picked (interaction/controls.ts), which the board lays out differently.
  */
-export type BoardUi = { handOpen: boolean; selected?: ObjectId | null; highlight?: readonly ObjectId[] };
+export type BoardUi = {
+  handOpen: boolean;
+  selected?: ObjectId | null;
+  highlight?: readonly ObjectId[];
+  /** The person made the large stack small (a tap on it, as Arena's collapse tab [R]): drawn as while choosing. */
+  stackSmall?: boolean;
+};
 
 export function boardModel(
   shown: SeatView,
@@ -195,7 +204,7 @@ export function boardModel(
   const playable = playableIds(shown);
   const targets = targetIds(shown);
   const hand = handCards(shown, area, layout, ui.handOpen, ui.selected ?? null);
-  const stack = stackCards(shown, area, layout);
+  const stack = stackCards(shown, area, layout, ui.stackSmall ?? false);
   const cards = [...field.cards, ...stack, ...hand]
     .map((c) => {
       const badges = c.zone === "battlefield" ? badgesOfId(shown, c.id) : NO_BADGES;
@@ -219,6 +228,8 @@ export function boardModel(
       height: layout.band.h * area.height,
     },
     links: field.links,
+    // After combat and attachments have placed the cards, so each arrow ends where its target is drawn.
+    arrows: targetArrows(shown, cards, overlay),
     overlay: {
       ...overlay,
       hand: handArea(hand, area),

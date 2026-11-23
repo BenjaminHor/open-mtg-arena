@@ -57,10 +57,10 @@ export function controls(shown: SeatView, selection: Selection): Controls {
     return seen?.kind === "card" ? seen.characteristics.name : "it";
   };
   const hand = new Set(shown.view.zones.players[shown.player]?.hand ?? []);
-  // A card is tapped where the board draws it: on the battlefield or in the person's hand. A card anywhere else (a
-  // graveyard, a spell on the stack for a counterspell) goes to the prompt instead: the zone browser is for looking,
-  // Arena's way of picking from a graveyard (a browser of the cards to choose) is later (future-rules.md), and tapping
-  // a stack object to target it is slice 6's second PR.
+  // A card is tapped where the board draws it: on the battlefield or in the person's hand. A card anywhere else goes to
+  // the prompt instead, by name: a graveyard card (Arena's browser of the cards to choose is later, future-rules.md),
+  // and a spell on the stack a counterspell targets (CR 115.1): the spell being cast is on top, so the one it targets
+  // shows only a name strip under it, too small to tap; it's outlined as a target there, and picked in the prompt.
   const onScreen = (id: ObjectId) => hand.has(id) || shown.view.zones.battlefield.includes(id);
   const onCard = new Map<ObjectId, Choice[]>();
   const blocks = new Map<ObjectId, Choice[]>();

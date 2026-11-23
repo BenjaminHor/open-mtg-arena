@@ -45,9 +45,11 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
   const cardLayer = new Container({ sortableChildren: true });
   // Combat's links go over the cards, so a pairing is never hidden under a card between the two.
   const links = new Graphics();
+  // The stack's arrows to its targets, over the cards too, so the creature a spell targets is never hidden from it.
+  const arrows = new Graphics();
   // Pile counts over everything on the board: a neighbouring row never covers one.
   const marks = new Container();
-  app.stage.addChild(hidden, cardLayer, links, marks);
+  app.stage.addChild(hidden, cardLayer, links, arrows, marks);
   const sprites = new Map<string, CardSprite>();
   return {
     draw: (model) => {
@@ -75,6 +77,7 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
         }
       }
       drawLinks(links, model.links);
+      drawArrows(arrows, model.arrows);
       for (const child of marks.removeChildren()) child.destroy({ children: true, context: true });
       for (const card of model.cards) {
         if (card.pileCount === null) continue;
@@ -108,6 +111,45 @@ function drawLinks(g: Graphics, links: BoardModel["links"]): void {
     }
     for (const end of [link.from, link.to])
       g.circle(end.x, end.y, 3.5).fill(color).stroke({ width: 1.5, color: PALETTE.rim });
+  }
+}
+
+/**
+ * Each arrow from the stack to a target [R: "a glowing curve from the stack item to its target"]: a curve bowing up, in
+ * the targets' colour with a dark edge, and a head at the target, so it reads as pointing at it on any art.
+ */
+function drawArrows(g: Graphics, arrows: BoardModel["arrows"]): void {
+  g.clear();
+  for (const { from, to } of arrows) {
+    const length = Math.hypot(to.x - from.x, to.y - from.y);
+    if (length < 12) continue;
+    // The control point lifts the middle of the line by a fifth of its length, perpendicular to it.
+    const nx = -(to.y - from.y) / length;
+    const ny = (to.x - from.x) / length;
+    const lift = (ny < 0 ? 1 : -1) * length * 0.2;
+    const control = { x: (from.x + to.x) / 2 + nx * lift, y: (from.y + to.y) / 2 + ny * lift };
+    for (const [width, color] of [
+      [6, PALETTE.rim],
+      [3, PALETTE.playable],
+    ] as const) {
+      g.moveTo(from.x, from.y)
+        .quadraticCurveTo(control.x, control.y, to.x, to.y)
+        .stroke({ width, color, cap: "round" });
+    }
+    // The head points along the curve's last stretch, from the control point to the target.
+    const angle = Math.atan2(to.y - control.y, to.x - control.x);
+    const head = 11;
+    g.poly([
+      to.x,
+      to.y,
+      to.x - head * Math.cos(angle - 0.45),
+      to.y - head * Math.sin(angle - 0.45),
+      to.x - head * Math.cos(angle + 0.45),
+      to.y - head * Math.sin(angle + 0.45),
+    ])
+      .fill(PALETTE.playable)
+      .stroke({ width: 1.5, color: PALETTE.rim });
+    g.circle(from.x, from.y, 3.5).fill(PALETTE.playable).stroke({ width: 1.5, color: PALETTE.rim });
   }
 }
 

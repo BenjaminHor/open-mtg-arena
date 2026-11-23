@@ -27,7 +27,7 @@ Everything runs in the browser: the engine and the AI in a Web Worker, nothing o
   anchors (ui.md, "Board structure"). `battlefield.ts` (the rows), `piles.ts` and `land-slots.ts` (piles of permanents
   that look the same), `combat.ts` (attackers step forward, blockers under their attackers, D-154), `picks.ts` (the
   declaration under way), `playable.ts` (what can be played now, from the options), `hand.ts` (collapsed and open),
-  `hidden-cards.ts` (the opponent's hand, libraries), `ladder.ts` (the phase ladders), `stack.ts` (the whole stack, an ability as a panel), `ability-text.ts` (an ability's own line of its card's text),
+  `hidden-cards.ts` (the opponent's hand, libraries), `ladder.ts` (the phase ladders), `stack.ts` (the whole stack, an ability as a panel), `ability-text.ts` (an ability's own line of its card's text), `target-arrows.ts` (arrows from the stack's top to its targets),
   `regions.ts` (where a tap lands), `badges.ts` (a permanent's keyword icons, counters, loyalty, sickness),
   `attachments.ts` (Auras and Equipment beside their host),
   `board-card.ts`, `card-info.ts`

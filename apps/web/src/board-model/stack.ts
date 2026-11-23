@@ -25,10 +25,10 @@ export const MOST_UNDER = 3;
  * share one block, the top's old place: the deeper ones peek out above the top by a name strip each [R: names read
  * down the stack], so the stack never covers more of the board than its top alone did (UX review).
  */
-export function stackCards(shown: SeatView, area: Rect, layout: BoardLayout): BoardCard[] {
+export function stackCards(shown: SeatView, area: Rect, layout: BoardLayout, small = false): BoardCard[] {
   const stack = shown.view.zones.stack;
   if (stack.length === 0) return [];
-  const block = stackBlock(shown, area, layout);
+  const block = stackBlock(shown, area, layout, small);
   const under = Math.min(stack.length - 1, MOST_UNDER);
   // The card's height, and the strip each one under it shows (at least a readable name, 14 px).
   const first = block.height / (1 + layout.stack.peek * under);
@@ -60,18 +60,18 @@ export function stackMore(shown: SeatView, drawn: readonly BoardCard[]): Rect | 
 
 /**
  * The stack's place: large right of centre (at most `maxH` px tall: on a near-square screen a share of the height is
- * far too large), or small at the right edge while the person chooses for it [R].
+ * far too large), or small at the right edge while the person chooses for it [R], or once they've made it small.
  */
-function stackBlock(shown: SeatView, area: Rect, layout: BoardLayout): Rect {
-  const choosing = shown.view.casting !== null && shown.view.casting.player === shown.player;
+function stackBlock(shown: SeatView, area: Rect, layout: BoardLayout, small: boolean): Rect {
+  const smallNow = small || (shown.view.casting !== null && shown.view.casting.player === shown.player);
   // Small means a fixed size at most (in CSS pixels): on a tall screen a share of the height would reach over the rows.
-  const height = choosing
+  const height = smallNow
     ? Math.min(layout.stack.smallH * area.height, layout.stack.smallMaxH)
     : Math.min(layout.stack.h * area.height, layout.stack.maxH);
   const width = height * layout.ratio.hand;
   const right = area.x + area.width - 8;
-  const x = choosing ? right - width : Math.min(area.x + layout.stack.x * area.width, right - width);
-  const y = area.y + (choosing ? layout.stack.smallY : layout.stack.y) * area.height;
+  const x = smallNow ? right - width : Math.min(area.x + layout.stack.x * area.width, right - width);
+  const y = area.y + (smallNow ? layout.stack.smallY : layout.stack.y) * area.height;
   return { x, y, width, height };
 }
 

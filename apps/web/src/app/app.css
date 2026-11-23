@@ -291,6 +291,10 @@ body,
 }
 
 .hud .tap-shield {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
   pointer-events: auto;
   z-index: 100000;
 }
