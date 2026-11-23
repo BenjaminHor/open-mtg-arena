@@ -2845,3 +2845,11 @@ owner's answer to the D-089 open question, option (a))
   sources noted, revisited if anyone objects ("Keep, credit what we can"). And the copyright line and NOTICE stay in
   the license files ("Yes, keep it in the license files"); nothing in the app names them.
 
+**D-178: Next: a playable build, then port the engine from Rust to Odin; the LLM opponent and the RPG wait (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner: "Honestly, once everything checks out let's just say yolo and plan out the rust to odin rewrite", then
+  "We can hold off on the LLM opponent and single player RPG/roguelike for now. I just want to be able to play this
+  build and then iterate safely on porting this from rust to Odin as efficiently and quickly as possible".
+- Order: finish the import (D-177) to a build the owner can play on the live site; then the Rust to Odin port, as
+  its own milestones, planned first and approved by the owner, done safely (every ported piece checked against the
+  Rust engine on the same games) and quickly. The LLM opponent and the single-player RPG or roguelike are on hold.
+
