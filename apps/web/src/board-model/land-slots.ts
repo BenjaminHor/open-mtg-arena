@@ -7,8 +7,9 @@ import type { SeenCard } from "@mtg/engine";
 import { attachedRoom } from "./attachments.ts";
 import type { Half } from "./battlefield.ts";
 import type { BoardCard } from "./board-model.ts";
+import { cardBasis } from "./card-basis.ts";
 import { pileKey, pileOffsets, pileWidth, placePile } from "./piles.ts";
-import { spread } from "./spread.ts";
+import { shrinkToFit, spread } from "./spread.ts";
 
 type Slot = { untapped: SeenCard[]; tapped: SeenCard[] };
 
@@ -39,33 +40,30 @@ export function landSlots(
   });
   const offsets = pileOffsets(area, layout);
   const gap = layout.lands.gap * area.width;
-  // A row too wide for its space shrinks its cards (down to `minH`) before it overlaps them, as the creature row does.
-  const widthAt = (h: number) =>
-    ordered.reduce((sum, slot) => sum + slotWidthAt(slot, h), 0) + gap * Math.max(0, ordered.length - 1);
-  const slotWidthAt = (slot: Slot, h: number) => {
-    const cardW = h * layout.ratio.battlefield;
-    const count = slot.untapped.length + slot.tapped.length;
-    return (
-      (count > 1 ? pileWidth(count, cardW, offsets.step) + layout.lands.tappedShift * cardW : cardW) +
-      roomAt(slot, cardW)
-    );
-  };
+  // A slot's width depends only on how many lands it holds, never on how many are tapped: room for them all in one
+  // pile plus the tapped pile's shift. The untapped pile sits at its left, the tapped one at its right.
+  // A land something is attached to stands alone in its slot (it can't pile), the slot keeping room left of it for
+  // its Aura (`attachments.ts`).
   const roomAt = (slot: Slot, cardW: number) => {
     const only = slot.untapped[0] ?? slot.tapped[0];
     return slot.untapped.length + slot.tapped.length === 1 && only !== undefined
       ? attachedRoom(half.attached, only.id, cardW, layout)
       : 0;
   };
-  let h = row.height;
-  const smallest = layout.lands.minH * area.height;
-  while (h > smallest && widthAt(h) > row.right - row.left) h = Math.max(smallest, h - 1);
+  const slotWidthAt = (slot: Slot, cardH: number) => {
+    const cardW = cardH * layout.ratio.battlefield;
+    const count = slot.untapped.length + slot.tapped.length;
+    const piles = count > 1 ? pileWidth(count, cardW, offsets.step) + layout.lands.tappedShift * cardW : cardW;
+    return piles + roomAt(slot, cardW);
+  };
+  // A row too wide for its space shrinks its cards (down to `minH`) before it overlaps them, as the creature row does.
+  const fits = (cardH: number) =>
+    ordered.reduce((sum, slot) => sum + slotWidthAt(slot, cardH), 0) + gap * Math.max(0, ordered.length - 1) <=
+    row.right - row.left;
+  const h = shrinkToFit(row.height, layout.lands.minH * cardBasis(area, layout), fits);
   // The row's cards hug the creature row whatever their size.
   const y = mine ? row.y : row.y + row.height - h;
   const w = h * layout.ratio.battlefield;
-  // A slot's width depends only on how many lands it holds, never on how many are tapped: room for them all in one
-  // pile plus the tapped pile's shift. The untapped pile sits at its left, the tapped one at its right.
-  // A land something is attached to stands alone in its slot (it can't pile), the slot keeping room left of it for
-  // its Aura (`attachments.ts`).
   const room = (slot: Slot) => roomAt(slot, w);
   const slotWidth = (slot: Slot) => slotWidthAt(slot, h);
   const xs = spread(ordered.map(slotWidth), row.left, row.right, gap, "start");

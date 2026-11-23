@@ -77,7 +77,7 @@ export function Hud(props: HudProps) {
   const menuId = props.menu?.id ?? null;
   const menuAt = menuId === null ? null : model.regions.find((r) => r.members.includes(menuId))?.rect;
   return (
-    <section className="hud" aria-label="Match">
+    <section className="hud" aria-label="Match" data-layout={model.layout}>
       <CardButtons
         model={model}
         controls={controls}

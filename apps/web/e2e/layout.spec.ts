@@ -52,7 +52,8 @@ for (const [from, to, way] of [
 
     await page.setViewportSize(to);
     await expect.poll(() => layoutOf(page)).toBe(to === FOLDED ? "compact" : "full");
-    // The lifted card is still lifted, ready to cast, with the hand still open behind it.
+    // The lifted card is still lifted, ready to cast, with the hand still open behind it (its other cards lift).
+    await expect(page.getByRole("button", { name: /^Cancel: lift/ })).toBeVisible();
     await page.getByRole("button", { name: /^Giant Growth: Cast/ }).click();
     await expect(
       page.getByRole("button", { name: /^Grizzly Bears: Target|^Elite Vanguard: Target/ }).first(),

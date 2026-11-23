@@ -105,7 +105,7 @@ function alignBlockers(
     });
   }
   const lo = area.x + layout.creatures.margin * area.width;
-  const hi = area.x + (1 - layout.creatures.margin) * area.width;
+  const hi = area.x + Math.min(1 - layout.creatures.margin, layout.creatures.right) * area.width;
   const room = hi - lo;
   const total = units.reduce((sum, u) => sum + u.width, 0) + gap * Math.max(0, units.length - 1);
   if (total > room) {

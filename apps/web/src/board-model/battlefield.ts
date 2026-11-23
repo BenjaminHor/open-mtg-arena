@@ -8,10 +8,11 @@ import type { BoardLayout } from "../layout/board-layout.ts";
 import { type Attached, attachedRoom, besideIds } from "./attachments.ts";
 import { boardCard } from "./board-card.ts";
 import type { BoardCard, OverlayAnchors, Rect } from "./board-model.ts";
+import { cardBasis } from "./card-basis.ts";
 import { landSlots } from "./land-slots.ts";
 import { pickedIds } from "./picks.ts";
 import { pileOffsets, pilesOf, pileWidth, placePile } from "./piles.ts";
-import { spread } from "./spread.ts";
+import { shrinkToFit, spread } from "./spread.ts";
 
 export function battlefieldCards(
   shown: SeatView,
@@ -74,9 +75,10 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
 
   // Rows are placed by the creature row's full height, so a row that shrinks doesn't move the others.
   const bandY = area.y + band.y * area.height;
-  const fullH = creatures.h * area.height;
+  const basis = cardBasis(area, layout);
+  const fullH = creatures.h * basis;
   const creatureTop = mine ? bandY + (band.h / 2) * area.height : bandY - (band.h / 2) * area.height - fullH;
-  const outerH = lands.h * area.height;
+  const outerH = lands.h * basis;
   const outerY = mine ? creatureTop + fullH + rowGap * area.height : creatureTop - rowGap * area.height - outerH;
   const info = mine ? overlay.player.mine : overlay.player.opponent;
   // An attacker tilts as it taps but isn't shaded: it's the card everyone is looking at.
@@ -86,15 +88,18 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
 
   // Lands, a slot per name from the left, clear of the info block in the corner when the row is level with it (on a
   // tall screen the row is well below the opponent's block, and starts at the left).
-  // A pile's lift and a tapped card's tilt reach past the row a little: `gap` of slack.
-  const slack = layout.player.gap;
-  const level = outerY - slack < info.y + info.height && info.y < outerY + outerH + slack;
-  const landLeft = Math.max(area.x + lands.left * area.width, level ? info.x + info.width + layout.player.gap : 0);
+  // How far the row's cards can reach past it: the deepest pile's lift (every land in one pile at most) and a tapped
+  // card's tilt, and the gap kept from the block (code review: a deep pile reached into the block).
+  const reach =
+    lands.pileLift * area.height * Math.max(0, landRow.length - 1) + outerH * Math.sin(tapped.tilt) + layout.player.gap;
+  const level = outerY - reach < info.y + info.height && info.y < outerY + outerH + reach;
+  const clearOfInfo = info.x + info.width + layout.player.gap;
+  const landLeft = level ? Math.max(area.x + lands.left * area.width, clearOfInfo) : area.x + lands.left * area.width;
   const landRight = area.x + lands.right * area.width;
   const placed = landSlots(landRow, half, { y: outerY, height: outerH, left: landLeft, right: landRight }, look);
 
   // Other permanents, from the right edge back towards the middle.
-  const otherH = others.h * area.height;
+  const otherH = others.h * basis;
   const otherW = otherH * ratio.battlefield;
   // The person's row stops short of the main button and the phase ladder over it, at the bottom right (the ladder can
   // be wider than the button while it shows combat's steps).
@@ -115,7 +120,7 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
   // Creatures, identical ones piled, centred on the band: a row too wide shrinks its cards before it overlaps them.
   const piles = pilesOf(creatureRow, half.apart);
   const left = area.x + creatures.margin * area.width;
-  const right = area.x + (1 - creatures.margin) * area.width;
+  const right = area.x + Math.min(1 - creatures.margin, creatures.right) * area.width;
   const gap = creatures.gap * area.width;
   // A host's pile keeps room left of it for what's attached (a host stands apart, so its pile is itself).
   const room = (pile: readonly SeenCard[], cardWidth: number) =>
@@ -127,17 +132,10 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
       0,
     ) +
     gap * Math.max(0, piles.length - 1);
-  let h = fullH;
-  const smallest = creatures.minH * area.height;
-  while (h > smallest && widthAt(h) > right - left) h = Math.max(smallest, h - 1);
+  const h = shrinkToFit(fullH, creatures.minH * basis, (cardH) => widthAt(cardH) <= right - left);
   const w = h * ratio.battlefield;
-  const xs = spread(
-    piles.map((pile) => pileWidth(pile.length, w, offsets.step) + room(pile, w)),
-    left,
-    right,
-    gap,
-    "centre",
-  );
+  const widths = piles.map((pile) => pileWidth(pile.length, w, offsets.step) + room(pile, w));
+  const xs = spread(widths, ...centredWithin(widths, gap, area.x + area.width / 2, left, right), gap, "start");
   // The row's cards hug the band whatever their size.
   const y = mine ? creatureTop : creatureTop + fullH - h;
   const rows = piles.map((pile, i) =>
@@ -147,4 +145,22 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
   // the power/toughness pill at its bottom centre in sight, and the leftmost card, drawn last, is whole.
   for (const pile of rows.reverse()) placed.push(...pile);
   return placed;
+}
+
+/**
+ * Where a row of these widths starts and ends: centred on the screen [R: creatures are centred], moved left as far as
+ * it must to end by `right` (the stack's column), and spanning the whole of `left` to `right` when it doesn't fit (it
+ * overlaps there, `spread`).
+ */
+function centredWithin(
+  widths: readonly number[],
+  gap: number,
+  centre: number,
+  left: number,
+  right: number,
+): [number, number] {
+  const total = widths.reduce((sum, w) => sum + w, 0) + gap * Math.max(0, widths.length - 1);
+  if (total >= right - left) return [left, right];
+  const start = Math.max(left, Math.min(centre - total / 2, right - total));
+  return [start, start + total];
 }

@@ -7,6 +7,8 @@ import type { BoardLayout } from "./board-layout.ts";
 
 export const COMPACT: BoardLayout = {
   name: "compact",
+  // Cards are shares of the height: a phone in landscape is always wide for its height.
+  cardBasis: 10,
   // A battlefield card is a wide "art card", its art under a name strip (ui.md, "The cards"); a hand card is a whole
   // card, 63 by 88 mm.
   ratio: { battlefield: 1.2, hand: 63 / 88 },
@@ -15,11 +17,12 @@ export const COMPACT: BoardLayout = {
   band: { y: 0.5, h: 0.1 },
   // Creatures, either side of the gap and centred [R], about 13% of the height in Arena [R]; a little more here, where
   // the screen is wider for its height.
-  creatures: { h: 0.16, minH: 0.12, gap: 0.008, margin: 0.09 },
-  // Lands at the outer left [R], piled by name [R]; smaller than creatures [guess].
+  creatures: { h: 0.16, minH: 0.12, gap: 0.008, margin: 0.09, right: 0.91 },
+  // Lands at the outer left [R], piled by name [R]; smaller than creatures [guess]. They don't shrink on the phone
+  // (`minH` = `h`): any smaller and a land is under a finger's 44 px (code review); a crowded row overlaps instead.
   lands: {
     h: 0.12,
-    minH: 0.09,
+    minH: 0.12,
     gap: 0.014,
     left: 0.075,
     right: 0.54,

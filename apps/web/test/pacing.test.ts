@@ -8,6 +8,7 @@ import { eventLine } from "../src/interaction/event-line.ts";
 import { eventHold, frameHold, HOLD } from "../src/interaction/pacing.ts";
 import { handle } from "../src/worker/match-session.ts";
 import type { Frame, FromWorker } from "../src/worker/protocol.ts";
+import { playFrom } from "./fixture-views.ts";
 
 const cards = cardDatabase();
 
@@ -154,5 +155,27 @@ describe("the line a frame shows", () => {
       if (eventLine(frame.events, before, frame.shown) === null)
         expect(frame.events.some((e) => e.type === "TURN_BEGAN" || e.type === "STEP_BEGAN")).toBe(true);
     }
+  });
+});
+
+describe("an activated ability's line", () => {
+  it("names it as its source's ability: \"activated Prodigal Pyromancer's ability\" (UX review)", () => {
+    const m = playFrom({
+      turn: { number: 5, activePlayer: "p1", step: "precombatMain" },
+      players: {
+        p1: { life: 20, hand: [], battlefield: ["Prodigal Pyromancer"], library: ["Forest", "Forest"] },
+        p2: { life: 20, hand: [], battlefield: [], library: ["Forest", "Forest"] },
+      },
+    });
+    const start = m.shown();
+    const source = start.view.zones.battlefield[0];
+    if (source === undefined) throw new Error("Prodigal Pyromancer");
+    m.act((a) => a.type === "ACTIVATE_ABILITY" && a.object === source, "activate");
+    const after = m.act((a) => a.type === "ANSWER" && a.answer.kind === "chooseTarget", "target");
+    const ability = after.view.zones.stack.at(-1);
+    if (ability === undefined) throw new Error("the ability on the stack");
+    // Said as the opponent's (the person's own activation isn't held, so it has no line).
+    const activated: ViewEvent = { type: "ABILITY_ACTIVATED", player: "p2", object: ability, source };
+    expect(eventLine([activated], start, after)).toBe("Your opponent activated Prodigal Pyromancer's ability");
   });
 });

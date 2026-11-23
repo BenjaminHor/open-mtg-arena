@@ -132,3 +132,83 @@ describe.each(FULL_SIZES.map((size) => [label(size), size] as const))("the full 
     expect(models[0]?.[1].layout).toBe("full");
   });
 });
+
+// Each behaviour the full layout added has its own test (code review: removing any of them once passed every test).
+describe("the full layout's own rules", () => {
+  const [, crowded] = BOARDS[1] ?? [];
+  if (crowded === undefined) throw new Error("the crowded board");
+  const at = (shown: SeatView, size: { width: number; height: number }) =>
+    boardModel(shown, size, undefined, undefined, FULL);
+
+  it("shrinks a land row too wide for its space before it overlaps (as creatures do), and not one that fits", () => {
+    const size = { width: 1280, height: 720 };
+    const full = FULL.lands.h * Math.min(size.height, FULL.cardBasis * size.width);
+    const lands = (shown: SeatView) => at(shown, size).cards.filter((c) => c.row === "lands");
+    for (const land of lands(manyPiles)) expect(land.height).toBeLessThan(full);
+    const [, midGame] = BOARDS[0] ?? [];
+    for (const land of lands(midGame as SeatView)) expect(land.height).toBeCloseTo(full, 5);
+  });
+
+  it("starts the opponent's lands at the left edge when they're below their info block, not beside it", () => {
+    const size = { width: 1024, height: 768 };
+    const model = at(manyPiles, size);
+    const theirs = model.cards.filter((c) => c.row === "lands" && !c.mine);
+    const info = model.overlay.player.opponent;
+    expect(Math.min(...theirs.map((c) => c.x))).toBeLessThan(info.x + info.width);
+    for (const land of theirs) expect(overlaps(land, info)).toBe(false);
+  });
+
+  it("sizes cards from the width on a screen tall for its width, and caps the stack's width", () => {
+    const size = { width: 860, height: 1000 };
+    const [, midGame] = BOARDS[0] ?? [];
+    const creature = at(midGame as SeatView, size).cards.find((c) => c.row === "creatures");
+    expect(creature?.height ?? 0).toBeCloseTo(FULL.creatures.h * FULL.cardBasis * size.width, 5);
+    for (const card of at(crowded, size).cards.filter((c) => c.zone === "stack"))
+      expect(card.width).toBeLessThanOrEqual(FULL.stack.maxW * size.width + 0.01);
+  });
+
+  it("ends a crowded creature row clear of the stack's column, a short one centred", () => {
+    for (const size of FULL_SIZES) {
+      const creatures = at(crowded, size).cards.filter((c) => c.row === "creatures");
+      for (const card of creatures)
+        expect(card.x + card.width, label(size)).toBeLessThanOrEqual(FULL.creatures.right * size.width + 0.01);
+    }
+    const [, midGame] = BOARDS[0] ?? [];
+    const mine = at(midGame as SeatView, { width: 1280, height: 720 }).cards.filter(
+      (c) => c.row === "creatures" && c.mine,
+    );
+    const middle = (Math.min(...mine.map((c) => c.x)) + Math.max(...mine.map((c) => c.x + c.width))) / 2;
+    expect(Math.abs(middle - 640)).toBeLessThan(1);
+  });
+});
+
+// The phone's lands keep clear of the person's info block however deep a pile is (code review: a deep pile reached
+// into it on a large phone with a bottom inset).
+describe("the compact layout's lands and the info blocks", () => {
+  const deep = boardView({
+    turn: { number: 9, activePlayer: "p1", step: "precombatMain" },
+    players: {
+      p1: {
+        life: 20,
+        hand: ["Forest"],
+        battlefield: [...Array(8).fill("Forest"), { card: "Forest", tapped: true }],
+        library: LIBRARY,
+      },
+      p2: { life: 20, hand: [], battlefield: Array(8).fill("Plains"), library: LIBRARY },
+    },
+  });
+  it("keeps a deep pile clear of the info block on large phones, a bottom inset included", () => {
+    for (const [size, bottom] of [
+      [{ width: 915, height: 400 }, 21],
+      [{ width: 915, height: 412 }, 21],
+      [{ width: 932, height: 430 }, 21],
+      [{ width: 812, height: 375 }, 0],
+    ] as const) {
+      const model = boardModel(deep, size, { top: 0, right: 0, bottom, left: 0 });
+      expect(model.layout).toBe("compact");
+      for (const card of model.cards.filter((c) => c.zone === "battlefield"))
+        for (const info of [model.overlay.player.mine, model.overlay.player.opponent])
+          expect(overlaps(card, info), `${label(size)}: ${card.name}`).toBe(false);
+    }
+  });
+});

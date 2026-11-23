@@ -338,7 +338,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     `layout/layout-for.ts`; lands shrink before overlapping, start clear of the info block only when level with it,
     the stack capped in width; tests: test/full-layout.test.ts (eight full sizes, mutation-checked),
     e2e/layout.spec.ts (fold and unfold mid-target and with a card lifted, then finish the action). The owner chose no
-    game log. Next: screenshots, the UX review, the PR, the owner's unfolded screenshot.
+    game log. Code and UX reviews done and applied (in D-176: the card basis, rows clear of the stack, the land
+    rules, the controls a size up). Left, from the UX review: the mulligan screen in the full layout could show the
+    seven cards whole and centred (Keep/Mulligan sit far from them); the mouse preview shows a hand card beside the
+    open hand; the small buttons ("Clear Attacks") can cover the hand's right end; on an upright screen the rows
+    leave empty space above the hand. Next: the PR, the owner's unfolded screenshot.
   - M3-05 plan (2026-11-23, written before starting; the owner: "move forward with M3-05"). Spec: m3-first-playable.md
     M3-05: the Arena-like layout for the unfolded phone (7.6-inch, nearly square, either way up) and desktop, switching
     live on resize with no loss of state or selection; accept: a Playwright test resizes mid-selection and it survives.
@@ -2379,6 +2383,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- (2026-11-23, UX review of M3-05, in both layouts, not yet fixed) The zone browser crops its card at the right; the
+  main button disabled ("No Attacks / Not yet: 1 must attack") reads as bare text, without a button's shape.
 - Fixed (2026-11-23, found while planning the pacing slice): the whole-game e2e (`playWholeGame`, M3's acceptance,
   D-171) stopped at the first `role="status"` element, and since the turn banner (PR #104) is one, it ended at the
   first new turn instead of the game's end. It now waits for the result itself and checks its text.

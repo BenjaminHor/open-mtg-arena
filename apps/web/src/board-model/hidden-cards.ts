@@ -4,10 +4,11 @@
 
 import type { BoardLayout } from "../layout/board-layout.ts";
 import type { CardBack, Rect } from "./board-model.ts";
+import { cardBasis } from "./card-basis.ts";
 
 export function cardBacks(count: number, area: Rect, layout: BoardLayout): CardBack[] {
   const { opponentHand, ratio } = layout;
-  const height = opponentHand.h * area.height;
+  const height = opponentHand.h * cardBasis(area, layout);
   const width = height * ratio.hand;
   const step = opponentHand.step * area.width;
   const middle = (count - 1) / 2;

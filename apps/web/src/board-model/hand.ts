@@ -6,6 +6,7 @@ import type { ObjectId, SeatView } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
 import { boardCard } from "./board-card.ts";
 import type { BoardCard, Rect } from "./board-model.ts";
+import { cardBasis } from "./card-basis.ts";
 import { cardInfo, manaSymbols } from "./card-info.ts";
 
 export function handCards(
@@ -23,7 +24,7 @@ export function handCards(
   });
   const n = cards.length;
   if (n === 0) return [];
-  const height = hand.h * area.height;
+  const height = hand.h * cardBasis(area, layout);
   const width = height * ratio.hand;
   // Centred, each card a step after the last, at most `mostStep`, the last one shown whole.
   const room = (hand.right - hand.left) * area.width;
@@ -44,7 +45,7 @@ export function handCards(
   // The lifted card leaves the fan and rises large at the centre [R], drawn over everything else in the hand.
   const liftedCard = placed.find((c) => c.id === lifted);
   if (liftedCard === undefined) return placed;
-  const h = layout.lifted.h * area.height;
+  const h = layout.lifted.h * cardBasis(area, layout);
   const w = h * ratio.hand;
   const big = {
     ...liftedCard,

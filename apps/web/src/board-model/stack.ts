@@ -13,6 +13,7 @@ import { abilityKind, abilityText } from "./ability-text.ts";
 import { NO_BADGES } from "./badges.ts";
 import { boardCard } from "./board-card.ts";
 import type { BoardCard, Rect } from "./board-model.ts";
+import { cardBasis } from "./card-basis.ts";
 import { cardInfo } from "./card-info.ts";
 
 /**
@@ -71,7 +72,7 @@ export function choosingOwn(shown: SeatView): boolean {
 function stackBlock(shown: SeatView, area: Rect, layout: BoardLayout, small: boolean): Rect {
   const right = area.x + area.width - 8;
   const largeH = Math.min(
-    layout.stack.h * area.height,
+    layout.stack.h * cardBasis(area, layout),
     layout.stack.maxH,
     (layout.stack.maxW * area.width) / layout.ratio.hand,
   );
@@ -81,7 +82,7 @@ function stackBlock(shown: SeatView, area: Rect, layout: BoardLayout, small: boo
     y: area.y + layout.stack.y * area.height,
   };
   // Small means a fixed size at most (in CSS pixels): on a tall screen a share of the height would reach over the rows.
-  const smallH = Math.min(layout.stack.smallH * area.height, layout.stack.smallMaxH);
+  const smallH = Math.min(layout.stack.smallH * cardBasis(area, layout), layout.stack.smallMaxH);
   const smallW = smallH * layout.ratio.hand;
   // While the person chooses for their own spell: at the right edge, clear of the targets [R].
   if (choosingOwn(shown)) {
