@@ -4,7 +4,7 @@
 import type { Effect, EffectSubject, SeatView, SeenCard } from "@mtg/engine";
 import { controlledBy, creaturesOf, creatureValue, lifeOf, opponents, seenCard } from "./board.ts";
 import type { Pump } from "./fights.ts";
-import { type Pumping, pumpsValue } from "./tricks.ts";
+import { losesFight, type Pumping, pumpsValue } from "./tricks.ts";
 
 /** `source`: the permanent whose ability this is ("this creature", "enchanted creature"); null for a spell. */
 export function untargetedValue(
@@ -39,7 +39,8 @@ function effectValue(shown: SeatView, effect: Effect, x: number, source: SeenCar
     case "dealDamage":
       return effect.to === "eachOpponent" ? toOpponents(shown, amount(effect.amount)) : 0;
     case "loseLife":
-      return effect.who === "eachOpponent" ? toOpponents(shown, amount(effect.amount)) : 0;
+      if (effect.who === "eachOpponent") return toOpponents(shown, amount(effect.amount));
+      return effect.who === "eachPlayer" ? toEveryone(shown, amount(effect.amount)) : 0;
     case "destroy":
     case "exile":
       return typeof effect.of === "object" && "each" in effect.of ? sweepValue(shown, effect.of.each.types) : 0;
@@ -59,6 +60,8 @@ function effectValue(shown: SeatView, effect: Effect, x: number, source: SeenCar
         pumpedBy(shown, effect.of, source, { power: 0, toughness: 0, keywords: effect.keywords }),
       );
     // Targeted (weighed by `targets.ts`), or not weighed yet.
+    case "regenerate":
+      return regenerateValue(shown, pumpedBy(shown, effect.of, source, NO_PUMP)[0]?.creature ?? null);
     case "addMana":
     case "cantBlock":
     case "cantBeBlocked":
@@ -72,7 +75,6 @@ function effectValue(shown: SeatView, effect: Effect, x: number, source: SeenCar
     case "becomes":
     case "sacrificeSource":
     case "preventAllDamage":
-    case "regenerate":
     case "revealUntil":
     case "destroyOneAtRandom":
     case "returnToHand":
@@ -117,6 +119,37 @@ function pumpedBy(shown: SeatView, subject: EffectSubject, source: SeenCard | nu
     return mine.map((creature) => ({ creature, pump }));
   }
   return [];
+}
+
+const NO_PUMP: Pump = { power: 0, toughness: 0, keywords: [] };
+
+/**
+ * A regeneration shield (CR 701.19a) is worth the creature when it would otherwise be destroyed now: it loses the fight
+ * it's in, or an opponent's spell or ability on the stack would kill it. Nothing once it has a shield already.
+ */
+function regenerateValue(shown: SeatView, creature: SeenCard | null): number {
+  if (creature === null || creature.regenerationShields > 0) return 0;
+  return losesFight(shown, creature) || aimedAt(shown, creature) ? creatureValue(creature) : 0;
+}
+
+/** An opponent's spell or ability on the stack would harm it (destroy it, or deal it lethal damage). */
+function aimedAt(shown: SeatView, creature: SeenCard): boolean {
+  return shown.view.zones.stack.some((id) => {
+    const seen = shown.seen[id];
+    if (seen === undefined) return false;
+    const controller = seen.kind === "card" ? seen.characteristics.controller : seen.controller;
+    if (controller === shown.player) return false;
+    const targets = (seen.choices?.targets ?? []).flat();
+    return targets.some((t) => t.kind === "object" && t.object === creature.id);
+  });
+}
+
+/** Life loss for every player, the heuristic too (Howling Banshee): never when its own share is lethal. */
+function toEveryone(shown: SeatView, amount: number): number {
+  const mine = lifeOf(shown, shown.player);
+  if (mine <= amount) return -100;
+  const ownLoss = mine - amount <= 5 ? amount : amount / 2;
+  return toOpponents(shown, amount) - ownLoss;
 }
 
 /** Damage or life loss for each opponent: the game when it's lethal, half a point a point before. */

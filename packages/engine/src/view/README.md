@@ -8,7 +8,8 @@ never the state (docs/architecture.md, "Hidden information"; D-044).
   identity only, `rules/revealed.ts`); the viewer's own pending `decision`, and `waitingFor` for anyone's; no random
   generator state, setup, work queue or id counters. A view shares structure with the state: never change it.
 - `seen-objects.ts`: `seenObjects(state, view, cards)`: what the viewer sees of each object in their view, with the
-  values the layer system derives (characteristics, summoning sickness, combat roles, a spell's choices), keyed by id.
+  values the layer system derives (characteristics, summoning sickness, combat roles, regeneration shields, a spell's
+  choices), keyed by id.
   The host sends it beside the view (D-135), so the UI, the heuristic AI and the LLM opponent read one source (D-137).
   Kept out of `playerView`, which stays a plain filter of the state.
 - `seat-view.ts`: `seatView(state, player, cards)`: what a seat is shown when it decides (D-144): the view, the seen

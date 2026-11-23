@@ -92,6 +92,7 @@ function playerScore(shown: SeatView, player: PlayerId, intent: Intent): number 
       return lifeOf(shown, player) - loss <= LOW_LIFE ? -1 : 1;
     }
     case "harm": {
+      if (intent.fromHand === true && (shown.view.zones.players[player]?.handSize ?? 0) === 0) return 0;
       if (intent.damage === null) return me ? -1 : 1;
       const life = lifeOf(shown, player);
       // Damage to a player is worth the game when it's lethal, a point a point once they're low, and little before:

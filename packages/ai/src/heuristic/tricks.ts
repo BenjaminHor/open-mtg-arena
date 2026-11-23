@@ -33,6 +33,13 @@ function fightGain(shown: SeatView, before: SeenCard, after: SeenCard): number {
   return saved + killedWorth(after, foes) - killedWorth(before, foes);
 }
 
+/** Whether it dies in the fight it's in now, once blockers are declared (CR 510.2). */
+export function losesFight(shown: SeatView, creature: SeenCard): boolean {
+  if (shown.view.turn?.step !== "declareBlockers") return false;
+  const foes = foesOf(shown, creature);
+  return foes.length > 0 && !survives(creature, foes);
+}
+
 /** The creatures it fights: an attacker's blockers, or the attackers a blocker blocks. */
 function foesOf(shown: SeatView, creature: SeenCard): SeenCard[] {
   if (creature.attacking !== null) return blockersOf(shown, creature);

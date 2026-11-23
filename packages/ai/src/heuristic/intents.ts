@@ -20,7 +20,8 @@ import { cardData } from "./board.ts";
 import type { Pump } from "./fights.ts";
 
 export type Intent =
-  | { kind: "harm"; damage: number | null }
+  /** `fromHand`: what it takes is cards from the player's hand (a discard), worth nothing against an empty hand. */
+  | { kind: "harm"; damage: number | null; fromHand?: true }
   /** `pump`: what it gives a creature until end of turn, a combat trick's worth (`tricks.ts`). */
   | { kind: "help"; untilEndOfTurn: boolean; pump?: Pump; lifeLoss?: number }
   /** A target the effect neither harms nor helps in a way the heuristic knows: any legal one will do. */
@@ -88,6 +89,7 @@ function effectOn(effect: Effect, x: number | null, index: number): EffectOn {
       return { subjects: effect.among, intent: HARM };
     case "discard":
     case "discardAtRandom":
+      return { subjects: [effect.who], intent: { kind: "harm", damage: null, fromHand: true } };
     case "loseLife":
     case "mill":
     case "sacrifice":

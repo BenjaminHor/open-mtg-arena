@@ -65,9 +65,14 @@ function spellValue(shown: SeatView, option: ActionOption, card: SeenCard, def: 
   if (isPermanent && def.enchant === undefined) {
     // A permanent with an X it can't make more than 0 of (Protean Hydra) would enter as nothing worth having.
     if (printed?.some((s) => s.kind === "x") === true && x < 1) return null;
-    // A permanent with no target: worth its size, so the biggest affordable one comes first.
+    // A permanent with no target: worth its size, so the biggest affordable one comes first, and what it does as it
+    // enters (CR 603.6a) when that needs no target ("each player loses 3 life" can make it not worth casting).
     const size = card.characteristics.types.includes("creature") ? creatureValue(card) : 0;
-    return 2 + manaValueOf(card, cards) + x + size / 4;
+    const entering = (def.triggers ?? [])
+      .filter((t) => t.when.kind === "selfEnters" && t.targets.length === 0)
+      .reduce((sum, t) => sum + untargetedValue(shown, t.effects, x, null), 0);
+    const value = 2 + manaValueOf(card, cards) + x + size / 4 + entering;
+    return value > 0 ? value : null;
   }
   const value = effectsValue(shown, option, cardIntents(def, x), def.spell?.effects ?? [], x, cards);
   return value !== null && value >= WORTH_CASTING ? value : null;

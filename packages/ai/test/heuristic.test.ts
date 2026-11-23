@@ -395,6 +395,44 @@ describe("the heuristic's combat tricks and costs", () => {
   });
 });
 
+describe("the heuristic reads more of the cards", () => {
+  const attacksWith = (state: GameState) =>
+    heuristicActs(until(state, "declareAttackers"), "p1").actions.filter(
+      (a) => a.type === "ANSWER" && a.answer.kind === "declareAttacker",
+    );
+
+  it("attacks with a creature that can't be blocked, whatever stands in its way (CR 509.1b)", () => {
+    const state = table({ battlefield: ["Phantom Warrior"] }, { battlefield: ["Hill Giant"] }, "p1", "precombatMain");
+    expect(attacksWith(state)).toHaveLength(1);
+  });
+
+  it("blocks with a creature it can regenerate, and regenerates it as it would die (CR 701.19a)", () => {
+    const { blocks: picks, state } = blocks({ battlefield: ["Wall of Bone", "Swamp"] }, ["Craw Wurm"]);
+    expect(picks).toHaveLength(1);
+    // p2, the active player, gets priority first in the declare blockers step and passes; then p1 decides.
+    expect(state.pending).toMatchObject({ kind: "priority", player: "p2" });
+    const passed = apply(state, legalActions(state, "p2", cards).find((a) => a.type === "PASS_PRIORITY") as Action);
+    const wall = named(passed, "Wall of Bone", "p1");
+    const regenerate = heuristicActs(passed, "p1").actions.find((a) => a.type === "ACTIVATE_ABILITY");
+    expect(regenerate).toMatchObject({ object: wall });
+  });
+
+  it("doesn't cast a creature whose entering would cost it its last life (Howling Banshee at 3)", () => {
+    const state = table(
+      { hand: ["Howling Banshee"], battlefield: ["Swamp", "Swamp", "Swamp", "Swamp"], life: 3 },
+      {},
+      "p1",
+      "precombatMain",
+    );
+    expect(decide(state).type).toBe("PASS_PRIORITY");
+  });
+
+  it("doesn't aim a discard at an empty hand", () => {
+    const state = table({ hand: ["Mind Rot"], battlefield: ["Swamp", "Swamp", "Swamp"] }, {}, "p1", "precombatMain");
+    expect(decide(state).type).toBe("PASS_PRIORITY");
+  });
+});
+
 describe("the heuristic's opening hand (CR 103.5)", () => {
   function opening(library: string[]): Action {
     const created = createGame(
