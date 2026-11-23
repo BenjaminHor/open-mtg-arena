@@ -27,7 +27,7 @@ export function handLower(
   );
   const typeLine = new Text({
     text: card.typeLine,
-    style: { fontFamily: PALETTE.serif, fontWeight: "700", fontSize: typeH * 0.68, fill: PALETTE.ink },
+    style: { fontFamily: faceFont(card), fontWeight: "700", fontSize: typeH * 0.68, fill: PALETTE.ink },
   });
   fitText(typeLine, inner.w - 4, { height: typeH });
   typeLine.anchor.set(0, 0.5);
@@ -39,7 +39,7 @@ export function handLower(
   const text = new Text({
     text: card.text,
     style: {
-      fontFamily: PALETTE.serif,
+      fontFamily: faceFont(card),
       fontSize: size,
       fill: PALETTE.ink,
       wordWrap: true,
@@ -78,4 +78,12 @@ export function ptBox(card: BoardCard, color: number, inner: { x: number; w: num
   t.position.set(x + bw / 2, y + bh / 2);
   box.addChild(t);
   return box;
+}
+
+/**
+ * A drawn card's typeface: a printed card's serif while its real image loads (D-163); an ability's panel, which never
+ * gets an image, in the app's own (UX review).
+ */
+export function faceFont(card: BoardCard): string {
+  return card.ability ? PALETTE.sans : PALETTE.serif;
 }

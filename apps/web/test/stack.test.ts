@@ -9,6 +9,7 @@ import { MOST_UNDER } from "../src/board-model/stack.ts";
 import type { Fixture } from "../src/fixtures/fixtures.ts";
 import { cardDetails } from "../src/interaction/card-details.ts";
 import { stackCards } from "../src/interaction/zones.ts";
+import { COMPACT } from "../src/layout/compact.ts";
 import { playFrom } from "./fixture-views.ts";
 
 const PHONE = { width: 812, height: 375 };
@@ -69,16 +70,21 @@ describe("the stack", () => {
     expect(stack.map((c) => c.name)).toEqual(["Lightning Bolt", "Giant Growth", "Prodigal Pyromancer"]);
   });
 
-  it("puts the top large at the right and each one under it further left, all the same size", () => {
+  it("puts the top at the right and each one under it a name strip higher, in the top's old place", () => {
     const [bolt, growth, top] = stack;
     if (bolt === undefined || growth === undefined || top === undefined) throw new Error("three");
     expect(top.x > PHONE.width / 2).toBe(true);
-    expect(growth.x).toBeLessThan(top.x);
-    expect(bolt.x).toBeLessThan(growth.x);
+    expect(growth.y).toBeLessThan(top.y);
+    expect(bolt.y).toBeLessThan(growth.y);
+    // A readable name's height each, and no further left than the top: the stack covers no more board than before.
+    expect(top.y - growth.y).toBeGreaterThanOrEqual(14);
+    expect(new Set(stack.map((c) => c.x)).size).toBe(1);
     expect(new Set(stack.map((c) => c.height)).size).toBe(1);
-    // The count rides on the top.
-    expect(top.pileCount).toBe(3);
-    expect(growth.pileCount).toBeNull();
+    const block = { top: bolt.y, bottom: top.y + top.height };
+    expect(block.bottom - block.top).toBeCloseTo(COMPACT.stack.h * PHONE.height, 5);
+    // The whole stack a tap away, above it.
+    const more = boardModel(shown, PHONE).overlay.stackMore;
+    expect(more?.y ?? 0).toBeLessThan(bolt.y);
   });
 
   it("draws an ability as a panel: its source's name and art, its kind, its own text", () => {
@@ -101,19 +107,20 @@ describe("the stack", () => {
     expect(panel?.colors).toEqual([]);
   });
 
-  it(`shows at most ${MOST_UNDER} under the top, and counts them all`, () => {
+  it(`shows at most ${MOST_UNDER} under the top, the rest in the browser`, () => {
     const deep = structuredClone(shown);
     const extra = Array.from({ length: 4 }, (_, i) => `o-extra-${i}` as ObjectId);
+    // One object alone has no button: nothing is hidden under it.
+    const one = structuredClone(shown);
+    one.view.zones.stack = one.view.zones.stack.slice(-1);
+    expect(boardModel(one, PHONE).overlay.stackMore).toBeNull();
     const bolt = deep.view.zones.stack[0];
     if (bolt === undefined) throw new Error("a stack");
     for (const id of extra) deep.seen[id] = { ...(deep.seen[bolt] as object), id } as SeatView["seen"][ObjectId];
     deep.view.zones.stack = [...extra, ...deep.view.zones.stack];
     const cards = boardModel(deep, PHONE).cards.filter((c) => c.zone === "stack");
     expect(cards).toHaveLength(MOST_UNDER + 1);
-    expect(cards.at(-1)?.pileCount).toBe(7);
-    // The rest are a tap away: a button under the top lists the whole stack.
     expect(boardModel(deep, PHONE).overlay.stackMore).not.toBeNull();
-    expect(boardModel(shown, PHONE).overlay.stackMore).toBeNull();
     expect(stackCards(deep)).toHaveLength(7);
     expect(stackCards(deep)[0]?.name).toBe("Prodigal Pyromancer ability");
     // The top five are drawn, not the bottom five.
@@ -181,7 +188,7 @@ describe("a stack object's card view", () => {
       now = m.act((a) => a === divide.action, "divide");
     }
     const top = now.view.zones.stack.at(-1);
-    const divided = (top === undefined ? null : cardDetails(now, top))?.hangers.find((h) => h.title === "Divided");
+    const divided = (top === undefined ? null : cardDetails(now, top))?.hangers.find((h) => h.title === "Targets");
     expect(divided?.text).toMatch(
       /^\d to (Elite Vanguard|Veteran Armorsmith), \d to (Elite Vanguard|Veteran Armorsmith)$/,
     );
@@ -222,8 +229,9 @@ describe("the stack while the person chooses", () => {
     const stack = boardModel(choosing, PHONE).cards.filter((c) => c.zone === "stack");
     expect(stack.map((c) => c.name)).toEqual(["Giant Growth", "Lightning Bolt"]);
     const [under, top] = stack;
-    expect(top?.height).toBeLessThanOrEqual(112);
+    // The whole stack fits the small block at the right edge, the one under the top peeking out above it.
+    expect((top?.y ?? 0) + (top?.height ?? 0) - (under?.y ?? 0)).toBeLessThanOrEqual(112.001);
     expect((top?.x ?? 0) + (top?.width ?? 0)).toBeGreaterThan(PHONE.width - 20);
-    expect(under?.x).toBeLessThan(top?.x ?? 0);
+    expect(under?.y).toBeLessThan(top?.y ?? 0);
   });
 });

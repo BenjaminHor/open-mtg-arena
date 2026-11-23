@@ -106,12 +106,7 @@ export function CardFace({ details }: { details: CardDetails }) {
             <ManaText text={details.manaCost} />
           </p>
           {/* An ability's panel has its source's art, as Arena draws one [R]. */}
-          {details.art !== null && (
-            <>
-              <img className="card-view-art" src={details.art.url} alt="" draggable={false} />
-              <p className="card-view-credit">Illustrated by {details.art.artist}</p>
-            </>
-          )}
+          {details.art !== null && <PanelArt art={details.art} />}
           <p className="card-view-type">{details.typeLine}</p>
           {details.oracleText.split("\n").map((line, i) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: the lines are fixed text, never reordered
@@ -135,5 +130,27 @@ export function CardFace({ details }: { details: CardDetails }) {
         />
       )}
     </figure>
+  );
+}
+
+/**
+ * An ability panel's art and its artist's credit (data-sources.md), shown once the art has loaded: offline, or if it
+ * fails, neither, and no broken image (D-161).
+ */
+function PanelArt({ art }: { art: { url: string; artist: string } }) {
+  const [state, setState] = useState<"loading" | "loaded" | "failed">("loading");
+  if (state === "failed") return null;
+  return (
+    <>
+      <img
+        className={`card-view-art${state === "loaded" ? "" : " loading"}`}
+        src={art.url}
+        alt=""
+        draggable={false}
+        onLoad={() => setState("loaded")}
+        onError={() => setState("failed")}
+      />
+      {state === "loaded" && <p className="card-view-credit">Illustrated by {art.artist}</p>}
+    </>
   );
 }

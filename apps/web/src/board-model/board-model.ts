@@ -124,10 +124,7 @@ export type OverlayAnchors = {
   secondary: Rect[];
   /** The centre of what the game is waiting for, in words, between the battlefields [R]. */
   prompt: Point;
-  /**
-   * Under the stack's top object, a button listing the whole stack when more is on it than the board draws (`stack.ts`,
-   * `MOST_UNDER`); null otherwise.
-   */
+  /** Above the stack, a button listing it all once two or more objects are on it (`stack.ts`); null otherwise. */
   stackMore: Rect | null;
 };
 

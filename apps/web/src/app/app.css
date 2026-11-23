@@ -744,6 +744,13 @@ body,
   object-fit: cover;
   margin: 0 0 6px;
 }
+/* Until it has loaded: no box, no broken image. */
+.card-view-card .card-view-text img.card-view-art.loading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
 /* The art's artist, credited beside a crop of it (data-sources.md). */
 .card-view-text .card-view-credit {
   margin: -3px 0 6px;
@@ -889,6 +896,7 @@ body,
   scroll-padding: 0 12px;
 }
 .zone-row li {
+  position: relative;
   flex: none;
   scroll-snap-align: start;
   /* A long graveyard draws only the cards near the view. */
@@ -1081,4 +1089,19 @@ body,
   content: "";
   position: absolute;
   inset: -7px 0;
+}
+
+/* The stack browser's first card resolves next: said on it, not left to the order. */
+.zone-next {
+  position: absolute;
+  z-index: 1;
+  top: 6px;
+  left: 6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
 }

@@ -1,6 +1,6 @@
 // What the card view adds for an object on the stack (M3-04c slice 6; arena-research.md §5): an ability's own panel
 // (its source's name and art, its kind and its own text [R]) rather than its source card, and for every object what
-// was chosen as it was put there: its targets, X, a divided effect (CR 601.2b-d). The UX review of slice 2 asked for
+// was chosen as it was put there: its targets and their shares of a divided effect, X (CR 601.2b-d). The UX review of slice 2 asked for
 // these; Arena shows targets on hover [R] and X on the spell [R].
 
 import type { ObjectId, SeatView, SeenAbility, StackChoices, Target } from "@mtg/engine";
@@ -37,25 +37,34 @@ export function abilityDetails(shown: SeatView, ability: SeenAbility): CardDetai
   };
 }
 
-/** What was chosen for a spell or ability as it was put on the stack: its targets, X, how an effect is divided. */
+/**
+ * What was chosen for a spell or ability as it was put on the stack: its targets (with each one's share, when an effect
+ * is divided among them, CR 601.2d), and X.
+ */
 export function choiceHangers(shown: SeatView, choices: StackChoices | null): CardDetails["hangers"] {
   if (choices === null) return [];
   const hangers: CardDetails["hangers"] = [];
   const targets = choices.targets.flat();
+  const shares = choices.division?.shares ?? [];
   if (targets.length > 0) {
     hangers.push({
       title: targets.length === 1 ? "Target" : "Targets",
-      text: targets.map((t) => targetText(shown, t)).join(", "),
+      text: targets
+        .map((t) => {
+          const share = shares.find((s) => sameTarget(s.target, t));
+          return share === undefined ? targetText(shown, t) : `${share.amount} to ${targetText(shown, t)}`;
+        })
+        .join(", "),
     });
   }
   if (choices.x !== null) hangers.push({ title: "X", text: `${choices.x}` });
-  if (choices.division !== null) {
-    hangers.push({
-      title: "Divided",
-      text: choices.division.shares.map((s) => `${s.amount} to ${targetText(shown, s.target)}`).join(", "),
-    });
-  }
   return hangers;
+}
+
+function sameTarget(a: Target, b: Target): boolean {
+  return a.kind === "player"
+    ? b.kind === "player" && a.player === b.player
+    : b.kind === "object" && a.object === b.object;
 }
 
 /** A target as the person reads it: a player, or an object by name, with where it is when that isn't plain. */

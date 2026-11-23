@@ -2,7 +2,8 @@
 // person's turn, "Resolve" with the spell's name while the stack holds something, "Pass" on the opponent's turn, and
 // a dark "Opponent's Turn" while there's nothing to pass [R]. M3-04b refines the labels as the auto-pass stops grow.
 
-import type { Action, ObjectId, SeatView, Step } from "@mtg/engine";
+import type { Action, SeatView, Step } from "@mtg/engine";
+import { objectName } from "../interaction/names.ts";
 
 export type MainButton = {
   label: string;
@@ -35,7 +36,8 @@ export function mainButton(shown: SeatView): MainButton {
   if (top !== undefined) {
     const seen = shown.seen[top];
     const name =
-      seen === undefined ? null : seen.kind === "card" ? seen.characteristics.name : abilitySource(shown, seen.source);
+      // Named as everywhere else (names.ts): by its source, even once that has left.
+      seen === undefined ? null : objectName(shown, seen.id);
     return { label: "Resolve", detail: name, action: pass, hidden: false };
   }
   if (!myTurn) return { label: "Pass", detail: null, action: pass, hidden: false };
@@ -103,11 +105,6 @@ export function mustDeclare(shown: SeatView): string[] {
 }
 
 /** An ability on the stack is named by where it came from: "Ajani Goldmane ability". */
-function abilitySource(shown: SeatView, source: ObjectId): string {
-  const seen = shown.seen[source];
-  return seen?.kind === "card" ? `${seen.characteristics.name} ability` : "An ability";
-}
-
 /**
  * Where passing on an empty stack heads in the person's own turn, named as the phase ladder names it. It names the
  * next step, not the next stop: auto-pass skips the end step (D-157) unless mana is left, as Arena's "To End" does.

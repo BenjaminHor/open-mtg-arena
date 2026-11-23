@@ -1,10 +1,10 @@
 // The whole stack at the right (M3-04c slice 6): with full control on, three objects wait on it, the top large and
-// the rest peeking out to its left; an ability is a panel with its own text, and each object's card view names what
+// the rest peeking out above it; an ability is a panel with its own text, and each object's card view names what
 // it targets. Art is refused, so each card shows its drawn face.
 
 import { expect, type Page, test } from "@playwright/test";
 
-type Board = { cards: { id: string; name: string; zone: string; x: number; ability?: boolean; typeLine: string }[] };
+type Board = { cards: { id: string; name: string; zone: string; y: number; ability?: boolean; typeLine: string }[] };
 const board = (page: Page) => page.evaluate(() => (window as unknown as { __board?: Board }).__board ?? null);
 const stackOf = async (page: Page) => ((await board(page))?.cards ?? []).filter((c) => c.zone === "stack");
 
@@ -37,8 +37,15 @@ test("draws every object on the stack, an ability as its own panel, and each one
   const [bolt, growth, top] = await stackOf(page);
   expect(top?.ability).toBe(true);
   expect(top?.typeLine).toBe("Activated ability");
-  // Each one under the top peeks out further left.
-  expect((growth?.x ?? 0) < (top?.x ?? 0) && (bolt?.x ?? 0) < (growth?.x ?? 0)).toBe(true);
+  // Each one under the top peeks out above it, a name strip higher.
+  expect((growth?.y ?? 0) < (top?.y ?? 0) && (bolt?.y ?? 0) < (growth?.y ?? 0)).toBe(true);
+  // "Stack 3" lists them all, the next to resolve first.
+  await page.getByRole("button", { name: /^The stack, 3 objects/ }).click();
+  const sheet = page.getByRole("dialog", { name: "The stack" });
+  await expect(sheet.getByRole("listitem")).toHaveCount(3);
+  await expect(sheet.getByRole("listitem").first()).toContainText("Resolves next");
+  await page.keyboard.press("Escape");
+  await expect(sheet).toHaveCount(0);
 
   // Every object takes "i" for its card view: the ability's own text, and what each targets.
   await page.getByRole("img", { name: "Prodigal Pyromancer ability" }).focus();

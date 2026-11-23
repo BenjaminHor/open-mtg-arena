@@ -8,7 +8,7 @@ import { Container, Graphics, Sprite, Text, type Texture } from "pixi.js";
 import type { BoardCard } from "../board-model/board-model.ts";
 import { drawTile } from "./battlefield-tile.ts";
 import { ART_LABEL, type Face } from "./face.ts";
-import { handLower, ptBox } from "./hand-face.ts";
+import { faceFont, handLower, ptBox } from "./hand-face.ts";
 import { type ColorSymbol, colorGlyph, manaCostRow } from "./mana-symbols.ts";
 import { FRAME, frameColor, mix, PALETTE } from "./palette.ts";
 import { fitText } from "./text-fit.ts";
@@ -141,7 +141,13 @@ function nameStrip(card: BoardCard, color: number, x: number, y: number, w: numb
   const room = w - 5;
   const text = new Text({
     text: card.name,
-    style: { fontFamily: PALETTE.serif, fontWeight: "700", fontSize: Math.min(h * 0.7, 12), fill: PALETTE.ink },
+    // A hand card's name is small in its strip (the card's image soon covers it); a panel's is its heading, sized to fit.
+    style: {
+      fontFamily: faceFont(card),
+      fontWeight: "700",
+      fontSize: card.ability ? h * 0.62 : Math.min(h * 0.7, 12),
+      fill: PALETTE.ink,
+    },
   });
   fitText(text, room, { height: h });
   text.anchor.set(0, 0.5);

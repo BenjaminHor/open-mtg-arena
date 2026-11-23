@@ -71,7 +71,7 @@ export const COMPACT: BoardLayout = {
   secondary: { width: 88, height: 44, gap: 6 },
   // A spell being cast, or an ability, large at the right of centre [R] (smaller than Arena's, the phone's board is full).
   // While choosing targets it shrinks to the right edge above the ladder, as Arena collapses it off the targets [R].
-  stack: { x: 0.78, y: 0.16, h: 0.52, smallH: 0.3, smallY: 0.36, smallMaxH: 112, peek: 0.16 },
+  stack: { x: 0.78, y: 0.16, h: 0.52, maxH: 340, smallH: 0.3, smallY: 0.36, smallMaxH: 112, peek: 0.11 },
   // A lifted hand card rises large at the centre [R] (about 70% of the height).
   lifted: { h: 0.62, top: 0.15 },
   // An attacker steps forward into the open table [guess: Arena keeps attackers in their row, marked by a chevron;

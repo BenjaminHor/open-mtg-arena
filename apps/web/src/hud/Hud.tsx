@@ -193,9 +193,10 @@ export function Hud(props: HudProps) {
           type="button"
           className="stack-more"
           style={place(anchors.stackMore)}
+          aria-label={`The stack, ${view.zones.stack.length} objects: show them all`}
           onClick={() => props.browse({ kind: "stack" })}
         >
-          All {view.zones.stack.length}
+          Stack {view.zones.stack.length}
         </button>
       )}
       {props.browsing !== null && (

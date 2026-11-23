@@ -326,7 +326,10 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     view.** `board-model/stack.ts` (`stackCards`, `stackMore`), `board-model/ability-text.ts` (tested over the whole
     pool), `interaction/stack-details.ts`, a Stack tab in the zone browser for a deep stack ("All n"), a `stack` fixture,
     test/stack.test.ts, test/ability-text.test.ts, e2e/stack.spec.ts. Test helper `playFrom` (fixture-views.ts) plays
-    the test's own actions in full control. Next PR: target arrows and the collapse tap. Not done: X drawn on the
+    the test's own actions in full control. Review fixes (code and UX, in D-169): the cascade peeks out upward
+    within the top's old block (leftward it covered creatures and took their taps), a "Stack n" button from two
+    objects, strip-sized tap regions, panel art credited and offline-safe, panels in Inter, the pool test compares exact
+    costs, `Browsing` a union, one `names.ts`. Next PR: target arrows and the collapse tap. Not done: X drawn on the
     spell itself [R] (it's in the card view); canvas text shows "{T}" as letters (hand cards too, pre-existing).
   - Slice 6 plan (2026-11-23, written before starting): the whole stack [R: arena-research.md §5, "The stack"]:
     - `board-model/stack.ts` draws every object, top first: the top large at the right as now, the ones under it

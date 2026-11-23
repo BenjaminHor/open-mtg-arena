@@ -156,8 +156,10 @@ export function ZoneBrowser({ shown, browsing, choose, close }: Props) {
               if (e.deltaX === 0) e.currentTarget.scrollLeft += e.deltaY * (e.deltaMode === 1 ? 16 : 1);
             }}
           >
-            {cards.map((c) => (
+            {cards.map((c, i) => (
               <li key={c.key}>
+                {/* Top first: the first resolves next (CR 608.1). */}
+                {browsing.kind === "stack" && i === 0 && <span className="zone-next">Resolves next</span>}
                 <button
                   type="button"
                   className="zone-card"

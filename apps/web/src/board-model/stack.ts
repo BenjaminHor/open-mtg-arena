@@ -1,7 +1,7 @@
 // The stack at the right [R: arena-research.md §5, "The stack sits on the right, mid-height, as a large readable card
 // for the top item"]: the top object large, so the person sees the spell they're choosing targets for or the one the
-// opponent cast, and the objects under it peeking out to its left in a cascade, the deepest furthest, each still
-// reachable for the card view. Past `MOST_UNDER` the rest are counted (the top's count) and listed in the zone browser.
+// opponent cast, and the objects under it peeking out above it by a name strip each, the deepest highest, each still
+// reachable for the card view; a "Stack n" button lists them all in the zone browser.
 // A spell is its card; an ability is a card-shaped panel with its source's name and art, its kind and its own text [R:
 // "drawn as card-shaped panels with the source's art, an 'Ability' type line, the ability text"], drawn from its
 // source's printed card when the source has left (a "dies" trigger).
@@ -14,42 +14,60 @@ import { boardCard } from "./board-card.ts";
 import type { BoardCard, Rect } from "./board-model.ts";
 import { cardInfo } from "./card-info.ts";
 
-/** How many objects under the top peek out: more would reach far over the board on a phone. */
-export const MOST_UNDER = 4;
+/**
+ * How many objects under the top peek out above it: each shows its name strip, so a deeper stack shrinks the top. More
+ * are counted on the "Stack n" button and listed in the zone browser.
+ */
+export const MOST_UNDER = 3;
 
-/** Every object on the stack the board draws, the deepest first (drawn first, so each covers the one under it). */
+/**
+ * Every object on the stack the board draws, the deepest first (drawn first, so each covers the one under it). They
+ * share one block, the top's old place: the deeper ones peek out above the top by a name strip each [R: names read
+ * down the stack], so the stack never covers more of the board than its top alone did (UX review).
+ */
 export function stackCards(shown: SeatView, area: Rect, layout: BoardLayout): BoardCard[] {
   const stack = shown.view.zones.stack;
-  const topId = stack[stack.length - 1];
-  if (topId === undefined) return [];
-  const top = topRect(shown, area, layout);
-  const peek = layout.stack.peek * top.width;
+  if (stack.length === 0) return [];
+  const block = stackBlock(shown, area, layout);
+  const under = Math.min(stack.length - 1, MOST_UNDER);
+  // The card's height, and the strip each one under it shows (at least a readable name, 14 px).
+  const first = block.height / (1 + layout.stack.peek * under);
+  const peek = Math.max(14, layout.stack.peek * first);
+  const height = block.height - under * peek;
+  const width = height * layout.ratio.hand;
+  const x = Math.min(block.x, area.x + area.width - 8 - width);
   // Top first, then down the stack, as far as is drawn.
-  const shownIds = [...stack].reverse().slice(0, MOST_UNDER + 1);
-  const drawn = shownIds.flatMap((id, depth) => {
-    const rect = { ...top, x: top.x - depth * peek };
-    const card = stackObject(shown, id, rect);
-    if (card === null) return [];
-    // The count rides on the top, as a pile's does.
-    return [depth === 0 && stack.length > 1 ? { ...card, pileCount: stack.length } : card];
-  });
+  const drawn = [...stack]
+    .reverse()
+    .slice(0, under + 1)
+    .flatMap((id, depth) => {
+      const card = stackObject(shown, id, { x, y: block.y + (under - depth) * peek, width, height });
+      return card === null ? [] : [card];
+    });
   return drawn.reverse();
 }
 
-/** A button under the top object listing the whole stack, when more is on it than is drawn; else null. */
+/**
+ * A button above the stack once two or more objects are on it, saying how many and listing them all top first in the
+ * zone browser: the strips are a name's height, smaller than a finger, so this is the sure way to each (UX review).
+ */
 export function stackMore(shown: SeatView, drawn: readonly BoardCard[]): Rect | null {
+  const deepest = drawn[0];
   const top = drawn.at(-1);
-  if (top === undefined || shown.view.zones.stack.length <= drawn.length) return null;
-  return { x: top.x, y: top.y + top.height + 6, width: top.width, height: 30 };
+  if (deepest === undefined || top === undefined || shown.view.zones.stack.length < 2) return null;
+  return { x: top.x, y: deepest.y - 34, width: Math.min(top.width, 96), height: 28 };
 }
 
-/** The top object's place: large right of centre, or small at the right edge while the person chooses for it [R]. */
-function topRect(shown: SeatView, area: Rect, layout: BoardLayout): Rect {
+/**
+ * The stack's place: large right of centre (at most `maxH` px tall: on a near-square screen a share of the height is
+ * far too large), or small at the right edge while the person chooses for it [R].
+ */
+function stackBlock(shown: SeatView, area: Rect, layout: BoardLayout): Rect {
   const choosing = shown.view.casting !== null && shown.view.casting.player === shown.player;
   // Small means a fixed size at most (in CSS pixels): on a tall screen a share of the height would reach over the rows.
   const height = choosing
     ? Math.min(layout.stack.smallH * area.height, layout.stack.smallMaxH)
-    : layout.stack.h * area.height;
+    : Math.min(layout.stack.h * area.height, layout.stack.maxH);
   const width = height * layout.ratio.hand;
   const right = area.x + area.width - 8;
   const x = choosing ? right - width : Math.min(area.x + layout.stack.x * area.width, right - width);
