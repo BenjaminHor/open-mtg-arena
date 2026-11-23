@@ -100,6 +100,10 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     "Vary: Origin", or every module script misses offline. `pnpm dev` runs; the two browser tests pass (a round trip
     through the worker; an offline reload). The screen is a scaffold: cards as named rectangles, a button per legal
     action (unpayable ones greyed out); M3-04 brings the real board.
+  - Owner on the scaffold's screenshot (2026-11-23): "the screenshot looks pretty bad". Expected for the scaffold;
+    M3-04 must make the board look like Arena from its first screenshot (arena-research.md, the owner's phone
+    screenshots: hand fan, lands row, life and portraits, phase indicator, the pass button, real card frames), and
+    show the owner the layout early, before the details.
   - Future impact: the LLM seat (M3-02b) plugs in as an outside seat; the web Worker (M3-03) calls `advance`/`submit`
     and posts `{ view, seen, legalActions, events }`.
 - M2 Rules depth (`docs/milestones/m2-rules-depth.md`), started 2026-11-19. M1 is closed: the owner skipped the CLI
