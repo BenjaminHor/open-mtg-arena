@@ -2241,3 +2241,10 @@ owner's answer to the D-089 open question, option (a))
 - Offered and not chosen for now: planning a turn in one go, handing trivial decisions to the heuristic, a "why did
   you do that?" button, difficulty levels, post-game lessons per deck, evaluating against the heuristic with blunder
   counts. They can come back later.
+
+**D-148: M3-02b measures the LLM opponent against the heuristic AI too (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner: "I'm honestly curious how well the offline AI would perform against an LLM opponent - something to maybe
+  test if it's worthwhile." M3-02b's evaluation command plays the LLM against the heuristic AI as well as the random
+  agent, from both seats and both sides of the play, and reports the win rate with the tokens and time each game cost.
+  It's how we'll judge whether the LLM opponent earns its cost and latency over the free, offline heuristic.
+- `pnpm eval` already seats any agent against the heuristic; the LLM seat joins it there (an outside seat, as in M3-01).
