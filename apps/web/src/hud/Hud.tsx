@@ -33,6 +33,10 @@ type HudProps = {
   selection: ObjectId | null;
   fullControl: boolean;
   setFullControl: (on: boolean) => void;
+  /** Drag to play: a hand card lifted by a drag, let go on the table, or put down (`hand-drag.ts`). */
+  drag: { lift: (id: ObjectId) => void; drop: (id: ObjectId) => void; cancel: () => void };
+  /** All Attack (`interaction/all-attack.ts`): offered now, and what pressing it starts. */
+  allAttack: { offered: boolean; start: () => void };
 };
 
 export function Hud(props: HudProps) {
@@ -58,6 +62,7 @@ export function Hud(props: HudProps) {
         onHand={props.openHand}
         handOpen={props.handOpen}
         selection={props.selection}
+        drag={props.drag}
       />
       <Portrait
         rect={anchors.portrait.opponent}
@@ -121,6 +126,18 @@ export function Hud(props: HudProps) {
           </button>
         );
       })}
+      {/* All Attack in the next free slot beside the main button, as Arena has it left of the button [R]. */}
+      {props.allAttack.offered && anchors.secondary[controls.secondary.length] !== undefined && (
+        <button
+          type="button"
+          className="secondary-button"
+          style={place(anchors.secondary[controls.secondary.length] as Rect)}
+          aria-disabled={busy}
+          onClick={() => !busy && props.allAttack.start()}
+        >
+          All Attack
+        </button>
+      )}
       <div className="prompt-anchor" style={{ left: anchors.prompt.x, top: anchors.prompt.y }}>
         <Prompt
           prompt={controls.prompt}

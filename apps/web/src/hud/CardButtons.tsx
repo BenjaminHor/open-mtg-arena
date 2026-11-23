@@ -6,6 +6,7 @@
 import type { ObjectId } from "@mtg/engine";
 import type { BoardModel } from "../board-model/board-model.ts";
 import type { Controls } from "../interaction/controls.ts";
+import { useHandDrag } from "./hand-drag.ts";
 import { place } from "./place.ts";
 
 type Props = {
@@ -19,10 +20,14 @@ type Props = {
   handOpen: boolean;
   /** The lifted hand card, if any: it says what a second tap does. */
   selection: ObjectId | null;
+  /** Drag to play (`hand-drag.ts`): a hand card lifted by a drag, let go on the table, or put down. */
+  drag: { lift: (id: ObjectId) => void; drop: (id: ObjectId) => void; cancel: () => void };
 };
 
-export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, selection }: Props) {
+export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, selection, drag }: Props) {
   const hand = model.overlay.hand;
+  const handDrag = useHandDrag(model, drag);
+  const inHand = new Set(model.cards.filter((c) => c.zone === "hand").map((c) => c.id));
   // A lifted hand card that a second tap plays: say so on it, "Tap again to cast" (the UX review's cue).
   const lifted = model.cards.find((c) => c.zone === "hand" && c.id === selection);
   const again = selection === null ? undefined : controls.cards[selection]?.tap;
@@ -44,19 +49,27 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
             aria-label={spoken(control.label)}
             aria-disabled={busy}
             onClick={() => !busy && onTap(actor)}
+            onPointerDown={inHand.has(id) && !busy ? handDrag.onPointerDown : undefined}
           />
         );
       })}
       {/* After the board's regions, so Tab reaches the hand after the cards above it. */}
       {hand !== null && !handOpen && (
-        <button type="button" className="tap-region" style={place(hand)} aria-label="Open your hand" onClick={onHand} />
+        <button
+          type="button"
+          className="tap-region"
+          style={place(hand)}
+          aria-label="Open your hand"
+          onClick={onHand}
+          onPointerDown={busy ? undefined : handDrag.onPointerDown}
+        />
       )}
       {lifted !== undefined && again?.kind === "send" && (
         <div
           className="tap-again"
           style={place({ x: lifted.x + 8, y: lifted.y + lifted.height - 34, width: lifted.width - 16, height: 26 })}
         >
-          Tap again to {again.choice.label.split(" ")[0]?.toLowerCase()}
+          {cue(handDrag.dragging, again.choice.label.split(" ")[0]?.toLowerCase() ?? "play")}
         </div>
       )}
       {/* The card on the stack takes a tap for itself, so a tap on it never lands on a card hidden under it. */}
@@ -94,4 +107,10 @@ function inReadingOrder(regions: BoardModel["regions"]) {
 /** A label as a screen reader should say it: mana symbols as words ("{T}" is "tap", "{G}" is "G mana"), as ManaText. */
 function spoken(label: string): string {
   return label.replace(/\{([^}]+)\}/g, (_, symbol: string) => (symbol === "T" ? "tap" : `${symbol} mana`));
+}
+
+/** What the lifted card says: a second tap plays it, or, while it's dragged, whether letting go will. */
+function cue(dragging: { armed: boolean } | null, verb: string): string {
+  if (dragging === null) return `Tap again to ${verb}`;
+  return dragging.armed ? `Release to ${verb}` : `Drag up to ${verb}`;
 }

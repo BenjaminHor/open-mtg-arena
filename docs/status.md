@@ -207,6 +207,23 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     key in a variable (M3-02b) sets a placeholder such as `proxy-injected`; the proxy replaces the header. Tests and
     CI never call it.
   - Owner (2026-11-23, morning) on M3-07: will likely provide screen recordings of Arena for the animation study.
+  - M3-04c first slice plan (2026-11-23): "All Attack" and drag to play, one PR.
+    - All Attack: during the declaration, a button left of the main one [R] (Arena's "All Attack"). It picks every
+      creature that can attack the opponent, one pick at a time as the engine offers them (each pick is its own
+      action; the engine re-checks after each), skipping planeswalkers as targets. Then the declaration stays open to
+      adjust, and the main button finishes it. `controls.ts` says when it's offered (two or more creatures could
+      attack); App sends the picks in turn.
+    - Drag to play: press a hand card and move it up past a threshold; the card lifts as it starts, "Release to cast"
+      shows, and letting go above the line plays or casts it as the second tap would (the same action, from
+      `controls`). Let go below the line, or press Escape, and it's put down. Pointer events, so mouse and touch
+      alike. The card following the finger is M3-07's animation.
+    - Tests: unit tests for when All Attack is offered; e2e for All Attack (every creature attacking, then finish)
+      and for dragging a land and a spell onto the table, on both projects.
+    - Built (2026-11-23): All Attack beside the main button, offered while two or more creatures could attack;
+      the app sends one pick per reply and stops when none is left. Drag to play from the open or collapsed hand
+      (12 px to start, 60 px to play; "Drag up to cast" / "Release to cast" on the lifted card), followed with window
+      listeners because lifting the card redraws the hand and removes the element pressed; the click a release fires
+      is swallowed. The browser tests drag with a mouse on both projects; a real finger is for the phone check.
   - **M3-04a done, merged (PR #96, 2026-11-23).** CI green, a 300-game fuzz clean. The owner can try it locally:
     `pnpm dev`, `?fixture=mid-game|crowded|attack|block|tokens`.
   - M3-04b plan (2026-11-23, written before starting): pulls M3-06's touch work forward. Slices, each its own PR:

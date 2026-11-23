@@ -280,7 +280,9 @@ body,
 }
 
 /* A card's tap region: invisible over the canvas, but for a press and the keyboard's focus ring (ui.md). */
+/* `touch-action: none`: a finger dragging a hand card up plays it (hud/hand-drag.ts), never scrolls or zooms. */
 .hud .tap-region {
+  touch-action: none;
   margin: 0;
   padding: 0;
   border: none;

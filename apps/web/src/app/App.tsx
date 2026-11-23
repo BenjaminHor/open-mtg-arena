@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type BoardSize, boardModel, type Insets, NO_INSETS } from "../board-model/board-model.ts";
 import { fixtureSetup } from "../fixtures/fixtures.ts";
 import { Hud } from "../hud/Hud.tsx";
+import { allAttackOffered, nextAllAttackPick } from "../interaction/all-attack.ts";
 import { controls, type Selection } from "../interaction/controls.ts";
 import { BoardCanvas } from "../renderer/BoardCanvas.tsx";
 import { type MatchClient, startMatchWorker } from "../worker/client.ts";
@@ -62,6 +63,8 @@ export function App() {
   // The UI's own side of a choice under way (interaction/controls.ts): a lifted hand card or a picked blocker, a card's
   // menu open, and an action on its way to the worker (no second press until the next update, ui.md).
   const [selection, setSelection] = useState<Selection>(null);
+  // All Attack under way: one pick is sent per update, until no creature is left to pick.
+  const [attackingAll, setAttackingAll] = useState(false);
   // An open menu is only which card it's for: its choices are always read from the current controls.
   const [menuFor, setMenuFor] = useState<ObjectId | null>(null);
   const [busy, setBusy] = useState(false);
@@ -160,6 +163,14 @@ export function App() {
     },
     [send],
   );
+  // All Attack: each reply brings the next pick (the engine re-checks the declaration after every pick), until none
+  // is left or the declaration is over; then the person adjusts or finishes it with the main button.
+  useEffect(() => {
+    if (!attackingAll || busy || shown === null) return;
+    const pick = nextAllAttackPick(shown);
+    if (pick === null) setAttackingAll(false);
+    else act(pick);
+  }, [attackingAll, busy, shown, act]);
   const menuTap = menuFor === null ? undefined : controlsNow?.cards[menuFor]?.tap;
   const menu = menuFor !== null && menuTap?.kind === "menu" ? { id: menuFor, choices: menuTap.choices } : null;
   const onTap = useCallback(
@@ -234,6 +245,23 @@ export function App() {
           fullControl={update?.fullControl ?? false}
           // Only turning it off moves the game on (as Next does), so only that press waits out the moment.
           setFullControl={(on) => send({ type: "fullControl", on }, !on)}
+          allAttack={{ offered: !attackingAll && allAttackOffered(shown), start: () => setAttackingAll(true) }}
+          drag={{
+            // The card lifts as the drag starts, out of the collapsed hand too.
+            lift: (id) => {
+              setMenuFor(null);
+              setHandOpen(true);
+              setSelection(id);
+            },
+            // Let go on the table: what a second tap on the lifted card would do.
+            drop: (id) => {
+              const tap = controls(shown, id).cards[id]?.tap;
+              if (tap?.kind === "send") act(tap.choice.action);
+              else if (tap?.kind === "menu") setMenuFor(id);
+              else setSelection(null);
+            },
+            cancel: () => setSelection(null),
+          }}
         />
       )}
       {error !== null && (
