@@ -2665,6 +2665,11 @@ owner's answer to the D-089 open question, option (a))
   power/toughness carries a small caret up or down as well as its colour (ui.md, "Never color alone").
 - M3's acceptance ("a full game is playable at the folded phone's size in landscape") is e2e/play.spec.ts's whole
   game by touch taps at 812x375, run on every PR.
+- After the code review: every key listener on the window (the zone browser's, the settings menu's, a drag's) checks
+  `matchPaused()` (`hud/paused.ts`: the match's main element is inert), so Escape behind the prompt doesn't close what
+  was open; the prompt takes focus while it's up and gives it back after; it adds "On a computer, widen the window"
+  (a narrow desktop window gets it too, by the viewport rule). Known and left: a hand drag or an All Attack already
+  under way when the phone turns keeps going (rare: it needs a turn mid-gesture).
 
 **D-172: Pacing comes next, before the full layout (owner feedback, 2026-11-23)** · 2026-11-23 · accepted
 - The owner: "the auto pass feature is a bit jarring currently. Things just progress instantly and I get confused."

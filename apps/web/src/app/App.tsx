@@ -24,6 +24,7 @@ import { BoardCanvas } from "../renderer/BoardCanvas.tsx";
 import { type MatchClient, startMatchWorker } from "../worker/client.ts";
 import type { FromWorker, ToWorker } from "../worker/protocol.ts";
 import { readInsets } from "./safe-area.ts";
+import { TurnYourPhone } from "./TurnYourPhone.tsx";
 import { usePortraitPhone } from "./use-portrait.ts";
 
 type Update = Extract<FromWorker, { type: "update" }>;
@@ -445,20 +446,5 @@ export function App() {
       </main>
       {portrait && <TurnYourPhone />}
     </>
-  );
-}
-
-/** Over the paused match while a phone is upright (ui.md, "Layouts"): turning it back carries on where it was. */
-function TurnYourPhone() {
-  return (
-    <div className="turn-your-phone" role="alertdialog" aria-modal="true" aria-labelledby="turn-your-phone-title">
-      <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true">
-        <rect x="22" y="8" width="20" height="36" rx="4" fill="none" stroke="currentColor" strokeWidth="3" />
-        <path d="M14 50 A 22 22 0 0 0 50 50" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-        <path d="M50 50 l-7 -2 M50 50 l2 -7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-      </svg>
-      <p id="turn-your-phone-title">Turn your phone sideways to play</p>
-      <p className="turn-your-phone-note">The match waits here.</p>
-    </div>
   );
 }

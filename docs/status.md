@@ -2294,9 +2294,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - (2026-11-23, owner) "I noticed that the cards in the hand, graveyard, exile view are spaced really far apart": the
   zone browser's row (D-168). Chromium draws it tight (140 px cards 8 px apart), so most likely the owner's Safari: the
   card was sized by `aspect-ratio` on a button and its image by a percentage height inside it, either of which Safari
-  can resolve to the image's natural 488 px width. Fixed in slice 7's PR: the card's width and height set outright,
-  the image filling it, no `content-visibility`, a 6 px gap. Can't be checked here (no WebKit in this environment):
-  ask the owner to look again on the phone.
+  can resolve to the image's natural 488 px width. Fix pending the owner's check on the phone (slice 7's PR): the
+  card's width and height set outright, what's inside pinned to its box (no percentage heights), no
+  `content-visibility`, a 6 px gap; an e2e pins the proportions and the gap. Can't be checked here (no WebKit).
 - Fixed (2026-11-23, owner): "sometimes I get to play two lands on one turn and I'm not sure why - I could be
   misunderstanding due to how the auto pass works but it's rather strange." Not the engine: eight seeded games played
   through the worker as the app plays them never gave two land drops in one turn (CR 305.2). The auto-pass (D-143,

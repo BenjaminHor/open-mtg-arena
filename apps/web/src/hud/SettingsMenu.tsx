@@ -3,6 +3,7 @@
 
 import type { Action } from "@mtg/engine";
 import { useEffect, useState } from "react";
+import { matchPaused } from "./paused.ts";
 
 type Props = {
   concede: Action | null;
@@ -23,7 +24,7 @@ export function SettingsMenu({ concede, act, fullControl, setFullControl }: Prop
   useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
+      if (event.key !== "Escape" || matchPaused()) return;
       event.stopImmediatePropagation();
       setOpen(false);
       setSure(false);

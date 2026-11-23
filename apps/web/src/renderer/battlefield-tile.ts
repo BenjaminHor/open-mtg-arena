@@ -223,7 +223,8 @@ function nameAndStats(card: BoardCard, w: number, h: number): Container[] {
 
 /**
  * On the dark pill, a raised number is a light blue with a small caret up after it, and a lowered one a light red with a
- * caret down: a shape as well as a colour (ui.md, "Never color alone"). Damage underlines the toughness instead.
+ * caret down: a shape as well as a colour (ui.md, "Never color alone"). Damage underlines the toughness as well, in red:
+ * a raised toughness that's been damaged shows both marks.
  */
 const RAISED = 0x7cb8ff;
 const LOWERED = 0xff8a7a;
@@ -250,7 +251,8 @@ function ptPill(card: BoardCard, h: number): Container {
     text: `${toughness}`,
     style: { ...style, fill: tint(toughnessChange, card.damage > 0) },
   });
-  const caretW = size * 0.42;
+  // At least 4 px wide, so it reads at a phone's smallest pill.
+  const caretW = Math.max(4, size * 0.5);
   const padX = size * 0.3;
   const parts: (Text | "up" | "down")[] = [
     p,

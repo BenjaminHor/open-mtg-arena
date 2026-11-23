@@ -25,6 +25,17 @@ test("browses the opponent's graveyard, exile and revealed hand; a card's view c
   await expect(row.getByRole("listitem")).toHaveCount(31);
   // The top of the graveyard first (CR 404.2).
   await expect(row.getByRole("button").first()).toHaveAccessibleName("Serra Angel");
+  // Each card a card's proportions (63 x 88), a few px from the next: the owner saw them spaced far apart.
+  const boxes = await row.locator(".zone-card").evaluateAll((cards) =>
+    cards.slice(0, 3).map((c) => {
+      const r = c.getBoundingClientRect();
+      return { x: r.x, width: r.width, height: r.height };
+    }),
+  );
+  for (const box of boxes) expect(box.width / box.height).toBeCloseTo(63 / 88, 2);
+  const [first, second] = boxes;
+  if (first === undefined || second === undefined) throw new Error("two cards");
+  expect(second.x - (first.x + first.width)).toBeLessThanOrEqual(8);
   // The row scrolls to its last card.
   const last = row.getByRole("button").last();
   await last.scrollIntoViewIfNeeded();

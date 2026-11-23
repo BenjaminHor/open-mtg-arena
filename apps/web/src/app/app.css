@@ -834,6 +834,8 @@ body,
   animation: card-view-fade 160ms ease-out;
 }
 .zone-browser > section {
+  /* A card's height in the row: large enough to read its name and art, a whole card in the phone's height. */
+  --zone-card-h: min(52vh, 300px);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -892,8 +894,6 @@ body,
   margin-left: 0;
 }
 .zone-row {
-  /* A card's height in the row: large enough to read its name and art, a whole card in the phone's height. */
-  --zone-card-h: min(52vh, 300px);
   display: flex;
   gap: 6px;
   margin: 0;
@@ -907,6 +907,8 @@ body,
   scroll-snap-type: x proximity;
   scroll-padding: 0 12px;
 }
+/* Every card is drawn (no content-visibility, D-168's first cut): a long graveyard's images still load as they're
+   scrolled near ("lazy"). */
 .zone-row li {
   position: relative;
   flex: none;
@@ -957,7 +959,7 @@ body,
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(min(52vh, 300px) + 8px);
+  min-height: calc(var(--zone-card-h) + 8px);
   box-sizing: border-box;
   margin: 0;
   padding: 0 12px;
@@ -965,16 +967,22 @@ body,
   font-size: 13px;
 }
 /* A card in the row drawn as text (no image yet, or offline), at the row's size. */
+/* Pinned to the card's box, so nothing inside depends on a percentage height resolving inside a button (Safari). */
 .zone-card .card-view-card {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 0;
 }
-.zone-card .card-view-card img,
+.zone-card .card-view-card > img,
 .zone-card .card-view-text {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  aspect-ratio: auto;
   box-shadow: none;
+}
+.zone-card .card-view-card > img {
+  object-fit: cover;
 }
 .zone-card .card-view-text {
   padding: 7%;
@@ -1135,6 +1143,10 @@ body,
   background: #22211f;
   color: #f4f1ec;
   text-align: center;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
 }
 .turn-your-phone p {
   margin: 0;
