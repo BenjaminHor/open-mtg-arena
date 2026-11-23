@@ -250,7 +250,17 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     sweep); a preview swap doesn't replay the fade; Space on a card only there to be looked at still presses the main
     button. Design recorded as D-161.
   - **M3-04c slice 2 merged (PR #102, squash, 2026-11-23).**
-  - M3-04c slice 3 plan (2026-11-23, written before starting), two PRs:
+  - **Owner (2026-11-23): "Minimal throughout" (D-162).** Asked after the owner shared another web app's screenshots;
+    chosen over "keep Arena's look" and "clean cards, Arena layout". So a restyle comes first, as its own slice, and
+    the badges after it are drawn in the new style:
+    - **Slice 3, the minimal restyle:** a flat dark table (no texture or rings); a permanent is its art only, no
+      frame or name strip, its name in small white text over a dark fade at the art's bottom left, power/toughness in
+      a small dark pill at the bottom right (raised blue, lowered red, as now); lands the same; a token the same
+      (its name on the fade); tapped: tilt and the curved arrow, as now; playable: a thin bright outline, not a glow;
+      the phases as a row of plain text labels with the current one lit; life totals as large plain numbers with
+      small zone counts beside the portraits; the main button a calm flat pill. Hand cards stay whole card images.
+      Future impact: the badges (3a below) and attachments (3b) are drawn on this frameless tile.
+  - M3-04c slice 3 badge plan (now slice 4, after the restyle) (2026-11-23, written before starting), two PRs:
     - **3a, badges on a permanent** (arena-research.md §"How permanents are drawn", owner screenshots):
       - Keyword icons in a small dark square at the bottom-left [R]: our own drawn shapes (D-140), one per keyword
         that has one (a wing for flying, a heart for lifelink, a skull for deathtouch, ...). Up to two icons; with
@@ -2051,10 +2061,6 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 ## Open questions
 
-- Visual direction (owner, 2026-11-23): "I kind of like how minimalistic and clean this person's web app is", with
-  screenshots of another MTG web app (described in ui.md, "Minimal and clean"). Asked whether to keep Arena's look,
-  take the minimal look for the cards and table while keeping Arena's layout and interactions, or go further. Slice
-  3's badges wait on the answer.
 - Smart stops (2026-11-23, D-157): the host stops wherever you could act, except in your own upkeep, draw step and
   end step. Proposal, not built: also skip your own beginning of combat, combat damage and end of combat unless an
   opponent's object is on the stack, and add one-shot stops by tapping a step on the phase ladder, as Arena does.
