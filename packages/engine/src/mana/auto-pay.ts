@@ -109,6 +109,28 @@ export function manaAvailable(state: GameState, player: PlayerId, cards: CardDat
   return inPool + fromPermanents;
 }
 
+/**
+ * How much mana of each type the player could have now: in the pool, plus each usable source counted once for every
+ * type it can make (a source of any color counts for each). A bound for `mightPay`, not a plan: one source counts
+ * toward several colors though it can only make one of them.
+ */
+export function manaByType(state: GameState, player: PlayerId, cards: CardDatabase): Record<ManaType, number> {
+  const pool = state.players[player]?.manaPool;
+  const byType = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, ...pool };
+  for (const object of usablePermanents(state, player, cards)) {
+    const most: Partial<Record<ManaType, number>> = {};
+    for (const { effect } of usableManaAbilities(state, player, object, cards)) {
+      const amount =
+        typeof effect.amount === "number"
+          ? effect.amount
+          : permanentsFittingFor(state, effect.amount.count, player, cards).length;
+      for (const type of manaKinds(effect.mana).makes) most[type] = Math.max(most[type] ?? 0, amount);
+    }
+    for (const type of MANA_TYPES) byType[type] += most[type] ?? 0;
+  }
+  return byType;
+}
+
 /** The player's permanents whose mana abilities could be activated now: not ones the cost being paid taps (CR 107.5). */
 function usablePermanents(state: GameState, player: PlayerId, cards: CardDatabase): ObjectId[] {
   const tappedByCost = tapsForCost(state, cards);

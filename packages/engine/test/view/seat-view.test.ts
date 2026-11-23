@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import { applyAction, type CardDatabase, createGame, type ObjectId, seatView } from "../../src/index.ts";
-import { BEARS, FOREST, LONER, MOUNTAIN, PINGER, SHOCK, TEST_CARDS, X_BOLT } from "../support/cards.ts";
+import { BEARS, ELVES, FOREST, LONER, MOUNTAIN, PINGER, SHOCK, TEST_CARDS, X_BOLT } from "../support/cards.ts";
 import { passBoth, playerSetup, start } from "../support/game.ts";
 
 const permanent = (oracleId: string, tapped = false) => ({
@@ -37,6 +37,18 @@ describe("seatView", () => {
     const bears = state.zones.battlefield[1];
     expect(cast?.targets[0]).toContainEqual({ kind: "object", object: bears });
     expect(cast?.targets[0]).toContainEqual({ kind: "player", player: "p2" });
+  });
+
+  it("says a spell can't be paid when no source makes its colour, though there's mana enough (the owner, 2026-11-23)", () => {
+    // Llanowar Elves costs {G}; a Mountain makes one mana, but red (CR 305.6). The hint used to count only how much mana
+    // there was, so one Mountain "might pay" for the Elves and the app offered to cast them.
+    const { state } = game({ hand: [ELVES], battlefield: [permanent(MOUNTAIN)] });
+    const cast = seatView(state, "p1", TEST_CARDS).options.find((o) => o.action.type === "CAST_SPELL");
+    expect(cast).toMatchObject({ payable: false, mightPay: false });
+    // With a Forest it can.
+    const { state: withForest } = game({ hand: [ELVES], battlefield: [permanent(MOUNTAIN), permanent(FOREST)] });
+    const castable = seatView(withForest, "p1", TEST_CARDS).options.find((o) => o.action.type === "CAST_SPELL");
+    expect(castable).toMatchObject({ payable: true, mightPay: true });
   });
 
   it("says a spell can't be paid for now when its mana is tapped", () => {

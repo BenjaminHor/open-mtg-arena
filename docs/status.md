@@ -1897,8 +1897,14 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
-- (2026-11-23, owner) "When I only had a mountain played, llanowar elves (1 green mana card) was available as an action
-  to cast, which is incorrect." Being investigated: reproduce as a failing test first (fix-bug).
+- Fixed (2026-11-23, owner): "When I only had a mountain played, llanowar elves (1 green mana card) was available as an
+  action to cast, which is incorrect." The engine may list a spell the player can't pay for: beginning to cast needs
+  only permission (CR 601.3), and a cost that can't be paid rewinds the cast (CR 601.2h, 734). The app greys out what
+  the seat view's `mightPay` hint says can't be paid, but that hint, when the auto-payer found no payment, answered
+  yes whenever the total mana was enough, ignoring colour: one Mountain was "enough" for {G}. Now it also needs, for
+  each coloured symbol, that many pool mana or sources able to make that colour (`manaByType`), so a no is always
+  right. The same hint drives auto-pass and the CLI brief, which no longer stop for or list such spells. Test:
+  packages/engine/test/view/seat-view.test.ts (Llanowar Elves with one Mountain, then with a Forest).
 - (2026-11-22, M3-02 code review) The `random` agent can spend tens of thousands of actions under Prized Unicorn's
   block requirement, adding and taking back blocks at random, until the host gives up (`HostStuck`, 100,000 actions):
   about one game in 1,500 of `pnpm eval`, which counts it void (D-145). Only the test agents do this (the heuristic
