@@ -1,7 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { useMultiplayerDraftStore as MultiplayerDraftStore } from "../../stores/multiplayerDraftStore";
-
 const mocks = vi.hoisted(() => {
   const connectivity = { offline: false, listeners: new Set<(offline: boolean, previous: boolean) => void>() };
   const status = { value: "idle", owner: null as string | null, allowClaim: true };
@@ -9,7 +7,6 @@ const mocks = vi.hoisted(() => {
     connectivity,
     status,
     registerSW: vi.fn(),
-    isBundledTauriOrigin: vi.fn(() => false),
     claimServiceWorkerReload: vi.fn(() => true),
     hasServiceWorkerReloadBudget: vi.fn(() => true),
     markPendingAutoUpdate: vi.fn(),
@@ -28,12 +25,10 @@ const mocks = vi.hoisted(() => {
     pushUpdateDebug: vi.fn(),
     setUpdateError: vi.fn(),
     clearUpdateError: vi.fn(),
-    markRemoteLoadOk: vi.fn(() => Promise.resolve(true)),
   };
 });
 
 vi.mock("\0virtual:pwa-register-stub", () => ({ registerSW: mocks.registerSW }));
-vi.mock("../../services/platform", () => ({ isBundledTauriOrigin: mocks.isBundledTauriOrigin }));
 vi.mock("../../stores/connectivityStore", () => ({
   getEffectiveOffline: () => mocks.connectivity.offline,
   subscribeEffectiveOffline: (listener: (offline: boolean, previous: boolean) => void) => {
@@ -71,7 +66,6 @@ function transitionOffline(offline: boolean): void {
 }
 
 describe("registerServiceWorker connectivity lifecycle", () => {
-  let draftStore: typeof MultiplayerDraftStore;
   let reload: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
@@ -85,8 +79,6 @@ describe("registerServiceWorker connectivity lifecycle", () => {
     mocks.status.allowClaim = true;
     mocks.claimServiceWorkerReload.mockReturnValue(true);
     mocks.hasServiceWorkerReloadBudget.mockReturnValue(true);
-    mocks.markRemoteLoadOk.mockResolvedValue(true);
-    ({ useMultiplayerDraftStore: draftStore } = await import("../../stores/multiplayerDraftStore"));
     Object.defineProperty(navigator, "serviceWorker", {
       configurable: true,
       value: { controller: { scriptURL: "/sw.js" } },
@@ -100,7 +92,6 @@ describe("registerServiceWorker connectivity lifecycle", () => {
   afterEach(async () => {
     const { disposeServiceWorkerUpdater } = await import("../registerServiceWorker");
     disposeServiceWorkerUpdater();
-    draftStore.setState({ role: null, phase: "idle" });
     vi.unstubAllEnvs();
     vi.unstubAllGlobals();
   });
@@ -256,43 +247,6 @@ describe("registerServiceWorker connectivity lifecycle", () => {
     expect(fetch).toHaveBeenCalledOnce();
   });
 
-  it("does not run an active or queued check after a reload becomes multiplayer-deferred", async () => {
-    let resolveFetch!: (value: { status: number }) => void;
-    vi.stubGlobal("fetch", vi.fn(() => new Promise((resolve) => { resolveFetch = resolve; })));
-    const options = await register();
-    const swRegistration = registration();
-    options.onRegisteredSW("/sw.js", swRegistration);
-    await vi.waitFor(() => expect(fetch).toHaveBeenCalledOnce());
-    const { checkForServiceWorkerUpdate } = await import("../registerServiceWorker");
-    checkForServiceWorkerUpdate();
-    draftStore.setState({ role: "host", phase: "deckbuilding" });
-    options.onNeedReload();
-    resolveFetch({ status: 200 });
-    await Promise.resolve();
-
-    expect(swRegistration.update).not.toHaveBeenCalled();
-    expect(fetch).toHaveBeenCalledOnce();
-  });
-
-  it("suppresses a deferred reload race even when the badge claim is rejected", async () => {
-    mocks.status.allowClaim = false;
-    let resolveFetch!: (value: { status: number }) => void;
-    vi.stubGlobal("fetch", vi.fn(() => new Promise((resolve) => { resolveFetch = resolve; })));
-    const options = await register();
-    const swRegistration = registration();
-    options.onRegisteredSW("/sw.js", swRegistration);
-    await vi.waitFor(() => expect(fetch).toHaveBeenCalledOnce());
-    const { checkForServiceWorkerUpdate } = await import("../registerServiceWorker");
-    checkForServiceWorkerUpdate();
-    draftStore.setState({ role: "host", phase: "deckbuilding" });
-    options.onNeedReload();
-    resolveFetch({ status: 200 });
-    await Promise.resolve();
-
-    expect(swRegistration.update).not.toHaveBeenCalled();
-    expect(fetch).toHaveBeenCalledOnce();
-  });
-
   it("upgrades a queued automatic request to a script probe behind an active manual check", async () => {
     const updates: Array<() => void> = [];
     const swRegistration = registration();
@@ -310,26 +264,6 @@ describe("registerServiceWorker connectivity lifecycle", () => {
     updates.shift()?.();
 
     await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
-  });
-
-  it("holds a multiplayer-deferred reload while offline and resubmits it once online", async () => {
-    const options = await register();
-    options.onRegisteredSW("/sw.js", registration());
-    draftStore.setState({ role: "host", phase: "deckbuilding" });
-    options.onNeedReload();
-
-    expect(mocks.status.value).toBe("deferred");
-    expect(mocks.status.owner).toBe("serviceWorker");
-    expect(mocks.releaseUpdateStatus).not.toHaveBeenCalled();
-
-    transitionOffline(true);
-    draftStore.setState({ phase: "complete" });
-    expect(reload).not.toHaveBeenCalled();
-    expect(mocks.markPendingAutoUpdate).not.toHaveBeenCalled();
-
-    transitionOffline(false);
-    expect(reload).toHaveBeenCalledTimes(1);
-    expect(mocks.markPendingAutoUpdate).toHaveBeenCalledTimes(1);
   });
 
   it("does not mark or reload when the reload claim is rejected", async () => {
@@ -530,19 +464,12 @@ describe("registerServiceWorker connectivity lifecycle", () => {
       expect(fetch).not.toHaveBeenCalled();
     });
 
-    it("requires the active current controller, cache-only marker, and awaited remote marker", async () => {
+    it("requires the active current controller and the cache-only marker", async () => {
       const entry = await readyRegistration();
       const { checkAppShellReadiness } = await import("../registerServiceWorker");
-      let resolveMarker!: (value: boolean) => void;
-      mocks.markRemoteLoadOk.mockImplementationOnce(() => new Promise<boolean>((resolve) => { resolveMarker = resolve; }));
       vi.mocked(fetch).mockResolvedValueOnce(jsonResponse({ build: __BUILD_HASH__ }));
 
-      const readiness = checkAppShellReadiness();
-      await vi.waitFor(() => expect(mocks.markRemoteLoadOk).toHaveBeenCalledOnce());
-      await expect(Promise.race([readiness, Promise.resolve("pending")])).resolves.toBe("pending");
-      resolveMarker(true);
-
-      await expect(readiness).resolves.toEqual({ status: "ready" });
+      await expect(checkAppShellReadiness()).resolves.toEqual({ status: "ready" });
       expect(fetch).toHaveBeenCalledWith(
         expect.stringMatching(new RegExp(`^/offline-shell-${__BUILD_HASH__}\\.json\\?phase-precache-probe=`)),
         { mode: "same-origin", cache: "only-if-cached" },
@@ -575,22 +502,15 @@ describe("registerServiceWorker connectivity lifecycle", () => {
 
       await expect(checkAppShellReadiness()).resolves.toEqual({ status: "not-ready", reason: "update-in-progress" });
       expect(fetch).not.toHaveBeenCalled();
-      expect(mocks.markRemoteLoadOk).not.toHaveBeenCalled();
     });
 
-    it("returns reload-required before marker work for a controller mismatch or retained reload", async () => {
-      const entry = await readyRegistration();
+    it("returns reload-required before marker work for a controller mismatch", async () => {
+      await readyRegistration();
       Object.defineProperty(navigator, "serviceWorker", { configurable: true, value: { controller: activeWorker() } });
       const { checkAppShellReadiness } = await import("../registerServiceWorker");
       await expect(checkAppShellReadiness()).resolves.toEqual({ status: "reload-required", reason: "controller-mismatch" });
 
-      Object.defineProperty(navigator, "serviceWorker", { configurable: true, value: { controller: entry.active } });
-      const options = mocks.registerSW.mock.calls[0][0] as ServiceWorkerOptions;
-      draftStore.setState({ role: "host", phase: "deckbuilding" });
-      options.onNeedReload();
-      await expect(checkAppShellReadiness()).resolves.toEqual({ status: "reload-required", reason: "deferred-reload" });
       expect(fetch).not.toHaveBeenCalled();
-      expect(mocks.markRemoteLoadOk).not.toHaveBeenCalled();
     });
 
     it("turns marker fetch, response, body, and subsequent misses into typed cache failures", async () => {
@@ -643,56 +563,6 @@ describe("registerServiceWorker connectivity lifecycle", () => {
 
       await expect(readiness).resolves.toEqual({ status: "reload-required", reason: "controller-mismatch" });
       expect(entry.update).toHaveBeenCalledTimes(1);
-    });
-
-    it("reports an unsuccessful remote marker write without rejecting", async () => {
-      await readyRegistration();
-      const { checkAppShellReadiness } = await import("../registerServiceWorker");
-      mocks.markRemoteLoadOk.mockResolvedValueOnce(false);
-      vi.mocked(fetch).mockResolvedValueOnce(jsonResponse({ build: __BUILD_HASH__ }));
-
-      await expect(checkAppShellReadiness()).resolves.toEqual({ status: "not-ready", reason: "remote-load-marker-unavailable" });
-    });
-
-    it("does not publish ready when the lifecycle changes while the marker is being written", async () => {
-      await readyRegistration();
-      const { checkAppShellReadiness, disposeServiceWorkerUpdater, registerServiceWorker } = await import("../registerServiceWorker");
-      let resolveMarker!: (value: boolean) => void;
-      mocks.markRemoteLoadOk.mockImplementationOnce(() => new Promise<boolean>((resolve) => { resolveMarker = resolve; }));
-      vi.mocked(fetch).mockResolvedValueOnce(jsonResponse({ build: __BUILD_HASH__ }));
-
-      const readiness = checkAppShellReadiness();
-      await vi.waitFor(() => expect(mocks.markRemoteLoadOk).toHaveBeenCalledOnce());
-      disposeServiceWorkerUpdater();
-      registerServiceWorker();
-      resolveMarker(true);
-
-      await expect(readiness).resolves.toEqual({ status: "not-ready", reason: "lifecycle-changed" });
-      expect(mocks.registerSW).toHaveBeenCalledTimes(2);
-    });
-
-    it("does not publish ready after controller or worker-state changes while the marker is pending", async () => {
-      const entry = await readyRegistration();
-      const { checkAppShellReadiness } = await import("../registerServiceWorker");
-      let resolveMarker!: (value: boolean) => void;
-      mocks.markRemoteLoadOk.mockImplementationOnce(() => new Promise<boolean>((resolve) => { resolveMarker = resolve; }));
-      vi.mocked(fetch).mockResolvedValueOnce(jsonResponse({ build: __BUILD_HASH__ }));
-
-      const controllerChange = checkAppShellReadiness();
-      await vi.waitFor(() => expect(mocks.markRemoteLoadOk).toHaveBeenCalledOnce());
-      Object.defineProperty(navigator, "serviceWorker", { configurable: true, value: { controller: activeWorker() } });
-      resolveMarker(true);
-      await expect(controllerChange).resolves.toEqual({ status: "reload-required", reason: "controller-mismatch" });
-
-      Object.defineProperty(navigator, "serviceWorker", { configurable: true, value: { controller: entry.active } });
-      let resolveSecondMarker!: (value: boolean) => void;
-      mocks.markRemoteLoadOk.mockImplementationOnce(() => new Promise<boolean>((resolve) => { resolveSecondMarker = resolve; }));
-      vi.mocked(fetch).mockResolvedValueOnce(jsonResponse({ build: __BUILD_HASH__ }));
-      const stateChange = checkAppShellReadiness();
-      await vi.waitFor(() => expect(mocks.markRemoteLoadOk).toHaveBeenCalledTimes(2));
-      Object.assign(entry.active!, { state: "activating" });
-      resolveSecondMarker(true);
-      await expect(stateChange).resolves.toEqual({ status: "not-ready", reason: "update-in-progress" });
     });
 
     it("does not publish ready after re-registration replaces the lifecycle during a probe", async () => {
@@ -801,20 +671,6 @@ describe("registerServiceWorker connectivity lifecycle", () => {
 
         await expect(outcome).resolves.toBe("reloading");
         expect(reload).toHaveBeenCalledTimes(1);
-      });
-
-      it("returns manual first while a multiplayer game is live, on both branches", async () => {
-        const entry = await readyRegistration();
-        draftStore.setState({ role: "host", phase: "deckbuilding" });
-        const { updateToLatestBuild } = await updater();
-
-        await expect(updateToLatestBuild({ deadlineMs: 1_000 })).resolves.toBe("manual");
-        expect(entry.update).toHaveBeenCalledTimes(1);
-
-        Object.defineProperty(navigator, "serviceWorker", { configurable: true, value: { controller: null } });
-        await expect(updateToLatestBuild({ deadlineMs: 1_000 })).resolves.toBe("manual");
-        expect(reload).not.toHaveBeenCalled();
-        expect(mocks.claimServiceWorkerReload).not.toHaveBeenCalled();
       });
 
       it("returns manual at the deadline and stops listening", async () => {
@@ -945,18 +801,6 @@ describe("registerServiceWorker connectivity lifecycle", () => {
         expect(isBuildUpdateInFlight()).toBe(true);
       });
 
-      it("is true while a reload is retained behind a live game", async () => {
-        await readyRegistration();
-        const options = mocks.registerSW.mock.calls[0][0] as ServiceWorkerOptions;
-        const { isBuildUpdateInFlight } = await updater();
-        await vi.waitFor(() => expect(isBuildUpdateInFlight()).toBe(false));
-        draftStore.setState({ role: "host", phase: "deckbuilding" });
-
-        options.onNeedReload();
-        expect(reload).not.toHaveBeenCalled();
-        expect(isBuildUpdateInFlight()).toBe(true);
-      });
-
       it("is true while registration is pending", async () => {
         await register();
         const { isBuildUpdateInFlight } = await updater();
@@ -983,17 +827,5 @@ describe("registerServiceWorker connectivity lifecycle", () => {
       });
     });
 
-    describe("reloadIfNoLiveGame", () => {
-      it("never reloads a live multiplayer game", async () => {
-        const { reloadIfNoLiveGame } = await updater();
-        draftStore.setState({ role: "host", phase: "deckbuilding" });
-        expect(reloadIfNoLiveGame()).toBe(false);
-        expect(reload).not.toHaveBeenCalled();
-
-        draftStore.setState({ role: null, phase: "idle" });
-        expect(reloadIfNoLiveGame()).toBe(true);
-        expect(reload).toHaveBeenCalledTimes(1);
-      });
-    });
   });
 });

@@ -26,17 +26,12 @@
   "home": {
     "resume": {
       "title": "继续对局",
-      "description": "从最近保存的对局的当前回合与场面状态继续。",
-      "viewResult": "查看结果"
+      "description": "从最近保存的对局的当前回合与场面状态继续。"
     },
     "setup": {
       "title": "与 AI 对战",
       "titleSaved": "新建 AI 对局",
       "description": "与 AI 对手进行单人对局——可选择赛制、套牌、原型和难度。"
-    },
-    "online": {
-      "title": "在线对战",
-      "description": "创建房间、通过代码加入，或重新连接多人对战。"
     },
     "draft": {
       "title": "轮抽",
@@ -51,9 +46,7 @@
     },
     "preview": {
       "cta": "试用预览版",
-      "tooltip": "体验最新预览版——最新卡牌与修复会在正式发布前先行上线。",
-      "backCta": "返回正式版",
-      "backTooltip": "返回当前正式版本。"
+      "tooltip": "体验最新预览版——最新卡牌与修复会在正式发布前先行上线。"
     },
     "coverage": {
       "title": "打开覆盖率面板",
@@ -70,13 +63,11 @@
     "load": {
       "title": "载入对局状态"
     },
-    "exit": "退出",
     "dashboard": {
       "welcome": "欢迎回来",
       "enter": "进入",
       "continue": "从上次离开处继续",
       "resumeDraft": "继续轮抽",
-      "draftPod": "轮抽牌桌",
       "activeDeck": "当前套牌",
       "noActiveDeck": "选择一副套牌开始",
       "fromFeeds": "来自你的订阅源",
@@ -84,10 +75,7 @@
       "cards": "{{count}} 张牌",
       "mode": {
         "ai": "对战 AI",
-        "online": "在线",
-        "local": "本地",
-        "p2p-host": "P2P",
-        "p2p-join": "P2P"
+        "local": "本地"
       },
       "tagline": "开源的万智牌规则引擎与游戏客户端",
       "turn": "第 {{n}} 回合",
@@ -149,20 +137,6 @@
     "precons": "预组套牌",
     "playable": "可用 {{playable}}",
     "nonePlayable": "所选 {{selected}} 套牌在当前过滤器下均不可用，因此随机将从全部 {{total}} 套牌中选择。"
-  },
-  "feedManager": {
-    "title": "管理订阅源",
-    "refreshing": "正在刷新…",
-    "refreshAll": "全部刷新",
-    "refresh": "刷新",
-    "subscribe": "订阅",
-    "unsubscribe": "取消订阅",
-    "lastRefreshed": "上次刷新：{{date}}",
-    "dataProvidedBy": "数据提供：",
-    "addCustomFeed": "添加自定义订阅源",
-    "add": "添加",
-    "offlineUnavailable": "离线时无法更新订阅源。",
-    "done": "完成"
   },
   "importDeck": {
     "title": "导入套牌",
@@ -247,9 +221,6 @@
     "tabDecks": "我的套牌",
     "tabSubscriptions": "订阅",
     "createNew": "新建",
-    "refreshing": "正在刷新…",
-    "refreshAll": "全部刷新",
-    "manageFeeds": "管理订阅源",
     "searchPlaceholder": "搜索套牌…",
     "formatLabel": "赛制",
     "sourceFilterLabel": "套牌来源",
@@ -334,10 +305,8 @@
     "label": "主导航",
     "home": "主页",
     "play": "对战",
-    "online": "在线",
     "draft": "轮抽",
     "decks": "套牌",
-    "tournament": "赛事",
     "alpha": "Alpha",
     "profile": "个人资料",
     "settings": "设置",

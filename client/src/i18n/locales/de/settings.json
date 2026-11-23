@@ -6,18 +6,10 @@
   "tabs": {
     "gameplay": "Spielablauf",
     "ai": "KI-Gegner",
-    "experimental": "Experimentell",
     "visual": "Grafik",
     "combat": "Tempo",
     "audio": "Audio",
-    "multiplayer": "Mehrspieler",
     "data": "Daten"
-  },
-  "experimental": {
-    "title": "Experimentell",
-    "tournaments": "Turniere",
-    "showTournaments": "Turniere in der Navigation anzeigen",
-    "showTournamentsDescription": "Turniere befinden sich noch in Entwicklung und können sich ohne Ankündigung ändern."
   },
   "gameplay": {
     "collapseLands": "Lands einklappen",
@@ -50,8 +42,6 @@
       "autoExceptSacrificialMana": "Vor dem Opfern fragen",
       "manual": "Manuell"
     },
-    "nativeEngine": "Native Engine für lokale Spiele und gehostete Mehrspielerpartien verwenden",
-    "nativeEngineDescription": "Verwende die heruntergeladene Engine für lokale KI-Spiele und Spiele, die du über eine Lobby hostest. Gäste verbinden sich weiterhin über die Peer-to-Peer-Verbindung der Lobby. Fällt auf die integrierte Engine zurück, wenn sie nicht verfügbar ist.",
     "boardBackground": "Spielfeldhintergrund",
     "boardBackgroundGroups": {
       "automatic": "Automatisch",
@@ -197,37 +187,6 @@
     "customThemes": "Eigene Themes",
     "remove": "Entfernen"
   },
-  "multiplayer": {
-    "title": "Mehrspieler",
-    "displayName": "Anzeigename",
-    "displayNamePlaceholder": "Gib deinen Namen ein",
-    "serverSelectionNote": "Die Serverauswahl ist in die Lobby verschoben — öffne den Mehrspielermodus und verwende den Server-Chip (oder „Server wählen“ im P2P-Modus), um Regionen zu wechseln, eine selbst gehostete Instanz zu konfigurieren oder die Verbindung zu testen."
-  },
-  "sync": {
-    "title": "Cloud-Synchronisierung",
-    "description": "Melde dich an, um deine Decks, Einstellungen und Feed-Abonnements geräteübergreifend zu synchronisieren. Deine Daten liegen in deinem Konto und werden bei jeder Änderung automatisch aktualisiert.",
-    "signInWith": "Mit {{provider}} anmelden",
-    "signOut": "Abmelden",
-    "signedInAs": "Angemeldet als {{name}}",
-    "syncNow": "Jetzt synchronisieren",
-    "statusSyncing": "Wird synchronisiert…",
-    "statusPaused": "Die Cloud-Synchronisierung ist pausiert, während du offline bist.",
-    "statusError": "Synchronisierung fehlgeschlagen",
-    "lastSynced": "Zuletzt synchronisiert {{time}}",
-    "never": "nie",
-    "conflictTitle": "Beide Versionen haben Änderungen",
-    "conflictBody": "Dieses Gerät und dein Cloud-Konto enthalten beide Daten, und wir können nicht feststellen, welche aktuell sind. Wähle eine Kopie oder behalte beide Decksammlungen.",
-    "keepCloud": "Cloud verwenden",
-    "keepLocal": "Dieses Gerät behalten",
-    "keepBothDecks": "Beide Decksammlungen behalten",
-    "savesNote": "Spielstände und Caches bleiben auf diesem Gerät.",
-    "diffDecks": "Decks: {{added}} hinzugefügt, {{modified}} geändert, {{removed}} entfernt",
-    "diffPrefs": "Einstellungen unterscheiden sich",
-    "diffFeeds": "Feed-Abonnements unterscheiden sich",
-    "diffOther": "Andere Einstellungen unterscheiden sich",
-    "providerDiscord": "Discord",
-    "providerGoogle": "Google"
-  },
   "data": {
     "title": "Sicherung & Wiederherstellung",
     "description": "Der Export bündelt deine Einstellungen, importierten Decks und Feed-Abonnements in einer einzigen JSON-Datei. Der Import stellt sie auf einem anderen Gerät wieder her. IndexedDB-Caches (Feed-Cache, Audio-Cache, gespeicherte Spiele) sind nicht enthalten — diese werden automatisch neu aufgebaut.",
@@ -244,9 +203,7 @@
     "importedWithPreferences_one": "{{count}} Deck und Einstellungen importiert.",
     "importedWithPreferences_other": "{{count}} Decks und Einstellungen importiert.",
     "skippedMalformed_one": "{{count}} fehlerhaften Eintrag übersprungen.",
-    "skippedMalformed_other": "{{count}} fehlerhafte Einträge übersprungen.",
-    "telemetry": "Anonyme Absturz- und Nutzungsberichte senden",
-    "telemetryDescription": "Hilft, Abstürze zu beheben und die Kartenunterstützung zu priorisieren. Kein Konto, keine persönlichen Daten – nur Fehler- und Spielzusammenfassungszählungen."
+    "skippedMalformed_other": "{{count}} fehlerhafte Einträge übersprungen."
   },
   "visualPacks": {
     "title": "Offline-visueller Katalog",
@@ -469,8 +426,7 @@
       "preconCatalog": "Vorgefertigte Decks",
       "bundledAiCatalog": "KI-Deckkatalog",
       "deckLibrary": "Installierte Deckbibliothek",
-      "coreVisuals": "Kartenrückseite und Manasymbole",
-      "nativeEngine": "Native Engine"
+      "coreVisuals": "Kartenrückseite und Manasymbole"
     },
     "capabilityStates": {
       "ready": "Bereit",

@@ -3,7 +3,7 @@
  * reach the started game.
  *
  * The game URL carries the format NAME only, so `GamePage` re-derives the
- * config from `FORMAT_DEFAULTS` unless the setup page hands the edited
+ * config from the format defaults unless the setup page hands the edited
  * `FormatConfig` over out-of-band. This suite pins the hand-over: the
  * active-game record (`ActiveGameMeta.formatConfig`) for the WASM route, and
  * router state for the native route, which deliberately writes no record.
@@ -18,7 +18,7 @@ import {
   ACTIVE_GAME_KEY,
   STORAGE_KEY_PREFIX,
 } from "../../constants/storage";
-import { FORMAT_DEFAULTS } from "../../stores/multiplayerStore";
+import { formatMetadata } from "../../data/formatRegistry";
 import { GameSetupPage } from "../GameSetupPage";
 
 vi.mock("../../components/menu/MenuParticles", () => ({ MenuParticles: () => null }));
@@ -128,7 +128,7 @@ describe("GameSetupPage — starting life", () => {
 
     const meta = JSON.parse(localStorage.getItem(ACTIVE_GAME_KEY)!);
     expect(meta.formatConfig.starting_life).toBe(
-      FORMAT_DEFAULTS.Commander.starting_life,
+      formatMetadata("Commander")!.default_config.starting_life,
     );
   });
 });
@@ -163,7 +163,7 @@ describe("GameSetupPage — commander damage", () => {
 
     const meta = JSON.parse(localStorage.getItem(ACTIVE_GAME_KEY)!);
     expect(meta.formatConfig.commander_damage_threshold).toBe(
-      FORMAT_DEFAULTS.Commander.commander_damage_threshold,
+      formatMetadata("Commander")!.default_config.commander_damage_threshold,
     );
   });
 

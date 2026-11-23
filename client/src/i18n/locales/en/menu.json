@@ -26,17 +26,12 @@
   "home": {
     "resume": {
       "title": "Resume Game",
-      "description": "Continue the last saved match from its current turn and board state.",
-      "viewResult": "View Result"
+      "description": "Continue the last saved match from its current turn and board state."
     },
     "setup": {
       "title": "Play vs AI",
       "titleSaved": "New AI Match",
       "description": "Play a solo match against an AI opponent — choose format, deck, archetype, and difficulty."
-    },
-    "online": {
-      "title": "Play Online",
-      "description": "Host a room, join by code, or reconnect to multiplayer."
     },
     "draft": {
       "title": "Draft",
@@ -51,9 +46,7 @@
     },
     "preview": {
       "cta": "Try Preview",
-      "tooltip": "Play the latest preview build — newest cards & fixes land here before each release.",
-      "backCta": "Back to release",
-      "backTooltip": "Return to the current release build."
+      "tooltip": "Play the latest preview build — newest cards & fixes land here before each release."
     },
     "coverage": {
       "title": "Open the coverage dashboard",
@@ -70,13 +63,11 @@
     "load": {
       "title": "Load Game State"
     },
-    "exit": "Exit",
     "dashboard": {
       "welcome": "Welcome back",
       "enter": "Enter",
       "continue": "Continue where you left off",
       "resumeDraft": "Resume Draft",
-      "draftPod": "Draft Pod",
       "activeDeck": "Active Deck",
       "noActiveDeck": "Pick a deck to get started",
       "fromFeeds": "From your feeds",
@@ -84,10 +75,7 @@
       "cards": "{{count}} cards",
       "mode": {
         "ai": "vs AI",
-        "online": "Online",
-        "local": "Local",
-        "p2p-host": "P2P",
-        "p2p-join": "P2P"
+        "local": "Local"
       },
       "tagline": "An open-source Magic: The Gathering rules engine and game client",
       "turn": "Turn {{n}}",
@@ -149,20 +137,6 @@
     "precons": "Precons",
     "playable": "{{playable}} playable",
     "nonePlayable": "None of the {{selected}} selected decks are legal under the current filters, so Random draws from all {{total}} decks."
-  },
-  "feedManager": {
-    "title": "Manage Feeds",
-    "refreshing": "Refreshing…",
-    "refreshAll": "Refresh all",
-    "refresh": "Refresh",
-    "subscribe": "Subscribe",
-    "unsubscribe": "Unsubscribe",
-    "lastRefreshed": "Last refreshed: {{date}}",
-    "dataProvidedBy": "Data provided by",
-    "addCustomFeed": "Add Custom Feed",
-    "add": "Add",
-    "offlineUnavailable": "Feed updates are unavailable while offline.",
-    "done": "Done"
   },
   "importDeck": {
     "title": "Import Deck",
@@ -247,9 +221,6 @@
     "tabDecks": "My Decks",
     "tabSubscriptions": "Subscriptions",
     "createNew": "Create New",
-    "refreshing": "Refreshing…",
-    "refreshAll": "Refresh All",
-    "manageFeeds": "Manage Feeds",
     "searchPlaceholder": "Search decks…",
     "formatLabel": "Format",
     "sourceFilterLabel": "Deck source",
@@ -317,7 +288,7 @@
   },
   "subscriptions": {
     "emptyTitle": "No feed subscriptions",
-    "emptyDescription": "Subscribe to deck feeds to get curated deck collections that auto-update.",
+    "emptyDescription": "The bundled starter decks appear here once they have loaded.",
     "feedMeta_one": "· {{count}} deck · Updated {{date}}",
     "feedMeta_other": "· {{count}} decks · Updated {{date}}",
     "error": "Error: {{error}}"
@@ -334,10 +305,8 @@
     "label": "Primary navigation",
     "home": "Home",
     "play": "Play",
-    "online": "Online",
     "draft": "Draft",
     "decks": "Decks",
-    "tournament": "Tournaments",
     "alpha": "Alpha",
     "profile": "Profile",
     "settings": "Settings",

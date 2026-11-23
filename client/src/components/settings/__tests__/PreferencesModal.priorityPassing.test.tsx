@@ -11,10 +11,7 @@ vi.mock("../../../services/backup", () => ({
 
 describe("PreferencesModal priority passing", () => {
   beforeEach(() => {
-    usePreferencesStore.setState({
-      priorityPassingMode: "Standard",
-      experimentalTournamentsEnabled: false,
-    });
+    usePreferencesStore.setState({ priorityPassingMode: "Standard" });
   });
 
   afterEach(() => cleanup());
@@ -45,15 +42,4 @@ describe("PreferencesModal priority passing", () => {
     expect(screen.queryByText("GAMEPLAY.COMMANDZONE")).not.toBeInTheDocument();
   });
 
-  it("offers an opt-in toggle for tournament navigation", () => {
-    render(<PreferencesModal onClose={vi.fn()} initialTab="experimental" />);
-
-    const checkbox = screen.getByRole("checkbox", {
-      name: /show tournaments in navigation/i,
-    });
-    expect(checkbox).not.toBeChecked();
-
-    fireEvent.click(checkbox);
-    expect(usePreferencesStore.getState().experimentalTournamentsEnabled).toBe(true);
-  });
 });

@@ -63,7 +63,6 @@ vi.mock("../../stack/StackDisplay.tsx", () => ({ StackDisplay: () => null }));
 vi.mock("../../chrome/GameMenu.tsx", () => ({ GameMenu: () => null }));
 vi.mock("../../modal/EngineLostModal.tsx", () => ({ EngineLostModal: () => null }));
 vi.mock("../../modal/CardDataMissingModal.tsx", () => ({ CardDataMissingModal: () => null }));
-vi.mock("../../multiplayer/ConcedeDialog.tsx", () => ({ ConcedeDialog: () => null }));
 vi.mock("../../animation/ParticleCanvas.tsx", () => ({ ParticleCanvas: () => null }));
 vi.mock("framer-motion", async (original) => ({
   ...await original<typeof Motion>(), useReducedMotion: () => false,
@@ -636,7 +635,7 @@ describe("owner printing remaining carrier surfaces (group 2)", () => {
       ] });
       // resetModules requires the real route to bind this fixture's fresh stores.
       const { GamePage } = await import("../../../pages/GamePage.tsx");
-      render(<MemoryRouter initialEntries={["/game/owner-art?mode=join"]}>
+      render(<MemoryRouter initialEntries={["/game/owner-art?mode=ai"]}>
         <Routes><Route path="/game/:id" element={<GamePage />} /></Routes>
       </MemoryRouter>);
       const heading = await screen.findByRole("heading", { name: route === "Declare"
@@ -675,7 +674,7 @@ describe("owner printing remaining carrier surfaces (group 2)", () => {
         env.ui.setState({ inspectedObjectId: hovered.id });
       });
       const { GamePage } = await import("../../../pages/GamePage.tsx");
-      render(<MemoryRouter initialEntries={["/game/owner-art?mode=join"]}>
+      render(<MemoryRouter initialEntries={["/game/owner-art?mode=ai"]}>
         <Routes><Route path="/game/:id" element={<GamePage />} /></Routes>
       </MemoryRouter>);
       const heading = await screen.findByRole("heading", { name: route === "Declare"
@@ -785,7 +784,7 @@ describe("owner printing remaining carrier surfaces (group 2)", () => {
     env.ui.setState({ pendingAbilityChoice: { objectId: object.id,
       actions: [{ type: "ActivateAbility", data: { source_id: object.id, ability_index: 0 } }] } });
     const { GamePage } = await import("../../../pages/GamePage.tsx");
-    render(<MemoryRouter initialEntries={["/game/owner-art?mode=join"]}>
+    render(<MemoryRouter initialEntries={["/game/owner-art?mode=ai"]}>
       <Routes><Route path="/game/:id" element={<GamePage />} /></Routes>
     </MemoryRouter>);
     const prompt = (await screen.findByRole("heading", { name: "Alpha" })).closest<HTMLElement>('[role="dialog"]') ?? document.body;

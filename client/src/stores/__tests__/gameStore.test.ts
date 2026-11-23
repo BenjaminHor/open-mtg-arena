@@ -16,7 +16,6 @@ import { undoLastAction } from "../../game/dispatch";
 import type { GameMode } from "../gameStore";
 import {
   canExportAuthoritativeState,
-  hasRemoteHumans,
   isAuthorityRemote,
   useGameStore,
 } from "../gameStore";
@@ -28,64 +27,34 @@ vi.mock("../../services/gamePersistence", async (importOriginal) => ({
 }));
 
 describe("game mode classification", () => {
-  // The two questions the old `isMultiplayerMode` answered with one bit:
-  //   authority — does the authoritative engine state live off this client?
-  //   company   — do humans on OTHER clients share this game?
-  // `native-ai` (desktop solo vs the phase-server sidecar) is the mode where
-  // they disagree, which is exactly what the merged predicate could not say.
-  const EXPECTED: Record<GameMode, { authority: boolean; company: boolean }> = {
-    "ai": { authority: false, company: false },
-    "local": { authority: false, company: false },
-    "native-ai": { authority: true, company: false },
-    "online": { authority: true, company: true },
-    "p2p-host": { authority: true, company: true },
-    "p2p-join": { authority: true, company: true },
-    "draft-match": { authority: true, company: true },
-    "spectate": { authority: true, company: true },
+  // Whether this client owns the game state it shows: a replay being watched
+  // (`spectate`) does not, so it must never rewind or record undo history.
+  const EXPECTED: Record<GameMode, { authority: boolean }> = {
+    "ai": { authority: false },
+    "local": { authority: false },
+    "spectate": { authority: true },
   };
 
   it.each(Object.keys(EXPECTED) as GameMode[])(
-    "classifies %s on both axes",
+    "classifies %s",
     (mode) => {
       expect(isAuthorityRemote(mode)).toBe(EXPECTED[mode].authority);
-      expect(hasRemoteHumans(mode)).toBe(EXPECTED[mode].company);
     },
   );
 
-  it("answers the two questions differently for native-ai", () => {
-    // Non-vacuity: these two assertions are contradictory for ANY single
-    // merged predicate. `isMultiplayerMode` — and equally the rejected
-    // `isMultiplayerMode(mode) || mode === "native-ai"` shape — returns one
-    // value for this input and therefore fails one of them whichever way it
-    // answers. Only a genuine split can satisfy both.
-    expect(isAuthorityRemote("native-ai")).toBe(true);
-    expect(hasRemoteHumans("native-ai")).toBe(false);
-  });
-
-  it("treats hot-seat local as solo despite having two humans", () => {
-    // The row a careless "solo means one human" reading gets wrong: two
-    // humans share one client and one state, so there is no peer to desync.
-    expect(hasRemoteHumans("local")).toBe(false);
-    expect(isAuthorityRemote("local")).toBe(false);
-  });
-
-  it.each(["ai", "local", "native-ai", "p2p-host"] as GameMode[])(
+  it.each(["ai", "local"] as GameMode[])(
     "allows authoritative bug reports when %s owns the state",
     (mode) => {
       expect(canExportAuthoritativeState(mode)).toBe(true);
     },
   );
 
-  it.each(["online", "p2p-join", "draft-match", "spectate"] as GameMode[])(
-    "blocks authoritative bug reports when %s only has a redacted view",
-    (mode) => {
-      expect(canExportAuthoritativeState(mode)).toBe(false);
-    },
-  );
+  it("blocks authoritative bug reports for a watched replay", () => {
+    expect(canExportAuthoritativeState("spectate")).toBe(false);
+  });
 
-  it("answers false to both for the pre-game null mode", () => {
+  it("answers false for the pre-game null mode", () => {
     expect(isAuthorityRemote(null)).toBe(false);
-    expect(hasRemoteHumans(null)).toBe(false);
   });
 });
 
@@ -502,16 +471,15 @@ describe("gameStore", () => {
     expect(useGameStore.getState().stateHistory).toHaveLength(5);
   });
 
-  it("dispatch does not push to stateHistory in multiplayer", async () => {
-    // Authoritative state lives on the wire in multiplayer, so undo is
-    // suppressed — rewinding a single client's view would desync.
+  it("dispatch does not push to stateHistory while watching a replay", async () => {
+    // A replay's state is not this client's own, so undo is suppressed.
     const state1 = buildGameState({ turn_number: 1 });
     const state2 = buildGameState({ turn_number: 2 });
     const exportPersistenceState = vi.fn().mockResolvedValue("{}");
     const adapter = buildEngineAdapterMock(state1, { exportPersistenceState });
 
     await act(() => useGameStore.getState().initGame("test-id", adapter));
-    act(() => useGameStore.getState().setGameMode("online"));
+    act(() => useGameStore.getState().setGameMode("spectate"));
     adapter.getState.mockResolvedValue(state2);
 
     await act(() => useGameStore.getState().dispatch({ type: "PassPriority" }));
@@ -520,7 +488,7 @@ describe("gameStore", () => {
     expect(exportPersistenceState).not.toHaveBeenCalled();
   });
 
-  it("undo is a no-op in multiplayer even if stateHistory is non-empty", async () => {
+  it("undo is a no-op while watching a replay even if stateHistory is non-empty", async () => {
     // Defense-in-depth: setGameMode after history was populated would be
     // unusual, but the guard must still hold.
     const state1 = buildGameState({ turn_number: 1 });
@@ -528,31 +496,12 @@ describe("gameStore", () => {
 
     await act(() => useGameStore.getState().initGame("test-id", adapter));
     act(() => {
-      useGameStore.setState({ stateHistory: [{ state: state1, logSeq: 0 }], gameMode: "p2p-host" });
+      useGameStore.setState({ stateHistory: [{ state: state1, logSeq: 0 }], gameMode: "spectate" });
     });
 
     await act(() => undoLastAction());
 
     // History untouched; restoreState never invoked.
-    expect(useGameStore.getState().stateHistory).toHaveLength(1);
-    expect(adapter.restoreState).not.toHaveBeenCalled();
-  });
-
-  it("undo is a no-op for native-ai, whose authority is the sidecar", async () => {
-    // Regression guard for the predicate split: `native-ai` is solo but
-    // wire-authoritative, so the rename must NOT have leaked client-side
-    // rewind into it. `WebSocketAdapter.restoreState` throws on this
-    // transport, so a leak here would surface as a thrown adapter call.
-    const state1 = buildGameState({ turn_number: 1 });
-    const adapter = buildEngineAdapterMock(state1);
-
-    await act(() => useGameStore.getState().initGame("test-id", adapter));
-    act(() => {
-      useGameStore.setState({ stateHistory: [{ state: state1, logSeq: 0 }], gameMode: "native-ai" });
-    });
-
-    await act(() => undoLastAction());
-
     expect(useGameStore.getState().stateHistory).toHaveLength(1);
     expect(adapter.restoreState).not.toHaveBeenCalled();
   });

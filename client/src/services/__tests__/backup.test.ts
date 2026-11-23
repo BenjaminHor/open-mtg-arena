@@ -8,12 +8,9 @@ import {
   type PhaseBackupV1,
 } from "../backup";
 import {
-  ACTIVE_DECK_KEY,
   DECK_METADATA_KEY,
   DECK_FOLDERS_KEY,
   DRAFT_WORKSPACE_PREFERENCES_KEY,
-  FEED_DECK_ORIGINS_KEY,
-  FEED_SUBSCRIPTIONS_KEY,
   getDeckMeta,
   STORAGE_KEY_PREFIX,
 } from "../../constants/storage";

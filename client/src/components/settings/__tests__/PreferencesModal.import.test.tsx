@@ -2,14 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-const platform = vi.hoisted(() => ({ desktop: false }));
-
-vi.mock("../../../services/platform", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("../../../services/platform")>()),
-  isDesktopTauri: () => platform.desktop,
-}));
-
-import { useCloudSyncStore } from "../../../stores/cloudSyncStore";
 import { setSavedDeckTxnLockWaitForTests, withSavedDeckLibrary } from "../../../services/savedDeckTransaction";
 import { useAppNotificationStore } from "../../../stores/appToastStore";
 import {
@@ -18,30 +10,6 @@ import {
   uninstallWebLocks,
 } from "../../../test/helpers/webLocks";
 import { PreferencesModal } from "../PreferencesModal";
-
-const actions = {
-  signIn: vi.fn(async () => {}),
-  signOut: vi.fn(async () => {}),
-  syncNow: vi.fn(async () => {}),
-  resolveConflict: vi.fn(async () => {}),
-};
-
-function setCloudState(overrides: Record<string, unknown> = {}) {
-  useCloudSyncStore.setState({
-    available: true,
-    paused: false,
-    identity: null,
-    sessionResolved: true,
-    status: "idle",
-    error: null,
-    dirty: false,
-    lastSyncedAt: null,
-    conflict: null,
-    conflictDiff: null,
-    ...actions,
-    ...overrides,
-  });
-}
 
 const BACKUP_JSON = JSON.stringify({
   version: 1,
@@ -56,8 +24,6 @@ const BACKUP_JSON = JSON.stringify({
 
 beforeEach(async () => {
   vi.clearAllMocks();
-  platform.desktop = false;
-  setCloudState();
   installFifoWebLocks();
   await resetSavedDeckLibraryForTests();
   useAppNotificationStore.setState({ notification: null, expiresAt: 0 });
@@ -66,7 +32,6 @@ beforeEach(async () => {
 afterEach(() => {
   uninstallWebLocks();
   cleanup();
-  setCloudState();
 });
 
 describe("PreferencesModal — import refused by a busy saved-deck library", () => {

@@ -6,18 +6,10 @@
   "tabs": {
     "gameplay": "Gameplay",
     "ai": "AI Opponents",
-    "experimental": "Experimental",
     "visual": "Visual",
     "combat": "Pacing",
     "audio": "Audio",
-    "multiplayer": "Multiplayer",
     "data": "Data"
-  },
-  "experimental": {
-    "title": "Experimental",
-    "tournaments": "Tournaments",
-    "showTournaments": "Show Tournaments in navigation",
-    "showTournamentsDescription": "Tournaments are still in progress and may change without notice."
   },
   "gameplay": {
     "collapseLands": "Collapse Lands",
@@ -50,8 +42,6 @@
       "autoExceptSacrificialMana": "Ask before sacrificing",
       "manual": "Manual"
     },
-    "nativeEngine": "Use native engine for local games and hosted multiplayer",
-    "nativeEngineDescription": "Use the downloaded engine for local AI games and games you host through a lobby. Guests still connect through the lobby's peer-to-peer connection. Falls back to the built-in engine when unavailable.",
     "boardBackground": "Board Background",
     "boardBackgroundGroups": {
       "automatic": "Automatic",
@@ -197,37 +187,6 @@
     "customThemes": "Custom Themes",
     "remove": "Remove"
   },
-  "multiplayer": {
-    "title": "Multiplayer",
-    "displayName": "Display Name",
-    "displayNamePlaceholder": "Enter your name",
-    "serverSelectionNote": "Server selection moved to the lobby — open Multiplayer and use the server chip (or \"Pick server\" in P2P mode) to switch regions, configure a self-hosted instance, or test connectivity."
-  },
-  "sync": {
-    "title": "Cloud Sync",
-    "description": "Sign in to sync your decks, preferences, and feed subscriptions across devices. Your data lives in your account and updates automatically whenever it changes.",
-    "signInWith": "Sign in with {{provider}}",
-    "signOut": "Sign out",
-    "signedInAs": "Signed in as {{name}}",
-    "syncNow": "Sync now",
-    "statusSyncing": "Syncing…",
-    "statusPaused": "Cloud sync is paused while you're offline.",
-    "statusError": "Sync failed",
-    "lastSynced": "Last synced {{time}}",
-    "never": "never",
-    "conflictTitle": "Both copies have changes",
-    "conflictBody": "This device and your cloud account both have data and we can't tell which is current. Choose one copy, or keep both deck collections.",
-    "keepCloud": "Use cloud",
-    "keepLocal": "Keep this device",
-    "keepBothDecks": "Keep both deck collections",
-    "savesNote": "Game saves and caches stay on this device.",
-    "diffDecks": "Decks: {{added}} added, {{modified}} changed, {{removed}} removed",
-    "diffPrefs": "Preferences differ",
-    "diffFeeds": "Feed subscriptions differ",
-    "diffOther": "Other settings differ",
-    "providerDiscord": "Discord",
-    "providerGoogle": "Google"
-  },
   "data": {
     "title": "Backup & Restore",
     "description": "Export bundles your preferences, imported decks, and feed subscriptions into a single JSON file. Import restores them on another machine. IndexedDB caches (feed cache, audio cache, saved games) are not included — those rebuild automatically.",
@@ -244,9 +203,7 @@
     "importedWithPreferences_one": "Imported {{count}} deck and preferences.",
     "importedWithPreferences_other": "Imported {{count}} decks and preferences.",
     "skippedMalformed_one": "Skipped {{count}} malformed entry.",
-    "skippedMalformed_other": "Skipped {{count}} malformed entries.",
-    "telemetry": "Send anonymous crash & usage reports",
-    "telemetryDescription": "Helps fix crashes and prioritize card support. No account, no personal data — just error and game-summary counts."
+    "skippedMalformed_other": "Skipped {{count}} malformed entries."
   },
   "visualPacks": {
     "title": "Offline card images",
@@ -469,8 +426,7 @@
       "preconCatalog": "Generated preconstructed decks",
       "bundledAiCatalog": "Bundled AI deck catalog",
       "deckLibrary": "Installed Deck Library",
-      "coreVisuals": "Card back and mana symbols",
-      "nativeEngine": "Native engine"
+      "coreVisuals": "Card back and mana symbols"
     },
     "capabilityStates": {
       "ready": "Ready",

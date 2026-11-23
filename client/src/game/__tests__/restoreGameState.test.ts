@@ -60,7 +60,6 @@ describe("restoreGameState", () => {
       legalActionsByObject: {},
       stateHistory: [],
       turnCheckpoints: [],
-      lobbyProgress: null,
     });
   });
 

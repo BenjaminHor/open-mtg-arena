@@ -55,7 +55,7 @@ function setPrompt(interactionId: string, options: {
     scry_prompt_id: options.scryPromptId,
   };
   useGameStore.setState({
-    gameMode: options.scryPromptId ? "local" : "online",
+    gameMode: options.scryPromptId ? "local" : "ai",
     gameState: buildGameState({
       active_player: options.scryPromptId ? 1 : 0,
       players: [buildPlayer({ id: 0, library: [41] }), buildPlayer({ id: 1 })],

@@ -22,7 +22,7 @@ describe("HelpSheet state export status", () => {
     useUiStore.setState({ helpSheetOpen: true });
     useGameStore.setState({
       gameState: { turn_number: 1 } as GameState,
-      gameMode: "native-ai",
+      gameMode: "ai",
       adapter: { exportPersistenceState: vi.fn() } as unknown as EngineAdapter,
     });
   });
@@ -39,7 +39,7 @@ describe("HelpSheet state export status", () => {
     return screen.findByText(/./, { selector: "p.text-emerald-300" });
   }
 
-  it("shows the server's reason when the export is refused", async () => {
+  it("shows the engine's reason when the export is refused", async () => {
     exportAuthoritativeGameStateZip.mockRejectedValue(
       new AdapterError("REQUEST_FAILED", "too large to send: 300 bytes; at most 200 allowed", true),
     );
@@ -62,12 +62,10 @@ describe("HelpSheet state export status", () => {
     }
   });
 
-  it("still reports where a saved export landed", async () => {
-    exportAuthoritativeGameStateZip.mockResolvedValue({
-      kind: "saved", filename: "state.zip", path: "/home/u/Downloads/state.zip",
-    });
+  it("reports the filename a saved export was given", async () => {
+    exportAuthoritativeGameStateZip.mockResolvedValue({ kind: "saved", filename: "state.zip" });
 
-    expect(await clickExportState()).toHaveTextContent("Exported to /home/u/Downloads/state.zip.");
+    expect(await clickExportState()).toHaveTextContent("state.zip");
   });
 });
 
@@ -93,24 +91,9 @@ describe("HelpSheet replay export status", () => {
 
   it.each<[string, DownloadResult | null, string]>([
     [
-      "a shell save reports the absolute path it landed on",
-      { kind: "saved", filename: "replay.json", path: "/home/u/Downloads/replay.json" },
-      "Exported to /home/u/Downloads/replay.json.",
-    ],
-    [
       "a browser save reports the filename it asked for",
       { kind: "saved", filename: "replay.json" },
       "Replay saved as replay.json.",
-    ],
-    [
-      "a shell that never reported claims only that the export was requested",
-      { kind: "requested", filename: "replay.json" },
-      "Export requested — replay.json.",
-    ],
-    [
-      "a failed download is not reported as a save",
-      { kind: "failed", filename: "replay.json", path: "/home/u/Downloads/replay.json" },
-      "Could not export the replay.",
     ],
     ["no recording says so", null, "No replay recording is available for this game."],
   ])("%s", async (_name, result, expected) => {

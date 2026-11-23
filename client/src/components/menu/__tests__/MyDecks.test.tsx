@@ -224,7 +224,7 @@ describe("MyDecks", () => {
     );
   });
 
-  it("keeps cached subscriptions usable while offline and re-enables refresh on reconnect", async () => {
+  it("keeps cached subscriptions usable while offline", async () => {
     const feedDeck = {
       name: "Offline Feed Deck",
       colors: ["U"],
@@ -242,13 +242,12 @@ describe("MyDecks", () => {
     });
     saveFeedSubscriptions([{
       sourceId: "offline-feed",
-      url: "https://example.com/offline-feed.json",
-      type: "remote",
+      url: "/feeds/offline-feed.json",
+      type: "bundled",
       subscribedAt: 1,
       lastRefreshedAt: 1,
       lastVersion: 1,
     }]);
-    const refreshAllFeeds = vi.spyOn(feedService, "refreshAllFeeds");
     const onEditDeck = vi.fn();
     vi.mocked(evaluateDeckCompatibilityBatch).mockResolvedValue({});
     const user = userEvent.setup();
@@ -264,42 +263,15 @@ describe("MyDecks", () => {
     await user.click(screen.getByRole("button", { name: "Subscriptions" }));
     expect(await screen.findByText("Offline Feed")).toBeInTheDocument();
     expect(screen.getByText("Offline Feed Deck")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Refresh All" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Manage Feeds" })).toBeEnabled();
 
     act(() => useConnectivityStore.getState().setForcedOffline(true));
 
-    expect(screen.getByText(/Feed updates are unavailable while offline/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Refresh All" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Manage Feeds" })).toBeEnabled();
     await user.click(screen.getByText("Offline Feed Deck"));
     expect(onEditDeck).toHaveBeenCalledWith("Offline Feed Deck");
     vi.stubGlobal("prompt", vi.fn(() => "Offline Feed Copy"));
     await user.click(screen.getByRole("button", { name: "Copy to My Decks" }));
     expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Offline Feed Copy")).not.toBeNull();
     expect(feedService.getDeckFeedOrigin("Offline Feed Copy")).toBeNull();
-    await user.click(screen.getByRole("button", { name: "Refresh All" }));
-    expect(refreshAllFeeds).not.toHaveBeenCalled();
-
-    act(() => useConnectivityStore.getState().setForcedOffline(false));
-
-    expect(screen.getByRole("button", { name: "Refresh All" })).toBeEnabled();
-  });
-
-  it("credits an attributed feed's data provider below the grid only while its decks are listed", async () => {
-    saveDeck("My Own Deck", { main: [{ name: "Island", count: 60 }], sideboard: [] });
-    vi.mocked(evaluateDeckCompatibilityBatch).mockResolvedValue({});
-
-    render(<MyDecks mode="manage" activeDeckName={null} />);
-    await screen.findByText("My Own Deck");
-    expect(screen.queryByRole("link", { name: "TopDeck.gg" })).not.toBeInTheDocument();
-    cleanup();
-
-    saveDeck("Vivi Ornitier (Weekly #1)", { main: [{ name: "Island", count: 99 }], sideboard: [] });
-    saveDeckOrigins({ "Vivi Ornitier (Weekly #1)": "topdeck-cedh" });
-    render(<MyDecks mode="manage" activeDeckName={null} />);
-
-    expect(await screen.findByRole("link", { name: "TopDeck.gg" })).toHaveAttribute("href", "https://topdeck.gg");
   });
 
   it("checks commander selection context and can reveal incompatible decks on demand", async () => {
@@ -555,7 +527,7 @@ describe("MyDecks", () => {
   it("uses trusted feed format metadata before background coverage filters unknown saved decks", async () => {
     saveDeck("Known Standard", { main: [{ name: "Island", count: 60 }], sideboard: [] });
     saveDeck("Unknown User Deck", { main: [{ name: "Mountain", count: 60 }], sideboard: [] });
-    saveDeckOrigins({ "Known Standard": "mtggoldfish-standard" });
+    saveDeckOrigins({ "Known Standard": "starter-decks" });
 
     vi.mocked(evaluateDeckCompatibilityBatch).mockImplementation(async (_decks, options) => ({
       "Unknown User Deck": {
@@ -942,7 +914,7 @@ describe("MyDecks", () => {
     saveFeedSubscriptions([{
       sourceId: "some-feed",
       url: "https://example.com/some-feed.json",
-      type: "remote",
+      type: "bundled",
       subscribedAt: 1,
       lastRefreshedAt: 1,
       lastVersion: 1,
@@ -978,73 +950,6 @@ describe("MyDecks", () => {
       expect(useAppNotificationStore.getState().notification?.title).toBe("Couldn't save deck");
     });
     expect(localStorage.getItem(`${STORAGE_KEY_PREFIX}Feed Deck Copy`)).toBeNull();
-
-    setSavedDeckTxnLockWaitForTests(Number.POSITIVE_INFINITY);
-    releaseHolder();
-    await holder;
-    uninstallWebLocks();
-  });
-
-  it("refreshing all feeds refused by a busy library shows the busy toast without an unhandled rejection", async () => {
-    installFifoWebLocks();
-    await resetSavedDeckLibraryForTests(); // clears localStorage; seed the subscription after
-    await setCachedFeed("some-feed", {
-      id: "some-feed",
-      name: "Some Feed",
-      version: 1,
-      updated: "2026-01-01T00:00:00Z",
-      decks: [{ name: "Some Feed Deck", colors: [], main: [{ name: "Island", count: 60 }], sideboard: [] }],
-    });
-    saveFeedSubscriptions([{
-      sourceId: "some-feed",
-      url: "https://example.com/some-feed.json",
-      type: "remote",
-      subscribedAt: 1,
-      lastRefreshedAt: 1,
-      lastVersion: 1,
-    }]);
-    vi.mocked(evaluateDeckCompatibilityBatch).mockResolvedValue({});
-    useAppNotificationStore.setState({ notification: null, expiresAt: 0 });
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      statusText: "OK",
-      json: () => Promise.resolve({
-        id: "some-feed",
-        name: "Some Feed",
-        version: 2,
-        updated: "2026-01-02T00:00:00Z",
-        decks: [{ name: "Fresh Feed Deck", colors: [], main: [{ name: "Island", count: 60 }], sideboard: [] }],
-      }),
-    }));
-
-    render(
-      <MyDecks
-        mode="manage"
-        activeDeckName={null}
-        onCreateDeck={vi.fn()}
-        onEditDeck={vi.fn()}
-      />,
-    );
-    await userEvent.click(screen.getByRole("button", { name: "Subscriptions" }));
-    expect(await screen.findByText("Some Feed")).toBeInTheDocument();
-
-    let releaseHolder!: () => void;
-    const held = new Promise<void>((resolve) => {
-      releaseHolder = resolve;
-    });
-    const holder = withSavedDeckLibrary(() => held);
-    await vi.waitFor(async () => {
-      expect((await navigator.locks.query()).held).toHaveLength(1);
-    });
-
-    setSavedDeckTxnLockWaitForTests(20);
-    await userEvent.click(screen.getByRole("button", { name: "Refresh All" }));
-
-    await vi.waitFor(() => {
-      expect(useAppNotificationStore.getState().notification?.title).toBe("Couldn't update deck feeds");
-    });
-    expect(localStorage.getItem(`${STORAGE_KEY_PREFIX}Fresh Feed Deck`)).toBeNull();
 
     setSavedDeckTxnLockWaitForTests(Number.POSITIVE_INFINITY);
     releaseHolder();
@@ -1166,7 +1071,7 @@ describe("MyDecks", () => {
   it("random selection prefers exact-format feed decks over incompatible user decks", async () => {
     saveDeck("Known Standard", { main: [{ name: "Island", count: 60 }], sideboard: [] });
     saveDeck("User Pauper", { main: [{ name: "Lightning Bolt", count: 60 }], sideboard: [] });
-    saveDeckOrigins({ "Known Standard": "mtggoldfish-standard" });
+    saveDeckOrigins({ "Known Standard": "starter-decks" });
     vi.mocked(evaluateDeckCompatibilityBatch).mockResolvedValue({
       "User Pauper": {
         standard: { compatible: false, reasons: [] },
@@ -1200,7 +1105,7 @@ describe("MyDecks", () => {
   it("falls back to a legal deck when the pool selection holds only an incompatible one", async () => {
     saveDeck("Known Standard", { main: [{ name: "Island", count: 60 }], sideboard: [] });
     saveDeck("User Pauper", { main: [{ name: "Lightning Bolt", count: 60 }], sideboard: [] });
-    saveDeckOrigins({ "Known Standard": "mtggoldfish-standard" });
+    saveDeckOrigins({ "Known Standard": "starter-decks" });
     vi.mocked(evaluateDeckCompatibilityBatch).mockResolvedValue({
       "User Pauper": {
         standard: { compatible: false, reasons: [] },
@@ -1223,7 +1128,7 @@ describe("MyDecks", () => {
         humanPoolSelection: setPoolDeckIncluded(
           {
             ...emptyPoolSelection(),
-            excludedGroups: [UNFILED_POOL_GROUP, feedPoolGroup("mtggoldfish-standard")],
+            excludedGroups: [UNFILED_POOL_GROUP, feedPoolGroup("starter-decks")],
           },
           savedDeckCatalogId("User Pauper"),
           true,
@@ -1256,7 +1161,7 @@ describe("MyDecks", () => {
   it("keeps a legal curated user deck instead of falling back to an excluded known-format deck", async () => {
     saveDeck("Known Standard", { main: [{ name: "Island", count: 60 }], sideboard: [] });
     saveDeck("User Standard", { main: [{ name: "Plains", count: 60 }], sideboard: [] });
-    saveDeckOrigins({ "Known Standard": "mtggoldfish-standard" });
+    saveDeckOrigins({ "Known Standard": "starter-decks" });
     vi.mocked(evaluateDeckCompatibilityBatch).mockImplementation(async (decks) => compatibleBatch(decks));
     // The known-format feed mirror is visible but excluded; only the
     // compatibility-confirmed user deck is selected. Tier 1 is fully legal,
@@ -1268,7 +1173,7 @@ describe("MyDecks", () => {
         humanPoolSelection: setPoolDeckIncluded(
           {
             ...emptyPoolSelection(),
-            excludedGroups: [UNFILED_POOL_GROUP, feedPoolGroup("mtggoldfish-standard")],
+            excludedGroups: [UNFILED_POOL_GROUP, feedPoolGroup("starter-decks")],
           },
           savedDeckCatalogId("User Standard"),
           true,
@@ -1641,7 +1546,7 @@ describe("MyDecks", () => {
     // only the source provenance changes.
     const feedOwned: AiDeckCandidate = {
       ...legalCandidate("Mirror Deck", null),
-      source: { type: "saved", feedId: "mtggoldfish-standard" },
+      source: { type: "saved", feedId: "starter-decks" },
     };
     const adopted = legalCandidate("Mirror Deck", null);
     const deckC = legalCandidate("User C", null);

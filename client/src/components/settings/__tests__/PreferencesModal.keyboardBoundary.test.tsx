@@ -187,12 +187,12 @@ describe("PreferencesModal keyboard boundary", () => {
       const user = userEvent.setup();
       render(<KeyboardSettingsHarness />);
       const { dialog } = await openSettingsAndFocusControl();
-      const tab = within(dialog).getByRole("button", { name: "Multiplayer" });
+      const tab = within(dialog).getByRole("button", { name: "Audio" });
       tab.focus();
 
       await user.keyboard(key);
 
-      expect(await within(dialog).findByPlaceholderText("Enter your name"))
+      expect(await within(dialog).findByPlaceholderText("https://example.com/theme.json"))
         .toBeInTheDocument();
       expect(dispatchActionMock).not.toHaveBeenCalled();
       expect(storeDispatchMock).not.toHaveBeenCalled();
@@ -204,18 +204,16 @@ describe("PreferencesModal keyboard boundary", () => {
     const user = userEvent.setup();
     render(<KeyboardSettingsHarness />);
     const { dialog } = await openSettingsAndFocusControl();
-    const multiplayerTab = within(dialog).getByRole("button", { name: "Multiplayer" });
-    multiplayerTab.focus();
+    const audioTab = within(dialog).getByRole("button", { name: "Audio" });
+    audioTab.focus();
     await user.keyboard(" ");
-    const nameInput = within(dialog).getByPlaceholderText("Enter your name");
+    const urlInput = within(dialog).getByPlaceholderText("https://example.com/theme.json");
 
-    await user.type(nameInput, "Pilot");
+    await user.type(urlInput, "Pilot");
 
-    expect(nameInput).toHaveValue("Pilot");
-    expect(useMultiplayerStore.getState().displayName).toBe("Pilot");
-    await user.type(nameInput, " fzt");
-    expect(nameInput).toHaveValue("Pilot fzt");
-    expect(useMultiplayerStore.getState().displayName).toBe("Pilot fzt");
+    expect(urlInput).toHaveValue("Pilot");
+    await user.type(urlInput, " fzt");
+    expect(urlInput).toHaveValue("Pilot fzt");
     expect(useUiStore.getState().fullControl).toBe(false);
     expect(dispatchActionMock).not.toHaveBeenCalled();
     expect(storeDispatchMock).not.toHaveBeenCalled();

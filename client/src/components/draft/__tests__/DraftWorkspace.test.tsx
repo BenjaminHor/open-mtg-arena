@@ -11,7 +11,6 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { DraftCardInstance, DraftPoolGroups } from "../../../adapter/draft-adapter";
-import { useMultiplayerDraftStore } from "../../../stores/multiplayerDraftStore";
 import { usePreferencesStore } from "../../../stores/preferencesStore";
 import { CompactSideboard } from "../workspace/CompactSideboard";
 import { DraftWorkspace, shouldShowDraftWorkspaceDeck } from "../workspace/DraftWorkspace";
@@ -135,7 +134,6 @@ afterEach(() => {
   motionState.animationCompleteHandlers = [];
   motionState.values = [];
   previewProps.values = [];
-  useMultiplayerDraftStore.getState().reset();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });

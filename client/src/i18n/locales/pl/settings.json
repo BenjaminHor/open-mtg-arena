@@ -6,18 +6,10 @@
   "tabs": {
     "gameplay": "Rozgrywka",
     "ai": "Przeciwnicy AI",
-    "experimental": "Eksperymentalne",
     "visual": "Grafika",
     "combat": "Tempo",
     "audio": "Dźwięk",
-    "multiplayer": "Tryb wieloosobowy",
     "data": "Dane"
-  },
-  "experimental": {
-    "title": "Eksperymentalne",
-    "tournaments": "Turnieje",
-    "showTournaments": "Pokazuj turnieje w nawigacji",
-    "showTournamentsDescription": "Turnieje są nadal w fazie rozwoju i mogą ulec zmianie bez uprzedzenia."
   },
   "gameplay": {
     "collapseLands": "Zwiń Lands",
@@ -50,8 +42,6 @@
       "autoExceptSacrificialMana": "Pytaj przed poświęceniem",
       "manual": "Ręcznie"
     },
-    "nativeEngine": "Używaj natywnego silnika w lokalnych grach i hostowanym trybie wieloosobowym",
-    "nativeEngineDescription": "Używaj pobranego silnika do lokalnych gier z AI i gier hostowanych przez lobby. Goście nadal łączą się przez połączenie peer-to-peer lobby. Gdy silnik jest niedostępny, używany jest wbudowany silnik.",
     "boardBackground": "Tło pola bitwy",
     "boardBackgroundGroups": {
       "automatic": "Automatyczne",
@@ -197,37 +187,6 @@
     "customThemes": "Niestandardowe motywy",
     "remove": "Usuń"
   },
-  "multiplayer": {
-    "title": "Tryb wieloosobowy",
-    "displayName": "Nazwa wyświetlana",
-    "displayNamePlaceholder": "Wprowadź swoją nazwę",
-    "serverSelectionNote": "Wybór serwera został przeniesiony do poczekalni — otwórz Tryb wieloosobowy i użyj plakietki serwera (lub „Wybierz serwer” w trybie P2P), aby zmieniać regiony, skonfigurować własną instancję lub przetestować połączenie."
-  },
-  "sync": {
-    "title": "Synchronizacja w chmurze",
-    "description": "Zaloguj się, aby synchronizować talie, preferencje i subskrypcje kanałów między urządzeniami. Twoje dane znajdują się na Twoim koncie i są aktualizowane automatycznie przy każdej zmianie.",
-    "signInWith": "Zaloguj się przez {{provider}}",
-    "signOut": "Wyloguj się",
-    "signedInAs": "Zalogowano jako {{name}}",
-    "syncNow": "Synchronizuj teraz",
-    "statusSyncing": "Synchronizowanie…",
-    "statusPaused": "Synchronizacja w chmurze jest wstrzymana, gdy nie masz połączenia z internetem.",
-    "statusError": "Synchronizacja nie powiodła się",
-    "lastSynced": "Ostatnia synchronizacja: {{time}}",
-    "never": "nigdy",
-    "conflictTitle": "Obie kopie mają zmiany",
-    "conflictBody": "To urządzenie i Twoje konto w chmurze zawierają dane, a nie możemy ustalić, która kopia jest aktualna. Wybierz jedną kopię albo zachowaj obie kolekcje talii.",
-    "keepCloud": "Użyj chmury",
-    "keepLocal": "Zachowaj to urządzenie",
-    "keepBothDecks": "Zachowaj obie kolekcje talii",
-    "savesNote": "Zapisy gier i pamięć podręczna pozostają na tym urządzeniu.",
-    "diffDecks": "Talie: {{added}} dodanych, {{modified}} zmienionych, {{removed}} usuniętych",
-    "diffPrefs": "Preferencje są różne",
-    "diffFeeds": "Subskrypcje kanałów są różne",
-    "diffOther": "Inne ustawienia są różne",
-    "providerDiscord": "Discord",
-    "providerGoogle": "Google"
-  },
   "data": {
     "title": "Kopia zapasowa i przywracanie",
     "description": "Eksport pakuje twoje preferencje, zaimportowane talie i subskrypcje kanałów do jednego pliku JSON. Import przywraca je na innym komputerze. Pamięci podręczne IndexedDB (pamięć kanałów, pamięć dźwięku, zapisane gry) nie są dołączane — odbudowują się automatycznie.",
@@ -244,9 +203,7 @@
     "importedWithPreferences_one": "Zaimportowano {{count}} talię i preferencje.",
     "importedWithPreferences_other": "Zaimportowano {{count}} talii i preferencje.",
     "skippedMalformed_one": "Pominięto {{count}} nieprawidłowy wpis.",
-    "skippedMalformed_other": "Pominięto {{count}} nieprawidłowych wpisów.",
-    "telemetry": "Wysyłaj anonimowe raporty o awariach i użyciu",
-    "telemetryDescription": "Pomaga naprawiać awarie i ustalać priorytety obsługi kart. Bez konta, bez danych osobowych — tylko liczniki błędów i podsumowań gier."
+    "skippedMalformed_other": "Pominięto {{count}} nieprawidłowych wpisów."
   },
   "visualPacks": {
     "title": "Katalog wizualny offline",
@@ -469,8 +426,7 @@
       "preconCatalog": "Wygenerowane talie",
       "bundledAiCatalog": "Katalog talii SI",
       "deckLibrary": "Zainstalowana biblioteka talii",
-      "coreVisuals": "Rewers karty i symbole many",
-      "nativeEngine": "Silnik natywny"
+      "coreVisuals": "Rewers karty i symbole many"
     },
     "capabilityStates": {
       "ready": "Gotowe",

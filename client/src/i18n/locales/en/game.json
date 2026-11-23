@@ -1,10 +1,4 @@
 {
-  "playerLatency": {
-    "host": "Host",
-    "waiting": "Waiting",
-    "value": "{{ms}} ms",
-    "description": "Round-trip latency to the host. A missing reply does not disconnect the game."
-  },
   "abilityBlock": {
     "badge": "Blocked",
     "cantBeActivated": "This ability can't be activated",
@@ -160,9 +154,6 @@
     "holdCtrlFront": "Hold Ctrl for front face",
     "holdCtrlFlip": "Hold Ctrl to flip",
     "flip": "Flip",
-    "report": "Report a problem",
-    "reported": "Reported ✓",
-    "reportNotSent": "Not sent",
     "reloadArt": "Reload art",
     "altParsedAbilities": "Alt: parsed abilities",
     "debugId": "ID: {{id}}",
@@ -237,26 +228,7 @@
     "autoPassing": "Auto-Passing to End Step...",
     "resolvingStack": "Resolving Stack..."
   },
-  "cardReport": {
-    "title": "Report a card problem",
-    "subtitle": "Pick the card that isn't working correctly.",
-    "search": "Search cards…",
-    "empty": "No reportable cards in view.",
-    "zone": {
-      "Stack": "Stack",
-      "Battlefield": "Battlefield",
-      "Hand": "Hand",
-      "Graveyard": "Graveyard",
-      "Exile": "Exile",
-      "Command": "Command"
-    },
-    "emblemTag": "Emblem",
-    "allPlayers": "All",
-    "allZones": "All zones",
-    "cancel": "Cancel"
-  },
   "board": {
-    "reportCard": "Report a card problem",
     "regroupCreatures": "Regroup duplicate creature groups",
     "changeBackground": "Change background…",
     "customizeLayout": "Customize layout…",
@@ -562,11 +534,6 @@
     "pauseAndWait": "Pause and wait",
     "continueWithout": "Continue without them"
   },
-  "kickDialog": {
-    "title": "Kick {{name}}?",
-    "body": "They will forfeit the game and cannot rejoin.",
-    "kick": "Kick"
-  },
   "enchantmentsBadge": {
     "ariaLabel_one": "1 enchantment on this player",
     "ariaLabel_other": "{{count}} enchantments on this player",
@@ -827,12 +794,8 @@
     "clickToViewThenTarget": "Click to view {{name}}'s board, then click again to target {{name}}",
     "clickToViewBoard": "Click to view {{name}}'s board",
     "underAttack": "{{name}} is under attack",
-    "kickPlayer": "Kick player {{seat}}",
-    "kickPlayerTooltip": "Kick player (forfeit)",
     "incomingAttackers_one": "{{count}} creature attacking you",
     "incomingAttackers_other": "{{count}} creatures attacking you",
-    "disconnected": "Disconnected",
-    "connected": "Connected",
     "statHand": "Hand",
     "statCreatures": "Creatures",
     "statLands": "Lands",
@@ -1410,26 +1373,10 @@
       "modeButtonOff": "CLICK MODE OFF"
     }
   },
-  "spectator": {
-    "banner": "Spectating — read only",
-    "leave": "Leave",
-    "watchingWith": "Also watching: {{names}}"
-  },
   "gameProvider": {
-    "passwordPrompt": "This room requires a password:",
-    "toasts": {
-      "connectionFailed": "Connection failed. Retry or change server in Settings.",
-      "eliminatedSpectating": "You have been eliminated. Now spectating.",
-      "retainedTerminalUnreadable": "Retained terminal delivery could not be read"
-    },
     "resumeReset": {
       "appUpdated": "The app was updated and your saved game is incompatible with the new version.",
       "restoreFailed": "Could not restore saved game: {{error}}"
-    },
-    "notification": {
-      "title": "Opponent joined",
-      "opponentJoined": "Your opponent has joined the game. Come back and play!",
-      "opponentJoinedNamed": "{{name}} joined your game. Come back and play!"
     },
     "noLegalAiDecks": {
       "withFormat": "No legal AI decks are available for {{format}}.",
@@ -2396,7 +2343,6 @@
     "exportClientSnapshot": "Export client snapshot",
     "exported": "Exported",
     "exportFailed": "Export failed",
-    "exportRequested": "Export unconfirmed",
     "copyDiagnostic": "Copy diagnostic",
     "copied": "Copied!",
     "reportOnGithub": "Report on GitHub",
@@ -2976,7 +2922,6 @@
     "copyOf": "Copy Of",
     "pickPermanent": "Pick a permanent…",
     "createCopy": "Create Copy",
-    "cardCreationUnavailable": "Spawning a card by name needs the in-browser engine. The token forms below work on this connection.",
     "createCatalogToken": "Create Token (Catalog)",
     "customToken": "Create Token (Custom)",
     "copyPermanent": "Copy Permanent",

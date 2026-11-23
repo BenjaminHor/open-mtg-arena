@@ -1,10 +1,4 @@
 {
-  "playerLatency": {
-    "host": "Anfitrião",
-    "waiting": "Aguardando",
-    "value": "{{ms}} ms",
-    "description": "Latência de ida e volta até o anfitrião. A falta de resposta não desconecta a partida."
-  },
   "abilityBlock": {
     "badge": "Bloqueada",
     "cantBeActivated": "Esta habilidade não pode ser ativada",
@@ -160,9 +154,6 @@
     "holdCtrlFront": "Segure Ctrl para a face dianteira",
     "holdCtrlFlip": "Segure Ctrl para virar",
     "flip": "Virar",
-    "report": "Relatar um problema",
-    "reported": "Relatado ✓",
-    "reportNotSent": "Não enviado",
     "reloadArt": "Recarregar arte",
     "altParsedAbilities": "Alt: habilidades processadas",
     "debugId": "ID: {{id}}",
@@ -237,26 +228,7 @@
     "autoPassing": "Passando Automaticamente até a Etapa Final...",
     "resolvingStack": "Resolvendo a Pilha..."
   },
-  "cardReport": {
-    "title": "Relatar um problema com uma carta",
-    "subtitle": "Escolha a carta que não está funcionando corretamente.",
-    "search": "Buscar cartas…",
-    "empty": "Nenhuma carta relatável à vista.",
-    "zone": {
-      "Stack": "Pilha",
-      "Battlefield": "Campo de batalha",
-      "Hand": "Mão",
-      "Graveyard": "Cemitério",
-      "Exile": "Exílio",
-      "Command": "Zona de comando"
-    },
-    "emblemTag": "Emblema",
-    "allPlayers": "Todos",
-    "allZones": "Todas as zonas",
-    "cancel": "Cancelar"
-  },
   "board": {
-    "reportCard": "Relatar um problema com uma carta",
     "regroupCreatures": "Reagrupar grupos de criaturas duplicadas",
     "changeBackground": "Alterar plano de fundo…",
     "customizeLayout": "Personalizar layout…",
@@ -529,11 +501,6 @@
     "pauseAndWait": "Pausar e aguardar",
     "continueWithout": "Continuar sem ele"
   },
-  "kickDialog": {
-    "title": "Expulsar {{name}}?",
-    "body": "Ele perderá o jogo e não poderá voltar.",
-    "kick": "Expulsar"
-  },
   "enchantmentsBadge": {
     "ariaLabel_one": "1 encantamento neste jogador",
     "ariaLabel_other": "{{count}} encantamentos neste jogador",
@@ -792,12 +759,8 @@
     "clickToViewThenTarget": "Clique para ver o tabuleiro de {{name}}, depois clique novamente para mirar {{name}}",
     "clickToViewBoard": "Clique para ver o tabuleiro de {{name}}",
     "underAttack": "{{name}} está sob ataque",
-    "kickPlayer": "Expulsar o jogador {{seat}}",
-    "kickPlayerTooltip": "Expulsar jogador (desistência)",
     "incomingAttackers_one": "{{count}} criatura atacando você",
     "incomingAttackers_other": "{{count}} criaturas atacando você",
-    "disconnected": "Desconectado",
-    "connected": "Conectado",
     "statHand": "Mão",
     "statCreatures": "Criaturas",
     "statLands": "Terrenos",
@@ -1378,20 +1341,9 @@
     }
   },
   "gameProvider": {
-    "passwordPrompt": "Esta sala requer uma senha:",
-    "toasts": {
-      "connectionFailed": "Falha na conexão. Tente novamente ou altere o servidor nas Configurações.",
-      "eliminatedSpectating": "Você foi eliminado. Agora está assistindo.",
-      "retainedTerminalUnreadable": "Não foi possível ler a entrega retida do resultado final"
-    },
     "resumeReset": {
       "appUpdated": "O aplicativo foi atualizado e seu jogo salvo é incompatível com a nova versão.",
       "restoreFailed": "Não foi possível restaurar o jogo salvo: {{error}}"
-    },
-    "notification": {
-      "title": "Oponente entrou",
-      "opponentJoined": "Seu oponente entrou no jogo. Volte e jogue!",
-      "opponentJoinedNamed": "{{name}} entrou no seu jogo. Volte e jogue!"
     },
     "noLegalAiDecks": {
       "withFormat": "Nenhum deck de IA válido está disponível para {{format}}.",
@@ -2358,7 +2310,6 @@
     "exportClientSnapshot": "Exportar instantâneo do cliente",
     "exported": "Exportado",
     "exportFailed": "Falha na exportação",
-    "exportRequested": "Exportação não confirmada",
     "copyDiagnostic": "Copiar diagnóstico",
     "copied": "Copiado!",
     "reportOnGithub": "Reportar no GitHub",
@@ -2763,11 +2714,6 @@
       "keep": "Kept"
     }
   },
-  "spectator": {
-    "banner": "Spectating — read only",
-    "leave": "Leave",
-    "watchingWith": "Also watching: {{names}}"
-  },
   "boardChoice": {
     "actions": {
       "sacrifice": "Sacrifice",
@@ -2976,7 +2922,6 @@
     "copyOf": "Copy Of",
     "pickPermanent": "Pick a permanent…",
     "createCopy": "Create Copy",
-    "cardCreationUnavailable": "Spawning a card by name needs the in-browser engine. The token forms below work on this connection.",
     "createCatalogToken": "Create Token (Catalog)",
     "customToken": "Create Token (Custom)",
     "copyPermanent": "Copy Permanent",

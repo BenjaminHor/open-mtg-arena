@@ -36,7 +36,7 @@ describe("PreferencesModal visual packs", () => {
     manager.unmounts.mockReset();
   });
 
-  it("mounts the manager only in Data before existing backup and telemetry controls", () => {
+  it("mounts the manager only in Data before existing backup controls", () => {
     render(<Harness />);
     expect(screen.queryByLabelText("Offline visual catalog")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /^Data$/i }));
@@ -44,7 +44,6 @@ describe("PreferencesModal visual packs", () => {
     const exportButton = screen.getByRole("button", { name: /Export backup/i });
     expect(visual.compareDocumentPosition(exportButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.getByRole("button", { name: /Import backup/i })).toBeInTheDocument();
-    expect(screen.getByRole("checkbox", { name: /anonymous crash/i })).toBeInTheDocument();
     expect(manager.mounts).toHaveBeenCalledTimes(1);
   });
 

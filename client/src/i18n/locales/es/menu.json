@@ -26,17 +26,12 @@
   "home": {
     "resume": {
       "title": "Reanudar partida",
-      "description": "Continúa la última partida guardada desde su turno y estado del tablero actuales.",
-      "viewResult": "Ver resultado"
+      "description": "Continúa la última partida guardada desde su turno y estado del tablero actuales."
     },
     "setup": {
       "title": "Jugar contra la IA",
       "titleSaved": "Nueva partida contra la IA",
       "description": "Juega una partida en solitario contra un oponente de IA — elige formato, mazo, arquetipo y dificultad."
-    },
-    "online": {
-      "title": "Jugar en línea",
-      "description": "Hospeda una sala, únete por código o reconéctate al multijugador."
     },
     "draft": {
       "title": "Draft",
@@ -51,9 +46,7 @@
     },
     "preview": {
       "cta": "Probar versión de desarrollo",
-      "tooltip": "Ejecuta la última versión de desarrollo — las cartas y correcciones más recientes llegan aquí antes de cada lanzamiento.",
-      "backCta": "Volver a la versión estable",
-      "backTooltip": "Volver a la versión de lanzamiento actual."
+      "tooltip": "Ejecuta la última versión de desarrollo — las cartas y correcciones más recientes llegan aquí antes de cada lanzamiento."
     },
     "coverage": {
       "title": "Abrir el panel de cobertura",
@@ -70,13 +63,11 @@
     "load": {
       "title": "Cargar estado de la partida"
     },
-    "exit": "Salir",
     "dashboard": {
       "welcome": "Bienvenido de nuevo",
       "enter": "Entrar",
       "continue": "Continúa donde lo dejaste",
       "resumeDraft": "Reanudar draft",
-      "draftPod": "Pod de draft",
       "activeDeck": "Mazo activo",
       "noActiveDeck": "Elige un mazo para empezar",
       "fromFeeds": "De tus feeds",
@@ -84,10 +75,7 @@
       "cards": "{{count}} cartas",
       "mode": {
         "ai": "contra IA",
-        "online": "En línea",
-        "local": "Local",
-        "p2p-host": "P2P",
-        "p2p-join": "P2P"
+        "local": "Local"
       },
       "tagline": "Un motor de reglas y cliente de juego de Magic: The Gathering de código abierto",
       "turn": "Turno {{n}}",
@@ -149,20 +137,6 @@
     "precons": "Precons",
     "playable": "{{playable}} jugables",
     "nonePlayable": "Ninguno de los {{selected}} mazos elegidos es legal con los filtros actuales, así que Aleatorio elige entre los {{total}} mazos."
-  },
-  "feedManager": {
-    "title": "Gestionar feeds",
-    "refreshing": "Actualizando…",
-    "refreshAll": "Actualizar todo",
-    "refresh": "Actualizar",
-    "subscribe": "Suscribirse",
-    "unsubscribe": "Cancelar suscripción",
-    "lastRefreshed": "Última actualización: {{date}}",
-    "dataProvidedBy": "Datos proporcionados por",
-    "addCustomFeed": "Añadir feed personalizado",
-    "add": "Añadir",
-    "offlineUnavailable": "Las actualizaciones de feeds no están disponibles sin conexión.",
-    "done": "Listo"
   },
   "importDeck": {
     "title": "Importar mazo",
@@ -247,9 +221,6 @@
     "tabDecks": "Mis mazos",
     "tabSubscriptions": "Suscripciones",
     "createNew": "Crear nuevo",
-    "refreshing": "Actualizando…",
-    "refreshAll": "Actualizar todo",
-    "manageFeeds": "Gestionar feeds",
     "searchPlaceholder": "Buscar mazos…",
     "formatLabel": "Formato",
     "sourceFilterLabel": "Fuente del mazo",
@@ -334,10 +305,8 @@
     "label": "Navegación principal",
     "home": "Inicio",
     "play": "Jugar",
-    "online": "En línea",
     "draft": "Draft",
     "decks": "Mazos",
-    "tournament": "Torneos",
     "alpha": "Alfa",
     "profile": "Perfil",
     "settings": "Ajustes",

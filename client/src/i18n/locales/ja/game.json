@@ -1,10 +1,4 @@
 {
-  "playerLatency": {
-    "host": "ホスト",
-    "waiting": "待機中",
-    "value": "{{ms}}ミリ秒",
-    "description": "ホストとの往復遅延です。応答がないだけではゲームから切断されません。"
-  },
   "abilityBlock": {
     "badge": "ブロック中",
     "cantBeActivated": "この能力は起動できません",
@@ -160,9 +154,6 @@
     "holdCtrlFront": "Ctrlを押して表面を表示",
     "holdCtrlFlip": "Ctrlを押して反転",
     "flip": "反転",
-    "report": "問題を報告",
-    "reported": "報告済み ✓",
-    "reportNotSent": "未送信",
     "reloadArt": "アートを再読み込み",
     "altParsedAbilities": "Alt: 解析済み能力",
     "debugId": "ID: {{id}}",
@@ -237,26 +228,7 @@
     "autoPassing": "終了ステップまで自動パス中…",
     "resolvingStack": "スタック解決中…"
   },
-  "cardReport": {
-    "title": "カードの問題を報告",
-    "subtitle": "正しく動作していないカードを選択してください。",
-    "search": "カードを検索…",
-    "empty": "表示中に報告できるカードはありません。",
-    "zone": {
-      "Stack": "スタック",
-      "Battlefield": "戦場",
-      "Hand": "手札",
-      "Graveyard": "墓地",
-      "Exile": "追放領域",
-      "Command": "統率領域"
-    },
-    "emblemTag": "紋章",
-    "allPlayers": "すべて",
-    "allZones": "すべての領域",
-    "cancel": "キャンセル"
-  },
   "board": {
-    "reportCard": "カードの問題を報告",
     "regroupCreatures": "重複したクリーチャーグループをまとめ直す",
     "changeBackground": "背景を変更…",
     "customizeLayout": "レイアウトをカスタマイズ…",
@@ -562,11 +534,6 @@
     "pauseAndWait": "一時停止して待つ",
     "continueWithout": "このプレイヤーなしで続行"
   },
-  "kickDialog": {
-    "title": "{{name}}をキックしますか？",
-    "body": "このプレイヤーはゲームを投了し、再参加できません。",
-    "kick": "キック"
-  },
   "enchantmentsBadge": {
     "ariaLabel_one": "このプレイヤーについたエンチャント1枚",
     "ariaLabel_other": "このプレイヤーについたエンチャント{{count}}枚",
@@ -827,12 +794,8 @@
     "clickToViewThenTarget": "クリックして{{name}}の盤面を表示し、もう一度クリックして{{name}}を対象",
     "clickToViewBoard": "クリックして{{name}}の盤面を表示",
     "underAttack": "{{name}}が攻撃されています",
-    "kickPlayer": "プレイヤー{{seat}}をキック",
-    "kickPlayerTooltip": "プレイヤーをキック（投了）",
     "incomingAttackers_one": "{{count}}体のクリーチャーがあなたを攻撃中",
     "incomingAttackers_other": "{{count}}体のクリーチャーがあなたを攻撃中",
-    "disconnected": "切断",
-    "connected": "接続済み",
     "statHand": "手札",
     "statCreatures": "クリーチャー",
     "statLands": "土地",
@@ -1410,26 +1373,10 @@
       "modeButtonOff": "クリックモード無効"
     }
   },
-  "spectator": {
-    "banner": "観戦中 — 閲覧のみ",
-    "leave": "退出",
-    "watchingWith": "同時に観戦中：{{names}}"
-  },
   "gameProvider": {
-    "passwordPrompt": "この部屋にはパスワードが必要です：",
-    "toasts": {
-      "connectionFailed": "接続に失敗しました。再試行するか、設定でサーバーを変更してください。",
-      "eliminatedSpectating": "あなたは敗北しました。観戦に移行します。",
-      "retainedTerminalUnreadable": "保存された最終結果の配信を読み取れませんでした"
-    },
     "resumeReset": {
       "appUpdated": "アプリが更新され、保存したゲームは新しいバージョンと互換性がありません。",
       "restoreFailed": "保存したゲームを復元できませんでした：{{error}}"
-    },
-    "notification": {
-      "title": "対戦相手が参加しました",
-      "opponentJoined": "対戦相手がゲームに参加しました。戻ってプレイしてください！",
-      "opponentJoinedNamed": "{{name}}があなたのゲームに参加しました。戻ってプレイしてください！"
     },
     "noLegalAiDecks": {
       "withFormat": "{{format}}で使用できる適正なAIデッキがありません。",
@@ -2396,7 +2343,6 @@
     "exportClientSnapshot": "クライアントのスナップショットを書き出す",
     "exported": "書き出し済み",
     "exportFailed": "書き出しに失敗",
-    "exportRequested": "書き出し未確認",
     "copyDiagnostic": "診断をコピー",
     "copied": "コピーしました！",
     "reportOnGithub": "GitHubで報告",
@@ -2976,7 +2922,6 @@
     "copyOf": "コピー元",
     "pickPermanent": "パーマネントを選択…",
     "createCopy": "コピーを生成",
-    "cardCreationUnavailable": "カード名を指定した生成にはブラウザ内のエンジンが必要です。この接続でも、下のフォームからトークンを生成できます。",
     "createCatalogToken": "トークンを生成（一覧から）",
     "customToken": "トークンを生成（指定）",
     "copyPermanent": "パーマネントをコピー",

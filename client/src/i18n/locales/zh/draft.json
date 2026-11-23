@@ -79,18 +79,6 @@
     "subtitle": "选择你的对战方式。",
     "title": "你的套牌已就绪"
   },
-  "hostControls": {
-    "endDraft": "结束轮抽",
-    "endDraftConfirm": "为所有牌手结束本次轮抽？此操作无法撤销。",
-    "kickReplace": "移出并替换",
-    "overrideResult": "覆盖结果",
-    "pauseDraft": "暂停轮抽",
-    "replaceWithBot": "用机器人替换 {{name}}",
-    "resumeDraft": "继续轮抽",
-    "startNextRound": "开始下一轮",
-    "title": "主持人控制",
-    "versusPair": "{{a}} 对阵 {{b}}"
-  },
   "intro": {
     "commander": {
       "step2": "开启{{packs}}；每个补充包内含 {{cardsPerPack}} — 选两张牌，其余传走",
@@ -154,10 +142,6 @@
     "cardsPicked_many": "已选 {{count}} 张牌",
     "cardsPicked_one": "已选 {{count}} 张牌",
     "cardsPicked_other": "已选 {{count}} 张牌",
-    "commanderDraft": {
-      "description": "在轮抽桌中每次选两张牌，构筑一套 60 张的指挥官套牌，然后进行一局多人对战。",
-      "title": "指挥官轮抽"
-    },
     "cubeDraft": {
       "description": "粘贴或载入 Cube 列表，调整补充包与套牌规则，然后与 AI 机器人快速轮抽。",
       "title": "Cube 轮抽"
@@ -166,38 +150,20 @@
     "draftComplete": "轮抽完成",
     "draftInProgress": "轮抽进行中",
     "eyebrow": "轮抽",
-    "guestPodInProgress": "已加入的轮抽桌可以重新连接",
-    "guestPodLabel": "轮抽桌",
-    "podDraft": {
-      "description": "开设或加入最多 8 人的轮抽桌，一起实时轮抽，然后进行瑞士轮或淘汰制比赛。",
-      "title": "牌桌轮抽"
-    },
-    "podInProgress": "牌桌轮抽进行中",
-    "podLabel": "{{kind}} 轮抽桌",
     "quickDraft": {
       "description": "与 7 名 AI 牌手轮抽 3 个补充包，构筑一套 40 张的套牌，然后与其中一名进行一场单局对战。",
       "title": "快速轮抽"
     },
-    "reconnect": "重新连接",
     "resume": "继续",
     "resumeMatch": "继续对战",
-    "roomLabel": "房间 {{code}}",
     "sealed": {
       "description": "开启 6 个补充包，查看完整牌池，然后构筑一套 40 张的套牌进行单局对战。",
       "title": "现开"
     },
-    "seatCount_few": "{{count}} 个座位",
-    "seatCount_many": "{{count}} 个座位",
-    "seatCount_one": "{{count}} 个座位",
-    "seatCount_other": "{{count}} 个座位",
     "setIconAlt": "{{code}} 图标",
     "startNew": "新建对局",
     "title": "轮抽",
-    "viewResults": "查看结果",
-    "winstonDraft": {
-      "description": "两名牌手共用一个面朝下的牌叠和三个牌堆 — 取走一个牌堆或放弃它，然后构筑套牌并对战。",
-      "title": "Winston 轮抽"
-    }
+    "viewResults": "查看结果"
   },
   "limitedDeck": {
     "addCard": "添加 {{name}}",
@@ -259,32 +225,9 @@
     "seatStatus": "{{seat}}：{{status}}",
     "waiting": "正在等待所有牌手选牌…"
   },
-  "lobby": {
-    "botSeat": "机器人",
-    "clickToCopy": "点击复制",
-    "copyRoomCodeTitle": "点击复制房间代码",
-    "draftKind": "{{kind}}轮抽",
-    "fillWithBots": "用机器人补足空座位",
-    "hostBadge": "主持人",
-    "kick": "移出",
-    "leave": "离开",
-    "roomCode": "房间代码",
-    "seatNumber": "座位 {{number}}",
-    "seatsFilled": "已入座 {{current}} / {{total}} 个座位",
-    "startDraft": "开始轮抽",
-    "title": "轮抽桌大厅",
-    "waitingForHost": "正在等待主持人开始轮抽…",
-    "waitingSeat": "等待中…"
-  },
   "manaCurve": {
     "bucketLabel": "法术力值 {{bucket}}",
     "title": "法术力曲线"
-  },
-  "offline": {
-    "startUnavailable": "离线时无法开始多人轮抽。请重新连接或关闭离线模式以继续。",
-    "unavailableDescription": "要开设、加入、开始或观战多人轮抽，请重新连接或关闭离线模式。",
-    "unavailableTitle": "离线时无法进行多人轮抽。",
-    "watchUnavailable": "离线时无法观战多人轮抽。请重新连接或关闭离线模式以继续。"
   },
   "pack": {
     "autoPick": "自动选牌",
@@ -323,126 +266,6 @@
   "pickTimer": {
     "label": "选牌计时",
     "seconds": "{{count}} 秒"
-  },
-  "podComplete": {
-    "cancelCommanderLaunch": "取消开始",
-    "joinCommanderGame": "加入指挥官对战",
-    "joiningCommanderGame": "正在加入 — 等待其他牌手…",
-    "launchCommanderGame": "开始指挥官对战",
-    "launchLocalCommanderGame": "开始本地指挥官对战",
-    "returnToMenu": "返回菜单",
-    "seatCeiling": "本桌共有 {{seats}} 个座位，而点对点指挥官对战最多支持 {{max}} 名牌手。本局将在本地与引擎对战，使用所有已轮抽的套牌。",
-    "title": "轮抽完成",
-    "waitingForPlayers": "正在等待牌手加入…"
-  },
-  "podError": {
-    "connection": "连接错误",
-    "hostLeft": "主持人已离开轮抽",
-    "incompatible": "此轮抽与你的协议版本不兼容。",
-    "kicked": "你已被移出轮抽桌",
-    "retry": "尝试重新连接"
-  },
-  "podPhase": {
-    "complete": "已完成",
-    "deckbuilding": "构筑套牌中",
-    "drafting": "轮抽中",
-    "lobby": "房间",
-    "matchInProgress": "对局进行中",
-    "pairing": "配对中"
-  },
-  "podPhaseView": {
-    "backToStandings": "返回积分榜",
-    "connectingOpponent": "正在连接对手…",
-    "editDeck": "编辑套牌",
-    "editDeckHint": "休闲牌桌：你可以在下一轮开始前修改套牌。",
-    "hidePool": "隐藏牌池",
-    "matchesInProgress": "进行中的对局",
-    "nextRoundShortly": "下一轮即将开始…",
-    "pauseReason": {
-      "DisconnectGraceExpired": "有牌手未在规定时间内返回。",
-      "PausedByHost": "轮抽已被主持人暂停。",
-      "PlayerDisconnected": "轮抽已暂停 — 有牌手断线。"
-    },
-    "reviewPool": "查看牌池",
-    "roundComplete": "本轮结束",
-    "tournamentPairings": "比赛配对",
-    "versusOpponent": "对阵 {{name}}",
-    "waitingNextRound": "正在等待主持人开始下一轮…",
-    "waitingResults": "正在等待对局结果…",
-    "youAreHosting": "你是主持人",
-    "yourMatch": "你的对局"
-  },
-  "podSetup": {
-    "back": "← 返回",
-    "chaosPacks": "混沌轮抽",
-    "chaosSelectorDetail": "每名牌手的每个补充包都会从这些候选中随机分配一个系列。具体分配在该牌手开启补充包前一直保密。",
-    "chaosSelectorHint": "选择候选系列。轮抽开始时，主持人会私下为每名牌手随机分配补充包。",
-    "createPod": "创建轮抽桌",
-    "displayName": "显示名称",
-    "draftType": "轮抽类型",
-    "hostCardDesc": "创建一个新的轮抽房间。由你选择系列、赛制和人数，然后把房间代码分享给好友。空座位可以用机器人补足。",
-    "hostCardTitle": "开设轮抽桌",
-    "hostTitle": "开设轮抽桌",
-    "howItWorks1": "每名牌手开启 3 个 14 张的补充包 — 选一张，其余传走",
-    "howItWorks2": "每轮的传递方向交替变化（左 → 右 → 左）",
-    "howItWorks3": "轮抽结束后，每名牌手用牌池构筑一套 40 张的套牌",
-    "howItWorks4": "然后进行瑞士轮或单败淘汰制的比赛对局",
-    "howItWorksTitle": "牌桌轮抽玩法",
-    "joinCardDesc": "输入主持人提供的房间代码即可加入现有轮抽。你会被安排到下一个空座位，与其他牌手实时同步轮抽。",
-    "joinCardTitle": "加入轮抽桌",
-    "joinPod": "加入轮抽桌",
-    "joinTitle": "加入轮抽桌",
-    "kindCommanderDraft": "指挥官",
-    "kindCommanderDraftDesc": "每名牌手每次选两张牌，构筑一套 60 张的指挥官套牌，然后全桌进行一局多人对战。",
-    "kindPremier": "顶级",
-    "kindPremierDesc": "构筑套牌后进行单局制的比赛对局。轮次更快，各局之间不更换备牌。",
-    "kindSealed": "现开",
-    "kindSealedDesc": "每名牌手直接开启 6 个补充包作为牌池，然后构筑一套用于单局制比赛的套牌。",
-    "kindTraditional": "传统",
-    "kindTraditionalDesc": "构筑套牌后进行三局两胜的比赛对局，各局之间可更换备牌。",
-    "kindWinston": "Winston",
-    "kindWinstonDesc": "2 至 4 名牌手围绕一个面朝下的公共牌叠和三个牌堆进行轮抽：轮到你时，查看一个牌堆并取走它，或放弃并往上面加一张牌。",
-    "listInLobby": "在大厅中列出",
-    "listingCubeNameTooLong": "要在大厅中列出此轮抽桌，请使用不超过 {{max}} 个字符的 Cube 名称。",
-    "listingHostNameTooLong": "要在大厅中列出此轮抽桌，请使用不超过 {{max}} 个字符的显示名称。",
-    "listingPasswordTooLong": "要在大厅中列出此轮抽桌，请使用更短的密码。",
-    "listingRoomNameTooLong": "要在大厅中列出此轮抽桌，请使用不超过 {{max}} 个字符的房间名称。",
-    "listingSeatLimit": "大厅列表最多支持 {{max}} 名牌手的轮抽桌。",
-    "loadingPool": "正在加载系列牌池数据…",
-    "lobbyUnavailable": "无法连接大厅来列出此轮抽桌。关闭“$t(draft:podSetup.listInLobby)”即可通过房间代码开设。",
-    "namePlaceholder": "输入你的名称…",
-    "optional": "（可选）",
-    "passwordPlaceholder": "轮抽桌密码",
-    "playerCount": "{{count}} 名牌手",
-    "podPolicy": "轮抽桌规则",
-    "podSize": "轮抽桌人数",
-    "podSizeDesc": "共 {{count}} 个座位。轮抽开始前可在房间中用机器人补足空座位。",
-    "policyCasual": "休闲",
-    "policyCasualDesc": "选牌不限时，手动推进轮次，主持人可介入处理问题，并可在轮次之间修改套牌。",
-    "policyCasualNoRoundsDesc": "选牌不限时，主持人可介入处理问题。",
-    "policyCompetitive": "竞技",
-    "policyCompetitiveDesc": "选牌限时，超时自动选牌，并自动推进轮次。提交的套牌为最终版本；只能在一场比赛的各局之间替换备牌。",
-    "policyCompetitiveNoRoundsDesc": "选牌限时，超时自动选牌。",
-    "roomCode": "房间代码",
-    "roomCodePlaceholder": "输入房间代码…",
-    "roomName": "房间名称",
-    "roomNameHelp": "会显示给浏览大厅的牌手。",
-    "roomNamePlaceholder": "例如：周五夜 Cube",
-    "setDraftMode": "系列轮抽模式",
-    "setPassword": "设置密码",
-    "setSelectorHint": "安排你的轮抽桌要轮抽的系列 — 每个补充包一个，按开启顺序排列。只指定一个系列即可用它填满每个补充包。创建轮抽桌时会加载牌池。",
-    "subtitle": "与好友一起轮抽 — 开启补充包、选牌，并进行比赛对局。",
-    "tabs": {
-      "cube": "Cube",
-      "set": "系列"
-    },
-    "title": "牌桌轮抽",
-    "tournamentElimination": "单败淘汰",
-    "tournamentEliminationDesc": "对局失利即被淘汰，直到只剩一名胜者。",
-    "tournamentFormat": "比赛赛制",
-    "tournamentSwiss": "瑞士轮",
-    "tournamentSwissDesc": "即使输掉一场，所有牌手仍会继续进行三轮比赛。",
-    "uniformPacks": "指定组合"
   },
   "pool": {
     "cardsDrafted_few": "已轮抽 {{count}} 张牌",
@@ -617,23 +440,6 @@
     "setIconAlt": "{{name}} 系列图标",
     "startDraft": "开始轮抽",
     "startSealed": "开始现开"
-  },
-  "spectator": {
-    "backToLobby": "返回大厅",
-    "banner": "正在观战此轮抽桌",
-    "connecting": "正在连接轮抽…",
-    "deckSubmitted": "已提交套牌",
-    "errorGeneric": "无法以观战者身份连接",
-    "eyebrow": "轮抽观战",
-    "missingCode": "请输入轮抽代码",
-    "omniscient": "全知视角",
-    "pairings": "配对",
-    "poolSize": "已选 {{count}} 张牌",
-    "pools": "牌池（全知）",
-    "seat": "座位 {{index}}",
-    "seats": "座位",
-    "standings": "积分榜",
-    "title": "正在观战轮抽 {{code}}"
   },
   "standings": {
     "currentPairings": "当前配对",

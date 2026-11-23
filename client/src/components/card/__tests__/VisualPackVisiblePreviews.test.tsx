@@ -1,13 +1,8 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { useCardHover } from "../../../hooks/useCardHover.ts";
 import { useCardImage } from "../../../hooks/useCardImage.ts";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useUiStore } from "../../../stores/uiStore.ts";
-import { buildGameObject, buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
-import { buildGameState, buildPlayers } from "../../../test/factories/gameStateFactory.ts";
-import { CardReportDialog } from "../CardReportDialog.tsx";
 import { CardCoverageDashboard } from "../../controls/CardCoverageDashboard.tsx";
 import { CardTextboxPreview } from "../../modal/CardTextboxPreview.tsx";
 
@@ -20,10 +15,8 @@ vi.mock("../../../hooks/useEngineCardData.ts", () => ({
 }));
 
 const mockUseCardImage = vi.mocked(useCardImage);
-const mockUseCardHover = vi.mocked(useCardHover);
 
 beforeEach(() => {
-  useUiStore.setState({ cardReportDialogOpen: false });
   useGameStore.setState({ gameState: null, gameMode: "local" });
 });
 
@@ -65,81 +58,6 @@ describe("visual-pack visible previews", () => {
 
     render(<CardTextboxPreview cardName="Public rules" />);
     expect(screen.getByRole("img", { name: "Public rules" })).toHaveTextContent("Public rules");
-  });
-
-  it("keeps report rows on current face identity with card-crop versus token-normal intent", () => {
-    const card = buildGameObject({
-      id: 41,
-      owner: 0,
-      controller: 0,
-      zone: "Battlefield",
-      name: "Current Face",
-      display_visible_to_viewer: true,
-      printed_ref: { oracle_id: "current-oracle", face_name: "Current Face" } as never,
-    });
-    const token = buildGameObject({
-      id: 42,
-      owner: 0,
-      controller: 0,
-      zone: "Battlefield",
-      name: "Public Token",
-      display_source: "Token",
-      display_visible_to_viewer: true,
-      token_image_ref: {
-        scryfall_id: "token-printing",
-        scryfall_oracle_id: "token-oracle",
-        face_name: "Public Token",
-        preset_id: "token-preset",
-      },
-    });
-    useGameStore.setState({
-      gameMode: "local",
-      gameState: buildGameState({
-        players: buildPlayers([0, 1]),
-        objects: buildObjectMap(card, token),
-        battlefield: [card.id, token.id],
-        seat_order: [0, 1],
-      }),
-    });
-    useUiStore.setState({ cardReportDialogOpen: true });
-    const advanceFailedSource = vi.fn();
-    mockUseCardImage.mockImplementation((name) => ({
-      src: `${name}.png`,
-      isLoading: false,
-      isRotated: false,
-      isFlip: false,
-      rungs: name === "Public Token"
-        ? { small: "token-small.png", normal: "Public Token.png" }
-        : undefined,
-      advanceFailedSource,
-    }));
-
-    render(<CardReportDialog />);
-
-    expect(mockUseCardImage).toHaveBeenCalledWith(
-      "Current Face",
-      expect.objectContaining({
-        size: "art_crop",
-        oracleId: "current-oracle",
-        faceName: "Current Face",
-        isToken: false,
-      }),
-    );
-    expect(mockUseCardImage).toHaveBeenCalledWith(
-      "Public Token",
-      expect.objectContaining({
-        size: "normal",
-        isToken: true,
-        tokenImageRef: expect.objectContaining({ scryfall_id: "token-printing" }),
-      }),
-    );
-    expect(mockUseCardHover).toHaveBeenCalledWith(41);
-    expect(document.querySelector('img[src="Public Token.png"]')).toHaveAttribute(
-      "srcset",
-      "token-small.png 146w, Public Token.png 488w",
-    );
-    fireEvent.error(document.querySelector('img[src="Current Face.png"]')!);
-    expect(advanceFailedSource).toHaveBeenCalledWith("Current Face.png");
   });
 
   it("renders coverage rungs", async () => {

@@ -72,8 +72,8 @@ function feed(id: string, decks: string[]): Feed {
 function subscription(sourceId: string): FeedSubscription {
   return {
     sourceId,
-    url: `https://example.test/${sourceId}.json`,
-    type: "remote",
+    url: `/feeds/${sourceId}.json`,
+    type: "bundled",
     subscribedAt: 1,
     lastRefreshedAt: 1,
     lastVersion: 1,

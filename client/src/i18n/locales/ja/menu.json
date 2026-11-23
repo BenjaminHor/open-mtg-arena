@@ -26,17 +26,12 @@
   "home": {
     "resume": {
       "title": "ゲームを再開",
-      "description": "現在のターンと盤面から、最後に保存したマッチを続行します。",
-      "viewResult": "結果を見る"
+      "description": "現在のターンと盤面から、最後に保存したマッチを続行します。"
     },
     "setup": {
       "title": "AIと対戦",
       "titleSaved": "新しいAIマッチ",
       "description": "AIとソロ対戦します。フォーマット、デッキ、アーキタイプ、難易度を選択できます。"
-    },
-    "online": {
-      "title": "オンラインでプレイ",
-      "description": "ルームの作成、コードでの参加、対戦への再接続ができます。"
     },
     "draft": {
       "title": "ドラフト",
@@ -51,9 +46,7 @@
     },
     "preview": {
       "cta": "プレビューを試す",
-      "tooltip": "最新のプレビュービルドをプレイできます。各リリース前に新カードと修正が先行して反映されます。",
-      "backCta": "リリース版に戻る",
-      "backTooltip": "現在のリリースビルドに戻ります。"
+      "tooltip": "最新のプレビュービルドをプレイできます。各リリース前に新カードと修正が先行して反映されます。"
     },
     "coverage": {
       "title": "対応率ダッシュボードを開く",
@@ -70,13 +63,11 @@
     "load": {
       "title": "ゲーム状態を読み込む"
     },
-    "exit": "終了",
     "dashboard": {
       "welcome": "おかえりなさい",
       "enter": "開始",
       "continue": "前回の続きから",
       "resumeDraft": "ドラフトを再開",
-      "draftPod": "卓でドラフト",
       "activeDeck": "使用中のデッキ",
       "noActiveDeck": "デッキを選んで開始",
       "fromFeeds": "フィードから",
@@ -84,10 +75,7 @@
       "cards": "{{count}}枚",
       "mode": {
         "ai": "AI対戦",
-        "online": "オンライン",
-        "local": "ローカル",
-        "p2p-host": "P2P",
-        "p2p-join": "P2P"
+        "local": "ローカル"
       },
       "tagline": "オープンソースのMagic: The Gatheringルールエンジンとゲームクライアント",
       "turn": "{{n}}ターン目",
@@ -149,20 +137,6 @@
     "precons": "構築済みデッキ",
     "playable": "有効{{playable}}件",
     "nonePlayable": "選択中の{{selected}}デッキは現在のフィルターで1つも使用できないため、ランダムは全{{total}}デッキから選択します。"
-  },
-  "feedManager": {
-    "title": "フィードを管理",
-    "refreshing": "更新中…",
-    "refreshAll": "すべて更新",
-    "refresh": "更新",
-    "subscribe": "購読",
-    "unsubscribe": "購読解除",
-    "lastRefreshed": "最終更新: {{date}}",
-    "dataProvidedBy": "データ提供:",
-    "addCustomFeed": "カスタムフィードを追加",
-    "add": "追加",
-    "offlineUnavailable": "オフライン中はフィードを更新できません。",
-    "done": "完了"
   },
   "importDeck": {
     "title": "デッキをインポート",
@@ -247,9 +221,6 @@
     "tabDecks": "マイデッキ",
     "tabSubscriptions": "購読",
     "createNew": "新規作成",
-    "refreshing": "更新中…",
-    "refreshAll": "すべて更新",
-    "manageFeeds": "フィードを管理",
     "searchPlaceholder": "デッキを検索…",
     "formatLabel": "フォーマット",
     "sourceFilterLabel": "デッキソース",
@@ -334,10 +305,8 @@
     "label": "メインナビゲーション",
     "home": "ホーム",
     "play": "プレイ",
-    "online": "オンライン",
     "draft": "ドラフト",
     "decks": "デッキ",
-    "tournament": "トーナメント",
     "alpha": "アルファ",
     "profile": "プロフィール",
     "settings": "設定",

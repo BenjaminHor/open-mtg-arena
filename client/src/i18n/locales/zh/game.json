@@ -405,7 +405,6 @@
     "debugLog": "调试日志",
     "gameLog": "游戏日志",
     "regroupCreatures": "重新归组重复的生物组",
-    "reportCard": "报告牌的问题",
     "undo": "撤销",
     "waitingForGame": "正在等待游戏…"
   },
@@ -1002,24 +1001,6 @@
     "placeFile": "然后将生成的文件放入<code>client/public/card-data.json</code>并重新加载。",
     "title": "缺少牌张数据"
   },
-  "cardReport": {
-    "allPlayers": "全部",
-    "allZones": "全部区域",
-    "cancel": "取消",
-    "emblemTag": "徽记",
-    "empty": "当前视图中没有可报告的牌。",
-    "search": "搜寻牌…",
-    "subtitle": "选择运行不正确的牌。",
-    "title": "报告牌的问题",
-    "zone": {
-      "Battlefield": "战场",
-      "Command": "统帅区",
-      "Exile": "放逐",
-      "Graveyard": "坟墓场",
-      "Hand": "手牌",
-      "Stack": "堆叠"
-    }
-  },
   "cascadeChoice": {
     "cascadeDeclineSuffix": "（将所有被放逐的牌洗牌后置于牌库底）",
     "cascadeEyebrow": "倾曳",
@@ -1440,7 +1421,6 @@
     "exportClientSnapshot": "导出客户端快照",
     "exportFailed": "导出失败",
     "exportGameState": "导出游戏状态",
-    "exportRequested": "导出未确认",
     "exported": "已导出",
     "reload": "重新加载",
     "reportConnectionSummary": "引擎连接已断开",
@@ -1716,20 +1696,9 @@
       "generic": "所选赛制没有可用的合法 AI 套牌。",
       "withFormat": "没有适用于{{format}}的合法 AI 套牌。"
     },
-    "notification": {
-      "opponentJoined": "你的对手已加入游戏。快回来继续对战吧！",
-      "opponentJoinedNamed": "{{name}}加入了你的游戏。快回来继续对战吧！",
-      "title": "对手已加入"
-    },
-    "passwordPrompt": "此房间需要密码：",
     "resumeReset": {
       "appUpdated": "应用已更新，你保存的游戏与新版本不兼容。",
       "restoreFailed": "无法恢复保存的游戏：{{error}}"
-    },
-    "toasts": {
-      "connectionFailed": "连接失败。请在设置中重试或更改服务器。",
-      "eliminatedSpectating": "你已被淘汰。现在进入观战。",
-      "retainedTerminalUnreadable": "无法读取已保留的终局投递"
     }
   },
   "gameSetup": {
@@ -1835,11 +1804,6 @@
     "wardDiscard_many": "弃{{count}}张牌",
     "wardDiscard_one": "弃一张牌",
     "wardDiscard_other": "弃{{count}}张牌"
-  },
-  "kickDialog": {
-    "body": "他们将放弃此盘游戏，且无法重新加入。",
-    "kick": "移出",
-    "title": "将{{name}}移出？"
   },
   "lifeTotal": {
     "playerLabel": "P{{seat}}",
@@ -2145,15 +2109,11 @@
     "clickToViewBoard": "点击查看{{name}}的战场",
     "clickToViewThenTarget": "点击查看{{name}}的战场，再次点击以{{name}}为目标",
     "compactHud": "紧凑的对手 HUD。将每位对手折叠为一行细条（名字 + 生命）；点击对手可聚焦其完整战场。",
-    "connected": "已连接",
-    "disconnected": "已断开连接",
     "expandHud": "展开对手 HUD。显示每位对手的手牌与战场明细。",
     "followActiveOpponent": "跟随当前活跃对手。焦点将切换到当前回合的对手。",
     "followingActiveOpponent": "正在跟随当前活跃对手。焦点会切换到当前回合的对手。",
     "incomingAttackers_one": "{{count}}个生物正在攻击你",
     "incomingAttackers_other": "{{count}}个生物正在攻击你",
-    "kickPlayer": "踢出牌手{{seat}}",
-    "kickPlayerTooltip": "踢出牌手（认输）",
     "out": "已出局",
     "phased": "已跃离",
     "statCreatures": "生物",
@@ -2356,12 +2316,6 @@
     "phasedOut": "已跃离",
     "you": "你"
   },
-  "playerLatency": {
-    "description": "与主机之间的往返延迟。未收到回复不会导致游戏断开连接。",
-    "host": "主机",
-    "value": "{{ms}} 毫秒",
-    "waiting": "等待中"
-  },
   "precastShortcut": {
     "offerSubtitle": "引擎已验证一条有限的复制路径。提议使用它，或照常继续。",
     "offerTitle": "复制捷径",
@@ -2420,9 +2374,6 @@
     "parse": "解析",
     "ptDeltaFrom": "来自{{source}}的{{delta}}",
     "reloadArt": "重新加载插画",
-    "report": "报告问题",
-    "reportNotSent": "未发送",
-    "reported": "已报告 ✓",
     "rulingCount_one": "{{count}}条规则释疑",
     "rulingCount_other": "{{count}}条规则释疑",
     "rulings": "规则释疑",
@@ -2619,11 +2570,6 @@
     "subtitle": "选择与你弃掉的牌相符的颜色",
     "title": "选择精进",
     "white": "白"
-  },
-  "spectator": {
-    "banner": "观战中 —— 只读",
-    "leave": "离开",
-    "watchingWith": "同时观战：{{names}}"
   },
   "cardTextReference": {
     "title": "Printed card text (reference)",
@@ -2976,7 +2922,6 @@
     "copyOf": "Copy Of",
     "pickPermanent": "Pick a permanent…",
     "createCopy": "Create Copy",
-    "cardCreationUnavailable": "Spawning a card by name needs the in-browser engine. The token forms below work on this connection.",
     "createCatalogToken": "Create Token (Catalog)",
     "customToken": "Create Token (Custom)",
     "copyPermanent": "Copy Permanent",

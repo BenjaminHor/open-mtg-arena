@@ -1,17 +1,9 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const { isBundledTauriOriginMock, isTauriMock, openExternalMock } = vi.hoisted(() => ({
-  isBundledTauriOriginMock: vi.fn(),
-  isTauriMock: vi.fn(),
+const { openExternalMock } = vi.hoisted(() => ({
   openExternalMock: vi.fn(),
 }));
-
-vi.mock("../../../services/platform", () => ({
-  isBundledTauriOrigin: isBundledTauriOriginMock,
-  isTauri: isTauriMock,
-}));
-
 
 // Only openExternal is replaced: the badge validates its runtime target with the
 // real isOpenableExternalUrl, so a stubbed validator would test nothing.
@@ -32,11 +24,6 @@ function previewLink() {
   return screen.getByRole("link", { name: /try preview/i });
 }
 
-beforeEach(() => {
-  isTauriMock.mockReturnValue(true);
-  isBundledTauriOriginMock.mockReturnValue(false);
-});
-
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
@@ -44,20 +31,8 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe("PreviewBadge", () => {
-  it("keeps the build-time preview site and in-webview navigation in the remote Tauri shell, whatever /config.js sets", () => {
-    setRuntimeConfig({ previewSiteUrl: SELF_PREVIEW });
-    render(<PreviewBadge />);
-
-    const link = previewLink();
-    expect(link).toHaveAttribute("href", "https://preview.phase-rs.dev");
-    expect(link).not.toHaveAttribute("target");
-  });
-});
-
 describe("PreviewBadge on a release web build", () => {
   beforeEach(() => {
-    isTauriMock.mockReturnValue(false);
     vi.stubGlobal("__IS_RELEASE_BUILD__", true);
   });
 

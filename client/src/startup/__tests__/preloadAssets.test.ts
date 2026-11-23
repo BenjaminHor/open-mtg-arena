@@ -1,13 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-// Claim boundary: `audioDeviceSafe` is mocked here, so this file proves the
-// DISABLE WIRING (verdict → disable → silent, completed boot) and its
-// ordering. The service's own seam (isTauri, invoke, timeout race) is proven
-// in services/__tests__/audioHealth.test.ts.
-const { audioDeviceSafeMock } = vi.hoisted(() => ({
-  audioDeviceSafeMock: vi.fn(),
-}));
-
 // Swappable so a test can reproduce the WebKitGTK failure mode from issue
 // #6744: a decode that neither resolves nor rejects because the pipeline it
 // needs was never fully built.
@@ -65,46 +57,13 @@ async function freshBoot() {
   return { ...preload, audioManager, useAudioHealthStore };
 }
 
-describe("ensurePreload audio gate", () => {
+describe("ensurePreload audio boot", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     decodeAudioData = () => Promise.resolve({});
   });
 
-  it("wedged verdict: boot completes silent, disable precedes gesture listeners", async () => {
-    audioDeviceSafeMock.mockResolvedValue(false);
-    const addListenerSpy = vi.spyOn(document, "addEventListener");
-    const { ensurePreload, subscribePreload, audioManager, useAudioHealthStore } =
-      await freshBoot();
-    const disableSpy = vi.spyOn(audioManager, "disable");
-
-    const percents: number[] = [];
-    const unsub = subscribePreload((p) => percents.push(p.percent));
-    await ensurePreload();
-    unsub();
-
-    // Silent: the device was never opened…
-    expect(audioContextSpy).not.toHaveBeenCalled();
-    // …but the boot still completed and the splash can dismiss.
-    expect(percents).toContain(100);
-    expect(useAudioHealthStore.getState().unavailable).toBe("device-wedged");
-
-    // Ordering, not mere co-occurrence: disable() must run before ANY gesture
-    // listener exists, else a click during boot could still reach warmUp().
-    expect(disableSpy).toHaveBeenCalledOnce();
-    const disableOrder = disableSpy.mock.invocationCallOrder[0];
-    const listenerOrders = addListenerSpy.mock.invocationCallOrder;
-    expect(listenerOrders.length).toBeGreaterThan(0);
-    for (const order of listenerOrders) {
-      expect(disableOrder).toBeLessThan(order);
-    }
-    addListenerSpy.mockRestore();
-  });
-
-  // Control arm: flipping only the verdict flips the device-open observable,
-  // so the wedged test's not-called assertion is discriminating.
-  it("healthy verdict: warmUp opens the device and nothing is blocked", async () => {
-    audioDeviceSafeMock.mockResolvedValue(true);
+  it("opens the device and completes the boot with nothing blocked", async () => {
     const { ensurePreload, subscribePreload, useAudioHealthStore } = await freshBoot();
 
     const percents: number[] = [];
@@ -113,44 +72,22 @@ describe("ensurePreload audio gate", () => {
     unsub();
 
     expect(audioContextSpy).toHaveBeenCalledOnce();
+    expect(percents).toContain(10);
     expect(percents).toContain(100);
     expect(useAudioHealthStore.getState().unavailable).toBeNull();
-  });
-
-  it("progress starts moving before the verdict resolves (splash is never 0%-frozen)", async () => {
-    let resolveVerdict!: (safe: boolean) => void;
-    audioDeviceSafeMock.mockReturnValue(
-      new Promise<boolean>((resolve) => {
-        resolveVerdict = resolve;
-      }),
-    );
-    const { ensurePreload, subscribePreload } = await freshBoot();
-
-    const percents: number[] = [];
-    const unsub = subscribePreload((p) => percents.push(p.percent));
-    const done = ensurePreload();
-
-    expect(percents).toContain(10);
-    expect(percents).not.toContain(100);
-
-    resolveVerdict(true);
-    await done;
-    unsub();
-    expect(percents).toContain(100);
   });
 });
 
 // Issue #6744. WebKitGTK builds every decode as a GStreamer pipeline; with no
 // usable plugin set it logs the missing elements, wires a partial pipeline and
-// leaves the promise pending forever. The device opened fine, so the wedged-
-// device gate above cannot see this — only a deadline on the preload can.
+// leaves the promise pending forever. Only a deadline on the preload can see
+// this.
 // Every test here fails by TIMING OUT if the deadline is removed, which is
 // exactly the user-visible bug: a splash that never dismisses.
 describe("ensurePreload SFX deadline", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
-    audioDeviceSafeMock.mockResolvedValue(true);
     decodeAudioData = () => Promise.resolve({});
   });
 
@@ -341,21 +278,6 @@ describe("ensurePreload SFX deadline", () => {
     expect(useAudioHealthStore.getState().unavailable).toBe("media-unavailable");
     expect(audioManager.isDisabled).toBe(true);
     expect(diagnostic).toHaveBeenCalledOnce();
-    diagnostic.mockRestore();
-  });
-
-  // The wedged-device verdict already named the fault and left ctx null, so
-  // preloadSfx has nothing to do. It must not relabel that boot as a media
-  // failure — "skipped" is not "none".
-  it("a wedged device keeps its own reason and is not relabelled media-unavailable", async () => {
-    audioDeviceSafeMock.mockResolvedValue(false);
-    const diagnostic = vi.spyOn(console, "error").mockImplementation(() => {});
-    const { ensurePreload, useAudioHealthStore } = await freshBoot();
-
-    await ensurePreload();
-
-    expect(useAudioHealthStore.getState().unavailable).toBe("device-wedged");
-    expect(diagnostic).not.toHaveBeenCalled();
     diagnostic.mockRestore();
   });
 });

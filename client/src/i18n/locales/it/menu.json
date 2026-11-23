@@ -26,17 +26,12 @@
   "home": {
     "resume": {
       "title": "Riprendi partita",
-      "description": "Continua l'ultima partita salvata dal suo turno e stato del campo attuali.",
-      "viewResult": "Vedi risultato"
+      "description": "Continua l'ultima partita salvata dal suo turno e stato del campo attuali."
     },
     "setup": {
       "title": "Gioca contro l'IA",
       "titleSaved": "Nuova partita contro l'IA",
       "description": "Gioca una partita in solitaria contro un avversario IA — scegli formato, mazzo, archetipo e difficoltà."
-    },
-    "online": {
-      "title": "Gioca online",
-      "description": "Ospita una stanza, unisciti tramite codice o riconnettiti al multigiocatore."
     },
     "draft": {
       "title": "Draft",
@@ -51,9 +46,7 @@
     },
     "preview": {
       "cta": "Prova l'anteprima",
-      "tooltip": "Gioca l'ultima build di anteprima — le carte e le correzioni più recenti arrivano qui prima di ogni rilascio.",
-      "backCta": "Torna alla versione stabile",
-      "backTooltip": "Torna alla versione di rilascio corrente."
+      "tooltip": "Gioca l'ultima build di anteprima — le carte e le correzioni più recenti arrivano qui prima di ogni rilascio."
     },
     "coverage": {
       "title": "Apri la dashboard della copertura",
@@ -70,13 +63,11 @@
     "load": {
       "title": "Carica stato di gioco"
     },
-    "exit": "Esci",
     "dashboard": {
       "welcome": "Bentornato",
       "enter": "Entra",
       "continue": "Riprendi da dove avevi lasciato",
       "resumeDraft": "Riprendi draft",
-      "draftPod": "Pod di draft",
       "activeDeck": "Mazzo attivo",
       "noActiveDeck": "Scegli un mazzo per iniziare",
       "fromFeeds": "Dai tuoi feed",
@@ -84,10 +75,7 @@
       "cards": "{{count}} carte",
       "mode": {
         "ai": "contro IA",
-        "online": "Online",
-        "local": "Locale",
-        "p2p-host": "P2P",
-        "p2p-join": "P2P"
+        "local": "Locale"
       },
       "tagline": "Un motore di regole e client di gioco open source per Magic: The Gathering",
       "turn": "Turno {{n}}",
@@ -149,20 +137,6 @@
     "precons": "Precon",
     "playable": "{{playable}} giocabili",
     "nonePlayable": "Nessuno degli {{selected}} mazzi selezionati è legale con i filtri attuali, quindi Casuale pesca da tutti gli {{total}} mazzi."
-  },
-  "feedManager": {
-    "title": "Gestisci feed",
-    "refreshing": "Aggiornamento…",
-    "refreshAll": "Aggiorna tutti",
-    "refresh": "Aggiorna",
-    "subscribe": "Iscriviti",
-    "unsubscribe": "Annulla iscrizione",
-    "lastRefreshed": "Ultimo aggiornamento: {{date}}",
-    "dataProvidedBy": "Dati forniti da",
-    "addCustomFeed": "Aggiungi feed personalizzato",
-    "add": "Aggiungi",
-    "offlineUnavailable": "Gli aggiornamenti dei feed non sono disponibili offline.",
-    "done": "Fatto"
   },
   "importDeck": {
     "title": "Importa mazzo",
@@ -247,9 +221,6 @@
     "tabDecks": "I miei mazzi",
     "tabSubscriptions": "Iscrizioni",
     "createNew": "Crea nuovo",
-    "refreshing": "Aggiornamento…",
-    "refreshAll": "Aggiorna tutti",
-    "manageFeeds": "Gestisci feed",
     "searchPlaceholder": "Cerca mazzi…",
     "formatLabel": "Formato",
     "sourceFilterLabel": "Fonte del mazzo",
@@ -334,10 +305,8 @@
     "label": "Navigazione principale",
     "home": "Home",
     "play": "Gioca",
-    "online": "Online",
     "draft": "Draft",
     "decks": "Mazzi",
-    "tournament": "Tornei",
     "alpha": "Alpha",
     "profile": "Profilo",
     "settings": "Impostazioni",

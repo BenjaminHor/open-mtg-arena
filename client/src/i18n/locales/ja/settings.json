@@ -6,18 +6,10 @@
   "tabs": {
     "gameplay": "ゲームプレイ",
     "ai": "AI対戦相手",
-    "experimental": "実験的",
     "visual": "表示",
     "combat": "ペース",
     "audio": "音声",
-    "multiplayer": "マルチプレイヤー",
     "data": "データ"
-  },
-  "experimental": {
-    "title": "実験的",
-    "tournaments": "トーナメント",
-    "showTournaments": "ナビゲーションにトーナメントを表示",
-    "showTournamentsDescription": "トーナメントは開発中で、予告なく変更される場合があります。"
   },
   "gameplay": {
     "collapseLands": "土地を折りたたむ",
@@ -50,8 +42,6 @@
       "autoExceptSacrificialMana": "生け贄にする前に確認",
       "manual": "手動"
     },
-    "nativeEngine": "ローカルゲームとホストしたマルチプレイヤーでネイティブエンジンを使用",
-    "nativeEngineDescription": "ローカルAIゲームとロビー経由でホストするゲームに、ダウンロード済みエンジンを使用します。ゲストは引き続きロビーのP2P接続を使います。利用できない場合は内蔵エンジンに戻ります。",
     "boardBackground": "盤面の背景",
     "boardBackgroundGroups": {
       "automatic": "自動",
@@ -197,37 +187,6 @@
     "customThemes": "カスタムテーマ",
     "remove": "削除"
   },
-  "multiplayer": {
-    "title": "マルチプレイヤー",
-    "displayName": "表示名",
-    "displayNamePlaceholder": "名前を入力",
-    "serverSelectionNote": "サーバー選択はロビーに移動しました — マルチプレイヤーを開き、サーバーチップ（またはP2Pモードの「サーバーを選択」）から地域の切り替え、自前ホストの設定、接続テストを行ってください。"
-  },
-  "sync": {
-    "title": "クラウド同期",
-    "description": "サインインしてデッキ、設定、フィード購読を端末間で同期します。データはアカウントに保存され、変更時に自動更新されます。",
-    "signInWith": "{{provider}}でサインイン",
-    "signOut": "サインアウト",
-    "signedInAs": "{{name}}としてサインイン中",
-    "syncNow": "今すぐ同期",
-    "statusSyncing": "同期中…",
-    "statusPaused": "オフライン中はクラウド同期を一時停止します。",
-    "statusError": "同期に失敗しました",
-    "lastSynced": "最終同期 {{time}}",
-    "never": "未同期",
-    "conflictTitle": "両方のコピーに変更があります",
-    "conflictBody": "この端末とクラウドアカウントの両方にデータがあり、どちらが最新か判定できません。片方を選ぶか、両方のデッキコレクションを残してください。",
-    "keepCloud": "クラウドを使用",
-    "keepLocal": "この端末を保持",
-    "keepBothDecks": "両方のデッキコレクションを保持",
-    "savesNote": "ゲームの保存データとキャッシュはこの端末に残ります。",
-    "diffDecks": "デッキ: {{added}}件追加、{{modified}}件変更、{{removed}}件削除",
-    "diffPrefs": "設定が異なります",
-    "diffFeeds": "フィード購読が異なります",
-    "diffOther": "その他の設定が異なります",
-    "providerDiscord": "Discord",
-    "providerGoogle": "Google"
-  },
   "data": {
     "title": "バックアップと復元",
     "description": "設定、インポートしたデッキ、フィード購読を1つのJSONファイルにエクスポートします。インポートすると別の端末で復元できます。IndexedDBキャッシュ（フィード、音声、保存ゲーム）は含まれず、自動的に再構築されます。",
@@ -244,9 +203,7 @@
     "importedWithPreferences_one": "{{count}}個のデッキと設定をインポートしました。",
     "importedWithPreferences_other": "{{count}}個のデッキと設定をインポートしました。",
     "skippedMalformed_one": "形式不正のエントリ{{count}}件をスキップしました。",
-    "skippedMalformed_other": "形式不正のエントリ{{count}}件をスキップしました。",
-    "telemetry": "匿名のクラッシュ・利用状況レポートを送信",
-    "telemetryDescription": "クラッシュ修正とカード対応の優先順位付けに役立ちます。アカウントや個人データは含まず、エラーとゲーム概要の件数だけを送信します。"
+    "skippedMalformed_other": "形式不正のエントリ{{count}}件をスキップしました。"
   },
   "visualPacks": {
     "title": "オフラインカード画像",
@@ -469,8 +426,7 @@
       "preconCatalog": "生成済み構築済みデッキ",
       "bundledAiCatalog": "同梱AIデッキカタログ",
       "deckLibrary": "インストール済みデッキライブラリー",
-      "coreVisuals": "カード裏面とマナシンボル",
-      "nativeEngine": "ネイティブエンジン"
+      "coreVisuals": "カード裏面とマナシンボル"
     },
     "capabilityStates": {
       "ready": "準備完了",

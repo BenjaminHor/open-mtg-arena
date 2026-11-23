@@ -62,7 +62,6 @@ async function setup() {
   await (await import("../../../services/scryfall.ts")).loadScryfallData();
   const store = (await import("../../../stores/gameStore.ts")).useGameStore;
   const ui = (await import("../../../stores/uiStore.ts")).useUiStore;
-  const multiplayer = (await import("../../../stores/multiplayerStore.ts")).useMultiplayerStore;
   ui.setState(ui.getInitialState());
   const { setGameStoreForTest } = await import("../../../test/helpers/gameStoreHelpers.ts");
   function seed(object: GameObject, overrides: Partial<GameState> = {}) {

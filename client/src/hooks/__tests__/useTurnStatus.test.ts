@@ -14,7 +14,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { Phase, StackEntry, WaitingFor } from "../../adapter/types";
 import { useGameStore } from "../../stores/gameStore";
-import { useMultiplayerStore } from "../../stores/multiplayerStore";
 import {
   buildGameState,
   buildStackEntry,
@@ -49,11 +48,9 @@ function setup(opts: {
   spectate?: boolean;
 }) {
   useGameStore.setState({
-    gameMode: opts.spectate ? "spectate" : "online",
+    gameMode: opts.spectate ? "spectate" : "ai",
     gameState: createGameState(opts.state),
     waitingFor: opts.waitingFor,
-  });
-  useMultiplayerStore.setState({ isSpectator: opts.spectate ?? false,
   });
 }
 

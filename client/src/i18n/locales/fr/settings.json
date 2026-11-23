@@ -6,18 +6,10 @@
   "tabs": {
     "gameplay": "Jouabilité",
     "ai": "Adversaires IA",
-    "experimental": "Expérimental",
     "visual": "Visuel",
     "combat": "Rythme",
     "audio": "Audio",
-    "multiplayer": "Multijoueur",
     "data": "Données"
-  },
-  "experimental": {
-    "title": "Expérimental",
-    "tournaments": "Tournois",
-    "showTournaments": "Afficher les tournois dans la navigation",
-    "showTournamentsDescription": "Les tournois sont encore en cours de développement et peuvent changer sans préavis."
   },
   "gameplay": {
     "collapseLands": "Réduire Lands",
@@ -50,8 +42,6 @@
       "autoExceptSacrificialMana": "Demander avant de sacrifier",
       "manual": "Manuel"
     },
-    "nativeEngine": "Utiliser le moteur natif pour les parties locales et le multijoueur hébergé",
-    "nativeEngineDescription": "Utilisez le moteur téléchargé pour les parties locales contre l’IA et les parties que vous hébergez via un salon. Les invités se connectent toujours via la connexion pair à pair du salon. Utilise le moteur intégré lorsqu’il n’est pas disponible.",
     "boardBackground": "Arrière-plan du plateau",
     "boardBackgroundGroups": {
       "automatic": "Automatique",
@@ -197,37 +187,6 @@
     "customThemes": "Thèmes personnalisés",
     "remove": "Retirer"
   },
-  "multiplayer": {
-    "title": "Multijoueur",
-    "displayName": "Nom affiché",
-    "displayNamePlaceholder": "Saisissez votre nom",
-    "serverSelectionNote": "La sélection du serveur a été déplacée vers le salon — ouvrez Multijoueur et utilisez la puce du serveur (ou « Choisir un serveur » en mode P2P) pour changer de région, configurer une instance auto-hébergée ou tester la connectivité."
-  },
-  "sync": {
-    "title": "Synchronisation cloud",
-    "description": "Connecte-toi pour synchroniser tes decks, préférences et abonnements de flux entre tes appareils. Tes données résident dans ton compte et se mettent à jour automatiquement à chaque changement.",
-    "signInWith": "Se connecter avec {{provider}}",
-    "signOut": "Se déconnecter",
-    "signedInAs": "Connecté en tant que {{name}}",
-    "syncNow": "Synchroniser maintenant",
-    "statusSyncing": "Synchronisation…",
-    "statusPaused": "La synchronisation cloud est en pause pendant que vous êtes hors ligne.",
-    "statusError": "Échec de la synchronisation",
-    "lastSynced": "Dernière synchronisation {{time}}",
-    "never": "jamais",
-    "conflictTitle": "Les deux copies ont des modifications",
-    "conflictBody": "Cet appareil et ton compte cloud contiennent tous les deux des données, et nous ne pouvons pas déterminer laquelle est à jour. Choisis une copie ou conserve les deux collections de decks.",
-    "keepCloud": "Utiliser le cloud",
-    "keepLocal": "Conserver cet appareil",
-    "keepBothDecks": "Conserver les deux collections de decks",
-    "savesNote": "Les sauvegardes de parties et les caches restent sur cet appareil.",
-    "diffDecks": "Decks : {{added}} ajoutés, {{modified}} modifiés, {{removed}} retirés",
-    "diffPrefs": "Les préférences diffèrent",
-    "diffFeeds": "Les abonnements aux flux diffèrent",
-    "diffOther": "D'autres paramètres diffèrent",
-    "providerDiscord": "Discord",
-    "providerGoogle": "Google"
-  },
   "data": {
     "title": "Sauvegarde et restauration",
     "description": "L'export regroupe vos préférences, decks importés et abonnements à des flux dans un seul fichier JSON. L'import les restaure sur une autre machine. Les caches IndexedDB (cache de flux, cache audio, parties enregistrées) ne sont pas inclus — ils se reconstruisent automatiquement.",
@@ -244,9 +203,7 @@
     "importedWithPreferences_one": "{{count}} deck et les préférences importés.",
     "importedWithPreferences_other": "{{count}} decks et les préférences importés.",
     "skippedMalformed_one": "{{count}} entrée malformée ignorée.",
-    "skippedMalformed_other": "{{count}} entrées malformées ignorées.",
-    "telemetry": "Envoyer des rapports anonymes de plantage et d'utilisation",
-    "telemetryDescription": "Aide à corriger les plantages et à prioriser la prise en charge des cartes. Aucun compte, aucune donnée personnelle — uniquement des comptages d'erreurs et de résumés de partie."
+    "skippedMalformed_other": "{{count}} entrées malformées ignorées."
   },
   "visualPacks": {
     "title": "Catalogue visuel hors ligne",
@@ -469,8 +426,7 @@
       "preconCatalog": "Decks préconstruits",
       "bundledAiCatalog": "Catalogue de decks IA",
       "deckLibrary": "Bibliothèque de decks installée",
-      "coreVisuals": "Dos de carte et symboles de mana",
-      "nativeEngine": "Moteur natif"
+      "coreVisuals": "Dos de carte et symboles de mana"
     },
     "capabilityStates": {
       "ready": "Prêt",

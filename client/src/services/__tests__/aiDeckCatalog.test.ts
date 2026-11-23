@@ -200,8 +200,8 @@ describe("buildLegalAiDeckCatalog", () => {
     saveDeck("Mirrored Deck", deck("Mirrored Card"));
     localStorage.setItem(FEED_DECK_ORIGINS_KEY, JSON.stringify({ "Mirrored Deck": "feed-a" }));
     vi.mocked(listSubscriptions).mockReturnValue([
-      { sourceId: "feed-a", url: "feed-a.json", type: "remote", subscribedAt: 0, lastRefreshedAt: 0, lastVersion: 1 },
-      { sourceId: "feed-b", url: "feed-b.json", type: "remote", subscribedAt: 0, lastRefreshedAt: 0, lastVersion: 1 },
+      { sourceId: "feed-a", url: "feed-a.json", type: "bundled", subscribedAt: 0, lastRefreshedAt: 0, lastVersion: 1 },
+      { sourceId: "feed-b", url: "feed-b.json", type: "bundled", subscribedAt: 0, lastRefreshedAt: 0, lastVersion: 1 },
       { sourceId: "starter", url: "starter.json", type: "bundled", subscribedAt: 0, lastRefreshedAt: 0, lastVersion: 1 },
     ]);
     vi.mocked(getCachedFeed).mockImplementation((feedId) => {

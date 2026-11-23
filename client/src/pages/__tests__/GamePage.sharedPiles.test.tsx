@@ -66,9 +66,6 @@ vi.mock("../../components/modal/EngineLostModal.tsx", () => ({ EngineLostModal: 
 vi.mock("../../components/modal/CardDataMissingModal.tsx", () => ({
   CardDataMissingModal: () => null,
 }));
-vi.mock("../../components/multiplayer/ConcedeDialog.tsx", () => ({
-  ConcedeDialog: () => null,
-}));
 vi.mock("../../components/chrome/GameMenu.tsx", () => ({ GameMenu: () => null }));
 
 vi.mock("../../stores/draftStore.ts", () => ({
@@ -94,7 +91,7 @@ vi.mock("../../adapter/draft-adapter.ts", async (importOriginal) => ({
 
 function gamePageTree() {
   return (
-    <MemoryRouter initialEntries={["/game/shared-piles?mode=join"]}>
+    <MemoryRouter initialEntries={["/game/shared-piles?mode=ai"]}>
       <Routes>
         <Route path="/game/:id" element={<GamePage />} />
       </Routes>
@@ -104,7 +101,7 @@ function gamePageTree() {
 
 const SHARED = { shared_piles: { library: 0, graveyard: 0 } };
 
-function seed(state: GameState, viewerSeat: number) {
+function seed(state: GameState) {
   act(() => {
     useGameStore.setState({
       gameId: "shared-piles",
@@ -154,7 +151,7 @@ const anchors = (attr: string) =>
 function bothGraveyardsPrompt() {
   return buildTargetSelectionWaitingFor({
     data: {
-      player: 1,
+      player: 0,
       pending_cast: buildPendingCast(),
       target_slots: [
         buildTargetSelectionSlot({ legal_targets: [{ Object: 101 }, { Object: 102 }] }),
@@ -174,8 +171,8 @@ describe("GamePage shared piles", () => {
     });
   });
 
-  it.each([0, 1])("renders the shared library and graveyard once, for viewer seat %i", (seat) => {
-    seed(pileState({ shared: true }), seat);
+  it("renders the shared library and graveyard once", () => {
+    seed(pileState({ shared: true }));
     render(gamePageTree());
 
     expect(anchors("data-library-pile")).toEqual(["0"]);
@@ -185,7 +182,7 @@ describe("GamePage shared piles", () => {
   });
 
   it("renders each seat's own library and graveyard when nothing is shared", () => {
-    seed(pileState({ shared: false }), 0);
+    seed(pileState({ shared: false }));
     render(gamePageTree());
 
     expect(anchors("data-library-pile").sort()).toEqual(["0", "1"]);
@@ -194,7 +191,7 @@ describe("GamePage shared piles", () => {
 
   it("opens one graveyard viewer for a prompt over a shared graveyard's cards of both owners", async () => {
     const prompt = bothGraveyardsPrompt();
-    seed(pileState({ shared: true, waitingFor: prompt }), 1);
+    seed(pileState({ shared: true, waitingFor: prompt }));
     render(gamePageTree());
 
     expect(await screen.findByRole("dialog", { name: /Graveyard/ })).toBeInTheDocument();
@@ -202,7 +199,7 @@ describe("GamePage shared piles", () => {
 
   it("leaves a prompt over two seats' own graveyards for the player to choose", () => {
     const prompt = bothGraveyardsPrompt();
-    seed(pileState({ shared: false, waitingFor: prompt }), 1);
+    seed(pileState({ shared: false, waitingFor: prompt }));
     render(gamePageTree());
 
     expect(screen.queryByRole("dialog", { name: /Graveyard/ })).not.toBeInTheDocument();

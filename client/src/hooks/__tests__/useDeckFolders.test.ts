@@ -5,7 +5,6 @@ import { groupSavedDecks, useDeckFolders } from "../useDeckFolders";
 import { DECK_FOLDERS_KEY, STORAGE_KEY_PREFIX, type DeckFolder, type DeckMeta } from "../../constants/storage";
 import { setSavedDeckTxnLockWaitForTests, withSavedDeckLibrary } from "../../services/savedDeckTransaction";
 import { installFifoWebLocks, resetSavedDeckLibraryForTests, uninstallWebLocks } from "../../test/helpers/webLocks";
-import { PROFILE_REPLACED_EVENT } from "../../stores/cloudSyncStore";
 
 beforeEach(() => {
   localStorage.clear();
@@ -148,24 +147,6 @@ describe("useDeckFolders (reactive)", () => {
     });
 
     expect(result.current.folders.map((f) => f.name)).toEqual(["External"]);
-  });
-
-  it("refreshes folder state when a cloud-sync snapshot replaces the profile", () => {
-    const { result } = renderHook(() => useDeckFolders());
-    expect(result.current.folders).toHaveLength(0);
-
-    // A same-tab cloud-sync restore overwrites the registry then broadcasts
-    // PROFILE_REPLACED_EVENT (not DECKS_CHANGED / storage); the hook must still
-    // re-read so grouping doesn't desync from the freshly-synced decks.
-    act(() => {
-      localStorage.setItem(
-        DECK_FOLDERS_KEY,
-        JSON.stringify([{ id: "synced", name: "From Phone", order: 0 }]),
-      );
-      window.dispatchEvent(new CustomEvent(PROFILE_REPLACED_EVENT));
-    });
-
-    expect(result.current.folders.map((f) => f.name)).toEqual(["From Phone"]);
   });
 
   it("returns stable identities for createFolder/renameFolder/deleteFolder/assignDeck/toggleStar across rerenders", () => {

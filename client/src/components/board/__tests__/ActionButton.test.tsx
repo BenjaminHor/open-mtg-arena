@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameState, WaitingFor } from "../../../adapter/types";
 import { dispatchAction, dispatchResolveAll } from "../../../game/dispatch.ts";
 import { useGameStore } from "../../../stores/gameStore";
-import { useMultiplayerDraftStore } from "../../../stores/multiplayerDraftStore";
 import { usePreferencesStore } from "../../../stores/preferencesStore";
 import { usePriorityAttentionStore } from "../../../stores/priorityAttentionStore";
 import { useUiStore } from "../../../stores/uiStore";
@@ -101,7 +100,6 @@ describe("ActionButton", () => {
       blockerAssignments: new Map(),
       combatClickHandler: null,
     });
-    useMultiplayerDraftStore.setState({ matchPairing: null });
   });
 
   afterEach(() => {
@@ -221,65 +219,6 @@ describe("ActionButton", () => {
       waitingFor: priorityPrompt(),
       legalActions: [],
     });
-
-    render(<ActionButton />);
-
-    fireEvent.click(screen.getByRole("button", { name: /^Resolve All/ }));
-    expect(vi.mocked(dispatchResolveAll)).toHaveBeenLastCalledWith(0);
-  });
-
-  it("leaves native AI Resolve All seat ownership to the server", () => {
-    useGameStore.setState({
-      gameMode: "native-ai",
-      gameState: {
-        ...createGameState(priorityPrompt()),
-        phase: "PostCombatMain",
-        auto_pass: {},
-        stack: [spellStackEntry()],
-      },
-      waitingFor: priorityPrompt(),
-      legalActions: [],
-    });
-
-    render(<ActionButton />);
-
-    fireEvent.click(screen.getByRole("button", { name: /^Resolve All/ }));
-    expect(vi.mocked(dispatchResolveAll)).toHaveBeenLastCalledWith(0);
-  });
-
-  it("uses the live controller's bot seat binding for a Bot draft match", () => {
-    useGameStore.setState({
-      gameMode: "draft-match",
-      gameState: {
-        ...createGameState(priorityPrompt()),
-        phase: "PostCombatMain",
-        auto_pass: {},
-        stack: [spellStackEntry()],
-      },
-      waitingFor: priorityPrompt(),
-      legalActions: [],
-    });
-    useMultiplayerDraftStore.setState({ matchPairing: { type: "Bot" } as never });
-
-    render(<ActionButton />);
-
-    fireEvent.click(screen.getByRole("button", { name: /^Resolve All/ }));
-    expect(vi.mocked(dispatchResolveAll)).toHaveBeenLastCalledWith(0);
-  });
-
-  it("claims no AI seats for a vs-human draft match", () => {
-    useGameStore.setState({
-      gameMode: "draft-match",
-      gameState: {
-        ...createGameState(priorityPrompt()),
-        phase: "PostCombatMain",
-        auto_pass: {},
-        stack: [spellStackEntry()],
-      },
-      waitingFor: priorityPrompt(),
-      legalActions: [],
-    });
-    useMultiplayerDraftStore.setState({ matchPairing: { type: "HumanHost" } as never });
 
     render(<ActionButton />);
 

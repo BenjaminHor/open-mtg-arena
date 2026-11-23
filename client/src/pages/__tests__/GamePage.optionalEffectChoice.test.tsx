@@ -60,9 +60,6 @@ vi.mock("../../components/modal/EngineLostModal.tsx", () => ({ EngineLostModal: 
 vi.mock("../../components/modal/CardDataMissingModal.tsx", () => ({
   CardDataMissingModal: () => null,
 }));
-vi.mock("../../components/multiplayer/ConcedeDialog.tsx", () => ({
-  ConcedeDialog: () => null,
-}));
 vi.mock("../../components/chrome/GameMenu.tsx", () => ({ GameMenu: () => null }));
 
 vi.mock("../../stores/draftStore.ts", () => ({
@@ -91,7 +88,7 @@ const SUBJECT_ID = 44;
 
 function gamePageTree() {
   return (
-    <MemoryRouter initialEntries={["/game/optional-choice?mode=join"]}>
+    <MemoryRouter initialEntries={["/game/optional-choice?mode=ai"]}>
       <Routes>
         <Route path="/game/:id" element={<GamePage />} />
       </Routes>

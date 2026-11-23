@@ -447,37 +447,6 @@ describe("processRemoteUpdate queue coalescing", () => {
     expect(logLabels()).toEqual(["blocker", "newer", "older"]);
   });
 
-  it("(d2) rewind targets follow the winning snapshot, and undefined never erases a published list", async () => {
-    const targets = [{ turn_number: 3, active_player: 1 }];
-    const calls = [
-      processRemoteUpdate(snapshot(1), lifeEvent(), [], undefined), // in flight
-      processRemoteUpdate(snapshot(2), lifeEvent(), [], targets),
-      processRemoteUpdate(snapshot(3), lifeEvent(), [], undefined),
-    ];
-    await vi.runAllTimersAsync();
-    await Promise.all(calls);
-
-    expect(useGameStore.getState().rewindTargets).toEqual(targets);
-  });
-
-  it("(d3) an older-seq update merged after a newer one does not replace the newer one's rewind targets", async () => {
-    const blocker = snapshot(1);
-    const older = snapshot(2);
-    const newer = snapshot(3);
-    const newerTargets = [{ turn_number: 3, active_player: 1 }];
-    const olderTargets = [{ turn_number: 2, active_player: 0 }];
-    const calls = [
-      processRemoteUpdate(blocker, lifeEvent(), [], undefined), // in flight
-      processRemoteUpdate(newer, lifeEvent(), [], newerTargets),
-      processRemoteUpdate(older, lifeEvent(), [], olderTargets),
-    ];
-    await vi.runAllTimersAsync();
-    await Promise.all(calls);
-
-    expect(useGameStore.getState().lastCommittedSeq).toBe(newer.seq);
-    expect(useGameStore.getState().rewindTargets).toEqual(newerTargets);
-  });
-
   it("rejects every coalesced caller together when the merged entry fails", async () => {
     const boom = new Error("commit failed");
     const original = useGameStore.getState().commitEngineSnapshot;

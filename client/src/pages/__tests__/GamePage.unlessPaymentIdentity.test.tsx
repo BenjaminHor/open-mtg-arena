@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter, Route, Routes } from "react-router";
 
 import { useGameStore } from "../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../stores/multiplayerStore.ts";
 import { usePreferencesStore } from "../../stores/preferencesStore.ts";
 import { useUiStore } from "../../stores/uiStore.ts";
 import { gameObjectFactory } from "../../test/factories/gameObjectFactory.ts";
@@ -57,9 +56,6 @@ vi.mock("../../components/modal/EngineLostModal.tsx", () => ({ EngineLostModal: 
 vi.mock("../../components/modal/CardDataMissingModal.tsx", () => ({
   CardDataMissingModal: () => null,
 }));
-vi.mock("../../components/multiplayer/ConcedeDialog.tsx", () => ({
-  ConcedeDialog: () => null,
-}));
 vi.mock("../../components/chrome/GameMenu.tsx", () => ({ GameMenu: () => null }));
 
 vi.mock("../../stores/draftStore.ts", () => ({
@@ -104,7 +100,7 @@ function paymentPrompt(player: number, affectedObject: number | null) {
 
 function gamePageTree() {
   return (
-    <MemoryRouter initialEntries={["/game/unless-identity?mode=join"]}>
+    <MemoryRouter initialEntries={["/game/unless-identity?mode=ai"]}>
       <Routes>
         <Route path="/game/:id" element={<GamePage />} />
       </Routes>
@@ -130,7 +126,7 @@ function chooseCostPrompt(player: number, affectedObject: number | null) {
   };
 }
 
-function seedPrompt(waitingFor: unknown, activePlayerId: number) {
+function seedPrompt(waitingFor: unknown) {
   const cardA = gameObjectFactory.creature(1, 1).named("Revealed Alpha").withId(CARD_A).build();
   const cardB = gameObjectFactory.creature(1, 1).named("Revealed Beta").withId(CARD_B).build();
   const state = gameStateFactory.withPlayers(0, 1, 2).withObjects(cardA, cardB).build();
@@ -141,7 +137,6 @@ function seedPrompt(waitingFor: unknown, activePlayerId: number) {
       gameState: state,
       waitingFor: waitingFor as never,
     });
-    useMultiplayerStore.setState({ activePlayerId,});
   });
 }
 
@@ -168,35 +163,27 @@ describe("GamePage unless-payment card identity", () => {
     clearSession();
   });
 
-  it("names the card each prompt decides for every opponent and after a restore", async () => {
-    seedPrompt(paymentPrompt(1, CARD_A), 1);
+  it("names the card each prompt decides, and again after a restore", async () => {
+    seedPrompt(paymentPrompt(0, CARD_A));
     render(gamePageTree());
 
-    // First opponent's prompt for the first card.
-    expect(await screen.findByText("Revealed Alpha")).toBeInTheDocument();
-    expect(screen.queryByText("Revealed Beta")).not.toBeInTheDocument();
-
-    // The next opponent's client is asked about the SAME card: identity carries.
-    act(() => {
-      useGameStore.setState({ waitingFor: paymentPrompt(2, CARD_A) as never });
-    });
     expect(await screen.findByText("Revealed Alpha")).toBeInTheDocument();
     expect(screen.queryByText("Revealed Beta")).not.toBeInTheDocument();
 
     // The following card of the sequence replaces the prompt's identity.
     act(() => {
-      useGameStore.setState({ waitingFor: paymentPrompt(2, CARD_B) as never });
+      useGameStore.setState({ waitingFor: paymentPrompt(0, CARD_B) as never });
     });
     expect(await screen.findByText("Revealed Beta")).toBeInTheDocument();
     expect(screen.queryByText("Revealed Alpha")).not.toBeInTheDocument();
 
-    // Reconnect: the page is torn down with the session cleared, then a fresh
+    // Restore: the page is torn down with the session cleared, then a fresh
     // mount receives the restored engine prompt. The identity is read again
     // from the restored payload, not from anything the first mount held.
     cleanup();
     clearSession();
     expect(screen.queryByText("Revealed Beta")).not.toBeInTheDocument();
-    seedPrompt(paymentPrompt(2, CARD_B), 2);
+    seedPrompt(paymentPrompt(0, CARD_B));
     render(gamePageTree());
     expect(await screen.findByText("Revealed Beta")).toBeInTheDocument();
     expect(screen.queryByText("Revealed Alpha")).not.toBeInTheDocument();
@@ -209,13 +196,13 @@ describe("GamePage unless-payment card identity", () => {
   });
 
   it("names the card in the disjunctive cost-choice prompt", async () => {
-    seedPrompt(chooseCostPrompt(1, CARD_B), 1);
+    seedPrompt(chooseCostPrompt(0, CARD_B));
     render(gamePageTree());
     expect(await screen.findByText("Revealed Beta")).toBeInTheDocument();
     expect(screen.queryByText("Revealed Alpha")).not.toBeInTheDocument();
 
     act(() => {
-      useGameStore.setState({ waitingFor: chooseCostPrompt(2, CARD_A) as never });
+      useGameStore.setState({ waitingFor: chooseCostPrompt(0, CARD_A) as never });
     });
     expect(await screen.findByText("Revealed Alpha")).toBeInTheDocument();
     expect(screen.queryByText("Revealed Beta")).not.toBeInTheDocument();

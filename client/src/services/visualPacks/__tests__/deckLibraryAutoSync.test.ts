@@ -12,7 +12,6 @@ import {
   PREFERENCES_KEY,
   STORAGE_KEY_PREFIX,
 } from "../../../constants/storage.ts";
-import { PROFILE_REPLACED_EVENT } from "../../../stores/cloudSyncStore.ts";
 import { usePreferencesStore } from "../../../stores/preferencesStore.ts";
 import type { DeckMap } from "../../../hooks/useDecks.ts";
 import type { DeckCatalogCandidate } from "../../deckCatalog.ts";
@@ -643,7 +642,7 @@ describe("useDeckLibraryAutoSync", () => {
     mounted.unmount();
   });
 
-  it("rehydrates for profile and cross-tab preference signals before retrying", async () => {
+  it("rehydrates for cross-tab preference signals before retrying", async () => {
     await hydrateFeedCache();
     vi.spyOn(usePreferencesStore.persist, "hasHydrated").mockReturnValue(true);
     const rehydrate = vi.spyOn(usePreferencesStore.persist, "rehydrate").mockImplementation(async () => {
@@ -658,7 +657,6 @@ describe("useDeckLibraryAutoSync", () => {
 
     act(() => {
       window.dispatchEvent(new StorageEvent("storage", { key: PREFERENCES_KEY, storageArea: localStorage }));
-      window.dispatchEvent(new CustomEvent(PROFILE_REPLACED_EVENT));
     });
     await flush();
 
@@ -706,7 +704,7 @@ describe("useDeckLibraryAutoSync", () => {
     expect(rehydrate).toHaveBeenCalledTimes(1);
     expect(backend.reconcileDeckLibrary).not.toHaveBeenCalled();
 
-    act(() => window.dispatchEvent(new CustomEvent(PROFILE_REPLACED_EVENT)));
+    act(() => window.dispatchEvent(new StorageEvent("storage", { key: PREFERENCES_KEY, storageArea: localStorage })));
     await act(async () => { releaseRehydrate(); });
     await flush();
 
@@ -788,7 +786,7 @@ describe("useDeckLibraryAutoSync", () => {
     mounted.unmount();
   });
 
-  it("uses rehydrated new art in the real shared planner after restored-profile replacement", async () => {
+  it("uses rehydrated new art in the real shared planner after a cross-tab preference change", async () => {
     await hydrateFeedCache();
     plannerFixture();
     vi.spyOn(usePreferencesStore.persist, "hasHydrated").mockReturnValue(true);
@@ -807,7 +805,7 @@ describe("useDeckLibraryAutoSync", () => {
       resolvePlan(await planDeckLibraryPack(packId("deck_library")));
     });
 
-    act(() => window.dispatchEvent(new CustomEvent(PROFILE_REPLACED_EVENT)));
+    act(() => window.dispatchEvent(new StorageEvent("storage", { key: PREFERENCES_KEY, storageArea: localStorage })));
     await flush();
 
   expect(rehydrateCount).toBe(2);

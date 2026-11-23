@@ -39,7 +39,6 @@ import {
 let capturedOnNoDeck: ((reason?: string, bracketViolation?: boolean) => void) | undefined;
 let capturedFormatConfig: FormatConfig | undefined;
 let capturedPile: string | undefined;
-let capturedGameId: string | undefined;
 
 const {
   mockCanActForWaitingState,
@@ -90,18 +89,15 @@ const { mockUseMultiplayerStore } = vi.hoisted(() => {
 vi.mock("../../providers/GameProvider", () => ({
   GameProvider: ({
     children,
-    gameId,
     onNoDeck,
     formatConfig,
     pile,
   }: {
     children: React.ReactNode;
-    gameId: string;
     onNoDeck?: (reason?: string, bracketViolation?: boolean) => void;
     formatConfig?: FormatConfig;
     pile?: string;
   }) => {
-    capturedGameId = gameId;
     capturedOnNoDeck = onNoDeck;
     capturedFormatConfig = formatConfig;
     capturedPile = pile;
@@ -337,14 +333,6 @@ vi.mock("../../components/chrome/GameMenu", () => ({
   },
 }));
 
-let capturedConcedeDialogProps: Record<string, unknown> | undefined;
-vi.mock("../../components/multiplayer/ConcedeDialog", () => ({
-  ConcedeDialog: (props: Record<string, unknown>) => {
-    capturedConcedeDialogProps = props;
-    return null;
-  },
-}));
-
 vi.mock("../../hooks/useCardDataMeta", () => ({
   useCardDataMeta: () => null,
   formatRelativeDate: () => "",
@@ -413,7 +401,6 @@ async function closeDialogAndExpectFocus(
 beforeEach(() => {
   capturedOnNoDeck = undefined;
   capturedFormatConfig = undefined;
-  capturedGameId = undefined;
   capturedGameMenuProps = undefined;
   storeOverrides.adapter = null;
   storeOverrides.gameState = null;
@@ -426,7 +413,6 @@ beforeEach(() => {
     multiplayerBoardLayout: "focused",
     multiplayerSplitLayoutNudgeDismissed: true,
   });
-  capturedConcedeDialogProps = undefined;
   vi.clearAllMocks();
   mockCanActForWaitingState.mockReturnValue(true);
 });

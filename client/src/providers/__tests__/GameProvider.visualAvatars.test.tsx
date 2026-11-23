@@ -5,11 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { assignRandomAvatars } from "../../services/playerAvatars.ts";
 import { useGameStore } from "../../stores/gameStore.ts";
 import { useMultiplayerStore } from "../../stores/multiplayerStore.ts";
-import {
-  buildCommanderFormatConfig,
-  buildGameState,
-  buildPlayers,
-} from "../../test/factories/gameStateFactory.ts";
+import { buildGameState, buildPlayers } from "../../test/factories/gameStateFactory.ts";
 import { GameProvider } from "../GameProvider.tsx";
 
 function expectedRandom(playerCount: number, seed: string) {

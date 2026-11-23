@@ -69,7 +69,7 @@ export async function exportAuthoritativeGameStateZip(
   adapter: EngineAdapter,
 ): Promise<DownloadResult> {
   if (!canExportAuthoritativeState(useGameStore.getState().gameMode)) {
-    throw new Error("Authoritative state export is unavailable for shared games");
+    throw new Error("Authoritative state export is unavailable while watching a replay");
   }
   if (!adapter.exportPersistenceState) {
     throw new Error("The current game authority cannot export a trusted state");

@@ -3,7 +3,7 @@ import { renderHook, act } from "@testing-library/react";
 
 import type { DeckEntry } from "../../hooks/useDecks";
 import { savePreconDeck } from "../preconDecks";
-import { adoptFeedDeck, unsubscribe } from "../feedService";
+import { adoptFeedDeck } from "../feedService";
 import { importBackupFromFile, type PhaseBackupV1 } from "../backup";
 import {
   getDeckMeta,
@@ -24,7 +24,7 @@ import {
   resetSavedDeckLibraryForTests,
   uninstallWebLocks,
 } from "../../test/helpers/webLocks";
-import { STORAGE_KEY_PREFIX, DECK_METADATA_KEY, FEED_DECK_ORIGINS_KEY } from "../../constants/storage";
+import { STORAGE_KEY_PREFIX, DECK_METADATA_KEY } from "../../constants/storage";
 
 /**
  * Each row holds the saved-deck library lock with a deferred body, invokes the writer, waits
@@ -96,23 +96,6 @@ describe("savedDeckWriters: each takes the saved-deck library lock", () => {
     await waitPendingThenRelease(release, holder);
     await call;
     expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Adopted Deck")).not.toBeNull();
-  });
-
-  it("unsubscribe waits for the lock and then removes feed-owned decks", async () => {
-    localStorage.setItem(
-      FEED_DECK_ORIGINS_KEY,
-      JSON.stringify({ "Feed Deck": "feed-1" }),
-    );
-    localStorage.setItem(
-      STORAGE_KEY_PREFIX + "Feed Deck",
-      JSON.stringify({ main: [], sideboard: [] }),
-    );
-    const { release, holder } = await heldLock();
-    const call = unsubscribe("feed-1");
-    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Feed Deck")).not.toBeNull();
-    await waitPendingThenRelease(release, holder);
-    await call;
-    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Feed Deck")).toBeNull();
   });
 
   it("importBackupFromFile waits for the lock and then applies the backup", async () => {
@@ -197,18 +180,6 @@ describe("refused on a lock-wait timeout", () => {
     const call = adoptFeedDeck("Feed Deck", "Adopted Deck");
     await expect(call).rejects.toMatchObject({ reason: "lock-timeout" });
     expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Adopted Deck")).toBe(before);
-    release();
-    await holder;
-  });
-
-  it("unsubscribe rejects with lock-timeout and writes nothing", async () => {
-    localStorage.setItem(FEED_DECK_ORIGINS_KEY, JSON.stringify({ "Feed Deck": "feed-1" }));
-    localStorage.setItem(STORAGE_KEY_PREFIX + "Feed Deck", JSON.stringify({ main: [], sideboard: [] }));
-    const { release, holder } = await heldLock();
-    const before = localStorage.getItem(STORAGE_KEY_PREFIX + "Feed Deck");
-    const call = unsubscribe("feed-1");
-    await expect(call).rejects.toMatchObject({ reason: "lock-timeout" });
-    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Feed Deck")).toBe(before);
     release();
     await holder;
   });

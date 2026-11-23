@@ -166,27 +166,27 @@ describe("gameStateExport", () => {
     );
   });
 
-  it("exports the trusted envelope from the P2P host", async () => {
+  it("exports the trusted envelope from a game played here", async () => {
     const trustedState = JSON.stringify({ state: { players: [{ hand: ["host-only-card"] }] } });
     const adapter = buildEngineAdapterMock(undefined, {
       exportPersistenceState: vi.fn().mockResolvedValue(trustedState),
     });
-    useGameStore.setState({ gameMode: "p2p-host" });
+    useGameStore.setState({ gameMode: "ai" });
 
     await exportAuthoritativeGameStateZip(adapter);
 
     expect(adapter.exportPersistenceState).toHaveBeenCalledOnce();
   });
 
-  it("does not expose the trusted envelope from a P2P guest", async () => {
+  it("does not expose the trusted envelope from the replay viewer", async () => {
     const exportPersistenceState = vi.fn().mockResolvedValue(JSON.stringify({
       state: { players: [{ hand: ["hidden-card"] }] },
     }));
     const adapter = buildEngineAdapterMock(undefined, { exportPersistenceState });
-    useGameStore.setState({ gameMode: "p2p-join" });
+    useGameStore.setState({ gameMode: "spectate" });
 
     await expect(exportAuthoritativeGameStateZip(adapter)).rejects.toThrow(
-      "Authoritative state export is unavailable for shared games",
+      "Authoritative state export is unavailable while watching a replay",
     );
     expect(exportPersistenceState).not.toHaveBeenCalled();
   });

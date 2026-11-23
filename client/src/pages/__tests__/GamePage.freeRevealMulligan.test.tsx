@@ -56,9 +56,6 @@ vi.mock("../../components/modal/EngineLostModal.tsx", () => ({ EngineLostModal: 
 vi.mock("../../components/modal/CardDataMissingModal.tsx", () => ({
   CardDataMissingModal: () => null,
 }));
-vi.mock("../../components/multiplayer/ConcedeDialog.tsx", () => ({
-  ConcedeDialog: () => null,
-}));
 vi.mock("../../components/chrome/GameMenu.tsx", () => ({ GameMenu: () => null }));
 
 vi.mock("../../stores/draftStore.ts", () => ({
@@ -128,7 +125,7 @@ function showMulligan(waitingFor: WaitingFor, legalActions: GameAction[]) {
 
 function renderGamePage() {
   return render(
-    <MemoryRouter initialEntries={["/game/free-reveal?mode=join"]}>
+    <MemoryRouter initialEntries={["/game/free-reveal?mode=ai"]}>
       <Routes>
         <Route path="/game/:id" element={<GamePage />} />
       </Routes>

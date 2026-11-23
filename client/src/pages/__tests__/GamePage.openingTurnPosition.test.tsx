@@ -56,9 +56,6 @@ vi.mock("../../components/modal/EngineLostModal.tsx", () => ({ EngineLostModal: 
 vi.mock("../../components/modal/CardDataMissingModal.tsx", () => ({
   CardDataMissingModal: () => null,
 }));
-vi.mock("../../components/multiplayer/ConcedeDialog.tsx", () => ({
-  ConcedeDialog: () => null,
-}));
 vi.mock("../../components/chrome/GameMenu.tsx", () => ({ GameMenu: () => null }));
 
 vi.mock("../../stores/draftStore.ts", () => ({
@@ -132,7 +129,7 @@ function showOpeningHand(waitingFor: WaitingFor, derived?: DerivedViews) {
 
 function renderGamePage() {
   return render(
-    <MemoryRouter initialEntries={["/game/opening-turn-position?mode=join"]}>
+    <MemoryRouter initialEntries={["/game/opening-turn-position?mode=ai"]}>
       <Routes>
         <Route path="/game/:id" element={<GamePage />} />
       </Routes>

@@ -18,7 +18,6 @@ import {
   writeSavedDeckData,
 } from "../constants/storage";
 import {
-  SavedDeckLibraryBusyError,
   withSavedDeckLibrary,
   withSavedDeckLibraryOrSkip,
   type SavedDeckTxn,
@@ -28,10 +27,8 @@ import {
 import {
   getCachedFeed,
   hydrateFeedCache,
-  removeCachedFeed,
   setCachedFeed,
 } from "./feedPersistence";
-import { getEffectiveOffline } from "../stores/connectivityStore";
 
 // --- Validation ---
 
@@ -77,15 +74,9 @@ export function validateFeed(data: unknown): Feed | null {
   return data as unknown as Feed;
 }
 
-// --- Constants ---
-
-/** Auto-refresh any subscription whose cached data is older than this. */
+/** A refetch that finds the feed unchanged still records itself as this
+ *  device's refresh once the last one is older than this. */
 const FEED_STALE_AFTER_MS = 24 * 60 * 60 * 1000;
-
-/** Translation keys for client-authored feed errors. */
-export const FEED_ERROR_KEYS = {
-  offline: "feedManager.offlineUnavailable",
-} as const;
 
 // --- Internal helpers ---
 
@@ -242,7 +233,7 @@ export async function initializeFeeds({ allowRefresh = true, signal }: Initializ
       if (!cached) continue;
       await publishUnlessSuperseded(signal, replacement, (txn) => {
         // `cached` was read before this call ever requested the library lock, so a concurrent
-        // unsubscribe() may have already dropped this subscription by the time the lock is
+        // writer may have already dropped this subscription by the time the lock is
         // granted. Re-check under the lock rather than publishing an unsubscribed feed's decks.
         if (!loadFeedSubscriptions().some((s) => s.sourceId === sub.sourceId)) return;
         syncFeedDecksToStorage(txn, cached);
@@ -270,7 +261,7 @@ export async function initializeFeeds({ allowRefresh = true, signal }: Initializ
         const cachePersistence = setCachedFeed(feedId, normalizedFeed);
         syncFeedDecksToStorage(txn, normalizedFeed);
         // Re-read the current list under the lock rather than writing back the `subs` snapshot
-        // loaded before the loop started — a concurrent subscribe()/unsubscribe() may have
+        // loaded before the loop started — a concurrent writer (another tab, a backup restore) may have
         // committed while this fetch was in flight.
         const currentSubs = loadFeedSubscriptions();
         if (!currentSubs.some((s) => s.sourceId === feedId)) {
@@ -295,37 +286,25 @@ export async function initializeFeeds({ allowRefresh = true, signal }: Initializ
 
   // Bundled feeds are deployment assets and may change without their legacy
   // numeric version changing. Fetch them on initialization so a fresh local
-  // timestamp can never pin an older IndexedDB copy. Remote feeds retain the
-  // TTL to avoid unnecessary third-party requests.
-  // Manual "Refresh all" / per-feed Refresh buttons bypass the TTL via refreshFeed().
+  // timestamp can never pin an older IndexedDB copy. A subscription to a feed
+  // the registry no longer lists (an older profile or backup) is left alone:
+  // its file is gone, and its decks stay as they are.
   const now = Date.now();
   for (const sub of subs) {
-    if (!subscribedIds.has(sub.sourceId)) continue;
+    const registrySource = FEED_REGISTRY.find((r) => r.id === sub.sourceId);
+    if (!registrySource) continue;
 
     const cached = getCachedFeed(sub.sourceId);
     const isStale = now - sub.lastRefreshedAt >= FEED_STALE_AFTER_MS;
-    const bundled = sub.type === "bundled";
-    if (!bundled && !isStale && cached) {
-      await publishUnlessSuperseded(signal, replacement, (txn) => {
-        // `cached` was read before this call ever requested the library lock, so a concurrent
-        // unsubscribe() may have already dropped this subscription by the time the lock is
-        // granted. Re-check under the lock rather than publishing an unsubscribed feed's decks.
-        if (!loadFeedSubscriptions().some((s) => s.sourceId === sub.sourceId)) return;
-        syncFeedDecksToStorage(txn, cached);
-      });
-      continue;
-    }
-
     try {
-      const feed = await fetchFeed(sub.url, signal);
+      const feed = await fetchFeed(registrySource.url, signal);
       throwIfAborted(signal);
-      const registrySource = FEED_REGISTRY.find((r) => r.id === sub.sourceId);
-      const normalizedFeed = { ...feed, id: sub.sourceId, format: registrySource?.format ?? feed.format };
+      const normalizedFeed = { ...feed, id: sub.sourceId, format: registrySource.format ?? feed.format };
       const published = await publishUnlessSuperseded(signal, replacement, (txn) => {
         // Same reasoning as the auto-subscribe loop above: re-read under the lock and update only
-        // this feed's entry, so a concurrent subscribe()/unsubscribe() isn't clobbered by writing
+        // this feed's entry, so a concurrent writer isn't clobbered by writing
         // back the pre-fetch `subs` snapshot. Look this up BEFORE publishing anything — if this
-        // feed was unsubscribed while the fetch was in flight, there's no entry left to update,
+        // feed was dropped while the fetch was in flight, there's no entry left to update,
         // and the cache/decks a plain lookup-after-publish would have just written back must
         // never become visible for a feed with no subscription.
         const currentSubs = loadFeedSubscriptions();
@@ -351,7 +330,7 @@ export async function initializeFeeds({ allowRefresh = true, signal }: Initializ
         await publishUnlessSuperseded(signal, replacement, (txn) => {
           // Same re-check as the other cached-only publishes above: `cached` was read after the
           // failed fetch but before this call requested the library lock, so a concurrent
-          // unsubscribe() may have already dropped this subscription by the time the lock is
+          // writer may have already dropped this subscription by the time the lock is
           // granted.
           if (!loadFeedSubscriptions().some((s) => s.sourceId === sub.sourceId)) return;
           syncFeedDecksToStorage(txn, cached);
@@ -359,73 +338,6 @@ export async function initializeFeeds({ allowRefresh = true, signal }: Initializ
       }
     }
   }
-}
-
-export async function subscribe(sourceOrUrl: string): Promise<Feed> {
-  // Check if it's a registry feed ID
-  const registrySource = FEED_REGISTRY.find((s) => s.id === sourceOrUrl);
-  const url = registrySource?.url ?? sourceOrUrl;
-  const type = registrySource?.type ?? "remote";
-
-  if (getEffectiveOffline()) {
-    throw new Error(FEED_ERROR_KEYS.offline);
-  }
-
-  const feed = await fetchFeed(url);
-
-  const { cachePersistence } = await withSavedDeckLibrary((txn) => {
-    const cachePersistence = setCachedFeed(feed.id, feed);
-    syncFeedDecksToStorage(txn, feed);
-
-    const subs = loadFeedSubscriptions();
-    const existing = subs.find((s) => s.sourceId === feed.id);
-    if (existing) {
-      existing.lastRefreshedAt = Date.now();
-      existing.lastVersion = feed.version;
-      existing.error = undefined;
-    } else {
-      subs.push({
-        sourceId: feed.id,
-        url,
-        type,
-        subscribedAt: Date.now(),
-        lastRefreshedAt: Date.now(),
-        lastVersion: feed.version,
-      });
-    }
-    saveFeedSubscriptions(subs);
-
-    return { cachePersistence };
-  });
-  await cachePersistence;
-  return feed;
-}
-
-export async function unsubscribe(feedId: string): Promise<void> {
-  await withSavedDeckLibrary((txn) => {
-    const origins = loadDeckOrigins();
-
-    // Remove all decks belonging to this feed
-    for (const [deckName, originFeedId] of Object.entries(origins)) {
-      if (originFeedId === feedId) {
-        removeSavedDeckData(txn, deckName);
-        removeDeckMeta(txn, deckName);
-        delete origins[deckName];
-
-        if (localStorage.getItem(ACTIVE_DECK_KEY) === deckName) {
-          localStorage.removeItem(ACTIVE_DECK_KEY);
-        }
-      }
-    }
-
-    saveDeckOrigins(origins);
-
-    // Remove the cache and subscription entry inside the same lock hold as the deck removal
-    // above, so another holder (e.g. a refresh queued behind this lock) can never observe the
-    // decks already gone but the subscription still present, or vice versa.
-    removeCachedFeed(feedId);
-    saveFeedSubscriptions(loadFeedSubscriptions().filter((s) => s.sourceId !== feedId));
-  });
 }
 
 export function listSubscriptions(): FeedSubscription[] {
@@ -436,71 +348,6 @@ export { getCachedFeed } from "./feedPersistence";
 
 export function getDeckFeedOrigin(deckName: string): string | null {
   return loadDeckOrigins()[deckName] ?? null;
-}
-
-export async function refreshFeed(feedId: string): Promise<Feed> {
-  const subs = loadFeedSubscriptions();
-  const sub = subs.find((s) => s.sourceId === feedId);
-  if (!sub) throw new Error(`Not subscribed to feed "${feedId}"`);
-
-  if (getEffectiveOffline()) {
-    throw new Error(FEED_ERROR_KEYS.offline);
-  }
-
-  try {
-    const feed = await fetchFeed(sub.url);
-    const { cachePersistence } = await withSavedDeckLibrary((txn) => {
-      // The fetch above ran unlocked, so a concurrent subscribe()/unsubscribe() may have
-      // committed while it was in flight. Re-read the subscription list under the lock and
-      // update only this feed's entry — writing back the pre-fetch `subs` snapshot loaded
-      // above would silently discard that concurrent change.
-      const currentSubs = loadFeedSubscriptions();
-      const currentSub = currentSubs.find((s) => s.sourceId === feedId);
-      if (!currentSub) {
-        // Unsubscribed while the fetch was in flight — nothing left to refresh or publish.
-        return { cachePersistence: Promise.resolve() };
-      }
-
-      const cachePersistence = setCachedFeed(feed.id, feed);
-      syncFeedDecksToStorage(txn, feed);
-
-      currentSub.lastRefreshedAt = Date.now();
-      currentSub.lastVersion = feed.version;
-      currentSub.error = undefined;
-      saveFeedSubscriptions(currentSubs);
-
-      return { cachePersistence };
-    });
-    await cachePersistence;
-    return feed;
-  } catch (err) {
-    if (!(err instanceof SavedDeckLibraryBusyError)) {
-      const currentSubs = loadFeedSubscriptions();
-      const currentSub = currentSubs.find((s) => s.sourceId === feedId);
-      if (currentSub) {
-        currentSub.error = err instanceof Error ? err.message : String(err);
-        saveFeedSubscriptions(currentSubs);
-      }
-    }
-    throw err;
-  }
-}
-
-export async function refreshAllFeeds(): Promise<Map<string, Feed | Error>> {
-  const results = new Map<string, Feed | Error>();
-  const subs = loadFeedSubscriptions();
-
-  for (const sub of subs) {
-    try {
-      const feed = await refreshFeed(sub.sourceId);
-      results.set(sub.sourceId, feed);
-    } catch (err) {
-      if (err instanceof SavedDeckLibraryBusyError) throw err;
-      results.set(sub.sourceId, err instanceof Error ? err : new Error(String(err)));
-    }
-  }
-
-  return results;
 }
 
 export function adoptFeedDeck(deckName: string, newName?: string): Promise<string> {

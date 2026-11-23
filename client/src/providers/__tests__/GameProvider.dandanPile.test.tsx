@@ -96,7 +96,6 @@ import type { GameFormat } from "../../adapter/types";
 import { GameProvider } from "../GameProvider";
 
 const PILE = Array<string>(80).fill("Island");
-const ACTIVE = Array<string>(60).fill("Plains");
 const NOT_LOADED = "Could not load deck. Try re-importing it.";
 
 function config(format: GameFormat) {

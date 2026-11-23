@@ -29,18 +29,14 @@ describe("multiplayerStore player avatar identities", () => {
     });
   });
 
-  it("starts empty and is excluded from persisted multiplayer state", () => {
+  it("starts empty and is never written to storage", () => {
     expect(initialAvatars).toEqual(new Map());
 
     useMultiplayerStore.setState({
       playerAvatars: new Map([[7, { kind: "card", cardName: "Private Resolver Input" }]]),
-      displayName: "Persisted Player",
     });
 
-    const persisted = localStorage.getItem("phase-multiplayer");
-    expect(persisted).toContain("Persisted Player");
-    expect(persisted).not.toContain("playerAvatars");
-    expect(persisted).not.toContain("Private Resolver Input");
+    expect(JSON.stringify({ ...localStorage })).not.toContain("Private Resolver Input");
   });
 
   it("can be cleared atomically at a session boundary", () => {

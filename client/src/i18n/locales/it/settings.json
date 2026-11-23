@@ -6,18 +6,10 @@
   "tabs": {
     "gameplay": "Giocabilità",
     "ai": "Avversari IA",
-    "experimental": "Sperimentale",
     "visual": "Grafica",
     "combat": "Ritmo",
     "audio": "Audio",
-    "multiplayer": "Multigiocatore",
     "data": "Dati"
-  },
-  "experimental": {
-    "title": "Sperimentale",
-    "tournaments": "Tornei",
-    "showTournaments": "Mostra i tornei nella navigazione",
-    "showTournamentsDescription": "I tornei sono ancora in lavorazione e potrebbero cambiare senza preavviso."
   },
   "gameplay": {
     "collapseLands": "Comprimi Lands",
@@ -50,8 +42,6 @@
       "autoExceptSacrificialMana": "Chiedi prima di sacrificare",
       "manual": "Manuale"
     },
-    "nativeEngine": "Usa il motore nativo per partite locali e multiplayer ospitato",
-    "nativeEngineDescription": "Usa il motore scaricato per le partite locali contro l'IA e le partite che ospiti tramite una lobby. Gli ospiti continuano a connettersi tramite la connessione peer-to-peer della lobby. Usa il motore integrato quando non è disponibile.",
     "boardBackground": "Sfondo del campo",
     "boardBackgroundGroups": {
       "automatic": "Automatico",
@@ -197,37 +187,6 @@
     "customThemes": "Temi personalizzati",
     "remove": "Rimuovi"
   },
-  "multiplayer": {
-    "title": "Multigiocatore",
-    "displayName": "Nome visualizzato",
-    "displayNamePlaceholder": "Inserisci il tuo nome",
-    "serverSelectionNote": "La selezione del server è stata spostata nella lobby — apri Multigiocatore e usa il chip del server (o \"Scegli server\" in modalità P2P) per cambiare regione, configurare un'istanza self-hosted o testare la connettività."
-  },
-  "sync": {
-    "title": "Sincronizzazione cloud",
-    "description": "Accedi per sincronizzare i tuoi mazzi, le preferenze e le iscrizioni ai feed tra i dispositivi. I tuoi dati risiedono nel tuo account e si aggiornano automaticamente a ogni modifica.",
-    "signInWith": "Accedi con {{provider}}",
-    "signOut": "Esci",
-    "signedInAs": "Hai effettuato l'accesso come {{name}}",
-    "syncNow": "Sincronizza ora",
-    "statusSyncing": "Sincronizzazione…",
-    "statusPaused": "La sincronizzazione cloud è in pausa mentre sei offline.",
-    "statusError": "Sincronizzazione non riuscita",
-    "lastSynced": "Ultima sincronizzazione {{time}}",
-    "never": "mai",
-    "conflictTitle": "Entrambe le copie hanno modifiche",
-    "conflictBody": "Questo dispositivo e il tuo account cloud contengono entrambi dati e non possiamo stabilire quale sia aggiornata. Scegli una copia o conserva entrambe le raccolte di mazzi.",
-    "keepCloud": "Usa il cloud",
-    "keepLocal": "Mantieni questo dispositivo",
-    "keepBothDecks": "Mantieni entrambe le raccolte di mazzi",
-    "savesNote": "I salvataggi delle partite e le cache restano su questo dispositivo.",
-    "diffDecks": "Mazzi: {{added}} aggiunti, {{modified}} modificati, {{removed}} rimossi",
-    "diffPrefs": "Le preferenze differiscono",
-    "diffFeeds": "Le sottoscrizioni ai feed differiscono",
-    "diffOther": "Altre impostazioni differiscono",
-    "providerDiscord": "Discord",
-    "providerGoogle": "Google"
-  },
   "data": {
     "title": "Backup e ripristino",
     "description": "L'esportazione raccoglie le tue preferenze, i mazzi importati e le iscrizioni ai feed in un unico file JSON. L'importazione li ripristina su un'altra macchina. Le cache di IndexedDB (cache dei feed, cache audio, partite salvate) non sono incluse — quelle si ricostruiscono automaticamente.",
@@ -244,9 +203,7 @@
     "importedWithPreferences_one": "Importato {{count}} mazzo e le preferenze.",
     "importedWithPreferences_other": "Importati {{count}} mazzi e le preferenze.",
     "skippedMalformed_one": "Saltata {{count}} voce malformata.",
-    "skippedMalformed_other": "Saltate {{count}} voci malformate.",
-    "telemetry": "Invia segnalazioni anonime di arresti anomali e utilizzo",
-    "telemetryDescription": "Aiuta a correggere gli arresti anomali e a dare priorità al supporto delle carte. Nessun account, nessun dato personale — solo conteggi di errori e riepiloghi di partita."
+    "skippedMalformed_other": "Saltate {{count}} voci malformate."
   },
   "visualPacks": {
     "title": "Catalogo visivo offline",
@@ -469,8 +426,7 @@
       "preconCatalog": "Mazzi precostruiti",
       "bundledAiCatalog": "Catalogo mazzi IA",
       "deckLibrary": "Libreria mazzi installata",
-      "coreVisuals": "Retro della carta e simboli di mana",
-      "nativeEngine": "Motore nativo"
+      "coreVisuals": "Retro della carta e simboli di mana"
     },
     "capabilityStates": {
       "ready": "Pronto",

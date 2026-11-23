@@ -18,9 +18,7 @@ export type SavedDeckWriteAction =
   | "import"
   | "delete"
   | "organize"
-  | "updateFeeds"
-  | "restore"
-  | "applyCloud";
+  | "restore";
 
 const titleByAction: Record<SavedDeckWriteAction, () => string> = {
   save: () => i18n.t("savedDeckLibraryBusy.title.save"),
@@ -28,9 +26,7 @@ const titleByAction: Record<SavedDeckWriteAction, () => string> = {
   import: () => i18n.t("savedDeckLibraryBusy.title.import"),
   delete: () => i18n.t("savedDeckLibraryBusy.title.delete"),
   organize: () => i18n.t("savedDeckLibraryBusy.title.organize"),
-  updateFeeds: () => i18n.t("savedDeckLibraryBusy.title.updateFeeds"),
   restore: () => i18n.t("savedDeckLibraryBusy.title.restore"),
-  applyCloud: () => i18n.t("savedDeckLibraryBusy.title.applyCloud"),
 };
 
 const STORAGE_FAILURE_REASONS: ReadonlySet<SavedDeckTxnFailure> = new Set([

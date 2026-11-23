@@ -32,16 +32,17 @@ function createGameState(): GameState {
   });
 }
 
-// caster = 1, chosen = 0: the helper (seat 0) is the one who must act.
-const ASSIST_PAYMENT: WaitingFor = buildAssistPaymentWaitingFor({
-  data: { caster: 1, chosen: 0, max_generic: 3 },
-});
-
-function setLocalSeat(seat: number) {
+/** Seat the Assist payment so the local human (always seat 0) is `role`. */
+function seatLocalAs(role: "chosen" | "caster") {
+  const waitingFor: WaitingFor = buildAssistPaymentWaitingFor({
+    data: role === "chosen"
+      ? { caster: 1, chosen: 0, max_generic: 3 }
+      : { caster: 0, chosen: 1, max_generic: 3 },
+  });
   useGameStore.setState({
     gameMode: "ai",
     gameState: createGameState(),
-    waitingFor: ASSIST_PAYMENT,
+    waitingFor,
   });
 }
 
@@ -55,30 +56,31 @@ describe("useCanActForWaitingState — Assist payment routing (CR 702.132a)", ()
   });
 
   it("is true for the chosen helper seat", () => {
-    setLocalSeat(0); // chosen
+    seatLocalAs("chosen");
     const { result } = renderHook(() => useCanActForWaitingState());
     expect(result.current).toBe(true);
   });
 
   it("is false for the caster seat", () => {
-    setLocalSeat(1); // caster, not the helper
+    seatLocalAs("caster"); // the caster, not the helper
     const { result } = renderHook(() => useCanActForWaitingState());
     expect(result.current).toBe(false);
   });
 
   it("authorizes the CR 723 turn controller for the active player's payment choice", () => {
+    // Seat 0 (the local human) controls the active player's (seat 1's) turn.
     const waitingFor: WaitingFor = {
       type: "ResolutionOptionalPaymentChoice",
-      data: { player: 0, source_id: 7, costs: [] },
+      data: { player: 1, source_id: 7, costs: [] },
     };
     useGameStore.setState({
       gameMode: "ai",
       gameState: buildGameState({
-        active_player: 0,
+        active_player: 1,
         players: buildPlayers([0, 1]),
-        priority_player: 0,
+        priority_player: 1,
         waiting_for: waitingFor,
-        turn_decision_controller: 1,
+        turn_decision_controller: 0,
       }),
       waitingFor,
     });

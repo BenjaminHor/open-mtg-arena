@@ -21,29 +21,18 @@ vi.mock("idb-keyval", () => ({
 
 import { del as idbDel, get as idbGet, keys as idbKeys, set as idbSet } from "idb-keyval";
 import {
-  clearFullTerminalCleanupStrict,
   clearGame,
   clearGameStrict,
-  clearNativeSoloSession,
-  clearOnlineSession,
-  listFullTerminalCleanupStrict,
-  markNativeSoloSessionTerminal,
   loadGame,
-  loadFullTerminalCleanupStrict,
   loadGameStrict,
   loadCheckpoints,
-  loadP2PHostSession,
   migratePersistedGameState,
   saveAuthoritativeGame,
   saveAuthoritativeGameStrict,
-  saveFullTerminalCleanupStrict,
   saveGame,
   saveResumableGameStrict,
-  saveP2PHostSession,
   saveActiveGame,
 } from "../gamePersistence";
-import { saveWsSession, type WsSessionData } from "../multiplayerSession";
-import type { FullTerminalCleanupObligation } from "../gamePersistence";
 
 function fixtureState(): GameState {
   return buildGameState({
@@ -100,9 +89,9 @@ describe("game persistence", () => {
     vi.mocked(idbSet).mockResolvedValue(undefined);
   });
 
-  it("deletes the three exact game records in order before clearing matching active metadata", async () => {
+  it("deletes the two exact game records in order before clearing matching active metadata", async () => {
     saveActiveGame({ id: "target", mode: "ai", difficulty: "Medium" });
-    const keys = [GAME_CHECKPOINTS_PREFIX + "target", "phase-p2p-host:target", GAME_KEY_PREFIX + "target"];
+    const keys = [GAME_CHECKPOINTS_PREFIX + "target", GAME_KEY_PREFIX + "target"];
     const records = new Map<string, unknown>(keys.map((key) => [key, fixtureState()]));
     vi.mocked(idbGet).mockImplementation(async (key) => records.get(String(key)));
     const releases: Array<() => void> = [];
@@ -116,7 +105,7 @@ describe("game persistence", () => {
       expect(idbDel).toHaveBeenCalledTimes(index + 1);
       expect(idbDel).toHaveBeenNthCalledWith(index + 1, keys[index], expect.anything());
       expect(localStorage.getItem(ACTIVE_GAME_KEY)).not.toBeNull();
-      expect(records.has(keys[2])).toBe(true);
+      expect(records.has(keys[1])).toBe(true);
       expect(settled).toBe(false);
       releases[index]();
       await Promise.resolve();
@@ -126,18 +115,17 @@ describe("game persistence", () => {
     expect(keys.every((key) => !records.has(key))).toBe(true);
     const calls = vi.mocked(idbDel).mock.calls;
     expect(calls[0][1]).toBe(calls[1][1]);
-    expect(calls[1][1]).toBe(calls[2][1]);
     expect(calls.map(([key]) => key)).toEqual(keys);
   });
 
-  it.each([0, 1, 2])("retains the game sentinel after delete index %i rejects, then retries safely", async (failedIndex) => {
+  it.each([0, 1])("retains the game sentinel after delete index %i rejects, then retries safely", async (failedIndex) => {
     saveActiveGame({ id: "target", mode: "ai", difficulty: "Medium" });
-    const keys = [GAME_CHECKPOINTS_PREFIX + "target", "phase-p2p-host:target", GAME_KEY_PREFIX + "target"];
+    const keys = [GAME_CHECKPOINTS_PREFIX + "target", GAME_KEY_PREFIX + "target"];
     const otherKeys = keys.map((key) => key.replace("target", "other"));
     const snapshot = fixtureState();
     const records = new Map<string, unknown>([
-      [keys[0], [snapshot]], [keys[1], { roomCode: "ABCDE" }], [keys[2], snapshot],
-      [otherKeys[0], [snapshot]], [otherKeys[1], { roomCode: "OTHER" }], [otherKeys[2], snapshot],
+      [keys[0], [snapshot]], [keys[1], snapshot],
+      [otherKeys[0], [snapshot]], [otherKeys[1], snapshot],
     ]);
     vi.mocked(idbGet).mockImplementation(async (key) => records.get(String(key)));
     const original = new Error(`delete ${failedIndex} failed`);
@@ -151,12 +139,11 @@ describe("game persistence", () => {
     expect(vi.mocked(idbDel).mock.calls.map(([key]) => key)).toEqual(keys.slice(0, failedIndex + 1));
     const calls = vi.mocked(idbDel).mock.calls;
     expect(calls.every(([, store]) => store === calls[0][1])).toBe(true);
-    expect(records.has(keys[2])).toBe(true);
+    expect(records.has(keys[1])).toBe(true);
     expect(records.has(keys[0])).toBe(failedIndex === 0);
-    expect(records.has(keys[1])).toBe(failedIndex < 2);
     expect(localStorage.getItem(ACTIVE_GAME_KEY)).not.toBeNull();
     await expect(loadGameStrict("target")).resolves.toEqual(snapshot);
-    expect(idbGet).toHaveBeenLastCalledWith(keys[2], calls[0][1]);
+    expect(idbGet).toHaveBeenLastCalledWith(keys[1], calls[0][1]);
     rejectAt = null;
     vi.mocked(idbDel).mockClear();
     await clearGameStrict("target");
@@ -361,7 +348,7 @@ describe("game persistence", () => {
     });
   });
 
-  it("does not clear resumable storage for a terminal state before GameOver delivery", async () => {
+  it("does not clear resumable storage for a terminal state", async () => {
     const state = fixtureState();
     state.match_phase = "Completed";
 
@@ -388,29 +375,4 @@ describe("game persistence", () => {
       "IndexedDB unavailable",
     );
   });
-
 });
-
-function cleanupObligation(gameId: string): FullTerminalCleanupObligation {
-  const p2pResult = {
-    key: "p2p-session",
-    lease: { sessionKey: "p2p-session", hostIncarnation: "host-incarnation" },
-    recipient: 0,
-    revision: 12,
-    terminalId: "terminal-result-id",
-    finalStateCommitment: "sha256:committed-state",
-    display: { winner: 0, reason: "Game complete" },
-  };
-  return {
-    gameId,
-    p2pSessionKey: p2pResult.key,
-    p2pTerminalId: p2pResult.terminalId,
-    p2pResult,
-    fullKey: { game_code: "ABCDE", generation: 4 },
-    terminalRevision: 12,
-    deliveries: [
-      { recipient: 0, deliveryId: "host-delivery", credential: "host-credential" },
-      { recipient: 1, deliveryId: "guest-delivery", credential: "guest-credential" },
-    ],
-  };
-}

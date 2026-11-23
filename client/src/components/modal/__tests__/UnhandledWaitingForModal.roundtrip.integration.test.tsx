@@ -18,7 +18,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameState, WaitingFor } from "../../../adapter/types.ts";
 import { UnhandledWaitingForModal } from "../UnhandledWaitingForModal.tsx";
 import { useGameStore } from "../../../stores/gameStore.ts";
-import { useMultiplayerStore } from "../../../stores/multiplayerStore.ts";
 import { isWaitingForHandled } from "../../../game/waitingForRegistry.ts";
 import { buildGameState } from "../../../test/factories/gameStateFactory.ts";
 
@@ -55,10 +54,9 @@ function makeState(waitingFor: WaitingFor): GameState {
  *  `gameStore.initializeGame`/`dispatch` do. */
 function seedStoreFromState(
   waitingFor: WaitingFor,
-  { gameMode, activePlayerId }: { gameMode: string; activePlayerId: number },
+  { gameMode }: { gameMode: string },
 ) {
   const gameState = makeState(waitingFor);
-  useMultiplayerStore.setState({ activePlayerId });
   useGameStore.setState({ gameMode, gameState, waitingFor } as never);
 }
 
@@ -80,7 +78,7 @@ describe("UnhandledWaitingForModal round-trip (issue #337)", () => {
 
   it("Test 1 — an unhandled WaitingFor verdict surfaces the safety-net diagnostic", () => {
     vi.mocked(isWaitingForHandled).mockReturnValue(false);
-    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai",});
+    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai" });
 
     const { container } = render(
       <UnhandledWaitingForModal onExit={vi.fn()} exitLabel="Return to menu" />,
@@ -96,7 +94,7 @@ describe("UnhandledWaitingForModal round-trip (issue #337)", () => {
 
   it("Test 2 — exit action is reachable and invokes the caller's exit handler (AI/local)", () => {
     vi.mocked(isWaitingForHandled).mockReturnValue(false);
-    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai",});
+    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai" });
 
     const onExit = vi.fn();
     render(<UnhandledWaitingForModal onExit={onExit} exitLabel="Return to menu" />);
@@ -107,7 +105,7 @@ describe("UnhandledWaitingForModal round-trip (issue #337)", () => {
 
   it("Test 3 — exit action is reachable in online mode (concede)", () => {
     vi.mocked(isWaitingForHandled).mockReturnValue(false);
-    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai",});
+    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai" });
 
     const onExit = vi.fn();
     render(<UnhandledWaitingForModal onExit={onExit} exitLabel="Concede game" />);
@@ -118,7 +116,7 @@ describe("UnhandledWaitingForModal round-trip (issue #337)", () => {
 
   it("Test 4 — modal returns null when its input predicate reports the variant handled", () => {
     vi.mocked(isWaitingForHandled).mockReturnValue(true);
-    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai",});
+    seedStoreFromState(readWaitingForPriorityFixture(), { gameMode: "ai" });
 
     const { container } = render(
       <UnhandledWaitingForModal onExit={vi.fn()} exitLabel="Return to menu" />,
@@ -135,7 +133,7 @@ describe("UnhandledWaitingForModal round-trip (issue #337)", () => {
       type: "OrphanEngineChoice",
       data: { player: 0 },
     } as unknown as WaitingFor;
-    seedStoreFromState(orphan, { gameMode: "ai",});
+    seedStoreFromState(orphan, { gameMode: "ai" });
 
     const { container } = render(
       <UnhandledWaitingForModal onExit={vi.fn()} exitLabel="Return to menu" />,
@@ -153,7 +151,7 @@ describe("UnhandledWaitingForModal round-trip (issue #337)", () => {
       type: "ResolutionOptionalPaymentChoice",
       data: { player: 0, source_id: 7, costs: [] },
     };
-    seedStoreFromState(waitingFor, { gameMode: "ai",});
+    seedStoreFromState(waitingFor, { gameMode: "ai" });
 
     const { container } = render(
       <UnhandledWaitingForModal onExit={vi.fn()} exitLabel="Return to menu" />,

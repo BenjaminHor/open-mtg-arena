@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // The storage-watcher tests below patch `Storage.prototype`, which the
 // default happy-dom environment does not honor for `localStorage.setItem`
-// (see `cloudSync/__tests__/storageWatcher.test.ts`'s own directive).
+// (see `__tests__/storageWatcher.test.ts`'s own directive).
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -19,7 +19,7 @@ import {
   STORAGE_KEY_PREFIX,
   type SavedDeckRewrite,
 } from "../../constants/storage";
-import { watchUserStorage } from "../cloudSync/storageWatcher";
+import { watchUserStorage } from "../storageWatcher";
 
 function renameTo(map: Record<string, string | null>) {
   return (names: string[]) => Promise.resolve(names.map((name) => map[name] ?? null));

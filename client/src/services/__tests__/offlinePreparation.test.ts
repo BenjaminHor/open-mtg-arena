@@ -338,12 +338,6 @@ describe("prepareForOffline", () => {
     });
   });
 
-  });
-
-  });
-
-  });
-
   it("preserves named asset gaps and turns browser engine module skew into reload required", async () => {
     mocks.assets.mockResolvedValueOnce({
       ...assetsReady,

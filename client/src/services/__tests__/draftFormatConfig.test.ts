@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { FORMAT_DEFAULTS } from "../../stores/multiplayerStore";
+import { formatMetadata } from "../../data/formatRegistry";
 import {
   draftSessionFormatConfig,
   minimumDeckSizeOf,
@@ -10,7 +10,7 @@ import {
 // CR 100.2b + CR 702.139b: a draft match runs under the session's own minimum
 // deck size, so the engine's Yorion condition reads it rather than 40.
 describe("draftSessionFormatConfig", () => {
-  const base = FORMAT_DEFAULTS.Limited;
+  const base = formatMetadata("Limited")!.default_config;
 
   it("issues a Cube's minimum against the exact launch config, never inside the payload", () => {
     const config = draftSessionFormatConfig(base, 50);

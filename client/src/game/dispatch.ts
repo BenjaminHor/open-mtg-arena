@@ -1,4 +1,4 @@
-import type { AiActionProposal, EngineAdapter, EngineSnapshot, GameAction, GameEvent, GameLogEntry, GameState, PersistedGameState, RewindOption, WaitingFor } from "../adapter/types";
+import type { AiActionProposal, EngineAdapter, EngineSnapshot, GameAction, GameEvent, GameLogEntry, GameState, PersistedGameState, WaitingFor } from "../adapter/types";
 import type {
   InteractionPreview,
   InteractionPreviewRequest,
@@ -101,8 +101,6 @@ interface PendingRemoteUpdate {
   snapshot: EngineSnapshot;
   events: GameEvent[];
   logEntries?: GameLogEntry[];
-  /** See `processRemoteUpdateInner`: `undefined` and `[]` mean different things. */
-  rewindTargets?: RewindOption[];
   /**
    * How many remote updates this entry stands for (1 + the number coalesced
    * into it while it waited). A large count means the client is far behind
@@ -475,7 +473,7 @@ async function processAction(
 
   // 2. Save undo history if applicable. Five conditions must hold:
   //    a) Action is unrevealed-information (UNDOABLE_ACTIONS).
-  //    b) Single-player — rewinding one client desyncs multiplayer.
+  //    b) This client owns the state (not a watched replay).
   //    c) Stack is currently empty. Checkpoints exist only at stack-empty
   //       boundaries so undo always lands before the activation/trigger
   //       sequence that put things on the stack, never mid-resolution.
@@ -812,7 +810,6 @@ async function processQueue(generation: number): Promise<void> {
           next.events,
           next.logEntries,
           generation,
-          next.rewindTargets,
           next.coalesced,
         );
       }
@@ -1080,7 +1077,6 @@ async function processRemoteUpdateInner(
   events: GameEvent[],
   logEntries: GameLogEntry[] = [],
   generation: number,
-  rewindTargets?: RewindOption[],
   coalesced = 1,
 ): Promise<void> {
   if (!isCurrentDispatchGeneration(generation)) return;
@@ -1152,14 +1148,6 @@ async function processRemoteUpdateInner(
     logEntries,
     extraState: { restoredStackAutomation: null },
   });
-  // Written INSIDE the generation gate, alongside the snapshot it describes:
-  // outside it, a superseded update would clobber the list with a stale one.
-  // `undefined` means "this transport does not publish rollback targets" (p2p,
-  // draft) and leaves the store alone; `[]` means "the server published none"
-  // and clears it. The two are deliberately not collapsed.
-  if (rewindTargets) {
-    useGameStore.getState().setRewindTargets(rewindTargets);
-  }
 
   // 6. Play victory/defeat stinger on GameOver
   const gameOverEvent = events.find((e) => e.type === "GameOver");
@@ -1183,16 +1171,15 @@ export async function processRemoteUpdate(
   snapshot: EngineSnapshot,
   events: GameEvent[],
   logEntries?: GameLogEntry[],
-  rewindTargets?: RewindOption[],
 ): Promise<void> {
   if (isAnimating) {
-    return enqueueRemoteUpdate(snapshot, events, logEntries, rewindTargets);
+    return enqueueRemoteUpdate(snapshot, events, logEntries);
   }
 
   const generation = dispatchGeneration;
   isAnimating = true;
   try {
-    await processRemoteUpdateInner(snapshot, events, logEntries, generation, rewindTargets);
+    await processRemoteUpdateInner(snapshot, events, logEntries, generation);
   } finally {
     releaseDispatchMutex(generation);
   }
@@ -1206,8 +1193,7 @@ export async function processRemoteUpdate(
  * state; the older ones contribute history. The merged entry therefore keeps
  * the higher-`seq` snapshot (the same ordering `commitEngineSnapshot` gates
  * on, so an out-of-order older update never wins), concatenates events and log
- * entries in arrival order so the game log stays complete, and carries the
- * rewind targets published alongside the winning snapshot. A queued local
+ * entries in arrival order so the game log stays complete. A queued local
  * action is never overtaken: coalescing only looks at the LAST entry, so a
  * `remote, local, remote` queue keeps all three in order.
  *
@@ -1217,7 +1203,6 @@ function enqueueRemoteUpdate(
   snapshot: EngineSnapshot,
   events: GameEvent[],
   logEntries: GameLogEntry[] | undefined,
-  rewindTargets: RewindOption[] | undefined,
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const last = pendingQueue[pendingQueue.length - 1];
@@ -1228,7 +1213,6 @@ function enqueueRemoteUpdate(
         snapshot,
         events,
         logEntries,
-        rewindTargets,
         coalesced: 1,
         waiters,
         ...sharedRemoteSettlement(waiters),
@@ -1250,11 +1234,6 @@ function enqueueRemoteUpdate(
       const merged = (last.logEntries ??= []);
       for (const entry of logEntries) merged.push(entry);
     }
-    // `undefined` means "this transport publishes no rewind targets" and must
-    // not erase a list that was published; otherwise the winner's list wins.
-    last.rewindTargets = incomingIsNewest
-      ? (rewindTargets ?? last.rewindTargets)
-      : (last.rewindTargets ?? rewindTargets);
     last.coalesced += 1;
     last.waiters.push({ resolve, reject });
   });

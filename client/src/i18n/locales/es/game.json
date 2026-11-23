@@ -1,10 +1,4 @@
 {
-  "playerLatency": {
-    "host": "Anfitrión",
-    "waiting": "Esperando",
-    "value": "{{ms}} ms",
-    "description": "Latencia de ida y vuelta al anfitrión. La falta de respuesta no desconecta la partida."
-  },
   "abilityBlock": {
     "badge": "Bloqueada",
     "cantBeActivated": "Esta habilidad no puede activarse",
@@ -160,9 +154,6 @@
     "holdCtrlFront": "Mantén Ctrl para la cara frontal",
     "holdCtrlFlip": "Mantén Ctrl para girar",
     "flip": "Girar",
-    "report": "Informar de un problema",
-    "reported": "Informado ✓",
-    "reportNotSent": "No enviado",
     "reloadArt": "Recargar ilustración",
     "altParsedAbilities": "Alt: habilidades analizadas",
     "debugId": "ID: {{id}}",
@@ -237,26 +228,7 @@
     "autoPassing": "Pasando automáticamente al paso final...",
     "resolvingStack": "Resolviendo la pila..."
   },
-  "cardReport": {
-    "title": "Informar de un problema con una carta",
-    "subtitle": "Elige la carta que no funciona correctamente.",
-    "search": "Buscar cartas…",
-    "empty": "No hay cartas para informar a la vista.",
-    "zone": {
-      "Stack": "Pila",
-      "Battlefield": "Campo de batalla",
-      "Hand": "Mano",
-      "Graveyard": "Cementerio",
-      "Exile": "Exilio",
-      "Command": "Zona de mando"
-    },
-    "emblemTag": "Emblema",
-    "allPlayers": "Todos",
-    "allZones": "Todas las zonas",
-    "cancel": "Cancelar"
-  },
   "board": {
-    "reportCard": "Informar de un problema con una carta",
     "regroupCreatures": "Reagrupar grupos de criaturas duplicadas",
     "changeBackground": "Cambiar fondo…",
     "customizeLayout": "Personalizar diseño…",
@@ -529,11 +501,6 @@
     "pauseAndWait": "Pausar y esperar",
     "continueWithout": "Continuar sin él"
   },
-  "kickDialog": {
-    "title": "¿Expulsar a {{name}}?",
-    "body": "Perderá la partida y no podrá volver a unirse.",
-    "kick": "Expulsar"
-  },
   "enchantmentsBadge": {
     "ariaLabel_one": "1 encantamiento sobre este jugador",
     "ariaLabel_other": "{{count}} encantamientos sobre este jugador",
@@ -792,12 +759,8 @@
     "clickToViewThenTarget": "Haz clic para ver el tablero de {{name}}, luego haz clic de nuevo para seleccionar a {{name}}",
     "clickToViewBoard": "Haz clic para ver el tablero de {{name}}",
     "underAttack": "{{name}} está bajo ataque",
-    "kickPlayer": "Expulsar al jugador {{seat}}",
-    "kickPlayerTooltip": "Expulsar al jugador (rendición)",
     "incomingAttackers_one": "{{count}} criatura te ataca",
     "incomingAttackers_other": "{{count}} criaturas te atacan",
-    "disconnected": "Desconectado",
-    "connected": "Conectado",
     "statHand": "Mano",
     "statCreatures": "Criaturas",
     "statLands": "Tierras",
@@ -1378,20 +1341,9 @@
     }
   },
   "gameProvider": {
-    "passwordPrompt": "Esta sala requiere una contraseña:",
-    "toasts": {
-      "connectionFailed": "La conexión falló. Reintenta o cambia el servidor en Ajustes.",
-      "eliminatedSpectating": "Has sido eliminado. Ahora eres espectador.",
-      "retainedTerminalUnreadable": "No se pudo leer la entrega guardada del resultado final"
-    },
     "resumeReset": {
       "appUpdated": "La aplicación se actualizó y tu partida guardada es incompatible con la nueva versión.",
       "restoreFailed": "No se pudo restaurar la partida guardada: {{error}}"
-    },
-    "notification": {
-      "title": "El oponente se unió",
-      "opponentJoined": "Tu oponente se ha unido a la partida. ¡Vuelve y juega!",
-      "opponentJoinedNamed": "{{name}} se unió a tu partida. ¡Vuelve y juega!"
     },
     "noLegalAiDecks": {
       "withFormat": "No hay mazos de IA legales disponibles para {{format}}.",
@@ -2358,7 +2310,6 @@
     "exportClientSnapshot": "Exportar instantánea del cliente",
     "exported": "Exportado",
     "exportFailed": "Error al exportar",
-    "exportRequested": "Exportación sin confirmar",
     "copyDiagnostic": "Copiar diagnóstico",
     "copied": "¡Copiado!",
     "reportOnGithub": "Informar en GitHub",
@@ -2763,11 +2714,6 @@
       "keep": "Kept"
     }
   },
-  "spectator": {
-    "banner": "Spectating — read only",
-    "leave": "Leave",
-    "watchingWith": "Also watching: {{names}}"
-  },
   "boardChoice": {
     "actions": {
       "sacrifice": "Sacrifice",
@@ -2976,7 +2922,6 @@
     "copyOf": "Copy Of",
     "pickPermanent": "Pick a permanent…",
     "createCopy": "Create Copy",
-    "cardCreationUnavailable": "Spawning a card by name needs the in-browser engine. The token forms below work on this connection.",
     "createCatalogToken": "Create Token (Catalog)",
     "customToken": "Create Token (Custom)",
     "copyPermanent": "Copy Permanent",

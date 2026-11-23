@@ -16,7 +16,7 @@ import { CardChoiceModal } from "../CardChoiceModal.tsx";
 // buttons in the footer. On a phone both steps now fill the screen and draw
 // their cards in the same larger-card grid as Search Library (#11063). On a
 // short screen the partition's header is one line, "Separate into Two Piles •
-// Player 1 chooses one", with Confirm at its end and the pile counts kept in
+// Player 2 chooses one", with Confirm at its end and the pile counts kept in
 // view; the choosing step's header is its instruction with both choose buttons.
 // A desktop keeps today's panel.
 
@@ -50,14 +50,14 @@ function tableState() {
   return gameStateFactory.withPlayers(0, 1).withObjects(...CREATURES);
 }
 
-/** The second player separates the three creatures; the first, shown as "Player 1", will choose. */
+/** The local player separates the three creatures; the opponent, shown as "Player 2", will choose. */
 function partitionState(remainingSubjects = 0) {
   const remaining_subjects = Array.from(
     { length: remainingSubjects },
     (_, index): [number, number[]] => [index + 2, []],
   );
   return tableState()
-    .separatePilesPartition({ player: 1, eligible: CREATURE_IDS, remaining_subjects, chooser: 0 })
+    .separatePilesPartition({ player: 0, eligible: CREATURE_IDS, remaining_subjects, chooser: 1 })
     .build();
 }
 
@@ -68,8 +68,7 @@ function choiceState(pileB = [3]) {
     .build();
 }
 
-function showPrompt(gameState: GameState, activePlayerId: number) {
-  useMultiplayerStore.setState({ activePlayerId });
+function showPrompt(gameState: GameState) {
   setGameStoreForTest({ gameState, gameMode: "ai" });
   render(<CardChoiceModal />);
 }
@@ -124,9 +123,9 @@ describe("separating into piles on a phone turned sideways", () => {
   });
 
   it("fills the screen with one title line and Confirm at its end", () => {
-    showPrompt(partitionState(), 1);
+    showPrompt(partitionState());
 
-    expect(screen.getByRole("heading").textContent).toBe("Separate into Two Piles • Player 1 chooses one");
+    expect(screen.getByRole("heading").textContent).toBe("Separate into Two Piles • Player 2 chooses one");
     expect(within(overlayHeader()).queryByText("Game Choice")).toBeNull();
     expect(screen.queryByText(/^Separate your creatures/)).toBeNull();
     headerButton("Confirm");
@@ -135,15 +134,15 @@ describe("separating into piles on a phone turned sideways", () => {
   });
 
   it("keeps the remaining players in the title line", () => {
-    showPrompt(partitionState(1), 1);
+    showPrompt(partitionState(1));
 
     expect(screen.getByRole("heading").textContent).toBe(
-      "Separate into Two Piles • Player 1 chooses one (1 more player after you)",
+      "Separate into Two Piles • Player 2 chooses one (1 more player after you)",
     );
   });
 
   it("draws the cards in the phone's grid under the pile counts, which follow the toggles", () => {
-    showPrompt(partitionState(), 1);
+    showPrompt(partitionState());
 
     for (const name of ["Alpha", "Bravo", "Cosmo"]) {
       expect(gridCellOf(name)).not.toBeNull();
@@ -170,7 +169,7 @@ describe("choosing a pile on a phone turned sideways", () => {
   });
 
   it("shows the instruction alone as its one title, with both choose buttons at its end", () => {
-    showPrompt(choiceState(), 0);
+    showPrompt(choiceState());
 
     expect(screen.getByRole("heading").textContent).toBe("Choose one of Player 2's piles.");
     expect(screen.queryByText("Choose a Pile")).toBeNull();
@@ -192,7 +191,6 @@ describe("choosing a pile on a phone turned sideways", () => {
           pending: [{ subject: 2, pile_a: [], pile_b: [] }],
         })
         .build(),
-      0,
     );
 
     expect(screen.getByRole("heading").textContent).toBe(
@@ -201,7 +199,7 @@ describe("choosing a pile on a phone turned sideways", () => {
   });
 
   it("gives each pile its own grid, side by side while the phone is sideways", () => {
-    showPrompt(choiceState(), 0);
+    showPrompt(choiceState());
 
     const pileA = screen.getByText("Pile A (2)").parentElement!;
     const pileB = screen.getByText("Pile B (1)").parentElement!;
@@ -218,7 +216,7 @@ describe("choosing a pile on a phone turned sideways", () => {
   });
 
   it("shows an empty pile as empty, with no grid", () => {
-    showPrompt(choiceState([]), 0);
+    showPrompt(choiceState([]));
 
     const pileB = screen.getByText("Pile B (0)").parentElement!;
     expect(within(pileB).getByText("(empty)")).toBeInTheDocument();
@@ -234,7 +232,7 @@ describe("separating into piles and choosing one on a phone held upright", () =>
   });
 
   it("stack the piles, each with its grid, under the full header with both choose buttons in the footer", () => {
-    showPrompt(choiceState(), 0);
+    showPrompt(choiceState());
 
     const pileA = screen.getByText("Pile A (2)").parentElement!;
     expect(pileA.querySelector(".card-choice-grid")).toContainElement(gridCellOf("Alpha"));
@@ -246,7 +244,7 @@ describe("separating into piles and choosing one on a phone held upright", () =>
   });
 
   it("draws the phone's grid under the full header and footer, which a tall screen keeps", () => {
-    showPrompt(partitionState(), 1);
+    showPrompt(partitionState());
 
     expect(gridCellOf("Alpha")).not.toBeNull();
     expect(within(overlayHeader()).getByText("Game Choice")).toBeInTheDocument();
@@ -262,12 +260,12 @@ describe("separating into piles and choosing one on a desktop", () => {
   });
 
   it("keep the partition's panel: title over subtitle, footer Confirm, cards in a wrapping row", () => {
-    showPrompt(partitionState(), 1);
+    showPrompt(partitionState());
 
     expect(within(overlayHeader()).getByText("Game Choice")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Separate into Two Piles" })).toBeInTheDocument();
     expect(
-      within(overlayHeader()).getByText("Separate your creatures into two piles. Player 1 will choose one."),
+      within(overlayHeader()).getByText("Separate your creatures into two piles. Player 2 will choose one."),
     ).toBeInTheDocument();
     expect(within(overlayHeader()).queryByRole("button")).toBeNull();
     expect(screen.getAllByRole("button", { name: "Confirm" })).toHaveLength(1);
@@ -276,7 +274,7 @@ describe("separating into piles and choosing one on a desktop", () => {
   });
 
   it("keep the choosing step's panel: both choose buttons in the footer, no grid", () => {
-    showPrompt(choiceState(), 0);
+    showPrompt(choiceState());
 
     expect(screen.getByRole("heading", { name: "Choose a Pile" })).toBeInTheDocument();
     expect(within(overlayHeader()).queryByRole("button")).toBeNull();

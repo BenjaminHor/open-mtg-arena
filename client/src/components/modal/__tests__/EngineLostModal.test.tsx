@@ -91,29 +91,22 @@ describe("EngineLostModal", () => {
     expect(screen.queryByRole("button", { name: "Main Menu" })).not.toBeInTheDocument();
   });
 
-  it.each<[string, DownloadResult, string, string]>([
+  it.each<[string, DownloadResult | Error, string, string]>([
     [
       "a failed download is not reported as an export",
-      { kind: "failed", filename: "game-state.zip" },
+      new Error("write failed"),
       "Export failed",
       "Exported",
     ],
     [
-      // This is the recovery path: a snapshot nothing confirmed must not send
-      // the player looking for a file that may not exist.
-      "a shell that never confirmed the export does not read as exported",
-      { kind: "requested", filename: "game-state.zip" },
-      "Export unconfirmed",
-      "Exported",
-    ],
-    [
       "a confirmed download reads as exported",
-      { kind: "saved", filename: "game-state.zip", path: "~/Downloads/game-state.zip" },
+      { kind: "saved", filename: "game-state.zip" },
       "Exported",
-      "Export unconfirmed",
+      "Export failed",
     ],
   ])("%s", async (_name, result, shown, hidden) => {
-    exportGameStateDebugZip.mockResolvedValue(result);
+    if (result instanceof Error) exportGameStateDebugZip.mockRejectedValue(result);
+    else exportGameStateDebugZip.mockResolvedValue(result);
     setGameStoreForTest({ gameId: GAME_ID, gameMode: "ai" });
     renderModal();
 
@@ -146,8 +139,8 @@ describe("EngineLostModal", () => {
     fireEvent.click(exportButton);
     expect(exportGameStateDebugZip).toHaveBeenCalledTimes(1);
 
-    settle({ kind: "requested", filename: "game-state.zip" });
-    expect(await screen.findByRole("button", { name: "Export unconfirmed" })).toBeEnabled();
+    settle({ kind: "saved", filename: "game-state.zip" });
+    expect(await screen.findByRole("button", { name: "Exported" })).toBeEnabled();
   });
 
   // Fake timers only here: the point is what happens when the earlier export's
@@ -159,26 +152,22 @@ describe("EngineLostModal", () => {
 
     act(() => notifyEngineLost("submitAction"));
     const exportButton = screen.getByRole("button", { name: "Export client snapshot" });
-    const exportOnce = async (result: DownloadResult) => {
-      const settled = Promise.resolve(result);
+    const exportOnce = async (result: DownloadResult | Error) => {
+      const settled = result instanceof Error ? Promise.reject(result) : Promise.resolve(result);
       exportGameStateDebugZip.mockReturnValueOnce(settled);
       fireEvent.click(exportButton);
       // Gate on the commit, not on the mock: the result lands in a promise
       // continuation React has not rendered yet.
       await act(async () => {
-        await settled;
+        await settled.catch(() => undefined);
       });
     };
 
-    await exportOnce({
-      kind: "saved",
-      filename: "game-state.zip",
-      path: "~/Downloads/game-state.zip",
-    });
+    await exportOnce({ kind: "saved", filename: "game-state.zip" });
     expect(screen.getByRole("button", { name: "Exported" })).toBeInTheDocument();
 
     act(() => vi.advanceTimersByTime(1_500));
-    await exportOnce({ kind: "failed", filename: "game-state.zip" });
+    await exportOnce(new Error("write failed"));
     expect(screen.getByRole("button", { name: "Export failed" })).toBeInTheDocument();
 
     // The first export's reset is due here and has no claim on this result.
@@ -246,7 +235,7 @@ describe("EngineLostModal", () => {
     expect(exportButton).toBeDisabled();
 
     cleanup();
-    settle({ kind: "saved", filename: "game-state.zip", path: "~/Downloads/game-state.zip" });
+    settle({ kind: "saved", filename: "game-state.zip" });
     await act(async () => {
       await pending;
     });

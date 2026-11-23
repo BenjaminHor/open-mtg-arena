@@ -32,24 +32,6 @@
     "enter": "进入全屏",
     "exit": "退出全屏"
   },
-  "nativeEngineProgress": {
-    "title": "正在更新原生引擎",
-    "resolving": "正在查找正确的本地服务器…",
-    "downloadingBinary": "正在下载更新后的服务器…",
-    "verifying": "正在校验服务器…",
-    "downloadingData": "正在下载游戏数据…",
-    "spawning": "正在启动本地服务器…",
-    "ready": "原生引擎已就绪",
-    "failed": "无法准备原生引擎"
-  },
-  "engineBadge": {
-    "native": "原生引擎",
-    "nativeTooltip": "本局游戏正运行在桌面应用的原生引擎上。",
-    "inBrowser": "浏览器内引擎",
-    "inBrowserTooltip": "原生引擎不可用 — 本局游戏正运行在浏览器内。",
-    "versionMismatchTooltip": "原生引擎版本不匹配 — 本局游戏正运行在浏览器内。",
-    "notAttemptedTooltip": "本局游戏正运行在浏览器内 — 未使用原生引擎。"
-  },
   "buildBadge": {
     "downloading": "正在下载… {{progress}}%",
     "checking": "正在检查…",
@@ -57,7 +39,6 @@
     "updatePending": "游戏结束后待更新",
     "cards": "卡牌 {{age}}（{{commit}}）",
     "cardDataTitle": "卡牌数据生成于 {{date}}，来源 {{commit}}",
-    "desktopAppVersion": "桌面应用 v{{version}}",
     "checkForUpdates": "检查更新",
     "updaterDebugInfo": "更新程序调试信息",
     "updaterIssue": "更新程序问题：{{error}}",
@@ -82,7 +63,6 @@
       "tools": "工具",
       "game": "游戏"
     },
-    "reportCard": "报告卡牌问题",
     "menu": "游戏菜单",
     "sandboxTools": "沙盒工具",
     "sandboxToolsTitle": "沙盒工具 — 设置任意盘面状态（`）",
@@ -106,7 +86,6 @@
     "helpShortcuts": "帮助与快捷键",
     "showAiHand": "显示 AI 手牌",
     "hideAiHand": "隐藏 AI 手牌",
-    "requestTakeback": "请求悔棋",
     "undoLastAction": "撤销上一步操作",
     "concede": "认输",
     "backToDraft": "返回轮抽",
@@ -115,39 +94,10 @@
     "cardDataTitle": "卡牌数据：{{date}}"
   },
   "volume": {
-    "deviceBlocked": "音频不可用 — 系统音频服务器无响应。重启应用后重试。",
     "mediaUnavailable": "音频不可用 — 本系统缺少播放声音所需的媒体组件。请安装你所使用发行版的 GStreamer 插件包，然后重启应用。",
     "mute": "静音",
     "unmute": "取消静音",
     "volume": "音量"
-  },
-  "hostControl": {
-    "collapse": "收起",
-    "expand": "展开主持面板",
-    "seatHost": "主持人",
-    "seatPlayer": "牌手",
-    "seatOpen": "空位",
-    "seatAi": "AI（{{difficulty}}）",
-    "teamLabel": "队伍 {{number}}",
-    "waiting": "等待中…",
-    "seatLabel": "座位 {{id}}",
-    "addAi": "添加 AI",
-    "remove": "移除",
-    "human": "真人",
-    "kick": "移出",
-    "replaceAi": "替换 AI",
-    "random": "随机",
-    "connecting": "正在连接…",
-    "cancelHosting": "取消主持",
-    "kickConfirm": "将 {{name}} 移出房间？",
-    "replaceConfirm": "用 AI 替换 {{name}}？此操作会将其移出房间。",
-    "fallbackPlayerName": "牌手 {{number}}",
-    "seatsOccupied": "已占用 {{occupied}}/{{total}} 个座位",
-    "startGame": "开始游戏",
-    "startNow": "立即开始",
-    "fillWithAi": "用 AI 补满",
-    "joinLinkCopied": "已复制加入链接",
-    "copyJoinLink": "复制加入链接：{{joinShare}}"
   },
   "grantDebug": {
     "heading": "沙盒：调试权限",
@@ -178,9 +128,6 @@
       "copied": "已将游戏状态复制到剪贴板。",
       "copyFailed": "无法复制游戏状态。",
       "exported": "已导出 {{filename}}。",
-      "exportedTo": "已导出到 {{path}}。",
-      "exportRequested": "已请求导出 — {{filename}}。",
-      "exportFailed": "无法导出游戏状态。",
       "exportFailedDetail": "无法导出游戏状态。{{detail}}",
       "replayExported": "回放已保存为 {{filename}}。",
       "replayExportUnavailable": "本局游戏没有可用的回放录像。",
@@ -279,12 +226,6 @@
       "message": "使用 <tools>沙盒工具</tools> 设置任意盘面状态 — 添加卡牌和衍生物、更改生命和指示物、复制永久物，或跳转阶段。随时按 <key>`</key> 键打开。",
       "dismiss": "忽略",
       "open": "打开沙盒工具"
-    },
-    "reportCardNudge": {
-      "message": "发现卡牌显示或运作异常？点击左上角的<flag>报告标记</flag>进行标记，以便我们修复。",
-      "dismiss": "忽略",
-      "open": "报告卡牌问题",
-      "debugPrompt": "发现卡牌显示或运作异常？标记它，以便我们修复。"
     }
   },
   "splash": {
@@ -316,15 +257,7 @@
     "back": "返回",
     "settings": "设置",
     "languageSettings": "语言（{{lang}}） — 打开设置",
-    "languageTitle": "语言：{{lang}}",
-    "statusBanner": {
-      "dismiss": "关闭此消息",
-      "severity": {
-        "info": "提示",
-        "warning": "注意",
-        "critical": "重要"
-      }
-    }
+    "languageTitle": "语言：{{lang}}"
   },
   "errorBoundary": {
     "heading": "出错了",
@@ -342,100 +275,6 @@
     "genericAction": "操作",
     "unknownEngineError": "未知引擎错误"
   },
-  "troubleshooting": {
-    "title": "疑难解答",
-    "intro": "使用两个临时连接和极小的测试消息来测试 PeerJS 信令和 TURN。检查最多耗时 35 秒，且不会改变你的对局。",
-    "run": "运行检查",
-    "rerun": "再次运行",
-    "running": "检查中…",
-    "export": "下载报告",
-    "privacy": "JSON 报告仅包含技术性观测数据，不包含游戏内容、牌手 ID、房间代码、凭据和控制台日志。近期历史会在此标签页中保留最多一小时，重新加载后仍然保留。",
-    "history": "近期事件：{{count}}。过去的事件不能证明当前存在故障。",
-    "observed": "观测时间 {{time}}",
-    "saved": "报告已保存。",
-    "requested": "已请求下载。请查看你的下载内容。",
-    "failed": "无法保存报告。请重试。",
-    "cancelled": "已取消保存。",
-    "runnerFailed": "检查无法完成。请重试。",
-    "checks": {
-      "connectivity": "网络连接",
-      "visibility": "页面可见性",
-      "support": "浏览器支持",
-      "engine": "本地引擎实例",
-      "peer": "牌手连接",
-      "route": "连接路径",
-      "directory": "大厅服务",
-      "mode": "对局引擎",
-      "credentials": "新的 TURN 凭据",
-      "signaling": "PeerJS 信令",
-      "relay": "TURN 消息往返"
-    },
-    "reasons": {
-      "online": "浏览器报告在线。这并不确认可以访问互联网。",
-      "offline": "浏览器报告离线。请检查你的网络连接。",
-      "visible": "页面可见。",
-      "hidden": "请返回此标签页；后台标签页可能会被降速。",
-      "supported": "WebAssembly 和 WebRTC 可用。",
-      "unsupported": "WebAssembly 或 WebRTC 不可用。部分检查无法在此浏览器中运行。",
-      "noEngine": "未注册本地引擎实例。未检查引擎健康状况。",
-      "engineReady": "有一个本地引擎实例作出了响应。它未必是正在运行你对局的引擎。",
-      "engineWaiting": "本地引擎实例尚未就绪。请稍候，然后再次运行检查。",
-      "probeFailed": "探测失败。如果反复出现，请在离开前保存报告。",
-      "probeTimeout": "引擎未及时响应。请稍候再试；如果反复出现，请保存报告。",
-      "noPeer": "未注册活跃的对等端。未检查对等端健康状况。",
-      "peerConnected": "牌手连接已打开。任何排队中的工作都会记录在报告中。",
-      "peerWaiting": "牌手连接仍在连接中或已断开。请稍候并再次检查。",
-      "peerDisconnectedDuringCheck": "牌手连接在这些检查期间断开了。请在重试前保存此报告。",
-      "relayConnectionFailed": "中继连接在设置或传输期间失败。下方错误类别标明了 PeerJS 报告的故障。",
-      "peerFailed": "传输层报告了错误。如果问题反复出现，请保存此报告。",
-      "relayed": "此连接使用了中继。使用中继是正常的，并不代表失败。",
-      "statsUnavailable": "连接路径详情不可用。这并非失败的证据。",
-      "directoryReached": "目录服务返回了成功的 HTTP 响应。这仅检查可达性，不代表对局健康状况。",
-      "directoryFailed": "目录检查未成功。请检查你的连接并重试。",
-      "modeNotChecked": "即使出现本地引擎实例，此处也不会检查 WebSocket 和原生对局引擎的健康状况。",
-      "direct": "观测到的连接是直连，未使用中继。",
-      "draftModeNotChecked": "这些检查不会验证正在运行轮抽对局的引擎；它可能是本地的，也可能是远程的。",
-      "networkUnsupported": "此浏览器无法运行 PeerJS 中继测试。请使用支持 WebRTC 的最新浏览器。",
-      "credentialsReady": "已获取新的 TURN 凭据。中继访问权限将在下方单独检查。",
-      "credentialsFailed": "无法获取新的 TURN 凭据，或凭据中不含可用的中继。请重试；如果持续如此，请下载报告以寻求支持。可能涉及 VPN、过滤器或服务故障。",
-      "credentialsTimeout": "TURN 凭据服务未及时响应。请检查你的网络并重试；如果持续如此，请下载报告。",
-      "prerequisiteFailed": "由于凭据或信令失败，无法运行中继测试。这不能确认 TURN 传输失败。",
-      "signalingReady": "两个临时对等端都已向 PeerJS 注册。中继检查还会测试 offer 和 answer 的转发。",
-      "signalingFailed": "PeerJS 信令失败。可能涉及网络过滤器、VPN 或信令服务问题。请尝试其他网络；如果反复出现，请下载报告。",
-      "signalingTimeout": "PeerJS 未及时注册两个临时对等端。请检查网络或 VPN 限制，尝试其他网络；如果反复出现，请保存报告。",
-      "relayReady": "预期的消息已通过选定的中继候选返回。此浏览器现在可以使用 TURN。",
-      "relayEvidenceUnavailable": "无法从选定的候选统计中验证中继结果。请下载报告；这不能证明 TURN 已宕机。",
-      "relayNoCandidates": "在测试失败或超时前未观测到中继候选。TURN 访问可能被阻止或不可用。请尝试其他网络，并将报告提供给支持人员。",
-      "relayNoEcho": "已观测到中继候选，但预期的消息未返回。请尝试其他网络；如果反复出现，请下载报告。"
-    },
-    "statuses": {
-      "pass": "通过",
-      "warning": "需注意",
-      "unavailable": "未检查",
-      "error": "错误"
-    },
-    "pastEngine": "之前本地引擎未就绪。如果反复出现，请在离开前保存报告。",
-    "pastDisconnect": "之前记录到一次意外的牌手断线。如果反复出现，请在离开前保存报告。",
-    "limitations": "此同设备测试检查的是此浏览器当前的中继路径。它无法验证其他牌手、对局的长期可靠性，也无法逐一验证每种 UDP/TCP 传输。",
-    "pastSetup": "之前记录到一次牌手连接设置问题。其阶段请见报告；这不能确认当前存在故障。",
-    "pastRoute": "之前选定的路径：本地 {{local}}，远程 {{remote}}。",
-    "unknownRoute": "不可用",
-    "duration": "耗时：{{duration, number}} 毫秒",
-    "routeEvidence": "选定的候选：本地 {{local}}，远程 {{remote}}。候选协议：{{protocol}}（不是客户端到 TURN 的传输协议）。",
-    "iceErrors": "ICE 错误代码：{{codes}}",
-    "credentialDetail": "凭据结果：{{reason}}",
-    "httpStatus": "HTTP 状态：{{status}}",
-    "connectionId": "诊断连接：{{id}}",
-    "relayProtocol": "客户端到 TURN 的传输协议：{{protocol}}",
-    "peerError": "PeerJS 错误类别：{{code}}",
-    "credentialFailures": {
-      "http": "服务返回了 HTTP 错误",
-      "network": "网络请求失败",
-      "invalid": "凭据响应无效",
-      "no-turn": "未提供 TURN 中继",
-      "aborted": "请求已取消"
-    }
-  },
   "savedDeckLibraryBusy": {
     "description": "另一个 phase.rs 标签页正忙。请关闭其他 phase.rs 标签页后重试。",
     "title": {
@@ -444,9 +283,7 @@
       "import": "无法导入套牌",
       "delete": "无法删除套牌",
       "organize": "无法更新套牌整理",
-      "updateFeeds": "无法更新套牌订阅源",
       "restore": "无法恢复备份",
-      "applyCloud": "无法应用云端套牌",
       "autosaveDraft": "无法自动保存你的轮抽套牌"
     }
   },

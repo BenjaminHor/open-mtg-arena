@@ -57,9 +57,6 @@ vi.mock("../../components/modal/EngineLostModal.tsx", () => ({ EngineLostModal: 
 vi.mock("../../components/modal/CardDataMissingModal.tsx", () => ({
   CardDataMissingModal: () => null,
 }));
-vi.mock("../../components/multiplayer/ConcedeDialog.tsx", () => ({
-  ConcedeDialog: () => null,
-}));
 vi.mock("../../components/chrome/GameMenu.tsx", () => ({ GameMenu: () => null }));
 // The overlay's renderer is not under test; only its `diceRoll` gate is.
 vi.mock("../../components/animation/DiceRollOverlay.tsx", () => ({
@@ -112,7 +109,7 @@ function showPrompt(waitingFor: WaitingFor, seats: PlayerId[]) {
 
 function renderGamePage() {
   return render(
-    <MemoryRouter initialEntries={["/game/starting-player-choice?mode=join"]}>
+    <MemoryRouter initialEntries={["/game/starting-player-choice?mode=ai"]}>
       <Routes>
         <Route path="/game/:id" element={<GamePage />} />
       </Routes>

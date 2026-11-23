@@ -30,16 +30,14 @@ export interface FeedSource {
   description?: string;
   icon?: string;
   format?: string;
-  type: "bundled" | "remote";
+  type: "bundled";
   url: string;
-  /** Data provider credited with a link wherever the feed is listed. */
-  attribution?: { name: string; url: string };
 }
 
 export interface FeedSubscription {
   sourceId: string;
   url: string;
-  type: "bundled" | "remote";
+  type: "bundled";
   subscribedAt: number;
   lastRefreshedAt: number;
   lastVersion: number;

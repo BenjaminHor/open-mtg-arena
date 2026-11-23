@@ -35,13 +35,11 @@ const initialVisualPreference = usePreferencesStore.getState().priorityAlertVisu
 
 function setup(opts: { seat: number; waitingFor: WaitingFor; state?: Parameters<typeof createGameState>[0]; spectate?: boolean }) {
   useGameStore.setState({
-    gameMode: opts.spectate ? "spectate" : "online",
+    gameMode: opts.spectate ? "spectate" : "ai",
     gameState: createGameState(opts.state),
     waitingFor: opts.waitingFor,
   });
-  useMultiplayerStore.setState({ isSpectator: opts.spectate ?? false,
-    playerNames: new Map([[1, "Sorin"]]),
-  });
+  useMultiplayerStore.setState({ playerNames: new Map([[1, "Sorin"]]) });
 }
 
 describe("TurnStatusLine", () => {

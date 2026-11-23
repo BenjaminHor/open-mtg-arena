@@ -16,12 +16,8 @@ afterEach(() => {
   useAudioHealthStore.setState({ unavailable: null });
 });
 
-// Each reason has its own remedy, so the description must name the fault the
-// user actually hit — a shared "audio is off" string would send someone with a
-// missing GStreamer plugin set off restarting the app forever (issue #6744).
+// The description must name the fault the user actually hit (issue #6744).
 const REASON_MESSAGE = {
-  "device-wedged":
-    "Audio unavailable — system audio server is not responding. Restart the app to retry.",
   "media-unavailable":
     "Audio unavailable — this system is missing the media components needed to play sound. Install your distribution's GStreamer plugin packages, then restart the app.",
 } as const satisfies Record<AudioUnavailableReason, string>;

@@ -13,7 +13,7 @@ import { encodeCandidateKey } from "../../services/visualPacks/candidateKeys";
 import { assetKey, catalogRoot, decodeCandidateKey, installedRevision, packId } from "../../services/visualPacks/types";
 import type { ResolutionKey, ResolutionResponse, RevisionEvent } from "../../services/visualPacks/types";
 import { useConnectivityStore } from "../../stores/connectivityStore";
-import { FORMAT_DEFAULTS } from "../../stores/multiplayerStore";
+import { formatMetadata } from "../../data/formatRegistry";
 import { usePreferencesStore } from "../../stores/preferencesStore";
 import { useCardImage } from "../useCardImage";
 
@@ -139,7 +139,7 @@ async function initializeDeck(deck: SubmissionDeck) {
   const adapter = getSharedAdapter();
   await adapter.initializeGame({
     player: deck, opponent: { ...list, main_deck: Array<string>(12).fill("Forest") },
-  }, FORMAT_DEFAULTS.Freeform, 2, undefined, 0);
+  }, formatMetadata("Freeform")!.default_config, 2, undefined, 0);
   const { state, actions } = await adapter.getViewerSnapshot(0);
   expect(actions.some((action) => action.type === "MulliganDecision")).toBe(true);
   const cards = state.players[0].hand.map((id) => state.objects[id]);

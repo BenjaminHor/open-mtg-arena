@@ -16,7 +16,6 @@ import type {
   ObjectId,
   PlayerId,
   PersistedGameState,
-  RewindOption,
   RestoredStackAutomationPresentation,
   StuckDecisionDiagnostic,
   WaitingFor,
@@ -196,13 +195,6 @@ interface GameStoreState {
   pendingUndoId: number | null;
   /** Debug rewind targets: trusted envelopes for the same reason. */
   turnCheckpoints: PersistedGameState[];
-  /**
-   * Server-published turn boundaries offered as rollback targets. Mirrors the
-   * server exactly — never appended to client-side, never derived. Empty on
-   * every transport that does not publish them (which is all of them except a
-   * `SingleUser` phase-server sidecar).
-   */
-  rewindTargets: RewindOption[];
   /** One-shot engine-authored summary of automation completed during a restore. */
   restoredStackAutomation: RestoredStackAutomationPresentation | null;
   /**
@@ -275,12 +267,6 @@ interface GameStoreActions {
   ) => Promise<void>;
   resumeGame: (gameId: string, adapter: EngineAdapter, savedState: PersistedGameState) => Promise<void>;
   dispatch: (action: GameAction) => Promise<GameEvent[]>;
-  /**
-   * Replace the server-published rollback targets. Only `dispatch.ts` calls
-   * this, and only from inside its generation gate — a superseded remote update
-   * must not clobber the list with a stale one.
-   */
-  setRewindTargets: (targets: RewindOption[]) => void;
   reset: () => void;
   setAdapter: (adapter: EngineAdapter) => void;
   /**
@@ -389,7 +375,6 @@ const initialState: GameStoreState = {
   stateHistory: [],
   pendingUndoId: null,
   turnCheckpoints: [],
-  rewindTargets: [],
   restoredStackAutomation: null,
   startingContest: null,
   aiSeatIds: [],
@@ -525,8 +510,7 @@ export const useGameStore = create<GameStore>()(
           nextLogSeq: initLogEntries.length,
           stateHistory: [],
           turnCheckpoints: [],
-          rewindTargets: [],
-          startingContest,
+                  startingContest,
           restoredStackAutomation: null,
         },
       });
@@ -555,8 +539,7 @@ export const useGameStore = create<GameStore>()(
           nextLogSeq: 0,
           stateHistory: [],
           turnCheckpoints: savedCheckpoints,
-          rewindTargets: [],
-          restoredStackAutomation: resumed?.presentation ?? null,
+                  restoredStackAutomation: resumed?.presentation ?? null,
         },
       });
       await saveAuthoritativeGame(gameId, adapter, snapshot.state);
@@ -639,9 +622,6 @@ export const useGameStore = create<GameStore>()(
       return result.events;
     },
 
-    setRewindTargets: (targets) => {
-      set({ rewindTargets: targets });
-    },
 
     reset: () => {
       const { adapter } = get();

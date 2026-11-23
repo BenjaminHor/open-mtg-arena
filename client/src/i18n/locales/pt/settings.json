@@ -6,18 +6,10 @@
   "tabs": {
     "gameplay": "Jogabilidade",
     "ai": "Oponentes de IA",
-    "experimental": "Experimental",
     "visual": "Visual",
     "combat": "Ritmo",
     "audio": "Áudio",
-    "multiplayer": "Multijogador",
     "data": "Dados"
-  },
-  "experimental": {
-    "title": "Experimental",
-    "tournaments": "Torneios",
-    "showTournaments": "Mostrar torneios na navegação",
-    "showTournamentsDescription": "Os torneios ainda estão em desenvolvimento e podem mudar sem aviso prévio."
   },
   "gameplay": {
     "collapseLands": "Recolher Lands",
@@ -50,8 +42,6 @@
       "autoExceptSacrificialMana": "Perguntar antes de sacrificar",
       "manual": "Manual"
     },
-    "nativeEngine": "Usar o motor nativo para partidas locais e multijogador hospedado",
-    "nativeEngineDescription": "Use o motor baixado para partidas locais contra IA e partidas hospedadas por você em um lobby. Os convidados continuam a se conectar pela conexão ponto a ponto do lobby. Usa o motor integrado quando não está disponível.",
     "boardBackground": "Plano de Fundo do Tabuleiro",
     "boardBackgroundGroups": {
       "automatic": "Automático",
@@ -197,37 +187,6 @@
     "customThemes": "Temas Personalizados",
     "remove": "Remover"
   },
-  "multiplayer": {
-    "title": "Multijogador",
-    "displayName": "Nome de Exibição",
-    "displayNamePlaceholder": "Digite seu nome",
-    "serverSelectionNote": "A seleção de servidor foi movida para o lobby — abra o Multijogador e use o chip de servidor (ou \"Escolher servidor\" no modo P2P) para trocar de região, configurar uma instância auto-hospedada ou testar a conectividade."
-  },
-  "sync": {
-    "title": "Sincronização na nuvem",
-    "description": "Inicie sessão para sincronizar os seus baralhos, preferências e subscrições de feeds entre dispositivos. Os seus dados ficam na sua conta e são atualizados automaticamente sempre que mudam.",
-    "signInWith": "Iniciar sessão com {{provider}}",
-    "signOut": "Terminar sessão",
-    "signedInAs": "Sessão iniciada como {{name}}",
-    "syncNow": "Sincronizar agora",
-    "statusSyncing": "A sincronizar…",
-    "statusPaused": "A sincronização na nuvem está em pausa enquanto está offline.",
-    "statusError": "Falha na sincronização",
-    "lastSynced": "Última sincronização {{time}}",
-    "never": "nunca",
-    "conflictTitle": "Ambas as cópias têm alterações",
-    "conflictBody": "Este dispositivo e a sua conta na nuvem têm dados e não conseguimos determinar qual está atualizada. Escolha uma cópia ou mantenha ambas as coleções de decks.",
-    "keepCloud": "Usar a nuvem",
-    "keepLocal": "Manter este dispositivo",
-    "keepBothDecks": "Manter ambas as coleções de decks",
-    "savesNote": "Os jogos guardados e as caches permanecem neste dispositivo.",
-    "diffDecks": "Decks: {{added}} adicionados, {{modified}} alterados, {{removed}} removidos",
-    "diffPrefs": "As preferências diferem",
-    "diffFeeds": "As subscrições de feeds diferem",
-    "diffOther": "Outras definições diferem",
-    "providerDiscord": "Discord",
-    "providerGoogle": "Google"
-  },
   "data": {
     "title": "Backup e Restauração",
     "description": "A exportação agrupa suas preferências, decks importados e inscrições em feeds em um único arquivo JSON. A importação os restaura em outra máquina. Os caches do IndexedDB (cache de feeds, cache de áudio, jogos salvos) não são incluídos — eles se reconstroem automaticamente.",
@@ -244,9 +203,7 @@
     "importedWithPreferences_one": "Importado {{count}} deck e preferências.",
     "importedWithPreferences_other": "Importados {{count}} decks e preferências.",
     "skippedMalformed_one": "Ignorada {{count}} entrada malformada.",
-    "skippedMalformed_other": "Ignoradas {{count}} entradas malformadas.",
-    "telemetry": "Enviar relatórios anônimos de falhas e uso",
-    "telemetryDescription": "Ajuda a corrigir falhas e priorizar o suporte a cartas. Sem conta, sem dados pessoais — apenas contagens de erros e resumos de partida."
+    "skippedMalformed_other": "Ignoradas {{count}} entradas malformadas."
   },
   "visualPacks": {
     "title": "Catálogo visual off-line",
@@ -469,8 +426,7 @@
       "preconCatalog": "Decks pré-construídos",
       "bundledAiCatalog": "Catálogo de decks de IA",
       "deckLibrary": "Biblioteca de decks instalada",
-      "coreVisuals": "Verso da carta e símbolos de mana",
-      "nativeEngine": "Motor nativo"
+      "coreVisuals": "Verso da carta e símbolos de mana"
     },
     "capabilityStates": {
       "ready": "Pronto",

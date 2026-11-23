@@ -1,10 +1,4 @@
 {
-  "playerLatency": {
-    "host": "Hôte",
-    "waiting": "En attente",
-    "value": "{{ms}} ms",
-    "description": "Latence aller-retour vers l’hôte. Une réponse manquante ne déconnecte pas la partie."
-  },
   "abilityBlock": {
     "badge": "Bloquée",
     "cantBeActivated": "Cette capacité ne peut pas être activée",
@@ -160,9 +154,6 @@
     "holdCtrlFront": "Maintenez Ctrl pour la face avant",
     "holdCtrlFlip": "Maintenez Ctrl pour pivoter",
     "flip": "Pivoter",
-    "report": "Signaler un problème",
-    "reported": "Signalé ✓",
-    "reportNotSent": "Non envoyé",
     "reloadArt": "Recharger l'illustration",
     "altParsedAbilities": "Alt : capacités analysées",
     "debugId": "ID : {{id}}",
@@ -237,26 +228,7 @@
     "autoPassing": "Passage automatique jusqu'à l'étape de fin...",
     "resolvingStack": "Résolution de la pile..."
   },
-  "cardReport": {
-    "title": "Signaler un problème de carte",
-    "subtitle": "Choisissez la carte qui ne fonctionne pas correctement.",
-    "search": "Rechercher des cartes…",
-    "empty": "Aucune carte à signaler visible.",
-    "zone": {
-      "Stack": "Pile",
-      "Battlefield": "Champ de bataille",
-      "Hand": "Main",
-      "Graveyard": "Cimetière",
-      "Exile": "Exil",
-      "Command": "Zone de commandement"
-    },
-    "emblemTag": "Emblème",
-    "allPlayers": "Tous",
-    "allZones": "Toutes les zones",
-    "cancel": "Annuler"
-  },
   "board": {
-    "reportCard": "Signaler un problème de carte",
     "regroupCreatures": "Regrouper les groupes de créatures en double",
     "changeBackground": "Changer l'arrière-plan…",
     "customizeLayout": "Personnaliser la disposition…",
@@ -529,11 +501,6 @@
     "pauseAndWait": "Mettre en pause et attendre",
     "continueWithout": "Continuer sans lui"
   },
-  "kickDialog": {
-    "title": "Exclure {{name}} ?",
-    "body": "Il abandonnera la partie et ne pourra pas la rejoindre.",
-    "kick": "Exclure"
-  },
   "enchantmentsBadge": {
     "ariaLabel_one": "1 enchantement sur ce joueur",
     "ariaLabel_other": "{{count}} enchantements sur ce joueur",
@@ -792,12 +759,8 @@
     "clickToViewThenTarget": "Cliquez pour voir le plateau de {{name}}, puis cliquez à nouveau pour cibler {{name}}",
     "clickToViewBoard": "Cliquez pour voir le plateau de {{name}}",
     "underAttack": "{{name}} est attaqué",
-    "kickPlayer": "Exclure le joueur {{seat}}",
-    "kickPlayerTooltip": "Exclure le joueur (abandon)",
     "incomingAttackers_one": "{{count}} créature vous attaque",
     "incomingAttackers_other": "{{count}} créatures vous attaquent",
-    "disconnected": "Déconnecté",
-    "connected": "Connecté",
     "statHand": "Main",
     "statCreatures": "Créatures",
     "statLands": "Terrains",
@@ -1378,20 +1341,9 @@
     }
   },
   "gameProvider": {
-    "passwordPrompt": "Cette salle requiert un mot de passe :",
-    "toasts": {
-      "connectionFailed": "Échec de la connexion. Réessayez ou changez de serveur dans les paramètres.",
-      "eliminatedSpectating": "Vous avez été éliminé. Vous êtes désormais spectateur.",
-      "retainedTerminalUnreadable": "Impossible de lire la livraison conservée du résultat final"
-    },
     "resumeReset": {
       "appUpdated": "L'application a été mise à jour et votre partie enregistrée est incompatible avec la nouvelle version.",
       "restoreFailed": "Impossible de restaurer la partie enregistrée : {{error}}"
-    },
-    "notification": {
-      "title": "Adversaire arrivé",
-      "opponentJoined": "Votre adversaire a rejoint la partie. Revenez jouer !",
-      "opponentJoinedNamed": "{{name}} a rejoint votre partie. Revenez jouer !"
     },
     "noLegalAiDecks": {
       "withFormat": "Aucun deck IA légal n'est disponible pour {{format}}.",
@@ -2358,7 +2310,6 @@
     "exportClientSnapshot": "Exporter l’instantané du client",
     "exported": "Exporté",
     "exportFailed": "Échec de l'exportation",
-    "exportRequested": "Export non confirmé",
     "copyDiagnostic": "Copier le diagnostic",
     "copied": "Copié !",
     "reportOnGithub": "Signaler sur GitHub",
@@ -2763,11 +2714,6 @@
       "keep": "Kept"
     }
   },
-  "spectator": {
-    "banner": "Spectating — read only",
-    "leave": "Leave",
-    "watchingWith": "Also watching: {{names}}"
-  },
   "boardChoice": {
     "actions": {
       "sacrifice": "Sacrifice",
@@ -2976,7 +2922,6 @@
     "copyOf": "Copy Of",
     "pickPermanent": "Pick a permanent…",
     "createCopy": "Create Copy",
-    "cardCreationUnavailable": "Spawning a card by name needs the in-browser engine. The token forms below work on this connection.",
     "createCatalogToken": "Create Token (Catalog)",
     "customToken": "Create Token (Custom)",
     "copyPermanent": "Copy Permanent",

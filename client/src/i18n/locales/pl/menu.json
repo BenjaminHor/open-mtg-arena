@@ -26,17 +26,12 @@
   "home": {
     "resume": {
       "title": "Wznów grę",
-      "description": "Kontynuuj ostatnio zapisany pojedynek od bieżącej tury i stanu pola gry.",
-      "viewResult": "Zobacz wynik"
+      "description": "Kontynuuj ostatnio zapisany pojedynek od bieżącej tury i stanu pola gry."
     },
     "setup": {
       "title": "Graj z AI",
       "titleSaved": "Nowy pojedynek z AI",
       "description": "Rozegraj samotny pojedynek przeciwko przeciwnikowi AI — wybierz format, talię, archetyp i poziom trudności."
-    },
-    "online": {
-      "title": "Graj online",
-      "description": "Załóż pokój, dołącz przez kod lub połącz się ponownie z trybem wieloosobowym."
     },
     "draft": {
       "title": "Draft",
@@ -51,9 +46,7 @@
     },
     "preview": {
       "cta": "Wypróbuj wersję zapowiadającą",
-      "tooltip": "Zagraj w najnowszą wersję zapowiadającą — nowe karty i poprawki trafiają tu przed każdym wydaniem.",
-      "backCta": "Wróć do wersji stabilnej",
-      "backTooltip": "Wróć do aktualnej wersji wydania."
+      "tooltip": "Zagraj w najnowszą wersję zapowiadającą — nowe karty i poprawki trafiają tu przed każdym wydaniem."
     },
     "coverage": {
       "title": "Otwórz panel obsługi kart",
@@ -70,13 +63,11 @@
     "load": {
       "title": "Wczytaj stan gry"
     },
-    "exit": "Wyjdź",
     "dashboard": {
       "welcome": "Witaj ponownie",
       "enter": "Wejdź",
       "continue": "Wróć tam, gdzie skończyłeś",
       "resumeDraft": "Wznów draft",
-      "draftPod": "Pod draftowy",
       "activeDeck": "Aktywna talia",
       "noActiveDeck": "Wybierz talię, aby zacząć",
       "fromFeeds": "Z Twoich kanałów",
@@ -84,10 +75,7 @@
       "cards": "karty: {{count}}",
       "mode": {
         "ai": "z AI",
-        "online": "Online",
-        "local": "Lokalnie",
-        "p2p-host": "P2P",
-        "p2p-join": "P2P"
+        "local": "Lokalnie"
       },
       "tagline": "Otwartoźródłowy silnik zasad i klient gry Magic: The Gathering",
       "turn": "Tura {{n}}",
@@ -149,20 +137,6 @@
     "precons": "Precon",
     "playable": "{{playable}} grywalne",
     "nonePlayable": "Żadna z {{selected}} wybranych talii nie jest legalna przy obecnych filtrach, więc losowanie korzysta ze wszystkich {{total}} talii."
-  },
-  "feedManager": {
-    "title": "Zarządzaj kanałami",
-    "refreshing": "Odświeżanie…",
-    "refreshAll": "Odśwież wszystkie",
-    "refresh": "Odśwież",
-    "subscribe": "Subskrybuj",
-    "unsubscribe": "Anuluj subskrypcję",
-    "lastRefreshed": "Ostatnio odświeżono: {{date}}",
-    "dataProvidedBy": "Dane udostępnione przez",
-    "addCustomFeed": "Dodaj własny kanał",
-    "add": "Dodaj",
-    "offlineUnavailable": "Aktualizacje kanałów są niedostępne offline.",
-    "done": "Gotowe"
   },
   "importDeck": {
     "title": "Importuj talię",
@@ -247,9 +221,6 @@
     "tabDecks": "Moje talie",
     "tabSubscriptions": "Subskrypcje",
     "createNew": "Utwórz nową",
-    "refreshing": "Odświeżanie…",
-    "refreshAll": "Odśwież wszystkie",
-    "manageFeeds": "Zarządzaj kanałami",
     "searchPlaceholder": "Szukaj talii…",
     "formatLabel": "Format",
     "sourceFilterLabel": "Źródło talii",
@@ -334,10 +305,8 @@
     "label": "Nawigacja główna",
     "home": "Start",
     "play": "Graj",
-    "online": "Online",
     "draft": "Draft",
     "decks": "Talie",
-    "tournament": "Turnieje",
     "alpha": "Alfa",
     "profile": "Profil",
     "settings": "Ustawienia",

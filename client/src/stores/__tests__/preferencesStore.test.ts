@@ -140,7 +140,6 @@ describe("preferencesStore", () => {
         draftDoubleClickConfirmPick: true,
         pacingMultipliers: { effects: 1.0, combat: 1.0, banners: 1.0 },
         priorityPassingMode: "Standard",
-        experimentalTournamentsEnabled: false,
         masterVolume: 100,
         sfxVolume: 70,
         musicVolume: 40,
@@ -174,7 +173,6 @@ describe("preferencesStore", () => {
     expect(usePreferencesStore.getInitialState().multiplayerSplitLayoutNudgeDismissed).toBe(true);
     expect(state.aiSeats).toEqual([{ difficulty: "Medium", deckId: "Random" }]);
     expect(state.priorityPassingMode).toBe("Standard");
-    expect(state.experimentalTournamentsEnabled).toBe(false);
     expect(state.draftDoubleClickConfirmPick).toBe(true);
     expect(usePreferencesStore.getInitialState().cardAnimationStyle).toBe("webgl");
     expect(usePreferencesStore.getInitialState().humanPoolSelection).toEqual(emptyPoolSelection());
@@ -237,15 +235,6 @@ describe("preferencesStore", () => {
     });
 
     expect(usePreferencesStore.getState().multiplayerBoardLayout).toBe("split");
-  });
-
-  it("persists the experimental tournaments navigation preference", () => {
-    act(() => {
-      usePreferencesStore.getState().setExperimentalTournamentsEnabled(true);
-    });
-
-    expect(usePreferencesStore.getState().experimentalTournamentsEnabled).toBe(true);
-    expect(JSON.parse(localStorage.getItem("phase-preferences")!).state.experimentalTournamentsEnabled).toBe(true);
   });
 
   it("persists the card animation style preference", () => {

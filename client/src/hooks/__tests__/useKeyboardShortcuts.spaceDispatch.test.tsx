@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { GameAction, GameEvent, GameState, WaitingFor } from "../../adapter/types";
 import type { GameMode } from "../../stores/gameStore";
 import { useGameStore } from "../../stores/gameStore";
-import { useMultiplayerStore } from "../../stores/multiplayerStore";
 import { useUiStore } from "../../stores/uiStore";
 import {
   buildGameState,
@@ -36,8 +35,6 @@ function seedGame(
   gameMode: GameMode | null,
   waitingFor: WaitingFor | null,
   options: {
-    activePlayerId?: number | null;
-    isSpectator?: boolean;
     gameState?: GameState | null;
     legacyDispatch?: LegacyDispatch;
   } = {},
@@ -53,8 +50,6 @@ function setGameStores(
   gameMode: GameMode | null,
   waitingFor: WaitingFor | null,
   options: {
-    activePlayerId?: number | null;
-    isSpectator?: boolean;
     gameState?: GameState | null;
     legacyDispatch?: LegacyDispatch;
   } = {},
@@ -70,10 +65,6 @@ function setGameStores(
     waitingFor,
     dispatch: legacyDispatch,
     stateHistory: [],
-  });
-  useMultiplayerStore.setState({
-    activePlayerId: options.activePlayerId ?? null,
-    isSpectator: options.isSpectator ?? false,
   });
 
   return legacyDispatch;
@@ -132,16 +123,16 @@ describe("Space priority dispatch authorization", () => {
     expect(legacyDispatch).not.toHaveBeenCalled();
   });
 
-  it("allows the authorized online turn-decision controller to pass Priority", () => {
-    const waitingFor = buildPriorityWaitingFor({ data: { player: 0 } });
+  it("allows the authorized turn-decision controller to pass Priority", () => {
+    // CR 723: seat 0 controls the active player's (seat 1's) decisions.
+    const waitingFor = buildPriorityWaitingFor({ data: { player: 1 } });
     const gameState = buildGameState({
       waiting_for: waitingFor,
-      active_player: 0,
-      priority_player: 1,
-      turn_decision_controller: 1,
+      active_player: 1,
+      priority_player: 0,
+      turn_decision_controller: 0,
     });
-    const legacyDispatch = seedGame("online", waitingFor, { gameState,
-    });
+    const legacyDispatch = seedGame("ai", waitingFor, { gameState });
     mountKeyboard();
 
     pressSpace();
@@ -151,15 +142,9 @@ describe("Space priority dispatch authorization", () => {
     expect(legacyDispatch).not.toHaveBeenCalled();
   });
 
-  it.each([
-    ["spectate mode", "spectate" as const, null, false],
-    ["multiplayer spectator flag", "online" as const, 0, true],
-  ])("submits neither path for a spectator (%s)", (_label, gameMode, activePlayerId, isSpectator) => {
+  it("submits neither path while watching a replay", () => {
     const waitingFor = buildPriorityWaitingFor({ data: { player: 0 } });
-    const legacyDispatch = seedGame(gameMode, waitingFor, {
-      activePlayerId,
-      isSpectator,
-    });
+    const legacyDispatch = seedGame("spectate", waitingFor);
     mountKeyboard();
 
     pressSpace();
@@ -282,92 +267,4 @@ describe("Space priority dispatch authorization", () => {
     expect(event.defaultPrevented).toBe(true);
   });
 
-  it("uses the current multiplayer seat assignment in the same act", () => {
-    const waitingFor = buildPriorityWaitingFor({ data: { player: 1 } });
-    const gameState = buildGameState({
-      waiting_for: waitingFor,
-      active_player: 1,
-      priority_player: 1,
-    });
-    seedGame("online", waitingFor, { gameState });
-    mountKeyboard();
-
-    let legacyDispatch!: LegacyDispatch;
-    let event!: KeyboardEvent;
-
-    act(() => {
-      legacyDispatch = setGameStores("online", waitingFor, { gameState });
-      event = dispatchSpaceKeydown();
-      expect(dispatchActionMock).toHaveBeenCalledExactlyOnceWith({ type: "PassPriority" });
-    });
-
-    expect(dispatchActionMock).toHaveBeenCalledExactlyOnceWith({ type: "PassPriority" });
-    expect(legacyDispatch).not.toHaveBeenCalled();
-    expect(event.defaultPrevented).toBe(true);
-  });
-
-  it("uses the current multiplayer seat assignment when the local seat loses authority in the same act", () => {
-    const waitingFor = buildPriorityWaitingFor({ data: { player: 1 } });
-    const gameState = buildGameState({
-      waiting_for: waitingFor,
-      active_player: 1,
-      priority_player: 1,
-    });
-    seedGame("online", waitingFor, { gameState });
-    mountKeyboard();
-
-    let legacyDispatch!: LegacyDispatch;
-    let event!: KeyboardEvent;
-
-    act(() => {
-      legacyDispatch = setGameStores("online", waitingFor, { gameState });
-      event = dispatchSpaceKeydown();
-      expect(dispatchActionMock).not.toHaveBeenCalled();
-    });
-
-    expect(dispatchActionMock).not.toHaveBeenCalled();
-    expect(legacyDispatch).not.toHaveBeenCalled();
-    expect(event.defaultPrevented).toBe(false);
-  });
-
-  it.each([
-    ["player to spectator", false, true, false],
-    ["spectator to player", true, false, true],
-  ])("uses the current spectator flag for a %s transition in the same act", (
-    _label,
-    wasSpectator,
-    isSpectator,
-    shouldDispatch,
-  ) => {
-    const waitingFor = buildPriorityWaitingFor({ data: { player: 0 } });
-    const gameState = buildGameState({
-      waiting_for: waitingFor,
-      active_player: 0,
-      priority_player: 0,
-    });
-    seedGame("online", waitingFor, { gameState });
-    mountKeyboard();
-
-    let legacyDispatch!: LegacyDispatch;
-    let event!: KeyboardEvent;
-
-    act(() => {
-      legacyDispatch = setGameStores("online", waitingFor, { isSpectator, gameState });
-      event = dispatchSpaceKeydown();
-      if (shouldDispatch) {
-        expect(dispatchActionMock).toHaveBeenCalledExactlyOnceWith({ type: "PassPriority" });
-      } else {
-        expect(dispatchActionMock).not.toHaveBeenCalled();
-      }
-    });
-
-    if (shouldDispatch) {
-      expect(dispatchActionMock).toHaveBeenCalledExactlyOnceWith({ type: "PassPriority" });
-      expect(event.defaultPrevented).toBe(true);
-    } else {
-      expect(dispatchActionMock).not.toHaveBeenCalled();
-      expect(event.defaultPrevented).toBe(false);
-    }
-    expect(legacyDispatch).not.toHaveBeenCalled();
-  });
 });

@@ -7,7 +7,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { disposeConnectivity, initializeConnectivity, useConnectivityStore } from "../stores/connectivityStore";
 import { useCardImage } from "../hooks/useCardImage";
-import { useCloudSyncStore } from "../stores/cloudSyncStore";
 import { clearActiveGame, loadActiveGame, useGameStore } from "../stores/gameStore";
 import { buildGameState } from "../test/factories/gameStateFactory";
 import type * as Scryfall from "../services/scryfall";
@@ -21,7 +20,6 @@ import type * as AudioManagerModule from "../audio/AudioManager";
  * boundaries and heavyweight shell presentation are substituted.
  */
 const test = vi.hoisted(() => {
-  const platform = { bundled: false, desktop: false };
   const aiCandidates = [{
     id: "saved:Offline Saved",
     name: "Offline Saved",
@@ -33,18 +31,12 @@ const test = vi.hoisted(() => {
     knownFormat: "Commander",
   }];
   const ledger = {
-    cloudProvider: 0,
-    cloudResume: 0,
-    cloudRestore: 0,
-    cloudReconcile: 0,
-    cloudUnsubscribe: 0,
     catalogReconcile: 0,
     catalogRefresh: 0,
     catalogStart: 0,
     catalogBackgroundPause: [] as boolean[],
     serviceWorkerRegister: 0,
     serviceWorkerUpdate: 0,
-    tauriCheck: 0,
     unexpectedFetches: [] as string[],
     adapterInitialize: 0,
     adapterInitializeGame: 0,
@@ -52,10 +44,6 @@ const test = vi.hoisted(() => {
     adapterDisposed: 0,
     visualResolutions: 0,
     remoteImageContinuation: 0,
-    nativeConstructor: 0,
-    webSocketConstructor: 0,
-    p2pConstructor: 0,
-    multiplayerTransport: 0,
     activeQuickDraftLoads: 0,
     draftRunLoads: 0,
     deckJsonRequests: 0,
@@ -90,50 +78,21 @@ const test = vi.hoisted(() => {
     ledger.serviceWorkerRegister += 1;
     options.onRegisteredSW?.("/sw.js", registration);
   });
-  const cloudProvider = {
-    id: "supabase" as const,
-    isConfigured: () => true,
-    resume: async () => { ledger.cloudResume += 1; },
-    pause: async () => undefined,
-    restoreSession: async () => {
-      ledger.cloudRestore += 1;
-      return { userId: "offline-test-user", label: "Offline Test" };
-    },
-    signIn: async () => undefined,
-    signOut: async () => undefined,
-    identity: () => ({ userId: "offline-test-user", label: "Offline Test" }),
-    pullMeta: async () => {
-      ledger.cloudReconcile += 1;
-      return { revision: 1, updatedAt: "2026-01-01T00:00:00.000Z" };
-    },
-    pull: async () => null,
-    push: async () => ({ revision: 1, updatedAt: "2026-01-01T00:00:00.000Z" }),
-    subscribe: () => async () => { ledger.cloudUnsubscribe += 1; },
-  };
-
   return {
     ledger,
-    platform,
     registration,
     aiCandidates,
     registerSW,
-    cloudProvider,
     localAdapter,
     localSnapshot,
     reset() {
       Object.assign(ledger, {
-        cloudProvider: 0,
-        cloudResume: 0,
-        cloudRestore: 0,
-        cloudReconcile: 0,
-        cloudUnsubscribe: 0,
         catalogReconcile: 0,
         catalogRefresh: 0,
         catalogStart: 0,
         catalogBackgroundPause: [],
         serviceWorkerRegister: 0,
         serviceWorkerUpdate: 0,
-        tauriCheck: 0,
         unexpectedFetches: [],
         adapterInitialize: 0,
         adapterInitializeGame: 0,
@@ -141,18 +100,12 @@ const test = vi.hoisted(() => {
         adapterDisposed: 0,
         visualResolutions: 0,
         remoteImageContinuation: 0,
-        nativeConstructor: 0,
-        webSocketConstructor: 0,
-        p2pConstructor: 0,
-        multiplayerTransport: 0,
         activeQuickDraftLoads: 0,
         draftRunLoads: 0,
         deckJsonRequests: 0,
         feedRequests: 0,
       });
       localSnapshot.value = null;
-      platform.bundled = false;
-      platform.desktop = false;
       registerSW.mockClear();
       vi.mocked(registration.update).mockClear();
       localAdapter.initialize.mockClear();
@@ -164,17 +117,7 @@ const test = vi.hoisted(() => {
 });
 
 vi.mock("virtual:pwa-register", () => ({ registerSW: test.registerSW }));
-vi.mock("@tauri-apps/plugin-updater", () => ({
-  check: vi.fn(async () => {
-    test.ledger.tauriCheck += 1;
-    return null;
-  }),
-}));
-vi.mock("@tauri-apps/plugin-process", () => ({ relaunch: vi.fn() }));
 vi.mock("../services/platform", () => ({
-  isTauri: () => false,
-  isBundledTauriOrigin: () => test.platform.bundled,
-  isDesktopTauri: () => test.platform.desktop,
   loadVisualPackBackend: async () => ({
     catalogStatus: vi.fn(),
     curatedSelector: vi.fn(),
@@ -393,11 +336,6 @@ function InstalledImageProbe() {
   );
 }
 
-async function settleReconnect(): Promise<void> {
-  await settleEffects();
-  expect(test.ledger.cloudReconcile).toBe(1);
-}
-
 async function settleEffects(): Promise<void> {
   await act(async () => {
     for (let index = 0; index < 64; index += 1) await Promise.resolve();
@@ -464,13 +402,8 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  const [{ disposeServiceWorkerUpdater }, { disposeTauriUpdater }, { disposeCloudSyncModuleForTest }] = await Promise.all([
-    import("../pwa/registerServiceWorker"),
-    import("../pwa/tauriUpdater"),
-    import("../stores/cloudSyncStore"),
-  ]);
+  const { disposeServiceWorkerUpdater } = await import("../pwa/registerServiceWorker");
   disposeServiceWorkerUpdater();
-  disposeTauriUpdater();
   cleanup();
   await act(async () => {
     await Promise.resolve();
@@ -478,20 +411,6 @@ afterEach(async () => {
   });
   useGameStore.getState().reset();
   clearActiveGame();
-  disposeCloudSyncModuleForTest({});
-  useCloudSyncStore.setState({
-    available: false,
-    paused: false,
-    identity: null,
-    sessionResolved: false,
-    status: "idle",
-    error: null,
-    dirty: false,
-    lastSyncedRevision: null,
-    lastSyncedAt: null,
-    conflict: null,
-    conflictDiff: null,
-  });
   disposeConnectivity();
   localStorage.clear();
   sessionStorage.clear();
@@ -557,13 +476,10 @@ describe("offline local play integration", () => {
       value: { controller: (test.registration as ServiceWorkerRegistration).active },
     });
     const { registerServiceWorker } = await import("../pwa/registerServiceWorker");
-    const { registerTauriUpdater } = await import("../pwa/tauriUpdater");
     registerServiceWorker();
-    registerTauriUpdater();
     await settleEffects();
     expect(test.ledger.serviceWorkerRegister).toBe(0);
     expect(test.ledger.serviceWorkerUpdate).toBe(0);
-    expect(test.ledger.tauriCheck).toBe(0);
 
     navigate("/setup");
     expect((await screen.findAllByText("Offline Saved")).length).toBeGreaterThan(0);
@@ -604,21 +520,12 @@ describe("offline local play integration", () => {
     expect(screen.getByTestId("installed-image")).toHaveTextContent("none");
     expect(test.ledger.remoteImageContinuation).toBe(0);
     expect(test.ledger.unexpectedFetches).toEqual([]);
-    expect(test.ledger.cloudProvider).toBe(0);
-    expect(test.ledger.cloudResume).toBe(0);
-    expect(test.ledger.cloudRestore).toBe(0);
-    expect(test.ledger.cloudReconcile).toBe(0);
     expect(test.ledger.feedRequests).toBe(0);
     expect(test.ledger.catalogReconcile).toBe(0);
     expect(test.ledger.catalogRefresh).toBe(0);
     expect(test.ledger.catalogStart).toBe(0);
     expect(test.ledger.serviceWorkerRegister).toBe(0);
     expect(test.ledger.serviceWorkerUpdate).toBe(0);
-    expect(test.ledger.tauriCheck).toBe(0);
-    expect(test.ledger.nativeConstructor).toBe(0);
-    expect(test.ledger.webSocketConstructor).toBe(0);
-    expect(test.ledger.p2pConstructor).toBe(0);
-    expect(test.ledger.multiplayerTransport).toBe(0);
     expect(test.ledger.activeQuickDraftLoads).toBe(0);
     expect(test.ledger.draftRunLoads).toBe(0);
     app.unmount();
@@ -627,8 +534,6 @@ describe("offline local play integration", () => {
   }, 30_000);
 
   it("runs only the PWA lifecycle after one offline-to-online reconnect", async () => {
-    test.platform.bundled = false;
-    test.platform.desktop = false;
     originalServiceWorkerDescriptor = Object.getOwnPropertyDescriptor(navigator, "serviceWorker");
     pwaServiceWorkerProfileActive = true;
     Object.defineProperty(navigator, "serviceWorker", {
@@ -636,31 +541,20 @@ describe("offline local play integration", () => {
       value: { controller: (test.registration as ServiceWorkerRegistration).active },
     });
     const { registerServiceWorker } = await import("../pwa/registerServiceWorker");
-    const { registerTauriUpdater } = await import("../pwa/tauriUpdater");
     const app = render(<App />);
     registerServiceWorker();
-    registerTauriUpdater();
     await settleEffects();
 
-    // Offline policy reaches the real cloud store and catalog scheduler, but
-    // neither is permitted to resolve its provider/backend or refresh feeds.
-    expect(test.ledger.cloudProvider).toBe(0);
-    expect(test.ledger.cloudResume).toBe(0);
-    expect(test.ledger.cloudRestore).toBe(0);
-    expect(test.ledger.cloudReconcile).toBe(0);
+    // Offline policy reaches the real catalog scheduler, but it may not
+    // resolve its backend or refresh feeds.
     expect(test.ledger.feedRequests).toBe(0);
     expect(test.ledger.catalogReconcile).toBe(0);
     expect(test.ledger.catalogBackgroundPause).toContain(true);
     expect(test.ledger.serviceWorkerRegister).toBe(0);
-    expect(test.ledger.tauriCheck).toBe(0);
 
     setOffline(false);
-    await settleReconnect();
+    await settleEffects();
     await settleCatalogActivation();
-    expect(test.ledger.cloudProvider).toBe(1);
-    expect(test.ledger.cloudResume).toBe(1);
-    expect(test.ledger.cloudRestore).toBe(1);
-    expect(test.ledger.cloudReconcile).toBe(1);
     expect(test.ledger.feedRequests).toBeGreaterThan(0);
     expect(test.ledger.serviceWorkerRegister).toBe(1);
     expect(test.ledger.catalogBackgroundPause).toContain(false);
@@ -677,7 +571,6 @@ describe("offline local play integration", () => {
     await settleEffects();
     expect(test.ledger.catalogReconcile).toBe(1);
     expect(test.ledger.serviceWorkerUpdate).toBe(1);
-    expect(test.ledger.tauriCheck).toBe(0);
 
     const afterFirstReconnect = ledgerSnapshot();
     setOffline(false);
@@ -686,57 +579,5 @@ describe("offline local play integration", () => {
     expect(test.ledger).toEqual(afterFirstReconnect);
     app.unmount();
     await settleEffects();
-    expect(test.ledger.cloudUnsubscribe).toBe(1);
-  });
-
-  it("runs only the bundled-Tauri updater after one offline-to-online reconnect", async () => {
-    test.platform.bundled = true;
-    test.platform.desktop = true;
-    const { registerServiceWorker } = await import("../pwa/registerServiceWorker");
-    const { registerTauriUpdater } = await import("../pwa/tauriUpdater");
-    const app = render(<App />);
-    registerServiceWorker();
-    registerTauriUpdater();
-    await settleEffects();
-
-    expect(test.ledger.cloudProvider).toBe(0);
-    expect(test.ledger.cloudResume).toBe(0);
-    expect(test.ledger.cloudRestore).toBe(0);
-    expect(test.ledger.cloudReconcile).toBe(0);
-    expect(test.ledger.feedRequests).toBe(0);
-    expect(test.ledger.catalogReconcile).toBe(0);
-    expect(test.ledger.catalogBackgroundPause).toContain(true);
-    expect(test.ledger.serviceWorkerRegister).toBe(0);
-    expect(test.ledger.tauriCheck).toBe(0);
-    setOffline(false);
-    await settleReconnect();
-    await settleCatalogActivation();
-    expect(test.ledger.catalogBackgroundPause).toContain(false);
-    expect(test.ledger.catalogReconcile).toBe(0);
-    await vi.advanceTimersByTimeAsync(499);
-    await settleEffects();
-    expect(test.ledger.catalogReconcile).toBe(0);
-    await vi.advanceTimersByTimeAsync(1);
-    await settleEffects();
-    expect(test.ledger.catalogReconcile).toBe(0);
-    await vi.advanceTimersByTimeAsync(500);
-    await settleEffects();
-    expect(test.ledger.tauriCheck).toBe(1);
-    expect(test.ledger.serviceWorkerRegister).toBe(0);
-    expect(test.ledger.cloudProvider).toBe(1);
-    expect(test.ledger.cloudResume).toBe(1);
-    expect(test.ledger.cloudRestore).toBe(1);
-    expect(test.ledger.cloudReconcile).toBe(1);
-    expect(test.ledger.feedRequests).toBeGreaterThan(0);
-    expect(test.ledger.catalogReconcile).toBe(1);
-
-    const afterFirstReconnect = ledgerSnapshot();
-    setOffline(false);
-    await vi.advanceTimersByTimeAsync(500);
-    await act(async () => { for (let index = 0; index < 8; index += 1) await Promise.resolve(); });
-    expect(test.ledger).toEqual(afterFirstReconnect);
-    app.unmount();
-    await settleEffects();
-    expect(test.ledger.cloudUnsubscribe).toBe(1);
   });
 });

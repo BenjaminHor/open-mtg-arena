@@ -26,17 +26,12 @@
   "home": {
     "resume": {
       "title": "Reprendre la partie",
-      "description": "Continuez le dernier match enregistré à partir de son tour et de son état de plateau actuels.",
-      "viewResult": "Voir le résultat"
+      "description": "Continuez le dernier match enregistré à partir de son tour et de son état de plateau actuels."
     },
     "setup": {
       "title": "Jouer contre l'IA",
       "titleSaved": "Nouveau match contre l'IA",
       "description": "Jouez un match en solo contre un adversaire IA — choisissez le format, le deck, l'archétype et la difficulté."
-    },
-    "online": {
-      "title": "Jouer en ligne",
-      "description": "Hébergez une salle, rejoignez par code ou reconnectez-vous au multijoueur."
     },
     "draft": {
       "title": "Draft",
@@ -51,9 +46,7 @@
     },
     "preview": {
       "cta": "Essayer l'aperçu",
-      "tooltip": "Jouez la dernière version d'aperçu — les nouvelles cartes et corrections arrivent ici avant chaque sortie.",
-      "backCta": "Retour à la version stable",
-      "backTooltip": "Revenir à la version de sortie actuelle."
+      "tooltip": "Jouez la dernière version d'aperçu — les nouvelles cartes et corrections arrivent ici avant chaque sortie."
     },
     "coverage": {
       "title": "Ouvrir le tableau de bord de couverture",
@@ -70,13 +63,11 @@
     "load": {
       "title": "Charger un état de partie"
     },
-    "exit": "Quitter",
     "dashboard": {
       "welcome": "Bon retour",
       "enter": "Entrer",
       "continue": "Reprenez où vous en étiez",
       "resumeDraft": "Reprendre le draft",
-      "draftPod": "Pod de draft",
       "activeDeck": "Deck actif",
       "noActiveDeck": "Choisissez un deck pour commencer",
       "fromFeeds": "Depuis vos flux",
@@ -84,10 +75,7 @@
       "cards": "{{count}} cartes",
       "mode": {
         "ai": "contre l'IA",
-        "online": "En ligne",
-        "local": "Local",
-        "p2p-host": "P2P",
-        "p2p-join": "P2P"
+        "local": "Local"
       },
       "tagline": "Un moteur de règles et client de jeu Magic: The Gathering open source",
       "turn": "Tour {{n}}",
@@ -149,20 +137,6 @@
     "precons": "Precons",
     "playable": "{{playable}} jouables",
     "nonePlayable": "Aucun des {{selected}} decks sélectionnés n'est légal avec les filtres actuels, le tirage aléatoire utilisera les {{total}} decks."
-  },
-  "feedManager": {
-    "title": "Gérer les flux",
-    "refreshing": "Actualisation…",
-    "refreshAll": "Tout actualiser",
-    "refresh": "Actualiser",
-    "subscribe": "S'abonner",
-    "unsubscribe": "Se désabonner",
-    "lastRefreshed": "Dernière actualisation : {{date}}",
-    "dataProvidedBy": "Données fournies par",
-    "addCustomFeed": "Ajouter un flux personnalisé",
-    "add": "Ajouter",
-    "offlineUnavailable": "Les mises à jour des flux ne sont pas disponibles hors ligne.",
-    "done": "Terminé"
   },
   "importDeck": {
     "title": "Importer un deck",
@@ -247,9 +221,6 @@
     "tabDecks": "Mes decks",
     "tabSubscriptions": "Abonnements",
     "createNew": "Créer un nouveau",
-    "refreshing": "Actualisation…",
-    "refreshAll": "Tout actualiser",
-    "manageFeeds": "Gérer les flux",
     "searchPlaceholder": "Rechercher des decks…",
     "formatLabel": "Format",
     "sourceFilterLabel": "Source du deck",
@@ -334,10 +305,8 @@
     "label": "Navigation principale",
     "home": "Accueil",
     "play": "Jouer",
-    "online": "En ligne",
     "draft": "Draft",
     "decks": "Decks",
-    "tournament": "Tournois",
     "alpha": "Alpha",
     "profile": "Profil",
     "settings": "Réglages",

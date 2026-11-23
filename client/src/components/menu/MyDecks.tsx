@@ -17,7 +17,6 @@ import {
 import { withSavedDeckLibrary } from "../../services/savedDeckTransaction";
 import { attemptSavedDeckWrite } from "../../services/savedDeckWriteFailure";
 import { usePreferencesStore } from "../../stores/preferencesStore";
-import { useEffectiveOffline } from "../../stores/connectivityStore";
 import { useDeckFolders } from "../../hooks/useDeckFolders";
 import { DeckActionsMenu } from "./DeckActionsMenu";
 import { FolderActionsMenu } from "./FolderActionsMenu";
@@ -26,16 +25,12 @@ import { DECK_CONSTRUCTION_FORMATS } from "../../data/formatRegistry";
 import {
   getDeckFeedOrigin,
   listSubscriptions,
-  refreshAllFeeds,
   adoptFeedDeck,
 } from "../../services/feedService";
 import {
   useCachedFeed,
   useFeedCacheSnapshot,
 } from "../../services/feedPersistence";
-import { FeedManagerModal } from "./FeedManagerModal";
-import { FeedAttribution } from "./FeedAttribution";
-import { FEED_REGISTRY } from "../../data/feedRegistry";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { ManaSymbol } from "../mana/ManaSymbol";
 import { useCardImage } from "../../hooks/useCardImage";
@@ -680,13 +675,10 @@ export function MyDecks({
   aiCatalog,
 }: MyDecksProps) {
   const { t } = useTranslation(["menu", "common"]);
-  const effectiveOffline = useEffectiveOffline();
   const [activeTab, setActiveTab] = useState<MyDecksTab>("decks");
   const [deckNames, setDeckNames] = useState<string[]>([]);
   const [showImport, setShowImport] = useState(false);
   const [showPrecon, setShowPrecon] = useState(false);
-  const [showFeedManager, setShowFeedManager] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [compatibilities, setCompatibilities] = useState<Record<string, DeckCompatibilityResult>>({});
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [isPickingRandomDeck, setIsPickingRandomDeck] = useState(false);
@@ -1178,15 +1170,6 @@ export function MyDecks({
     };
   }, [sourceFilteredDeckNames, activeSort, sortAsc, compatibilities]);
 
-  // Credit each attributed feed whose decks the grid lists; its tiles are
-  // buttons, so the linked credit sits below the grid rather than on them.
-  const gridAttributions = useMemo(() => {
-    const feedIds = new Set(bundledDecks.map(getDeckFeedOrigin));
-    return FEED_REGISTRY.flatMap((source) =>
-      source.attribution && feedIds.has(source.id) ? [source.attribution] : [],
-    );
-  }, [bundledDecks]);
-
   const randomDeckSelected = activeDeckName === RANDOM_DECK_SELECTION;
   const noDeckSelected = mode === "select"
     ? !activeDeckName || (
@@ -1607,17 +1590,6 @@ export function MyDecks({
     }
   };
 
-  const handleRefreshAll = async () => {
-    if (effectiveOffline) return;
-    setIsRefreshing(true);
-    try {
-      const refreshed = await attemptSavedDeckWrite("updateFeeds", refreshAllFeeds);
-      if (refreshed.ok) setDeckNames(listSavedDeckNames());
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
-
   const handleAdoptDeck = useCallback(async (deckName: string) => {
     const newName = prompt(t("myDecks.saveAsPrompt"), deckName);
     if (!newName) return;
@@ -1636,11 +1608,6 @@ export function MyDecks({
     const deleted = await attemptSavedDeckWrite("delete", () => withSavedDeckLibrary((txn) => deleteDeck(txn, deck)));
     if (deleted.ok) setDeckNames(listSavedDeckNames());
   }, []);
-
-  const handleFeedManagerClose = () => {
-    setShowFeedManager(false);
-    setDeckNames(listSavedDeckNames());
-  };
 
   // Group the user's own decks into Starred / folders / Unfiled. Bundled and
   // precon decks are separate immutable system folders, handled below.
@@ -1806,28 +1773,6 @@ export function MyDecks({
           >
             {t("myDecks.createNew")}
           </button>
-        )}
-        {mode === "manage" && activeTab === "subscriptions" && (
-          <div className="flex flex-wrap gap-2 self-start sm:self-auto">
-            {effectiveOffline && (
-              <p className="w-full text-xs text-amber-200 sm:w-auto sm:self-center">
-                {t("feedManager.offlineUnavailable")}
-              </p>
-            )}
-            <button
-              onClick={handleRefreshAll}
-              disabled={effectiveOffline || isRefreshing}
-              className={menuButtonClass({ tone: "neutral", size: "sm", disabled: effectiveOffline || isRefreshing })}
-            >
-              {isRefreshing ? t("myDecks.refreshing") : t("myDecks.refreshAll")}
-            </button>
-            <button
-              onClick={() => setShowFeedManager(true)}
-              className={menuButtonClass({ tone: "neutral", size: "sm" })}
-            >
-              {t("myDecks.manageFeeds")}
-            </button>
-          </div>
         )}
       </div>
       )}
@@ -2164,14 +2109,6 @@ export function MyDecks({
               icon={<SectionLockIcon />}
               collapsed={isSectionCollapsed(STARTER_SECTION_ID, bundledDecks)}
               onToggleCollapsed={() => handleToggleSection(STARTER_SECTION_ID)}
-              headerAction={
-                <button
-                  onClick={() => setShowFeedManager(true)}
-                  className="text-[11px] text-slate-500 transition-colors hover:text-slate-300"
-                >
-                  {t("myDecks.manageFeeds")}
-                </button>
-              }
             >
               <div className={DECK_GRID_CLASS}>
                 {bundledDecks.map((deckName) => (
@@ -2237,9 +2174,6 @@ export function MyDecks({
           )}
         </div>
       )}
-      {gridAttributions.map((attribution) => (
-        <FeedAttribution key={attribution.url} attribution={attribution} />
-      ))}
       </>)}
 
       {activeTab === "subscriptions" && mode === "manage" && (
@@ -2282,10 +2216,6 @@ export function MyDecks({
         open={showPrecon}
         onClose={() => setShowPrecon(false)}
         onImported={(name, session) => handleImported(name, listSavedDeckNames(), session)}
-      />
-      <FeedManagerModal
-        open={showFeedManager}
-        onClose={handleFeedManagerClose}
       />
       <ConfirmDialog
         open={folderPendingDelete !== null}
@@ -2359,7 +2289,6 @@ function SubscriptionsView({
         const feedDecks = feed?.decks ?? [];
         const deckCount = feedDecks.length;
         const lastRefreshed = new Date(sub.lastRefreshedAt).toLocaleDateString();
-        const attribution = FEED_REGISTRY.find((source) => source.id === sub.sourceId)?.attribution;
 
         return (
           <div key={sub.sourceId}>
@@ -2377,7 +2306,6 @@ function SubscriptionsView({
                   {feed?.description} {t("subscriptions.feedMeta", { count: deckCount, date: lastRefreshed })}
                   {sub.error && <span className="ml-2 text-red-400">{t("subscriptions.error", { error: sub.error })}</span>}
                 </p>
-                {attribution && <FeedAttribution attribution={attribution} />}
               </div>
             </div>
             <div className="grid w-full gap-4 grid-cols-[repeat(auto-fill,minmax(15rem,1fr))]">

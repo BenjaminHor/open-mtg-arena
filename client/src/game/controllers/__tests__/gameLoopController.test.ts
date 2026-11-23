@@ -253,7 +253,7 @@ describe("gameLoopController auto-pass authorization", () => {
       autoPassRecommended: true,
     };
 
-    const controller = createGameLoopController({ mode: "online" });
+    const controller = createGameLoopController({ mode: "ai" });
     controller.start();
 
     await vi.advanceTimersByTimeAsync(200);
