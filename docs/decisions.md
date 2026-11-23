@@ -2626,3 +2626,31 @@ owner's answer to the D-089 open question, option (a))
 - Left for later: mana symbols drawn as shapes in canvas text (an ability panel and a hand card print "{T}"); an
   ability panel's own shape (Arena's shield-like bottom); X drawn on the spell itself [R].
 - Arrows from the top object to its targets and the tap that shrinks the large card are the next PR.
+
+**D-170: The stack's targets on the board, and the stack made small (M3-04c slice 6b)** · 2026-11-23 · accepted
+- An arrow runs from the top of the stack to each of its targets the board shows [R: "a targeting arc is drawn as a
+  glowing curve from the stack item to its target"]: a curve in the targets' cyan with a dark edge and a head at the
+  target, to a card where it's drawn (a pile's front for a card behind it, an object under the top at its strip) or to
+  a player's info block. A target the board doesn't show (a graveyard card, one gone) has no arrow; the card view
+  names it (D-169). Only the top's: the others show theirs in their card views, as Arena shows them on hover [R]. None
+  while a spell is being put on the stack: its targets are being chosen, shown by the dashed outlines.
+  `board-model/target-arrows.ts`, computed after combat and attachments have placed the cards.
+- A tap on the stack makes it small at the right edge, as while choosing, and another makes it large again [R: Arena's
+  collapse tab]; held for the object on top then (`stackSmallFor` in App), so a new object on top shows large. Not
+  while the person chooses for their own spell (it's small already). The stack's tap regions are buttons now, so Space
+  presses a focused one rather than the main button.
+- A spell on the stack a counterspell targets (CR 115.1) is outlined as a target where it's drawn, and picked in the
+  prompt by name ("Target Lightning Bolt"): the counterspell being cast is on top, so its target shows only a name
+  strip, too small to tap. Arena clicks the spell itself; the prompt is the reachable equivalent here.
+- After the reviews: a partly covered card carries the part that shows (`BoardCard.shows`: a stack object's name strip,
+  an Aura's left edge beside its host), and the target outline, the arrows and the tap regions use it, so an outline
+  never runs down the sides of the card over it and an arrow at an Aura doesn't land on its host. An arrow to a spell
+  under the top ends at its strip's left edge and bows out beside the stack; to a player at their block's edge, clear
+  of the life total; one arrow per target chosen twice. No arrows while the hand is open (it covers the board). The
+  strip of a spell a counterspell can target is also a tap that picks it (the prompt's same choice), so the outline's
+  promise holds. Made small, the stack keeps the large one's top right corner, so a second tap where the first was
+  makes it large again. A pointer's press on the stack leaves no focus behind, so Space goes on pressing the main
+  button. Arrows have a soft glow under them [R].
+- Left for later (UX review): a visible collapse tab (only the tap on the card for now); a mark on the targeted card
+  itself; a second cue for the opponent's arrows; the arrows drawn from the sprites' moving positions once M3-07
+  animates them (today they're from the model's).

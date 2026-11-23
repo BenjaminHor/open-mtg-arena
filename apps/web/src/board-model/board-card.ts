@@ -63,6 +63,7 @@ export function boardCard(
     badges: NO_BADGES,
     // Filled in for a host by `attachments.ts`.
     attachments: 0,
+    shows: null,
   };
 }
 

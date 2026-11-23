@@ -69,7 +69,11 @@ export function withAttachments(
         ? { rotation: layout.tapped.tilt, dim: layout.tapped.dim }
         : { rotation: 0, dim: 0 };
       const mine = attachment.characteristics.controller === me;
-      placed.push(boardCard(attachment, "battlefield", mine, rect, { ...look, row: card.row }));
+      // It shows only its left edge, out from behind the next one (or the host).
+      placed.push({
+        ...boardCard(attachment, "battlefield", mine, rect, { ...look, row: card.row }),
+        shows: { ...rect, width: peek },
+      });
     }
     placed.push({ ...card, attachments: onIt.length });
   }

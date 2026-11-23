@@ -25,10 +25,10 @@ export const MOST_UNDER = 3;
  * share one block, the top's old place: the deeper ones peek out above the top by a name strip each [R: names read
  * down the stack], so the stack never covers more of the board than its top alone did (UX review).
  */
-export function stackCards(shown: SeatView, area: Rect, layout: BoardLayout): BoardCard[] {
+export function stackCards(shown: SeatView, area: Rect, layout: BoardLayout, small = false): BoardCard[] {
   const stack = shown.view.zones.stack;
   if (stack.length === 0) return [];
-  const block = stackBlock(shown, area, layout);
+  const block = stackBlock(shown, area, layout, small);
   const under = Math.min(stack.length - 1, MOST_UNDER);
   // The card's height, and the strip each one under it shows (at least a readable name, 14 px).
   const first = block.height / (1 + layout.stack.peek * under);
@@ -36,15 +36,25 @@ export function stackCards(shown: SeatView, area: Rect, layout: BoardLayout): Bo
   const height = block.height - under * peek;
   const width = height * layout.ratio.hand;
   const x = Math.min(block.x, area.x + area.width - 8 - width);
-  // Top first, then down the stack, as far as is drawn.
+  // Top first, then down the stack, as far as is drawn; each one under the top shows its strip, up to the next one.
   const drawn = [...stack]
     .reverse()
     .slice(0, under + 1)
     .flatMap((id, depth) => {
-      const card = stackObject(shown, id, { x, y: block.y + (under - depth) * peek, width, height });
-      return card === null ? [] : [card];
+      const y = block.y + (under - depth) * peek;
+      const card = stackObject(shown, id, { x, y, width, height });
+      if (card === null) return [];
+      return [depth === 0 ? card : { ...card, shows: { x, y, width, height: peek } }];
     });
   return drawn.reverse();
+}
+
+/**
+ * Whether the stack is drawn small: the person made it small for the object on top then (D-170). A new object on top
+ * shows large again; the old one coming back to the top shows as it was left.
+ */
+export function stackIsSmall(shown: SeatView, smallFor: ObjectId | null): boolean {
+  return smallFor !== null && shown.view.zones.stack.at(-1) === smallFor;
 }
 
 /**
@@ -60,19 +70,26 @@ export function stackMore(shown: SeatView, drawn: readonly BoardCard[]): Rect | 
 
 /**
  * The stack's place: large right of centre (at most `maxH` px tall: on a near-square screen a share of the height is
- * far too large), or small at the right edge while the person chooses for it [R].
+ * far too large), or small at the right edge while the person chooses for it [R], or once they've made it small.
  */
-function stackBlock(shown: SeatView, area: Rect, layout: BoardLayout): Rect {
-  const choosing = shown.view.casting !== null && shown.view.casting.player === shown.player;
-  // Small means a fixed size at most (in CSS pixels): on a tall screen a share of the height would reach over the rows.
-  const height = choosing
-    ? Math.min(layout.stack.smallH * area.height, layout.stack.smallMaxH)
-    : Math.min(layout.stack.h * area.height, layout.stack.maxH);
-  const width = height * layout.ratio.hand;
+function stackBlock(shown: SeatView, area: Rect, layout: BoardLayout, small: boolean): Rect {
   const right = area.x + area.width - 8;
-  const x = choosing ? right - width : Math.min(area.x + layout.stack.x * area.width, right - width);
-  const y = area.y + (choosing ? layout.stack.smallY : layout.stack.y) * area.height;
-  return { x, y, width, height };
+  const largeH = Math.min(layout.stack.h * area.height, layout.stack.maxH);
+  const largeW = largeH * layout.ratio.hand;
+  const large = {
+    x: Math.min(area.x + layout.stack.x * area.width, right - largeW),
+    y: area.y + layout.stack.y * area.height,
+  };
+  // Small means a fixed size at most (in CSS pixels): on a tall screen a share of the height would reach over the rows.
+  const smallH = Math.min(layout.stack.smallH * area.height, layout.stack.smallMaxH);
+  const smallW = smallH * layout.ratio.hand;
+  // While the person chooses for their own spell: at the right edge, clear of the targets [R].
+  if (shown.view.casting !== null && shown.view.casting.player === shown.player) {
+    return { x: right - smallW, y: area.y + layout.stack.smallY * area.height, width: smallW, height: smallH };
+  }
+  // Made small by a tap: in the large one's top right corner, so a second tap where the first was makes it large again.
+  if (small) return { x: large.x + largeW - smallW, y: large.y, width: smallW, height: smallH };
+  return { ...large, width: largeW, height: largeH };
 }
 
 function stackObject(shown: SeatView, id: ObjectId, rect: Rect): BoardCard | null {
@@ -127,5 +144,6 @@ function abilityPanel(shown: SeatView, ability: SeenAbility, rect: Rect): BoardC
     pileCount: null,
     badges: NO_BADGES,
     attachments: 0,
+    shows: null,
   };
 }

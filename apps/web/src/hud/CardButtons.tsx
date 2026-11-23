@@ -3,8 +3,8 @@
 // that says what it does for screen readers and tests. Invisible but for the focus ring and a press: the card under it
 // is drawn on the canvas.
 
-import type { ObjectId } from "@mtg/engine";
-import type { BoardCard, BoardModel, Rect } from "../board-model/board-model.ts";
+import type { Action, ObjectId } from "@mtg/engine";
+import type { BoardModel } from "../board-model/board-model.ts";
 import type { Controls } from "../interaction/controls.ts";
 import { type InspectCallbacks, useCardInspect } from "./card-inspect.ts";
 import { type HandDragCallbacks, useHandDrag } from "./hand-drag.ts";
@@ -25,9 +25,14 @@ type Props = {
   drag: HandDragCallbacks;
   /** The card view (`card-inspect.ts`): open it for a card, or close a hover's preview. */
   inspect: InspectCallbacks;
+  /** Makes the large stack small, or large again (Arena's collapse tab [R]); null while it's small to choose for it. */
+  toggleStack: (() => void) | null;
+  /** Sends an action: a spell on the stack picked as a counterspell's target, as its prompt button would. */
+  act: (action: Action) => void;
 };
 
-export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, selection, drag, inspect }: Props) {
+export function CardButtons(props: Props) {
+  const { model, controls, busy, onTap, onHand, handOpen, selection, drag, inspect, toggleStack, act } = props;
   const hand = model.overlay.hand;
   const handDrag = useHandDrag(model, drag);
   const inspectOn = useCardInspect({
@@ -106,23 +111,47 @@ export function CardButtons({ model, controls, busy, onTap, onHand, handOpen, se
         </div>
       )}
       {/* Each object on the stack takes a tap for itself, so a tap on it never lands on a card hidden under it; one under
-          the top only where it shows, its name strip, so its focus ring and its tap are where it's seen. */}
-      {stackStrips(model.cards).map(({ card: c, rect }) => (
-        // biome-ignore lint/a11y/noStaticElementInteractions: it only stops a tap; the card has no action of its own
-        // biome-ignore lint/a11y/useKeyWithClickEvents: nothing to do from the keyboard
-        <div
-          key={`stack-${c.id}`}
-          className="tap-shield"
-          role="img"
-          // biome-ignore lint/a11y/noNoninteractiveTabindex: focus is how the keyboard picks a card to look at ("i")
-          tabIndex={0}
+          the top only where it shows, its name strip, so its focus ring and its tap are where it's seen. A tap makes the
+          stack small, or large again [R]. While the person chooses for a spell, a tap on a spell it can target (a
+          counterspell's) picks it, as the prompt's button does (D-170); anything else does nothing then, and says so. */}
+      {model.cards
+        .filter((c) => c.zone === "stack")
+        .map((c) => {
           // An ability is named as everywhere else (names.ts): "Prodigal Pyromancer ability".
-          aria-label={c.ability ? `${c.name} ability` : c.name}
-          style={place(rect)}
-          onClick={(e) => e.stopPropagation()}
-          {...inspectOn(c.id as ObjectId)}
-        />
-      ))}
+          const name = c.ability ? `${c.name} ability` : c.name;
+          const target = controls.prompt?.choices.find(
+            (choice) =>
+              choice.action.type === "ANSWER" &&
+              choice.action.answer.kind === "chooseTarget" &&
+              choice.action.answer.target.kind === "object" &&
+              choice.action.answer.target.object === c.id,
+          );
+          const press = target !== undefined ? () => !busy && act(target.action) : toggleStack;
+          return (
+            <button
+              type="button"
+              key={`stack-${c.id}`}
+              className="tap-shield"
+              aria-disabled={press === null}
+              aria-label={
+                target !== undefined
+                  ? `${name}: ${target.label}`
+                  : toggleStack === null
+                    ? name
+                    : `${name}: make the stack smaller or larger`
+              }
+              style={place(c.shows ?? c)}
+              onClick={(e) => {
+                e.stopPropagation();
+                // A pointer's press leaves no focus behind it: Space goes on pressing the main button (ui.md, "Mouse and
+                // keyboard too"), not this one again.
+                if (e.detail > 0) e.currentTarget.blur();
+                press?.();
+              }}
+              {...inspectOn(c.id as ObjectId)}
+            />
+          );
+        })}
     </div>
   );
 }
@@ -162,14 +191,4 @@ function cue(dragging: { armed: boolean } | null, tap: Controls["cards"][ObjectI
   if (tap?.kind === "menu") return dragging.armed ? "Release to choose" : "Drag up to choose";
   if (verb === null) return "Can't play it now";
   return dragging.armed ? `Release to ${verb}` : `Drag up to ${verb}`;
-}
-
-/** The stack's objects, each with the part of it that shows: the top whole, each one under it to the next one's edge. */
-function stackStrips(cards: readonly BoardCard[]): { card: BoardCard; rect: Rect }[] {
-  const stack = cards.filter((c) => c.zone === "stack");
-  return stack.map((card, i) => {
-    const above = stack[i + 1];
-    const height = above === undefined ? card.height : Math.max(0, above.y - card.y);
-    return { card, rect: { x: card.x, y: card.y, width: card.width, height } };
-  });
 }

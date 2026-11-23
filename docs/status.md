@@ -331,6 +331,13 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     objects, strip-sized tap regions, panel art credited and offline-safe, panels in Inter, the pool test compares exact
     costs, `Browsing` a union, one `names.ts`. Next PR: target arrows and the collapse tap. Not done: X drawn on the
     spell itself [R] (it's in the card view); canvas text shows "{T}" as letters (hand cards too, pre-existing).
+  - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
+  - **Slice 6b done (2026-11-23, D-170): arrows from the top of the stack to its targets, a tap to make the stack
+    small and large again, a spell a counterspell targets outlined and picked in the prompt.**
+    `board-model/target-arrows.ts`, test/stack-targets.test.ts, e2e/stack.spec.ts (the `stack` fixture now has Cancel).
+    Review fixes (code and UX, in D-170): `BoardCard.shows` (the visible part of a covered card) for outlines, arrows
+    and taps; arrows end beside a strip, at a block's edge, never under the open hand; the strip of a counterspell's
+    target picks it; the small stack keeps the large one's corner; Space after a click presses Resolve.
   - Slice 6 plan (2026-11-23, written before starting): the whole stack [R: arena-research.md §5, "The stack"]:
     - `board-model/stack.ts` draws every object, top first: the top large at the right as now, the ones under it
       peeking out to its left in a cascade (drawn behind it), at most four, then a count. Small while the person

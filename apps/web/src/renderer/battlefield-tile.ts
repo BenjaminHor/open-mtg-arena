@@ -97,7 +97,7 @@ function outline(shape: (g: Graphics) => Graphics, w: number, h: number, color: 
 }
 
 /** A dashed outline just inside the tile's edge: dashes along each side, the corners left open. */
-function dashed(w: number, h: number, color: number, width: number): Graphics {
+export function dashed(w: number, h: number, color: number, width: number): Graphics {
   const g = new Graphics();
   const dash = 5;
   const gap = 3.5;

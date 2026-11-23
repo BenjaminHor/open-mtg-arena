@@ -6,7 +6,7 @@
 
 import { Container, Graphics, Sprite, Text, type Texture } from "pixi.js";
 import type { BoardCard } from "../board-model/board-model.ts";
-import { drawTile } from "./battlefield-tile.ts";
+import { dashed, drawTile } from "./battlefield-tile.ts";
 import { ART_LABEL, type Face } from "./face.ts";
 import { faceFont, handLower, ptBox } from "./hand-face.ts";
 import { type ColorSymbol, colorGlyph, manaCostRow } from "./mana-symbols.ts";
@@ -21,8 +21,16 @@ export function drawFace(card: BoardCard): Face {
   const color = frameColor(card);
   const radius = Math.min(w, h) * 0.07;
   const border = Math.max(3, Math.min(w, h) * 0.07);
+  // A target (a spell a counterspell can target): the dashed outline a targetable permanent has (D-162), around the part
+  // of it that shows (its name strip, under the stack's top), never down the sides of the card over it.
+  if (card.targetable) {
+    const shows = card.shows?.height ?? h;
+    const outline = dashed(w + 4, shows + 4, PALETTE.playable, 2);
+    outline.position.set(0, -h / 2 + shows / 2);
+    face.addChild(outline);
+  }
   // Playable: a thin bright outline, as a permanent's (D-162).
-  if (card.playable) {
+  else if (card.playable) {
     face.addChild(
       new Graphics()
         .roundRect(-w / 2 - 2, -h / 2 - 2, w + 4, h + 4, radius + 2)

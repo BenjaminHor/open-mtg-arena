@@ -49,6 +49,8 @@ type HudProps = {
   /** A new turn's banner ("Turn 6 · Your turn"), for a moment, or null. */
   banner: string | null;
   closeInspected: () => void;
+  /** Makes the large stack small or large again; null while it's small to choose for it. */
+  toggleStack: (() => void) | null;
   /** The zone browser, if open: whose zones and which tab (`ZoneBrowser.tsx`). */
   browsing: Browsing | null;
   browse: (browsing: Browsing | null) => void;
@@ -80,6 +82,8 @@ export function Hud(props: HudProps) {
         selection={props.selection}
         drag={props.drag}
         inspect={props.inspect}
+        toggleStack={props.toggleStack}
+        act={act}
       />
       <PlayerInfo
         shown={shown}
