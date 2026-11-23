@@ -43,7 +43,7 @@ export function Hud({ shown, model, act, handOpen, toggleHand }: HudProps) {
       />
       <LifeCrest rect={anchors.life.mine} life={life(me)} label="Your life" side="mine" combat={false} />
       {/* While a choice other than priority waits, its prompt answers it: no button that does nothing. */}
-      {button.label !== "Choose" && (
+      {!button.hidden && (
         <button
           type="button"
           className={`main-button${button.action === null ? " waiting" : ""}`}

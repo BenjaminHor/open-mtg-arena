@@ -4,6 +4,7 @@
 
 import type { BoardLayout } from "../layout/board-layout.ts";
 import type { BoardCard, CombatLink, Rect } from "./board-model.ts";
+import { spread } from "./spread.ts";
 
 export function withCombat(
   cards: readonly BoardCard[],
@@ -33,7 +34,22 @@ export function withCombat(
     const walker = card.attacks === null ? undefined : at.get(card.attacks);
     if (walker !== undefined) links.push({ kind: "attack", from: facing(card), to: centre(walker) });
   }
-  return { cards: placed, links };
+  return { cards: drawOrder(placed), links };
+}
+
+/**
+ * The cards back to front again once combat has moved some: each creature row drawn right to left by pile (as
+ * battlefield.ts draws it, so an overlap never hides a power/toughness pill), the rest as they were.
+ */
+function drawOrder(cards: readonly BoardCard[]): BoardCard[] {
+  const rest = cards.filter((c) => c.row !== "creatures");
+  const rows = [false, true].flatMap((mine) => {
+    const row = cards.filter((c) => c.row === "creatures" && c.mine === mine);
+    const piles = [...new Set(row.map((c) => c.pileOf))].map((pileOf) => row.filter((c) => c.pileOf === pileOf));
+    const left = (pile: readonly BoardCard[]) => Math.min(...pile.map((c) => c.x));
+    return piles.sort((a, b) => left(b) - left(a)).flat();
+  });
+  return [...rest, ...rows];
 }
 
 /**
@@ -66,8 +82,10 @@ function alignBlockers(
     const width = Math.max(...members.map((c) => c.x + c.width)) - left;
     units.push({ members, offsets: members.map((c) => c.x - left), width, wish: left, blocks: false, at: left });
   }
-  for (const [attackerId, members] of gangs) {
+  for (const [attackerId, gang] of gangs) {
     const attacker = byId.get(attackerId) as BoardCard;
+    // Left to right as they stood, so no two blockers cross on the way to the huddle.
+    const members = [...gang].sort((a, b) => a.x - b.x);
     const w = members[0]?.width ?? 0;
     const step = w * (1 - huddle);
     const width = w + step * (members.length - 1);
@@ -76,18 +94,36 @@ function alignBlockers(
   }
   const lo = area.x + layout.creatures.margin * area.width;
   const hi = area.x + (1 - layout.creatures.margin) * area.width;
-  // Blocker groups first, at their attackers, swept apart if two would overlap.
-  const groups = units.filter((u) => u.blocks).sort((a, b) => a.wish - b.wish);
-  let next = Number.NEGATIVE_INFINITY;
-  for (const g of groups) {
-    g.at = Math.min(Math.max(g.wish, next, lo), hi - g.width);
-    next = g.at + g.width + gap;
-  }
-  // Then every other pile, into the free space nearest where it was.
-  const taken = groups.map((g) => ({ from: g.at - gap, to: g.at + g.width + gap }));
-  for (const u of units.filter((u) => !u.blocks).sort((a, b) => a.wish - b.wish)) {
-    u.at = nearestFree(u.wish, u.width, lo, hi, taken);
-    taken.push({ from: u.at - gap, to: u.at + u.width + gap });
+  const room = hi - lo;
+  const total = units.reduce((sum, u) => sum + u.width, 0) + gap * Math.max(0, units.length - 1);
+  if (total > room) {
+    // A row too full to give every blocker its attacker's place: keep them in the order of their wishes, spread evenly
+    // across the row (overlapping, as a full row does), so nothing piles on top of anything else.
+    const ordered = [...units].sort((a, b) => a.wish - b.wish);
+    const xs = spread(
+      ordered.map((u) => u.width),
+      lo,
+      hi,
+      gap,
+      "centre",
+    );
+    ordered.forEach((u, i) => {
+      u.at = xs[i] ?? u.at;
+    });
+  } else {
+    // Blocker groups first, at their attackers, swept apart if two would overlap.
+    const groups = units.filter((u) => u.blocks).sort((a, b) => a.wish - b.wish);
+    let next = Number.NEGATIVE_INFINITY;
+    for (const g of groups) {
+      g.at = Math.min(Math.max(g.wish, next, lo), hi - g.width);
+      next = g.at + g.width + gap;
+    }
+    // Then every other pile, into the free space nearest where it was.
+    const taken = groups.map((g) => ({ from: g.at - gap, to: g.at + g.width + gap }));
+    for (const u of units.filter((u) => !u.blocks).sort((a, b) => a.wish - b.wish)) {
+      u.at = nearestFree(u.wish, u.width, lo, hi, taken);
+      taken.push({ from: u.at - gap, to: u.at + u.width + gap });
+    }
   }
   return units.flatMap((u) => u.members.map((c, k) => ({ ...c, x: u.at + (u.offsets[k] ?? 0) })));
 }

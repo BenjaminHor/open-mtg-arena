@@ -66,5 +66,5 @@ export const COMPACT: BoardLayout = {
   crestClearance: 6,
   // An attacker steps forward into the open table [guess: Arena keeps attackers in their row, marked by a chevron;
   // a step reads at a glance on a small screen].
-  combat: { advance: 0.035, gangOverlap: 0.3 },
+  combat: { advance: 0.035, gangOverlap: 0.25 },
 };

@@ -227,6 +227,23 @@ describe("the compact board model", () => {
     });
   });
 
+  it("puts a small hand either side of the life crest", () => {
+    const small = boardModel(
+      boardView({
+        turn: { number: 9, activePlayer: "p1", step: "precombatMain" },
+        players: {
+          p1: { life: 20, hand: ["Lightning Bolt", "Giant Growth"], battlefield: ["Mountain"], library: LIBRARY },
+          p2: { life: 20, hand: [], battlefield: [], library: LIBRARY },
+        },
+      }),
+      PHONE,
+    );
+    const crest = small.overlay.life.mine;
+    const hand = small.cards.filter((c) => c.zone === "hand");
+    expect(hand.some((c) => c.x + c.width / 2 < crest.x)).toBe(true);
+    expect(hand.some((c) => c.x > crest.x + crest.width)).toBe(true);
+  });
+
   it("keeps the person's outer row above the hand's floating costs", () => {
     for (const shown of [midGame, crowded, manyPiles("p1")]) {
       const model = boardModel(shown, PHONE);
@@ -246,9 +263,12 @@ describe("the compact board model", () => {
   });
 
   it("shrinks a crowded creature row before it overlaps", () => {
-    const creatures = Array.from({ length: 9 }, (_, i) => ["Grizzly Bears", "Hill Giant", "Gray Ogre"][i % 3] as string)
-      .map((card, i) => ({ card, damage: i }))
-      .map(({ card, damage }) => ({ card, counters: { "+1/+1": damage + 1 } }));
+    // Nine creatures that can't pile: each has a different number of +1/+1 counters.
+    const names = ["Grizzly Bears", "Hill Giant", "Gray Ogre"];
+    const creatures = Array.from({ length: 9 }, (_, i) => ({
+      card: names[i % 3] as string,
+      counters: { "+1/+1": i + 1 },
+    }));
     const model = boardModel(
       boardView({
         turn: { number: 5, activePlayer: "p1", step: "precombatMain" },

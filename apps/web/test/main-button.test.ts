@@ -60,6 +60,6 @@ describe("the main button", () => {
   });
 
   it("sends nothing while a decision other than priority waits", () => {
-    expect(mainButton(mulliganView())).toEqual({ label: "Choose", detail: null, action: null });
+    expect(mainButton(mulliganView())).toEqual({ label: "Choose", detail: null, action: null, hidden: true });
   });
 });

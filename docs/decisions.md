@@ -2318,13 +2318,14 @@ owner's answer to the D-089 open question, option (a))
 - Art loads at runtime from Scryfall's image host (D-007), which serves it cross-origin; an art-less original frame
   shows until it arrives or if it never does, and the browser tests block the host so they never need the network.
 - The main thread reads card faces from `@mtg/cards/pool`, the pool data without the definitions (about 220 KB more in
-  the main bundle, no engine code). Long-press details (M3-04c) need the same data.
+  the main bundle; of the engine only small pure helpers such as `phaseOf` and `isManaAbility`, which tree-shaking
+  keeps alone). Long-press details (M3-04c) need the same data.
 - Fixture boards start the worker from a `GameSetup` (`startFrom`; `?fixture=mid-game` or `crowded` in the address),
   for tests and the screenshots shown to the owner. The browser tests run at desktop size and at the folded phone in
   landscape (812×375, touch).
 
 **D-153: Arena's card anatomy for the board's cards (M3-04a)** · 2026-11-23 · accepted
-- The owner asked for cards closer to Arena's (ui.md, "The cards"). A permanent is a wide art card (1.15 wide to 1
+- The owner asked for cards closer to Arena's (ui.md, "The cards"). A permanent is a wide art card (1.2 wide to 1
   tall): a bevelled frame in its colour with a drop shadow, a light name strip with dark serif text and the card's
   colours as glyphs, the art filling the rest, power/toughness in a pill at the bottom centre, a raised number blue
   and a lowered one red, damage also underlined. A colourless basic land is framed in its mana's colour (CR 305.6).

@@ -126,7 +126,6 @@ function outlineGlow(w: number, h: number, radius: number, color: number): Graph
   return g.roundRect(-w / 2 - 1.5, -h / 2 - 1.5, w + 3, h + 3, radius + 1.5).stroke({ width: 2, color });
 }
 
-/** Until the art loads (or offline): a dark field tinted by the frame, its colour's glyph large in the middle. */
 /** The art window's shape: a rectangle, or for a token a rectangle whose top rises into an arch [R]. */
 type ArtWindow = { x: number; y: number; w: number; h: number; arch: number };
 
@@ -172,6 +171,7 @@ function colourStripes(card: BoardCard, w: number, h: number, border: number): G
   return g;
 }
 
+/** Until the art loads (or offline): a dark field tinted by the frame, its colour's glyph large in the middle. */
 function artFallback(card: BoardCard, art: ArtWindow): Container {
   const holder = new Container();
   const color = frameColor(card);
@@ -228,7 +228,8 @@ function nameStrip(card: BoardCard, color: number, x: number, y: number, w: numb
 function ptPill(card: BoardCard, color: number, h: number): Container {
   const pill = new Container();
   const ph = Math.max(13, h * 0.2);
-  const pw = Math.max(30, card.width * 0.36);
+  // Its width is part of what layout.combat.gangOverlap keeps in sight (board-layout.ts).
+  const pw = Math.max(26, card.width * 0.36);
   const y = h / 2 - ph / 2 - 1;
   pill.addChild(
     new Graphics()

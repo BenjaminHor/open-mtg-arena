@@ -27,26 +27,39 @@ export function createCardSprite(card: BoardCard, root: Container, changed: () =
     root.position.set(next.x + next.width / 2, next.y + next.height / 2);
     root.rotation = next.rotation;
     const look = lookKey(next);
-    if (look === drawn) return;
+    if (look === drawn) {
+      // Art that failed to load (offline for a moment) is asked for again on the next draw.
+      if (next.art !== null && !hasArt()) showArtWhenLoaded(next.art);
+      return;
+    }
     drawn = look;
     for (const child of root.removeChildren()) child.destroy({ children: true, context: true });
     const face = drawFace(next);
     current = face.container;
     root.addChild(face.container);
-    if (next.art !== null) {
-      loadArt(next.art).then((texture) => {
-        if (current === face.container && texture !== null) {
-          face.showArt(texture);
-          changed();
-        }
-      });
-    }
+    currentFace = face;
+    if (next.art !== null) showArtWhenLoaded(next.art);
+  };
+  const hasArt = () => current?.getChildByLabel(ART_LABEL, true) != null;
+  let currentFace: ReturnType<typeof drawFace> | null = null;
+  let asking = false;
+  const showArtWhenLoaded = (url: string) => {
+    if (asking) return;
+    asking = true;
+    const face = currentFace;
+    loadArt(url).then((texture) => {
+      asking = false;
+      if (face !== null && current === face.container && texture !== null && !hasArt()) {
+        face.showArt(texture);
+        changed();
+      }
+    });
   };
   update(card);
   return {
     root,
     update,
-    hasArt: () => current?.getChildByLabel(ART_LABEL, true) != null,
+    hasArt,
     destroy: () => {
       current = null;
       root.destroy({ children: true, context: true });

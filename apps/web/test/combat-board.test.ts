@@ -5,8 +5,9 @@ import type { Action, SeatView } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
 import { type BoardCard, boardModel } from "../src/board-model/board-model.ts";
 import { fixtureSetup } from "../src/fixtures/fixtures.ts";
+import { COMPACT } from "../src/layout/compact.ts";
 import { handle, type Session } from "../src/worker/match-session.ts";
-import { cards } from "./fixture-views.ts";
+import { boardView, cards } from "./fixture-views.ts";
 
 const PHONE = { width: 812, height: 375 };
 
@@ -79,9 +80,10 @@ describe("combat on the board", () => {
     expect(overlapX(recluse as BoardCard, angel as BoardCard)).toBe(true);
     // Under its attacker, the pairing needs no line.
     expect(model.links).toEqual([]);
-    // An attacker steps toward the band: its bottom edge is lower than a creature of its row that isn't attacking.
-    const band = model.band.y + model.band.height / 2;
-    expect((angel?.y ?? 0) + (angel?.height ?? 0)).toBeGreaterThan(band - model.band.height);
+    // An attacker steps toward the band: the opponent's creature row rests with its bottom edge on the open table's
+    // top edge, and the attacking Angel's is lower by exactly the layout's step.
+    const step = COMPACT.combat.advance * PHONE.height;
+    expect((angel?.y ?? 0) + (angel?.height ?? 0)).toBeCloseTo(model.band.y + step, 5);
   });
 
   it("huddles the blockers of one attacker together under it", () => {
@@ -99,5 +101,64 @@ describe("combat on the board", () => {
     const blockers = model.cards.filter((c) => c.blocking.includes(mastodon.id));
     expect(blockers.map((c) => c.name).sort()).toEqual([...gang].sort());
     for (const b of blockers) expect(overlapX(b, mastodon)).toBe(true);
+  });
+});
+
+describe("a declaration under way", () => {
+  const LIBRARY = Array.from({ length: 20 }, () => "Forest");
+  const board = boardView({
+    turn: { number: 6, activePlayer: "p1", step: "precombatMain" },
+    players: {
+      p1: {
+        life: 20,
+        hand: ["Lightning Bolt"],
+        battlefield: ["Mountain", ...Array.from({ length: 3 }, () => "Llanowar Elves")],
+        library: LIBRARY,
+      },
+      p2: {
+        life: 20,
+        hand: [],
+        battlefield: ["Siege Mastodon", { card: "Garruk Wildspeaker", counters: { loyalty: 3 } }],
+        library: LIBRARY,
+      },
+    },
+  });
+  const ids = (name: string) => board.view.zones.battlefield.filter((id) => nameOf(board, id) === name);
+  const elves = ids("Llanowar Elves");
+  const [mastodon] = ids("Siege Mastodon");
+  const [garruk] = ids("Garruk Wildspeaker");
+  const declaring = (decision: object): SeatView => ({
+    ...board,
+    view: { ...board.view, decision: decision as SeatView["view"]["decision"] },
+  });
+
+  it("takes a picked attacker out of its pile, alone, with a link to the planeswalker it attacks", () => {
+    const picked = elves[1] as string;
+    const model = boardModel(
+      declaring({ kind: "declareAttackers", chosen: [{ attacker: picked, defender: "p2", attacked: garruk }] }),
+      PHONE,
+    );
+    const shown = model.cards.filter((c) => c.name === "Llanowar Elves");
+    const attacker = shown.find((c) => c.id === picked);
+    expect(attacker).toMatchObject({ attacking: true, picked: true, behind: false, pileCount: null, pileOf: picked });
+    // The two left behind still make a pile of two.
+    expect(shown.filter((c) => c.id !== picked).map((c) => c.pileCount)).toContain(2);
+    expect(model.links).toEqual([expect.objectContaining({ kind: "attack" })]);
+  });
+
+  it("takes a picked blocker out of its pile and sits it under its attacker, alone", () => {
+    const picked = elves[0] as string;
+    const model = boardModel(
+      declaring({ kind: "declareBlockers", chosen: [{ blocker: picked, attacker: mastodon }] }),
+      PHONE,
+    );
+    const blockers = model.cards.filter((c) => c.blocking.length > 0);
+    expect(blockers.map((c) => c.id)).toEqual([picked]);
+    const target = model.cards.find((c) => c.id === mastodon) as BoardCard;
+    expect(overlapX(blockers[0] as BoardCard, target)).toBe(true);
+    // The rest of the pile isn't under the Mastodon, and is still a pile of two.
+    const rest = model.cards.filter((c) => c.name === "Llanowar Elves" && c.id !== picked);
+    expect(rest.map((c) => c.pileCount)).toContain(2);
+    for (const c of rest) expect(overlapX(c, target)).toBe(false);
   });
 });

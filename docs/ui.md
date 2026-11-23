@@ -67,9 +67,10 @@ colourless land a bronze one. A token is told by its shape, not only its colour:
 strip across the top, its name on a small plate low on the art, as Arena's tokens have an arched frame.
 
 **Attacks and blocks (owner, 2026-11-23):** "I'd like to see screenshots of what attack and blocks look like."
-Combat must read at a glance (see "Clarity"): attacking creatures step forward toward the band with a crossed-swords
-badge, each blocker steps forward opposite the attacker it blocks with a shield badge, and a short link joins each
-blocker to its attacker (and an attacker to the planeswalker it attacks).
+Combat must read at a glance (see "Clarity"): attacking creatures step toward the open table with a crossed-swords
+badge; each blocker moves along its row to sit under the attacker it blocks, with a shield badge, the blockers of one
+attacker huddled together; a link is drawn only where position can't show the pairing (a lone blocker pushed out from
+under its attacker) and from an attacker to the planeswalker it attacks (D-154).
 
 **The rest of the HUD (owner, 2026-11-23, after the card redraw):** "Looks a lot better! I think some of the UI other
 than the cards could use some polish, they look a little too generic and basic." The portraits, life crests, phase

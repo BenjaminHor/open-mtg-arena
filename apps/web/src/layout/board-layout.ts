@@ -51,7 +51,8 @@ export type BoardLayout = {
   ladder: { icon: number; padding: number; gap: number };
   /**
    * Combat: how far (of H) an attacking creature steps toward the band, and how much (of a card's width) the blockers
-   * of one attacker overlap as they huddle under it.
+   * of one attacker overlap as they huddle under it. The overlap must leave each blocker's power/toughness pill in
+   * sight: the pill spans the middle 0.36 of the card, at least 26 px (renderer/card-face.ts `ptPill`).
    */
   combat: { advance: number; gangOverlap: number };
   /** px: the space kept between the outer rows and the life crests. */

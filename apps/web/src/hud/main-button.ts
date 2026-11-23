@@ -10,11 +10,13 @@ export type MainButton = {
   detail: string | null;
   /** What a press sends; null when the button only shows the state. */
   action: Action | null;
+  /** No button at all: a choice it can't answer waits, and that choice's prompt answers it. */
+  hidden: boolean;
 };
 
 export function mainButton(shown: SeatView): MainButton {
   const view = shown.view;
-  if (view.result !== null) return { label: "Game over", detail: null, action: null };
+  if (view.result !== null) return { label: "Game over", detail: null, action: null, hidden: false };
   const myTurn = view.turn?.activePlayer === shown.player;
   const pass = shown.options.find((o) => o.action.type === "PASS_PRIORITY")?.action ?? null;
   const declaring = declarationButton(shown);
@@ -22,17 +24,22 @@ export function mainButton(shown: SeatView): MainButton {
   if (pass === null) {
     // A decision other than priority (a target, a block) is answered from its prompt, not this button.
     const choosing = shown.options.length > 0;
-    return { label: choosing ? "Choose" : myTurn ? "Waiting" : "Opponent's Turn", detail: null, action: null };
+    return {
+      label: choosing ? "Choose" : myTurn ? "Waiting" : "Opponent's Turn",
+      detail: null,
+      action: null,
+      hidden: choosing,
+    };
   }
   const top = view.zones.stack[view.zones.stack.length - 1];
   if (top !== undefined) {
     const seen = shown.seen[top];
     const name =
       seen === undefined ? null : seen.kind === "card" ? seen.characteristics.name : abilitySource(shown, seen.source);
-    return { label: "Resolve", detail: name, action: pass };
+    return { label: "Resolve", detail: name, action: pass, hidden: false };
   }
-  if (!myTurn) return { label: "Pass", detail: null, action: pass };
-  return { label: "Next", detail: view.turn === null ? null : nextStop(view.turn.step), action: pass };
+  if (!myTurn) return { label: "Pass", detail: null, action: pass, hidden: false };
+  return { label: "Next", detail: view.turn === null ? null : nextStop(view.turn.step), action: pass, hidden: false };
 }
 
 /**
@@ -48,11 +55,21 @@ function declarationButton(shown: SeatView): MainButton | null {
   // The picks so far are the declaration under way, before it's finished.
   if (decision.kind === "declareAttackers") {
     const n = decision.chosen.length;
-    return { label: n === 0 ? "No Attacks" : `${n} Attacker${n === 1 ? "" : "s"}`, detail: "To Blockers", action };
+    return {
+      label: n === 0 ? "No Attacks" : `${n} Attacker${n === 1 ? "" : "s"}`,
+      detail: "To Blockers",
+      action,
+      hidden: false,
+    };
   }
   // A creature that blocks two attackers is still one blocker.
   const n = new Set(decision.chosen.map((b) => b.blocker)).size;
-  return { label: n === 0 ? "No Blocks" : `${n} Blocker${n === 1 ? "" : "s"}`, detail: "To Damage", action };
+  return {
+    label: n === 0 ? "No Blocks" : `${n} Blocker${n === 1 ? "" : "s"}`,
+    detail: "To Damage",
+    action,
+    hidden: false,
+  };
 }
 
 /** An ability on the stack is named by where it came from: "Ajani Goldmane ability". */

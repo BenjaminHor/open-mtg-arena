@@ -33,7 +33,11 @@ export function handCards(shown: SeatView, area: Rect, layout: BoardLayout, open
     const off = i - middle;
     const x = xs[i] ?? 0;
     // A card's own strip runs to where the next card starts; the last card shows its whole width.
-    const strip = i < n - 1 ? (xs[i + 1] ?? x) - x - (i === left - 1 ? hand.crestGap : 0) : width;
+    // The last card right of the crest shows whole; the last one left of it ends where the crest begins.
+    const strip =
+      i === n - 1 && i >= left
+        ? width
+        : (i + 1 < n ? (xs[i + 1] ?? x) : centre + hand.crestGap / 2) - x - (i === left - 1 ? hand.crestGap : 0);
     const symbols = manaSymbols(card.oracleId === null ? "" : (cardCost(card.oracleId) ?? ""));
     const costRadius = Math.max(hand.minCost, Math.min(hand.cost, strip / (2.05 * Math.max(1, symbols.length))));
     const rect = { x, y: top + off * off * hand.arcDrop * area.height, width, height };
@@ -64,7 +68,11 @@ function bestSplit(
           ? 0
           : Number.POSITIVE_INFINITY;
     const step = Math.min(most, fromLeft, fromRight);
-    if (step > best.step) best = { left, step };
+    // A wider strip wins; between splits about as wide, the one most even about the crest, so a small hand sits
+    // either side of it rather than all to one side.
+    const evenness = Math.abs(left - (n - left));
+    const bestEvenness = Math.abs(best.left - (n - best.left));
+    if (step > best.step + 0.5 || (Math.abs(step - best.step) <= 0.5 && evenness < bestEvenness)) best = { left, step };
   }
   return best;
 }

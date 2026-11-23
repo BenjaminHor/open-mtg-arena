@@ -20,13 +20,22 @@ export function landSlots(
   const { area, layout, mine } = half;
   const slots = new Map<string, Slot>();
   for (const land of lands) {
-    const key = pileKey(land, half.hosts) === null ? land.id : land.characteristics.name;
+    // The slot is the pile key with the tapped state left out: tapped and untapped twins share it.
+    const key = pileKey({ ...land, tapped: false }, half.apart) ?? land.id;
     const slot = slots.get(key) ?? { untapped: [], tapped: [] };
     (land.tapped ? slot.tapped : slot.untapped).push(land);
     slots.set(key, slot);
   }
-  // By name: a plain comparison, so the order doesn't depend on the browser's locale.
-  const ordered = [...slots.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)).map(([, slot]) => slot);
+  // By name, then by object id for slots of the same name, in numeric order: a plain comparison, so the order doesn't
+  // depend on the browser's locale, and a land that stands apart sits beside its same-name slot.
+  const order = (slot: Slot) => {
+    const first = slot.untapped[0] ?? slot.tapped[0];
+    return { name: first?.characteristics.name ?? "", id: Number((first?.id ?? "o0").slice(1)) };
+  };
+  const ordered = [...slots.values()].sort((a, b) => {
+    const [x, y] = [order(a), order(b)];
+    return x.name < y.name ? -1 : x.name > y.name ? 1 : x.id - y.id;
+  });
   const offsets = pileOffsets(area, layout);
   const w = row.height * layout.ratio.battlefield;
   const shift = layout.lands.tappedShift * w;

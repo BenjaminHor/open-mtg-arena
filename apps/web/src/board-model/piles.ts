@@ -11,27 +11,42 @@ import type { BoardCard, Rect } from "./board-model.ts";
 export const PILE_DEPTH = 3;
 
 /**
- * Two permanents look the same, so they can share a pile: the same name and power/toughness, both tapped or both not,
- * no counters or damage, nothing attached either way, not in combat. Null for a permanent that stands alone.
+ * Two permanents look the same, so they can share a pile: the same name, power/toughness, colours, types and
+ * keywords as they are now, both tapped or both not, no counters, damage or regeneration shields, the same choice
+ * made as they entered, both tokens or both cards, nothing attached either way, not in combat, not picked. Null for a
+ * permanent that stands alone (`apart` holds those something is attached to, and the picked ones).
  */
-export function pileKey(card: SeenCard, hosts: ReadonlySet<string>): string | null {
+export function pileKey(card: SeenCard, apart: ReadonlySet<string>): string | null {
   const plain =
     Object.keys(card.counters).length === 0 &&
     card.damage === 0 &&
+    card.regenerationShields === 0 &&
     card.attachedTo === null &&
-    !hosts.has(card.id) &&
+    !apart.has(card.id) &&
     card.attacking === null &&
     card.blocking.length === 0;
   if (!plain) return null;
   const c = card.characteristics;
-  return JSON.stringify([c.name, c.power, c.toughness, card.tapped, card.summoningSick, card.token]);
+  return JSON.stringify([
+    c.name,
+    c.power,
+    c.toughness,
+    c.colors,
+    c.types,
+    c.subtypes,
+    c.keywords,
+    card.chosen,
+    card.tapped,
+    card.summoningSick,
+    card.token,
+  ]);
 }
 
 /** Groups cards into piles by `pileKey`, each pile in the order its first card came; a card with no key is alone. */
-export function pilesOf(cards: readonly SeenCard[], hosts: ReadonlySet<string>): SeenCard[][] {
+export function pilesOf(cards: readonly SeenCard[], apart: ReadonlySet<string>): SeenCard[][] {
   const piles = new Map<string, SeenCard[]>();
   for (const card of cards) {
-    const key = pileKey(card, hosts) ?? card.id;
+    const key = pileKey(card, apart) ?? card.id;
     piles.set(key, [...(piles.get(key) ?? []), card]);
   }
   return [...piles.values()];

@@ -8,6 +8,7 @@ import type { BoardLayout } from "../layout/board-layout.ts";
 import { boardCard } from "./board-card.ts";
 import type { BoardCard, OverlayAnchors, Rect } from "./board-model.ts";
 import { landSlots } from "./land-slots.ts";
+import { pickedIds } from "./picks.ts";
 import { pileOffsets, pilesOf, pileWidth, placePile } from "./piles.ts";
 import { spread } from "./spread.ts";
 
@@ -22,18 +23,22 @@ export function battlefieldCards(
     const seen = shown.seen[id];
     return seen?.kind === "card" ? [seen] : [];
   });
-  // An attachment sits on its own (CR 301.5, 303.4): a permanent something is attached to isn't piled with others.
-  const hosts = new Set(permanents.flatMap((p) => (p.attachedTo === null ? [] : [p.attachedTo])));
+  // Some permanents stand apart from a pile of their twins: one something is attached to (CR 301.5, 303.4), and one
+  // picked in the declaration under way, which steps into combat on its own.
+  const apart = new Set([
+    ...permanents.flatMap((p) => (p.attachedTo === null ? [] : [p.attachedTo])),
+    ...pickedIds(shown),
+  ]);
   return [false, true].flatMap((mine) => {
     const own = permanents.filter((p) => (p.characteristics.controller === me) === mine);
-    return halfCards(own, { area, mine, hosts, layout, overlay });
+    return halfCards(own, { area, mine, apart, layout, overlay });
   });
 }
 
 export type Half = {
   area: Rect;
   mine: boolean;
-  hosts: ReadonlySet<string>;
+  apart: ReadonlySet<string>;
   layout: BoardLayout;
   overlay: OverlayAnchors;
 };
@@ -87,7 +92,7 @@ function halfCards(permanents: readonly SeenCard[], half: Half): BoardCard[] {
   });
 
   // Creatures, identical ones piled, centred on the band: a row too wide shrinks its cards before it overlaps them.
-  const piles = pilesOf(creatureRow, half.hosts);
+  const piles = pilesOf(creatureRow, half.apart);
   const left = area.x + creatures.margin * area.width;
   const right = area.x + (1 - creatures.margin) * area.width;
   const gap = creatures.gap * area.width;

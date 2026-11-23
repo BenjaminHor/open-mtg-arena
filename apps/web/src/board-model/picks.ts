@@ -2,8 +2,21 @@
 // finish. The board shows them as if declared already, each with the outline of a pick [R], so the person sees the
 // combat they're building (arena-research.md, "The owner's phone screenshots, second set").
 
-import type { SeatView } from "@mtg/engine";
+import type { ObjectId, SeatView } from "@mtg/engine";
 import type { BoardCard } from "./board-model.ts";
+
+/** The permanents picked so far in the declaration under way: they stand apart from any pile (battlefield.ts). */
+export function pickedIds(shown: SeatView): Set<ObjectId> {
+  const decision = shown.view.decision;
+  switch (decision?.kind) {
+    case "declareAttackers":
+      return new Set(decision.chosen.map((a) => a.attacker));
+    case "declareBlockers":
+      return new Set(decision.chosen.map((b) => b.blocker));
+    default:
+      return new Set();
+  }
+}
 
 export function withPicks(shown: SeatView, cards: readonly BoardCard[]): BoardCard[] {
   const decision = shown.view.decision;

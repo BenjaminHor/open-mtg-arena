@@ -46,7 +46,7 @@ export type BoardCard = {
   rotation: number;
   /** How dark the card is shaded, 0 to 1: a tapped permanent is dimmed [R]. */
   dim: number;
-  /** A card behind the front of a land pile: drawn as a plain edge, no name or badges, so the pile reads as one. */
+  /** A card behind the front of a pile: drawn as a plain edge, no name or badges, so the pile reads as one. */
   behind: boolean;
   /** The radius, in px, of the mana symbols floating over a hand card: smaller when its strip is narrow. */
   costRadius: number;
@@ -78,7 +78,7 @@ export type BoardCard = {
   /** The printed power and toughness, so a changed one can be told apart; null for a token or a "*" value. */
   printed: { power: number | null; toughness: number | null };
   damage: number;
-  /** On the front card of a pile of lands with the same name, how many it holds; null elsewhere. */
+  /** On the front card of a pile (lands or creatures that look the same, piles.ts), how many it holds; null elsewhere. */
   pileCount: number | null;
 };
 
@@ -123,7 +123,10 @@ export type BoardModel = {
   libraries: LibraryPile[];
   /** The open table between the two creature rows [R], the board's whole width: drawn as nothing, kept for layout. */
   band: Rect;
-  /** Combat's pairings: each blocker to the attacker it blocks, each attacker to the planeswalker it attacks. */
+  /**
+   * Combat's links, where position can't show a pairing: a lone blocker pushed out from under the attacker it blocks,
+   * an attacker to the planeswalker it attacks (D-154).
+   */
   links: CombatLink[];
   overlay: OverlayAnchors;
 };

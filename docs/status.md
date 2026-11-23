@@ -177,8 +177,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     right, the artist credit, D-155), and the click after a long-press is swallowed so it doesn't also toggle the hand.
   - Owner (2026-11-23): "Is the opponent health upside down" — its blades were mirrored to point down; both crests'
     blades now sweep up, as in their screenshots.
-  - Still to do in M3-04a: the frames for colourless, multicolour and tokens (ui.md); the HUD polish (ui.md, "The rest
-    of the HUD"); then code and UX reviews, the PR, and screenshots of everything to the owner.
+  - Built since: the frames for colourless, multicolour and tokens, and the HUD polish. Final code review done; its
+    two must-fixes (a pick from a pile moved the whole pile; a combat test that passed without a step) and most
+    should-fixes are in. The final UX review is running; then the PR, and the owner tries a local build once it merges.
   - Owner (2026-11-23), for M3-04b: "this app should be compatible with mouse/keyboard controls as well as touch
     devices." Recorded in ui.md ("Mouse and keyboard too"): pointer events serve touch and mouse alike, the long-press
     view also opens with a mouse, and the keyboard can do everything (focus, Enter/Space, Escape, a main-button key).
@@ -1831,7 +1832,7 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 ## Open questions
 
 - Desktop hover (2026-11-23): should hovering a card with a mouse show a large preview, as Arena's desktop client
-  does? On touch, long-press shows the details (M3-04c) either way. for the owner
+  does? On touch, long-press shows the details (M3-04c) either way.
 - (2026-11-23, after M3) What follows M3? The owner says M4 (deckbuilding) is up for debate and likes Legends of
   Runeterra's roguelike mode (Path of Champions). Discuss once M3 is done: a roguelike run, the Shandalar-style RPG, or
   deckbuilding first, and how they share the engine, the AI and the card pool (vision.md).
