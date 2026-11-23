@@ -299,3 +299,50 @@ test("drag to play: a land dragged up onto the table is played, a spell is cast,
   await drag("Lightning Bolt");
   await expect(page.getByText("Choose a target for Lightning Bolt")).toBeVisible();
 });
+
+test("the card view: a right-click or a long-press shows a card large with its hangers; Escape or a tap closes it; a resting mouse previews", async ({
+  page,
+  isMobile,
+}) => {
+  await page.goto("/?fixture=mid-game");
+  await expect(page.getByRole("button", { name: /^Next/ })).toBeVisible();
+  const centre = async (name: string) => {
+    const card = (await board(page))?.cards.find((c) => c.name === name && c.zone === "battlefield") as unknown as
+      | { x: number; y: number; width: number; height: number }
+      | undefined;
+    if (card === undefined) throw new Error(`no ${name} on the battlefield`);
+    return { x: card.x + card.width / 2, y: card.y + card.height / 2 };
+  };
+  const view = page.getByRole("dialog", { name: "Deadly Recluse" });
+  const recluse = await centre("Deadly Recluse");
+  if (isMobile) {
+    // A long-press: touch events through the browser's own input, as a finger would (Playwright's touchscreen only taps).
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [recluse] });
+    await expect(view).toBeVisible();
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    // Letting go doesn't close it: the release's click is swallowed.
+    await page.waitForTimeout(400);
+    await expect(view).toBeVisible();
+    await expect(view.getByText("Summoning sick")).toBeVisible();
+    await expect(view.getByText("Deathtouch", { exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Close" }).tap();
+    await expect(view).toHaveCount(0);
+    return;
+  }
+  await page.mouse.click(recluse.x, recluse.y, { button: "right" });
+  await expect(view).toBeVisible();
+  await expect(view.getByText("Summoning sick")).toBeVisible();
+  await expect(view.getByText("Reach", { exact: true })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(view).toHaveCount(0);
+  // Nothing was picked or opened by the right-click: the card's own menu didn't come up.
+  await expect(page.getByRole("menu")).toHaveCount(0);
+  // A mouse resting on a card shows the same as a preview, gone when the mouse leaves.
+  const elves = await centre("Llanowar Elves");
+  await page.mouse.move(elves.x, elves.y);
+  await expect(page.locator(".card-view.preview")).toBeVisible();
+  await expect(page.locator('.card-view.preview img[alt="Llanowar Elves"]')).toHaveCount(1);
+  await page.mouse.move(400, 5);
+  await expect(page.locator(".card-view.preview")).toHaveCount(0);
+});

@@ -110,7 +110,7 @@ export function useHandDrag(model: BoardModel, on: HandDragCallbacks): HandDrag 
  * table's "put things down". Neither is meant, so that click is stopped before anything sees it. A touch release often
  * fires none: then the next press, or a moment's wait, takes the listener away, so a real click is never eaten.
  */
-function swallowNextClick(): void {
+export function swallowNextClick(): void {
   const stop = (e: Event) => {
     e.stopPropagation();
     e.preventDefault();

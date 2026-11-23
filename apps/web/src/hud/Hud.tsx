@@ -10,7 +10,9 @@ import type { BoardModel, Rect } from "../board-model/board-model.ts";
 import type { Choice, Controls } from "../interaction/controls.ts";
 import { promptLayout, promptTitle } from "../interaction/prompt-text.ts";
 import { CardButtons } from "./CardButtons.tsx";
+import { CardView, type Inspected } from "./CardView.tsx";
 import { ChoiceMenu } from "./ChoiceMenu.tsx";
+import type { InspectOpen } from "./card-inspect.ts";
 import type { HandDragCallbacks } from "./hand-drag.ts";
 import { ManaText } from "./ManaText.tsx";
 import { mainButton } from "./main-button.ts";
@@ -36,6 +38,10 @@ type HudProps = {
   setFullControl: (on: boolean) => void;
   /** Drag to play: a hand card lifted by a drag, let go on the table, or put down (`hand-drag.ts`). */
   drag: HandDragCallbacks;
+  /** The card view: how a card's region opens it, and what's being looked at now. */
+  inspect: { open: InspectOpen; closePreview: () => void };
+  inspected: Inspected | null;
+  closeInspected: () => void;
   /** The declaration's batch button, "All Attack" or "Clear Attacks" (App.tsx, `all-attack.ts`), or none now. */
   attackBatch: { label: string; run: () => void; running: boolean } | null;
 };
@@ -64,6 +70,7 @@ export function Hud(props: HudProps) {
         handOpen={props.handOpen}
         selection={props.selection}
         drag={props.drag}
+        inspect={props.inspect}
       />
       <Portrait
         rect={anchors.portrait.opponent}
@@ -159,6 +166,8 @@ export function Hud(props: HudProps) {
         fullControl={props.fullControl}
         setFullControl={props.setFullControl}
       />
+      {/* Over everything else: what's being looked at. */}
+      {props.inspected !== null && <CardView inspected={props.inspected} close={props.closeInspected} />}
       {result !== null && (
         <p role="status" className="result">
           {result.winner === me ? "You win" : result.winner === null ? "Draw" : "You lose"}

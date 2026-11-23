@@ -5,6 +5,7 @@ import type { Action, GameSetup, ObjectId, SeatView } from "@mtg/engine";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type BoardSize, boardModel, type Insets, NO_INSETS } from "../board-model/board-model.ts";
 import { fixtureSetup } from "../fixtures/fixtures.ts";
+import type { Inspected } from "../hud/CardView.tsx";
 import { Hud } from "../hud/Hud.tsx";
 import {
   allAttackGoal,
@@ -13,6 +14,7 @@ import {
   type WantedAttack,
   withoutAttacker,
 } from "../interaction/all-attack.ts";
+import { cardDetails } from "../interaction/card-details.ts";
 import { controls, type Selection } from "../interaction/controls.ts";
 import { BoardCanvas } from "../renderer/BoardCanvas.tsx";
 import { type MatchClient, startMatchWorker } from "../worker/client.ts";
@@ -100,6 +102,8 @@ export function App() {
   const lastStep = useRef<string | null>(null);
   // The batch button's label while the app works toward its goal: kept as pressed, not flipping as attackers come and go.
   const runningLabel = useRef("All Attack");
+  // The card being looked at (the card view, M3-04c): a full view, or a mouse's preview.
+  const [inspected, setInspected] = useState<Inspected | null>(null);
   // Whether the hand was open when a drag lifted a card from it, to put it back that way if the drag is cancelled.
   const handBeforeDrag = useRef(false);
   // An open menu is only which card it's for: its choices are always read from the current controls.
@@ -267,6 +271,17 @@ export function App() {
   // Space presses the main button when no other control has focus.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && inspected !== null) {
+        setInspected(null);
+        return;
+      }
+      // "i" looks at the focused card, the keyboard's way to the card view (a long-press or a right-click otherwise).
+      if (event.key === "i" && !event.repeat && shown !== null) {
+        const id = (document.activeElement as HTMLElement | null)?.dataset.card;
+        const details = id === undefined ? null : cardDetails(shown, id as ObjectId);
+        if (details !== null) setInspected({ mode: "full", details });
+        return;
+      }
       if (event.key === "Escape") {
         const cancel = controlsNow?.secondary.find(
           (c) => c.action.type === "ANSWER" && c.action.answer.kind === "cancelCast",
@@ -282,7 +297,7 @@ export function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [controlsNow, menu, selection, handOpen, act]);
+  }, [controlsNow, menu, selection, handOpen, act, inspected, shown]);
 
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: the keyboard's way to put things down is Escape (above)
@@ -305,10 +320,23 @@ export function App() {
           fullControl={update?.fullControl ?? false}
           // Only turning it off moves the game on (as Next does), so only that press waits out the moment.
           setFullControl={(on) => send({ type: "fullControl", on }, !on)}
+          inspect={{
+            open: (id, mode) => {
+              const details = cardDetails(shown, id);
+              // A hover never replaces a view opened on purpose.
+              if (details !== null && !(mode === "preview" && inspected?.mode === "full"))
+                setInspected({ mode, details });
+            },
+            closePreview: () => setInspected((now) => (now?.mode === "preview" ? null : now)),
+          }}
+          inspected={inspected}
+          closeInspected={() => setInspected(null)}
           attackBatch={attackBatch(shown, attackGoal === null ? null : runningLabel.current, aimAttack)}
           drag={{
             // The card lifts as the drag starts, out of the collapsed hand too.
             lift: (id) => {
+              // A long-press opened the card view: looking, not playing.
+              if (inspected?.mode === "full") return;
               setMenuFor(null);
               handBeforeDrag.current = handOpen;
               setHandOpen(true);
@@ -316,6 +344,7 @@ export function App() {
             },
             // Let go on the table: what a second tap on the lifted card would do.
             drop: (id) => {
+              if (inspected?.mode === "full") return;
               const tap = controls(shown, id).cards[id]?.tap;
               if (tap?.kind === "send") act(tap.choice.action);
               else if (tap?.kind === "menu") setMenuFor(id);

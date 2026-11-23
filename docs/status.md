@@ -219,6 +219,14 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - Owner (2026-11-23, morning) on M3-07: will likely provide screen recordings of Arena for the animation study.
   - **M3-04c first slice merged (PR #100, squash, 2026-11-23): All Attack, Clear Attacks, taking one attacker out,
     and drag to play.** Waiting on the owner's phone check (a real finger, iOS Safari).
+  - **M3-04c slice 2 done (2026-11-23): the card view**, Arena's "Examined" view. A long-press (400ms, touch), a
+    right-click, or "i" on a focused card shows it large with its full image (or its text, for a token) and the
+    artist's credit, and beside it a hanger for each thing the face doesn't say: each keyword's reminder in our own
+    words, protection, summoning sickness, counters, damage, regeneration shields, what it's attached to or what's
+    attached to it, control vs ownership, a chosen name or type, token, copy, and power/toughness against the printed
+    card. A tap anywhere, Close or Escape closes it. A mouse resting 600ms on a card shows the same as a preview that
+    passes taps through. No rulings: Arena has none (D-160). An ability on the stack shows its source card.
+    `interaction/card-details.ts` (pure, tested), `hud/CardView.tsx`, `hud/card-inspect.ts`; e2e on both sizes.
   - M3-04c plan for the rest (2026-11-23, written before starting), each slice its own squash-merged PR, live on Pages
     as it merges; the owner gives feedback at the end:
     2. **The card view:** long-press (touch) or right-click/hover-hold (mouse) shows a card large, with its full

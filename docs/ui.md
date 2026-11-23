@@ -51,8 +51,8 @@ the owner's screenshots, rather than clear above it.
 
 **Hover and long-press (owner's question, 2026-11-23):** "I'm also curious what hovering over a card does on the
 battlefield." Touch has no hover, so on the phone a long-press opens the card's details (arena-research.md, "Examine
-(long-press)": the card large, and a panel per ability or effect on it), planned for M3-04c. Whether a desktop mouse
-hover should also show a large preview, as Arena's desktop client does, is an open question for the owner.
+(long-press)": the card large, and a panel per ability or effect on it), built in M3-04c. A desktop mouse resting on a
+card shows the same as a preview, as Arena's desktop client does (D-160 settled it).
 
 **Room between the battlefields (owner, 2026-11-23):** "the space between my battlefield and the opponents
 battlefield seems really cramped compared to mtg arena." In the owner's recent screenshots a creature is about 13% of
@@ -157,7 +157,7 @@ action must also work with a mouse and with a keyboard:
 - A click does what a tap does; a drag with the mouse does what a drag with a finger does. Pointer events, not
   touch-only events, so one code path serves both.
 - What a long-press opens (the card's details) also opens another way with a mouse (a right-click, or a hover
-  preview: the hover question is still open in status.md).
+  preview that passes clicks through) and with the keyboard ("i" on the focused card).
 - The keyboard can do everything: Tab moves focus through cards and controls with a visible focus ring, Enter or
   Space acts on the focused thing, Escape cancels a choice under way or closes a view, and a shortcut presses the
   main button (Space, as Arena's desktop client uses), plus Arena's full-control keys (arena-research.md).
@@ -167,7 +167,8 @@ action must also work with a mouse and with a keyboard:
 
 - **Tap** to select; **tap again or tap a target** to confirm. **Drag** a card from hand onto the board
   to play it (with tap-to-play as the equivalent, since dragging should never be the only way).
-- **Long-press** (about 400 ms) shows the full card image, Oracle text, rulings and artist credit.
+- **Long-press** (about 400 ms) shows the full card image, Oracle text and artist credit, with a panel beside it
+  for each keyword's reminder, counters, damage, attachments and control. No rulings: Arena's view has none (D-160).
   There's no hover anywhere, because touch has none.
 - Hit targets are at least 44×44 points. Spacing prevents mis-taps on dense boards.
 - Prompts for decisions come from the engine's `PendingDecision`. The UI renders them; it never
