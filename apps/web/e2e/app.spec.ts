@@ -4,7 +4,15 @@
 
 import { expect, type Page, test } from "@playwright/test";
 
-type Board = { cards: { name: string; zone: string; mine: boolean }[]; backs: unknown[] };
+type Board = {
+  cards: {
+    name: string;
+    zone: string;
+    mine: boolean;
+    badges?: { counter: string | null; loyalty: number | null; icons: string[] };
+  }[];
+  backs: unknown[];
+};
 
 const board = (page: Page) => page.evaluate(() => (window as unknown as { __board?: Board }).__board ?? null);
 const artShown = (page: Page) =>
@@ -86,6 +94,19 @@ test.describe("card art", () => {
     // A busy CI runner with software WebGL can take several seconds to decode and draw them all.
     await expect.poll(async () => (await artShown(page)).length, { timeout: 15_000 }).toBe(drawn);
   });
+});
+
+test("draws the badges board: a permanent's keywords, counters and loyalty, and no badges in hand", async ({
+  page,
+}) => {
+  await page.goto("/?fixture=badges");
+  await expect(page.getByRole("button", { name: /^Next/ })).toBeVisible();
+  await expect
+    .poll(async () => (await board(page))?.cards.find((c) => c.name === "Grizzly Bears")?.badges?.counter)
+    .toBe("+2");
+  const cards = (await board(page))?.cards ?? [];
+  expect(cards.find((c) => c.name === "Garruk Wildspeaker")?.badges?.loyalty).toBe(3);
+  expect(cards.find((c) => c.name === "Serra Angel" && c.zone === "hand")?.badges?.icons).toEqual([]);
 });
 
 test("shows a refusal rather than hanging: an unknown deck in the address", async ({ page }) => {

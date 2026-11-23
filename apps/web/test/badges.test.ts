@@ -3,8 +3,9 @@
 
 import type { SeatView, SeenCard } from "@mtg/engine";
 import { describe, expect, it } from "vitest";
-import { badgesOf } from "../src/board-model/badges.ts";
+import { badgesOf, NO_BADGES } from "../src/board-model/badges.ts";
 import { boardModel } from "../src/board-model/board-model.ts";
+import { pileKey } from "../src/board-model/piles.ts";
 import { boardView, fixtureView } from "./fixture-views.ts";
 
 const LIBRARY = Array.from({ length: 10 }, () => "Plains");
@@ -36,7 +37,7 @@ function card(shown: SeatView, name: string): SeenCard {
   return found;
 }
 
-const of = (name: string) => badgesOf(card(board, name), "p1");
+const of = (name: string) => badgesOf(card(board, name));
 
 describe("badgesOf", () => {
   it("shows a creature's keywords as icons, most telling first", () => {
@@ -62,12 +63,11 @@ describe("badgesOf", () => {
     expect(of("Grizzly Bears").loyalty).toBeNull();
   });
 
-  it("marks summoning sickness only on its controller's turn (CR 302.6)", () => {
+  it("marks summoning sickness until its controller's next turn begins, the other player's turn included (CR 302.6)", () => {
     expect(of("Llanowar Elves").sick).toBe(true);
     expect(of("Ornithopter").sick).toBe(false);
-    // The opponent's new creature, on the person's turn: it can still block, so no mark.
-    expect(badgesOf(card(board, "Elite Vanguard"), "p1").sick).toBe(false);
-    expect(badgesOf(card(board, "Elite Vanguard"), "p2").sick).toBe(true);
+    // The opponent's new creature, on the person's turn: it can't use {T} abilities until its controller's turn.
+    expect(of("Elite Vanguard").sick).toBe(true);
   });
 
   it("puts each permanent's badges on its board card, and none on a hand card", () => {
@@ -76,12 +76,19 @@ describe("badgesOf", () => {
     expect(on("Grizzly Bears")?.counter).toBe("+2");
     expect(on("Garruk Wildspeaker")?.loyalty).toBe(3);
     expect(on("Llanowar Elves")?.sick).toBe(true);
-    expect(on("Elite Vanguard")?.sick).toBe(false);
-    expect(model.cards.find((c) => c.zone === "hand")?.badges.icons).toEqual([]);
+    expect(on("Elite Vanguard")?.sick).toBe(true);
+    // A hand card with keywords (Serra Angel: flying, vigilance) wears none: badges are for permanents.
+    expect(model.cards.find((c) => c.zone === "hand" && c.name === "Serra Angel")?.badges).toBe(NO_BADGES);
     // Dimmed while sick, as Arena shows it (the owner); the opponent's new creature isn't, on the person's turn.
     const dim = (name: string) => model.cards.find((c) => c.name === name && c.zone === "battlefield")?.dim;
     expect(dim("Llanowar Elves")).toBeGreaterThan(0);
     expect(dim("Grizzly Bears")).toBe(0);
-    expect(dim("Elite Vanguard")).toBe(0);
+  });
+
+  it("doesn't pile a permanent with a twin that has a protection it lacks (its badges would differ)", () => {
+    const knight = card(board, "White Knight");
+    const bare = { ...knight, characteristics: { ...knight.characteristics, protections: [] } };
+    expect(pileKey(knight, new Set())).not.toBe(pileKey(bare, new Set()));
+    expect(pileKey(knight, new Set())).toBe(pileKey({ ...knight }, new Set()));
   });
 });

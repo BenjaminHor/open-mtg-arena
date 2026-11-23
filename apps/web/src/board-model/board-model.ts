@@ -3,7 +3,7 @@
 // portraits, the phase ladder and the main button. The renderer draws it and does no layout of its own, so the layout
 // is tested here without drawing anything. The layout's values are data (`BoardLayout`; the compact one by default).
 
-import type { Color, ObjectId, PlayerId, SeatView, Step } from "@mtg/engine";
+import type { Color, ObjectId, SeatView, Step } from "@mtg/engine";
 import type { BoardLayout } from "../layout/board-layout.ts";
 import { COMPACT } from "../layout/compact.ts";
 import { type Badges, badgesOf, NO_BADGES } from "./badges.ts";
@@ -180,8 +180,7 @@ export function boardModel(
   const stack = stackTop(shown, area, layout);
   const cards = [...field.cards, ...stack, ...hand]
     .map((c) => {
-      const badges =
-        c.zone === "battlefield" ? badgesOfId(shown, c.id as ObjectId, turn?.activePlayer ?? null) : NO_BADGES;
+      const badges = c.zone === "battlefield" ? badgesOfId(shown, c.id) : NO_BADGES;
       return withSickDim({ ...c, badges }, layout);
     })
     .map((c) => ({
@@ -321,14 +320,14 @@ function handArea(hand: readonly BoardCard[], area: Rect): Rect | null {
   return { x: left, y: top, width: right - left, height: area.y + area.height - top };
 }
 
-function badgesOfId(shown: SeatView, id: ObjectId, activePlayer: PlayerId | null): Badges {
+function badgesOfId(shown: SeatView, id: ObjectId): Badges {
   const seen = shown.seen[id];
-  return seen?.kind === "card" ? badgesOf(seen, activePlayer) : NO_BADGES;
+  return seen?.kind === "card" ? badgesOf(seen) : NO_BADGES;
 }
 
 /**
- * A creature that can't attack or tap yet is dimmed, as Arena shows it (the owner, ui.md "Summoning sickness,
- * dimmed"), besides its "zz" badge; less than a tapped card, which also tilts and carries its arrow.
+ * A creature that can't attack or tap yet (CR 302.6) is dimmed, as Arena shows it (the owner, ui.md "Summoning
+ * sickness, dimmed"), besides its "zz" badge; less than a tapped card, which also tilts and carries its arrow.
  */
 function withSickDim(card: BoardCard, layout: BoardLayout): BoardCard {
   return card.badges.sick ? { ...card, dim: Math.max(card.dim, layout.sick.dim) } : card;

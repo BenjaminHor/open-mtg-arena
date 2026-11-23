@@ -2534,8 +2534,14 @@ owner's answer to the D-089 open question, option (a))
   - counters as a small badge at the top right [R], left of a combat badge: "+2", "−1", or another kind's count;
   - a planeswalker's loyalty (CR 306.5c) in a shield where a creature's P/T goes [R]; one that's also a creature
     shows it at the top right;
-  - summoning sickness (CR 302.6) as a "zz" mark first in the icon row [R: Arena has an overlay], only on its
-    controller's turn: on the other player's turn it can still block, and a "can't" mark would mislead.
+  - summoning sickness (CR 302.6) as a "zz" mark first in the icon row [R: Arena has an overlay], and the creature
+    dimmed: until its controller's next turn begins, the other player's turn included, as the rule says (it can't
+    attack or use {T}/{Q} abilities then; a Llanowar Elves can't tap for mana on the opponent's turn). First built
+    to show only on its controller's turn; the code review found that hid a real restriction, and the card view
+    already said "Summoning sick" then.
 - Protection now splits a pile, as keywords and counters do. Loyalty isn't a counter badge.
+- The icons take the room the counter leaves: fewer, ending in the ellipsis, on a small tile. Badges sit below a
+  token's arched corners. A planeswalker that's also a creature (none in the pool) would show its P/T, loyalty in the
+  card view.
 - A sick creature is also dimmed (0.32, less than a tapped card's 0.45), as Arena shows it (the owner, ui.md
   "Summoning sickness, dimmed"); its badges stay bright over the dimming.

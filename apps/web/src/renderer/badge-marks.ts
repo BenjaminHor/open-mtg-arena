@@ -10,14 +10,24 @@ import { PALETTE } from "./palette.ts";
 const INK = 0xf4f1ec;
 const DISC = 0x161514;
 
-/** The icons along the top left, left to right: sickness, keywords, then the ellipsis. Its top left is at (0, 0). */
-export function iconRow(badges: Badges, r: number): Container {
+/**
+ * The icons along the top left, left to right: sickness, keywords, then the ellipsis; at most `room` discs, the last
+ * an ellipsis when some don't fit. Its top left is at (0, 0).
+ */
+export function iconRow(badges: Badges, r: number, room: number): Container {
   const row = new Container();
-  const kinds: (BadgeIcon | "sick" | "more")[] = [
+  const all: (BadgeIcon | "sick" | "more")[] = [
     ...(badges.sick ? (["sick"] as const) : []),
     ...badges.icons,
     ...(badges.more ? (["more"] as const) : []),
   ];
+  const fits = Math.max(0, room);
+  const kinds =
+    all.length <= fits
+      ? all
+      : fits === 0
+        ? []
+        : [...all.filter((k) => k !== "more").slice(0, fits - 1), "more" as const];
   kinds.forEach((kind, i) => {
     const badge = new Container();
     badge.addChild(
@@ -75,22 +85,18 @@ export function loyaltyShield(loyalty: number, h: number): Container {
   return shield;
 }
 
-/** "z", twice, small then larger: asleep, it can't attack or tap yet. */
-function sleepy(r: number): Container {
-  const holder = new Container();
-  for (const [size, x, y] of [
-    [r * 0.75, -r * 0.3, r * 0.15],
-    [r * 1.05, r * 0.25, -r * 0.1],
-  ] as const) {
-    const z = new Text({
-      text: "z",
-      style: { fontFamily: PALETTE.sans, fontWeight: "700", fontSize: size, fill: INK },
-    });
-    z.anchor.set(0.5);
-    z.position.set(x, y);
-    holder.addChild(z);
-  }
-  return holder;
+/** Two "z"s, small then larger, drawn as strokes like the other icons: asleep, it can't attack or tap yet. */
+function sleepy(r: number): Graphics {
+  const g = new Graphics();
+  const z = (x: number, y: number, size: number) =>
+    g
+      .moveTo(x - size, y - size)
+      .lineTo(x + size, y - size)
+      .lineTo(x - size, y + size)
+      .lineTo(x + size, y + size);
+  z(-r * 0.32, r * 0.2, r * 0.22);
+  z(r * 0.25, -r * 0.15, r * 0.32);
+  return g.stroke({ width: Math.max(1.2, r * 0.16), color: INK, cap: "round", join: "round" });
 }
 
 /** Each keyword's icon in a box of half-size `s` about (0, 0). Shapes, not letters, so each reads at a glance. */
