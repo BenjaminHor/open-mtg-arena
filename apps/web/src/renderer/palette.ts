@@ -5,7 +5,6 @@
 import type { Color } from "@mtg/engine";
 
 export const PALETTE = {
-  band: 0x2a2419,
   rim: 0x0c0d10,
   parchment: 0xeee8d8,
   ink: 0x1d1a16,

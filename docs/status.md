@@ -152,6 +152,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     of their ladder; the main button's labels while attacking or blocking ("No Blocks", "1 Blocker", "To Damage").
     Left for M3-04b (touch): picking blockers by tapping, the yellow-orange picked outline and the beam to the attacker
     during the choice, "Cancel Blocks", the "Choose blockers." prompt, the fast-forward button.
+  - Owner (2026-11-23): the space between the two battlefields feels cramped next to Arena. Recorded in ui.md ("Room
+    between the battlefields"): smaller creature cards and an open gap between the rows, as in their screenshots.
   - **M3-04b, touch.** Playable cards glow (from the seat view's options and `mightPay`); tap a hand card to lift it,
     tap again or drag up to play or cast; valid targets glow and a tap picks one; attacking and blocking by tapping
     creatures, with "All attack" and "No blocks"; the main button says what it will do ("Pass", "Resolve Shock", "Next:

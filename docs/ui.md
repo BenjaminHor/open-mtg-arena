@@ -33,6 +33,11 @@ just taps them within the stack visually. I think if they're tapped then they sh
 that makes sense. So it doesn't look messy." A pile's tapped cards gather on top of it, together, in front of its
 untapped ones (D-153).
 
+**Room between the battlefields (owner, 2026-11-23):** "the space between my battlefield and the opponents
+battlefield seems really cramped compared to mtg arena." In the owner's recent screenshots a creature is about 13% of
+the screen's height tall, and about 9% of the height of open table separates the two creature rows; nothing is drawn
+in that gap. The compact layout keeps that open space (D-152's values).
+
 **Colourless, multicolour and tokens (owner, 2026-11-23):** "the color coded borders is neat. However I wonder what
 would be done for colorless cards and multicolor cards. Also wondering what tokens would look like since mtga arena
 makes it obvious at first glance what's a token and not." The answer (D-153): a multicolour card has a gold frame with

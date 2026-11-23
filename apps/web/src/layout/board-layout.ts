@@ -6,7 +6,7 @@
 export type BoardLayout = {
   /** Width-to-height ratios: a battlefield card (mostly art) and a whole card (hand, backs, libraries). */
   ratio: { battlefield: number; hand: number };
-  /** The band across the middle that splits the two battlefields: its centre line and height. */
+  /** The open table between the two creature rows: its centre line and height. */
   band: { y: number; h: number };
   /**
    * The creature row by the band, centred, kept `margin` from each side. A row too wide for its space first shrinks

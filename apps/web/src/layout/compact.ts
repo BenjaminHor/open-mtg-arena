@@ -8,17 +8,19 @@ import type { BoardLayout } from "./board-layout.ts";
 export const COMPACT: BoardLayout = {
   // A battlefield card is a wide "art card", its art under a name strip (ui.md, "The cards"); a hand card is a whole
   // card, 63 by 88 mm.
-  ratio: { battlefield: 1.15, hand: 63 / 88 },
-  // The band across the middle [R].
-  band: { y: 0.5, h: 0.03 },
-  // Creatures, close to the band and centred [R].
-  creatures: { h: 0.2, minH: 0.15, gap: 0.008, margin: 0.09 },
+  ratio: { battlefield: 1.2, hand: 63 / 88 },
+  // The open table between the two creature rows, about 9% of the height in the owner's screenshots [R]; nothing is
+  // drawn in it (ui.md, "Room between the battlefields").
+  band: { y: 0.5, h: 0.1 },
+  // Creatures, either side of the gap and centred [R], about 13% of the height in Arena [R]; a little more here, where
+  // the screen is wider for its height.
+  creatures: { h: 0.16, minH: 0.12, gap: 0.008, margin: 0.09 },
   // Lands at the outer left [R], piled by name [R]; smaller than creatures [guess].
-  lands: { h: 0.13, gap: 0.014, left: 0.075, right: 0.5, pileStep: 0.007, pileLift: 0.008, tappedShift: 0.45 },
+  lands: { h: 0.12, gap: 0.014, left: 0.075, right: 0.5, pileStep: 0.007, pileLift: 0.008, tappedShift: 0.45 },
   // Other non-creature permanents at the outer right, planeswalkers at the right edge [guess, from the desktop map].
-  others: { h: 0.13, gap: 0.006, left: 0.55, right: 0.985 },
+  others: { h: 0.12, gap: 0.006, left: 0.55, right: 0.985 },
   // Close enough that the person's outer row ends above the hand's floating mana costs.
-  rowGap: 0.01,
+  rowGap: 0.012,
   // A small tilt, dimmed, with a tap mark [R].
   tapped: { tilt: (8 * Math.PI) / 180, dim: 0.45 },
   // Overlapped across the bottom centre (about 35–65% W [R], a little wider here so each card shows more), only the
@@ -48,6 +50,7 @@ export const COMPACT: BoardLayout = {
   // Over the main button, or around the opponent's crest on their turn [R].
   ladder: { icon: 20, padding: 2, gap: 6 },
   crestClearance: 6,
-  // An attacker steps forward [guess: Arena slides attackers toward the opponent; the phone has little room].
-  combat: { advance: 0.025, gangOverlap: 0.3 },
+  // An attacker steps forward into the open table [guess: Arena keeps attackers in their row, marked by a chevron;
+  // a step reads at a glance on a small screen].
+  combat: { advance: 0.035, gangOverlap: 0.3 },
 };

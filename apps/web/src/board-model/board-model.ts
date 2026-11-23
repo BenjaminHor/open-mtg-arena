@@ -98,7 +98,7 @@ export type BoardModel = {
   cards: BoardCard[];
   backs: CardBack[];
   libraries: LibraryPile[];
-  /** The band across the middle that splits the two battlefields [R], the board's whole width. */
+  /** The open table between the two creature rows [R], the board's whole width: drawn as nothing, kept for layout. */
   band: Rect;
   /** Combat's pairings: each blocker to the attacker it blocks, each attacker to the planeswalker it attacks. */
   links: CombatLink[];

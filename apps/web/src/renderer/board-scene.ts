@@ -29,22 +29,16 @@ export async function createBoardScene(host: HTMLElement): Promise<BoardScene> {
   app.ticker.stop();
   const render = () => app.render();
   host.appendChild(app.canvas);
-  const table = new Graphics();
   const hidden = new Container();
   const cardLayer = new Container({ sortableChildren: true });
   // Combat's links go over the cards, so a pairing is never hidden under a card between the two.
   const links = new Graphics();
-  app.stage.addChild(table, hidden, cardLayer, links);
+  app.stage.addChild(hidden, cardLayer, links);
   const sprites = new Map<string, CardSprite>();
   return {
     draw: (model) => {
       app.renderer.resize(model.width, model.height);
-      table
-        .clear()
-        .rect(model.band.x, model.band.y, model.band.width, model.band.height)
-        .fill({ color: PALETTE.band, alpha: 0.9 })
-        .rect(model.band.x, model.band.y + model.band.height / 2 - 0.5, model.band.width, 1)
-        .fill({ color: 0x3a4252 });
+      // The gap between the battlefields is open table (ui.md, "Room between the battlefields"): nothing to draw.
       // `context: true` frees each Graphics' drawing too, which a plain `children: true` leaves behind.
       for (const child of hidden.removeChildren()) child.destroy({ children: true, context: true });
       for (const pile of model.libraries) hidden.addChild(librarySprite(pile));
