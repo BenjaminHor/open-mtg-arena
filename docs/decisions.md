@@ -2840,4 +2840,8 @@ owner's answer to the D-089 open question, option (a))
 - The owner's answers (2026-11-23): the app is called "Open MTG Arena" on screen too; online multiplayer, its servers,
   the lobby, peer-to-peer and Supabase cloud sync are removed (offline only: the AI, the LLM opponent, the RPG); the
   Tauri desktop app and its updater are removed (the web app installs as a PWA).
+- The owner (2026-11-23): their art and audio without a recorded source (the battlefields, most music and sound
+  effects) are kept as part of the MIT/Apache code we copy, the Kevin MacLeod tracks credited (CC-BY), the unknown
+  sources noted, revisited if anyone objects ("Keep, credit what we can"). And the copyright line and NOTICE stay in
+  the license files ("Yes, keep it in the license files"); nothing in the app names them.
 

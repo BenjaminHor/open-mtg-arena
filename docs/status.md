@@ -360,7 +360,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       changes no behaviour (the fair AI and phone work come after); NOTICE names the upstream commit.
     - Progress (2026-11-23): their pinned toolchain (nightly-2026-11-19, wasm32 target) installs here; crates.io,
       MTGJSON and the Rust dist are reachable; building wasm-bindgen-cli 0.2.121 and the release engine WASM in the
-      clone at scratchpad/phase-src/repo. Asked the owner about keeping their unsourced audio and battlefield art.
+      clone at scratchpad/phase-src/repo. The owner: keep their art and audio (credit Kevin MacLeod), keep the copyright
+      line and NOTICE in the license files (D-177).
   - **M3-05 merged (PR #115, squash, 2026-11-23).** Paused after it: the owner is weighing building on phase-rs
     (Open questions; docs/phase-rs-evaluation.md).
   - **M3-05 built (2026-11-23, D-176): the full layout, picked by size, switching live.** `layout/full.ts`,
