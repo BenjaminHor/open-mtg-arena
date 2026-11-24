@@ -2625,6 +2625,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
      file (the dev build is 263 MB); measure edit-to-screen.
   2. Engine loop measured: a one-line engine change to a reloaded app, today and with cheap build settings.
   3. Report the numbers and a recommendation on the engine (keep Rust, or port) for the owner to decide.
+- Owner (2026-11-24), during that work: "I also wonder if it's worthwhile to do an Odin port at a high level and not
+  necessarily a rust to Odin translation" (a clean Odin engine written from the rules, not translated). To be
+  answered in step 3 with the trade-off (card coverage against a small, fast, readable engine; what of today's Odin
+  work carries over: the data model, codecs and RNG do, the translator doesn't).
 - Settled (2026-11-24, D-183): runtime card-text parses are precomputed into the card data; the Odin engine
   never parses. Settled (2026-11-24, D-184): fix the saved-game `"type"` clash, changing that wire form.
 
