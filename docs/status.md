@@ -2799,6 +2799,11 @@ Progress:
   ~100 min). Shards integration, integration_2 and integration_3 completed (one Rust test failed in the first);
   integration_4 failed partway, likely killed in a memory squeeze (the container's processes share ~15 GB).
   Next: replay on Rust to keep the clean recordings, then on Odin for the pass rate, then the card-to-test map.
+- Step 3 progress (2026-11-24, night 2): you may / if you do, library search and shuffle, sacrifice effects,
+  counterspells, blink and graveyard either-or targets, each player / each opponent instructions, cycling,
+  required additional costs, kicker, predefined tokens (Treasure, Food, Clue, Shard, Heartwood; others
+  unsupported), whenever you attack, Nth spell and opponent-cast triggers, activation restrictions. Rules tests:
+  67. Coverage: 4,138 of 15,772.
 - Edit to app (measured 2026-11-24, 4-core container, one core busy with a replay): `scripts/build-odin-engine.sh
   dev` 13.8 s, then the running `ENGINE=odin` dev server reloads the page 0.4 s later: about 14 s from an engine edit
   to the app. LLVM code generation is 88% of the build (type check 1.1 s, which is the quick check after an edit);
