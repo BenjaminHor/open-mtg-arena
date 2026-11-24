@@ -1294,7 +1294,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                     let v = self.expr(args[0], i)?;
                     format!("append(&{recv}, {v})")
                 }
-                ("contains", Shape::Vec(i), 1) if deref.is_empty() => {
+                ("contains", Shape::Vec(i), 1) if deref.is_empty() && self.comparable(&i.clone()) => {
                     let v = self.expr(args[0], i)?;
                     format!("vec_contains({recv}[:], {v})")
                 }
