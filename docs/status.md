@@ -2806,6 +2806,10 @@ a216a17. Next when resuming: tuple field access (`f(..).0` on a returned tuple: 
 but reverted untested; then the executed-blocker list (`translate-report` with ODINGEN_EXECUTED).
 
 ## Working with the owner
+- Owner (2026-11-24) asked whether the Rust integration tests validate card coverage. Not yet: coverage is a static
+  check (every part of the card's parsed text is implemented). Plan: once the capture finishes, replay it on Rust
+  (keep the clean recordings), then on Odin (pass rate), and map tests to the cards they use, so a card counts as
+  validated only when its tests pass on Odin. Report that validated number as the coverage.
 - Owner (2026-11-24): "anything that can be ran in the background reasonably, do it". Builds, test runs, captures,
   comparisons and browser checks run as background jobs; work continues meanwhile.
 

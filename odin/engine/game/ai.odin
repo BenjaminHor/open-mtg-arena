@@ -59,6 +59,15 @@ priority_action :: proc(g: ^Game, p: types.PlayerId) -> types.GameAction {
 		if best == nil || mana_value(o.mana_cost) > mana_value(best.mana_cost) do best = o
 	}
 	if best != nil do return types.GameAction_CastSpell{object_id = best.id, card_id = best.card_id}
+	// After combat on its own turn, use abilities that make cards, creatures or a good kill.
+	if s.active_player == p && s.phase == .PostCombatMain && types.pvec_len(s.stack) == 0 {
+		for o in permanents_of(s, p) {
+			if o.abilities == nil do continue
+			for &a, i in o.abilities^ do if can_activate(g, p, o, i) && ability_worth_using(g, p, &a) {
+				return types.GameAction_ActivateAbility{source_id = o.id, ability_index = i}
+			}
+		}
+	}
 	return types.GameAction_PassPriority{}
 }
 
@@ -71,7 +80,7 @@ worth_casting :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool
 	for x := a; x != nil; x = x.sub_ability {
 		if x.effect == nil do continue
 		#partial switch e in x.effect^ {
-		case types.Effect_Pump:
+		case types.Effect_Pump, types.Effect_GenericEffect:
 			// A pump spell during its own combat, on an attacker.
 			c, in_combat := s.combat.?
 			if !in_combat || s.active_player != p || len(c.attackers) == 0 do return false
@@ -93,8 +102,12 @@ chosen_target :: proc(g: ^Game, p: types.PlayerId, legal: []types.TargetRef, a: 
 	damage := 0
 	if a != nil && a.effect != nil {
 		#partial switch e in a.effect^ {
-		case types.Effect_Pump:
+		case types.Effect_Pump, types.Effect_GenericEffect:
 			helps = true
+		case types.Effect_ChangeZone:
+			// Getting a card back is good for its owner; exiling or bouncing a permanent is aimed at an opponent's.
+			origin, _ := e.origin.?
+			helps = origin == .Graveyard && (e.destination == .Hand || e.destination == .Battlefield)
 		case types.Effect_DealDamage:
 			damage, _ = fixed_quantity(e.amount)
 		}
@@ -125,7 +138,7 @@ chosen_target :: proc(g: ^Game, p: types.PlayerId, legal: []types.TargetRef, a: 
 best_target :: proc(g: ^Game, p: types.PlayerId, legal: []types.TargetRef) -> types.TargetRef {
 	s := &g.state
 	a: ^types.AbilityDefinition
-	if g.pending.object != 0 do a = spell_ability(object(s, g.pending.object))
+	if g.pending.object != 0 do a = pending_ability(g)
 	t, good := chosen_target(g, p, legal, a)
 	if !good && len(legal) > 0 do return legal[0]
 	return t
@@ -212,4 +225,36 @@ choose_blocks :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.Tuple2(type
 		}
 	}
 	return out
+}
+
+// An activated ability worth its cost: no sacrifice or life payment, and every effect a gain (a card, a creature,
+// life, or damage or destruction with a good target).
+ability_worth_using :: proc(g: ^Game, p: types.PlayerId, a: ^types.AbilityDefinition) -> bool {
+	s := &g.state
+	cost, _ := a.cost.?
+	if comp, ok := cost.(types.AbilityCost_Composite); ok {
+		for part in comp.costs {
+			#partial switch _ in part {
+			case types.AbilityCost_Sacrifice, types.AbilityCost_PayLife:
+				return false
+			}
+		}
+	}
+	#partial switch _ in cost {
+	case types.AbilityCost_Sacrifice, types.AbilityCost_PayLife:
+		return false
+	}
+	for x := a; x != nil; x = x.sub_ability {
+		if x.effect == nil do continue
+		#partial switch _ in x.effect^ {
+		case types.Effect_Draw, types.Effect_Token, types.Effect_GainLife, types.Effect_DealDamage, types.Effect_Destroy:
+		case:
+			return false
+		}
+	}
+	for f in target_slots(a) {
+		_, good := chosen_target(g, p, legal_targets(s, f, p)[:], a)
+		if !good do return false
+	}
+	return true
 }

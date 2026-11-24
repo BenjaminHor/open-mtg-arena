@@ -24,6 +24,7 @@ Game :: struct {
 	// "Until end of turn" changes to power and toughness, undone in the cleanup step. Kept beside the state, so a
 	// saved and restored game forgets them (to be moved into the state's continuous effects).
 	pumps:   [dynamic]Pump,
+	temp_effects: [dynamic]Temp_Effect, // other "until end of turn" effects, kept the same way
 	bottoms: [dynamic]types.MulliganBottomEntry, // players who kept after mulligans, owing cards to the bottom
 	// Triggered abilities (triggers.odin): what happened since the last check, what triggered and waits to go on the
 	// stack, a trigger whose targets are being chosen, and the definition of each ability on the stack. Kept beside
@@ -42,6 +43,7 @@ Game :: struct {
 start_game :: proc(decks: []Deck, seed: u64, format: types.FormatConfig, first_player: types.PlayerId, card_db: Card_Lookup) -> ^Game {
 	g := new(Game)
 	g.card_db = card_db
+	current_card_db = card_db
 	g.rng = rng.from_u64(seed)
 	s := &g.state
 	s.format_config = format

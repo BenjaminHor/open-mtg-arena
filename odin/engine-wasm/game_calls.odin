@@ -147,6 +147,7 @@ restore_game_state :: proc(b: ^strings.Builder, args: []json.Value) {
 	}
 	g.rng = game.restored_rng(g.state)
 	g.card_db = card_lookup
+	game.current_card_db = card_lookup
 	current = g
 	reply_ok_raw(b, "null")
 }
@@ -212,6 +213,8 @@ write_legal :: proc(b: ^strings.Builder, viewer: types.PlayerId) {
 			id = x.object_id
 		case types.GameAction_CastSpell:
 			id = x.object_id
+		case types.GameAction_ActivateAbility:
+			id = x.source_id
 		case:
 			continue
 		}

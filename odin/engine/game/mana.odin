@@ -56,10 +56,10 @@ can_tap_for_cost :: proc(o: ^types.GameObject) -> bool {
 	return true
 }
 
-mana_sources :: proc(s: ^types.GameState, p: types.PlayerId) -> [dynamic]Mana_Source {
+mana_sources :: proc(s: ^types.GameState, p: types.PlayerId, exclude: types.ObjectId = 0) -> [dynamic]Mana_Source {
 	out := make([dynamic]Mana_Source, context.temp_allocator)
 	for o in permanents_of(s, p) {
-		if !can_tap_for_cost(o) || o.abilities == nil do continue
+		if o.id == exclude || !can_tap_for_cost(o) || o.abilities == nil do continue
 		for a in o.abilities^ {
 			if colors, amount, ok := tap_mana_ability(a); ok {
 				append(&out, Mana_Source{object = o, colors = colors, amount = amount})
@@ -89,11 +89,12 @@ shard_payers :: proc(shard: types.ManaCostShard) -> (payers: bit_set[types.ManaT
 
 // The sources that pay a mana cost (CR 601.2g-h), chosen automatically: each colored symbol first, from the sources
 // with the fewest other uses, then the generic part from what's left. Nil when the cost can't be paid.
-plan_payment :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaCost) -> (taps: [dynamic]^types.GameObject, ok: bool) {
+// `exclude`: a permanent that can't help pay, because the cost also taps it.
+plan_payment :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0) -> (taps: [dynamic]^types.GameObject, ok: bool) {
 	taps = make([dynamic]^types.GameObject, context.temp_allocator)
 	c, is_cost := cost.(types.ManaCost_Cost)
 	if !is_cost do return taps, true // no mana cost: nothing to pay
-	sources := mana_sources(s, p)
+	sources := mana_sources(s, p, exclude)
 	used := make([]bool, len(sources), context.temp_allocator)
 	// Each source makes `amount` mana per tap; a planned payment taps whole sources and wastes the rest.
 	leftover := make([]int, len(sources), context.temp_allocator)

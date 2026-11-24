@@ -120,6 +120,7 @@ is_attacking :: proc(c: ^types.CombatState, id: types.ObjectId) -> bool {
 // and state-based actions are checked before the others deal theirs.
 combat_damage :: proc(g: ^Game) {
 	s := &g.state
+	apply_continuous_effects(g)
 	combat, ok := &s.combat.?
 	if !ok do return
 	any_first := false
@@ -210,6 +211,7 @@ damage_pass :: proc(g: ^Game, combat: ^types.CombatState, pass: Damage_Pass) {
 // CR 704.3: state-based actions are performed all at once, and repeated until none apply.
 check_state_based_actions :: proc(g: ^Game) {
 	s := &g.state
+	apply_continuous_effects(g)
 	for {
 		changed := false
 		for id in ids_of(s.battlefield) {
@@ -239,6 +241,7 @@ check_state_based_actions :: proc(g: ^Game) {
 		}
 		if remove_departed_tokens(g) do changed = true
 		if !changed do break
+		apply_continuous_effects(g) // a permanent that left takes its effects with it
 	}
 	// CR 704.5a-c: a player with no life, who drew from an empty library, or with ten poison counters loses.
 	losers := make([dynamic]types.PlayerId, context.temp_allocator)

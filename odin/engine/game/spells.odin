@@ -19,7 +19,8 @@ has_keyword :: proc(o: ^types.GameObject, $T: typeid) -> bool {
 // keywords. Triggered, static and replacement abilities, and activated abilities other than mana abilities, come
 // later.
 card_supported :: proc(face: ^types.CardFace) -> bool {
-	if len(face.static_abilities) > 0 || len(face.replacements) > 0 do return false
+	for r in face.replacements do if !replacement_supported(r) do return false
+	for st in face.static_abilities do if !static_supported(st) do return false
 	for t in face.triggers do if !trigger_supported(t) do return false
 	if face.additional_cost != nil || face.modal != nil || len(face.casting_options) > 0 do return false
 	for a in face.abilities {
@@ -27,7 +28,7 @@ card_supported :: proc(face: ^types.CardFace) -> bool {
 		case .Spell:
 			if !spell_ability_supported(a) do return false
 		case .Activated:
-			if _, _, ok := tap_mana_ability(a); !ok do return false
+			if _, _, ok := tap_mana_ability(a); !ok && !activated_supported(a) do return false
 		case .Database, .BeginGame, .Mulligan:
 			return false
 		}
@@ -87,10 +88,16 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		_, fixed := fixed_quantity(x.count)
 		_, you := x.target.(types.TargetFilter_Controller)
 		return fixed && you
+	case types.Effect_GenericEffect:
+		return generic_effect_supported(x)
+	case types.Effect_ChangeZone:
+		return change_zone_supported(x)
+	case types.Effect_Bounce:
+		return bounce_supported(x)
 	case types.Effect_GainLife:
 		_, fixed := fixed_quantity(x.amount)
 		_, you := x.player.(types.TargetFilter_Controller)
-		return fixed && you
+		return fixed && (you || x.player == nil)
 	case types.Effect_Destroy:
 		return !x.cant_regenerate && filter_supported(x.target)
 	}
@@ -136,6 +143,12 @@ effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
 	case types.Effect_Pump:
 		f = x.target
 	case types.Effect_Destroy:
+		f = x.target
+	case types.Effect_GenericEffect:
+		f = x.target.? or_else nil
+	case types.Effect_ChangeZone:
+		f = x.target
+	case types.Effect_Bounce:
 		f = x.target
 	case:
 		return nil, false
@@ -198,6 +211,10 @@ legal_targets :: proc(s: ^types.GameState, f: types.TargetFilter, controller: ty
 	case types.TargetFilter_Opponent:
 		for p in s.players do if p.id != controller do append(&out, types.TargetRef_Player{p.id})
 	case types.TargetFilter_Typed:
+		if gf, in_graveyard := graveyard_filter(f); in_graveyard {
+			graveyard_targets(s, gf, controller, &out)
+			return out
+		}
 		outer: for id in ids_of(s.battlefield) {
 			o := object(s, id)
 			for t in x._0.type_filters do if !matches_type(o, t) do continue outer
@@ -261,6 +278,15 @@ castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c
 // Looks up the card an object was made from, to check what this engine supports of it.
 Card_Lookup :: proc(name: string) -> ^types.CardExportEntry
 
+// The card database lookup of the game in play, for code that holds only an object.
+current_card_db: Card_Lookup
+
+card_entry_of :: proc(o: ^types.GameObject) -> (^types.CardExportEntry, bool) {
+	if current_card_db == nil || o.is_token do return nil, false
+	e := current_card_db(o.base_name)
+	return e, e != nil
+}
+
 object_supported :: proc(o: ^types.GameObject, card_db: Card_Lookup) -> bool {
 	if card_db == nil do return false
 	entry := card_db(o.base_name)
@@ -282,7 +308,7 @@ cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []t
 	}
 	if len(chosen) < len(slots) {
 		// CR 601.2c: ask for the next target.
-		g.pending = Pending_Cast{object = id, targets = chosen}
+		g.pending = Pending_Cast{object = id, targets = chosen, ability_index = -1}
 		ask_target(g, p)
 		return true
 	}
@@ -291,21 +317,30 @@ cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []t
 }
 
 Pending_Cast :: struct {
-	object:  types.ObjectId,
-	targets: [dynamic]types.TargetRef,
+	object:        types.ObjectId,
+	targets:       [dynamic]types.TargetRef,
+	ability_index: int, // an activated ability being activated, or -1 for a spell being cast
+}
+
+// The ability whose targets are being chosen: the spell's, or the activated ability's.
+pending_ability :: proc(g: ^Game) -> ^types.AbilityDefinition {
+	o := object(&g.state, g.pending.object)
+	if g.pending.ability_index >= 0 do return activated_ability(o, g.pending.ability_index)
+	return spell_ability(o)
 }
 
 ask_target :: proc(g: ^Game, p: types.PlayerId) {
 	s := &g.state
 	o := object(s, g.pending.object)
-	slots := target_slots(spell_ability(o))
+	slots := target_slots(pending_ability(g))
 	slot := len(g.pending.targets)
 	legal := legal_targets(s, slots[slot], p)
 	pending := new(types.PendingCast)
 	pending.object_id = o.id
 	pending.card_id = o.card_id
 	pending.cost = o.mana_cost
-	pending.origin_zone = .Hand
+	pending.origin_zone = .Hand if g.pending.ability_index < 0 else .Battlefield
+	if g.pending.ability_index >= 0 do pending.activation_ability_index = g.pending.ability_index
 	target_slot_list: [dynamic]types.TargetSelectionSlot
 	for f in slots do append(&target_slot_list, types.TargetSelectionSlot{legal_targets = legal_targets(s, f, p)})
 	selected: [dynamic]Maybe(types.TargetRef)
@@ -320,8 +355,7 @@ ask_target :: proc(g: ^Game, p: types.PlayerId) {
 
 choose_target :: proc(g: ^Game, p: types.PlayerId, t: types.TargetRef) -> bool {
 	s := &g.state
-	o := object(s, g.pending.object)
-	slots := target_slots(spell_ability(o))
+	slots := target_slots(pending_ability(g))
 	slot := len(g.pending.targets)
 	if !target_still_legal(s, t, slots[slot], p) do return false
 	append(&g.pending.targets, t)
@@ -329,7 +363,8 @@ choose_target :: proc(g: ^Game, p: types.PlayerId, t: types.TargetRef) -> bool {
 		ask_target(g, p)
 		return true
 	}
-	finish_cast(g, p, g.pending.object, g.pending.targets[:])
+	if g.pending.ability_index >= 0 do finish_activation(g, p, g.pending.object, g.pending.ability_index, g.pending.targets[:])
+	else do finish_cast(g, p, g.pending.object, g.pending.targets[:])
 	g.pending = {}
 	return true
 }
@@ -402,6 +437,15 @@ do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Playe
 	case types.Effect_LoseLife:
 		n, _ := fixed_quantity(x.amount)
 		lose_life(s, controller, n)
+	case types.Effect_ChangeZone:
+		do_change_zone(g, x, controller, source, target)
+	case types.Effect_Bounce:
+		if t, ok := target.?.(types.TargetRef_Object); ok && object(s, t._0).zone == .Battlefield do move_object(g, t._0, .Hand)
+	case types.Effect_GenericEffect:
+		affected: ^types.GameObject
+		if t, ok := target.?.(types.TargetRef_Object); ok do affected = object(s, t._0)
+		else do affected = object(s, source)
+		if affected != nil && affected.zone == .Battlefield do add_temp_effect(g, affected, x)
 	case types.Effect_Token:
 		n, _ := fixed_quantity(x.count)
 		for _ in 0 ..< n do create_token(g, x, controller)
@@ -469,19 +513,13 @@ Pump :: struct {
 
 pump :: proc(g: ^Game, o: ^types.GameObject, power, toughness: i32) {
 	append(&g.pumps, Pump{object = o.id, incarnation = o.incarnation, power = power, toughness = toughness})
-	if p, ok := o.power.?; ok do o.power = p + power
-	if t, ok := o.toughness.?; ok do o.toughness = t + toughness
+	apply_continuous_effects(g)
 }
 
 end_until_end_of_turn_effects :: proc(g: ^Game) {
-	s := &g.state
-	for p in g.pumps {
-		o := object(s, p.object)
-		if o == nil || o.incarnation != p.incarnation do continue
-		if v, ok := o.power.?; ok do o.power = v - p.power
-		if v, ok := o.toughness.?; ok do o.toughness = v - p.toughness
-	}
 	clear(&g.pumps)
+	clear(&g.temp_effects)
+	apply_continuous_effects(g)
 }
 
 // Why this engine can't fully support a card yet: one entry per missing piece ("trigger:ChangesZone",
@@ -503,8 +541,8 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 			append(&out, name("trigger:", t.mode))
 		}
 	}
-	for st in face.static_abilities do append(&out, name("static:", st.mode))
-	for r in face.replacements do append(&out, name("replacement:", r.event))
+	for st in face.static_abilities do if !static_supported(st) do append(&out, name("static:", st.mode))
+	for r in face.replacements do if !replacement_supported(r) do append(&out, name("replacement:", r.event))
 	if face.additional_cost != nil do append(&out, "additional cost")
 	if face.modal != nil do append(&out, "modal")
 	if len(face.casting_options) > 0 do append(&out, "casting option")
@@ -513,9 +551,10 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 		case .Spell:
 			if !spell_ability_supported(a) do ability_gaps(&out, a, "spell")
 		case .Activated:
-			if _, _, ok := tap_mana_ability(a); !ok {
-				if a.effect != nil do append(&out, name("activated:", a.effect^))
-				else do append(&out, "activated")
+			if _, _, ok := tap_mana_ability(a); !ok && !activated_supported(a) {
+				if a.effect != nil && !ability_supported(a) do ability_gaps(&out, a, "activated")
+				else if cost, has := a.cost.?; has && !cost_supported(cost) do append(&out, name("cost:", cost))
+				else do append(&out, "activated: restriction")
 			}
 		case .Database, .BeginGame, .Mulligan:
 			append(&out, fmt.tprintf("ability:%v", a.kind))

@@ -33,7 +33,10 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 // Applies one action from a player. False (and nothing changed) when it isn't legal now.
 apply :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> bool {
 	ok := apply_action(g, p, action)
-	if ok do sync_decider(&g.state)
+	if ok {
+		apply_continuous_effects(g)
+		sync_decider(&g.state)
+	}
 	return ok
 }
 
@@ -89,6 +92,8 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			targets := make([dynamic]types.TargetRef, context.temp_allocator)
 			for t in a.targets do append(&targets, types.TargetRef_Object{t})
 			return cast_spell(g, p, a.object_id, targets[:])
+		case types.GameAction_ActivateAbility:
+			return activate_ability(g, p, a.source_id, a.ability_index)
 		}
 	case types.WaitingFor_TargetSelection:
 		#partial switch a in action {
@@ -222,6 +227,10 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 			} else if castable(s, p, o, g.card_db) {
 				append(&out, types.GameAction_CastSpell{object_id = id, card_id = o.card_id})
 			}
+		}
+		for o in permanents_of(s, p) {
+			if o.abilities == nil do continue
+			for _, i in o.abilities^ do if can_activate(g, p, o, i) do append(&out, types.GameAction_ActivateAbility{source_id = o.id, ability_index = i})
 		}
 	case types.WaitingFor_TargetSelection:
 		for t in w.selection.current_legal_targets do append(&out, types.GameAction_ChooseTarget{target = t})
