@@ -83,6 +83,14 @@ main :: proc() {
 			if mismatches <= max_reports do fmt.printf("mismatch: %q at %v\n", m.key, strings.to_string(path))
 		}
 	}
+	when types.COVERAGE {
+		if path, ok := os.lookup_env("COVERAGE_OUT", context.allocator); ok {
+			b := strings.builder_make()
+			for k in types.COVERAGE_KEYS do fmt.sbprintf(&b, "%v\t%v\n", types.coverage[k], k)
+			for k in types.HAND_COVERAGE_KEYS do fmt.sbprintf(&b, "%v\t%v\n", types.coverage[k], k)
+			_ = os.write_entire_file(path, transmute([]byte)strings.to_string(b))
+		}
+	}
 	fmt.printf("cards %v: decode failures %v (%.0f ms), round-trip mismatches %v (%.0f ms)\n",
 		len(root.members), decode_failures, decode_ms, mismatches, time.duration_milliseconds(time.since(t)))
 	if decode_failures > 0 || mismatches > 0 do os.exit(1)

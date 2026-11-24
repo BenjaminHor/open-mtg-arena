@@ -4,6 +4,7 @@
 package types
 
 import "base:intrinsics"
+import "base:runtime"
 import "core:strconv"
 import "core:strings"
 import "../json"
@@ -242,4 +243,17 @@ member_json_key :: proc(b: ^strings.Builder, first: ^bool, x: $T, enc: proc(b: ^
 other_member_key :: proc(v: json.Value, tag: string) -> string {
 	for m in v.members do if m.key != tag do return m.key
 	return ""
+}
+
+// ------------------------------------------------------------------------------------------------------ coverage ---
+// With `-define:COVERAGE=true`, every generated decoder counts what it reads (a type, an enum variant by tag) in
+// `coverage`, so a round trip can report which parts of the model its data reached. COVERAGE_KEYS (generated) lists
+// them all. Off by default: the hooks compile to nothing.
+COVERAGE :: #config(COVERAGE, false)
+coverage: map[string]int
+
+cov_hit :: proc(key: string) {
+	// Its own allocator: callers decode inside short-lived arenas.
+	if coverage == nil do coverage = make(map[string]int, 8192, runtime.heap_allocator())
+	coverage[key] += 1
 }

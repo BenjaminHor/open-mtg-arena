@@ -213,9 +213,12 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
     std::fs::create_dir_all(out_dir).unwrap();
     let types = format!("{HEADER}import \"../json\"\nimport \"../rng\"\n\n_ :: json\n_ :: rng\n\n{}", e.types_out);
     std::fs::write(out_dir.join("generated_types.odin"), types).unwrap();
+    let (codec_out, coverage_keys) = add_coverage_hooks(&e.codec_out);
+    let keys: Vec<String> = coverage_keys.iter().map(|k| format!("\t\"{k}\",")).collect();
     let codecs = format!(
-        "{HEADER}import \"core:slice\"\nimport \"core:strings\"\nimport \"../json\"\n\n_ :: slice\n_ :: strings\n\n{}\n{}",
-        e.codec_out,
+        "{HEADER}import \"core:slice\"\nimport \"core:strings\"\nimport \"../json\"\n\n_ :: slice\n_ :: strings\n\n// Every coverage key the generated decoders count (`-define:COVERAGE=true`): one per type, one per variant.\nCOVERAGE_KEYS := []string{{\n{}\n}}\n\n{}\n{}",
+        keys.join("\n"),
+        codec_out,
         e.helpers_out,
     );
     std::fs::write(out_dir.join("generated_codecs.odin"), codecs).unwrap();
@@ -260,4 +263,51 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
     for (n, users) in &e.unknown_shapes {
         println!("  unknown type {n} (in {})", users.iter().cloned().collect::<Vec<_>>().join(", "));
     }
+}
+
+/// Adds coverage counting to the generated decoders: a hit per decoded type (`T`) and per enum variant read by its
+/// tag (`T::V`), compiled in only with `-define:COVERAGE=true` (codec_runtime.odin). Returns the code and the keys.
+fn add_coverage_hooks(code: &str) -> (String, Vec<String>) {
+    let mut out = String::with_capacity(code.len() + code.len() / 8);
+    let mut keys = Vec::new();
+    let mut current: Option<String> = None;
+    for line in code.lines() {
+        if let Some(rest) = line.strip_prefix("decode_") {
+            if let Some((name, tail)) = rest.split_once(" :: proc(v: json.Value, out: ^") {
+                if tail.ends_with(") -> bool {") {
+                    out.push_str(line);
+                    out.push_str(&format!("\n\twhen COVERAGE do cov_hit(\"{name}\")\n"));
+                    keys.push(name.to_string());
+                    current = Some(name.to_string());
+                    continue;
+                }
+            }
+        }
+        if line.starts_with('}') {
+            current = None;
+        }
+        // A tag dispatch: `\tcase "A", "B": ...` (the variant's JSON names; the first is enough to name it).
+        if let (Some(t), Some(rest)) = (&current, line.strip_prefix("\tcase \"")) {
+            if let Some((tag, _)) = rest.split_once('"') {
+                if let Some(colon) = line.find("\":").or_else(|| line.find("\", ")) {
+                    let _ = colon;
+                    let key = format!("{t}::{tag}");
+                    let at = line.find(':').unwrap();
+                    // Insert right after the case label's colon.
+                    let label_end = line[..].char_indices().skip_while(|(i, _)| *i < at).find(|(_, c)| *c == ':').map(|(i, _)| i).unwrap();
+                    out.push_str(&line[..=label_end]);
+                    out.push_str(&format!(" when COVERAGE do cov_hit(\"{key}\");"));
+                    out.push_str(&line[label_end + 1..]);
+                    out.push('\n');
+                    keys.push(key);
+                    continue;
+                }
+            }
+        }
+        out.push_str(line);
+        out.push('\n');
+    }
+    keys.sort();
+    keys.dedup();
+    (out, keys)
 }

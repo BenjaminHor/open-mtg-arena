@@ -13,6 +13,7 @@ import "../json"
 
 // phase-ast types/ability.rs `impl Serialize for ExileConcealment`: a bool, true when face down.
 decode_ExileConcealment :: proc(v: json.Value, out: ^ExileConcealment) -> bool {
+	when COVERAGE do cov_hit("hand:ExileConcealment")
 	if v.kind != .Bool do return fail("ExileConcealment: expected a bool")
 	out^ = v.boolean ? .FaceDown : .Public
 	return true
@@ -27,6 +28,7 @@ encode_ExileConcealment :: proc(b: ^strings.Builder, x: ExileConcealment) {
 // types/ability.rs `impl Serialize for SacrificeCost`: {"target": ..., "count": n} for a count requirement,
 // {"target": ..., "requirement": ...} otherwise.
 decode_SacrificeCost :: proc(v: json.Value, out: ^SacrificeCost) -> bool {
+	when COVERAGE do cov_hit("hand:SacrificeCost")
 	if v.kind != .Object do return fail("SacrificeCost: not an object")
 	t, has_target := json.get(v, "target")
 	if !has_target || !decode_TargetFilter(t, &out.target) do return fail("SacrificeCost.target")
@@ -186,6 +188,7 @@ parse_counter_type :: proc(text: string) -> CounterType {
 }
 
 decode_CounterType :: proc(v: json.Value, out: ^CounterType) -> bool {
+	when COVERAGE do cov_hit("hand:CounterType")
 	if v.kind != .String do return fail("CounterType: expected a string")
 	out^ = parse_counter_type(v.text)
 	return true
@@ -202,6 +205,7 @@ encode_CounterType :: proc(b: ^strings.Builder, x: CounterType) {
 // types/ability.rs `impl Deserialize for ChoiceType`: a bare variant name (the unrestricted, default form of the
 // variants that have data), or an externally tagged object.
 decode_ChoiceType :: proc(v: json.Value, out: ^ChoiceType) -> bool {
+	when COVERAGE do cov_hit("hand:ChoiceType")
 	if v.kind == .String {
 		switch v.text {
 		case "CreatureType": out^ = ChoiceType_CreatureType{}
@@ -429,6 +433,7 @@ decode_bool_as :: proc(v: json.Value, out: ^$E, if_true, if_false: E) -> bool {
 }
 
 decode_with_etb_tap_bool_compat :: proc(v: json.Value, out: ^EtbTapState) -> bool {
+	when COVERAGE do cov_hit("hand:with_etb_tap_bool_compat")
 	return decode_bool_as(v, out, EtbTapState.Tapped, EtbTapState.Unspecified) // EtbTapState::from_legacy_bool
 }
 encode_with_etb_tap_bool_compat :: proc(b: ^strings.Builder, x: EtbTapState) {
@@ -436,6 +441,7 @@ encode_with_etb_tap_bool_compat :: proc(b: ^strings.Builder, x: EtbTapState) {
 }
 
 decode_with_card_selection_bool_compat :: proc(v: json.Value, out: ^CardSelectionMode) -> bool {
+	when COVERAGE do cov_hit("hand:with_card_selection_bool_compat")
 	return decode_bool_as(v, out, CardSelectionMode.Random, CardSelectionMode.Chosen)
 }
 encode_with_card_selection_bool_compat :: proc(b: ^strings.Builder, x: CardSelectionMode) {
@@ -443,6 +449,7 @@ encode_with_card_selection_bool_compat :: proc(b: ^strings.Builder, x: CardSelec
 }
 
 decode_with_additional_cost_repeatability_bool_compat :: proc(v: json.Value, out: ^AdditionalCostRepeatability) -> bool {
+	when COVERAGE do cov_hit("hand:with_additional_cost_repeatability_bool_compat")
 	return decode_bool_as(v, out, AdditionalCostRepeatability.Repeatable, AdditionalCostRepeatability.Once)
 }
 encode_with_additional_cost_repeatability_bool_compat :: proc(b: ^strings.Builder, x: AdditionalCostRepeatability) {
@@ -450,6 +457,7 @@ encode_with_additional_cost_repeatability_bool_compat :: proc(b: ^strings.Builde
 }
 
 decode_with_discard_self_scope_bool_compat :: proc(v: json.Value, out: ^DiscardSelfScope) -> bool {
+	when COVERAGE do cov_hit("hand:with_discard_self_scope_bool_compat")
 	return decode_bool_as(v, out, DiscardSelfScope.SourceCard, DiscardSelfScope.FromHand)
 }
 encode_with_discard_self_scope_bool_compat :: proc(b: ^strings.Builder, x: DiscardSelfScope) {
@@ -457,6 +465,7 @@ encode_with_discard_self_scope_bool_compat :: proc(b: ^strings.Builder, x: Disca
 }
 
 decode_with_source_exclusion_bool_compat :: proc(v: json.Value, out: ^SourceExclusion) -> bool {
+	when COVERAGE do cov_hit("hand:with_source_exclusion_bool_compat")
 	return decode_bool_as(v, out, SourceExclusion.Exclude, SourceExclusion.Include)
 }
 encode_with_source_exclusion_bool_compat :: proc(b: ^strings.Builder, x: SourceExclusion) {
@@ -465,6 +474,7 @@ encode_with_source_exclusion_bool_compat :: proc(b: ^strings.Builder, x: SourceE
 
 // types/ability.rs serialize_multi_target_min / deserialize_multi_target_min: a fixed minimum is a bare number.
 decode_with_multi_target_min :: proc(v: json.Value, out: ^QuantityExpr) -> bool {
+	when COVERAGE do cov_hit("hand:with_multi_target_min")
 	if v.kind == .Number {
 		n: i32
 		if !decode_i32(v, &n) do return false
@@ -481,6 +491,7 @@ encode_with_multi_target_min :: proc(b: ^strings.Builder, x: QuantityExpr) {
 // types/ability.rs serialize_damage_amount_compat / deserialize_damage_amount_compat: a per-source threshold is
 // written as the legacy [comparator, threshold] pair; whole-event thresholds as the struct.
 decode_with_damage_amount_compat :: proc(v: json.Value, out: ^Maybe(DamageAmountThreshold)) -> bool {
+	when COVERAGE do cov_hit("hand:with_damage_amount_compat")
 	#partial switch v.kind {
 	case .Null:
 		out^ = nil
@@ -585,6 +596,7 @@ hand_FormatConfig_standard :: proc() -> FormatConfig {
 // types/game_state.rs `impl Serialize for StackResolutionBudget`: the cap as a u32, 0 meaning no cap
 // (from_legacy_max_resolutions). CR 117.3d + CR 117.4.
 decode_StackResolutionBudget :: proc(v: json.Value, out: ^StackResolutionBudget) -> bool {
+	when COVERAGE do cov_hit("hand:StackResolutionBudget")
 	n: u32
 	if !decode_u32(v, &n) do return false
 	out^ = n == 0 ? StackResolutionBudget(StackResolutionBudget_Unlimited{}) : StackResolutionBudget(StackResolutionBudget_Limited{_0 = n})
@@ -597,24 +609,28 @@ encode_StackResolutionBudget :: proc(b: ^strings.Builder, x: StackResolutionBudg
 
 // types/game_state.rs SearchFoundVisibility: `from/into = "bool"`, true = Public (CR 701.23e).
 decode_SearchFoundVisibility :: proc(v: json.Value, out: ^SearchFoundVisibility) -> bool {
+	when COVERAGE do cov_hit("hand:SearchFoundVisibility")
 	return decode_bool_as(v, out, SearchFoundVisibility.Public, SearchFoundVisibility.Private)
 }
 encode_SearchFoundVisibility :: proc(b: ^strings.Builder, x: SearchFoundVisibility) { encode_bool(b, x == .Public) }
 
 // types/game_state.rs EntryEventReplay: `from/into = "bool"`, true = Required.
 decode_EntryEventReplay :: proc(v: json.Value, out: ^EntryEventReplay) -> bool {
+	when COVERAGE do cov_hit("hand:EntryEventReplay")
 	return decode_bool_as(v, out, EntryEventReplay.Required, EntryEventReplay.AlreadyDelivered)
 }
 encode_EntryEventReplay :: proc(b: ^strings.Builder, x: EntryEventReplay) { encode_bool(b, x == .Required) }
 
 // types/game_state.rs `impl Serialize for FaceState`: a bool, true = FaceDown (CR 110.5, CR 708.2).
 decode_FaceState :: proc(v: json.Value, out: ^FaceState) -> bool {
+	when COVERAGE do cov_hit("hand:FaceState")
 	return decode_bool_as(v, out, FaceState.FaceDown, FaceState.FaceUp)
 }
 encode_FaceState :: proc(b: ^strings.Builder, x: FaceState) { encode_bool(b, x == .FaceDown) }
 
 // types/format.rs GameFormat: its Display string ("Standard", ..., "Custom:<id>"), read back by FromStr.
 decode_GameFormat :: proc(v: json.Value, out: ^GameFormat) -> bool {
+	when COVERAGE do cov_hit("hand:GameFormat")
 	if v.kind != .String do return fail("GameFormat: expected a string")
 	if strings.has_prefix(v.text, "Custom:") {
 		n, ok := strconv.parse_u64_of_base(v.text[len("Custom:"):], 10)
@@ -638,6 +654,7 @@ encode_GameFormat :: proc(b: ^strings.Builder, x: GameFormat) {
 // types/ability.rs CostPaidObjectRecord: Captured writes the bare snapshot (an object), MembershipOnly the bare
 // object id (a number); reading goes by the JSON shape (CR 601.2h, CR 602.2b).
 decode_CostPaidObjectRecord :: proc(v: json.Value, out: ^CostPaidObjectRecord) -> bool {
+	when COVERAGE do cov_hit("hand:CostPaidObjectRecord")
 	if v.kind == .Object {
 		c: CostPaidObjectRecord_Captured
 		if !decode_CostPaidObjectSnapshot(v, &c._0) do return false
@@ -659,6 +676,7 @@ encode_CostPaidObjectRecord :: proc(b: ^strings.Builder, x: CostPaidObjectRecord
 // types/game_state.rs LiminalEntrant: written as the projected GameObject; read back as Token when its is_token
 // is set (CR 111.1), else Card.
 decode_LiminalEntrant :: proc(v: json.Value, out: ^LiminalEntrant) -> bool {
+	when COVERAGE do cov_hit("hand:LiminalEntrant")
 	o: GameObject
 	if !decode_GameObject(v, &o) do return false
 	out^ = o.is_token ? LiminalEntrant(LiminalEntrant_Token{_0 = TokenProjection(o)}) : LiminalEntrant(LiminalEntrant_Card{_0 = o})
@@ -674,6 +692,7 @@ encode_LiminalEntrant :: proc(b: ^strings.Builder, x: LiminalEntrant) {
 // analysis/resource.rs PeriodSignature: `from/into = "SignatureWire"`, the period's own fields (flattened) plus
 // `"scope": "OneRepetition"` for a one-repetition signature; absent scope reads as EveryRepetition (CR 732.2a).
 decode_PeriodSignature :: proc(v: json.Value, out: ^PeriodSignature) -> bool {
+	when COVERAGE do cov_hit("hand:PeriodSignature")
 	p: PeriodicDelta
 	if !decode_PeriodicDelta(v, &p) do return false
 	scope, has := json.get(v, "scope")
@@ -698,6 +717,7 @@ encode_PeriodSignature :: proc(b: ^strings.Builder, x: PeriodSignature) {
 // (required on reading: a parked flip without them is invalid), `branch_context` is left out when empty and
 // `trigger_context` when absent. CR 705.
 decode_PendingCoinFlip :: proc(v: json.Value, out: ^PendingCoinFlip) -> bool {
+	when COVERAGE do cov_hit("hand:PendingCoinFlip")
 	if v.kind != .Object do return fail("PendingCoinFlip: expected an object")
 	req :: proc(v: json.Value, key: string, out: ^$T, d: proc(json.Value, ^T) -> bool) -> bool {
 		m, ok := json.get(v, key)
@@ -752,6 +772,7 @@ flip_branch_context_is_empty :: proc(x: FlipBranchContext) -> bool {
 // types/card_printing.rs owner_printing_pair: a deck's printing as {set_code, collector_number}, read back as
 // CardPrinting::owner (no automatic art catalog version).
 decode_with_owner_printing_pair :: proc(v: json.Value, out: ^CardPrinting) -> bool {
+	when COVERAGE do cov_hit("hand:with_owner_printing_pair")
 	if v.kind != .Object do return fail("printing: expected an object")
 	s, ok1 := json.get(v, "set_code")
 	c, ok2 := json.get(v, "collector_number")
@@ -770,6 +791,7 @@ encode_with_owner_printing_pair :: proc(b: ^strings.Builder, x: CardPrinting) {
 // game/combat.rs outgoing_attack_wire: Option<Option<ObjectIncarnationRef>> written as the inner option (outer
 // None writes null) and read back as Some(inner).
 decode_with_outgoing_attack_wire :: proc(v: json.Value, out: ^Maybe(Maybe(ObjectIncarnationRef))) -> bool {
+	when COVERAGE do cov_hit("hand:with_outgoing_attack_wire")
 	inner: Maybe(ObjectIncarnationRef)
 	if !dec_opt_ObjectIncarnationRef(v, &inner) do return false
 	out^ = inner
@@ -782,6 +804,7 @@ encode_with_outgoing_attack_wire :: proc(b: ^strings.Builder, x: Maybe(Maybe(Obj
 
 // game/combat.rs blocking_wire (CR 733): None ↔ [], Some([]) ↔ null, Some(ids) ↔ ids.
 decode_with_blocking_wire :: proc(v: json.Value, out: ^Maybe([dynamic]ObjectId)) -> bool {
+	when COVERAGE do cov_hit("hand:with_blocking_wire")
 	if v.kind == .Null {
 		out^ = make([dynamic]ObjectId)
 		return true
@@ -816,6 +839,7 @@ hand_ResourceVector_is_zero :: proc(x: ResourceVector) -> bool {
 // GameFormat's other variants are written as their names; the variant structs are GameFormat_<Name>.
 @(private)
 decode_GameFormat_named :: proc(v: json.Value, out: ^GameFormat) -> bool {
+	when COVERAGE do cov_hit("hand:GameFormat_named")
 	u := runtime.type_info_base(type_info_of(GameFormat)).variant.(runtime.Type_Info_Union)
 	for vt in u.variants {
 		name := vt.variant.(runtime.Type_Info_Named).name[len("GameFormat_"):]
@@ -841,6 +865,7 @@ encode_GameFormat_named :: proc(b: ^strings.Builder, x: GameFormat) {
 // game/game_object.rs unit_marker_option_serde: Option<T> of a marker type written as a bool; true or null reads
 // back as Some(T::default()).
 decode_with_unit_marker_option_serde :: proc(v: json.Value, out: ^Maybe($T)) -> bool {
+	when COVERAGE do cov_hit("hand:with_unit_marker_option_serde")
 	#partial switch v.kind {
 	case .Null: out^ = T{}; return true
 	case .Bool:
@@ -855,6 +880,7 @@ encode_with_unit_marker_option_serde :: proc(b: ^strings.Builder, x: Maybe($T)) 
 // game/game_object.rs bestow_form_serde (CR 702.103): a bare flag, or the state itself once it records removed
 // subtypes; null or true reads as the default state.
 decode_with_bestow_form_serde :: proc(v: json.Value, out: ^Maybe(BestowFormState)) -> bool {
+	when COVERAGE do cov_hit("hand:with_bestow_form_serde")
 	#partial switch v.kind {
 	case .Null: out^ = BestowFormState{}; return true
 	case .Bool:
@@ -875,6 +901,7 @@ encode_with_bestow_form_serde :: proc(b: ^strings.Builder, x: Maybe(BestowFormSt
 
 // phase-ast types/mana.rs snow_compat: Option<ManaSupertype> as a bool, true = Snow.
 decode_with_snow_compat :: proc(v: json.Value, out: ^Maybe(ManaSupertype)) -> bool {
+	when COVERAGE do cov_hit("hand:with_snow_compat")
 	if v.kind != .Bool do return fail("snow: expected a bool")
 	if v.boolean do out^ = ManaSupertype.Snow
 	else do out^ = nil
@@ -891,6 +918,7 @@ encode_with_sorted :: proc(b: ^strings.Builder, x: ObjectMap) { encode_ObjectMap
 // phase-ast types/counter.rs counter_map_serde: a map keyed by the counter type's string; reading adds up
 // repeated keys (two spellings of one counter type).
 decode_with_counter_map_serde :: proc(v: json.Value, out: ^[dynamic]Tuple2(CounterType, u32)) -> bool {
+	when COVERAGE do cov_hit("hand:with_counter_map_serde")
 	if v.kind != .Object do return fail("counters: expected an object")
 	out^ = make([dynamic]Tuple2(CounterType, u32), 0, len(v.members))
 	outer: for m in v.members {
@@ -928,6 +956,7 @@ encode_with_counter_map_serde :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(Co
 
 // types/game_state.rs tuple_key_map: (ObjectId, index) keys written "<object id>_<index>".
 decode_with_tuple_key_map :: proc(v: json.Value, out: ^[dynamic]Tuple2(Tuple2(ObjectId, int), u32)) -> bool {
+	when COVERAGE do cov_hit("hand:with_tuple_key_map")
 	if v.kind != .Object do return fail("tuple-key map: expected an object")
 	out^ = make([dynamic]Tuple2(Tuple2(ObjectId, int), u32), len(v.members))
 	for m, i in v.members {
@@ -1046,6 +1075,7 @@ read_usage_key :: proc(raw: string) -> (k: AbilityUsageKey, ok: bool) {
 }
 
 decode_with_ability_usage_key_map :: proc(v: json.Value, out: ^[dynamic]Tuple2(AbilityUsageKey, u32)) -> bool {
+	when COVERAGE do cov_hit("hand:with_ability_usage_key_map")
 	if v.kind != .Object do return fail("ability usage map: expected an object")
 	out^ = make([dynamic]Tuple2(AbilityUsageKey, u32), len(v.members))
 	for m, i in v.members {
@@ -1072,6 +1102,7 @@ encode_with_ability_usage_key_map :: proc(b: ^strings.Builder, x: [dynamic]Tuple
 // types/game_state.rs departed_activation_tally_map (CR 602.5b): (key, incarnation) written
 // "<incarnation>#<usage key>".
 decode_with_departed_activation_tally_map :: proc(v: json.Value, out: ^[dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32)) -> bool {
+	when COVERAGE do cov_hit("hand:with_departed_activation_tally_map")
 	if v.kind != .Object do return fail("departed tally map: expected an object")
 	out^ = make([dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32), len(v.members))
 	for m, i in v.members {
@@ -1104,9 +1135,47 @@ encode_with_departed_activation_tally_map :: proc(b: ^strings.Builder, x: [dynam
 // written through ResolutionStateWire, the versioned persistence form (resolution frames in place of the
 // resolution stack, types/resolution.rs). Not ported yet: reading one fails rather than misreading it.
 decode_with_persisted_checkpoint_state :: proc(v: json.Value, out: ^^GameState) -> bool {
+	when COVERAGE do cov_hit("hand:with_persisted_checkpoint_state")
 	_ = v; _ = out
 	return fail("payment recovery checkpoint: ResolutionStateWire is not ported yet")
 }
 encode_with_persisted_checkpoint_state :: proc(b: ^strings.Builder, x: ^GameState) {
-	encode_GameState(b, x^) // TODO(O-1): ResolutionStateWire's form; see decode_with_persisted_checkpoint_state
+	_ = b; _ = x
+	panic("payment recovery checkpoint: ResolutionStateWire is not ported yet")
+}
+
+// The coverage keys of the hand-written decoders above.
+HAND_COVERAGE_KEYS := []string{
+	"hand:ExileConcealment",
+	"hand:SacrificeCost",
+	"hand:CounterType",
+	"hand:ChoiceType",
+	"hand:with_etb_tap_bool_compat",
+	"hand:with_card_selection_bool_compat",
+	"hand:with_additional_cost_repeatability_bool_compat",
+	"hand:with_discard_self_scope_bool_compat",
+	"hand:with_source_exclusion_bool_compat",
+	"hand:with_multi_target_min",
+	"hand:with_damage_amount_compat",
+	"hand:StackResolutionBudget",
+	"hand:SearchFoundVisibility",
+	"hand:EntryEventReplay",
+	"hand:FaceState",
+	"hand:GameFormat",
+	"hand:CostPaidObjectRecord",
+	"hand:LiminalEntrant",
+	"hand:PeriodSignature",
+	"hand:PendingCoinFlip",
+	"hand:with_owner_printing_pair",
+	"hand:with_outgoing_attack_wire",
+	"hand:with_blocking_wire",
+	"hand:GameFormat_named",
+	"hand:with_unit_marker_option_serde",
+	"hand:with_bestow_form_serde",
+	"hand:with_snow_compat",
+	"hand:with_counter_map_serde",
+	"hand:with_tuple_key_map",
+	"hand:with_ability_usage_key_map",
+	"hand:with_departed_activation_tally_map",
+	"hand:with_persisted_checkpoint_state",
 }

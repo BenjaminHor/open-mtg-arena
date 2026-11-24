@@ -109,7 +109,33 @@ main :: proc() {
 			if a, ok := json.get(root, "action"); ok do check(a, types.GameAction, types.decode_GameAction, types.encode_GameAction, &actions, where_)
 		}
 	}
+	when types.COVERAGE do report_coverage()
 	fmt.printf("states %v: decode failures %v (%.0f ms), mismatches %v (%.0f ms)\n", states.checked, states.decode_failures, states.decode_ms, states.mismatches, states.encode_ms)
 	fmt.printf("actions %v: decode failures %v, mismatches %v\n", actions.checked, actions.decode_failures, actions.mismatches)
 	if states.decode_failures + states.mismatches + actions.decode_failures + actions.mismatches > 0 do os.exit(1)
+}
+
+// With -define:COVERAGE=true: how much of the model the recordings reached (types, enum variants, hand codecs),
+// and the unreached hand codecs by name.
+report_coverage :: proc() {
+	hit_types, all_types, hit_vars, all_vars := 0, 0, 0, 0
+	for k in types.COVERAGE_KEYS {
+		is_variant := strings.contains(k, "::")
+		hit := types.coverage[k] > 0
+		if is_variant { all_vars += 1; if hit do hit_vars += 1 } else { all_types += 1; if hit do hit_types += 1 }
+	}
+	hit_hand := 0
+	missed: [dynamic]string
+	for k in types.HAND_COVERAGE_KEYS {
+		if types.coverage[k] > 0 do hit_hand += 1
+		else do append(&missed, k[len("hand:"):])
+	}
+	fmt.printf("coverage: types %v/%v, enum variants %v/%v, hand decoders %v/%v\n", hit_types, all_types, hit_vars, all_vars, hit_hand, len(types.HAND_COVERAGE_KEYS))
+	fmt.printf("hand decoders not reached: %v\n", strings.join(missed[:], ", "))
+	if path, ok := os.lookup_env("COVERAGE_OUT", context.allocator); ok {
+		b := strings.builder_make()
+		for k in types.COVERAGE_KEYS do fmt.sbprintf(&b, "%v\t%v\n", types.coverage[k], k)
+		for k in types.HAND_COVERAGE_KEYS do fmt.sbprintf(&b, "%v\t%v\n", types.coverage[k], k)
+		_ = os.write_entire_file(path, transmute([]byte)strings.to_string(b))
+	}
 }

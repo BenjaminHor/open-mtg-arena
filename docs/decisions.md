@@ -2883,3 +2883,17 @@ owner's answer to the D-089 open question, option (a))
   the Rust engine (performance: game actions, AI move time, card-data load, wasm size).
 - D-179's "the parser stays Rust" was about order: the card-text parser is a build tool, not the engine, and stays
   Rust until the engine is done; whether it is ported too is decided then.
+
+**D-181: The Odin data model: wire forms, today's save format only (2026-11-24)** · 2026-11-24 · accepted
+- Where a Rust type keeps a runtime form and converts to a separate wire form (`serde(from/into)`), the Odin model
+  holds what the engine needs and the codec writes Rust's wire form exactly. ManaPool is modeled as its wire form,
+  the units in pool order (Rust's shape-and-slot index is a speed cache over it; pools are a handful of units, and the
+  ported logic works on the list). ResolvedRulesJournal keeps Rust's fields and rebuilds its runtime index in logic.
+- Types whose `from` conversion also accepts older save formats (ObjectIncarnationRef, PhaseStop, TriggerCause and six
+  more, plus `deserialize_with` adapters marked compat) are read in today's form only. Consequence: a save written by
+  an older Rust build that still uses a legacy form won't load in the Odin engine, where the Rust engine would migrate
+  it. Saves written by the current build load. If old saves matter at the switch, their migrations are ported then.
+- Fields Rust writes but never reads (`skip_deserializing`, 13 names in WRITE_ONLY_FIELDS) aren't read by the Odin
+  model either; the ported logic derives them, as Rust does.
+- Why: one exact wire format keeps the Rust and Odin engines comparable step by step (D-179's recordings) without
+  porting a decade of save migrations up front.

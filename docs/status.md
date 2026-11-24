@@ -2584,8 +2584,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 - (2026-11-24, found by the Odin port) A game state whose WaitingFor holds a target slot with
   `TargetEffectDetail::Modification(..)` can't round-trip through `serde_json::Value`: serde writes `"type"` twice
   (`{"type":"Modification","type":"Increase"}`, an internally tagged enum inside another with the same tag) and a
-  Value's map keeps only the last. Direct to/from strings is fine. Matters only to code that goes through Value
-  (`json!`, `to_value`); the Odin port's recorder writes strings.
+  Value's map keeps only the last. Direct to/from strings is fine, but the client does go through objects: the
+  wasm bridge's `to_js` parses the engine's JSON with `JSON.parse` (last key wins), and `WasmAdapter.restoreState`
+  sends a `JSON.stringify` of the stored object back to `restore_game_state`. So recovering or resuming a game paused
+  on a target prompt for a P/T pump (`TargetEffectDetail::Modification`) would fail to restore ("unknown variant
+  Increase"). Pre-existing in the Rust app, not yet reproduced in the browser. A fix changes a wire format (e.g.
+  PtDirection written as a plain string), so it waits for the owner's go-ahead.
 - (2026-11-23, UX review of M3-05, in both layouts, not yet fixed) The zone browser crops its card at the right; the
   main button disabled ("No Attacks / Not yet: 1 must attack") reads as bare text, without a button's shape.
 - Fixed (2026-11-23, found while planning the pacing slice): the whole-game e2e (`playWholeGame`, M3's acceptance,
