@@ -354,6 +354,8 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
             }
             Expr::Paren(p) => self.expr(&p.expr, want),
+            // `()`: the unit value.
+            Expr::Tuple(t) if t.elems.is_empty() => Ok("Unit{}".into()),
             // `x?`: a temporary, an early return of the error (or None), and the value.
             Expr::Try(t) if self.calls => {
                 let sh = self.shape_of(&t.expr).ok_or("? on an untyped value")?;
@@ -877,6 +879,9 @@ impl<'a, 'b> Tx<'a, 'b> {
                     }
                     ("as_deref" | "as_ref", Shape::OptPtr(..), 0) => return Some(recv.clone()),
                     ("get", Shape::Map(_, v), 1) => return Some(Shape::Option(v.clone())),
+                    ("insert", Shape::Map(_, v), 2) => return Some(Shape::Option(v.clone())),
+                    ("insert", Shape::Vec(_), 1) => return Some(Shape::Bool),
+                    ("remove", Shape::Map(_, v), 1) => return Some(Shape::Option(v.clone())),
                     ("or_else", Shape::Option(_), 1) => return Some(recv.clone()),
                     ("remove", Shape::Vec(i), 1) => return Some((**i).clone()),
                     ("pop", Shape::Vec(i), 0) => return Some(Shape::Option(i.clone())),
@@ -987,6 +992,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                 Shape::Vec(i) | Shape::Array(i, _) | Shape::PVec(i) => Some(*i),
                 _ => None,
             },
+            Expr::Tuple(t) if t.elems.is_empty() => Some(Shape::Unit),
             Expr::Tuple(t) if self.calls && !t.elems.is_empty() => {
                 let mut es = Vec::new();
                 for e in &t.elems {
@@ -1734,9 +1740,15 @@ impl<'a, 'b> Tx<'a, 'b> {
                     return Err("closure with statements".into());
                 }
             },
-            Expr::Block(_) => {
+            // Statements: a block assigning the value, emitted where the closure runs (closure_in keeps them there).
+            Expr::Block(b) => {
+                if crate::closures::has_return(&c.body) {
+                    self.unbind(saved);
+                    return Err("closure with return".into());
+                }
+                let r = crate::body::inline_block(self, &b.block, want);
                 self.unbind(saved);
-                return Err("closure with statements".into());
+                return r;
             }
             e => e.clone(),
         };
@@ -1755,6 +1767,12 @@ impl<'a, 'b> Tx<'a, 'b> {
                     return None;
                 }
             },
+            // A body with statements: a dry run of them finds its value's shape.
+            Expr::Block(b) => {
+                let r = crate::body::infer_block_shape(self, &b.block);
+                self.unbind(saved);
+                return r;
+            }
             e => e.clone(),
         };
         let r = self.shape_of(&body);
@@ -2052,6 +2070,39 @@ impl<'a, 'b> Tx<'a, 'b> {
                     format!("r{n}_")
                 }
                 ("clear", Shape::Vec(_), 0) if deref.is_empty() => format!("clear(&{recv})"),
+                // A map's insert returns the value it replaced.
+                ("insert", Shape::Map(k, v), 2) if deref.is_empty() => {
+                    let (key, val) = (self.expr(args[0], k)?, self.expr(args[1], v)?);
+                    let n = self.next_temp();
+                    self.pre.push(format!("mk{n}_, mv{n}_ := {key}, {val}"));
+                    self.pre.push(format!("old{n}_: Maybe({})", self.e.odin(v)));
+                    self.pre.push(format!("if x{n}_, ok{n}_ := {recv}[mk{n}_]; ok{n}_ do old{n}_ = x{n}_"));
+                    self.pre.push(format!("{recv}[mk{n}_] = mv{n}_"));
+                    format!("old{n}_")
+                }
+                ("remove", Shape::Map(k, v), 1) if deref.is_empty() => {
+                    let key = self.expr(args[0], k)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("mk{n}_ := {key}"));
+                    self.pre.push(format!("old{n}_: Maybe({})", self.e.odin(v)));
+                    self.pre.push(format!("if x{n}_, ok{n}_ := {recv}[mk{n}_]; ok{n}_ do old{n}_ = x{n}_"));
+                    self.pre.push(format!("delete_key(&{recv}, mk{n}_)"));
+                    format!("old{n}_")
+                }
+                // A set (a Vec in the model) inserts only what it doesn't hold, and says whether it did.
+                ("insert", Shape::Vec(i), 1) if deref.is_empty() && self.comparable(&i.clone()) => {
+                    let v = self.expr(args[0], i)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("sv{n}_ := {v}"));
+                    self.pre.push(format!("si{n}_ := !vec_contains({recv}[:], sv{n}_)"));
+                    self.pre.push(format!("if si{n}_ do append(&{recv}, sv{n}_)"));
+                    format!("si{n}_")
+                }
+                ("insert", Shape::Vec(i), 2) if deref.is_empty() => {
+                    let ix = self.expr(args[0], &Shape::Int("int"))?;
+                    let v = self.expr(args[1], i)?;
+                    format!("inject_at(&{recv}, {ix}, {v})")
+                }
                 // `b.then_some(x)` evaluates x either way; `b.then(|| x)` only when b holds.
                 ("then_some", Shape::Bool, 1) => {
                     let Some(Shape::Option(i)) = self.shape_of_pub_mc(mc) else { return Err("then_some of an untyped value".into()) };

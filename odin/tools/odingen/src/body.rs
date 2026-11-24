@@ -758,7 +758,21 @@ impl Body<'_, '_, '_> {
             }
             Expr::MethodCall(_) | Expr::Call(_) => {
                 let v = self.tx.expr(e, &Shape::Unit)?;
-                self.line(&v);
+                if v.is_empty() {
+                    return Ok(());
+                }
+                // A value left by a library method (`set.insert(x)` → a temporary) or a translated call whose result
+                // Rust drops: Odin wants it used.
+                let is_value = v.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') || v.starts_with('(');
+                let returns_value = match e {
+                    Expr::MethodCall(_) | Expr::Call(_) => self.shape_of(e).is_some_and(|s| !matches!(s, Shape::Unit)),
+                    _ => false,
+                };
+                if is_value || (returns_value && !v.starts_with("_ =")) {
+                    self.line(&format!("_ = {v}"));
+                } else {
+                    self.line(&v);
+                }
                 Ok(())
             }
             Expr::Macro(m) => self.stmt_macro(&m.mac),
@@ -1875,4 +1889,19 @@ pub fn inline_block(tx: &mut Tx, block: &Block, shape: &Shape) -> R<String> {
     }
     tx.pre.push(format!("{{\n{code}}}"));
     Ok(if unit { String::new() } else { res })
+}
+
+/// The shape of a block's value, by a dry run of its statements (nothing is kept).
+pub fn infer_block_shape(tx: &mut Tx, block: &Block) -> Option<Shape> {
+    let (vars, temps) = (tx.vars.clone(), tx.temps);
+    let outer = std::mem::take(&mut tx.pre);
+    let target = Some(Target { ident: String::new(), shape: None, weak: false, infer: true });
+    let mut b = Body { tx, out: String::new(), indent: 1, ret: Shape::Unit, declared: Default::default(), target, loops: Vec::new() };
+    let _ = b.block(block, true);
+    let shape = b.target.take().and_then(|t| t.shape);
+    let tx = b.tx;
+    tx.vars = vars;
+    tx.temps = temps;
+    tx.pre = outer;
+    shape
 }
