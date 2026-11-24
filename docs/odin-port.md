@@ -357,6 +357,39 @@ A translated procedure becomes engine code only after passing here. Fields Rust 
 behind `#[serde(skip)]`) reach Odin as defaults, so a function that reads one shows up as a failure. Investigating
 each such failure is part of the check.
 
+### Replaying recorded games: the O-2 harness (2026-11-24)
+
+`odin/tools/replay` steps a game `record-games` recorded through the translated engine and checks each step:
+
+1. It decodes the recorded state before the step and restores its RNG, which the wire skips (as
+   `GameState::rehydrate_rng`: seeded from `rng_seed`, moved to the previous line's `rng_word_pos`).
+2. It applies the action through the boundary `phase_ai::auto_play::run_ai_action` uses: a verified AI stack pass
+   (`verified_ai_stack_pass_player`) goes to `apply_verified_ai_priority_pass` with the issued
+   `AiDecisionContract`; any other action goes to `apply_interaction(actor, semantic_owner, action)`.
+3. It compares the result with the recorded state as JSON (the first differing path, ignoring the derived fields
+   gamestate_roundtrip ignores) and the RNG position with the recorded one. A rejected action is a failure too.
+4. In a `-define:VECTOR=true` build a stub reports itself and returns a zero value. A step that meets a stub is
+   judged by its first stub. The step goes on with the zero value, which shows the stubs met after it; those are
+   indicative only.
+
+Every step starts from the recorded state, not from the harness's own previous result, so one divergence doesn't
+hide later steps. Steps run in forked children with a timeout: a panic, or a loop on made-up values, ends only that
+step. Host settlements of physical contests aren't game actions (the host plays them out with the AI's own RNG), so
+they are skipped and counted. Not compared yet: the events and log entries a step returns.
+
+The report gives the counts per outcome, the first step that doesn't pass (with the RNG position), the first
+difference, and two rankings by first use. The first is the stubs that block steps (each step's first stub, with
+the number of steps it blocks): the translator's priority list. The second is the stubs reached after one.
+
+    odin/tools/replay.sh <odingen> <work-dir> [matchup] [seed] [max-steps] [-- replay options]
+    # e.g. odin/tools/replay.sh odin/tools/odingen/target/release/odingen /tmp/replay   (red-vs-green, seed 1, 400)
+
+The script translates (translate-loop.sh), builds the harness, records a fresh game (`record-games`, built if
+missing), and prints the report. `RECORDING=<file>` replays an existing recording. Options:
+`-trace` (a line per step), `-from:N`, `-steps:N`, `-timeout:S` (5 s per step by default), `-first-stub` (end each
+step at its first stub), `-top:N`. CI (the Odin workflow) runs it on the game it records and prints the report
+without failing, until O-2 passes.
+
 ## Decided (D-179)
 
 1. The Rust card-text parser stays as an offline build tool; only the engine is ported.
