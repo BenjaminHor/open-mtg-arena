@@ -2630,7 +2630,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   answered in step 3 with the trade-off (card coverage against a small, fast, readable engine; what of today's Odin
   work carries over: the data model, codecs and RNG do, the translator doesn't).
 - Owner (2026-11-24): the cards that matter are those from the Scryfall query **`game:arena in:paper`** (cards on
-  MTG Arena that also exist in paper). That pool sizes the engine options in step 3.
+  MTG Arena that also exist in paper). That pool sizes the engine options in step 3. Measured (2026-11-24): the
+  pool is 15,772 unique cards (Scryfall API); the Rust engine fully supports 14,013 of them (88.8%), 1,759 are
+  marked unsupported, none are missing from the card data (client/public/coverage-data.json, matched by name).
 - Settled (2026-11-24, D-183): runtime card-text parses are precomputed into the card data; the Odin engine
   never parses. Settled (2026-11-24, D-184): fix the saved-game `"type"` clash, changing that wire form.
 
