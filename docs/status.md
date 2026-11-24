@@ -90,8 +90,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     runtime field the log can't carry. Blockers are now also ranked over the functions the recorded games execute
     (`ODINGEN_EXECUTED`, from an lcov profile): 27.4% of 5,852 executed functions translate (26.7% overall, 4,252). A
     hand-written `ObjectMap_get` (odin/engine/types/hand_logic.odin, for generic Rust functions) cleared the top
-    executed blocker (294 callers). Next: a general pattern compiler (patterns block ~760 executed functions) that
-    binds `&mut` scrutinees as pointers. Translator now: value
+    executed blocker (294 callers). **The pattern compiler** (odin/tools/odingen/src/pattern.rs) then took patterns
+    off the blocker list: nested, tuple, slice, literal and range patterns, `@` bindings, guards, or-patterns, matches
+    on non-enums, `let`/`let else`/`if let`/`for` patterns (with `.enumerate()`), and matches through a mutable
+    reference, which bind pointers into the subject. Plain arithmetic is translated too. Now 5,025 of 15,922 (31.6%)
+    overall, 32.1% of executed functions. Next blockers (executed): generic functions (196), iterator adapters with
+    other closures (174), out-of-model local types (142), nested items (134). Translator now: value
     `if`/`match`/block initializers (each branch assigns), empty collections typed by their later use, Option/Result
     combinators, labelled loops. Next blockers: generic calls/functions (~1,280), nested items (527), patterns (let
     457, let-else 423, for 236, or-with-bindings 221, if-let 173, nested 147), match on non-enums (432), mutable

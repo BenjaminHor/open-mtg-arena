@@ -336,13 +336,28 @@ impl Body<'_, '_, '_> {
             Pat::Type(pt) => (&*pt.pat, Some(&*pt.ty)),
             p => (p, None),
         };
-        let Pat::Ident(pi) = pat else { return Err("let pattern".into()) };
+        let Pat::Ident(pi) = pat else {
+            let init = l.init.as_ref().ok_or("let without a value")?;
+            return self.let_pattern(pat, ty, &init.expr);
+        };
         let name = pi.ident.to_string();
         let init = l.init.as_ref().ok_or("let without a value")?;
         if pi.by_ref.is_some() || self.mut_ref_source(&init.expr) {
             return Err("binding to a mutable reference".into());
         }
         let control = matches!(&*init.expr, Expr::If(_) | Expr::Match(_) | Expr::Block(_));
+        let check = |tx: &mut Tx, sh: Shape| -> R<Shape> {
+            // A local's type must be one Odin knows (not a lifetime-generic or out-of-model type).
+            if shape_unknown(&sh) {
+                return Err("let of a type outside the model".into());
+            }
+            let mut names = Vec::new();
+            crate::emit::shape_names_pub(&sh, &mut names);
+            match names.iter().find(|n| !tx.e.emitted.contains(*n)) {
+                Some(n) => Err(format!("let of a type outside the model ({n})")),
+                None => Ok(sh),
+            }
+        };
         let sh = match ty {
             Some(t) => self.tx.e.shape(t, &[]),
             None => match self.shape_of(&init.expr) {
@@ -352,6 +367,7 @@ impl Body<'_, '_, '_> {
             }
             .ok_or_else(|| format!("let of an untyped value: {}", expr_kind(&init.expr)))?,
         };
+        let sh = check(self.tx, sh)?;
         if control {
             // `let x = if/match/{..}`: declare x, then each branch's value assigns it.
             let ident = self.fresh(&local_ident(&name));
@@ -370,50 +386,33 @@ impl Body<'_, '_, '_> {
         Ok(())
     }
 
-    /// `let Some(x) = e else { .. };` and `let Enum::V(a, ..) = e else { .. };` (the else block diverges).
+    /// `let PAT = e else { .. };` (the else block diverges): the bindings are declared first, assigned when the
+    /// pattern matches, and live on after.
     fn let_else(&mut self, pat: &Pat, e: &Expr, els: &Expr) -> R<()> {
-        let Pat::TupleStruct(ts) = pat else { return Err("let else pattern".into()) };
-        if self.mut_ref_source(e) || pat_ref_mut(pat) {
-            return Err("binding to a mutable reference".into());
+        let (subj, sh, mode) = self.subject(e)?;
+        let code = crate::pattern::compile(self.tx, pat, &subj, &sh, mode)?;
+        let ok = self.fresh("le_ok");
+        let label = self.fresh("le");
+        let mut decls = Vec::new();
+        for (name, init, bsh, ptr) in &code.binds {
+            let ident = self.fresh(&local_ident(name));
+            let ty = self.tx.e.odin(bsh);
+            self.line(&format!("{ident}: {}{ty}", if *ptr { "^" } else { "" }));
+            decls.push((name.clone(), ident, init.clone(), bsh.clone(), *ptr));
         }
-        let segs: Vec<String> = ts.path.segments.iter().map(|s| s.ident.to_string()).collect();
-        let sh = self.shape_of(e).ok_or("let else on an untyped value")?;
-        let v = self.tx.expr(e, &sh)?;
-        let tmp = self.fresh("le_");
-        let last = segs.last().cloned().unwrap_or_default();
-        let mut binds: Vec<(String, String, Shape)> = Vec::new();
-        if last == "Some" && ts.elems.len() == 1 {
-            let inner = match &sh {
-                Shape::Option(i) => (**i).clone(),
-                Shape::OptPtr(i, s) => Shape::Ptr(i.clone(), *s),
-                _ => return Err("let Some else on a non-option".into()),
-            };
-            self.line(&format!("{tmp} := {v}"));
-            self.line(&format!("if {tmp} == nil {{"));
-            if let Pat::Ident(pi) = &ts.elems[0] {
-                let src = if matches!(sh, Shape::OptPtr(..)) { tmp.clone() } else { format!("{tmp}.?") };
-                binds.push((pi.ident.to_string(), src, inner));
-            } else if !matches!(&ts.elems[0], Pat::Wild(_)) {
-                return Err("let Some else binding".into());
-            }
-        } else {
-            let Shape::Named(en, _) = &sh else { return Err("let else on a non-enum".into()) };
-            let en = en.clone();
-            let fields = self.tx.named_fields_pub(&en, Some(&last)).ok_or("let else variant")?;
-            let Fields::Tuple(fs) = fields else { return Err("let else on a struct variant".into()) };
-            self.line(&format!("{tmp}, {tmp}ok := {v}.({en}_{last})"));
-            self.line(&format!("if !{tmp}ok {{"));
-            for (i, (pe, f)) in ts.elems.iter().zip(fs.iter()).enumerate() {
-                match pe {
-                    Pat::Ident(pi) => {
-                        let s = self.tx.e.shape(&f.ty, &[]);
-                        binds.push((pi.ident.to_string(), format!("{tmp}._{i}"), s));
-                    }
-                    Pat::Wild(_) => {}
-                    _ => return Err("let else nested pattern".into()),
-                }
-            }
+        self.line(&format!("{ok} := false"));
+        self.line(&format!("{label}: {{"));
+        self.indent += 1;
+        for st in &code.stmts {
+            self.line(&st.replace(crate::pattern::FAIL, &format!("break {label}")));
         }
+        for (_, ident, init, _, _) in &decls {
+            self.line(&format!("{ident} = {init}"));
+        }
+        self.line(&format!("{ok} = true"));
+        self.indent -= 1;
+        self.line("}");
+        self.line(&format!("if !{ok} {{"));
         self.indent += 1;
         match els {
             Expr::Block(b) => self.block(&b.block, false)?,
@@ -421,12 +420,167 @@ impl Body<'_, '_, '_> {
         }
         self.indent -= 1;
         self.line("}");
-        for (n, src, s) in binds {
-            let ident = self.fresh(&local_ident(&n));
-            self.line(&format!("{ident} := {src}"));
-            self.tx.vars.insert(n, (ident, s));
+        for (name, ident, _, bsh, ptr) in decls {
+            let use_expr = if ptr { format!("{ident}^") } else { ident };
+            self.tx.vars.insert(name, (use_expr, bsh));
         }
         Ok(())
+    }
+
+    /// `let (a, b) = e;` and other irrefutable patterns.
+    fn let_pattern(&mut self, pat: &Pat, ty: Option<&syn::Type>, e: &Expr) -> R<()> {
+        let (subj, sh, mode) = match ty {
+            Some(t) => {
+                let sh = self.tx.e.shape(t, &[]);
+                let v = self.tx.expr(e, &sh)?;
+                let tmp = self.fresh("lp");
+                self.line(&format!("{tmp}: {} = {v}", self.tx.e.odin(&sh)));
+                (tmp, sh, crate::pattern::Mode::Value)
+            }
+            None => self.subject(e)?,
+        };
+        let code = crate::pattern::compile(self.tx, pat, &subj, &sh, mode)?;
+        if code.refutable() {
+            return Err("refutable pattern in let".into());
+        }
+        for st in &code.stmts {
+            self.line(st);
+        }
+        self.bind_all(&code.binds);
+        Ok(())
+    }
+
+    /// The subject a pattern is matched against: a place is used where it is (no copy); anything else is computed
+    /// once into a temporary. Through a mutable reference (`&mut e`, `e.as_mut()`, a `&mut` parameter), the place is
+    /// matched in Mut mode, binding pointers into it.
+    fn subject(&mut self, e: &Expr) -> R<(String, Shape, crate::pattern::Mode)> {
+        use crate::pattern::Mode;
+        let mut e = e;
+        let mut mode = Mode::Value;
+        loop {
+            match e {
+                Expr::Paren(p) => e = &p.expr,
+                Expr::Group(g) => e = &g.expr,
+                Expr::Reference(r) => {
+                    if r.mutability.is_some() {
+                        mode = Mode::Mut;
+                    }
+                    e = &r.expr
+                }
+                Expr::MethodCall(mc) if mc.args.is_empty() && matches!(mc.method.to_string().as_str(), "as_mut" | "as_deref_mut") => {
+                    mode = Mode::Mut;
+                    e = &mc.receiver
+                }
+                Expr::MethodCall(mc) if mc.args.is_empty() && matches!(mc.method.to_string().as_str(), "as_ref" | "as_deref") => e = &mc.receiver,
+                _ => break,
+            }
+        }
+        if self.mut_ref_source(e) {
+            if !is_place(e) {
+                return Err("pattern on a mutable reference that isn't a place".into());
+            }
+            mode = Mode::Mut;
+        }
+        let sh = self.shape_of(e).ok_or("pattern on an untyped value")?;
+        let v = self.tx.expr(e, &sh)?;
+        if is_place(e) {
+            return Ok((v, sh, mode));
+        }
+        if mode == Mode::Mut {
+            return Err("pattern on a mutable reference that isn't a place".into());
+        }
+        let tmp = self.fresh("ms");
+        self.line(&format!("{tmp} := {v}"));
+        Ok((tmp, sh, mode))
+    }
+
+    /// Declares a pattern's bindings in the current scope (pointer bindings are used as `x^`); returns what they shadow.
+    fn bind_all(&mut self, binds: &[(String, String, Shape, bool)]) -> Vec<(String, Option<(String, Shape)>)> {
+        let mut saved = Vec::new();
+        for (name, init, bsh, ptr) in binds {
+            let ident = self.fresh(&local_ident(name));
+            self.line(&format!("{ident} := {init}"));
+            let use_expr = if *ptr { format!("{ident}^") } else { ident };
+            saved.push((name.clone(), self.tx.vars.insert(name.clone(), (use_expr, bsh.clone()))));
+        }
+        saved
+    }
+
+    fn unbind_all(&mut self, saved: Vec<(String, Option<(String, Shape)>)>) {
+        for (n, old) in saved.into_iter().rev() {
+            restore(&mut self.tx.vars, n, old);
+        }
+    }
+
+    /// Runs an emitter and undoes everything it did if it fails (for trying a faster form first).
+    fn attempt(&mut self, f: impl FnOnce(&mut Self) -> R<()>) -> R<()> {
+        let snap = (self.out.len(), self.tx.vars.clone(), self.declared.clone(), self.tx.pre.clone(), self.tx.temps, self.indent, self.loops.clone());
+        let r = f(self);
+        if r.is_err() {
+            self.out.truncate(snap.0);
+            (self.tx.vars, self.declared, self.tx.pre, self.tx.temps, self.indent, self.loops) = (snap.1, snap.2, snap.3, snap.4, snap.5, snap.6);
+        }
+        r
+    }
+
+    /// A general `match`: each arm (each alternative of an or-pattern) is a labelled block whose failed tests break to
+    /// the next; a match arm's guard is one more test.
+    fn match_general(&mut self, m: &syn::ExprMatch, tail: bool) -> R<()> {
+        let (subj, sh, mode) = self.subject(&m.expr)?;
+        let outer = self.fresh("match");
+        self.line(&format!("{outer}: {{"));
+        self.indent += 1;
+        for arm in &m.arms {
+            let alts: Vec<&Pat> = match &arm.pat {
+                Pat::Or(o) => o.cases.iter().collect(),
+                p => vec![p],
+            };
+            for alt in alts {
+                let code = crate::pattern::compile(self.tx, alt, &subj, &sh, mode)?;
+                let label = self.fresh("arm");
+                self.line(&format!("{label}: {{"));
+                self.indent += 1;
+                for st in &code.stmts {
+                    self.line(&st.replace(crate::pattern::FAIL, &format!("break {label}")));
+                }
+                let saved = self.bind_all(&code.binds);
+                if let Some((_, g)) = &arm.guard {
+                    let c = self.tx.expr(g, &Shape::Bool)?;
+                    self.line(&format!("if !({c}) do break {label}"));
+                }
+                match &*arm.body {
+                    Expr::Block(b) => self.block(&b.block, tail)?,
+                    e if tail => self.tail_expr(e)?,
+                    e => self.stmt_expr(e)?,
+                }
+                if !self.ends_in_jump() {
+                    self.line(&format!("break {outer}"));
+                }
+                self.unbind_all(saved);
+                self.indent -= 1;
+                self.line("}");
+            }
+        }
+        // Rust's match is exhaustive: falling past every arm can't happen.
+        self.line("unreachable()");
+        self.indent -= 1;
+        self.line("}");
+        self.close_tail(tail);
+        Ok(())
+    }
+
+    /// Whether the last line written leaves the block (Odin rejects statements after one).
+    fn ends_in_jump(&self) -> bool {
+        let last = self.out.lines().rev().find(|l| !l.trim().is_empty()).unwrap_or("").trim();
+        last.starts_with("return") || last.starts_with("break") || last.starts_with("continue") || last == "unreachable()" || last.starts_with("panic(")
+    }
+
+    /// After a construct that returns from every branch but that Odin can't see terminate (a labelled block, an `if`
+    /// on a flag): the end of the procedure is unreachable.
+    fn close_tail(&mut self, tail: bool) {
+        if tail && self.target.is_none() && !matches!(self.ret, Shape::Unit) {
+            self.line("unreachable()");
+        }
     }
 
     /// An Odin name not yet declared in this procedure.
@@ -533,6 +687,14 @@ impl Body<'_, '_, '_> {
 
     fn if_expr(&mut self, i: &syn::ExprIf, tail: bool) -> R<()> {
         if let Expr::Let(l) = &*i.cond {
+            let simple = matches!(&*l.pat, Pat::TupleStruct(ts) if ts.path.segments.last().is_some_and(|s| s.ident == "Some")
+                && ts.elems.len() == 1 && matches!(&ts.elems[0], Pat::Ident(pi) if pi.by_ref.is_none() && pi.subpat.is_none()))
+                && !self.mut_ref_source(&l.expr)
+                && !matches!(&*l.expr, Expr::Reference(r) if r.mutability.is_some())
+                && !matches!(&*l.expr, Expr::MethodCall(mc) if mc.method == "as_mut");
+            if !simple {
+                return self.if_let_general(i, l, tail);
+            }
             // `if let Some(x) = opt` → `if x, ok := opt.?; ok`.
             let Pat::TupleStruct(ts) = &*l.pat else { return Err("if let pattern".into()) };
             let segs: Vec<String> = ts.path.segments.iter().map(|s| s.ident.to_string()).collect();
@@ -598,7 +760,56 @@ impl Body<'_, '_, '_> {
         Ok(())
     }
 
+    /// `if let PAT = e { A } else { B }` for any pattern: A runs in a labelled block the failed tests leave.
+    fn if_let_general(&mut self, i: &syn::ExprIf, l: &syn::ExprLet, tail: bool) -> R<()> {
+        let (subj, sh, mode) = self.subject(&l.expr)?;
+        let code = crate::pattern::compile(self.tx, &l.pat, &subj, &sh, mode)?;
+        let ok = self.fresh("il_ok");
+        let label = self.fresh("il");
+        self.line(&format!("{ok} := false"));
+        self.line(&format!("{label}: {{"));
+        self.indent += 1;
+        for st in &code.stmts {
+            self.line(&st.replace(crate::pattern::FAIL, &format!("break {label}")));
+        }
+        self.line(&format!("{ok} = true"));
+        let saved = self.bind_all(&code.binds);
+        self.block(&i.then_branch, tail)?;
+        self.unbind_all(saved);
+        self.indent -= 1;
+        self.line("}");
+        match &i.else_branch {
+            None => {
+                if tail {
+                    return Err("if without else as the result".into());
+                }
+            }
+            Some((_, els)) => {
+                self.line(&format!("if !{ok} {{"));
+                self.indent += 1;
+                match &**els {
+                    Expr::Block(b) => self.block(&b.block, tail)?,
+                    Expr::If(ei) => self.if_expr(ei, tail)?,
+                    _ => return Err("else branch".into()),
+                }
+                self.indent -= 1;
+                self.line("}");
+                self.close_tail(tail);
+            }
+        }
+        Ok(())
+    }
+
     fn match_expr(&mut self, m: &syn::ExprMatch, tail: bool) -> R<()> {
+        let simple_ok = self.attempt(|b| b.match_switch(m, tail));
+        match simple_ok {
+            Ok(()) => Ok(()),
+            Err(_) => self.match_general(m, tail),
+        }
+    }
+
+    /// A `match` on an enum whose arms are plain variant patterns: an Odin `#partial switch`.
+    fn match_switch(&mut self, m: &syn::ExprMatch, tail: bool) -> R<()> {
         if (self.mut_ref_source(&m.expr) && m.arms.iter().any(|a| pat_binds(&a.pat))) || m.arms.iter().any(|a| pat_ref_mut(&a.pat)) {
             return Err("binding to a mutable reference".into());
         }
@@ -740,6 +951,83 @@ impl Body<'_, '_, '_> {
         }
     }
 
+    /// `for PAT in coll` over a Vec, with `.iter()`, `.iter_mut()`, `&v`, `&mut v` and `.enumerate()`: the loop
+    /// variable is matched against the pattern; through `iter_mut`/`&mut` it binds pointers into the elements.
+    fn for_general(&mut self, fl: &syn::ExprForLoop) -> R<()> {
+        use crate::pattern::Mode;
+        let mut e: &Expr = &fl.expr;
+        let mut enumerate = false;
+        if let Expr::MethodCall(mc) = e {
+            if mc.method == "enumerate" && mc.args.is_empty() {
+                enumerate = true;
+                e = &mc.receiver;
+            }
+        }
+        let mut mode = Mode::Value;
+        let coll: &Expr = match e {
+            Expr::MethodCall(mc) if mc.args.is_empty() && mc.method == "iter" => &mc.receiver,
+            Expr::MethodCall(mc) if mc.args.is_empty() && mc.method == "iter_mut" => {
+                mode = Mode::Mut;
+                &mc.receiver
+            }
+            Expr::Reference(r) => {
+                if r.mutability.is_some() {
+                    mode = Mode::Mut;
+                }
+                &r.expr
+            }
+            e if self.mut_ref_source(e) => {
+                mode = Mode::Mut;
+                e
+            }
+            e => e,
+        };
+        let sh = self.shape_of(coll).ok_or("for over an untyped collection")?;
+        let elem = match &sh {
+            Shape::Vec(i) => (**i).clone(),
+            _ => return Err("for over a non-Vec collection".into()),
+        };
+        if mode == Mode::Mut && !is_place(coll) {
+            return Err("mutable iteration over something that isn't a place".into());
+        }
+        let c = self.tx.expr(coll, &sh)?;
+        let item = self.fresh("it");
+        let idx = self.fresh("ix");
+        let label = self.open_loop(fl.label.as_ref());
+        let amp = if mode == Mode::Mut { "&" } else { "" };
+        self.line(&format!("{label}: for {amp}{item}, {idx} in {c} {{"));
+        self.indent += 1;
+        let (elem_pat, idx_pat): (&Pat, Option<&Pat>) = if enumerate {
+            let Pat::Tuple(t) = &*fl.pat else { return Err("enumerate without a tuple pattern".into()) };
+            if t.elems.len() != 2 {
+                return Err("enumerate pattern".into());
+            }
+            (&t.elems[1], Some(&t.elems[0]))
+        } else {
+            (&*fl.pat, None)
+        };
+        let mut code = crate::pattern::compile(self.tx, elem_pat, &item, &elem, mode)?;
+        if let Some(ip) = idx_pat {
+            let ic = crate::pattern::compile(self.tx, ip, &idx, &Shape::Int("int"), Mode::Value)?;
+            code.stmts.extend(ic.stmts);
+            code.binds.extend(ic.binds);
+        }
+        if code.refutable() {
+            return Err("refutable pattern in for".into());
+        }
+        for st in &code.stmts {
+            self.line(st);
+        }
+        let saved = self.bind_all(&code.binds);
+        self.line(&format!("_ = {idx}"));
+        self.block(&fl.body, false)?;
+        self.unbind_all(saved);
+        self.indent -= 1;
+        self.line("}");
+        self.loops.pop();
+        Ok(())
+    }
+
     /// A new loop: its Odin label, pushed on the loop stack (the caller pops it).
     fn open_loop(&mut self, rust: Option<&syn::Label>) -> String {
         let label = self.fresh("loop");
@@ -759,6 +1047,10 @@ impl Body<'_, '_, '_> {
     }
 
     fn for_loop(&mut self, fl: &syn::ExprForLoop) -> R<()> {
+        let plain = matches!(&*fl.pat, Pat::Ident(pi) if pi.by_ref.is_none() && pi.subpat.is_none());
+        if !plain || self.mut_ref_source(&fl.expr) || matches!(&*fl.expr, Expr::MethodCall(mc) if mc.method == "enumerate") {
+            return self.for_general(fl);
+        }
         let Pat::Ident(pi) = &*fl.pat else { return Err("for pattern".into()) };
         let name = pi.ident.to_string();
         let ident = local_ident(&name);
@@ -1286,6 +1578,30 @@ fn pat_ref_mut(p: &Pat) -> bool {
         Pat::TupleStruct(t) => t.elems.iter().any(pat_ref_mut),
         Pat::Slice(s) => s.elems.iter().any(pat_ref_mut),
         Pat::Type(t) => pat_ref_mut(&t.pat),
+        _ => false,
+    }
+}
+
+/// A place expression: a variable, a field or an element of one (matching it needs no copy, and it can be pointed to).
+fn is_place(e: &Expr) -> bool {
+    match e {
+        Expr::Path(p) => p.path.segments.len() == 1,
+        Expr::Field(f) => is_place(&f.base),
+        Expr::Index(i) => is_place(&i.expr),
+        Expr::Paren(p) => is_place(&p.expr),
+        Expr::Unary(u) if matches!(u.op, syn::UnOp::Deref(_)) => is_place(&u.expr),
+        _ => false,
+    }
+}
+
+/// Whether a shape holds a type parameter or a type odingen couldn't resolve.
+fn shape_unknown(s: &Shape) -> bool {
+    match s {
+        Shape::Param(_) | Shape::Unknown(_) => true,
+        Shape::Option(i) | Shape::OptPtr(i, _) | Shape::Ptr(i, _) | Shape::Vec(i) | Shape::PVec(i) | Shape::Array(i, _) => shape_unknown(i),
+        Shape::Result(a, b) | Shape::Map(a, b) => shape_unknown(a) || shape_unknown(b),
+        Shape::Tuple(v) => v.iter().any(shape_unknown),
+        Shape::Named(_, a) => a.iter().any(shape_unknown),
         _ => false,
     }
 }

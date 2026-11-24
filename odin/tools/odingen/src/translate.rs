@@ -251,6 +251,10 @@ impl<'a, 'b> Tx<'a, 'b> {
     }
 
     /// Whether Odin's `==` works on values of this shape: no dynamic arrays, maps or pointers inside.
+    pub fn comparable_pub(&mut self, s: &Shape) -> bool {
+        self.comparable(s)
+    }
+
     fn comparable(&mut self, s: &Shape) -> bool {
         match s {
             Shape::Bool | Shape::Int(_) | Shape::Float(_) | Shape::Str | Shape::Char | Shape::Unit => true,
@@ -369,6 +373,8 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let inner = self.expr(&u.expr, want)?;
                 Ok(match u.op {
                     UnOp::Deref(_) => inner,
+                    // `!` on an integer is bitwise in Rust.
+                    UnOp::Not(_) if matches!(self.shape_of(&u.expr).unwrap_or_else(|| want.clone()), Shape::Int(_)) => format!("~{inner}"),
                     UnOp::Not(_) => format!("!{inner}"),
                     UnOp::Neg(_) => format!("-{inner}"),
                     _ => return Err("unary".into()),
@@ -605,6 +611,33 @@ impl<'a, 'b> Tx<'a, 'b> {
                     BinOp::Ge(_) => ">=",
                     BinOp::And(_) => "&&",
                     BinOp::Or(_) => "||",
+                    // Arithmetic and bit operators on integers: Odin wraps on overflow where Rust's release build
+                    // does too; division by zero traps in both.
+                    BinOp::Add(_) | BinOp::Sub(_) | BinOp::Mul(_) | BinOp::Div(_) | BinOp::Rem(_) | BinOp::BitAnd(_)
+                    | BinOp::BitOr(_) | BinOp::BitXor(_) | BinOp::Shl(_) | BinOp::Shr(_)
+                        if self.calls =>
+                    {
+                        let sym = match b.op {
+                            BinOp::Add(_) => "+",
+                            BinOp::Sub(_) => "-",
+                            BinOp::Mul(_) => "*",
+                            BinOp::Div(_) => "/",
+                            BinOp::Rem(_) => "%",
+                            BinOp::BitAnd(_) => "&",
+                            BinOp::BitOr(_) => "|",
+                            BinOp::BitXor(_) => "~",
+                            BinOp::Shl(_) => "<<",
+                            _ => ">>",
+                        };
+                        let ls = self.shape_of(&b.left).or_else(|| self.shape_of(&b.right)).unwrap_or_else(|| want.clone());
+                        if !matches!(ls, Shape::Int(_) | Shape::Float(_)) && !matches!(&ls, Shape::Named(n, _) if self.is_distinct_number(n)) {
+                            return Err("arithmetic on a non-number".into());
+                        }
+                        let l = self.expr(&b.left, &ls)?;
+                        let rs = if matches!(sym, "<<" | ">>") { self.shape_of(&b.right).unwrap_or(Shape::Int("u32")) } else { ls.clone() };
+                        let r = self.expr(&b.right, &rs)?;
+                        return Ok(format!("({l} {sym} {r})"));
+                    }
                     _ => return Err("binary operator".into()),
                 };
                 // Comparisons take the left side's type for the right (literals, variants).
@@ -887,6 +920,14 @@ impl<'a, 'b> Tx<'a, 'b> {
             format!("({})(nil)", self.e.odin(shape))
         } else {
             v.to_string()
+        }
+    }
+
+    /// A newtype over a number (`ObjectId(u64)`): an Odin `distinct` number, which supports arithmetic.
+    fn is_distinct_number(&mut self, n: &str) -> bool {
+        match self.named_fields(n, None) {
+            Some(Fields::Tuple(fs)) if fs.len() == 1 => matches!(self.e.shape(&fs[0].ty, &[]), Shape::Int(_) | Shape::Float(_)),
+            _ => false,
         }
     }
 

@@ -9,6 +9,7 @@ mod emit;
 mod translate;
 mod vectors;
 mod model;
+mod pattern;
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::PathBuf;
