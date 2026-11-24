@@ -158,6 +158,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   `engine_apply_action_boundary_with_stack_limit` and 53 at `AiDecisionContract_issue`; the game's reducer calls
   3,105 functions: 1,516 translated, 13 as instances, 1,433 stubs, 143 not in the translation. Pair-list maps (keys
   Odin can't hash) are compared ignoring order and counted apart (coordinator's note).
+  **Paused (2026-11-24, the owner's pause relayed by the coordinator session).** Done and pushed on
+  claude/odin-o2-replay: the harness, replay.sh, the first-use trace, the RNG word position, the CI step, docs, and
+  the code review's fixes. Not done: a last end-to-end run of replay.sh with the trace after the review fixes (each
+  part was run on its own: the TRACE=0 script end to end, the traced recorder giving identical bytes, the report);
+  `git merge origin/main` (main was already in the branch); the PR into main. The branch also carries the
+  translator's commits up to e653957 (PR #119's), since it started from claude/eloquent-mayer-qcx0e1.
 - **D-177 import merged** (PR #116, squash bdd74cf, 2026-11-24, CI green). **Live** (Pages run 21 succeeded 03:37 UTC;
   checked 04:55 UTC with Playwright at 915x412 landscape phone: the home page loads in ~8 s with no errors, Play vs AI
   → Random Deck → Start Match plays a Commander game: the die roll, play-first choice, mulligan, then about five turns
