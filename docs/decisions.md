@@ -2901,8 +2901,9 @@ owner's answer to the D-089 open question, option (a))
 **D-182: The Odin ObjectMap iterates in the Rust engine's order (2026-11-24)** · 2026-11-24 · accepted
 - Found by experiment: the order of `GameState.objects` is observable. With ObjectMap's FxBuildHasher swapped for
   a random one, an elves-mirror recording diverged at step 111 (`last_zone_changed_ids` [23, 24] vs [24, 23]),
-  where an effect moved several objects in map order. (Three other matchups didn't diverge; the randomly seeded
-  `std` maps elsewhere never do.)
+  where an effect moved several objects in map order. (Three other matchups didn't diverge.) Control: all 32 duel
+  matchups recorded twice with the unmodified recorder are byte-identical, so the randomly seeded maps elsewhere
+  don't reach the recordings and the divergence is ObjectMap's.
 - That order is a pure function of the ids: `im::HashMap` (15.1) walks its hash trie by the key hash's 5-bit
   chunks from the lowest, and the hash of `ObjectId(i)` is rustc-hash 2.1's FxHash, `((i * K) rotl 26)` truncated
   to u32 (K = 0xf1357aea2e62a9c5). Sorting ids by those chunks reproduces im's order exactly, also after removals
