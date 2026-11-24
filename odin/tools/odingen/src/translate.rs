@@ -46,6 +46,8 @@ pub fn proc_name(owner: Option<&str>, name: &str) -> String {
 thread_local! {
     /// The file of the function being translated (free calls resolve against it).
     pub static CURRENT_FILE: std::cell::RefCell<Option<std::path::PathBuf>> = const { std::cell::RefCell::new(None) };
+    /// Set when translated code reads or writes a field the Rust engine doesn't serialize (`#[serde(skip)]`).
+    pub static TOUCHES_UNLOGGED: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
     /// Procedures written by hand (hand_logic.odin and the runtime): callable even when the Rust one is generic.
     pub static HAND: std::cell::RefCell<std::collections::BTreeSet<String>> = const { std::cell::RefCell::new(std::collections::BTreeSet::new()) };
     /// Procedure names more than one engine function would get: never translated or called.
@@ -321,7 +323,16 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
                 let Shape::Named(tn, _) = &base_shape else { return Err("field of a non-struct".into()) };
                 match &fe.member {
-                    syn::Member::Named(id) => Ok(format!("{base}.{}", field_ident(&id.to_string()))),
+                    syn::Member::Named(id) => {
+                        // A field the Rust engine never serializes: the vector check can't see what such code reads or
+                        // writes, so a pass there proves less (noted per procedure).
+                        if let Some(Fields::Named(fs)) = self.named_fields(tn, None) {
+                            if fs.iter().any(|f| f.name.as_deref() == Some(&id.to_string()) && (f.serde.skip || f.serde.skip_serializing)) {
+                                TOUCHES_UNLOGGED.with(|t| t.set(true));
+                            }
+                        }
+                        Ok(format!("{base}.{}", field_ident(&id.to_string())))
+                    }
                     // A newtype's only field: the Odin type is `distinct` of it, so the value itself.
                     syn::Member::Unnamed(i) if i.index == 0 => match self.named_fields(tn, None) {
                         Some(Fields::Tuple(fs)) if fs.len() == 1 => {

@@ -102,7 +102,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     in locals and chain terminals (`find`, `collect`, ...) are typed. Now 5,726 of 15,922 (36.0%) overall, 36.3% of
     executed functions. **Vector check after
     the pattern compiler: 717 procedures exercised, 442 pass, 0 unexplained failures, 0 crashes, 274 reach only
-    untranslated code** (odin/tools/vector_check/explained.txt lists the one understood failure). Next blockers
+    untranslated code** (odin/tools/vector_check/explained.txt lists the one understood failure). Later count
+    (6,564 translated, same log): 439 pass with real comparisons, 23 more pass but touch `#[serde(skip)]` state the log
+    can't carry (reported apart), 0 unexplained failures, 252 reach only untranslated code. Next blockers
     (executed): generic functions (196), iterating non-Vec collections (maps, sets, PVec, ranges: ~260), `get` on
     maps (78), `matches!` with field conditions (70), statement macros (66). Translator now: value
     `if`/`match`/block initializers (each branch assigns), empty collections typed by their later use, Option/Result

@@ -180,8 +180,11 @@ main :: proc() {
 		}
 		if t.counts[.Fail] > 0 do worst = .Fail
 		else if t.counts[.Undecodable] > 0 do worst = .Undecodable
-		else if t.counts[.Pass] == 0 && t.counts[.Stub] > 0 do worst = .Stub
-		else if t.counts[.Pass] == 0 do worst = .Unlogged
+		else if t.counts[.Pass] > 0 do worst = .Pass
+		else if t.counts[.PassUnloggedState] > 0 do worst = .PassUnloggedState
+		else if t.counts[.PassNothingCompared] > 0 do worst = .PassNothingCompared
+		else if t.counts[.Stub] > 0 do worst = .Stub
+		else do worst = .Unlogged
 		fns[worst] += 1
 		if worst == .Fail {
 			if why, ok := explained[k]; ok {
@@ -197,6 +200,6 @@ main :: proc() {
 	}
 	fmt.printf("\n%v calls checked over %v procedures\n", n, len(names))
 	fmt.printf("explained failures %v\n", explained_n)
-	fmt.printf("procedures: pass %v, fail %v, crash %v, undecodable %v, only stubs reached %v, unlogged %v\n", fns[.Pass], fns[.Fail], crash_fns, fns[.Undecodable], fns[.Stub], fns[.Unlogged])
+	fmt.printf("procedures: pass %v (and %v touching unlogged state, %v with nothing to compare), fail %v, crash %v, undecodable %v, only stubs reached %v, unlogged %v\n", fns[.Pass], fns[.PassUnloggedState], fns[.PassNothingCompared], fns[.Fail], crash_fns, fns[.Undecodable], fns[.Stub], fns[.Unlogged])
 	fmt.printf("calls: pass %v, fail %v, crash %v, undecodable %v, stub %v, unlogged %v\n", totals[.Pass], totals[.Fail], crash_calls, totals[.Undecodable], totals[.Stub], totals[.Unlogged])
 }
