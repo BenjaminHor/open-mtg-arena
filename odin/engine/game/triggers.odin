@@ -11,6 +11,7 @@ Event_Kind :: enum {
 	Step_Begin,
 	Attack,
 	Spell_Cast,
+	Damage,
 }
 
 // Something that happened that an ability may trigger on (CR 603.2).
@@ -20,6 +21,9 @@ Event :: struct {
 	from, to:   types.Zone,
 	controller: types.PlayerId, // the object's controller as it last existed (CR 603.10)
 	step:       types.Phase,
+	target:     types.TargetRef, // Damage: what was dealt damage
+	amount:     int,
+	combat:     bool,
 }
 
 // A triggered ability waiting to be put on the stack (CR 603.3).
@@ -33,9 +37,12 @@ Pending_Trigger :: struct {
 
 trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	if t.execute == nil || !ability_supported(t.execute^) do return false
-	if t.condition != nil || t.unless_pay != nil || t.valid_source != nil || t.batched do return false
+	if t.condition != nil || t.unless_pay != nil || t.batched do return false
 	// "you" as the one acting is read only by spell-cast triggers ("whenever you cast").
-	if _, is_cast := t.mode.(types.TriggerMode_SpellCast); !is_cast && t.valid_target != nil do return false
+	_, is_cast := t.mode.(types.TriggerMode_SpellCast)
+	_, is_damage := t.mode.(types.TriggerMode_DamageDone)
+	if !is_cast && !is_damage && t.valid_target != nil do return false
+	if !is_damage && t.valid_source != nil do return false
 	if len(t.origin_zones) > 0 || len(t.zone_change_clauses) > 0 || t.counter_filter != nil || t.saga_chapter != nil do return false
 	if c, has := t.constraint.?; has {
 		#partial switch _ in c {
@@ -55,6 +62,20 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		f, has := t.valid_card.?
 		_, self := f.(types.TargetFilter_SelfRef)
 		return has && self && t.attack_target_filter == nil
+	case types.TriggerMode_DamageDone:
+		// "Whenever [this / a creature you control] deals [combat] damage to [a player / an opponent / a creature]".
+		if t.damage_kind == .NoncombatOnly || t.damage_amount != nil do return false
+		src, has_src := t.valid_source.?
+		if !has_src do return false
+		#partial switch x in src {
+		case types.TargetFilter_SelfRef:
+		case types.TargetFilter_Typed:
+			if !typed_supported(x._0) do return false
+		case:
+			return false
+		}
+		if v, has := t.valid_target.?; has && !damage_recipient_supported(v) do return false
+		return true
 	case types.TriggerMode_SpellCast:
 		// "Whenever you cast a [kind of] spell", or "when you cast this spell".
 		if v, has := t.valid_target.?; has {
@@ -62,6 +83,41 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		}
 		f, has := t.valid_card.?
 		return !has || spell_filter_supported(f)
+	}
+	return false
+}
+
+damage_recipient_supported :: proc(f: types.TargetFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Player, types.TargetFilter_Opponent:
+		return true
+	case types.TargetFilter_Typed:
+		// No types and an opponent controller: "an opponent".
+		if len(x._0.type_filters) == 0 && len(x._0.properties) == 0 {
+			c, has := x._0.controller.?
+			_, opp := c.(types.ControllerRef_Opponent)
+			return has && opp
+		}
+		return typed_supported(x._0)
+	}
+	return false
+}
+
+damage_recipient_matches :: proc(s: ^types.GameState, f: types.TargetFilter, recipient: types.TargetRef, watcher: ^types.GameObject) -> bool {
+	switch r in recipient {
+	case types.TargetRef_Player:
+		#partial switch x in f {
+		case types.TargetFilter_Player:
+			return true
+		case types.TargetFilter_Opponent:
+			return r._0 != watcher.controller
+		case types.TargetFilter_Typed:
+			return len(x._0.type_filters) == 0 && r._0 != watcher.controller
+		}
+	case types.TargetRef_Object:
+		if x, typed := f.(types.TargetFilter_Typed); typed && len(x._0.type_filters) > 0 {
+			return object_matches(s, object(s, r._0), x._0, watcher.controller, watcher.id)
+		}
 	}
 	return false
 }
@@ -155,6 +211,27 @@ collect_triggers :: proc(g: ^Game) {
 					if w.id == spell.id && !(has && is_self(f)) do continue // a spell's own triggers are "this spell" ones
 					if has && !spell_matches(s, spell, f, w) do continue
 					if _, you := t.valid_target.?; you && e.controller != w.controller do continue
+					add_trigger(g, w.id, w.controller, t)
+				}
+			}
+		case .Damage:
+			source := object(s, e.object)
+			watchers := make([dynamic]^types.GameObject, context.temp_allocator)
+			append(&watchers, source)
+			for id in ids_of(s.battlefield) do if id != e.object do append(&watchers, object(s, id))
+			for w in watchers {
+				for &entry in trigger_definitions(w) {
+					t := &entry.definition
+					if _, dmg := t.mode.(types.TriggerMode_DamageDone); !dmg || !trigger_supported(t^) do continue
+					if t.damage_kind == .CombatOnly && !e.combat do continue
+					src, _ := t.valid_source.?
+					#partial switch x in src {
+					case types.TargetFilter_SelfRef:
+						if w.id != source.id do continue
+					case types.TargetFilter_Typed:
+						if !object_matches(s, source, x._0, w.controller, w.id) do continue
+					}
+					if v, has := t.valid_target.?; has && !damage_recipient_matches(s, v, e.target, w) do continue
 					add_trigger(g, w.id, w.controller, t)
 				}
 			}
@@ -334,8 +411,7 @@ resolve_ability :: proc(g: ^Game, entry: types.StackEntry, resolved: ^types.Reso
 		return
 	}
 	g.optional_accepted = false
-	run_ability(g, a, entry.controller, entry.source_id, resolved)
-	delete_key(&g.stack_abilities, entry.id)
+	start_resolution(g, a, entry.controller, entry.source_id, resolved, stack_id = entry.id)
 }
 
 // CR 603.5: the controller decides whether to carry out a "may" ability.
@@ -350,6 +426,7 @@ decide_optional :: proc(g: ^Game, p: types.PlayerId, accept: bool) -> bool {
 	case types.StackEntryKind_ActivatedAbility:
 		resolved = k.ability
 	}
+	s.waiting_for = nil
 	if accept {
 		g.optional_accepted = true
 		resolve_ability(g, entry, resolved)
@@ -357,35 +434,10 @@ decide_optional :: proc(g: ^Game, p: types.PlayerId, accept: bool) -> bool {
 		delete_key(&g.stack_abilities, entry.id)
 	}
 	g.optional_entry = {}
+	if g.resolution.active do return true // the ability asked for another choice
 	s.waiting_for = nil
 	after_resolution(g)
 	return true
-}
-
-// Carries out an ability's effects in order, each on its target if it has one. CR 608.2b: with every target illegal
-// the ability does nothing; an illegal target alone is left unaffected.
-run_ability :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.PlayerId, source: types.ObjectId, resolved: ^types.ResolvedAbility) {
-	s := &g.state
-	slots := target_slots(a)
-	targets := resolved.targets[:]
-	legal := make([]bool, len(targets), context.temp_allocator)
-	any_legal := len(slots) == 0
-	for t, i in targets do if i < len(slots) && same_object_as_chosen(s, resolved, i) && target_still_legal(s, t, slots[i], controller, source) {
-		legal[i] = true
-		any_legal = true
-	}
-	if !any_legal do return
-	slot := 0
-	for x := a; x != nil; x = x.sub_ability {
-		if x.effect == nil do continue
-		target: Maybe(types.TargetRef)
-		if _, targets_one := effect_target(x.effect^); targets_one {
-			if slot < len(targets) && legal[slot] do target = targets[slot]
-			slot += 1
-			if target == nil do continue
-		}
-		do_effect(g, x, controller, source, target)
-	}
 }
 
 // ---- Tokens (CR 111) ----------------------------------------------------------------------------------------

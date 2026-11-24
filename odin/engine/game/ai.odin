@@ -34,6 +34,10 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		return types.GameAction_ChooseTarget{target = t}, true
 	case types.WaitingFor_OptionalEffectChoice:
 		return types.GameAction_DecideOptionalEffect{accept = true}, true
+	case types.WaitingFor_ScryChoice:
+		return types.GameAction_SelectCards{cards = ai_keep_on_top(g, p, w.cards[:])}, true
+	case types.WaitingFor_SurveilChoice:
+		return types.GameAction_SelectCards{cards = ai_keep_on_top(g, p, w.cards[:])}, true
 	case types.WaitingFor_AssignCombatDamage:
 		return ai_damage_division(g, w), true
 	case types.WaitingFor_DeclareAttackers:
@@ -293,4 +297,21 @@ ai_damage_division :: proc(g: ^Game, w: types.WaitingFor_AssignCombatDamage) -> 
 		out[0]._1 += left
 	}
 	return types.GameAction_AssignCombatDamage{mode = .Normal, assignments = out, trample_damage = trample}
+}
+
+// Keep lands while it has fewer than five, and spells it could cast within a turn or two; the rest go away.
+ai_keep_on_top :: proc(g: ^Game, p: types.PlayerId, cards: []types.ObjectId) -> [dynamic]types.ObjectId {
+	s := &g.state
+	lands := 0
+	for o in permanents_of(s, p) do if is_type(o, .Land) do lands += 1
+	keep: [dynamic]types.ObjectId
+	for id in cards {
+		o := object(s, id)
+		if is_type(o, .Land) {
+			if lands < 5 do append(&keep, id)
+		} else if mana_value(o.mana_cost) <= lands + 2 {
+			append(&keep, id)
+		}
+	}
+	return keep
 }

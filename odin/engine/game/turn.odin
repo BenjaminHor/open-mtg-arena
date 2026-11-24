@@ -132,6 +132,7 @@ pass_priority :: proc(g: ^Game, p: types.PlayerId) {
 		resolve_top_of_stack(g)
 		if game_over(s) do return
 		if _, asking := s.waiting_for.(types.WaitingFor_OptionalEffectChoice); asking do return
+		if g.resolution.active do return // a player is choosing partway through
 		after_resolution(g)
 		return
 	}

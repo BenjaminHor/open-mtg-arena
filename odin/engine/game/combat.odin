@@ -302,7 +302,7 @@ damage_pass :: proc(g: ^Game, combat: ^types.CombatState, pass: Damage_Pass) {
 		if !deals_damage_in(blocker, pass) || len(attackers) == 0 || object(s, attackers[0]).zone != .Battlefield do continue
 		if n := power_of(blocker); n > 0 do append(&hits, Hit{blocker_id, types.TargetRef_Object{attackers[0]}, n})
 	}
-	for h in hits do deal_damage(g, h.source, h.target, h.n)
+	for h in hits do deal_damage(g, h.source, h.target, h.n, combat = true)
 }
 
 // CR 704.3: state-based actions are performed all at once, and repeated until none apply.

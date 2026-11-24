@@ -37,6 +37,7 @@ Game :: struct {
 	optional_entry:    types.StackEntry, // a "may" ability waiting for its controller's answer
 	optional_accepted: bool,
 	damage_progress:   Combat_Damage_Progress, // a combat damage step waiting on damage divisions
+	resolution:        Resolution, // a spell or ability partway through resolving, waiting on a choice
 }
 
 // CR 103: starts a two-player game. The first player (CR 103.1) is given; each library is shuffled with the game's

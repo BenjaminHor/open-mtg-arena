@@ -28,6 +28,10 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_AssignCombatDamage:
 		return w.player, true
+	case types.WaitingFor_ScryChoice:
+		return w.player, true
+	case types.WaitingFor_SurveilChoice:
+		return w.player, true
 	}
 	return 0, false
 }
@@ -125,6 +129,12 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_AssignCombatDamage:
 		a, ok := action.(types.GameAction_AssignCombatDamage)
 		return ok && assign_combat_damage(g, p, a)
+	case types.WaitingFor_ScryChoice:
+		a, ok := action.(types.GameAction_SelectCards)
+		return ok && answer_scry(g, p, w.cards[:], a.cards[:], false)
+	case types.WaitingFor_SurveilChoice:
+		a, ok := action.(types.GameAction_SelectCards)
+		return ok && answer_scry(g, p, w.cards[:], a.cards[:], true)
 	case types.WaitingFor_DiscardToHandSize:
 		a, ok := action.(types.GameAction_SelectCards)
 		if !ok || len(a.cards) != w.count || has_duplicates(a.cards[:]) do return false

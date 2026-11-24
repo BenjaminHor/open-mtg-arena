@@ -101,6 +101,12 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return fixed && you
 	case types.Effect_GenericEffect:
 		return generic_effect_supported(x)
+	case types.Effect_Scry:
+		_, fixed := fixed_quantity(x.count)
+		return fixed && (x.target == nil || is_controller(x.target))
+	case types.Effect_Surveil:
+		_, fixed := fixed_quantity(x.count)
+		return fixed && (x.target == nil || is_controller(x.target))
 	case types.Effect_ChangeZone:
 		return change_zone_supported(x)
 	case types.Effect_Bounce:
@@ -159,6 +165,11 @@ effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
 		return f, true
 	}
 	return nil, false
+}
+
+is_controller :: proc(f: types.TargetFilter) -> bool {
+	_, ok := f.(types.TargetFilter_Controller)
+	return ok
 }
 
 is_any :: proc(f: types.TargetFilter) -> bool {
@@ -411,9 +422,9 @@ resolve_top_of_stack :: proc(g: ^Game) {
 		o.controller = entry.controller
 		return
 	}
-	if a := spell_ability(o); a != nil do run_ability(g, a, entry.controller, o.id, spell.ability)
 	// CR 608.2n: an instant or sorcery spell goes to its owner's graveyard as the final step of resolving.
-	move_object(g, o.id, .Graveyard)
+	if a := spell_ability(o); a != nil do start_resolution(g, a, entry.controller, o.id, spell.ability, spell = o.id)
+	else do move_object(g, o.id, .Graveyard)
 }
 
 is_permanent_card :: proc(o: ^types.GameObject) -> bool {
@@ -421,13 +432,20 @@ is_permanent_card :: proc(o: ^types.GameObject) -> bool {
 }
 
 // One effect of a resolving spell.
-do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) {
+// One instruction of a resolving spell or ability. True when it asked a player to choose (resolution pauses).
+do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) -> (asked: bool) {
 	s := &g.state
 	if _, known := more_effect_supported(a.effect^, a.duration); known {
 		do_more_effect(g, a.effect^, controller, source, target)
 		return
 	}
 	#partial switch x in a.effect^ {
+	case types.Effect_Scry:
+		n, _ := fixed_quantity(x.count)
+		return ask_scry(g, controller, n, false)
+	case types.Effect_Surveil:
+		n, _ := fixed_quantity(x.count)
+		return ask_scry(g, controller, n, true)
 	case types.Effect_DealDamage:
 		n, _ := fixed_quantity(x.amount)
 		deal_damage(g, source, target.?, n)
@@ -445,10 +463,9 @@ do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Playe
 	case types.Effect_Bounce:
 		if id, ok := target_object(target); ok && object(s, id).zone == .Battlefield do move_object(g, id, .Hand)
 	case types.Effect_GenericEffect:
-		affected: ^types.GameObject
-		if id, ok := target_object(target); ok do affected = object(s, id)
-		else do affected = object(s, source)
-		if affected != nil && affected.zone == .Battlefield do add_temp_effect(g, affected, x)
+		targeted: ^types.GameObject
+		if id, ok := target_object(target); ok do targeted = object(s, id)
+		add_temp_effect(g, x, controller, source, targeted)
 	case types.Effect_Token:
 		n, _ := fixed_quantity(x.count)
 		for _ in 0 ..< n do create_token(g, x, controller)
@@ -461,15 +478,18 @@ do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Playe
 	case types.Effect_Destroy:
 		if id, ok := target_object(target); ok do destroy(g, object(s, id))
 	}
+	return false
 }
 
 // CR 120.3: damage to a player makes them lose that much life; to a creature, it's marked on it; to a planeswalker,
 // it removes loyalty counters. CR 702.15b: a source with lifelink makes its controller gain that much life.
 // CR 702.2b: deathtouch damage marks the creature for destruction.
-deal_damage :: proc(g: ^Game, source: types.ObjectId, target: types.TargetRef, n: int) {
+deal_damage :: proc(g: ^Game, source: types.ObjectId, target: types.TargetRef, n: int, combat := false) {
 	if n <= 0 do return
 	s := &g.state
 	src := object(s, source)
+	// CR 603.2: damage dealt is an event abilities can trigger on.
+	append(&g.events, Event{kind = .Damage, object = source, target = target, amount = n, combat = combat})
 	switch t in target {
 	case types.TargetRef_Player:
 		lose_life(s, t._0, n)
@@ -521,7 +541,9 @@ pump :: proc(g: ^Game, o: ^types.GameObject, power, toughness: i32) {
 
 end_until_end_of_turn_effects :: proc(g: ^Game) {
 	clear(&g.pumps)
-	clear(&g.temp_effects)
+	lasting := make([dynamic]Temp_Effect)
+	for e in g.temp_effects do if e.permanent do append(&lasting, e)
+	g.temp_effects = lasting
 	apply_continuous_effects(g)
 }
 
