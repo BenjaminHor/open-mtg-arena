@@ -131,7 +131,7 @@
     },
     "extra_combats": {
       "source": {
-        "url": "phase.rs engine taxonomy — Effect::AdditionalPhase (crates/engine/src/types/ability.rs:17737, CR 500.8) vs Effect::ExtraTurn (:17677, CR 500.7)",
+        "url": "engine taxonomy — Effect::AdditionalPhase (crates/engine/src/types/ability.rs:17737, CR 500.8) vs Effect::ExtraTurn (:17677, CR 500.7)",
         "published": "2026-09-12",
         "retrieved": "2026-09-12",
         "local_copy": null

@@ -28,7 +28,6 @@ interface DraftIntroCapture {
 const wasm = vi.hoisted(() => ({
   ...(() => {
     Object.assign(globalThis, {
-      __DEFAULT_MULTIPLAYER_SERVER_URL__: "wss://lobby.phase-rs.dev/ws",
       __TELEMETRY_URL__: "",
       __CARD_DATA_URL__: "test://card-data",
     });

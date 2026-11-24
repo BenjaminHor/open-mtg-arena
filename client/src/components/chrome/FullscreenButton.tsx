@@ -41,7 +41,7 @@ export function FullscreenButton({ variant }: FullscreenButtonProps) {
         await document.documentElement.requestFullscreen();
       }
     } catch (error) {
-      console.warn("[phase.rs] Could not toggle fullscreen.", error);
+      console.warn("[open-mtg-arena] Could not toggle fullscreen.", error);
     }
   }, []);
 

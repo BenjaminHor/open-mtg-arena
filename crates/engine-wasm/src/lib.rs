@@ -1382,7 +1382,7 @@ pub fn clear_game_state() {
 /// Verify WASM integration works.
 #[wasm_bindgen]
 pub fn ping() -> String {
-    "phase-rs engine ready".to_string()
+    "engine ready".to_string()
 }
 
 /// Create a default 2-player game state.

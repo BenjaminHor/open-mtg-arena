@@ -1,6 +1,6 @@
 {
-  "name": "phase.rs",
-  "short_name": "phase.rs",
+  "name": "Open MTG Arena",
+  "short_name": "Open MTG Arena",
   "description": "Magic: The Gathering Engine",
   "start_url": "./",
   "scope": "./",

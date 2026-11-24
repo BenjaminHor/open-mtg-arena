@@ -4,7 +4,7 @@ import type { TFunction } from "i18next";
 
 import { onNonFatalPanic } from "../../game/engineRecovery";
 
-const SESSION_SUPPRESS_KEY = "phase-rs:suppress-nonfatal-panic-toast";
+const SESSION_SUPPRESS_KEY = "open-mtg-arena:suppress-nonfatal-panic-toast";
 /**
  * How long to stay quiet after a toast fires, unless the panic *text*
  * differs. A cascade of identical panics (e.g., a wasm hot-loop calling

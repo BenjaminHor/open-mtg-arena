@@ -21,7 +21,7 @@
     "heading": "Schnellstart"
   },
   "shell": {
-    "disclaimer": "phase.rs ist ein nicht-kommerzielles Fanprojekt und steht in keiner Verbindung zu Wizards of the Coast und wird von diesen nicht unterstützt. Magic: The Gathering ist © Wizards of the Coast LLC. Kartenbilder werden zur Laufzeit von Scryfall abgerufen; Kartendaten stammen von MTGJSON. Es werden keine urheberrechtlich geschützten WotC-Inhalte mit diesem Projekt ausgeliefert."
+    "disclaimer": "Open MTG Arena ist ein nicht-kommerzielles Fanprojekt und steht in keiner Verbindung zu Wizards of the Coast und wird von diesen nicht unterstützt. Magic: The Gathering ist © Wizards of the Coast LLC. Kartenbilder werden zur Laufzeit von Scryfall abgerufen; Kartendaten stammen von MTGJSON. Es werden keine urheberrechtlich geschützten WotC-Inhalte mit diesem Projekt ausgeliefert."
   },
   "home": {
     "resume": {
@@ -43,10 +43,6 @@
     },
     "social": {
       "sponsor": "Sponsor"
-    },
-    "preview": {
-      "cta": "Vorschau testen",
-      "tooltip": "Spiele den neuesten Vorschau-Build — die neuesten Karten & Fixes landen hier vor jeder Veröffentlichung."
     },
     "coverage": {
       "title": "Abdeckungs-Dashboard öffnen",
@@ -345,5 +341,8 @@
   "pileSource": {
     "label": "Stapel",
     "default": "Standardstapel"
+  },
+  "feedManager": {
+    "dataProvidedBy": "Daten bereitgestellt von"
   }
 }

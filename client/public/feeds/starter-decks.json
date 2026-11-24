@@ -6,11 +6,11 @@
   "format": "standard",
   "version": 1,
   "updated": "2026-03-20T00:00:00Z",
-  "source": "https://github.com/phase-rs/phase.rs",
+  "source": "https://github.com/BenjaminHor/open-mtg-arena",
   "decks": [
     {
       "name": "Red Deck Wins",
-      "author": "phase.rs",
+      "author": "Open MTG Arena",
       "colors": ["R"],
       "tags": ["aggro", "starter"],
       "main": [
@@ -29,7 +29,7 @@
     },
     {
       "name": "White Weenie",
-      "author": "phase.rs",
+      "author": "Open MTG Arena",
       "colors": ["W"],
       "tags": ["aggro", "starter"],
       "main": [
@@ -48,7 +48,7 @@
     },
     {
       "name": "Blue Control",
-      "author": "phase.rs",
+      "author": "Open MTG Arena",
       "colors": ["U"],
       "tags": ["control", "starter"],
       "main": [
@@ -67,7 +67,7 @@
     },
     {
       "name": "Green Stompy",
-      "author": "phase.rs",
+      "author": "Open MTG Arena",
       "colors": ["G"],
       "tags": ["aggro", "starter"],
       "main": [
@@ -86,7 +86,7 @@
     },
     {
       "name": "Azorius Flyers",
-      "author": "phase.rs",
+      "author": "Open MTG Arena",
       "colors": ["W", "U"],
       "tags": ["tempo", "starter"],
       "main": [

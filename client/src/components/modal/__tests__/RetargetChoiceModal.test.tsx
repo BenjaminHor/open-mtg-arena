@@ -46,7 +46,7 @@ describe("RetargetChoiceModal (via CardChoiceModal)", () => {
     cleanup();
   });
 
-  // CR 115.7d + INVARIANT SC (phase-rs/phase#8355 round-8 review finding
+  // CR 115.7d + INVARIANT SC (upstream #8355 round-8 review finding
   // MED-2): admission for an `All`-scope submission is PER-SLOT
   // (`engine::apply_retarget`'s `pool_for`), but this modal used to render
   // the FLAT UNION for whichever slot was active — measured on a multi-slot

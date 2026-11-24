@@ -274,24 +274,18 @@ describe("GameMenu", () => {
   it.each([
     {
       preview: true,
-      origin: "https://preview.phase-rs.dev",
+      origin: "https://example.test",
       text: `v${__APP_VERSION__} ${__BUILD_HASH__}`,
       href: `${__GIT_REPO_URL__}/commit/${__BUILD_HASH__}`,
     },
     {
       preview: false,
-      origin: "https://preview.phase-rs.dev",
-      text: `v${__APP_VERSION__}`,
-      href: __GIT_REPO_URL__,
-    },
-    {
-      preview: true,
-      origin: "https://phase-rs.dev",
+      origin: "https://example.test",
       text: `v${__APP_VERSION__}`,
       href: __GIT_REPO_URL__,
     },
   ])(
-    "shows the build hash beside the version only on preview builds at the preview origin (preview=$preview, origin=$origin)",
+    "shows the build hash beside the version only on preview builds (preview=$preview, origin=$origin)",
     ({ preview, origin, text, href }) => {
       const originalLocation = window.location;
       vi.stubGlobal("__IS_PREVIEW_BUILD__", preview);

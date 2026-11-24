@@ -6,7 +6,7 @@ import type { StuckDecisionDiagnostic } from "../../adapter/types";
 import { useGameStore } from "../../stores/gameStore";
 import { STUCK_DEBOUNCE_MS } from "../../constants/stuckDecision";
 
-const SESSION_SUPPRESS_KEY = "phase-rs:suppress-stuck-decision-toast";
+const SESSION_SUPPRESS_KEY = "open-mtg-arena:suppress-stuck-decision-toast";
 
 /**
  * Non-blocking toast for a wedged (stuck) decision point.

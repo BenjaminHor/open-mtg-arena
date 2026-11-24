@@ -8,7 +8,7 @@ import { usePreferencesStore } from "../../stores/preferencesStore";
 import { usePriorityAttentionStore } from "../../stores/priorityAttentionStore";
 import { usePriorityTabTitle } from "../usePriorityTabTitle";
 
-const ORIGINAL_TITLE = "phase.rs — Match 7";
+const ORIGINAL_TITLE = "Open MTG Arena — Match 7";
 const ALERT_TITLE = `● Your priority — ${ORIGINAL_TITLE}`;
 let hidden = false;
 

@@ -377,7 +377,7 @@ mod tests {
             },
             "extra_combats": {
                 "source": {
-                    "url": "phase.rs engine taxonomy",
+                    "url": "engine taxonomy",
                     "published": "2026-09-12",
                     "retrieved": "2026-09-12"
                 },

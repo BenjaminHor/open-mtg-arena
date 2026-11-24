@@ -88,7 +88,7 @@ export function RetargetChoiceModal({ data }: { data: RetargetChoice["data"] }) 
 
   const activeSelection = permitsKeep ? selected[activeSlot] : selected[0];
 
-  // CR 115.7d + INVARIANT SC (phase-rs/phase#8355 round-8 review finding
+  // CR 115.7d + INVARIANT SC (upstream #8355 round-8 review finding
   // MED-2): admission is PER-SLOT (`engine::apply_retarget`'s `pool_for`),
   // but this modal rendered the FLAT UNION for whichever slot was active —
   // measured on a multi-slot prompt where the union had 5 entries and

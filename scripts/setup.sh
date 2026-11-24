@@ -25,10 +25,6 @@ set -euo pipefail
 #     * Manual mode (--no-tilt or PHASE_SETUP_NO_TILT=1, or simply no `tilt`
 #       on PATH): runs `build-wasm.sh` + `gen-card-data.sh` inline so the repo
 #       is test-ready without Tilt.
-#
-# Caddy/SSL is intentionally NOT invoked — it's only needed for LAN HTTPS
-# (WebRTC P2P guesting) and is gated behind `tilt up -- https`. See
-# scripts/setup-ssl.sh + Caddyfile if you want it.
 
 NO_TILT="${PHASE_SETUP_NO_TILT:-0}"
 AGENT="${PHASE_SETUP_AGENT:-0}"
@@ -232,7 +228,3 @@ elif [ "$USE_TILT" = 1 ]; then
 else
   echo "Next: run \`cd client && pnpm dev\` to start the dev server."
 fi
-echo ""
-echo "Optional: LAN HTTPS / WebRTC P2P guesting requires a Caddy reverse proxy."
-echo "          See scripts/setup-ssl.sh, then \`tilt up -- https\`. Not needed for"
-echo "          single-machine dev."

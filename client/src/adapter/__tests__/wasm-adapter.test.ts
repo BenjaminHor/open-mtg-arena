@@ -141,7 +141,7 @@ const mockWorkerClient = {
   setMultiplayerMode: vi.fn().mockResolvedValue(undefined),
   resetGame: vi.fn().mockResolvedValue(undefined),
   applySeatMutation: vi.fn().mockResolvedValue({ state: {}, delta: {} }),
-  ping: vi.fn().mockResolvedValue("phase-rs engine ready"),
+  ping: vi.fn().mockResolvedValue("engine ready"),
   takeLastPanic: vi.fn().mockResolvedValue(null),
   dispose: vi.fn(),
 };
@@ -559,7 +559,7 @@ describe("WasmAdapter", () => {
 
       await adapter.initialize();
       expect(vi.mocked(EngineWorkerClient)).toHaveBeenCalledTimes(2);
-      await expect(adapter.ping()).resolves.toBe("phase-rs engine ready");
+      await expect(adapter.ping()).resolves.toBe("engine ready");
     });
   });
 

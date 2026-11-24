@@ -129,7 +129,7 @@ export function WhatsNewModal({
 
   return (
     <DialogShell
-      eyebrow="phase.rs"
+      eyebrow="Open MTG Arena"
       title={t("whatsNew.title")}
       size="lg"
       onClose={onClose}

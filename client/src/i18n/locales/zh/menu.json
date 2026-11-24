@@ -21,7 +21,7 @@
     "heading": "快速开始"
   },
   "shell": {
-    "disclaimer": "phase.rs 是一个非商业粉丝项目，与威世智（Wizards of the Coast）无关联，也未获其认可。Magic: The Gathering 版权归 Wizards of the Coast LLC 所有。卡牌图像在运行时从 Scryfall 获取；卡牌数据来自 MTGJSON。本项目不内置任何受威世智版权保护的素材。"
+    "disclaimer": "Open MTG Arena 是一个非商业粉丝项目，与威世智（Wizards of the Coast）无关联，也未获其认可。Magic: The Gathering 版权归 Wizards of the Coast LLC 所有。卡牌图像在运行时从 Scryfall 获取；卡牌数据来自 MTGJSON。本项目不内置任何受威世智版权保护的素材。"
   },
   "home": {
     "resume": {
@@ -43,10 +43,6 @@
     },
     "social": {
       "sponsor": "赞助"
-    },
-    "preview": {
-      "cta": "试用预览版",
-      "tooltip": "体验最新预览版——最新卡牌与修复会在正式发布前先行上线。"
     },
     "coverage": {
       "title": "打开覆盖率面板",
@@ -345,5 +341,8 @@
   "pileSource": {
     "label": "牌堆",
     "default": "默认牌堆"
+  },
+  "feedManager": {
+    "dataProvidedBy": "数据提供："
   }
 }

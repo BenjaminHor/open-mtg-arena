@@ -41,7 +41,7 @@ export function Rail({ onSettings, onWhatsNew, hasUnread }: RailProps) {
       >
         <img
           src={publicUrl("logo_only.webp")}
-          alt="phase.rs"
+          alt="Open MTG Arena"
           className="w-10 [@media(max-height:540px)]:w-8"
         />
       </button>

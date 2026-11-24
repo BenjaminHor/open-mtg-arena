@@ -74,6 +74,9 @@ jobs:
           BASE_PATH: /open-mtg-arena/
       # Pages has no server-side routing: a direct link into the app (a deck, a game) serves 404.html, which is the app.
       - run: cp client/dist/index.html client/dist/404.html
+      # Everything published, the WASM and the generated data included, is free of the upstream project's name (D-177).
+      - name: Brand check (built site)
+        run: ./scripts/check-brand.sh client/dist
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4

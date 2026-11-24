@@ -21,7 +21,7 @@
     "heading": "Início Rápido"
   },
   "shell": {
-    "disclaimer": "phase.rs é um projeto de fã não comercial e não é afiliado nem endossado pela Wizards of the Coast. Magic: The Gathering é © Wizards of the Coast LLC. As imagens das cartas são obtidas do Scryfall em tempo de execução; os dados das cartas vêm do MTGJSON. Nenhum recurso protegido por direitos autorais da WotC é incluído neste projeto."
+    "disclaimer": "Open MTG Arena é um projeto de fã não comercial e não é afiliado nem endossado pela Wizards of the Coast. Magic: The Gathering é © Wizards of the Coast LLC. As imagens das cartas são obtidas do Scryfall em tempo de execução; os dados das cartas vêm do MTGJSON. Nenhum recurso protegido por direitos autorais da WotC é incluído neste projeto."
   },
   "home": {
     "resume": {
@@ -43,10 +43,6 @@
     },
     "social": {
       "sponsor": "Patrocinar"
-    },
-    "preview": {
-      "cta": "Experimentar Preview",
-      "tooltip": "Jogue a build de preview mais recente — as cartas e correções mais novas chegam aqui antes de cada lançamento."
     },
     "coverage": {
       "title": "Abrir o painel de cobertura",
@@ -345,5 +341,8 @@
   "pileSource": {
     "label": "Pilha",
     "default": "Pilha padrão"
+  },
+  "feedManager": {
+    "dataProvidedBy": "Dados fornecidos por"
   }
 }

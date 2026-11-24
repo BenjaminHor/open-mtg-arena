@@ -4,7 +4,6 @@ import { useNavigate } from "react-router";
 
 import { persistedGameStateView, type PersistedGameState } from "../adapter/types";
 import { useAudioContext } from "../audio/useAudioContext";
-import { PreviewBadge } from "../components/chrome/PreviewBadge";
 import { LoadGameStateModal } from "../components/menu/LoadGameStateModal";
 import { HomeDashboard } from "../components/menu/home/HomeDashboard";
 import { buildLegalAiDeckCatalog } from "../services/aiDeckCatalog";
@@ -61,7 +60,6 @@ export function MenuPage() {
 
   return (
     <div className="menu-scene relative flex min-h-screen flex-col overflow-hidden">
-      <PreviewBadge />
       <HomeDashboard />
 
       <div className="mx-auto flex w-full max-w-[1180px] flex-col items-center gap-4 px-7 pb-12">

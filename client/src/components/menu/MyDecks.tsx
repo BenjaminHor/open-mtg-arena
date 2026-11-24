@@ -61,6 +61,8 @@ import { usePoolFolderIndex } from "../../hooks/usePoolFolderIndex";
 import { resolveBracketDrawBase, resolveRandomDrawPool, type BracketTaggedCandidate } from "../../services/aiRandomPool";
 import { RandomPoolTree } from "./RandomPoolTree";
 import { ImportDeckModal } from "./ImportDeckModal";
+import { FeedAttribution } from "./FeedAttribution";
+import { FEED_REGISTRY } from "../../data/feedRegistry";
 import { PreconDeckModal } from "./PreconDeckModal";
 import type { ImportSession } from "./importSession";
 import { savePreconDeck } from "../../services/preconDecks";
@@ -1170,6 +1172,15 @@ export function MyDecks({
     };
   }, [sourceFilteredDeckNames, activeSort, sortAsc, compatibilities]);
 
+  // Credit each attributed feed whose decks the grid lists; its tiles are
+  // buttons, so the linked credit sits below the grid rather than on them.
+  const gridAttributions = useMemo(() => {
+    const feedIds = new Set(bundledDecks.map(getDeckFeedOrigin));
+    return FEED_REGISTRY.flatMap((source) =>
+      source.attribution && feedIds.has(source.id) ? [source.attribution] : [],
+    );
+  }, [bundledDecks]);
+
   const randomDeckSelected = activeDeckName === RANDOM_DECK_SELECTION;
   const noDeckSelected = mode === "select"
     ? !activeDeckName || (
@@ -2174,6 +2185,9 @@ export function MyDecks({
           )}
         </div>
       )}
+      {gridAttributions.map((attribution) => (
+        <FeedAttribution key={attribution.url} attribution={attribution} />
+      ))}
       </>)}
 
       {activeTab === "subscriptions" && mode === "manage" && (
@@ -2289,6 +2303,7 @@ function SubscriptionsView({
         const feedDecks = feed?.decks ?? [];
         const deckCount = feedDecks.length;
         const lastRefreshed = new Date(sub.lastRefreshedAt).toLocaleDateString();
+        const attribution = FEED_REGISTRY.find((source) => source.id === sub.sourceId)?.attribution;
 
         return (
           <div key={sub.sourceId}>
@@ -2306,6 +2321,7 @@ function SubscriptionsView({
                   {feed?.description} {t("subscriptions.feedMeta", { count: deckCount, date: lastRefreshed })}
                   {sub.error && <span className="ml-2 text-red-400">{t("subscriptions.error", { error: sub.error })}</span>}
                 </p>
+                {attribution && <FeedAttribution attribution={attribution} />}
               </div>
             </div>
             <div className="grid w-full gap-4 grid-cols-[repeat(auto-fill,minmax(15rem,1fr))]">

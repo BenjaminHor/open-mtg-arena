@@ -1,5 +1,5 @@
-# Checks every pull request and every push to main (CLAUDE.md, "How to work"): the client's type-check and unit tests,
-# and that the engine's WebAssembly build compiles. A pull request merges into main only with this green.
+# Checks every pull request and every push to main (CLAUDE.md, "How to work"): the brand check, the client's type-check
+# and unit tests, and that the engine's WebAssembly build compiles. A pull request merges into main only with this green.
 name: CI
 
 on:
@@ -22,6 +22,10 @@ jobs:
         working-directory: client
     steps:
       - uses: actions/checkout@v7
+      # The upstream project's name stays out of what the app ships (D-177). Pages checks the whole built site too.
+      - name: Brand check (client sources)
+        working-directory: .
+        run: ./scripts/check-brand.sh client/src client/public client/index.html client/vite.config.ts data
       # Installs the pnpm version named in client/package.json's "packageManager".
       - uses: pnpm/action-setup@v6
         with:

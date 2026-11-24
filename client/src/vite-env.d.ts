@@ -5,25 +5,6 @@ declare const __APP_VERSION__: string;
 declare const __BUILD_HASH__: string;
 declare const __ENGINE_WASM_URL__: string | undefined;
 
-/**
- * Per-deployment configuration, set by `/config.js` before the app bundle runs.
- *
- * Everything here is optional and untrusted: the file is written by whoever
- * deployed the bundle, so readers validate rather than assume. In official builds the file is an empty
- * placeholder and the build-time defines are used unchanged.
- */
-interface PhaseRuntimeConfig {
-  /**
-   * `http://`/`https://` site a release web build's "Try Preview" badge opens.
-   * Ignored if malformed.
-   */
-  previewSiteUrl?: string;
-}
-
-interface Window {
-  __PHASE_CONFIG__?: PhaseRuntimeConfig;
-}
-
 declare const __CARD_DATA_URL__: string;
 declare const __CARD_DATA_LOCALE_URL_TEMPLATE__: string;
 declare const __SCRYFALL_IMAGES_LOCALE_URL_TEMPLATE__: string;
@@ -59,8 +40,6 @@ declare const __SEMANTIC_AUDIT_URL__: string;
 declare const __SET_LIST_URL__: string;
 // End manifest-driven data file URLs.
 declare const __GIT_REPO_URL__: string;
-declare const __PREVIEW_SITE_URL__: string;
-declare const __IS_RELEASE_BUILD__: boolean;
 declare const __IS_PREVIEW_BUILD__: boolean;
 
 // Fontsource packages ship only side-effect CSS (no type declarations); Vite

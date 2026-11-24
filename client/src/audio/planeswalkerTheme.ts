@@ -25,7 +25,7 @@ export const PLANESWALKER_THEME: AudioThemeManifest = {
   id: "planeswalker",
   name: "Planeswalker",
   version: 1,
-  author: "phase.rs (AI-generated via Suno)",
+  author: "AI-generated via Suno",
   description:
     "Epic fantasy orchestral soundtrack with phase-aware battlefield music that intensifies as the game progresses",
   baseUrl: AUDIO_BASE_URL || publicUrl("audio/music"),

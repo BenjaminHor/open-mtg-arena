@@ -137,14 +137,8 @@ function dataFileDefines(buildHash: string): Record<string, string> {
       ? JSON.stringify(process.env.ENGINE_WASM_URL)
       : "undefined",
     __AUDIO_BASE_URL__: JSON.stringify(process.env.AUDIO_BASE_URL || ""),
-    __GIT_REPO_URL__: JSON.stringify("https://github.com/phase-rs/phase"),
-    __PREVIEW_SITE_URL__: JSON.stringify("https://preview.phase-rs.dev"),
-    // True only for tagged production releases (release.yml sets RELEASE_BUILD).
-    // The staging deploy (deploy.yml) is also a production Vite build, so we
-    // cannot key off import.meta.env.PROD — that would surface the "try the
-    // preview" link on the preview site itself. dev + staging → false (hidden);
-    // tagged release → true (shown).
-    __IS_RELEASE_BUILD__: JSON.stringify(process.env.RELEASE_BUILD === "true"),
+    // Commit links and "report an issue" point here (D-177).
+    __GIT_REPO_URL__: JSON.stringify("https://github.com/BenjaminHor/open-mtg-arena"),
     // True only for a preview deploy (PREVIEW_BUILD=true). Gates showing the
     // commit hash next to the version in the UI.
     __IS_PREVIEW_BUILD__: JSON.stringify(process.env.PREVIEW_BUILD === "true"),
@@ -266,14 +260,6 @@ export default defineConfig(() => {
           "**/draft_wasm_bg-*.wasm",
           "**/changelog.json",
           "**/changelog-meta.json",
-          // config.js is per-deployment: a self-hoster serves their own copy
-          // over the placeholder shipped in the bundle. `.js` is in
-          // globPatterns, so precaching it would pin the BUILD-TIME copy for
-          // every client that already has a service worker, and the deployed
-          // one would never be read. Same mechanism as the wasm entries above,
-          // different motive: those are fetched by a runtime rule, this one
-          // must always come from the network.
-          "**/config.js",
         ],
         runtimeCaching: [
           {
@@ -303,12 +289,8 @@ export default defineConfig(() => {
             },
           },
           {
-            // Workbox accepts cross-origin RegExpRoute matches only when they
-            // begin at index 0. The anchored R2 branch covers production and
-            // staging uploads; the existing unanchored branch preserves
-            // same-origin bundled-WASM behavior.
-            urlPattern:
-              /(?:^https:\/\/data\.phase-rs\.dev\/(?:staging\/)?wasm\/engine_wasm_bg-.*\.wasm$|engine_wasm_bg-.*\.wasm$)/,
+            // The engine WASM is served with the app (no separate data host).
+            urlPattern: /engine_wasm_bg-.*\.wasm$/,
             handler: "CacheFirst",
             options: {
               cacheName: "engine-wasm",
@@ -364,26 +346,14 @@ export default defineConfig(() => {
             //
             // The anchored R2 branch covers both production and staging,
             // mirroring the engine-WASM rule above.
-            // Workbox's RegExpRoute refuses a cross-origin match that does not
-            // begin at index 0 of the href, and in production these are served
-            // from R2 at DATA_BASE_URL — so a bare `…\.json$` suffix pattern
-            // silently never routes the very requests this rule exists for. The
-            // second branch keeps the same-origin path working in dev/Tauri,
-            // where the files are served from the site root.
-            urlPattern:
-              /(?:^https:\/\/data\.phase-rs\.dev\/(?:staging\/)?scryfall-images\.v2\.[a-z]{2}\.json$|\/scryfall-images\.v2\.[a-z]{2}\.json$)/,
+            // Served with the app, under its base path. (Workbox routes a
+            // cross-origin match only from index 0 of the href, so a DATA_BASE_URL
+            // on another host would need an anchored branch here.)
+            urlPattern: /\/scryfall-images\.v2\.[a-z]{2}\.json$/,
             handler: "StaleWhileRevalidate",
             options: {
               cacheName: "card-art-locale-maps",
               expiration: { maxEntries: 6, maxAgeSeconds: 2592000 },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/data\.phase-rs\.dev\/audio\//,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "audio-r2",
-              expiration: { maxEntries: 50, maxAgeSeconds: 2592000 },
             },
           },
           {
@@ -461,12 +431,6 @@ export default defineConfig(() => {
   worker: {
     plugins: () => [wasmEnvShim(), externalEngineWasm()],
   },
-  // Vite's host-check rejects requests with a Host header outside its
-  // known list — required to allow the Caddy proxy at local.phase-rs.dev
-  // (see Caddyfile). HMR's injected websocket client connects back to the
-  // page origin, so it needs `clientPort: 443` and `protocol: wss` to
-  // hit Caddy rather than the bare :5173 dev server. Both are gated on a
-  // hostname presence check so plain `pnpm dev` on localhost still works.
   server: {
     // `port` declares the dev server's port; `strictPort` refuses to drift to
     // ++port on EADDRINUSE (vite's default), which would leave anything that
@@ -474,10 +438,6 @@ export default defineConfig(() => {
     // here (its own port stays 4173), so `pnpm preview` refuses.
     port: 5173,
     strictPort: true,
-    allowedHosts: ["local.phase-rs.dev", ".local.phase-rs.dev"],
-    hmr: process.env.CADDY_PROXY === "1"
-      ? { protocol: "wss", host: "local.phase-rs.dev", clientPort: 443 }
-      : undefined,
   },
   build: {
     target: "esnext",

@@ -274,6 +274,22 @@ describe("MyDecks", () => {
     expect(feedService.getDeckFeedOrigin("Offline Feed Copy")).toBeNull();
   });
 
+  it("credits an attributed feed's data provider below the grid only while its decks are listed", async () => {
+    saveDeck("My Own Deck", { main: [{ name: "Island", count: 60 }], sideboard: [] });
+    vi.mocked(evaluateDeckCompatibilityBatch).mockResolvedValue({});
+
+    render(<MyDecks mode="manage" activeDeckName={null} />);
+    await screen.findByText("My Own Deck");
+    expect(screen.queryByRole("link", { name: "TopDeck.gg" })).not.toBeInTheDocument();
+    cleanup();
+
+    saveDeck("Vivi Ornitier (Weekly #1)", { main: [{ name: "Island", count: 99 }], sideboard: [] });
+    saveDeckOrigins({ "Vivi Ornitier (Weekly #1)": "topdeck-cedh" });
+    render(<MyDecks mode="manage" activeDeckName={null} />);
+
+    expect(await screen.findByRole("link", { name: "TopDeck.gg" })).toHaveAttribute("href", "https://topdeck.gg");
+  });
+
   it("checks commander selection context and can reveal incompatible decks on demand", async () => {
     saveDeck("Commander Ready", {
       main: [{ name: "Island", count: 99 }],
@@ -527,7 +543,7 @@ describe("MyDecks", () => {
   it("uses trusted feed format metadata before background coverage filters unknown saved decks", async () => {
     saveDeck("Known Standard", { main: [{ name: "Island", count: 60 }], sideboard: [] });
     saveDeck("Unknown User Deck", { main: [{ name: "Mountain", count: 60 }], sideboard: [] });
-    saveDeckOrigins({ "Known Standard": "starter-decks" });
+    saveDeckOrigins({ "Known Standard": "mtggoldfish-standard" });
 
     vi.mocked(evaluateDeckCompatibilityBatch).mockImplementation(async (_decks, options) => ({
       "Unknown User Deck": {
@@ -1071,7 +1087,7 @@ describe("MyDecks", () => {
   it("random selection prefers exact-format feed decks over incompatible user decks", async () => {
     saveDeck("Known Standard", { main: [{ name: "Island", count: 60 }], sideboard: [] });
     saveDeck("User Pauper", { main: [{ name: "Lightning Bolt", count: 60 }], sideboard: [] });
-    saveDeckOrigins({ "Known Standard": "starter-decks" });
+    saveDeckOrigins({ "Known Standard": "mtggoldfish-standard" });
     vi.mocked(evaluateDeckCompatibilityBatch).mockResolvedValue({
       "User Pauper": {
         standard: { compatible: false, reasons: [] },
@@ -1105,7 +1121,7 @@ describe("MyDecks", () => {
   it("falls back to a legal deck when the pool selection holds only an incompatible one", async () => {
     saveDeck("Known Standard", { main: [{ name: "Island", count: 60 }], sideboard: [] });
     saveDeck("User Pauper", { main: [{ name: "Lightning Bolt", count: 60 }], sideboard: [] });
-    saveDeckOrigins({ "Known Standard": "starter-decks" });
+    saveDeckOrigins({ "Known Standard": "mtggoldfish-standard" });
     vi.mocked(evaluateDeckCompatibilityBatch).mockResolvedValue({
       "User Pauper": {
         standard: { compatible: false, reasons: [] },
@@ -1128,7 +1144,7 @@ describe("MyDecks", () => {
         humanPoolSelection: setPoolDeckIncluded(
           {
             ...emptyPoolSelection(),
-            excludedGroups: [UNFILED_POOL_GROUP, feedPoolGroup("starter-decks")],
+            excludedGroups: [UNFILED_POOL_GROUP, feedPoolGroup("mtggoldfish-standard")],
           },
           savedDeckCatalogId("User Pauper"),
           true,
@@ -1161,7 +1177,7 @@ describe("MyDecks", () => {
   it("keeps a legal curated user deck instead of falling back to an excluded known-format deck", async () => {
     saveDeck("Known Standard", { main: [{ name: "Island", count: 60 }], sideboard: [] });
     saveDeck("User Standard", { main: [{ name: "Plains", count: 60 }], sideboard: [] });
-    saveDeckOrigins({ "Known Standard": "starter-decks" });
+    saveDeckOrigins({ "Known Standard": "mtggoldfish-standard" });
     vi.mocked(evaluateDeckCompatibilityBatch).mockImplementation(async (decks) => compatibleBatch(decks));
     // The known-format feed mirror is visible but excluded; only the
     // compatibility-confirmed user deck is selected. Tier 1 is fully legal,
@@ -1173,7 +1189,7 @@ describe("MyDecks", () => {
         humanPoolSelection: setPoolDeckIncluded(
           {
             ...emptyPoolSelection(),
-            excludedGroups: [UNFILED_POOL_GROUP, feedPoolGroup("starter-decks")],
+            excludedGroups: [UNFILED_POOL_GROUP, feedPoolGroup("mtggoldfish-standard")],
           },
           savedDeckCatalogId("User Standard"),
           true,
@@ -1546,7 +1562,7 @@ describe("MyDecks", () => {
     // only the source provenance changes.
     const feedOwned: AiDeckCandidate = {
       ...legalCandidate("Mirror Deck", null),
-      source: { type: "saved", feedId: "starter-decks" },
+      source: { type: "saved", feedId: "mtggoldfish-standard" },
     };
     const adopted = legalCandidate("Mirror Deck", null);
     const deckC = legalCandidate("User C", null);
@@ -1566,13 +1582,13 @@ describe("MyDecks", () => {
       // Feed-owned: the mirror sits in its feed group, included …
       await screen.findByText("Mirror Deck");
       await userEvent.click(screen.getByRole("button", { name: /Your random pool/ }));
-      expect(screen.getByRole("checkbox", { name: "Starter Decks" })).toBeInTheDocument();
-      await userEvent.click(screen.getByRole("button", { name: /Starter Decks/ }));
+      expect(screen.getByRole("checkbox", { name: "Standard Meta" })).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: /Standard Meta/ }));
       expect(screen.getByRole("checkbox", { name: "Mirror Deck" })).toBeChecked();
 
       // … adopting it regroups the same id into excluded folder F.
       rerender(renderDecks(adopted));
-      expect(screen.queryByRole("checkbox", { name: "Starter Decks" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("checkbox", { name: "Standard Meta" })).not.toBeInTheDocument();
       await userEvent.click(screen.getByRole("button", { name: /F 0 of 1/ }));
       expect(screen.getByRole("checkbox", { name: "Mirror Deck" })).not.toBeChecked();
       expect(screen.getByRole("button", { name: /Your random pool 1 of 2/ })).toBeInTheDocument();

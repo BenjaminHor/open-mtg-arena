@@ -21,7 +21,7 @@
     "heading": "クイックスタート"
   },
   "shell": {
-    "disclaimer": "phase.rsは非商用のファンプロジェクトであり、Wizards of the Coastとは提携・承認関係にありません。Magic: The GatheringはWizards of the Coast LLCの©著作物です。カード画像は実行時にScryfallから取得し、カードデータはMTGJSONを使用しています。WotCの著作権資産は本プロジェクトに同梱していません。"
+    "disclaimer": "Open MTG Arenaは非商用のファンプロジェクトであり、Wizards of the Coastとは提携・承認関係にありません。Magic: The GatheringはWizards of the Coast LLCの©著作物です。カード画像は実行時にScryfallから取得し、カードデータはMTGJSONを使用しています。WotCの著作権資産は本プロジェクトに同梱していません。"
   },
   "home": {
     "resume": {
@@ -43,10 +43,6 @@
     },
     "social": {
       "sponsor": "スポンサー"
-    },
-    "preview": {
-      "cta": "プレビューを試す",
-      "tooltip": "最新のプレビュービルドをプレイできます。各リリース前に新カードと修正が先行して反映されます。"
     },
     "coverage": {
       "title": "対応率ダッシュボードを開く",
@@ -345,5 +341,8 @@
   "pileSource": {
     "label": "山札",
     "default": "デフォルトの山札"
+  },
+  "feedManager": {
+    "dataProvidedBy": "データ提供:"
   }
 }

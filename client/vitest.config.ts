@@ -80,9 +80,7 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify("0.0.0-test"),
     __BUILD_HASH__: JSON.stringify("testhash"),
     __ENGINE_WASM_URL__: "undefined",
-    __GIT_REPO_URL__: JSON.stringify("https://github.com/phase-rs/phase"),
-    __PREVIEW_SITE_URL__: JSON.stringify("https://preview.phase-rs.dev"),
-    __IS_RELEASE_BUILD__: JSON.stringify(false),
+    __GIT_REPO_URL__: JSON.stringify("https://github.com/BenjaminHor/open-mtg-arena"),
     __IS_PREVIEW_BUILD__: "globalThis.__IS_PREVIEW_BUILD__",
   },
   test: {
