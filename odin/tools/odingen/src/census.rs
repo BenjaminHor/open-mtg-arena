@@ -7,7 +7,7 @@ use syn::visit::Visit;
 use crate::model::Registry;
 
 #[derive(Default)]
-struct Features(BTreeSet<String>);
+struct Features(BTreeSet<String>, BTreeSet<String>);
 
 impl<'ast> Visit<'ast> for Features {
     fn visit_expr(&mut self, e: &'ast syn::Expr) {
@@ -46,7 +46,12 @@ impl<'ast> Visit<'ast> for Features {
             }
             Match(_) => "match",
             MethodCall(mc) => {
-                self.0.insert(format!("method .{}()", mc.method));
+                // The engine's own methods only need their callee translated; library methods (std, im,
+                // iterators) are what the translator must know.
+                let m = mc.method.to_string();
+                if !self.1.contains(&m) {
+                    self.0.insert(format!("method .{m}()"));
+                }
                 "method call"
             }
             Paren(_) => "paren",
@@ -80,6 +85,7 @@ impl<'ast> Visit<'ast> for Features {
 }
 
 pub fn census(reg: &Registry, only: Option<&str>) {
+    let engine_methods: BTreeSet<String> = reg.fns.keys().filter(|(o, _)| o.is_some()).map(|(_, n)| n.clone()).collect();
     let mut per_fn: Vec<(String, BTreeSet<String>, usize)> = Vec::new();
     for ((owner, name), defs) in &reg.fns {
         for d in defs {
@@ -87,7 +93,7 @@ pub fn census(reg: &Registry, only: Option<&str>) {
             if only.is_some_and(|o| !file.contains(o)) {
                 continue;
             }
-            let mut f = Features::default();
+            let mut f = Features(BTreeSet::new(), engine_methods.clone());
             f.visit_block(&d.block);
             let block = &d.block;
             let lines = quote::quote!(#block).to_string().len() / 40;
@@ -106,7 +112,7 @@ pub fn census(reg: &Registry, only: Option<&str>) {
     let mut supported: BTreeSet<String> = BTreeSet::new();
     let mut covered = 0;
     println!("constructs in the order that completes the most functions (cumulative functions fully covered):");
-    for step in 0..60 {
+    for step in 0..120 {
         let mut best: Option<(String, usize)> = None;
         for cand in freq.keys().filter(|k| !supported.contains(*k)) {
             let n = per_fn.iter().filter(|(_, fs, _)| fs.iter().all(|f| supported.contains(f) || f == cand)).count();

@@ -281,6 +281,30 @@ serde attributes name (bodies like `QuantityExpr::Fixed { value: 1 }`, `vec![...
 then pure methods on the types, then the engine's modules in dependency order. Progress is measured as the share of
 functions translated and the share of recordings passing.
 
+### The translator's next layer: whole function bodies (plan, 2026-11-24)
+
+Census (`odingen census crates`, 15,955 functions read: top-level and inherent methods of phase-ast and engine; trait
+impls and inline modules not yet counted): Rust's syntax alone (paths, calls, struct literals, `match`, fields, `&`,
+`?`, closures, loops, `let else`, ...) completes about 20% of the functions; with `matches!`/`vec!`/`format!` 25%; the
+rest need library methods (std, `im`, iterators). The refined census lists those methods in the order that completes
+the most functions (the engine's own methods only need their callee translated). The translator grows in that order:
+1. Statements and control flow: `let` (typed from the initializer), `if`/`if let`/`let else`, `match` on enums
+   (an Odin `switch` on the union, bindings per variant), `for` over ranges and collections, `while`, `loop`,
+   `return`, `break`/`continue`, `?` (early return of the error or None).
+2. Signatures: `&T` parameters by value (Odin passes large values by reference), `&mut T` as `^T`, `Option<T>` as
+   `Maybe(T)`, `Result<T, E>` as two results `(T, Maybe(E))`, references returned as pointers.
+3. Library methods by table, the census order: `clone` (→ `clone_<T>`), `is_empty`/`len`/`push`/`contains` (per
+   collection kind: `[dynamic]`, `PVec`, maps, shared collections through `make_mut` on writes), `Option` helpers
+   (`is_some`, `as_ref`, `is_some_and`, `map`, `unwrap_or`, ...), `to_string`.
+4. Iterator chains as loops: `iter().filter(..).map(..).collect()`, `any`/`all`/`find`/`position`/`count`/`sum`/
+   `max_by_key`, with the closures inlined into the loop body.
+5. Closures passed to engine functions (higher-order code) and traits: counted separately before choosing between
+   monomorphizing per call site and Odin procedure values with explicit context.
+Each translated batch is checked before whole games can run: odingen also generates a Rust printer that calls the
+same functions on inputs taken from the card data and recorded states and prints the results, and an Odin checker
+that compares (the O-0 vector pattern, per batch). Functions the translator can't handle stay listed, with the
+construct that stopped them.
+
 ## Decided (D-179)
 
 1. The Rust card-text parser stays as an offline build tool; only the engine is ported.
