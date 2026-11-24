@@ -78,9 +78,7 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		return true
 	case types.TriggerMode_SpellCast:
 		// "Whenever you cast a [kind of] spell", or "when you cast this spell".
-		if v, has := t.valid_target.?; has {
-			if _, you := v.(types.TargetFilter_Controller); !you do return false
-		}
+		if v, has := t.valid_target.?; has && !is_you(v) do return false
 		f, has := t.valid_card.?
 		return !has || spell_filter_supported(f)
 	}
@@ -127,6 +125,12 @@ spell_filter_supported :: proc(f: types.TargetFilter) -> bool {
 	case types.TargetFilter_SelfRef:
 		return true
 	case types.TargetFilter_Typed:
+		// With no card type named, any spell ("a spell with mana value 4 or greater").
+		if len(x._0.type_filters) == 0 {
+			if x._0.controller != nil do return false
+			for p in x._0.properties do if !property_supported(p) do return false
+			return true
+		}
 		return typed_supported(x._0)
 	case types.TargetFilter_Or:
 		for y in x.filters do if !spell_filter_supported(y) || is_self(y) do return false
@@ -538,4 +542,17 @@ remove_departed_tokens :: proc(g: ^Game) -> bool {
 		}
 	}
 	return removed
+}
+
+// "You", written as the controller or as a player filter with no types and "you" as the controller.
+is_you :: proc(f: types.TargetFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Controller:
+		return true
+	case types.TargetFilter_Typed:
+		c, has := x._0.controller.?
+		_, you := c.(types.ControllerRef_You)
+		return has && you && len(x._0.type_filters) == 0 && len(x._0.properties) == 0
+	}
+	return false
 }

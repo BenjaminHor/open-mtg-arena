@@ -626,3 +626,34 @@ discard_a_card_as_a_cost :: proc(t: ^testing.T) {
 	add(t, g, "Forest", 0, .Hand)
 	testing.expect(t, game.can_activate(g, 0, mongrel, 0), "a card to discard")
 }
+
+@(test)
+heroic_triggers_on_a_spell_that_targets_it :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 601.2c, 603.2: a spell's targets are chosen as it's cast, so "whenever you cast a spell that targets this
+	// creature" triggers then, and its ability resolves first: the +1/+1 counter lets the Hoplite survive Shock.
+	g := new_game()
+	for _ in 0 ..< 2 do add(t, g, "Mountain", 0, .Battlefield)
+	hoplite := add(t, g, "Battlewise Hoplite", 0, .Battlefield) // heroic: +1/+1 counter, then scry 1
+	theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	other := add(t, g, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = other.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{theirs.id}}))
+	testing.expect(t, types.pvec_len(g.state.stack) == 1, "a spell aimed elsewhere doesn't trigger it")
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	shock := add(t, g, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{hoplite.id}}))
+	testing.expect(t, types.pvec_len(g.state.stack) == 2, "the heroic trigger is above Shock")
+	for _ in 0 ..< 6 {
+		if _, scry := g.state.waiting_for.(types.WaitingFor_ScryChoice); scry {
+			none: [dynamic]types.ObjectId
+			game.apply(g, 0, types.GameAction_SelectCards{cards = none})
+		} else {
+			game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+		}
+		if types.pvec_len(g.state.stack) == 0 do break
+	}
+	testing.expect(t, hoplite.zone == .Battlefield && hoplite.damage_marked == 2, "3/3 with the counter, 2 damage")
+}

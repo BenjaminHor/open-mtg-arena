@@ -25,6 +25,16 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 	#partial switch x in p {
 	case types.FilterProp_EnchantedBy, types.FilterProp_EquippedBy:
 		return true
+	case types.FilterProp_Targets:
+		// "A spell that targets this creature" (CR 601.2c: its targets are chosen as it's cast).
+		if x.filter == nil do return false
+		#partial switch y in x.filter^ {
+		case types.TargetFilter_SelfRef:
+			return true
+		case types.TargetFilter_Typed:
+			return typed_supported(y._0)
+		}
+		return false
 	case types.FilterProp_Another, types.FilterProp_Tapped, types.FilterProp_Untapped, types.FilterProp_Token,
 	     types.FilterProp_NonToken, types.FilterProp_HasColor, types.FilterProp_NotColor, types.FilterProp_HasSupertype,
 	     types.FilterProp_NotSupertype, types.FilterProp_Blocking:
@@ -197,9 +207,32 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 			if src == nil do return false
 			host := host_of(s, src)
 			if host == nil || host.id != o.id do return false
+		case types.FilterProp_Targets:
+			if !spell_targets_one(s, o.id, x.filter^, chooser, source) do return false
 		case types.FilterProp_InZone, types.FilterProp_Owned:
 		// The zone and owner are checked where the candidates are gathered (graveyard_targets).
 		}
 	}
 	return true
+}
+
+// Whether a spell on the stack has a target that fits the description ("this creature", "a creature you control").
+spell_targets_one :: proc(s: ^types.GameState, spell: types.ObjectId, f: types.TargetFilter, chooser: types.PlayerId, source: types.ObjectId) -> bool {
+	for i in 0 ..< types.pvec_len(s.stack) {
+		e := types.pvec_get(s.stack, i)
+		if e.id != spell do continue
+		k, is_spell := e.kind.(types.StackEntryKind_Spell)
+		if !is_spell || k.ability == nil do return false
+		for t in k.ability.targets {
+			id, is_object := t.(types.TargetRef_Object)
+			if !is_object do continue
+			#partial switch x in f {
+			case types.TargetFilter_SelfRef:
+				if id._0 == source do return true
+			case types.TargetFilter_Typed:
+				if o := object(s, id._0); o != nil && object_matches(s, o, x._0, chooser, source) do return true
+			}
+		}
+	}
+	return false
 }
