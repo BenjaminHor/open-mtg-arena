@@ -501,7 +501,12 @@ impl<'a, 'b> Tx<'a, 'b> {
                     } else {
                         want.clone()
                     };
-                    return Ok(self.e.default_expr(&target).unwrap_or_else(|| format!("{}{{}}", self.e.odin(&target))));
+                    return Ok(match self.e.default_expr(&target) {
+                        Some(d) => d,
+                        // A pointer's default (`Arc::default()`) is an allocation, not a literal.
+                        None if matches!(target, Shape::Ptr(..)) => return Err("default of a shared or boxed value".into()),
+                        None => format!("{}{{}}", self.e.odin(&target)),
+                    });
                 }
                 // `Self(x)`: the impl type's newtype constructor.
                 if segs.len() == 1 && last == "Self" && args.len() == 1 {
@@ -963,6 +968,10 @@ impl<'a, 'b> Tx<'a, 'b> {
 
     /// An Odin value given its type when it is an untyped literal (`{..}` or `nil`).
     fn typed_value(&self, v: &str, shape: &Shape) -> String {
+        if v.starts_with('{') && matches!(shape, Shape::Ptr(..) | Shape::OptPtr(..)) {
+            // A pointer to a default value needs an allocation; an untyped `{}` would be nil. Left for Odin to reject.
+            return format!("UNTRANSLATABLE_default_pointer");
+        }
         if v.starts_with('{') {
             format!("{}{v}", self.e.odin(shape))
         } else if v == "nil" {
@@ -1471,6 +1480,11 @@ impl<'a, 'b> Tx<'a, 'b> {
 
     /// A closure body as an expression, with its parameter bound to `value`.
     fn closure_expr(&mut self, c: &syn::ExprClosure, value: &str, shape: &Shape, want: &Shape) -> R<String> {
+        // `?` in a closure leaves the closure, but an inlined body has no closure to leave: it would return from the
+        // enclosing procedure (a filter_map closure's `?` must skip the item). Refused until closures are converted.
+        if has_try(&c.body) {
+            return Err("? inside a closure".into());
+        }
         let saved = self.bind_param(&c.inputs[0], value, shape)?;
         let body = match &*c.body {
             Expr::Block(b) if b.block.stmts.len() == 1 => match &b.block.stmts[0] {
@@ -1671,6 +1685,9 @@ impl<'a, 'b> Tx<'a, 'b> {
                     format!("({recv}.? or_else {d})")
                 }
                 ("unwrap_or_default", Shape::Option(i), 0) => {
+                    if matches!(**i, Shape::Ptr(..)) && self.e.default_expr(i).is_none() {
+                        return Err("default of a shared or boxed value".into());
+                    }
                     let d = self.e.default_expr(i).unwrap_or_else(|| format!("{}{{}}", self.e.odin(i)));
                     format!("({recv}.? or_else {d})")
                 }
@@ -1717,7 +1734,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                         self.expr(args[0], &err)
                     } else {
                         match args[0] {
-                            Expr::Closure(c) if c.inputs.is_empty() => self.expr(&c.body, &err),
+                            Expr::Closure(c) if c.inputs.is_empty() && !has_try(&c.body) => self.expr(&c.body, &err),
                             _ => Err("ok_or_else without a closure".into()),
                         }
                     };
@@ -1827,6 +1844,9 @@ impl<'a, 'b> Tx<'a, 'b> {
                     if !c.inputs.is_empty() {
                         return Err("or_else closure with arguments".into());
                     }
+                    if has_try(&c.body) {
+                        return Err("? inside a closure".into());
+                    }
                     let n = self.next_temp();
                     let outer = std::mem::take(&mut self.pre);
                     let d = self.expr(&c.body, &base);
@@ -1838,17 +1858,17 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
                 // A slice of a Vec reads like the Vec itself here (len, indexing, iteration).
                 ("as_slice", Shape::Vec(_), 0) => recv,
+                // The closure runs only on a present value; its statements go inside the `if`.
                 ("is_some_and", Shape::Option(i), 1) | ("is_none_or", Shape::Option(i), 1) => {
                     let c = Self::closure_of(args[0])?;
-                    self.temps += 1;
-                    let t = format!("o{}_", self.temps);
-                    let cond = self.closure_expr(&c, &format!("{t}.?"), i, &Shape::Bool)?;
+                    let n = self.next_temp();
+                    let (t, v, r) = (format!("o{n}_"), format!("v{n}_"), format!("r{n}_"));
+                    let mut body = Vec::new();
+                    let cond = self.closure_in(&mut body, &c, &v, i, &Shape::Bool)?;
                     self.pre.push(format!("{t} := {recv}"));
-                    if m == "is_some_and" {
-                        format!("({t} != nil && ({cond}))")
-                    } else {
-                        format!("({t} == nil || ({cond}))")
-                    }
+                    self.pre.push(format!("{r} := {}", if m == "is_some_and" { "false" } else { "true" }));
+                    self.pre.push(format!("if {v}, ok{n}_ := {t}.?; ok{n}_ {{\n{}\n{r} = {cond}\n}}", body.join("\n")));
+                    r
                 }
                 _ => return Err(String::new()),
             })
@@ -1892,4 +1912,18 @@ fn subst_self(s: Shape, owner: Option<&str>) -> Option<Shape> {
         Shape::Tuple(v) => Shape::Tuple(v.into_iter().map(|x| subst_self(x, owner)).collect::<Option<Vec<_>>>()?),
         s => s,
     })
+}
+
+/// Whether an expression uses `?` outside any nested closure.
+fn has_try(e: &Expr) -> bool {
+    struct V(bool);
+    impl<'ast> syn::visit::Visit<'ast> for V {
+        fn visit_expr_try(&mut self, _: &'ast syn::ExprTry) {
+            self.0 = true;
+        }
+        fn visit_expr_closure(&mut self, _: &'ast syn::ExprClosure) {}
+    }
+    let mut v = V(false);
+    syn::visit::visit_expr(&mut v, e);
+    v.0
 }

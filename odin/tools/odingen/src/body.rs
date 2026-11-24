@@ -860,6 +860,7 @@ impl Body<'_, '_, '_> {
             self.line(&format!("#partial switch v_ in {subject} {{"));
         }
         let mut has_default = false;
+        let mut default_emitted = false;
         for arm in &m.arms {
             if arm.guard.is_some() {
                 return Err("match guard".into());
@@ -926,6 +927,11 @@ impl Body<'_, '_, '_> {
                 return Err("or-pattern with bindings".into());
             }
             if labels.is_empty() {
+                if default_emitted {
+                    // A second catch-all (a binding after a wildcard) can never be reached.
+                    continue;
+                }
+                default_emitted = true;
                 self.line("case:");
             } else {
                 self.line(&format!("case {}:", labels.join(", ")));
@@ -1713,8 +1719,18 @@ pub fn generic_kind(sig: &syn::Signature) -> Option<&'static str> {
             }
         }
     }
-    if kind.is_none() && sig.inputs.iter().any(|i| matches!(i, FnArg::Typed(t) if t.ty.to_token_stream().to_string().contains("impl "))) {
-        kind = Some("impl Trait argument");
+    // `impl Iterator<Item = T>` / `impl IntoIterator<Item = T>` parameters are Vecs (translated logic materializes
+    // iterators); other `impl Trait` parameters need monomorphizing.
+    for i in &sig.inputs {
+        let FnArg::Typed(t) = i else { continue };
+        let ty = t.ty.to_token_stream().to_string();
+        if !ty.contains("impl ") {
+            continue;
+        }
+        let iterator = (ty.contains("Iterator <") || ty.contains("Iterator<")) && ty.contains("Item") && !ty.contains("Fn");
+        if !iterator && kind.is_none() {
+            kind = Some(if ty.contains("Fn") { "closure parameter" } else { "impl Trait argument" });
+        }
     }
     kind
 }
