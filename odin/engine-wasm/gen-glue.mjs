@@ -120,6 +120,8 @@ export function state_codec_decode(bytes, _baseline) { return new StateCodecHand
 export function state_codec_encode(state, _baseline) { return enc.encode(state.json()); }
 export function state_codec_for_viewer(viewer) { return new StateCodecHandle(JSON.stringify(call("get_filtered_game_state_json", [viewer ?? null]))); }
 export function state_codec_from_json(bytes) { return new StateCodecHandle(dec.decode(bytes)); }
+// The Odin engine's own calls, outside the client's interface (tools such as coverage.mjs use them).
+export function odin_call(fn, args) { return call(fn, args); }
 export function take_last_panic_message() { const m = lastPanic; lastPanic = undefined; return m; }
 
 ${generated}

@@ -1,0 +1,114 @@
+// Objects and zones (CR 400): finding objects, and moving them between zones.
+package game
+
+import types "../types"
+
+object :: proc(s: ^types.GameState, id: types.ObjectId) -> ^types.GameObject {
+	return s.objects.inner[id]
+}
+
+player :: proc(s: ^types.GameState, p: types.PlayerId) -> ^types.Player {
+	return &s.players[int(p)]
+}
+
+opponent :: proc(s: ^types.GameState, p: types.PlayerId) -> types.PlayerId {
+	return types.PlayerId((int(p) + 1) % len(s.players))
+}
+
+is_type :: proc(o: ^types.GameObject, t: types.CoreType) -> bool {
+	for c in o.card_types.core_types do if c == t do return true
+	return false
+}
+
+// The ids in a persistent vector, as a slice the caller owns.
+ids_of :: proc(v: types.PVec(types.ObjectId), allocator := context.temp_allocator) -> []types.ObjectId {
+	out := make([]types.ObjectId, types.pvec_len(v), allocator)
+	for i in 0 ..< len(out) do out[i] = types.pvec_get(v, i)
+	return out
+}
+
+@(private = "file")
+remove_id :: proc(v: ^types.PVec(types.ObjectId), id: types.ObjectId) -> bool {
+	n := types.pvec_len(v^)
+	for i in 0 ..< n do if types.pvec_get(v^, i) == id {
+		rest := make([]types.ObjectId, n - i - 1, context.temp_allocator)
+		for j in i + 1 ..< n do rest[j - i - 1] = types.pvec_get(v^, j)
+		for _ in i ..< n do types.pvec_pop(v, copy_id)
+		for x in rest do types.pvec_push(v, x, copy_id)
+		return true
+	}
+	return false
+}
+
+// The list that holds a zone's objects: each player's own library, hand and graveyard, the shared others.
+zone_list :: proc(s: ^types.GameState, zone: types.Zone, owner: types.PlayerId) -> ^types.PVec(types.ObjectId) {
+	#partial switch zone {
+	case .Library:
+		return &player(s, owner).library
+	case .Hand:
+		return &player(s, owner).hand
+	case .Graveyard:
+		return &player(s, owner).graveyard
+	case .Battlefield:
+		return &s.battlefield
+	case .Exile:
+		return &s.exile
+	}
+	return nil
+}
+
+// CR 400.7: an object that moves from one zone to another becomes a new object with no memory of its previous
+// existence: it enters untapped, without damage, counters or attachments, and with its printed characteristics.
+// (The id stays, with the incarnation counting the new object, so the client can follow the card.)
+move_object :: proc(s: ^types.GameState, id: types.ObjectId, to: types.Zone) {
+	o := object(s, id)
+	if o.zone != .Stack {
+		if list := zone_list(s, o.zone, o.owner); list != nil do remove_id(list, id)
+	}
+	from := o.zone
+	o.zone = to
+	o.incarnation += 1
+	o.tapped = false
+	o.damage_marked = 0
+	o.dealt_deathtouch_damage = false
+	clear(&o.counters)
+	clear(&o.attachments)
+	o.attached_to = nil
+	reset_characteristics(o)
+	// A permanent is controlled by whoever put it onto the battlefield; elsewhere its owner (CR 108.4, 110.2).
+	o.controller = o.owner
+	if to == .Battlefield {
+		o.entered_battlefield_turn = s.turn_number
+		o.summoning_sick = true
+		o.timestamp = s.next_timestamp
+		s.next_timestamp += 1
+	} else {
+		o.entered_battlefield_turn = nil
+	}
+	_ = from
+	if to != .Stack {
+		list := zone_list(s, to, o.owner)
+		types.pvec_push(list, id, copy_id)
+	}
+}
+
+// Back to the printed characteristics (CR 613: no continuous effects apply to the new object yet).
+reset_characteristics :: proc(o: ^types.GameObject) {
+	o.name = o.base_name
+	o.card_types = o.base_card_types
+	o.mana_cost = o.base_mana_cost
+	o.keywords = o.base_keywords
+	o.color = o.base_color
+	o.power = o.base_power
+	o.toughness = o.base_toughness
+}
+
+// The permanents a player controls.
+permanents_of :: proc(s: ^types.GameState, p: types.PlayerId) -> [dynamic]^types.GameObject {
+	out := make([dynamic]^types.GameObject, context.temp_allocator)
+	for id in ids_of(s.battlefield) {
+		o := object(s, id)
+		if o.controller == p do append(&out, o)
+	}
+	return out
+}

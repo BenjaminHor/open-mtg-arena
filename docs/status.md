@@ -2760,6 +2760,21 @@ Progress:
   compares `projection.mjs`'s game-relevant view (cards by name, not id; libraries as counts and contents, not order;
   no timestamps). Rust against its own capture: 7/8 tests, 71/75 steps; the miss is a state Rust itself refuses to
   restore ("current-turn ZoneChanged record has no ledger occurrence"), so such tests are fixtures to exclude.
+- Step 3 (2026-11-24): the Odin engine plays whole games. `odin/engine/game/`: turns and steps (CR 500-514),
+  priority (117), land plays (305), mana abilities and automatic payment (106, 601.2g-h, 605), casting with targets
+  (601, 115), the stack and resolving (405, 608), combat with flying/reach, first and double strike, trample,
+  deathtouch, lifelink, vigilance, menace, defender, haste (506-511, 702), state-based actions (704), London
+  mulligan (103.5), discard to hand size (514.1), and a simple AI. Spells supported: fixed damage, +N/+N until end of
+  turn, draw, gain life, destroy. AI-vs-AI games finish (three seeds, 14-22 turns, ~11 ms per action in the dev
+  build). In the app: the game page loads, the opening hand shows, Keep works, the steps advance.
+  Known simplifications: first-strike and regular damage happen in one combat damage step (SBAs between them);
+  "until end of turn" pumps live beside the state, so a save/restore forgets them; no game events yet (no
+  animations or log); the Commander format's command zone isn't set up (commanders are left out).
+  Coverage (`node odin/engine-wasm/coverage.mjs`): 582 of the 15,772 pool cards fully supported (Rust: 13,381 by
+  client/public/coverage-data.json's names; the goal's 14,013 came from the Scryfall-name match, to reconcile).
+  The report ranks missing pieces: triggered abilities lead (zone-change triggers block 3,623 cards and are the
+  only gap for 1,709), then continuous statics (1,623), "as it enters" replacements (883), step and attack triggers,
+  spell-cast triggers. Next: triggered abilities (CR 603).
 - Step 2/3 start: `odin/engine/game/setup.odin` starts a game from the CR (103: libraries shuffled with the seeded
   generator, starting life, seven-card hands, mulligan decisions in turn order); `game_calls.odin` serves
   `initialize_game` (decks checked against the format first, as Rust does), `get_game_state`,
@@ -2791,6 +2806,8 @@ a216a17. Next when resuming: tuple field access (`f(..).0` on a returned tuple: 
 but reverted untested; then the executed-blocker list (`translate-report` with ODINGEN_EXECUTED).
 
 ## Working with the owner
+- Owner (2026-11-24): "anything that can be ran in the background reasonably, do it". Builds, test runs, captures,
+  comparisons and browser checks run as background jobs; work continues meanwhile.
 
 - Owner (2026-11-24): the running progress messages had no value to them ("probably a lot of value to you, but
   none to me"). Report only what matters to the owner, in plain terms and briefly: milestones reached (a recorded

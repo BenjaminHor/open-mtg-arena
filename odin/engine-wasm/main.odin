@@ -108,6 +108,24 @@ dispatch :: proc(b: ^strings.Builder, fn: string, args: []json.Value) {
 		export_game_state_json(b)
 	case "restore_game_state":
 		restore_game_state(b, args)
+	case "submit_action":
+		submit_action(b, args)
+	case "get_filtered_game_state":
+		get_filtered_game_state(b, args)
+	case "get_legal_actions_for_viewer_js", "get_legal_actions_js":
+		get_legal_actions_for_viewer(b, args)
+	case "get_viewer_snapshot_js":
+		get_viewer_snapshot(b, args)
+	case "get_ai_action_proposal", "get_ai_tactical_action_proposal":
+		get_ai_action_proposal(b, args)
+	case "submit_ai_action_proposal":
+		submit_ai_action_proposal(b, args)
+	case "odin_supported_cards":
+		// Not part of the client's interface: the coverage report (coverage.mjs) asks which of these cards the Odin
+		// engine fully supports.
+		supported_cards(b, arg(args, 0))
+	case "odin_card_gaps":
+		card_gaps(b, arg(args, 0))
 	case "estimate_bracket_for_deck":
 		// No bracket estimate yet: the Rust engine also answers null when it has none.
 		reply_ok_raw(b, "null")

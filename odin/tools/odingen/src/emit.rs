@@ -1450,7 +1450,9 @@ impl<'a> Emitter<'a> {
             }
             Kind::Enum(vs) => {
                 let (d, e, m) = self.data_enum_codec(def, vs, &params);
-                dec = d;
+                // null decodes to an unset union, as the encoder writes one (D-187: the Odin engine leaves unions
+                // it doesn't use unset).
+                dec = if vs.iter().all(|v| matches!(v.fields, Fields::Unit)) { d } else { format!("\tif v.kind == .Null do return true\n{d}") };
                 enc = e;
                 members = m;
             }
@@ -1520,7 +1522,8 @@ impl<'a> Emitter<'a> {
         let generic_suffix = if params.is_empty() { String::new() } else { format!("({})", params.join(", ")) };
         let field_rule = s.rename_all_fields.clone();
         let mut dec = String::new();
-        let mut enc = String::from("\t#partial switch y in x {\n");
+        // An unset union (nil) writes null, so a value the engine hasn't filled in is still valid JSON.
+        let mut enc = String::from("\t#partial switch y in x {\n\tcase nil: strings.write_string(b, \"null\")\n");
         let mut mem = String::from("\t#partial switch y in x {\n");
         let internally = s.tag.is_some() && s.content.is_none();
         let adjacent = s.tag.is_some() && s.content.is_some();

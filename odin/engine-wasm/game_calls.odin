@@ -83,7 +83,8 @@ initialize_game :: proc(b: ^strings.Builder, args: []json.Value) {
 	seed, has_seed := json.to_u64(arg(args, 1))
 	if !has_seed do seed = random_seed()
 	first, _ := json.to_u64(arg(args, 5))
-	current = game.start_game(decks[:], seed, format, types.PlayerId(first))
+	current = game.start_game(decks[:], seed, format, types.PlayerId(first), card_lookup)
+	revision = 0
 
 	strings.write_string(b, `{"ok":{"events":[],"log_entries":[],"waiting_for":`)
 	types.encode_WaitingFor(b, current.state.waiting_for)
@@ -103,9 +104,9 @@ get_game_state :: proc(b: ^strings.Builder) {
 		reply_ok_raw(b, "null")
 		return
 	}
-	strings.write_string(b, `{"ok":{"state":`)
-	types.encode_GameState(b, current.state)
-	strings.write_string(b, `,"derived":{"state_revision":0,"storm_count":0,"debug_library_cards":[]}}}`)
+	strings.write_string(b, `{"ok":`)
+	write_state(b, nil)
+	strings.write_byte(b, '}')
 }
 
 // export_game_state_json(): the whole state as a JSON string, for saving and for restore_game_state.
@@ -145,6 +146,226 @@ restore_game_state :: proc(b: ^strings.Builder, args: []json.Value) {
 		return
 	}
 	g.rng = game.restored_rng(g.state)
+	g.card_db = card_lookup
 	current = g
 	reply_ok_raw(b, "null")
+}
+
+// The card an object was made from, for the rules to tell what they support of it.
+card_lookup :: proc(name: string) -> ^types.CardExportEntry {
+	e, _ := find_card(name)
+	return e
+}
+
+// Runs a rules procedure on the game's own allocator, so what it changes outlives this call.
+@(private = "file")
+game_allocator :: proc() -> runtime.Allocator {return runtime.arena_allocator(&game_arena)}
+
+// A revision number the client compares to drop stale snapshots: one more for each applied action.
+revision: u64
+
+// submit_action(actor, action): the client's action for a seat. Applied, or rejected with nothing changed.
+submit_action :: proc(b: ^strings.Builder, args: []json.Value) {
+	if current == nil {
+		reply_ok_raw(b, `"NOT_INITIALIZED: no game"`)
+		return
+	}
+	actor, _ := json.to_u64(arg(args, 0))
+	applied := false
+	{
+		context.allocator = game_allocator()
+		action: types.GameAction
+		if types.decode_GameAction(arg(args, 1), &action) do applied = game.apply(current, types.PlayerId(actor), action)
+	}
+	write_outcome(b, applied)
+}
+
+@(private = "file")
+write_outcome :: proc(b: ^strings.Builder, applied: bool) {
+	if applied {
+		revision += 1
+		reply_ok_raw(b, `{"status":"applied","result":{"events":[],"log_entries":[]}}`)
+	} else {
+		reply_ok_raw(b, `{"status":"rejected","rejection":{"code":"invalid_action","disposition":"invalid","message":"That action isn't legal now.","related_object_ids":[]}}`)
+	}
+}
+
+// The legal actions for a viewer, with what the client reads alongside them.
+@(private = "file")
+write_legal :: proc(b: ^strings.Builder, viewer: types.PlayerId) {
+	actions := game.legal_actions(current, viewer)
+	strings.write_string(b, `{"actions":[`)
+	for a, i in actions {
+		if i > 0 do strings.write_byte(b, ',')
+		types.encode_GameAction(b, a)
+	}
+	// Only "pass" offered: the client may pass on the player's behalf.
+	auto_pass := len(actions) == 1 && is_pass(actions[0])
+	strings.write_string(b, `],"autoPassRecommended":`)
+	strings.write_string(b, "true" if auto_pass else "false")
+	strings.write_string(b, `,"endContinuousEffectOffers":[],"manaPaymentShortcutActions":[],"spellCosts":{},"legalActionsByObject":{`)
+	first := true
+	for a in actions {
+		id: types.ObjectId
+		#partial switch x in a {
+		case types.GameAction_PlayLand:
+			id = x.object_id
+		case types.GameAction_CastSpell:
+			id = x.object_id
+		case:
+			continue
+		}
+		if !first do strings.write_byte(b, ',')
+		first = false
+		strings.write_byte(b, '"')
+		strings.write_u64(b, u64(id))
+		strings.write_string(b, `":[`)
+		types.encode_GameAction(b, a)
+		strings.write_byte(b, ']')
+	}
+	strings.write_string(b, `},"activationBlockReasons":{},"viewerInteraction":null}`)
+}
+
+@(private = "file")
+is_pass :: proc(a: types.GameAction) -> bool {
+	_, ok := a.(types.GameAction_PassPriority)
+	return ok
+}
+
+// The state as a viewer may see it (CR 401.2, 402.3): libraries and the other players' hands are hidden.
+@(private = "file")
+write_state :: proc(b: ^strings.Builder, viewer: Maybe(types.PlayerId)) {
+	s := &current.state
+	hidden := make([dynamic]^types.GameObject, context.temp_allocator)
+	if v, filtered := viewer.?; filtered {
+		for p in s.players {
+			for id in game.ids_of(p.library) do append(&hidden, s.objects.inner[id])
+			if p.id != v do for id in game.ids_of(p.hand) do append(&hidden, s.objects.inner[id])
+		}
+	}
+	for o in hidden {
+		placeholder := new(types.GameObject, context.temp_allocator)
+		placeholder.id, placeholder.card_id, placeholder.owner, placeholder.controller, placeholder.zone = o.id, o.card_id, o.owner, o.controller, o.zone
+		placeholder.name = "Hidden Card"
+		placeholder.base_name = "Hidden Card"
+		s.objects.inner[o.id] = placeholder
+	}
+	strings.write_string(b, `{"state":`)
+	types.encode_GameState(b, s^)
+	for o in hidden do s.objects.inner[o.id] = o
+	strings.write_string(b, `,"derived":{"waiting_for_identity":"`)
+	strings.write_u64(b, revision)
+	strings.write_string(b, `","state_revision":`)
+	strings.write_u64(b, revision)
+	strings.write_string(b, `,"storm_count":0,"debug_library_cards":[]}}`)
+}
+
+get_filtered_game_state :: proc(b: ^strings.Builder, args: []json.Value) {
+	if current == nil {
+		reply_ok_raw(b, "null")
+		return
+	}
+	viewer, _ := json.to_u64(arg(args, 0))
+	strings.write_string(b, `{"ok":`)
+	write_state(b, types.PlayerId(viewer))
+	strings.write_byte(b, '}')
+}
+
+get_legal_actions_for_viewer :: proc(b: ^strings.Builder, args: []json.Value) {
+	if current == nil {
+		reply_ok_raw(b, "null")
+		return
+	}
+	viewer, ok := json.to_u64(arg(args, 0))
+	if !ok {
+		who, _ := game.acting_player(&current.state)
+		viewer = u64(who)
+	}
+	strings.write_string(b, `{"ok":`)
+	write_legal(b, types.PlayerId(viewer))
+	strings.write_byte(b, '}')
+}
+
+// get_viewer_snapshot_js(viewer): the viewer's state and legal actions, from one moment.
+get_viewer_snapshot :: proc(b: ^strings.Builder, args: []json.Value) {
+	if current == nil {
+		reply_ok_raw(b, "null")
+		return
+	}
+	viewer, _ := json.to_u64(arg(args, 0))
+	strings.write_string(b, `{"ok":{"state":`)
+	write_state(b, types.PlayerId(viewer))
+	legal := strings.builder_make(context.temp_allocator)
+	write_legal(&legal, types.PlayerId(viewer))
+	text := strings.to_string(legal)
+	// The legal result's members follow the state's in one object.
+	strings.write_byte(b, ',')
+	strings.write_string(b, text[1:])
+	strings.write_byte(b, '}')
+}
+
+// get_ai_action_proposal(difficulty, player): the AI's choice for a seat, as a proposal the client submits back.
+get_ai_action_proposal :: proc(b: ^strings.Builder, args: []json.Value) {
+	if current == nil {
+		reply_ok_raw(b, "null")
+		return
+	}
+	p, _ := json.to_u64(arg(args, 1))
+	action, ok := game.ai_action(current, types.PlayerId(p))
+	if !ok {
+		reply_ok_raw(b, "null")
+		return
+	}
+	strings.write_string(b, `{"ok":{"token":"`)
+	strings.write_u64(b, revision)
+	strings.write_string(b, `","semanticOwner":`)
+	strings.write_u64(b, p)
+	strings.write_string(b, `,"actor":`)
+	strings.write_u64(b, p)
+	strings.write_string(b, `,"action":`)
+	types.encode_GameAction(b, action)
+	strings.write_string(b, "}}")
+}
+
+// submit_ai_action_proposal(token, actor, action): applies a proposal made for the current revision.
+submit_ai_action_proposal :: proc(b: ^strings.Builder, args: []json.Value) {
+	if current == nil {
+		reply_ok_raw(b, `{"status":"stale","reason":"no game"}`)
+		return
+	}
+	token := arg(args, 0).text
+	rev := strings.builder_make(context.temp_allocator)
+	strings.write_u64(&rev, revision)
+	if token != strings.to_string(rev) {
+		reply_ok_raw(b, `{"status":"stale","reason":"the game moved on"}`)
+		return
+	}
+	submit_action(b, args[1:])
+}
+
+// Of these card names, the ones the Odin engine fully supports (each name as given; unknown names are left out).
+supported_cards :: proc(b: ^strings.Builder, names: json.Value) {
+	out := make([dynamic]string)
+	for n in names.items {
+		if e, ok := find_card(n.text); ok && game.card_supported(&e.face) do append(&out, n.text)
+	}
+	strings.write_string(b, `{"ok":`)
+	write_strings(b, out[:])
+	strings.write_byte(b, '}')
+}
+
+// For each of these card names, what the Odin engine is missing to support it: {name: [gap, ...]}.
+card_gaps :: proc(b: ^strings.Builder, names: json.Value) {
+	strings.write_string(b, `{"ok":{`)
+	first := true
+	for n in names.items {
+		e, ok := find_card(n.text)
+		if !ok do continue
+		if !first do strings.write_byte(b, ',')
+		first = false
+		json.write_string(b, n.text)
+		strings.write_byte(b, ':')
+		write_strings(b, game.card_gaps(&e.face)[:])
+	}
+	strings.write_string(b, "}}")
 }

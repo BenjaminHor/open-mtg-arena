@@ -1,0 +1,236 @@
+// Players' actions: what each decision accepts, and the actions a player could take now.
+package game
+
+import "core:slice"
+import rng "../rng"
+import types "../types"
+
+// The player the game waits on (the first of them, when several decide at once).
+acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
+	#partial switch w in s.waiting_for {
+	case types.WaitingFor_Priority:
+		return w.player, true
+	case types.WaitingFor_MulliganDecision:
+		if len(w.pending) > 0 do return w.pending[0].player, true
+	case types.WaitingFor_OpeningHandBottomCards:
+		if len(w.pending) > 0 do return w.pending[0].player, true
+	case types.WaitingFor_DeclareAttackers:
+		return w.player, true
+	case types.WaitingFor_DeclareBlockers:
+		return w.player, true
+	case types.WaitingFor_TargetSelection:
+		return w.player, true
+	case types.WaitingFor_DiscardToHandSize:
+		return w.player, true
+	}
+	return 0, false
+}
+
+// Applies one action from a player. False (and nothing changed) when it isn't legal now.
+apply :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> bool {
+	ok := apply_action(g, p, action)
+	if ok do sync_decider(&g.state)
+	return ok
+}
+
+// The client reads whose decision it is from the priority player, for every decision a single player makes (the
+// attacker, the defender declaring blockers, a player choosing targets or discarding), so it follows the decision.
+sync_decider :: proc(s: ^types.GameState) {
+	#partial switch _ in s.waiting_for {
+	case types.WaitingFor_MulliganDecision, types.WaitingFor_OpeningHandBottomCards, types.WaitingFor_GameOver:
+		return
+	}
+	if who, ok := acting_player(s); ok do s.priority_player = who
+}
+
+apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> bool {
+	s := &g.state
+	if game_over(s) do return false
+	// A player's own settings (where to stop, passing preferences, the order of their hand) change no game state
+	// here: the client keeps them, and the engine doesn't auto-pass for anyone.
+	#partial switch a in action {
+	case types.GameAction_SetPhaseStops, types.GameAction_SetAutoPass, types.GameAction_CancelAutoPass,
+	     types.GameAction_SetPriorityPassingMode, types.GameAction_SetPriorityYield, types.GameAction_SetMayTriggerAutoChoice,
+	     types.GameAction_SetTriggerOrderTemplate, types.GameAction_SetReplacementAutoChoice, types.GameAction_ReorderHand,
+	     types.GameAction_UnAction:
+		return true
+	case types.GameAction_Concede:
+		// CR 104.3a: a player may concede at any time; they leave the game and lose.
+		player(s, a.player_id).is_eliminated = true
+		other := opponent(s, a.player_id)
+		s.waiting_for = types.WaitingFor_GameOver{winner = other}
+		return true
+	}
+	// CR 103.5: the mulligan declarations are made by every player still deciding, in any order here.
+	if w, deciding := &s.waiting_for.(types.WaitingFor_MulliganDecision); deciding {
+		a, ok := action.(types.GameAction_MulliganDecision)
+		if !ok do return false
+		for e, i in w.pending do if e.player == p do return mulligan_decision(g, p, i, a.choice)
+		return false
+	}
+	if _, bottoming := s.waiting_for.(types.WaitingFor_OpeningHandBottomCards); bottoming {
+		a, ok := action.(types.GameAction_SelectCards)
+		return ok && bottom_cards(g, p, a.cards[:])
+	}
+	if who, ok := acting_player(s); !ok || who != p do return false
+	#partial switch w in s.waiting_for {
+	case types.WaitingFor_Priority:
+		#partial switch a in action {
+		case types.GameAction_PassPriority:
+			pass_priority(g, p)
+			return true
+		case types.GameAction_PlayLand:
+			return play_land(g, p, a.object_id)
+		case types.GameAction_CastSpell:
+			targets := make([dynamic]types.TargetRef, context.temp_allocator)
+			for t in a.targets do append(&targets, types.TargetRef_Object{t})
+			return cast_spell(g, p, a.object_id, targets[:])
+		}
+	case types.WaitingFor_TargetSelection:
+		#partial switch a in action {
+		case types.GameAction_ChooseTarget:
+			t, ok := a.target.?
+			return ok && choose_target(g, p, t)
+		case types.GameAction_CancelCast:
+			g.pending = {}
+			give_priority(g, p)
+			return true
+		}
+	case types.WaitingFor_DeclareAttackers:
+		a, ok := action.(types.GameAction_DeclareAttackers)
+		return ok && declare_attackers(g, a.attacks[:])
+	case types.WaitingFor_DeclareBlockers:
+		a, ok := action.(types.GameAction_DeclareBlockers)
+		return ok && declare_blockers(g, a.assignments[:])
+	case types.WaitingFor_DiscardToHandSize:
+		a, ok := action.(types.GameAction_SelectCards)
+		if !ok || len(a.cards) != w.count do return false
+		for id in a.cards do if !slice.contains(w.cards[:], id) do return false
+		for id in a.cards do move_object(s, id, .Graveyard)
+		cleanup(g)
+		return true
+	}
+	return false
+}
+
+// CR 103.5: a player keeps their hand, or takes a mulligan: shuffles their hand into their library and draws a new
+// seven (the London mulligan; they put that many cards on the bottom once everyone keeps).
+mulligan_decision :: proc(g: ^Game, p: types.PlayerId, index: int, choice: types.MulliganChoice) -> bool {
+	s := &g.state
+	w := &s.waiting_for.(types.WaitingFor_MulliganDecision)
+	entry := w.pending[index]
+	#partial switch _ in choice {
+	case types.MulliganChoice_Keep:
+		ordered_remove(&w.pending, index)
+		if entry.mulligan_count > 0 do append(&g.bottoms, types.MulliganBottomEntry{player = p, count = entry.mulligan_count})
+	case types.MulliganChoice_Mulligan:
+		if int(entry.mulligan_count) >= STARTING_HAND_SIZE do return false
+		pl := player(s, p)
+		for id in ids_of(pl.hand) do move_object(s, id, .Library)
+		library := ids_of(pl.library)
+		rng.shuffle(&g.rng, library)
+		pl.library = {}
+		for id in library do types.pvec_push(&pl.library, id, copy_id)
+		for _ in 0 ..< STARTING_HAND_SIZE do draw_card(s, pl)
+		ordered_remove(&w.pending, index)
+		entry.mulligan_count += 1
+		append(&w.pending, entry) // declares again after the others
+	case:
+		return false
+	}
+	if len(w.pending) > 0 do return true
+	if len(g.bottoms) > 0 {
+		pending: [dynamic]types.MulliganBottomEntry
+		append(&pending, ..g.bottoms[:])
+		clear(&g.bottoms)
+		s.waiting_for = types.WaitingFor_OpeningHandBottomCards{pending = pending}
+		return true
+	}
+	begin_first_turn(g)
+	return true
+}
+
+// CR 103.5: a player who took mulligans puts that many cards from their hand on the bottom of their library.
+bottom_cards :: proc(g: ^Game, p: types.PlayerId, cards: []types.ObjectId) -> bool {
+	s := &g.state
+	w := &s.waiting_for.(types.WaitingFor_OpeningHandBottomCards)
+	index := -1
+	for e, i in w.pending do if e.player == p do index = i
+	if index < 0 || len(cards) != int(w.pending[index].count) do return false
+	pl := player(s, p)
+	hand := ids_of(pl.hand)
+	for id in cards do if !slice.contains(hand, id) do return false
+	for id in cards do move_object(s, id, .Library)
+	// The library's top is its end, so the bottom is the front: rebuild with these first.
+	rest := make([dynamic]types.ObjectId, context.temp_allocator)
+	for id in ids_of(pl.library) do if !slice.contains(cards, id) do append(&rest, id)
+	pl.library = {}
+	for id in cards do types.pvec_push(&pl.library, id, copy_id)
+	for id in rest do types.pvec_push(&pl.library, id, copy_id)
+	ordered_remove(&w.pending, index)
+	if len(w.pending) == 0 do begin_first_turn(g)
+	return true
+}
+
+// CR 305.2, 505.6b: on their own turn, in a main phase with an empty stack, a player may play a land if they haven't
+// played their land for the turn.
+can_play_land :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject) -> bool {
+	if o.zone != .Hand || o.owner != p || !is_type(o, .Land) do return false
+	return sorcery_timing(s, p) && player(s, p).lands_played_this_turn < s.max_lands_per_turn
+}
+
+// CR 305.1: playing a land puts it onto the battlefield; it doesn't use the stack.
+play_land :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId) -> bool {
+	s := &g.state
+	o := object(s, id)
+	if o == nil || !can_play_land(s, p, o) || !object_supported(o, g.card_db) do return false
+	move_object(s, id, .Battlefield)
+	player(s, p).lands_played_this_turn += 1
+	s.lands_played_this_turn += 1
+	s.priority_passes = nil
+	give_priority(g, p)
+	return true
+}
+
+// The actions a player could take now, for the client's buttons and highlights.
+legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction {
+	s := &g.state
+	out := make([dynamic]types.GameAction, context.temp_allocator)
+	if !is_deciding(s, p) do return out
+	#partial switch w in s.waiting_for {
+	case types.WaitingFor_MulliganDecision:
+		append(&out, types.GameAction_MulliganDecision{choice = types.MulliganChoice_Keep{}})
+		append(&out, types.GameAction_MulliganDecision{choice = types.MulliganChoice_Mulligan{}})
+	case types.WaitingFor_Priority:
+		append(&out, types.GameAction_PassPriority{})
+		for id in ids_of(player(s, p).hand) {
+			o := object(s, id)
+			if can_play_land(s, p, o) && object_supported(o, g.card_db) {
+				append(&out, types.GameAction_PlayLand{object_id = id, card_id = o.card_id})
+			} else if castable(s, p, o, g.card_db) {
+				append(&out, types.GameAction_CastSpell{object_id = id, card_id = o.card_id})
+			}
+		}
+	case types.WaitingFor_TargetSelection:
+		for t in w.selection.current_legal_targets do append(&out, types.GameAction_ChooseTarget{target = t})
+	case types.WaitingFor_DeclareAttackers:
+		append(&out, types.GameAction_DeclareAttackers{})
+	case types.WaitingFor_DeclareBlockers:
+		append(&out, types.GameAction_DeclareBlockers{})
+	}
+	return out
+}
+
+// Whether the game waits on this player: the one acting, or any player still owed a simultaneous decision.
+is_deciding :: proc(s: ^types.GameState, p: types.PlayerId) -> bool {
+	#partial switch w in s.waiting_for {
+	case types.WaitingFor_MulliganDecision:
+		for e in w.pending do if e.player == p do return true
+		return false
+	case types.WaitingFor_OpeningHandBottomCards:
+		for e in w.pending do if e.player == p do return true
+		return false
+	}
+	who, ok := acting_player(s)
+	return ok && who == p
+}

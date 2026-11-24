@@ -17,15 +17,22 @@ Deck :: struct {
 }
 
 Game :: struct {
-	state: types.GameState,
-	rng:   rng.Chacha20,
+	state:   types.GameState,
+	rng:     rng.Chacha20,
+	card_db: Card_Lookup, // the card each object was made from, to tell what this engine supports of it
+	pending: Pending_Cast, // a spell being cast while its targets are chosen
+	// "Until end of turn" changes to power and toughness, undone in the cleanup step. Kept beside the state, so a
+	// saved and restored game forgets them (to be moved into the state's continuous effects).
+	pumps:   [dynamic]Pump,
+	bottoms: [dynamic]types.MulliganBottomEntry, // players who kept after mulligans, owing cards to the bottom
 }
 
 // CR 103: starts a two-player game. The first player (CR 103.1) is given; each library is shuffled with the game's
 // seeded generator (CR 103.3), each player's life is the format's starting life (CR 103.4), each draws seven cards
 // (CR 103.5) and the game waits for the starting player's mulligan declaration, then the others' in turn order.
-start_game :: proc(decks: []Deck, seed: u64, format: types.FormatConfig, first_player: types.PlayerId) -> ^Game {
+start_game :: proc(decks: []Deck, seed: u64, format: types.FormatConfig, first_player: types.PlayerId, card_db: Card_Lookup) -> ^Game {
 	g := new(Game)
+	g.card_db = card_db
 	g.rng = rng.from_u64(seed)
 	s := &g.state
 	s.format_config = format
@@ -67,7 +74,7 @@ start_game :: proc(decks: []Deck, seed: u64, format: types.FormatConfig, first_p
 	pending: [dynamic]types.MulliganDecisionEntry
 	for i in 0 ..< len(s.players) {
 		seat := (int(first_player) + i) % len(s.players)
-		append(&pending, types.MulliganDecisionEntry{player = types.PlayerId(seat)})
+		append(&pending, types.MulliganDecisionEntry{player = types.PlayerId(seat), phase = types.MulliganDecisionPhase_Declare{}})
 	}
 	s.waiting_for = types.WaitingFor_MulliganDecision{pending = pending}
 	return g
@@ -85,6 +92,7 @@ new_card_object :: proc(s: ^types.GameState, card: ^types.CardExportEntry, owner
 	o.base_controller = owner
 	o.zone = zone
 	o.incarnation = 1
+	o.phase_status = types.PhaseStatus_PhasedIn{} // CR 702.26: permanents are phased in unless something phases them out
 	o.name = face.name
 	o.card_types = face.card_type
 	o.mana_cost = face.mana_cost

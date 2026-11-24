@@ -7072,6 +7072,7 @@ encode_GameState_members :: proc(b: ^strings.Builder, x: GameState, first: ^bool
 }
 
 decode_GameAction :: proc(v: json.Value, out: ^GameAction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("GameAction")
 	if v.kind != .Object do return fail("GameAction: not an object")
 	tv, found := json.get(v, "type")
@@ -8066,6 +8067,7 @@ decode_GameAction :: proc(v: json.Value, out: ^GameAction) -> bool {
 
 encode_GameAction :: proc(b: ^strings.Builder, x: GameAction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case GameAction_PassPriority: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "PassPriority"); strings.write_byte(b, '}')
 	case GameAction_ChooseMeldPair: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ChooseMeldPair"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "source_id"); encode_ObjectId(b, y.source_id)
@@ -8524,6 +8526,7 @@ encode_GameAction :: proc(b: ^strings.Builder, x: GameAction) {
 }
 
 decode_WaitingFor :: proc(v: json.Value, out: ^WaitingFor) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("WaitingFor")
 	if v.kind != .Object do return fail("WaitingFor: not an object")
 	tv, found := json.get(v, "type")
@@ -10180,6 +10183,7 @@ decode_WaitingFor :: proc(v: json.Value, out: ^WaitingFor) -> bool {
 
 encode_WaitingFor :: proc(b: ^strings.Builder, x: WaitingFor) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case WaitingFor_Priority: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Priority"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "player"); encode_PlayerId(b, y.player)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -11232,6 +11236,7 @@ encode_WaitingFor :: proc(b: ^strings.Builder, x: WaitingFor) {
 }
 
 decode_GameEvent :: proc(v: json.Value, out: ^GameEvent) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("GameEvent")
 	if v.kind != .Object do return fail("GameEvent: not an object")
 	tv, found := json.get(v, "type")
@@ -12495,6 +12500,7 @@ decode_GameEvent :: proc(v: json.Value, out: ^GameEvent) -> bool {
 
 encode_GameEvent :: proc(b: ^strings.Builder, x: GameEvent) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case GameEvent_GameStarted: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "GameStarted"); strings.write_byte(b, '}')
 	case GameEvent_HiddenSearchViewed: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "HiddenSearchViewed"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "searcher"); encode_PlayerId(b, y.searcher)
@@ -13310,6 +13316,7 @@ encode_BracketSignals_members :: proc(b: ^strings.Builder, x: BracketSignals, fi
 }
 
 decode_ManaCost :: proc(v: json.Value, out: ^ManaCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaCost")
 	if v.kind != .Object do return fail("ManaCost: not an object")
 	tv, found := json.get(v, "type")
@@ -13340,6 +13347,7 @@ decode_ManaCost :: proc(v: json.Value, out: ^ManaCost) -> bool {
 
 encode_ManaCost :: proc(b: ^strings.Builder, x: ManaCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaCost_NoCost: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NoCost"); strings.write_byte(b, '}')
 	case ManaCost_Cost: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Cost")
 	member(b, first, "shards"); enc_dyn_ManaCostShard(b, y.shards)
@@ -13391,6 +13399,7 @@ encode_CardType_members :: proc(b: ^strings.Builder, x: CardType, first: ^bool) 
 }
 
 decode_PtValue :: proc(v: json.Value, out: ^PtValue) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PtValue")
 	if v.kind != .Object do return fail("PtValue: not an object")
 	tv, found := json.get(v, "type")
@@ -13406,6 +13415,7 @@ decode_PtValue :: proc(v: json.Value, out: ^PtValue) -> bool {
 
 encode_PtValue :: proc(b: ^strings.Builder, x: PtValue) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PtValue_Fixed: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Fixed"); member(b, &f, "value"); encode_i32(b, y._0); strings.write_byte(b, '}')
 	case PtValue_Variable: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Variable"); member(b, &f, "value"); encode_string(b, y._0); strings.write_byte(b, '}')
 	case PtValue_Quantity: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Quantity"); member(b, &f, "value"); encode_QuantityExpr(b, y._0); strings.write_byte(b, '}')
@@ -13413,6 +13423,7 @@ encode_PtValue :: proc(b: ^strings.Builder, x: PtValue) {
 }
 
 decode_Keyword :: proc(v: json.Value, out: ^Keyword) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("Keyword")
 	variant: string
 	body: json.Value
@@ -13710,6 +13721,7 @@ decode_Keyword :: proc(v: json.Value, out: ^Keyword) -> bool {
 
 encode_Keyword :: proc(b: ^strings.Builder, x: Keyword) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case Keyword_Flying: _ = y; json.write_string(b, "Flying")
 	case Keyword_FirstStrike: _ = y; json.write_string(b, "FirstStrike")
 	case Keyword_DoubleStrike: _ = y; json.write_string(b, "DoubleStrike")
@@ -14410,6 +14422,7 @@ encode_ModalChoice_members :: proc(b: ^strings.Builder, x: ModalChoice, first: ^
 }
 
 decode_AdditionalCost :: proc(v: json.Value, out: ^AdditionalCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AdditionalCost")
 	if v.kind != .Object do return fail("AdditionalCost: not an object")
 	tv, found := json.get(v, "type")
@@ -14440,6 +14453,7 @@ decode_AdditionalCost :: proc(v: json.Value, out: ^AdditionalCost) -> bool {
 
 encode_AdditionalCost :: proc(b: ^strings.Builder, x: AdditionalCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AdditionalCost_Optional: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Optional"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "cost"); encode_AbilityCost(b, y.cost)
 	if !(skip_AdditionalCost_AdditionalCostRepeatability_is_once_AdditionalCostRepeatability(y.repeatability)) { member(b, first, "repeatable"); encode_with_additional_cost_repeatability_bool_compat(b, y.repeatability) }
@@ -14454,6 +14468,7 @@ encode_AdditionalCost :: proc(b: ^strings.Builder, x: AdditionalCost) {
 }
 
 decode_CastingRestriction :: proc(v: json.Value, out: ^CastingRestriction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastingRestriction")
 	if v.kind != .Object do return fail("CastingRestriction: not an object")
 	tv, found := json.get(v, "type")
@@ -14505,6 +14520,7 @@ decode_CastingRestriction :: proc(v: json.Value, out: ^CastingRestriction) -> bo
 
 encode_CastingRestriction :: proc(b: ^strings.Builder, x: CastingRestriction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CastingRestriction_AsSorcery: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "AsSorcery"); strings.write_byte(b, '}')
 	case CastingRestriction_DuringCombat: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "DuringCombat"); strings.write_byte(b, '}')
 	case CastingRestriction_DuringOpponentsTurn: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "DuringOpponentsTurn"); strings.write_byte(b, '}')
@@ -14558,6 +14574,7 @@ encode_SpellCastingOption_members :: proc(b: ^strings.Builder, x: SpellCastingOp
 }
 
 decode_SolveCondition :: proc(v: json.Value, out: ^SolveCondition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SolveCondition")
 	if v.kind != .Object do return fail("SolveCondition: not an object")
 	tv, found := json.get(v, "type")
@@ -14593,6 +14610,7 @@ decode_SolveCondition :: proc(v: json.Value, out: ^SolveCondition) -> bool {
 
 encode_SolveCondition :: proc(b: ^strings.Builder, x: SolveCondition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case SolveCondition_ObjectCount: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "ObjectCount")
 	member(b, first, "filter"); encode_TargetFilter(b, y.filter)
 	member(b, first, "comparator"); encode_Comparator(b, y.comparator)
@@ -14624,6 +14642,7 @@ encode_SolveCondition_members :: proc(b: ^strings.Builder, x: SolveCondition, fi
 }
 
 decode_DeckCopyLimit :: proc(v: json.Value, out: ^DeckCopyLimit) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DeckCopyLimit")
 	if v.kind != .Object do return fail("DeckCopyLimit: not an object")
 	tv, found := json.get(v, "type")
@@ -14638,6 +14657,7 @@ decode_DeckCopyLimit :: proc(v: json.Value, out: ^DeckCopyLimit) -> bool {
 
 encode_DeckCopyLimit :: proc(b: ^strings.Builder, x: DeckCopyLimit) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DeckCopyLimit_Unlimited: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Unlimited"); strings.write_byte(b, '}')
 	case DeckCopyLimit_UpTo: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "UpTo"); member(b, &f, "data"); encode_u32(b, y._0); strings.write_byte(b, '}')
 	}
@@ -14672,6 +14692,7 @@ encode_DeckSizeOverride_members :: proc(b: ^strings.Builder, x: DeckSizeOverride
 }
 
 decode_OracleDiagnostic :: proc(v: json.Value, out: ^OracleDiagnostic) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("OracleDiagnostic")
 	if v.kind != .Object do return fail("OracleDiagnostic: not an object")
 	tv, found := json.get(v, "type")
@@ -14723,6 +14744,7 @@ decode_OracleDiagnostic :: proc(v: json.Value, out: ^OracleDiagnostic) -> bool {
 
 encode_OracleDiagnostic :: proc(b: ^strings.Builder, x: OracleDiagnostic) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case OracleDiagnostic_TargetFallback: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "TargetFallback")
 	member(b, first, "context"); encode_string(b, y.context_)
 	member(b, first, "text"); encode_string(b, y.text)
@@ -15193,6 +15215,7 @@ encode_ManaPipId :: proc(b: ^strings.Builder, x: ManaPipId) {
 }
 
 decode_RulesExecutionNodeRef :: proc(v: json.Value, out: ^RulesExecutionNodeRef) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RulesExecutionNodeRef")
 	variant: string
 	body: json.Value
@@ -15216,6 +15239,7 @@ decode_RulesExecutionNodeRef :: proc(v: json.Value, out: ^RulesExecutionNodeRef)
 
 encode_RulesExecutionNodeRef :: proc(b: ^strings.Builder, x: RulesExecutionNodeRef) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case RulesExecutionNodeRef_Proposal: strings.write_byte(b, '{'); json.write_string(b, "Proposal"); strings.write_byte(b, ':'); encode_ResolvedCommandOrdinal(b, y._0); strings.write_byte(b, '}')
 	case RulesExecutionNodeRef_ActivatedMana: strings.write_byte(b, '{'); json.write_string(b, "ActivatedMana"); strings.write_byte(b, ':'); encode_SettlementNodeOrdinal(b, y._0); strings.write_byte(b, '}')
 	case RulesExecutionNodeRef_TriggeredMana: strings.write_byte(b, '{'); json.write_string(b, "TriggeredMana"); strings.write_byte(b, ':'); encode_SettlementNodeOrdinal(b, y._0); strings.write_byte(b, '}')
@@ -15621,6 +15645,7 @@ encode_LiminalEntry_members :: proc(b: ^strings.Builder, x: LiminalEntry, first:
 }
 
 decode_PendingLiminalEntryResume :: proc(v: json.Value, out: ^PendingLiminalEntryResume) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingLiminalEntryResume")
 	variant: string
 	body: json.Value
@@ -15658,6 +15683,7 @@ decode_PendingLiminalEntryResume :: proc(v: json.Value, out: ^PendingLiminalEntr
 
 encode_PendingLiminalEntryResume :: proc(b: ^strings.Builder, x: PendingLiminalEntryResume) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingLiminalEntryResume_Token: strings.write_byte(b, '{'); json.write_string(b, "Token"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "source_id"); encode_ObjectId(b, y.source_id)
 	member(b, first, "player"); encode_PlayerId(b, y.player)
@@ -15693,6 +15719,7 @@ encode_EnteringAuraAuthority_members :: proc(b: ^strings.Builder, x: EnteringAur
 }
 
 decode_AppliedReplacementKey :: proc(v: json.Value, out: ^AppliedReplacementKey) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AppliedReplacementKey")
 	if v.kind != .Object do return fail("AppliedReplacementKey: not an object")
 	tv, found := json.get(v, "type")
@@ -15743,6 +15770,7 @@ decode_AppliedReplacementKey :: proc(v: json.Value, out: ^AppliedReplacementKey)
 
 encode_AppliedReplacementKey :: proc(b: ^strings.Builder, x: AppliedReplacementKey) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AppliedReplacementKey_Object: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Object")
 	member(b, first, "source"); encode_ObjectId(b, y.source)
 	member(b, first, "index"); encode_u64(b, y.index)
@@ -15990,6 +16018,7 @@ encode_PendingTrigger_members :: proc(b: ^strings.Builder, x: PendingTrigger, fi
 }
 
 decode_TriggerFiring :: proc(v: json.Value, out: ^TriggerFiring) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerFiring")
 	variant: string
 	body: json.Value
@@ -16012,6 +16041,7 @@ decode_TriggerFiring :: proc(v: json.Value, out: ^TriggerFiring) -> bool {
 
 encode_TriggerFiring :: proc(b: ^strings.Builder, x: TriggerFiring) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TriggerFiring_Ordinary: _ = y; json.write_string(b, "Ordinary")
 	case TriggerFiring_LegacyDelayed: _ = y; json.write_string(b, "LegacyDelayed")
 	case TriggerFiring_ReceiptEligible: strings.write_byte(b, '{'); json.write_string(b, "ReceiptEligible"); strings.write_byte(b, ':'); encode_DelayedTriggerOrigin(b, y._0); strings.write_byte(b, '}')
@@ -16511,6 +16541,7 @@ encode_TurnDirection :: proc(b: ^strings.Builder, x: TurnDirection) {
 }
 
 decode_TargetFilter :: proc(v: json.Value, out: ^TargetFilter) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TargetFilter")
 	if v.kind != .Object do return fail("TargetFilter: not an object")
 	tv, found := json.get(v, "type")
@@ -16704,6 +16735,7 @@ decode_TargetFilter :: proc(v: json.Value, out: ^TargetFilter) -> bool {
 
 encode_TargetFilter :: proc(b: ^strings.Builder, x: TargetFilter) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TargetFilter_None: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "None"); strings.write_byte(b, '}')
 	case TargetFilter_Any: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Any"); strings.write_byte(b, '}')
 	case TargetFilter_Player: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Player"); strings.write_byte(b, '}')
@@ -17001,6 +17033,7 @@ encode_CommanderDamageEntry_members :: proc(b: ^strings.Builder, x: CommanderDam
 }
 
 decode_AutoPassMode :: proc(v: json.Value, out: ^AutoPassMode) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AutoPassMode")
 	if v.kind != .Object do return fail("AutoPassMode: not an object")
 	tv, found := json.get(v, "type")
@@ -17028,6 +17061,7 @@ decode_AutoPassMode :: proc(v: json.Value, out: ^AutoPassMode) -> bool {
 
 encode_AutoPassMode :: proc(b: ^strings.Builder, x: AutoPassMode) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AutoPassMode_UntilStackEmpty: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "UntilStackEmpty")
 	member(b, first, "initial_stack_len"); encode_int(b, y.initial_stack_len)
 	if !(skip_AutoPassMode_StackResolutionPolicy_is_committed_StackResolutionPolicy(y.policy)) { member(b, first, "policy"); encode_StackResolutionPolicy(b, y.policy) }
@@ -17093,6 +17127,7 @@ encode_PriorityPassingMode :: proc(b: ^strings.Builder, x: PriorityPassingMode) 
 }
 
 decode_ResourceAxis :: proc(v: json.Value, out: ^ResourceAxis) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResourceAxis")
 	variant: string
 	body: json.Value
@@ -17135,6 +17170,7 @@ decode_ResourceAxis :: proc(v: json.Value, out: ^ResourceAxis) -> bool {
 
 encode_ResourceAxis :: proc(b: ^strings.Builder, x: ResourceAxis) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResourceAxis_Mana: strings.write_byte(b, '{'); json.write_string(b, "Mana"); strings.write_byte(b, ':'); encode_ManaType(b, y._0); strings.write_byte(b, '}')
 	case ResourceAxis_Life: strings.write_byte(b, '{'); json.write_string(b, "Life"); strings.write_byte(b, ':'); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	case ResourceAxis_DamageDealt: strings.write_byte(b, '{'); json.write_string(b, "DamageDealt"); strings.write_byte(b, ':'); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
@@ -17157,6 +17193,7 @@ encode_ResourceAxis :: proc(b: ^strings.Builder, x: ResourceAxis) {
 }
 
 decode_PersistentAxisMaterialization :: proc(v: json.Value, out: ^PersistentAxisMaterialization) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PersistentAxisMaterialization")
 	variant: string
 	body: json.Value
@@ -17185,6 +17222,7 @@ decode_PersistentAxisMaterialization :: proc(v: json.Value, out: ^PersistentAxis
 
 encode_PersistentAxisMaterialization :: proc(b: ^strings.Builder, x: PersistentAxisMaterialization) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PersistentAxisMaterialization_Tokens: strings.write_byte(b, '{'); json.write_string(b, "Tokens"); strings.write_byte(b, ':'); enc_ptr_TokenGrowth(b, y._0); strings.write_byte(b, '}')
 	case PersistentAxisMaterialization_Counters: strings.write_byte(b, '{'); json.write_string(b, "Counters"); strings.write_byte(b, ':'); enc_dyn_CounterGrowth(b, y._0); strings.write_byte(b, '}')
 	case PersistentAxisMaterialization_Life: strings.write_byte(b, '{'); json.write_string(b, "Life"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -18073,6 +18111,7 @@ encode_SpellCastReversal_members :: proc(b: ^strings.Builder, x: SpellCastRevers
 }
 
 decode_AttachTarget :: proc(v: json.Value, out: ^AttachTarget) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AttachTarget")
 	if v.kind != .Object do return fail("AttachTarget: not an object")
 	tv, found := json.get(v, "type")
@@ -18087,6 +18126,7 @@ decode_AttachTarget :: proc(v: json.Value, out: ^AttachTarget) -> bool {
 
 encode_AttachTarget :: proc(b: ^strings.Builder, x: AttachTarget) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AttachTarget_Object: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Object"); member(b, &f, "data"); encode_ObjectId(b, y._0); strings.write_byte(b, '}')
 	case AttachTarget_Player: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Player"); member(b, &f, "data"); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	}
@@ -18413,6 +18453,7 @@ encode_PendingHeroEvent_members :: proc(b: ^strings.Builder, x: PendingHeroEvent
 }
 
 decode_PendingHordeReveal :: proc(v: json.Value, out: ^PendingHordeReveal) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingHordeReveal")
 	variant: string
 	body: json.Value
@@ -18464,6 +18505,7 @@ decode_PendingHordeReveal :: proc(v: json.Value, out: ^PendingHordeReveal) -> bo
 
 encode_PendingHordeReveal :: proc(b: ^strings.Builder, x: PendingHordeReveal) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingHordeReveal_NontokenCast: strings.write_byte(b, '{'); json.write_string(b, "NontokenCast"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "card"); encode_ObjectId(b, y.card)
 	member(b, first, "revealed_rarity"); enc_opt_Rarity(b, y.revealed_rarity)
@@ -18649,6 +18691,7 @@ encode_PendingScopedLibrarySearch_members :: proc(b: ^strings.Builder, x: Pendin
 }
 
 decode_LibrarySearchDeliveryResume :: proc(v: json.Value, out: ^LibrarySearchDeliveryResume) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LibrarySearchDeliveryResume")
 	if v.kind != .Object do return fail("LibrarySearchDeliveryResume: not an object")
 	tv, found := json.get(v, "type")
@@ -18680,6 +18723,7 @@ decode_LibrarySearchDeliveryResume :: proc(v: json.Value, out: ^LibrarySearchDel
 
 encode_LibrarySearchDeliveryResume :: proc(b: ^strings.Builder, x: LibrarySearchDeliveryResume) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case LibrarySearchDeliveryResume_Standard: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "standard")
 	member(b, first, "searcher"); encode_PlayerId(b, y.searcher)
 	if !((len(y.hidden_search_audiences) == 0)) { member(b, first, "hidden_search_audiences"); enc_dyn_HiddenSearchAudience(b, y.hidden_search_audiences) }
@@ -18969,6 +19013,7 @@ encode_PendingBeginGameAbility_members :: proc(b: ^strings.Builder, x: PendingBe
 }
 
 decode_ChoiceValue :: proc(v: json.Value, out: ^ChoiceValue) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ChoiceValue")
 	if v.kind != .Object do return fail("ChoiceValue: not an object")
 	tv, found := json.get(v, "type")
@@ -18995,6 +19040,7 @@ decode_ChoiceValue :: proc(v: json.Value, out: ^ChoiceValue) -> bool {
 
 encode_ChoiceValue :: proc(b: ^strings.Builder, x: ChoiceValue) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ChoiceValue_Color: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Color"); member(b, &f, "value"); encode_ManaColor(b, y._0); strings.write_byte(b, '}')
 	case ChoiceValue_CreatureType: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CreatureType"); member(b, &f, "value"); encode_string(b, y._0); strings.write_byte(b, '}')
 	case ChoiceValue_BasicLandType: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "BasicLandType"); member(b, &f, "value"); encode_BasicLandType(b, y._0); strings.write_byte(b, '}')
@@ -19013,6 +19059,7 @@ encode_ChoiceValue :: proc(b: ^strings.Builder, x: ChoiceValue) {
 }
 
 decode_AppliedSticker :: proc(v: json.Value, out: ^AppliedSticker) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AppliedSticker")
 	if v.kind != .Object do return fail("AppliedSticker: not an object")
 	tv, found := json.get(v, "type")
@@ -19065,6 +19112,7 @@ decode_AppliedSticker :: proc(v: json.Value, out: ^AppliedSticker) -> bool {
 
 encode_AppliedSticker :: proc(b: ^strings.Builder, x: AppliedSticker) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AppliedSticker_Name: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Name")
 	member(b, first, "locator"); encode_StickerLocator(b, y.locator)
 	member(b, first, "text"); encode_string(b, y.text)
@@ -19142,6 +19190,7 @@ encode_ChosenDamageSource_members :: proc(b: ^strings.Builder, x: ChosenDamageSo
 }
 
 decode_ParentTargetMissingReason :: proc(v: json.Value, out: ^ParentTargetMissingReason) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ParentTargetMissingReason")
 	variant: string
 	body: json.Value
@@ -19173,6 +19222,7 @@ decode_ParentTargetMissingReason :: proc(v: json.Value, out: ^ParentTargetMissin
 
 encode_ParentTargetMissingReason :: proc(b: ^strings.Builder, x: ParentTargetMissingReason) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ParentTargetMissingReason_Dig: _ = y; json.write_string(b, "Dig")
 	case ParentTargetMissingReason_ChooseFromZone: _ = y; json.write_string(b, "ChooseFromZone")
 	case ParentTargetMissingReason_RevealHandChoice: _ = y; json.write_string(b, "RevealHandChoice")
@@ -19478,6 +19528,7 @@ encode_ResolvedAbility_members :: proc(b: ^strings.Builder, x: ResolvedAbility, 
 }
 
 decode_GameRestriction :: proc(v: json.Value, out: ^GameRestriction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("GameRestriction")
 	if v.kind != .Object do return fail("GameRestriction: not an object")
 	tv, found := json.get(v, "type")
@@ -19518,6 +19569,7 @@ decode_GameRestriction :: proc(v: json.Value, out: ^GameRestriction) -> bool {
 
 encode_GameRestriction :: proc(b: ^strings.Builder, x: GameRestriction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case GameRestriction_DamagePreventionDisabled: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "DamagePreventionDisabled")
 	member(b, first, "source"); encode_ObjectId(b, y.source)
 	member(b, first, "expiry"); encode_RestrictionExpiry(b, y.expiry)
@@ -19871,6 +19923,7 @@ encode_LinkedExileLki_members :: proc(b: ^strings.Builder, x: LinkedExileLki, fi
 }
 
 decode_ProductionOverride :: proc(v: json.Value, out: ^ProductionOverride) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ProductionOverride")
 	if v.kind != .Object do return fail("ProductionOverride: not an object")
 	tv, found := json.get(v, "type")
@@ -19885,12 +19938,14 @@ decode_ProductionOverride :: proc(v: json.Value, out: ^ProductionOverride) -> bo
 
 encode_ProductionOverride :: proc(b: ^strings.Builder, x: ProductionOverride) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ProductionOverride_SingleColor: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SingleColor"); member(b, &f, "data"); encode_ManaType(b, y._0); strings.write_byte(b, '}')
 	case ProductionOverride_Combination: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Combination"); member(b, &f, "data"); enc_dyn_ManaType(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_PendingCostMoveResume :: proc(v: json.Value, out: ^PendingCostMoveResume) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingCostMoveResume")
 	variant: string
 	body: json.Value
@@ -20062,6 +20117,7 @@ decode_PendingCostMoveResume :: proc(v: json.Value, out: ^PendingCostMoveResume)
 
 encode_PendingCostMoveResume :: proc(b: ^strings.Builder, x: PendingCostMoveResume) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingCostMoveResume_Cast: strings.write_byte(b, '{'); json.write_string(b, "Cast"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "player"); encode_PlayerId(b, y.player)
 	member(b, first, "pending"); enc_ptr_PendingCast(b, y.pending)
@@ -20163,6 +20219,7 @@ encode_PendingCostMoveResume :: proc(b: ^strings.Builder, x: PendingCostMoveResu
 }
 
 decode_DeferredLifeCostResume :: proc(v: json.Value, out: ^DeferredLifeCostResume) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DeferredLifeCostResume")
 	if v.kind != .Object do return fail("DeferredLifeCostResume: not an object")
 	tv, found := json.get(v, "type")
@@ -20216,6 +20273,7 @@ decode_DeferredLifeCostResume :: proc(v: json.Value, out: ^DeferredLifeCostResum
 
 encode_DeferredLifeCostResume :: proc(b: ^strings.Builder, x: DeferredLifeCostResume) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DeferredLifeCostResume_Cast: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Cast")
 	member(b, first, "player"); encode_PlayerId(b, y.player)
 	if !(y.pending == nil) { member(b, first, "pending"); enc_ptr_PendingCast(b, y.pending) }
@@ -20447,6 +20505,7 @@ encode_DungeonProgress_members :: proc(b: ^strings.Builder, x: DungeonProgress, 
 }
 
 decode_TargetRef :: proc(v: json.Value, out: ^TargetRef) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TargetRef")
 	variant: string
 	body: json.Value
@@ -20467,6 +20526,7 @@ decode_TargetRef :: proc(v: json.Value, out: ^TargetRef) -> bool {
 
 encode_TargetRef :: proc(b: ^strings.Builder, x: TargetRef) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TargetRef_Object: strings.write_byte(b, '{'); json.write_string(b, "Object"); strings.write_byte(b, ':'); encode_ObjectId(b, y._0); strings.write_byte(b, '}')
 	case TargetRef_Player: strings.write_byte(b, '{'); json.write_string(b, "Player"); strings.write_byte(b, ':'); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	}
@@ -20591,6 +20651,7 @@ encode_CompanionInfo_members :: proc(b: ^strings.Builder, x: CompanionInfo, firs
 }
 
 decode_ChosenAttribute :: proc(v: json.Value, out: ^ChosenAttribute) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ChosenAttribute")
 	if v.kind != .Object do return fail("ChosenAttribute: not an object")
 	tv, found := json.get(v, "type")
@@ -20621,6 +20682,7 @@ decode_ChosenAttribute :: proc(v: json.Value, out: ^ChosenAttribute) -> bool {
 
 encode_ChosenAttribute :: proc(b: ^strings.Builder, x: ChosenAttribute) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ChosenAttribute_Color: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Color"); member(b, &f, "value"); encode_ManaColor(b, y._0); strings.write_byte(b, '}')
 	case ChosenAttribute_CreatureType: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CreatureType"); member(b, &f, "value"); encode_string(b, y._0); strings.write_byte(b, '}')
 	case ChosenAttribute_BasicLandType: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "BasicLandType"); member(b, &f, "value"); encode_BasicLandType(b, y._0); strings.write_byte(b, '}')
@@ -21333,6 +21395,7 @@ encode_PendingEntersModifications_members :: proc(b: ^strings.Builder, x: Pendin
 }
 
 decode_PermissionGrant :: proc(v: json.Value, out: ^PermissionGrant) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PermissionGrant")
 	if v.kind != .Object do return fail("PermissionGrant: not an object")
 	tv, found := json.get(v, "type")
@@ -21360,6 +21423,7 @@ decode_PermissionGrant :: proc(v: json.Value, out: ^PermissionGrant) -> bool {
 
 encode_PermissionGrant :: proc(b: ^strings.Builder, x: PermissionGrant) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PermissionGrant_Static: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Static")
 	member(b, first, "index"); encode_u32(b, y.index)
 	}; strings.write_byte(b, '}')
@@ -21383,6 +21447,7 @@ encode_PermissionGrant_members :: proc(b: ^strings.Builder, x: PermissionGrant, 
 }
 
 decode_AbilityCost :: proc(v: json.Value, out: ^AbilityCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AbilityCost")
 	if v.kind != .Object do return fail("AbilityCost: not an object")
 	tv, found := json.get(v, "type")
@@ -21630,6 +21695,7 @@ decode_AbilityCost :: proc(v: json.Value, out: ^AbilityCost) -> bool {
 
 encode_AbilityCost :: proc(b: ^strings.Builder, x: AbilityCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AbilityCost_Mana: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Mana")
 	member(b, first, "cost"); encode_ManaCost(b, y.cost)
 	}; strings.write_byte(b, '}')
@@ -21897,6 +21963,7 @@ encode_CastCostMode :: proc(b: ^strings.Builder, x: CastCostMode) {
 }
 
 decode_QuantityExpr :: proc(v: json.Value, out: ^QuantityExpr) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("QuantityExpr")
 	if v.kind != .Object do return fail("QuantityExpr: not an object")
 	tv, found := json.get(v, "type")
@@ -21993,6 +22060,7 @@ decode_QuantityExpr :: proc(v: json.Value, out: ^QuantityExpr) -> bool {
 
 encode_QuantityExpr :: proc(b: ^strings.Builder, x: QuantityExpr) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case QuantityExpr_Ref: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Ref")
 	member(b, first, "qty"); encode_QuantityRef(b, y.qty)
 	}; strings.write_byte(b, '}')
@@ -22152,6 +22220,7 @@ encode_Zone :: proc(b: ^strings.Builder, x: Zone) {
 }
 
 decode_CostObjectCount :: proc(v: json.Value, out: ^CostObjectCount) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CostObjectCount")
 	if v.kind != .Object do return fail("CostObjectCount: not an object")
 	tv, found := json.get(v, "type")
@@ -22178,6 +22247,7 @@ decode_CostObjectCount :: proc(v: json.Value, out: ^CostObjectCount) -> bool {
 
 encode_CostObjectCount :: proc(b: ^strings.Builder, x: CostObjectCount) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CostObjectCount_Exactly: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Exactly")
 	member(b, first, "count"); encode_u32(b, y.count)
 	}; strings.write_byte(b, '}')
@@ -22221,6 +22291,7 @@ encode_AggregateFunction :: proc(b: ^strings.Builder, x: AggregateFunction) {
 }
 
 decode_ObjectProperty :: proc(v: json.Value, out: ^ObjectProperty) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ObjectProperty")
 	variant: string
 	body: json.Value
@@ -22243,6 +22314,7 @@ decode_ObjectProperty :: proc(v: json.Value, out: ^ObjectProperty) -> bool {
 
 encode_ObjectProperty :: proc(b: ^strings.Builder, x: ObjectProperty) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ObjectProperty_Power: _ = y; json.write_string(b, "Power")
 	case ObjectProperty_Toughness: _ = y; json.write_string(b, "Toughness")
 	case ObjectProperty_ManaValue: _ = y; json.write_string(b, "ManaValue")
@@ -22279,6 +22351,7 @@ encode_Comparator :: proc(b: ^strings.Builder, x: Comparator) {
 }
 
 decode_TapCreaturesRequirement :: proc(v: json.Value, out: ^TapCreaturesRequirement) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TapCreaturesRequirement")
 	if v.kind != .Object do return fail("TapCreaturesRequirement: not an object")
 	tv, found := json.get(v, "requirement")
@@ -22308,6 +22381,7 @@ decode_TapCreaturesRequirement :: proc(v: json.Value, out: ^TapCreaturesRequirem
 
 encode_TapCreaturesRequirement :: proc(b: ^strings.Builder, x: TapCreaturesRequirement) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TapCreaturesRequirement_Count: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "requirement"); json.write_string(b, "count")
 	member(b, first, "count"); encode_u32(b, y.count)
 	}; strings.write_byte(b, '}')
@@ -22335,6 +22409,7 @@ encode_TapCreaturesRequirement_members :: proc(b: ^strings.Builder, x: TapCreatu
 }
 
 decode_CounterMatch :: proc(v: json.Value, out: ^CounterMatch) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CounterMatch")
 	if v.kind != .Object do return fail("CounterMatch: not an object")
 	tv, found := json.get(v, "type")
@@ -22349,6 +22424,7 @@ decode_CounterMatch :: proc(v: json.Value, out: ^CounterMatch) -> bool {
 
 encode_CounterMatch :: proc(b: ^strings.Builder, x: CounterMatch) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CounterMatch_Any: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Any"); strings.write_byte(b, '}')
 	case CounterMatch_OfType: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "OfType"); member(b, &f, "data"); encode_CounterType(b, y._0); strings.write_byte(b, '}')
 	}
@@ -22451,6 +22527,7 @@ encode_NinjutsuVariant :: proc(b: ^strings.Builder, x: NinjutsuVariant) {
 }
 
 decode_Effect :: proc(v: json.Value, out: ^Effect) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("Effect")
 	if v.kind != .Object do return fail("Effect: not an object")
 	tv, found := json.get(v, "type")
@@ -24373,6 +24450,7 @@ decode_Effect :: proc(v: json.Value, out: ^Effect) -> bool {
 
 encode_Effect :: proc(b: ^strings.Builder, x: Effect) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case Effect_StartYourEngines: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "StartYourEngines")
 	member(b, first, "player_scope"); encode_PlayerFilter(b, y.player_scope)
 	}; strings.write_byte(b, '}')
@@ -26820,6 +26898,7 @@ encode_KeywordKind :: proc(b: ^strings.Builder, x: KeywordKind) {
 }
 
 decode_StackEntryKind :: proc(v: json.Value, out: ^StackEntryKind) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StackEntryKind")
 	if v.kind != .Object do return fail("StackEntryKind: not an object")
 	tv, found := json.get(v, "type")
@@ -26880,6 +26959,7 @@ decode_StackEntryKind :: proc(v: json.Value, out: ^StackEntryKind) -> bool {
 
 encode_StackEntryKind :: proc(b: ^strings.Builder, x: StackEntryKind) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case StackEntryKind_Spell: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Spell"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "card_id"); encode_CardId(b, y.card_id)
 	if !(y.ability == nil) { member(b, first, "ability"); enc_ptr_ResolvedAbility(b, y.ability) }
@@ -26921,6 +27001,7 @@ encode_CardId :: proc(b: ^strings.Builder, x: CardId) {
 }
 
 decode_CastingVariant :: proc(v: json.Value, out: ^CastingVariant) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastingVariant")
 	variant: string
 	body: json.Value
@@ -27015,6 +27096,7 @@ decode_CastingVariant :: proc(v: json.Value, out: ^CastingVariant) -> bool {
 
 encode_CastingVariant :: proc(b: ^strings.Builder, x: CastingVariant) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CastingVariant_Normal: _ = y; json.write_string(b, "Normal")
 	case CastingVariant_Adventure: _ = y; json.write_string(b, "Adventure")
 	case CastingVariant_Omen: _ = y; json.write_string(b, "Omen")
@@ -27075,6 +27157,7 @@ encode_CastingVariant :: proc(b: ^strings.Builder, x: CastingVariant) {
 }
 
 decode_TriggerCondition :: proc(v: json.Value, out: ^TriggerCondition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerCondition")
 	if v.kind != .Object do return fail("TriggerCondition: not an object")
 	tv, found := json.get(v, "type")
@@ -27472,6 +27555,7 @@ decode_TriggerCondition :: proc(v: json.Value, out: ^TriggerCondition) -> bool {
 
 encode_TriggerCondition :: proc(b: ^strings.Builder, x: TriggerCondition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TriggerCondition_GainedLife: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "GainedLife")
 	member(b, first, "minimum"); encode_u32(b, y.minimum)
 	}; strings.write_byte(b, '}')
@@ -27875,6 +27959,7 @@ encode_TriggerCondition_members :: proc(b: ^strings.Builder, x: TriggerCondition
 }
 
 decode_SyntheticTriggerProvenance :: proc(v: json.Value, out: ^SyntheticTriggerProvenance) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SyntheticTriggerProvenance")
 	if v.kind != .Object do return fail("SyntheticTriggerProvenance: not an object")
 	tv, found := json.get(v, "type")
@@ -27894,6 +27979,7 @@ decode_SyntheticTriggerProvenance :: proc(v: json.Value, out: ^SyntheticTriggerP
 
 encode_SyntheticTriggerProvenance :: proc(b: ^strings.Builder, x: SyntheticTriggerProvenance) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case SyntheticTriggerProvenance_Storm: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Storm"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "copy_count"); encode_u32(b, y.copy_count)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -27901,6 +27987,7 @@ encode_SyntheticTriggerProvenance :: proc(b: ^strings.Builder, x: SyntheticTrigg
 }
 
 decode_KeywordAction :: proc(v: json.Value, out: ^KeywordAction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("KeywordAction")
 	if v.kind != .Object do return fail("KeywordAction: not an object")
 	tv, found := json.get(v, "type")
@@ -27946,6 +28033,7 @@ decode_KeywordAction :: proc(v: json.Value, out: ^KeywordAction) -> bool {
 
 encode_KeywordAction :: proc(b: ^strings.Builder, x: KeywordAction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case KeywordAction_Equip: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Equip"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "equipment_id"); encode_ObjectId(b, y.equipment_id)
 	member(b, first, "target_creature_id"); encode_ObjectId(b, y.target_creature_id)
@@ -28133,6 +28221,7 @@ encode_MeldSelection_members :: proc(b: ^strings.Builder, x: MeldSelection, firs
 }
 
 decode_AttackTarget :: proc(v: json.Value, out: ^AttackTarget) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AttackTarget")
 	if v.kind != .Object do return fail("AttackTarget: not an object")
 	tv, found := json.get(v, "type")
@@ -28148,6 +28237,7 @@ decode_AttackTarget :: proc(v: json.Value, out: ^AttackTarget) -> bool {
 
 encode_AttackTarget :: proc(b: ^strings.Builder, x: AttackTarget) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AttackTarget_Player: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Player"); member(b, &f, "data"); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	case AttackTarget_Planeswalker: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Planeswalker"); member(b, &f, "data"); encode_ObjectId(b, y._0); strings.write_byte(b, '}')
 	case AttackTarget_Battle: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Battle"); member(b, &f, "data"); encode_ObjectId(b, y._0); strings.write_byte(b, '}')
@@ -28355,6 +28445,7 @@ encode_TargetSelectionProgress_members :: proc(b: ^strings.Builder, x: TargetSel
 }
 
 decode_CombatRequirement :: proc(v: json.Value, out: ^CombatRequirement) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CombatRequirement")
 	if v.kind != .Object do return fail("CombatRequirement: not an object")
 	tv, found := json.get(v, "kind")
@@ -28397,6 +28488,7 @@ decode_CombatRequirement :: proc(v: json.Value, out: ^CombatRequirement) -> bool
 
 encode_CombatRequirement :: proc(b: ^strings.Builder, x: CombatRequirement) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CombatRequirement_MustAttack: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "kind"); json.write_string(b, "MustAttack")
 	member(b, first, "defenders"); enc_dyn_AttackTarget(b, y.defenders)
 	if !((len(y.sources) == 0)) { member(b, first, "sources"); enc_dyn_ObjectId(b, y.sources) }
@@ -28784,6 +28876,7 @@ encode_DigRestSplitScope :: proc(b: ^strings.Builder, x: DigRestSplitScope) {
 }
 
 decode_LibraryPlacementContinuation :: proc(v: json.Value, out: ^LibraryPlacementContinuation) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LibraryPlacementContinuation")
 	// untagged: the first variant that decodes wins, as in serde.
 	{ tmp: LibraryPlacementContinuation_Requests; if decode_quiet_proc(v, &tmp._0, dec_ptr_BatchCompletion) { out^ = tmp; return true } }
@@ -28796,6 +28889,7 @@ decode_LibraryPlacementContinuation :: proc(v: json.Value, out: ^LibraryPlacemen
 
 encode_LibraryPlacementContinuation :: proc(b: ^strings.Builder, x: LibraryPlacementContinuation) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case LibraryPlacementContinuation_Requests: enc_ptr_BatchCompletion(b, y._0)
 	case LibraryPlacementContinuation_ApprovedBatch: strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "logical_group_id"); encode_LogicalZoneChangeGroupId(b, y.logical_group_id)
@@ -28804,6 +28898,7 @@ encode_LibraryPlacementContinuation :: proc(b: ^strings.Builder, x: LibraryPlace
 }
 
 decode_ObjectSelectionCardinality :: proc(v: json.Value, out: ^ObjectSelectionCardinality) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ObjectSelectionCardinality")
 	variant: string
 	body: json.Value
@@ -28830,6 +28925,7 @@ decode_ObjectSelectionCardinality :: proc(v: json.Value, out: ^ObjectSelectionCa
 
 encode_ObjectSelectionCardinality :: proc(b: ^strings.Builder, x: ObjectSelectionCardinality) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ObjectSelectionCardinality_Exactly: strings.write_byte(b, '{'); json.write_string(b, "Exactly"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "count"); encode_u32(b, y.count)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -28902,6 +28998,7 @@ encode_PendingManaAbility_members :: proc(b: ^strings.Builder, x: PendingManaAbi
 }
 
 decode_SearchSelectionConstraint :: proc(v: json.Value, out: ^SearchSelectionConstraint) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SearchSelectionConstraint")
 	if v.kind != .Object do return fail("SearchSelectionConstraint: not an object")
 	tv, found := json.get(v, "type")
@@ -28938,6 +29035,7 @@ decode_SearchSelectionConstraint :: proc(v: json.Value, out: ^SearchSelectionCon
 
 encode_SearchSelectionConstraint :: proc(b: ^strings.Builder, x: SearchSelectionConstraint) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case SearchSelectionConstraint_None: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "None"); strings.write_byte(b, '}')
 	case SearchSelectionConstraint_SharesQualities: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "SharesQualities")
 	member(b, first, "qualities"); enc_dyn_SharedQuality(b, y.qualities)
@@ -29037,6 +29135,7 @@ encode_OutsideGameChoiceEntry_members :: proc(b: ^strings.Builder, x: OutsideGam
 }
 
 decode_ChooseFromZoneConstraint :: proc(v: json.Value, out: ^ChooseFromZoneConstraint) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ChooseFromZoneConstraint")
 	if v.kind != .Object do return fail("ChooseFromZoneConstraint: not an object")
 	tv, found := json.get(v, "type")
@@ -29064,6 +29163,7 @@ decode_ChooseFromZoneConstraint :: proc(v: json.Value, out: ^ChooseFromZoneConst
 
 encode_ChooseFromZoneConstraint :: proc(b: ^strings.Builder, x: ChooseFromZoneConstraint) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ChooseFromZoneConstraint_DistinctCardTypes: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "DistinctCardTypes")
 	member(b, first, "categories"); enc_dyn_CoreType(b, y.categories)
 	}; strings.write_byte(b, '}')
@@ -29818,6 +29918,7 @@ encode_DiscardFrameId :: proc(b: ^strings.Builder, x: DiscardFrameId) {
 }
 
 decode_HeroEventKind :: proc(v: json.Value, out: ^HeroEventKind) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("HeroEventKind")
 	if v.kind != .Object do return fail("HeroEventKind: not an object")
 	tv, found := json.get(v, "type")
@@ -29843,6 +29944,7 @@ decode_HeroEventKind :: proc(v: json.Value, out: ^HeroEventKind) -> bool {
 
 encode_HeroEventKind :: proc(b: ^strings.Builder, x: HeroEventKind) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case HeroEventKind_ChromeOverload: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ChromeOverload"); strings.write_byte(b, '}')
 	case HeroEventKind_KrangStratagem: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "KrangStratagem"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "remaining"); encode_int(b, y.remaining)
@@ -29928,6 +30030,7 @@ encode_WithEntryEffect_members :: proc(b: ^strings.Builder, x: WithEntryEffect, 
 }
 
 decode_LibraryPosition :: proc(v: json.Value, out: ^LibraryPosition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LibraryPosition")
 	if v.kind != .Object do return fail("LibraryPosition: not an object")
 	tv, found := json.get(v, "type")
@@ -29963,6 +30066,7 @@ decode_LibraryPosition :: proc(v: json.Value, out: ^LibraryPosition) -> bool {
 
 encode_LibraryPosition :: proc(b: ^strings.Builder, x: LibraryPosition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case LibraryPosition_Top: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Top"); strings.write_byte(b, '}')
 	case LibraryPosition_Bottom: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Bottom"); strings.write_byte(b, '}')
 	case LibraryPosition_NthFromTop: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "NthFromTop")
@@ -30046,6 +30150,7 @@ encode_MassLibraryOrderBatch_members :: proc(b: ^strings.Builder, x: MassLibrary
 }
 
 decode_Duration :: proc(v: json.Value, out: ^Duration) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("Duration")
 	variant: string
 	body: json.Value
@@ -30108,6 +30213,7 @@ decode_Duration :: proc(v: json.Value, out: ^Duration) -> bool {
 
 encode_Duration :: proc(b: ^strings.Builder, x: Duration) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case Duration_UntilEndOfTurn: _ = y; json.write_string(b, "UntilEndOfTurn")
 	case Duration_UntilEndOfCombat: _ = y; json.write_string(b, "UntilEndOfCombat")
 	case Duration_UntilNextTurnOf: strings.write_byte(b, '{'); json.write_string(b, "UntilNextTurnOf"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -30136,6 +30242,7 @@ encode_Duration :: proc(b: ^strings.Builder, x: Duration) {
 }
 
 decode_TargetSelectionConstraint :: proc(v: json.Value, out: ^TargetSelectionConstraint) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TargetSelectionConstraint")
 	if v.kind != .Object do return fail("TargetSelectionConstraint: not an object")
 	tv, found := json.get(v, "type")
@@ -30165,6 +30272,7 @@ decode_TargetSelectionConstraint :: proc(v: json.Value, out: ^TargetSelectionCon
 
 encode_TargetSelectionConstraint :: proc(b: ^strings.Builder, x: TargetSelectionConstraint) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TargetSelectionConstraint_DifferentTargetPlayers: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "DifferentTargetPlayers"); strings.write_byte(b, '}')
 	case TargetSelectionConstraint_DifferentObjectControllers: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "DifferentObjectControllers"); strings.write_byte(b, '}')
 	case TargetSelectionConstraint_SameZoneOwner: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "SameZoneOwner")
@@ -30214,6 +30322,7 @@ encode_NamedChoiceSource_members :: proc(b: ^strings.Builder, x: NamedChoiceSour
 }
 
 decode_FreeEntry :: proc(v: json.Value, out: ^FreeEntry) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("FreeEntry")
 	if v.kind != .Object do return fail("FreeEntry: not an object")
 	tv, found := json.get(v, "kind")
@@ -30234,6 +30343,7 @@ decode_FreeEntry :: proc(v: json.Value, out: ^FreeEntry) -> bool {
 
 encode_FreeEntry :: proc(b: ^strings.Builder, x: FreeEntry) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case FreeEntry_Number: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "kind"); json.write_string(b, "Number")
 	member(b, first, "min"); encode_u32(b, y.min)
 	member(b, first, "max"); encode_u32(b, y.max)
@@ -30359,6 +30469,7 @@ encode_GiftKind_members :: proc(b: ^strings.Builder, x: GiftKind, first: ^bool) 
 }
 
 decode_CastOpponentChoicePurpose :: proc(v: json.Value, out: ^CastOpponentChoicePurpose) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastOpponentChoicePurpose")
 	if v.kind != .Object do return fail("CastOpponentChoicePurpose: not an object")
 	tv, found := json.get(v, "type")
@@ -30379,6 +30490,7 @@ decode_CastOpponentChoicePurpose :: proc(v: json.Value, out: ^CastOpponentChoice
 
 encode_CastOpponentChoicePurpose :: proc(b: ^strings.Builder, x: CastOpponentChoicePurpose) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CastOpponentChoicePurpose_Gift: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Gift"); strings.write_byte(b, '}')
 	case CastOpponentChoicePurpose_EffectCost: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "EffectCost")
 	member(b, first, "cost"); enc_ptr_AbilityCost(b, y.cost)
@@ -30466,6 +30578,7 @@ encode_CostReductionOutcome_members :: proc(b: ^strings.Builder, x: CostReductio
 }
 
 decode_CastOfferKind :: proc(v: json.Value, out: ^CastOfferKind) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastOfferKind")
 	if v.kind != .Object do return fail("CastOfferKind: not an object")
 	tv, found := json.get(v, "type")
@@ -30567,6 +30680,7 @@ decode_CastOfferKind :: proc(v: json.Value, out: ^CastOfferKind) -> bool {
 
 encode_CastOfferKind :: proc(b: ^strings.Builder, x: CastOfferKind) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CastOfferKind_Adventure: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Adventure")
 	member(b, first, "object_id"); encode_ObjectId(b, y.object_id)
 	member(b, first, "card_id"); encode_CardId(b, y.card_id)
@@ -30774,6 +30888,7 @@ encode_AlternativeCastKeyword_members :: proc(b: ^strings.Builder, x: Alternativ
 }
 
 decode_AlternativeAdditionalCostDescription :: proc(v: json.Value, out: ^AlternativeAdditionalCostDescription) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AlternativeAdditionalCostDescription")
 	if v.kind != .Object do return fail("AlternativeAdditionalCostDescription: not an object")
 	tv, found := json.get(v, "type")
@@ -30793,6 +30908,7 @@ decode_AlternativeAdditionalCostDescription :: proc(v: json.Value, out: ^Alterna
 
 encode_AlternativeAdditionalCostDescription :: proc(b: ^strings.Builder, x: AlternativeAdditionalCostDescription) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AlternativeAdditionalCostDescription_EmergeSacrifice: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "EmergeSacrifice")
 	member(b, first, "quality"); encode_EmergeSacrificeQuality(b, y.quality)
 	}; strings.write_byte(b, '}')
@@ -30988,6 +31104,7 @@ encode_ShortcutDecisionSchema_members :: proc(b: ^strings.Builder, x: ShortcutDe
 }
 
 decode_CountedTake :: proc(v: json.Value, out: ^CountedTake) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CountedTake")
 	variant: string
 	body: json.Value
@@ -31008,6 +31125,7 @@ decode_CountedTake :: proc(v: json.Value, out: ^CountedTake) -> bool {
 
 encode_CountedTake :: proc(b: ^strings.Builder, x: CountedTake) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CountedTake_Performs: _ = y; json.write_string(b, "Performs")
 	case CountedTake_Unperformable: strings.write_byte(b, '{'); json.write_string(b, "Unperformable"); strings.write_byte(b, ':'); encode_UnperformableCause(b, y._0); strings.write_byte(b, '}')
 	}
@@ -31220,6 +31338,7 @@ encode_RoomPreview_members :: proc(b: ^strings.Builder, x: RoomPreview, first: ^
 }
 
 decode_PayCostKind :: proc(v: json.Value, out: ^PayCostKind) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PayCostKind")
 	if v.kind != .Object do return fail("PayCostKind: not an object")
 	tv, found := json.get(v, "type")
@@ -31312,6 +31431,7 @@ decode_PayCostKind :: proc(v: json.Value, out: ^PayCostKind) -> bool {
 
 encode_PayCostKind :: proc(b: ^strings.Builder, x: PayCostKind) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PayCostKind_Discard: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Discard"); strings.write_byte(b, '}')
 	case PayCostKind_Reveal: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Reveal")
 	if !(y.shared_quality == nil) { member(b, first, "shared_quality"); enc_opt_SharedQuality(b, y.shared_quality) }
@@ -31401,6 +31521,7 @@ encode_PayCostKind_members :: proc(b: ^strings.Builder, x: PayCostKind, first: ^
 }
 
 decode_CostResume :: proc(v: json.Value, out: ^CostResume) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CostResume")
 	if v.kind != .Object do return fail("CostResume: not an object")
 	tv, found := json.get(v, "type")
@@ -31458,6 +31579,7 @@ decode_CostResume :: proc(v: json.Value, out: ^CostResume) -> bool {
 
 encode_CostResume :: proc(b: ^strings.Builder, x: CostResume) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CostResume_Spell: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Spell")
 	member(b, first, "Spell"); enc_ptr_PendingCast(b, y.spell)
 	}; strings.write_byte(b, '}')
@@ -31545,6 +31667,7 @@ encode_ManaType :: proc(b: ^strings.Builder, x: ManaType) {
 }
 
 decode_ManaChoicePrompt :: proc(v: json.Value, out: ^ManaChoicePrompt) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaChoicePrompt")
 	if v.kind != .Object do return fail("ManaChoicePrompt: not an object")
 	tv, found := json.get(v, "type")
@@ -31579,6 +31702,7 @@ decode_ManaChoicePrompt :: proc(v: json.Value, out: ^ManaChoicePrompt) -> bool {
 
 encode_ManaChoicePrompt :: proc(b: ^strings.Builder, x: ManaChoicePrompt) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaChoicePrompt_SingleColor: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SingleColor"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "options"); enc_dyn_ManaType(b, y.options)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -31593,6 +31717,7 @@ encode_ManaChoicePrompt :: proc(b: ^strings.Builder, x: ManaChoicePrompt) {
 }
 
 decode_ManaChoiceContext :: proc(v: json.Value, out: ^ManaChoiceContext) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaChoiceContext")
 	if v.kind != .Object do return fail("ManaChoiceContext: not an object")
 	tv, found := json.get(v, "type")
@@ -31607,12 +31732,14 @@ decode_ManaChoiceContext :: proc(v: json.Value, out: ^ManaChoiceContext) -> bool
 
 encode_ManaChoiceContext :: proc(b: ^strings.Builder, x: ManaChoiceContext) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaChoiceContext_ManaAbility: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ManaAbility"); member(b, &f, "data"); enc_ptr_PendingManaAbility(b, y._0); strings.write_byte(b, '}')
 	case ManaChoiceContext_ResolvingEffect: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ResolvingEffect"); member(b, &f, "data"); enc_ptr_ResolvedAbility(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_CollectEvidenceResume :: proc(v: json.Value, out: ^CollectEvidenceResume) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CollectEvidenceResume")
 	if v.kind != .Object do return fail("CollectEvidenceResume: not an object")
 	tv, found := json.get(v, "type")
@@ -31654,6 +31781,7 @@ decode_CollectEvidenceResume :: proc(v: json.Value, out: ^CollectEvidenceResume)
 
 encode_CollectEvidenceResume :: proc(b: ^strings.Builder, x: CollectEvidenceResume) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CollectEvidenceResume_Casting: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Casting"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "pending_cast"); enc_ptr_PendingCast(b, y.pending_cast)
 	member(b, first, "source"); encode_SpellCostSource(b, y.source)
@@ -31731,6 +31859,7 @@ encode_ContestState_members :: proc(b: ^strings.Builder, x: ContestState, first:
 }
 
 decode_VoteActor :: proc(v: json.Value, out: ^VoteActor) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("VoteActor")
 	if v.kind != .Object do return fail("VoteActor: not an object")
 	tv, found := json.get(v, "type")
@@ -31745,12 +31874,14 @@ decode_VoteActor :: proc(v: json.Value, out: ^VoteActor) -> bool {
 
 encode_VoteActor :: proc(b: ^strings.Builder, x: VoteActor) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case VoteActor_SubjectActs: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SubjectActs"); strings.write_byte(b, '}')
 	case VoteActor_Delegated: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Delegated"); member(b, &f, "data"); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_VoteTally :: proc(v: json.Value, out: ^VoteTally) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("VoteTally")
 	if v.kind != .Object do return fail("VoteTally: not an object")
 	tv, found := json.get(v, "type")
@@ -31771,6 +31902,7 @@ decode_VoteTally :: proc(v: json.Value, out: ^VoteTally) -> bool {
 
 encode_VoteTally :: proc(b: ^strings.Builder, x: VoteTally) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case VoteTally_PerVote: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "PerVote"); strings.write_byte(b, '}')
 	case VoteTally_TopVotes: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "TopVotes"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "tie"); encode_TieResolution(b, y.tie)
@@ -31809,6 +31941,7 @@ encode_VoteVisibility_members :: proc(b: ^strings.Builder, x: VoteVisibility, fi
 }
 
 decode_PileSource :: proc(v: json.Value, out: ^PileSource) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PileSource")
 	if v.kind != .Object do return fail("PileSource: not an object")
 	tv, found := json.get(v, "type")
@@ -31830,6 +31963,7 @@ decode_PileSource :: proc(v: json.Value, out: ^PileSource) -> bool {
 
 encode_PileSource :: proc(b: ^strings.Builder, x: PileSource) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PileSource_Battlefield: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Battlefield"); strings.write_byte(b, '}')
 	case PileSource_RevealedFromLibraryTop: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "RevealedFromLibraryTop"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "count"); encode_u32(b, y.count)
@@ -31921,6 +32055,7 @@ encode_CategoryChooserScope :: proc(b: ^strings.Builder, x: CategoryChooserScope
 }
 
 decode_ContinuousModification :: proc(v: json.Value, out: ^ContinuousModification) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ContinuousModification")
 	if v.kind != .Object do return fail("ContinuousModification: not an object")
 	tv, found := json.get(v, "type")
@@ -32257,6 +32392,7 @@ decode_ContinuousModification :: proc(v: json.Value, out: ^ContinuousModificatio
 
 encode_ContinuousModification :: proc(b: ^strings.Builder, x: ContinuousModification) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ContinuousModification_CopyValues: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "CopyValues")
 	member(b, first, "values"); enc_ptr_CopiableValues(b, y.values)
 	encode_DisplayIdentity_members(b, y.display, first)
@@ -32590,6 +32726,7 @@ encode_CopyScale_members :: proc(b: ^strings.Builder, x: CopyScale, first: ^bool
 }
 
 decode_CopyChooseScope :: proc(v: json.Value, out: ^CopyChooseScope) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CopyChooseScope")
 	if v.kind != .Object do return fail("CopyChooseScope: not an object")
 	tv, found := json.get(v, "type")
@@ -32610,6 +32747,7 @@ decode_CopyChooseScope :: proc(v: json.Value, out: ^CopyChooseScope) -> bool {
 
 encode_CopyChooseScope :: proc(b: ^strings.Builder, x: CopyChooseScope) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CopyChooseScope_Chooser: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Chooser"); strings.write_byte(b, '}')
 	case CopyChooseScope_Neighbor: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Neighbor")
 	member(b, first, "direction"); encode_SeatDirection(b, y.direction)
@@ -32777,6 +32915,7 @@ encode_TrampleKind :: proc(b: ^strings.Builder, x: TrampleKind) {
 }
 
 decode_DistributionUnit :: proc(v: json.Value, out: ^DistributionUnit) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DistributionUnit")
 	if v.kind != .Object do return fail("DistributionUnit: not an object")
 	tv, found := json.get(v, "type")
@@ -32793,6 +32932,7 @@ decode_DistributionUnit :: proc(v: json.Value, out: ^DistributionUnit) -> bool {
 
 encode_DistributionUnit :: proc(b: ^strings.Builder, x: DistributionUnit) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DistributionUnit_Damage: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Damage"); strings.write_byte(b, '}')
 	case DistributionUnit_EvenSplitDamage: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "EvenSplitDamage"); strings.write_byte(b, '}')
 	case DistributionUnit_Counters: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Counters"); member(b, &f, "data"); encode_string(b, y._0); strings.write_byte(b, '}')
@@ -32801,6 +32941,7 @@ encode_DistributionUnit :: proc(b: ^strings.Builder, x: DistributionUnit) {
 }
 
 decode_DistributionScope :: proc(v: json.Value, out: ^DistributionScope) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DistributionScope")
 	if v.kind != .Object do return fail("DistributionScope: not an object")
 	tv, found := json.get(v, "type")
@@ -32821,6 +32962,7 @@ decode_DistributionScope :: proc(v: json.Value, out: ^DistributionScope) -> bool
 
 encode_DistributionScope :: proc(b: ^strings.Builder, x: DistributionScope) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DistributionScope_AnnouncedTargets: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "AnnouncedTargets"); strings.write_byte(b, '}')
 	case DistributionScope_ResolutionCandidates: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ResolutionCandidates"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "pending_effect"); enc_ptr_ResolvedAbility(b, y.pending_effect)
@@ -32829,6 +32971,7 @@ encode_DistributionScope :: proc(b: ^strings.Builder, x: DistributionScope) {
 }
 
 decode_PayableResource :: proc(v: json.Value, out: ^PayableResource) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PayableResource")
 	if v.kind != .Object do return fail("PayableResource: not an object")
 	tv, found := json.get(v, "type")
@@ -32860,6 +33003,7 @@ decode_PayableResource :: proc(v: json.Value, out: ^PayableResource) -> bool {
 
 encode_PayableResource :: proc(b: ^strings.Builder, x: PayableResource) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PayableResource_Energy: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Energy"); strings.write_byte(b, '}')
 	case PayableResource_Mana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ManaGeneric"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "base_cost"); encode_ManaCost(b, y.base_cost)
@@ -32875,6 +33019,7 @@ encode_PayableResource :: proc(b: ^strings.Builder, x: PayableResource) {
 }
 
 decode_RetargetScope :: proc(v: json.Value, out: ^RetargetScope) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RetargetScope")
 	if v.kind != .Object do return fail("RetargetScope: not an object")
 	tv, found := json.get(v, "type")
@@ -32890,6 +33035,7 @@ decode_RetargetScope :: proc(v: json.Value, out: ^RetargetScope) -> bool {
 
 encode_RetargetScope :: proc(b: ^strings.Builder, x: RetargetScope) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case RetargetScope_Single: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Single"); strings.write_byte(b, '}')
 	case RetargetScope_All: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "All"); strings.write_byte(b, '}')
 	case RetargetScope_ForcedTo: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ForcedTo"); member(b, &f, "data"); encode_TargetRef(b, y._0); strings.write_byte(b, '}')
@@ -32947,6 +33093,7 @@ encode_CombatTaxContext_members :: proc(b: ^strings.Builder, x: CombatTaxContext
 }
 
 decode_CombatTaxPending :: proc(v: json.Value, out: ^CombatTaxPending) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CombatTaxPending")
 	if v.kind != .Object do return fail("CombatTaxPending: not an object")
 	tv, found := json.get(v, "type")
@@ -32974,6 +33121,7 @@ decode_CombatTaxPending :: proc(v: json.Value, out: ^CombatTaxPending) -> bool {
 
 encode_CombatTaxPending :: proc(b: ^strings.Builder, x: CombatTaxPending) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CombatTaxPending_Attack: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Attack"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "attacks"); enc_dyn_t2_ObjectIncarnationRef_AttackTarget(b, y.attacks)
 	member(b, first, "bands"); enc_dyn_dyn_ObjectIncarnationRef(b, y.bands)
@@ -33181,6 +33329,7 @@ encode_InteractionId :: proc(b: ^strings.Builder, x: InteractionId) {
 }
 
 decode_ProposedEvent :: proc(v: json.Value, out: ^ProposedEvent) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ProposedEvent")
 	variant: string
 	body: json.Value
@@ -33520,6 +33669,7 @@ decode_ProposedEvent :: proc(v: json.Value, out: ^ProposedEvent) -> bool {
 
 encode_ProposedEvent :: proc(b: ^strings.Builder, x: ProposedEvent) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ProposedEvent_ZoneChange: strings.write_byte(b, '{'); json.write_string(b, "ZoneChange"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "object_id"); encode_ObjectId(b, y.object_id)
 	member(b, first, "from"); encode_Zone(b, y.from)
@@ -33833,6 +33983,7 @@ encode_ZoneDeliveryExileTracking :: proc(b: ^strings.Builder, x: ZoneDeliveryExi
 }
 
 decode_ExcessRecipient :: proc(v: json.Value, out: ^ExcessRecipient) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ExcessRecipient")
 	if v.kind != .Object do return fail("ExcessRecipient: not an object")
 	tv, found := json.get(v, "type")
@@ -33852,6 +34003,7 @@ decode_ExcessRecipient :: proc(v: json.Value, out: ^ExcessRecipient) -> bool {
 
 encode_ExcessRecipient :: proc(b: ^strings.Builder, x: ExcessRecipient) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ExcessRecipient_TargetController: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "TargetController")
 	if !(y.source_keyword == nil) { member(b, first, "source_keyword"); enc_opt_KeywordKind(b, y.source_keyword) }
 	}; strings.write_byte(b, '}')
@@ -33974,6 +34126,7 @@ encode_CoEntrants :: proc(b: ^strings.Builder, x: CoEntrants) {
 }
 
 decode_EntryOwnershipActor :: proc(v: json.Value, out: ^EntryOwnershipActor) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EntryOwnershipActor")
 	variant: string
 	body: json.Value
@@ -33995,6 +34148,7 @@ decode_EntryOwnershipActor :: proc(v: json.Value, out: ^EntryOwnershipActor) -> 
 
 encode_EntryOwnershipActor :: proc(b: ^strings.Builder, x: EntryOwnershipActor) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case EntryOwnershipActor_Unrecorded: _ = y; json.write_string(b, "Unrecorded")
 	case EntryOwnershipActor_NoPlayer: _ = y; json.write_string(b, "NoPlayer")
 	case EntryOwnershipActor_Player: strings.write_byte(b, '{'); json.write_string(b, "Player"); strings.write_byte(b, ':'); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
@@ -34022,6 +34176,7 @@ encode_DrawEventStage :: proc(b: ^strings.Builder, x: DrawEventStage) {
 }
 
 decode_SearchFoundDisposition :: proc(v: json.Value, out: ^SearchFoundDisposition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SearchFoundDisposition")
 	variant: string
 	body: json.Value
@@ -34042,6 +34197,7 @@ decode_SearchFoundDisposition :: proc(v: json.Value, out: ^SearchFoundDispositio
 
 encode_SearchFoundDisposition :: proc(b: ^strings.Builder, x: SearchFoundDisposition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case SearchFoundDisposition_Original: _ = y; json.write_string(b, "Original")
 	case SearchFoundDisposition_Modified: strings.write_byte(b, '{'); json.write_string(b, "Modified"); strings.write_byte(b, ':'); encode_BoundSearchFoundDisposition(b, y._0); strings.write_byte(b, '}')
 	}
@@ -34076,6 +34232,7 @@ encode_DieRollIgnoreRule_members :: proc(b: ^strings.Builder, x: DieRollIgnoreRu
 }
 
 decode_CounterPlacement :: proc(v: json.Value, out: ^CounterPlacement) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CounterPlacement")
 	// untagged: the first variant that decodes wins, as in serde.
 	if v.kind == .Object { tmp: CounterPlacement_Object; if decode_quiet_proc(v, &tmp, proc(v: json.Value, out: ^CounterPlacement_Object) -> bool {
@@ -34103,6 +34260,7 @@ decode_CounterPlacement :: proc(v: json.Value, out: ^CounterPlacement) -> bool {
 
 encode_CounterPlacement :: proc(b: ^strings.Builder, x: CounterPlacement) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CounterPlacement_Object: strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "actor"); encode_PlayerId(b, y.actor)
 	member(b, first, "object_id"); encode_ObjectId(b, y.object_id)
@@ -34390,6 +34548,7 @@ encode_PendingCombatPhaseCRemnant_members :: proc(b: ^strings.Builder, x: Pendin
 }
 
 decode_EntryAttackDestination :: proc(v: json.Value, out: ^EntryAttackDestination) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EntryAttackDestination")
 	if v.kind != .Object do return fail("EntryAttackDestination: not an object")
 	tv, found := json.get(v, "type")
@@ -34411,6 +34570,7 @@ decode_EntryAttackDestination :: proc(v: json.Value, out: ^EntryAttackDestinatio
 
 encode_EntryAttackDestination :: proc(b: ^strings.Builder, x: EntryAttackDestination) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case EntryAttackDestination_AnyDefender: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "AnyDefender"); strings.write_byte(b, '}')
 	case EntryAttackDestination_PlayerOrPlaneswalker: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "PlayerOrPlaneswalker"); strings.write_byte(b, '}')
 	case EntryAttackDestination_Exact: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Exact"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -34420,6 +34580,7 @@ encode_EntryAttackDestination :: proc(b: ^strings.Builder, x: EntryAttackDestina
 }
 
 decode_LiminalEntryKind :: proc(v: json.Value, out: ^LiminalEntryKind) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LiminalEntryKind")
 	variant: string
 	body: json.Value
@@ -34448,6 +34609,7 @@ decode_LiminalEntryKind :: proc(v: json.Value, out: ^LiminalEntryKind) -> bool {
 
 encode_LiminalEntryKind :: proc(b: ^strings.Builder, x: LiminalEntryKind) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case LiminalEntryKind_Token: _ = y; json.write_string(b, "Token")
 	case LiminalEntryKind_Meld: strings.write_byte(b, '{'); json.write_string(b, "Meld"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "context"); encode_MeldSelection(b, y.context_)
@@ -34580,6 +34742,7 @@ encode_ProtectionStartSnapshot_members :: proc(b: ^strings.Builder, x: Protectio
 }
 
 decode_PerpetualModification :: proc(v: json.Value, out: ^PerpetualModification) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PerpetualModification")
 	if v.kind != .Object do return fail("PerpetualModification: not an object")
 	tv, found := json.get(v, "kind")
@@ -34641,6 +34804,7 @@ decode_PerpetualModification :: proc(v: json.Value, out: ^PerpetualModification)
 
 encode_PerpetualModification :: proc(b: ^strings.Builder, x: PerpetualModification) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PerpetualModification_SetBasePowerToughness: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "kind"); json.write_string(b, "SetBasePowerToughness")
 	member(b, first, "power"); encode_i32(b, y.power)
 	member(b, first, "toughness"); encode_i32(b, y.toughness)
@@ -34700,6 +34864,7 @@ encode_PerpetualModification_members :: proc(b: ^strings.Builder, x: PerpetualMo
 }
 
 decode_PrintedLoyalty :: proc(v: json.Value, out: ^PrintedLoyalty) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PrintedLoyalty")
 	variant: string
 	body: json.Value
@@ -34720,6 +34885,7 @@ decode_PrintedLoyalty :: proc(v: json.Value, out: ^PrintedLoyalty) -> bool {
 
 encode_PrintedLoyalty :: proc(b: ^strings.Builder, x: PrintedLoyalty) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PrintedLoyalty_Fixed: strings.write_byte(b, '{'); json.write_string(b, "Fixed"); strings.write_byte(b, ':'); encode_u32(b, y._0); strings.write_byte(b, '}')
 	case PrintedLoyalty_X: _ = y; json.write_string(b, "X")
 	}
@@ -35212,6 +35378,7 @@ encode_CleaveFormState_members :: proc(b: ^strings.Builder, x: CleaveFormState, 
 }
 
 decode_ManaPip :: proc(v: json.Value, out: ^ManaPip) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaPip")
 	if v.kind != .Object do return fail("ManaPip: not an object")
 	tv, found := json.get(v, "type")
@@ -35229,6 +35396,7 @@ decode_ManaPip :: proc(v: json.Value, out: ^ManaPip) -> bool {
 
 encode_ManaPip :: proc(b: ^strings.Builder, x: ManaPip) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaPip_Color: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Color"); member(b, &f, "data"); encode_ManaColor(b, y._0); strings.write_byte(b, '}')
 	case ManaPip_Colorless: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Colorless"); strings.write_byte(b, '}')
 	case ManaPip_OneOfColors: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "OneOfColors"); member(b, &f, "data"); enc_dyn_ManaColor(b, y._0); strings.write_byte(b, '}')
@@ -35338,6 +35506,7 @@ encode_DisplaySource :: proc(b: ^strings.Builder, x: DisplaySource) {
 }
 
 decode_CastingPermission :: proc(v: json.Value, out: ^CastingPermission) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastingPermission")
 	if v.kind != .Object do return fail("CastingPermission: not an object")
 	tv, found := json.get(v, "type")
@@ -35427,6 +35596,7 @@ decode_CastingPermission :: proc(v: json.Value, out: ^CastingPermission) -> bool
 
 encode_CastingPermission :: proc(b: ^strings.Builder, x: CastingPermission) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CastingPermission_AdventureCreature: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "AdventureCreature"); strings.write_byte(b, '}')
 	case CastingPermission_ExileWithAltCost: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "ExileWithAltCost")
 	member(b, first, "cost"); encode_ManaCost(b, y.cost)
@@ -35702,6 +35872,7 @@ encode_SpellAnnouncement :: proc(b: ^strings.Builder, x: SpellAnnouncement) {
 }
 
 decode_ExiledSpellRider :: proc(v: json.Value, out: ^ExiledSpellRider) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ExiledSpellRider")
 	variant: string
 	body: json.Value
@@ -35729,6 +35900,7 @@ decode_ExiledSpellRider :: proc(v: json.Value, out: ^ExiledSpellRider) -> bool {
 
 encode_ExiledSpellRider :: proc(b: ^strings.Builder, x: ExiledSpellRider) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ExiledSpellRider_ReturnTo: strings.write_byte(b, '{'); json.write_string(b, "ReturnTo"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "destination"); encode_Zone(b, y.destination)
 	member(b, first, "timing"); encode_DelayedTriggerCondition(b, y.timing)
@@ -35784,6 +35956,7 @@ encode_ManaSpentSourceSnapshot_members :: proc(b: ^strings.Builder, x: ManaSpent
 }
 
 decode_PhaseStatus :: proc(v: json.Value, out: ^PhaseStatus) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PhaseStatus")
 	if v.kind != .Object do return fail("PhaseStatus: not an object")
 	tv, found := json.get(v, "status")
@@ -35804,6 +35977,7 @@ decode_PhaseStatus :: proc(v: json.Value, out: ^PhaseStatus) -> bool {
 
 encode_PhaseStatus :: proc(b: ^strings.Builder, x: PhaseStatus) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PhaseStatus_PhasedIn: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "status"); json.write_string(b, "PhasedIn"); strings.write_byte(b, '}')
 	case PhaseStatus_PhasedOut: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "status"); json.write_string(b, "PhasedOut")
 	member(b, first, "cause"); encode_PhaseOutCause(b, y.cause)
@@ -35830,6 +36004,7 @@ encode_LogicalZoneChangeGroupId :: proc(b: ^strings.Builder, x: LogicalZoneChang
 }
 
 decode_MatchedProtectionQuality :: proc(v: json.Value, out: ^MatchedProtectionQuality) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("MatchedProtectionQuality")
 	variant: string
 	body: json.Value
@@ -35858,6 +36033,7 @@ decode_MatchedProtectionQuality :: proc(v: json.Value, out: ^MatchedProtectionQu
 
 encode_MatchedProtectionQuality :: proc(b: ^strings.Builder, x: MatchedProtectionQuality) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case MatchedProtectionQuality_Color: strings.write_byte(b, '{'); json.write_string(b, "Color"); strings.write_byte(b, ':'); encode_ManaColor(b, y._0); strings.write_byte(b, '}')
 	case MatchedProtectionQuality_CardType: strings.write_byte(b, '{'); json.write_string(b, "CardType"); strings.write_byte(b, ':'); encode_CoreType(b, y._0); strings.write_byte(b, '}')
 	case MatchedProtectionQuality_CardSubtype: strings.write_byte(b, '{'); json.write_string(b, "CardSubtype"); strings.write_byte(b, ':'); encode_u64(b, y._0); strings.write_byte(b, '}')
@@ -35914,6 +36090,7 @@ encode_ProtectionPlayerScope :: proc(b: ^strings.Builder, x: ProtectionPlayerSco
 }
 
 decode_ParkedEntryState :: proc(v: json.Value, out: ^ParkedEntryState) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ParkedEntryState")
 	if v.kind != .Object do return fail("ParkedEntryState: not an object")
 	tv, found := json.get(v, "type")
@@ -35934,6 +36111,7 @@ decode_ParkedEntryState :: proc(v: json.Value, out: ^ParkedEntryState) -> bool {
 
 encode_ParkedEntryState :: proc(b: ^strings.Builder, x: ParkedEntryState) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ParkedEntryState_Pending: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Pending"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "carrier"); enc_opt_ObjectId(b, y.carrier)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -35996,6 +36174,7 @@ encode_ActivatedAbilityKind :: proc(b: ^strings.Builder, x: ActivatedAbilityKind
 }
 
 decode_ActivationTriggerState :: proc(v: json.Value, out: ^ActivationTriggerState) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ActivationTriggerState")
 	variant: string
 	body: json.Value
@@ -36022,6 +36201,7 @@ decode_ActivationTriggerState :: proc(v: json.Value, out: ^ActivationTriggerStat
 
 encode_ActivationTriggerState :: proc(b: ^strings.Builder, x: ActivationTriggerState) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ActivationTriggerState_Pending: _ = y; json.write_string(b, "Pending")
 	case ActivationTriggerState_CollectedAtActivation: strings.write_byte(b, '{'); json.write_string(b, "CollectedAtActivation"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "observers"); encode_ActivationObservers(b, y.observers)
@@ -36030,6 +36210,7 @@ encode_ActivationTriggerState :: proc(b: ^strings.Builder, x: ActivationTriggerS
 }
 
 decode_BoundActivationCost :: proc(v: json.Value, out: ^BoundActivationCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("BoundActivationCost")
 	variant: string
 	body: json.Value
@@ -36051,6 +36232,7 @@ decode_BoundActivationCost :: proc(v: json.Value, out: ^BoundActivationCost) -> 
 
 encode_BoundActivationCost :: proc(b: ^strings.Builder, x: BoundActivationCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case BoundActivationCost_Unknown: _ = y; json.write_string(b, "Unknown")
 	case BoundActivationCost_Costless: _ = y; json.write_string(b, "Costless")
 	case BoundActivationCost_Cost: strings.write_byte(b, '{'); json.write_string(b, "Cost"); strings.write_byte(b, ':'); enc_ptr_AbilityCost(b, y._0); strings.write_byte(b, '}')
@@ -36287,6 +36469,7 @@ encode_TriggerSourceContext_members :: proc(b: ^strings.Builder, x: TriggerSourc
 }
 
 decode_UnTell :: proc(v: json.Value, out: ^UnTell) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UnTell")
 	if v.kind != .Object do return fail("UnTell: not an object")
 	tv, found := json.get(v, "type")
@@ -36307,6 +36490,7 @@ decode_UnTell :: proc(v: json.Value, out: ^UnTell) -> bool {
 
 encode_UnTell :: proc(b: ^strings.Builder, x: UnTell) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case UnTell_Physical: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Physical"); member(b, &f, "data"); encode_PhysicalTell(b, y._0); strings.write_byte(b, '}')
 	case UnTell_Said: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Said"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "text"); encode_string(b, y.text)
@@ -36344,6 +36528,7 @@ encode_InstructionLead :: proc(b: ^strings.Builder, x: InstructionLead) {
 }
 
 decode_ControlChangeEvidence :: proc(v: json.Value, out: ^ControlChangeEvidence) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ControlChangeEvidence")
 	variant: string
 	body: json.Value
@@ -36364,6 +36549,7 @@ decode_ControlChangeEvidence :: proc(v: json.Value, out: ^ControlChangeEvidence)
 
 encode_ControlChangeEvidence :: proc(b: ^strings.Builder, x: ControlChangeEvidence) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ControlChangeEvidence_Unrecorded: _ = y; json.write_string(b, "Unrecorded")
 	case ControlChangeEvidence_Observed: strings.write_byte(b, '{'); json.write_string(b, "Observed"); strings.write_byte(b, ':'); encode_u64(b, y._0); strings.write_byte(b, '}')
 	}
@@ -36379,6 +36565,7 @@ encode_EndEffectGroupId :: proc(b: ^strings.Builder, x: EndEffectGroupId) {
 }
 
 decode_Targeter :: proc(v: json.Value, out: ^Targeter) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("Targeter")
 	if v.kind != .Object do return fail("Targeter: not an object")
 	tv, found := json.get(v, "type")
@@ -36393,6 +36580,7 @@ decode_Targeter :: proc(v: json.Value, out: ^Targeter) -> bool {
 
 encode_Targeter :: proc(b: ^strings.Builder, x: Targeter) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case Targeter_Spell: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Spell"); member(b, &f, "data"); encode_SpellAnnouncement(b, y._0); strings.write_byte(b, '}')
 	case Targeter_Ability: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Ability"); member(b, &f, "data"); encode_StackAbilityKind(b, y._0); strings.write_byte(b, '}')
 	}
@@ -36527,6 +36715,7 @@ encode_ContestKind :: proc(b: ^strings.Builder, x: ContestKind) {
 }
 
 decode_ContestResult :: proc(v: json.Value, out: ^ContestResult) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ContestResult")
 	variant: string
 	body: json.Value
@@ -36547,6 +36736,7 @@ decode_ContestResult :: proc(v: json.Value, out: ^ContestResult) -> bool {
 
 encode_ContestResult :: proc(b: ^strings.Builder, x: ContestResult) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ContestResult_Outcome: strings.write_byte(b, '{'); json.write_string(b, "Outcome"); strings.write_byte(b, ':'); encode_ContestOutcome(b, y._0); strings.write_byte(b, '}')
 	case ContestResult_Cancelled: strings.write_byte(b, '{'); json.write_string(b, "Cancelled"); strings.write_byte(b, ':'); encode_ContestCancelReason(b, y._0); strings.write_byte(b, '}')
 	}
@@ -36575,6 +36765,7 @@ encode_ClashResult :: proc(b: ^strings.Builder, x: ClashResult) {
 }
 
 decode_ReplacementEvent :: proc(v: json.Value, out: ^ReplacementEvent) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ReplacementEvent")
 	variant: string
 	body: json.Value
@@ -36636,6 +36827,7 @@ decode_ReplacementEvent :: proc(v: json.Value, out: ^ReplacementEvent) -> bool {
 
 encode_ReplacementEvent :: proc(b: ^strings.Builder, x: ReplacementEvent) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ReplacementEvent_DamageDone: _ = y; json.write_string(b, "DamageDone")
 	case ReplacementEvent_Destroy: _ = y; json.write_string(b, "Destroy")
 	case ReplacementEvent_Discard: _ = y; json.write_string(b, "Discard")
@@ -36683,6 +36875,7 @@ encode_ReplacementEvent :: proc(b: ^strings.Builder, x: ReplacementEvent) {
 }
 
 decode_StaticCondition :: proc(v: json.Value, out: ^StaticCondition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StaticCondition")
 	if v.kind != .Object do return fail("StaticCondition: not an object")
 	tv, found := json.get(v, "type")
@@ -37001,6 +37194,7 @@ decode_StaticCondition :: proc(v: json.Value, out: ^StaticCondition) -> bool {
 
 encode_StaticCondition :: proc(b: ^strings.Builder, x: StaticCondition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case StaticCondition_DevotionGE: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "DevotionGE")
 	member(b, first, "colors"); enc_dyn_ManaColor(b, y.colors)
 	member(b, first, "threshold"); encode_u32(b, y.threshold)
@@ -37338,6 +37532,7 @@ encode_EndEffectPermission_members :: proc(b: ^strings.Builder, x: EndEffectPerm
 }
 
 decode_PlayerScope :: proc(v: json.Value, out: ^PlayerScope) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PlayerScope")
 	if v.kind != .Object do return fail("PlayerScope: not an object")
 	tv, found := json.get(v, "type")
@@ -37386,6 +37581,7 @@ decode_PlayerScope :: proc(v: json.Value, out: ^PlayerScope) -> bool {
 
 encode_PlayerScope :: proc(b: ^strings.Builder, x: PlayerScope) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PlayerScope_Controller: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Controller"); strings.write_byte(b, '}')
 	case PlayerScope_ScopedPlayer: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ScopedPlayer"); strings.write_byte(b, '}')
 	case PlayerScope_Target: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Target"); strings.write_byte(b, '}')
@@ -37455,6 +37651,7 @@ encode_PossessionAxis :: proc(b: ^strings.Builder, x: PossessionAxis) {
 }
 
 decode_MayTriggerOrigin :: proc(v: json.Value, out: ^MayTriggerOrigin) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("MayTriggerOrigin")
 	if v.kind != .Object do return fail("MayTriggerOrigin: not an object")
 	tv, found := json.get(v, "type")
@@ -37488,6 +37685,7 @@ decode_MayTriggerOrigin :: proc(v: json.Value, out: ^MayTriggerOrigin) -> bool {
 
 encode_MayTriggerOrigin :: proc(b: ^strings.Builder, x: MayTriggerOrigin) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case MayTriggerOrigin_Definition: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Definition")
 	member(b, first, "definition_ref"); encode_TriggerDefinitionRef(b, y.definition_ref)
 	}; strings.write_byte(b, '}')
@@ -37515,6 +37713,7 @@ encode_MayTriggerOrigin_members :: proc(b: ^strings.Builder, x: MayTriggerOrigin
 }
 
 decode_PlayerFilter :: proc(v: json.Value, out: ^PlayerFilter) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PlayerFilter")
 	if v.kind != .Object do return fail("PlayerFilter: not an object")
 	tv, found := json.get(v, "type")
@@ -37631,6 +37830,7 @@ decode_PlayerFilter :: proc(v: json.Value, out: ^PlayerFilter) -> bool {
 
 encode_PlayerFilter :: proc(b: ^strings.Builder, x: PlayerFilter) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PlayerFilter_Controller: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Controller"); strings.write_byte(b, '}')
 	case PlayerFilter_Opponent: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Opponent"); strings.write_byte(b, '}')
 	case PlayerFilter_DefendingPlayer: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "DefendingPlayer"); strings.write_byte(b, '}')
@@ -37768,6 +37968,7 @@ encode_PlayerFilter_members :: proc(b: ^strings.Builder, x: PlayerFilter, first:
 }
 
 decode_ControllerRef :: proc(v: json.Value, out: ^ControllerRef) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ControllerRef")
 	variant: string
 	body: json.Value
@@ -37820,6 +38021,7 @@ decode_ControllerRef :: proc(v: json.Value, out: ^ControllerRef) -> bool {
 
 encode_ControllerRef :: proc(b: ^strings.Builder, x: ControllerRef) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ControllerRef_You: _ = y; json.write_string(b, "You")
 	case ControllerRef_Opponent: _ = y; json.write_string(b, "Opponent")
 	case ControllerRef_ScopedPlayer: _ = y; json.write_string(b, "ScopedPlayer")
@@ -37868,6 +38070,7 @@ encode_AdditionalCostPaymentSource :: proc(b: ^strings.Builder, x: AdditionalCos
 }
 
 decode_NumberQuality :: proc(v: json.Value, out: ^NumberQuality) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("NumberQuality")
 	if v.kind != .Object do return fail("NumberQuality: not an object")
 	tv, found := json.get(v, "type")
@@ -37882,12 +38085,14 @@ decode_NumberQuality :: proc(v: json.Value, out: ^NumberQuality) -> bool {
 
 encode_NumberQuality :: proc(b: ^strings.Builder, x: NumberQuality) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case NumberQuality_Parity: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Parity"); member(b, &f, "value"); encode_Parity(b, y._0); strings.write_byte(b, '}')
 	case NumberQuality_Prime: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Prime"); strings.write_byte(b, '}')
 	}
 }
 
 decode_SpentColor :: proc(v: json.Value, out: ^SpentColor) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SpentColor")
 	if v.kind != .Object do return fail("SpentColor: not an object")
 	tv, found := json.get(v, "type")
@@ -37914,6 +38119,7 @@ decode_SpentColor :: proc(v: json.Value, out: ^SpentColor) -> bool {
 
 encode_SpentColor :: proc(b: ^strings.Builder, x: SpentColor) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case SpentColor_ColorWord: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "ColorWord")
 	member(b, first, "color"); encode_ManaColor(b, y.color)
 	}; strings.write_byte(b, '}')
@@ -37975,6 +38181,7 @@ encode_RenownSubject :: proc(b: ^strings.Builder, x: RenownSubject) {
 }
 
 decode_AttackersDeclaredCountSubject :: proc(v: json.Value, out: ^AttackersDeclaredCountSubject) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AttackersDeclaredCountSubject")
 	if v.kind != .Object do return fail("AttackersDeclaredCountSubject: not an object")
 	tv, found := json.get(v, "type")
@@ -38011,6 +38218,7 @@ decode_AttackersDeclaredCountSubject :: proc(v: json.Value, out: ^AttackersDecla
 
 encode_AttackersDeclaredCountSubject :: proc(b: ^strings.Builder, x: AttackersDeclaredCountSubject) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AttackersDeclaredCountSubject_CurrentCombat: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "CurrentCombat")
 	member(b, first, "exclude_source"); encode_SourceExclusion(b, y.exclude_source)
 	}; strings.write_byte(b, '}')
@@ -38165,6 +38373,7 @@ encode_ChosenGroupId :: proc(b: ^strings.Builder, x: ChosenGroupId) {
 }
 
 decode_TypeFilter :: proc(v: json.Value, out: ^TypeFilter) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TypeFilter")
 	variant: string
 	body: json.Value
@@ -38198,6 +38407,7 @@ decode_TypeFilter :: proc(v: json.Value, out: ^TypeFilter) -> bool {
 
 encode_TypeFilter :: proc(b: ^strings.Builder, x: TypeFilter) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TypeFilter_Creature: _ = y; json.write_string(b, "Creature")
 	case TypeFilter_Land: _ = y; json.write_string(b, "Land")
 	case TypeFilter_Artifact: _ = y; json.write_string(b, "Artifact")
@@ -38217,6 +38427,7 @@ encode_TypeFilter :: proc(b: ^strings.Builder, x: TypeFilter) {
 }
 
 decode_FilterProp :: proc(v: json.Value, out: ^FilterProp) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("FilterProp")
 	if v.kind != .Object do return fail("FilterProp: not an object")
 	tv, found := json.get(v, "type")
@@ -38629,6 +38840,7 @@ decode_FilterProp :: proc(v: json.Value, out: ^FilterProp) -> bool {
 
 encode_FilterProp :: proc(b: ^strings.Builder, x: FilterProp) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case FilterProp_Token: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Token"); strings.write_byte(b, '}')
 	case FilterProp_NonToken: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NonToken"); strings.write_byte(b, '}')
 	case FilterProp_RepresentedByCard: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "RepresentedByCard"); strings.write_byte(b, '}')
@@ -39218,6 +39430,7 @@ encode_ConsumedTriggerEventScope :: proc(b: ^strings.Builder, x: ConsumedTrigger
 }
 
 decode_ExileLinkKind :: proc(v: json.Value, out: ^ExileLinkKind) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ExileLinkKind")
 	variant: string
 	body: json.Value
@@ -39272,6 +39485,7 @@ decode_ExileLinkKind :: proc(v: json.Value, out: ^ExileLinkKind) -> bool {
 
 encode_ExileLinkKind :: proc(b: ^strings.Builder, x: ExileLinkKind) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ExileLinkKind_UntilSourceLeaves: strings.write_byte(b, '{'); json.write_string(b, "UntilSourceLeaves"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "return_zone"); encode_Zone(b, y.return_zone)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -39296,6 +39510,7 @@ encode_ExileLinkKind :: proc(b: ^strings.Builder, x: ExileLinkKind) {
 }
 
 decode_LookGrant :: proc(v: json.Value, out: ^LookGrant) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LookGrant")
 	variant: string
 	body: json.Value
@@ -39322,6 +39537,7 @@ decode_LookGrant :: proc(v: json.Value, out: ^LookGrant) -> bool {
 
 encode_LookGrant :: proc(b: ^strings.Builder, x: LookGrant) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case LookGrant_SourceController: _ = y; json.write_string(b, "SourceController")
 	case LookGrant_Player: strings.write_byte(b, '{'); json.write_string(b, "Player"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "player"); encode_PlayerId(b, y.player)
@@ -39330,6 +39546,7 @@ encode_LookGrant :: proc(b: ^strings.Builder, x: LookGrant) {
 }
 
 decode_DelayedTriggerCondition :: proc(v: json.Value, out: ^DelayedTriggerCondition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DelayedTriggerCondition")
 	if v.kind != .Object do return fail("DelayedTriggerCondition: not an object")
 	tv, found := json.get(v, "type")
@@ -39427,6 +39644,7 @@ decode_DelayedTriggerCondition :: proc(v: json.Value, out: ^DelayedTriggerCondit
 
 encode_DelayedTriggerCondition :: proc(b: ^strings.Builder, x: DelayedTriggerCondition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DelayedTriggerCondition_AtNextPhase: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "AtNextPhase")
 	member(b, first, "phase"); encode_Phase(b, y.phase)
 	}; strings.write_byte(b, '}')
@@ -39538,6 +39756,7 @@ encode_DelayedTriggerKind :: proc(b: ^strings.Builder, x: DelayedTriggerKind) {
 }
 
 decode_DelayedInstallIdentity :: proc(v: json.Value, out: ^DelayedInstallIdentity) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DelayedInstallIdentity")
 	variant: string
 	body: json.Value
@@ -39558,12 +39777,14 @@ decode_DelayedInstallIdentity :: proc(v: json.Value, out: ^DelayedInstallIdentit
 
 encode_DelayedInstallIdentity :: proc(b: ^strings.Builder, x: DelayedInstallIdentity) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DelayedInstallIdentity_LegacyDelayed: _ = y; json.write_string(b, "LegacyDelayed")
 	case DelayedInstallIdentity_ReceiptEligible: strings.write_byte(b, '{'); json.write_string(b, "ReceiptEligible"); strings.write_byte(b, ':'); encode_DelayedTriggerOrigin(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_TurnGate :: proc(v: json.Value, out: ^TurnGate) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TurnGate")
 	variant: string
 	body: json.Value
@@ -39585,6 +39806,7 @@ decode_TurnGate :: proc(v: json.Value, out: ^TurnGate) -> bool {
 
 encode_TurnGate :: proc(b: ^strings.Builder, x: TurnGate) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TurnGate_None: _ = y; json.write_string(b, "None")
 	case TurnGate_AfterCreationTurn: _ = y; json.write_string(b, "AfterCreationTurn")
 	case TurnGate_After: strings.write_byte(b, '{'); json.write_string(b, "After"); strings.write_byte(b, ':'); encode_u32(b, y._0); strings.write_byte(b, '}')
@@ -39592,6 +39814,7 @@ encode_TurnGate :: proc(b: ^strings.Builder, x: TurnGate) {
 }
 
 decode_DelayedTriggerPlayerBinding :: proc(v: json.Value, out: ^DelayedTriggerPlayerBinding) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DelayedTriggerPlayerBinding")
 	variant: string
 	body: json.Value
@@ -39619,6 +39842,7 @@ decode_DelayedTriggerPlayerBinding :: proc(v: json.Value, out: ^DelayedTriggerPl
 
 encode_DelayedTriggerPlayerBinding :: proc(b: ^strings.Builder, x: DelayedTriggerPlayerBinding) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DelayedTriggerPlayerBinding_Controller: _ = y; json.write_string(b, "Controller")
 	case DelayedTriggerPlayerBinding_ParentTargetOwner: _ = y; json.write_string(b, "ParentTargetOwner")
 	case DelayedTriggerPlayerBinding_ChosenPlayer: strings.write_byte(b, '{'); json.write_string(b, "ChosenPlayer"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -39628,6 +39852,7 @@ encode_DelayedTriggerPlayerBinding :: proc(b: ^strings.Builder, x: DelayedTrigge
 }
 
 decode_WheneverEventExpiry :: proc(v: json.Value, out: ^WheneverEventExpiry) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("WheneverEventExpiry")
 	variant: string
 	body: json.Value
@@ -39654,6 +39879,7 @@ decode_WheneverEventExpiry :: proc(v: json.Value, out: ^WheneverEventExpiry) -> 
 
 encode_WheneverEventExpiry :: proc(b: ^strings.Builder, x: WheneverEventExpiry) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case WheneverEventExpiry_EndOfTurn: _ = y; json.write_string(b, "EndOfTurn")
 	case WheneverEventExpiry_UntilControllersNextTurn: strings.write_byte(b, '{'); json.write_string(b, "UntilControllersNextTurn"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "after"); encode_TurnGate(b, y.after)
@@ -39854,6 +40080,7 @@ encode_ControlWindow :: proc(b: ^strings.Builder, x: ControlWindow) {
 }
 
 decode_TurnSegment :: proc(v: json.Value, out: ^TurnSegment) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TurnSegment")
 	if v.kind != .Object do return fail("TurnSegment: not an object")
 	tv, found := json.get(v, "type")
@@ -39869,6 +40096,7 @@ decode_TurnSegment :: proc(v: json.Value, out: ^TurnSegment) -> bool {
 
 encode_TurnSegment :: proc(b: ^strings.Builder, x: TurnSegment) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TurnSegment_Phase: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Phase"); member(b, &f, "data"); encode_PhaseGroup(b, y._0); strings.write_byte(b, '}')
 	case TurnSegment_CreatedPhase: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CreatedPhase"); member(b, &f, "data"); encode_Phase(b, y._0); strings.write_byte(b, '}')
 	case TurnSegment_Step: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Step"); member(b, &f, "data"); encode_Phase(b, y._0); strings.write_byte(b, '}')
@@ -39902,6 +40130,7 @@ encode_PhaseGroup :: proc(b: ^strings.Builder, x: PhaseGroup) {
 }
 
 decode_DeckSizeRule :: proc(v: json.Value, out: ^DeckSizeRule) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DeckSizeRule")
 	if v.kind != .Object do return fail("DeckSizeRule: not an object")
 	tv, found := json.get(v, "type")
@@ -39916,6 +40145,7 @@ decode_DeckSizeRule :: proc(v: json.Value, out: ^DeckSizeRule) -> bool {
 
 encode_DeckSizeRule :: proc(b: ^strings.Builder, x: DeckSizeRule) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DeckSizeRule_Minimum: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Minimum"); member(b, &f, "data"); encode_u16(b, y._0); strings.write_byte(b, '}')
 	case DeckSizeRule_Exactly: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Exactly"); member(b, &f, "data"); encode_u16(b, y._0); strings.write_byte(b, '}')
 	}
@@ -39962,6 +40192,7 @@ encode_RangeOfInfluenceConfig_members :: proc(b: ^strings.Builder, x: RangeOfInf
 }
 
 decode_SideboardPolicy :: proc(v: json.Value, out: ^SideboardPolicy) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SideboardPolicy")
 	if v.kind != .Object do return fail("SideboardPolicy: not an object")
 	tv, found := json.get(v, "type")
@@ -39977,6 +40208,7 @@ decode_SideboardPolicy :: proc(v: json.Value, out: ^SideboardPolicy) -> bool {
 
 encode_SideboardPolicy :: proc(b: ^strings.Builder, x: SideboardPolicy) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case SideboardPolicy_Forbidden: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Forbidden"); strings.write_byte(b, '}')
 	case SideboardPolicy_Limited: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Limited"); member(b, &f, "data"); encode_u32(b, y._0); strings.write_byte(b, '}')
 	case SideboardPolicy_Unlimited: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Unlimited"); strings.write_byte(b, '}')
@@ -40338,6 +40570,7 @@ encode_DisplayOnly_ptr_DeckPrintingRecord :: proc(b: ^strings.Builder, x: Displa
 }
 
 decode_TriggerDefinitionOccurrenceRef :: proc(v: json.Value, out: ^TriggerDefinitionOccurrenceRef) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerDefinitionOccurrenceRef")
 	if v.kind != .Object do return fail("TriggerDefinitionOccurrenceRef: not an object")
 	tv, found := json.get(v, "type")
@@ -40400,6 +40633,7 @@ decode_TriggerDefinitionOccurrenceRef :: proc(v: json.Value, out: ^TriggerDefini
 
 encode_TriggerDefinitionOccurrenceRef :: proc(b: ^strings.Builder, x: TriggerDefinitionOccurrenceRef) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TriggerDefinitionOccurrenceRef_Printed: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Printed"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "base_set"); encode_TriggerBaseSetInstanceRef(b, y.base_set)
 	member(b, first, "printed_index"); encode_int(b, y.printed_index)
@@ -40439,6 +40673,7 @@ encode_TriggerGrantInstanceRef :: proc(b: ^strings.Builder, x: TriggerGrantInsta
 }
 
 decode_ActivationTargetFact :: proc(v: json.Value, out: ^ActivationTargetFact) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ActivationTargetFact")
 	if v.kind != .Object do return fail("ActivationTargetFact: not an object")
 	tv, found := json.get(v, "type")
@@ -40460,6 +40695,7 @@ decode_ActivationTargetFact :: proc(v: json.Value, out: ^ActivationTargetFact) -
 
 encode_ActivationTargetFact :: proc(b: ^strings.Builder, x: ActivationTargetFact) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ActivationTargetFact_Player: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Player"); member(b, &f, "data"); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	case ActivationTargetFact_Object: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Object"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "id"); encode_ObjectId(b, y.id)
@@ -40489,6 +40725,7 @@ encode_EntryTokenStatus :: proc(b: ^strings.Builder, x: EntryTokenStatus) {
 }
 
 decode_NextSpellModifier :: proc(v: json.Value, out: ^NextSpellModifier) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("NextSpellModifier")
 	if v.kind != .Object do return fail("NextSpellModifier: not an object")
 	tv, found := json.get(v, "type")
@@ -40511,6 +40748,7 @@ decode_NextSpellModifier :: proc(v: json.Value, out: ^NextSpellModifier) -> bool
 
 encode_NextSpellModifier :: proc(b: ^strings.Builder, x: NextSpellModifier) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case NextSpellModifier_CantBeCountered: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CantBeCountered"); strings.write_byte(b, '}')
 	case NextSpellModifier_HasKeyword: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "HasKeyword")
 	member(b, first, "keyword"); encode_Keyword(b, y.keyword)
@@ -40532,6 +40770,7 @@ encode_NextSpellModifier_members :: proc(b: ^strings.Builder, x: NextSpellModifi
 }
 
 decode_HexproofFilter :: proc(v: json.Value, out: ^HexproofFilter) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("HexproofFilter")
 	if v.kind != .Object do return fail("HexproofFilter: not an object")
 	tv, found := json.get(v, "type")
@@ -40548,6 +40787,7 @@ decode_HexproofFilter :: proc(v: json.Value, out: ^HexproofFilter) -> bool {
 
 encode_HexproofFilter :: proc(b: ^strings.Builder, x: HexproofFilter) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case HexproofFilter_Color: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Color"); member(b, &f, "data"); encode_ManaColor(b, y._0); strings.write_byte(b, '}')
 	case HexproofFilter_CardType: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CardType"); member(b, &f, "data"); encode_string(b, y._0); strings.write_byte(b, '}')
 	case HexproofFilter_Quality: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Quality"); member(b, &f, "data"); encode_string(b, y._0); strings.write_byte(b, '}')
@@ -40556,6 +40796,7 @@ encode_HexproofFilter :: proc(b: ^strings.Builder, x: HexproofFilter) {
 }
 
 decode_BestowCost :: proc(v: json.Value, out: ^BestowCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("BestowCost")
 	if v.kind != .Object do return fail("BestowCost: not an object")
 	tv, found := json.get(v, "type")
@@ -40570,12 +40811,14 @@ decode_BestowCost :: proc(v: json.Value, out: ^BestowCost) -> bool {
 
 encode_BestowCost :: proc(b: ^strings.Builder, x: BestowCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case BestowCost_Mana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mana"); member(b, &f, "data"); encode_ManaCost(b, y._0); strings.write_byte(b, '}')
 	case BestowCost_NonMana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NonMana"); member(b, &f, "data"); encode_AbilityCost(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_EmbalmCost :: proc(v: json.Value, out: ^EmbalmCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EmbalmCost")
 	if v.kind != .Object do return fail("EmbalmCost: not an object")
 	tv, found := json.get(v, "type")
@@ -40590,12 +40833,14 @@ decode_EmbalmCost :: proc(v: json.Value, out: ^EmbalmCost) -> bool {
 
 encode_EmbalmCost :: proc(b: ^strings.Builder, x: EmbalmCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case EmbalmCost_Mana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mana"); member(b, &f, "data"); encode_ManaCost(b, y._0); strings.write_byte(b, '}')
 	case EmbalmCost_NonMana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NonMana"); member(b, &f, "data"); encode_AbilityCost(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_EternalizeCost :: proc(v: json.Value, out: ^EternalizeCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EternalizeCost")
 	if v.kind != .Object do return fail("EternalizeCost: not an object")
 	tv, found := json.get(v, "type")
@@ -40610,12 +40855,14 @@ decode_EternalizeCost :: proc(v: json.Value, out: ^EternalizeCost) -> bool {
 
 encode_EternalizeCost :: proc(b: ^strings.Builder, x: EternalizeCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case EternalizeCost_Mana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mana"); member(b, &f, "data"); encode_ManaCost(b, y._0); strings.write_byte(b, '}')
 	case EternalizeCost_NonMana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NonMana"); member(b, &f, "data"); encode_AbilityCost(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_ProtectionTarget :: proc(v: json.Value, out: ^ProtectionTarget) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ProtectionTarget")
 	variant: string
 	body: json.Value
@@ -40646,6 +40893,7 @@ decode_ProtectionTarget :: proc(v: json.Value, out: ^ProtectionTarget) -> bool {
 
 encode_ProtectionTarget :: proc(b: ^strings.Builder, x: ProtectionTarget) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ProtectionTarget_Color: strings.write_byte(b, '{'); json.write_string(b, "Color"); strings.write_byte(b, ':'); encode_ManaColor(b, y._0); strings.write_byte(b, '}')
 	case ProtectionTarget_CardType: strings.write_byte(b, '{'); json.write_string(b, "CardType"); strings.write_byte(b, ':'); encode_string(b, y._0); strings.write_byte(b, '}')
 	case ProtectionTarget_Quality: strings.write_byte(b, '{'); json.write_string(b, "Quality"); strings.write_byte(b, ':'); encode_string(b, y._0); strings.write_byte(b, '}')
@@ -40662,6 +40910,7 @@ encode_ProtectionTarget :: proc(b: ^strings.Builder, x: ProtectionTarget) {
 }
 
 decode_CyclingCost :: proc(v: json.Value, out: ^CyclingCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CyclingCost")
 	if v.kind != .Object do return fail("CyclingCost: not an object")
 	tv, found := json.get(v, "type")
@@ -40676,12 +40925,14 @@ decode_CyclingCost :: proc(v: json.Value, out: ^CyclingCost) -> bool {
 
 encode_CyclingCost :: proc(b: ^strings.Builder, x: CyclingCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CyclingCost_Mana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mana"); member(b, &f, "data"); encode_ManaCost(b, y._0); strings.write_byte(b, '}')
 	case CyclingCost_NonMana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NonMana"); member(b, &f, "data"); encode_AbilityCost(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_FlashbackCost :: proc(v: json.Value, out: ^FlashbackCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("FlashbackCost")
 	if v.kind != .Object do return fail("FlashbackCost: not an object")
 	tv, found := json.get(v, "type")
@@ -40696,12 +40947,14 @@ decode_FlashbackCost :: proc(v: json.Value, out: ^FlashbackCost) -> bool {
 
 encode_FlashbackCost :: proc(b: ^strings.Builder, x: FlashbackCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case FlashbackCost_Mana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mana"); member(b, &f, "data"); encode_ManaCost(b, y._0); strings.write_byte(b, '}')
 	case FlashbackCost_NonMana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NonMana"); member(b, &f, "data"); encode_AbilityCost(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_WardCost :: proc(v: json.Value, out: ^WardCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("WardCost")
 	if v.kind != .Object do return fail("WardCost: not an object")
 	tv, found := json.get(v, "type")
@@ -40744,6 +40997,7 @@ decode_WardCost :: proc(v: json.Value, out: ^WardCost) -> bool {
 
 encode_WardCost :: proc(b: ^strings.Builder, x: WardCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case WardCost_Mana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mana"); member(b, &f, "data"); encode_ManaCost(b, y._0); strings.write_byte(b, '}')
 	case WardCost_PayLife: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "PayLife"); member(b, &f, "data"); encode_i32(b, y._0); strings.write_byte(b, '}')
 	case WardCost_PayLifeEqualToPower: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "PayLifeEqualToPower"); strings.write_byte(b, '}')
@@ -40766,6 +41020,7 @@ encode_WardCost :: proc(b: ^strings.Builder, x: WardCost) {
 }
 
 decode_ActivationRestriction :: proc(v: json.Value, out: ^ActivationRestriction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ActivationRestriction")
 	if v.kind != .Object do return fail("ActivationRestriction: not an object")
 	tv, found := json.get(v, "type")
@@ -40828,6 +41083,7 @@ decode_ActivationRestriction :: proc(v: json.Value, out: ^ActivationRestriction)
 
 encode_ActivationRestriction :: proc(b: ^strings.Builder, x: ActivationRestriction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ActivationRestriction_AsSorcery: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "AsSorcery"); strings.write_byte(b, '}')
 	case ActivationRestriction_AsInstant: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "AsInstant"); strings.write_byte(b, '}')
 	case ActivationRestriction_DuringYourTurn: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "DuringYourTurn"); strings.write_byte(b, '}')
@@ -40862,6 +41118,7 @@ encode_ActivationRestriction :: proc(b: ^strings.Builder, x: ActivationRestricti
 }
 
 decode_PartnerType :: proc(v: json.Value, out: ^PartnerType) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PartnerType")
 	if v.kind != .Object do return fail("PartnerType: not an object")
 	tv, found := json.get(v, "type")
@@ -40880,6 +41137,7 @@ decode_PartnerType :: proc(v: json.Value, out: ^PartnerType) -> bool {
 
 encode_PartnerType :: proc(b: ^strings.Builder, x: PartnerType) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PartnerType_Generic: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Generic"); strings.write_byte(b, '}')
 	case PartnerType_With: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "With"); member(b, &f, "data"); encode_string(b, y._0); strings.write_byte(b, '}')
 	case PartnerType_FriendsForever: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "FriendsForever"); strings.write_byte(b, '}')
@@ -40890,6 +41148,7 @@ encode_PartnerType :: proc(b: ^strings.Builder, x: PartnerType) {
 }
 
 decode_CompanionCondition :: proc(v: json.Value, out: ^CompanionCondition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CompanionCondition")
 	if v.kind != .Object do return fail("CompanionCondition: not an object")
 	tv, found := json.get(v, "type")
@@ -40912,6 +41171,7 @@ decode_CompanionCondition :: proc(v: json.Value, out: ^CompanionCondition) -> bo
 
 encode_CompanionCondition :: proc(b: ^strings.Builder, x: CompanionCondition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CompanionCondition_EvenManaValues: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "EvenManaValues"); strings.write_byte(b, '}')
 	case CompanionCondition_NoRepeatedManaSymbols: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NoRepeatedManaSymbols"); strings.write_byte(b, '}')
 	case CompanionCondition_CreatureTypeRestriction: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CreatureTypeRestriction"); member(b, &f, "data"); enc_dyn_string(b, y._0); strings.write_byte(b, '}')
@@ -40926,6 +41186,7 @@ encode_CompanionCondition :: proc(b: ^strings.Builder, x: CompanionCondition) {
 }
 
 decode_MorphCost :: proc(v: json.Value, out: ^MorphCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("MorphCost")
 	if v.kind != .Object do return fail("MorphCost: not an object")
 	tv, found := json.get(v, "type")
@@ -40940,6 +41201,7 @@ decode_MorphCost :: proc(v: json.Value, out: ^MorphCost) -> bool {
 
 encode_MorphCost :: proc(b: ^strings.Builder, x: MorphCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case MorphCost_Mana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mana"); member(b, &f, "data"); encode_ManaCost(b, y._0); strings.write_byte(b, '}')
 	case MorphCost_NonMana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NonMana"); member(b, &f, "data"); encode_AbilityCost(b, y._0); strings.write_byte(b, '}')
 	}
@@ -40966,6 +41228,7 @@ encode_EmergeCost_members :: proc(b: ^strings.Builder, x: EmergeCost, first: ^bo
 }
 
 decode_EscapeCost :: proc(v: json.Value, out: ^EscapeCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EscapeCost")
 	if v.kind != .Object do return fail("EscapeCost: not an object")
 	tv, found := json.get(v, "type")
@@ -40980,12 +41243,14 @@ decode_EscapeCost :: proc(v: json.Value, out: ^EscapeCost) -> bool {
 
 encode_EscapeCost :: proc(b: ^strings.Builder, x: EscapeCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case EscapeCost_Mana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mana"); member(b, &f, "data"); encode_ManaCost(b, y._0); strings.write_byte(b, '}')
 	case EscapeCost_NonMana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NonMana"); member(b, &f, "data"); encode_AbilityCost(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_EvokeCost :: proc(v: json.Value, out: ^EvokeCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EvokeCost")
 	if v.kind != .Object do return fail("EvokeCost: not an object")
 	tv, found := json.get(v, "type")
@@ -41000,12 +41265,14 @@ decode_EvokeCost :: proc(v: json.Value, out: ^EvokeCost) -> bool {
 
 encode_EvokeCost :: proc(b: ^strings.Builder, x: EvokeCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case EvokeCost_Mana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mana"); member(b, &f, "data"); encode_ManaCost(b, y._0); strings.write_byte(b, '}')
 	case EvokeCost_NonMana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NonMana"); member(b, &f, "data"); encode_AbilityCost(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_DisguiseCost :: proc(v: json.Value, out: ^DisguiseCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DisguiseCost")
 	// untagged: the first variant that decodes wins, as in serde.
 	{ tmp: DisguiseCost_Mana; if decode_quiet_proc(v, &tmp._0, decode_ManaCost) { out^ = tmp; return true } }
@@ -41019,6 +41286,7 @@ decode_DisguiseCost :: proc(v: json.Value, out: ^DisguiseCost) -> bool {
 
 encode_DisguiseCost :: proc(b: ^strings.Builder, x: DisguiseCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DisguiseCost_Mana: encode_ManaCost(b, y._0)
 	case DisguiseCost_Reduced: strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "cost"); encode_ManaCost(b, y.cost)
@@ -41028,6 +41296,7 @@ encode_DisguiseCost :: proc(b: ^strings.Builder, x: DisguiseCost) {
 }
 
 decode_BlitzCost :: proc(v: json.Value, out: ^BlitzCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("BlitzCost")
 	if v.kind != .Object do return fail("BlitzCost: not an object")
 	tv, found := json.get(v, "type")
@@ -41042,12 +41311,14 @@ decode_BlitzCost :: proc(v: json.Value, out: ^BlitzCost) -> bool {
 
 encode_BlitzCost :: proc(b: ^strings.Builder, x: BlitzCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case BlitzCost_Mana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mana"); member(b, &f, "data"); encode_ManaCost(b, y._0); strings.write_byte(b, '}')
 	case BlitzCost_NonMana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NonMana"); member(b, &f, "data"); encode_AbilityCost(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_BuybackCost :: proc(v: json.Value, out: ^BuybackCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("BuybackCost")
 	if v.kind != .Object do return fail("BuybackCost: not an object")
 	tv, found := json.get(v, "type")
@@ -41062,12 +41333,14 @@ decode_BuybackCost :: proc(v: json.Value, out: ^BuybackCost) -> bool {
 
 encode_BuybackCost :: proc(b: ^strings.Builder, x: BuybackCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case BuybackCost_Mana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mana"); member(b, &f, "data"); encode_ManaCost(b, y._0); strings.write_byte(b, '}')
 	case BuybackCost_NonMana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NonMana"); member(b, &f, "data"); encode_AbilityCost(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_EchoCost :: proc(v: json.Value, out: ^EchoCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EchoCost")
 	if v.kind != .Object do return fail("EchoCost: not an object")
 	tv, found := json.get(v, "type")
@@ -41082,12 +41355,14 @@ decode_EchoCost :: proc(v: json.Value, out: ^EchoCost) -> bool {
 
 encode_EchoCost :: proc(b: ^strings.Builder, x: EchoCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case EchoCost_Mana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mana"); member(b, &f, "data"); encode_ManaCost(b, y._0); strings.write_byte(b, '}')
 	case EchoCost_NonMana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NonMana"); member(b, &f, "data"); encode_AbilityCost(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_EntwineCost :: proc(v: json.Value, out: ^EntwineCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EntwineCost")
 	if v.kind != .Object do return fail("EntwineCost: not an object")
 	tv, found := json.get(v, "type")
@@ -41102,12 +41377,14 @@ decode_EntwineCost :: proc(v: json.Value, out: ^EntwineCost) -> bool {
 
 encode_EntwineCost :: proc(b: ^strings.Builder, x: EntwineCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case EntwineCost_Mana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mana"); member(b, &f, "data"); encode_ManaCost(b, y._0); strings.write_byte(b, '}')
 	case EntwineCost_NonMana: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NonMana"); member(b, &f, "data"); encode_AbilityCost(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_BloodthirstValue :: proc(v: json.Value, out: ^BloodthirstValue) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("BloodthirstValue")
 	if v.kind != .Object do return fail("BloodthirstValue: not an object")
 	tv, found := json.get(v, "type")
@@ -41122,6 +41399,7 @@ decode_BloodthirstValue :: proc(v: json.Value, out: ^BloodthirstValue) -> bool {
 
 encode_BloodthirstValue :: proc(b: ^strings.Builder, x: BloodthirstValue) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case BloodthirstValue_Fixed: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Fixed"); member(b, &f, "data"); encode_u32(b, y._0); strings.write_byte(b, '}')
 	case BloodthirstValue_X: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "X"); strings.write_byte(b, '}')
 	}
@@ -41187,6 +41465,7 @@ encode_FrameVec :: proc(b: ^strings.Builder, x: FrameVec) {
 }
 
 decode_ResolutionFrame :: proc(v: json.Value, out: ^ResolutionFrame) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolutionFrame")
 	if v.kind != .Object do return fail("ResolutionFrame: not an object")
 	tv, found := json.get(v, "type")
@@ -41228,6 +41507,7 @@ decode_ResolutionFrame :: proc(v: json.Value, out: ^ResolutionFrame) -> bool {
 
 encode_ResolutionFrame :: proc(b: ^strings.Builder, x: ResolutionFrame) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolutionFrame_AbilityContinuation: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "AbilityContinuation"); member(b, &f, "data"); encode_AbilityContinuationFrame(b, y._0); strings.write_byte(b, '}')
 	case ResolutionFrame_RepeatFor: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "RepeatFor"); member(b, &f, "data"); encode_PendingRepeatIteration(b, y._0); strings.write_byte(b, '}')
 	case ResolutionFrame_RepeatUntil: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "RepeatUntil"); member(b, &f, "data"); encode_PendingRepeatUntil(b, y._0); strings.write_byte(b, '}')
@@ -41431,6 +41711,7 @@ encode_UnlessPayModifier_members :: proc(b: ^strings.Builder, x: UnlessPayModifi
 }
 
 decode_SimultaneousUnlessPhase :: proc(v: json.Value, out: ^SimultaneousUnlessPhase) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SimultaneousUnlessPhase")
 	if v.kind != .Object do return fail("SimultaneousUnlessPhase: not an object")
 	tv, found := json.get(v, "type")
@@ -41445,6 +41726,7 @@ decode_SimultaneousUnlessPhase :: proc(v: json.Value, out: ^SimultaneousUnlessPh
 
 encode_SimultaneousUnlessPhase :: proc(b: ^strings.Builder, x: SimultaneousUnlessPhase) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case SimultaneousUnlessPhase_Collecting: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "collecting"); encode_SimultaneousUnlessCollection_members(b, y._0, &f); strings.write_byte(b, '}')
 	case SimultaneousUnlessPhase_Delivering: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "delivering"); encode_SimultaneousUnlessDelivery_members(b, y._0, &f); strings.write_byte(b, '}')
 	}
@@ -41458,6 +41740,7 @@ encode_SimultaneousUnlessPhase_members :: proc(b: ^strings.Builder, x: Simultane
 }
 
 decode_DiscardBatchCursor :: proc(v: json.Value, out: ^DiscardBatchCursor) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DiscardBatchCursor")
 	if v.kind != .Object do return fail("DiscardBatchCursor: not an object")
 	tv, found := json.get(v, "type")
@@ -41492,6 +41775,7 @@ decode_DiscardBatchCursor :: proc(v: json.Value, out: ^DiscardBatchCursor) -> bo
 
 encode_DiscardBatchCursor :: proc(b: ^strings.Builder, x: DiscardBatchCursor) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DiscardBatchCursor_All: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "All")
 	member(b, first, "remaining"); enc_dyn_ObjectId(b, y.remaining)
 	}; strings.write_byte(b, '}')
@@ -41521,6 +41805,7 @@ encode_DiscardBatchCursor_members :: proc(b: ^strings.Builder, x: DiscardBatchCu
 }
 
 decode_PendingDiscardBatchCompletion :: proc(v: json.Value, out: ^PendingDiscardBatchCompletion) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingDiscardBatchCompletion")
 	if v.kind != .Object do return fail("PendingDiscardBatchCompletion: not an object")
 	tv, found := json.get(v, "type")
@@ -41541,6 +41826,7 @@ decode_PendingDiscardBatchCompletion :: proc(v: json.Value, out: ^PendingDiscard
 
 encode_PendingDiscardBatchCompletion :: proc(b: ^strings.Builder, x: PendingDiscardBatchCompletion) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingDiscardBatchCompletion_Standard: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Standard"); strings.write_byte(b, '}')
 	case PendingDiscardBatchCompletion_DiscardChoice: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "DiscardChoice")
 	member(b, first, "chosen"); enc_dyn_ObjectIncarnationRef(b, y.chosen)
@@ -41606,6 +41892,7 @@ encode_PendingDiscardFanOut_members :: proc(b: ^strings.Builder, x: PendingDisca
 }
 
 decode_HeroEventApplyStep :: proc(v: json.Value, out: ^HeroEventApplyStep) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("HeroEventApplyStep")
 	variant: string
 	body: json.Value
@@ -41716,6 +42003,7 @@ decode_HeroEventApplyStep :: proc(v: json.Value, out: ^HeroEventApplyStep) -> bo
 
 encode_HeroEventApplyStep :: proc(b: ^strings.Builder, x: HeroEventApplyStep) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case HeroEventApplyStep_Sacrifice: strings.write_byte(b, '{'); json.write_string(b, "Sacrifice"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "hero"); encode_PlayerId(b, y.hero)
 	member(b, first, "card"); encode_ObjectId(b, y.card)
@@ -41842,6 +42130,7 @@ encode_DamageContextSnapshot_members :: proc(b: ^strings.Builder, x: DamageConte
 }
 
 decode_PendingMassLibraryOrderBatches :: proc(v: json.Value, out: ^PendingMassLibraryOrderBatches) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingMassLibraryOrderBatches")
 	// untagged: the first variant that decodes wins, as in serde.
 	{ tmp: PendingMassLibraryOrderBatches_Typed; if decode_quiet_proc(v, &tmp._0, dec_dyn_MassLibraryOrderBatch) { out^ = tmp; return true } }
@@ -41851,12 +42140,14 @@ decode_PendingMassLibraryOrderBatches :: proc(v: json.Value, out: ^PendingMassLi
 
 encode_PendingMassLibraryOrderBatches :: proc(b: ^strings.Builder, x: PendingMassLibraryOrderBatches) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingMassLibraryOrderBatches_Typed: enc_dyn_MassLibraryOrderBatch(b, y._0)
 	case PendingMassLibraryOrderBatches_Legacy: enc_dyn_t2_PlayerId_dyn_ObjectId(b, y._0)
 	}
 }
 
 decode_QuantityRef :: proc(v: json.Value, out: ^QuantityRef) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("QuantityRef")
 	if v.kind != .Object do return fail("QuantityRef: not an object")
 	tv, found := json.get(v, "type")
@@ -42437,6 +42728,7 @@ decode_QuantityRef :: proc(v: json.Value, out: ^QuantityRef) -> bool {
 
 encode_QuantityRef :: proc(b: ^strings.Builder, x: QuantityRef) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case QuantityRef_HandSize: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "HandSize")
 	member(b, first, "player"); encode_PlayerScope(b, y.player)
 	}; strings.write_byte(b, '}')
@@ -43042,6 +43334,7 @@ encode_RoundingMode :: proc(b: ^strings.Builder, x: RoundingMode) {
 }
 
 decode_ObjectScope :: proc(v: json.Value, out: ^ObjectScope) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ObjectScope")
 	if v.kind != .Object do return fail("ObjectScope: not an object")
 	tv, found := json.get(v, "type")
@@ -43075,6 +43368,7 @@ decode_ObjectScope :: proc(v: json.Value, out: ^ObjectScope) -> bool {
 
 encode_ObjectScope :: proc(b: ^strings.Builder, x: ObjectScope) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ObjectScope_Source: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Source"); strings.write_byte(b, '}')
 	case ObjectScope_Target: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Target"); strings.write_byte(b, '}')
 	case ObjectScope_Recipient: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Recipient"); strings.write_byte(b, '}')
@@ -43146,6 +43440,7 @@ encode_CountScope :: proc(b: ^strings.Builder, x: CountScope) {
 }
 
 decode_NameStickerSet :: proc(v: json.Value, out: ^NameStickerSet) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("NameStickerSet")
 	if v.kind != .Object do return fail("NameStickerSet: not an object")
 	tv, found := json.get(v, "type")
@@ -43166,6 +43461,7 @@ decode_NameStickerSet :: proc(v: json.Value, out: ^NameStickerSet) -> bool {
 
 encode_NameStickerSet :: proc(b: ^strings.Builder, x: NameStickerSet) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case NameStickerSet_ThatSticker: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ThatSticker"); strings.write_byte(b, '}')
 	case NameStickerSet_OnObject: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "OnObject")
 	member(b, first, "scope"); encode_ObjectScope(b, y.scope)
@@ -43183,6 +43479,7 @@ encode_NameStickerSet_members :: proc(b: ^strings.Builder, x: NameStickerSet, fi
 }
 
 decode_LetterQuery :: proc(v: json.Value, out: ^LetterQuery) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LetterQuery")
 	if v.kind != .Object do return fail("LetterQuery: not an object")
 	tv, found := json.get(v, "type")
@@ -43203,6 +43500,7 @@ decode_LetterQuery :: proc(v: json.Value, out: ^LetterQuery) -> bool {
 
 encode_LetterQuery :: proc(b: ^strings.Builder, x: LetterQuery) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case LetterQuery_UniqueVowels: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "UniqueVowels"); strings.write_byte(b, '}')
 	case LetterQuery_Letter: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Letter")
 	member(b, first, "letter"); encode_rune(b, y.letter)
@@ -43318,6 +43616,7 @@ encode_CountBinding :: proc(b: ^strings.Builder, x: CountBinding) {
 }
 
 decode_DevotionColors :: proc(v: json.Value, out: ^DevotionColors) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DevotionColors")
 	if v.kind != .Object do return fail("DevotionColors: not an object")
 	tv, found := json.get(v, "type")
@@ -43332,12 +43631,14 @@ decode_DevotionColors :: proc(v: json.Value, out: ^DevotionColors) -> bool {
 
 encode_DevotionColors :: proc(b: ^strings.Builder, x: DevotionColors) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DevotionColors_Fixed: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Fixed"); member(b, &f, "value"); enc_dyn_ManaColor(b, y._0); strings.write_byte(b, '}')
 	case DevotionColors_ChosenColor: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ChosenColor"); strings.write_byte(b, '}')
 	}
 }
 
 decode_CardTypeSetSource :: proc(v: json.Value, out: ^CardTypeSetSource) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CardTypeSetSource")
 	if v.kind != .Object do return fail("CardTypeSetSource: not an object")
 	tv, found := json.get(v, "type")
@@ -43398,6 +43699,7 @@ decode_CardTypeSetSource :: proc(v: json.Value, out: ^CardTypeSetSource) -> bool
 
 encode_CardTypeSetSource :: proc(b: ^strings.Builder, x: CardTypeSetSource) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CardTypeSetSource_Zone: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Zone")
 	member(b, first, "zone"); encode_ZoneRef(b, y.zone)
 	member(b, first, "scope"); encode_CountScope(b, y.scope)
@@ -43659,6 +43961,7 @@ encode_CastManaObjectScope :: proc(b: ^strings.Builder, x: CastManaObjectScope) 
 }
 
 decode_CastManaSpentMetric :: proc(v: json.Value, out: ^CastManaSpentMetric) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastManaSpentMetric")
 	if v.kind != .Object do return fail("CastManaSpentMetric: not an object")
 	tv, found := json.get(v, "type")
@@ -43687,6 +43990,7 @@ decode_CastManaSpentMetric :: proc(v: json.Value, out: ^CastManaSpentMetric) -> 
 
 encode_CastManaSpentMetric :: proc(b: ^strings.Builder, x: CastManaSpentMetric) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CastManaSpentMetric_Total: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Total"); strings.write_byte(b, '}')
 	case CastManaSpentMetric_DistinctColors: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "DistinctColors"); strings.write_byte(b, '}')
 	case CastManaSpentMetric_OfColor: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "OfColor")
@@ -43712,6 +44016,7 @@ encode_CastManaSpentMetric_members :: proc(b: ^strings.Builder, x: CastManaSpent
 }
 
 decode_ScopedLibrarySearchPhase :: proc(v: json.Value, out: ^ScopedLibrarySearchPhase) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ScopedLibrarySearchPhase")
 	if v.kind != .Object do return fail("ScopedLibrarySearchPhase: not an object")
 	tv, found := json.get(v, "type")
@@ -43753,6 +44058,7 @@ decode_ScopedLibrarySearchPhase :: proc(v: json.Value, out: ^ScopedLibrarySearch
 
 encode_ScopedLibrarySearchPhase :: proc(b: ^strings.Builder, x: ScopedLibrarySearchPhase) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ScopedLibrarySearchPhase_CollectAcceptance: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "collect_acceptance")
 	member(b, first, "remaining_players"); enc_dyn_PlayerId(b, y.remaining_players)
 	member(b, first, "accepted_players"); enc_dyn_PlayerId(b, y.accepted_players)
@@ -43820,6 +44126,7 @@ encode_BoundSearchFoundGrant_members :: proc(b: ^strings.Builder, x: BoundSearch
 }
 
 decode_PendingSearchFoundContinuation :: proc(v: json.Value, out: ^PendingSearchFoundContinuation) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingSearchFoundContinuation")
 	variant: string
 	body: json.Value
@@ -43846,6 +44153,7 @@ decode_PendingSearchFoundContinuation :: proc(v: json.Value, out: ^PendingSearch
 
 encode_PendingSearchFoundContinuation :: proc(b: ^strings.Builder, x: PendingSearchFoundContinuation) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingSearchFoundContinuation_Standard: strings.write_byte(b, '{'); json.write_string(b, "Standard"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	if !(y.split == nil) { member(b, first, "split"); enc_opt_SearchDestinationSplit(b, y.split) }
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -43876,6 +44184,7 @@ encode_DieResultBranch_members :: proc(b: ^strings.Builder, x: DieResultBranch, 
 }
 
 decode_DieRollModifier :: proc(v: json.Value, out: ^DieRollModifier) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DieRollModifier")
 	if v.kind != .Object do return fail("DieRollModifier: not an object")
 	tv, found := json.get(v, "type")
@@ -43902,6 +44211,7 @@ decode_DieRollModifier :: proc(v: json.Value, out: ^DieRollModifier) -> bool {
 
 encode_DieRollModifier :: proc(b: ^strings.Builder, x: DieRollModifier) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DieRollModifier_Add: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Add")
 	member(b, first, "value"); encode_QuantityExpr(b, y.value)
 	}; strings.write_byte(b, '}')
@@ -43965,6 +44275,7 @@ encode_CapturedDeclarationPayload_members :: proc(b: ^strings.Builder, x: Captur
 }
 
 decode_DeclaredPlayerTarget :: proc(v: json.Value, out: ^DeclaredPlayerTarget) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DeclaredPlayerTarget")
 	variant: string
 	body: json.Value
@@ -43986,6 +44297,7 @@ decode_DeclaredPlayerTarget :: proc(v: json.Value, out: ^DeclaredPlayerTarget) -
 
 encode_DeclaredPlayerTarget :: proc(b: ^strings.Builder, x: DeclaredPlayerTarget) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DeclaredPlayerTarget_Legal: strings.write_byte(b, '{'); json.write_string(b, "Legal"); strings.write_byte(b, ':'); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	case DeclaredPlayerTarget_Illegal: _ = y; json.write_string(b, "Illegal")
 	case DeclaredPlayerTarget_Undeclared: _ = y; json.write_string(b, "Undeclared")
@@ -43993,6 +44305,7 @@ encode_DeclaredPlayerTarget :: proc(b: ^strings.Builder, x: DeclaredPlayerTarget
 }
 
 decode_MayTriggerAutoChoiceSelector :: proc(v: json.Value, out: ^MayTriggerAutoChoiceSelector) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("MayTriggerAutoChoiceSelector")
 	if v.kind != .Object do return fail("MayTriggerAutoChoiceSelector: not an object")
 	tv, found := json.get(v, "type")
@@ -44023,6 +44336,7 @@ decode_MayTriggerAutoChoiceSelector :: proc(v: json.Value, out: ^MayTriggerAutoC
 
 encode_MayTriggerAutoChoiceSelector :: proc(b: ^strings.Builder, x: MayTriggerAutoChoiceSelector) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case MayTriggerAutoChoiceSelector_ExactInstance: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ExactInstance"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "player"); encode_PlayerId(b, y.player)
 	member(b, first, "source_id"); encode_ObjectId(b, y.source_id)
@@ -44067,6 +44381,7 @@ encode_AutoMayChoice_members :: proc(b: ^strings.Builder, x: AutoMayChoice, firs
 }
 
 decode_UnTellKind :: proc(v: json.Value, out: ^UnTellKind) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UnTellKind")
 	if v.kind != .Object do return fail("UnTellKind: not an object")
 	tv, found := json.get(v, "type")
@@ -44082,6 +44397,7 @@ decode_UnTellKind :: proc(v: json.Value, out: ^UnTellKind) -> bool {
 
 encode_UnTellKind :: proc(b: ^strings.Builder, x: UnTellKind) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case UnTellKind_Physical: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Physical"); member(b, &f, "data"); encode_PhysicalTell(b, y._0); strings.write_byte(b, '}')
 	case UnTellKind_SaysWord: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SaysWord"); strings.write_byte(b, '}')
 	case UnTellKind_SaysNumber: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SaysNumber"); strings.write_byte(b, '}')
@@ -44122,6 +44438,7 @@ encode_ReplacementAutoChoiceId :: proc(b: ^strings.Builder, x: ReplacementAutoCh
 }
 
 decode_ReplacementAutoChoice :: proc(v: json.Value, out: ^ReplacementAutoChoice) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ReplacementAutoChoice")
 	if v.kind != .Object do return fail("ReplacementAutoChoice: not an object")
 	tv, found := json.get(v, "type")
@@ -44148,6 +44465,7 @@ decode_ReplacementAutoChoice :: proc(v: json.Value, out: ^ReplacementAutoChoice)
 
 encode_ReplacementAutoChoice :: proc(b: ^strings.Builder, x: ReplacementAutoChoice) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ReplacementAutoChoice_Order: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Order"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "order"); enc_dyn_int(b, y.order)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -44158,6 +44476,7 @@ encode_ReplacementAutoChoice :: proc(b: ^strings.Builder, x: ReplacementAutoChoi
 }
 
 decode_ReplacementAutoChoiceIdentity :: proc(v: json.Value, out: ^ReplacementAutoChoiceIdentity) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ReplacementAutoChoiceIdentity")
 	if v.kind != .Object do return fail("ReplacementAutoChoiceIdentity: not an object")
 	tv, found := json.get(v, "type")
@@ -44190,6 +44509,7 @@ decode_ReplacementAutoChoiceIdentity :: proc(v: json.Value, out: ^ReplacementAut
 
 encode_ReplacementAutoChoiceIdentity :: proc(b: ^strings.Builder, x: ReplacementAutoChoiceIdentity) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ReplacementAutoChoiceIdentity_Definition: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Definition"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "source"); encode_ObjectIncarnationRef(b, y.source)
 	member(b, first, "index"); encode_u64(b, y.index)
@@ -44206,6 +44526,7 @@ encode_ReplacementAutoChoiceIdentity :: proc(b: ^strings.Builder, x: Replacement
 }
 
 decode_PinnedDecision :: proc(v: json.Value, out: ^PinnedDecision) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PinnedDecision")
 	variant: string
 	body: json.Value
@@ -44279,6 +44600,7 @@ decode_PinnedDecision :: proc(v: json.Value, out: ^PinnedDecision) -> bool {
 
 encode_PinnedDecision :: proc(b: ^strings.Builder, x: PinnedDecision) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PinnedDecision_Order: strings.write_byte(b, '{'); json.write_string(b, "Order"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "slot"); encode_DecisionSlot(b, y.slot)
 	member(b, first, "pos"); encode_u8(b, y.pos)
@@ -44310,6 +44632,7 @@ encode_PinnedDecision :: proc(b: ^strings.Builder, x: PinnedDecision) {
 }
 
 decode_ReplayMode :: proc(v: json.Value, out: ^ReplayMode) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ReplayMode")
 	variant: string
 	body: json.Value
@@ -44336,6 +44659,7 @@ decode_ReplayMode :: proc(v: json.Value, out: ^ReplayMode) -> bool {
 
 encode_ReplayMode :: proc(b: ^strings.Builder, x: ReplayMode) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ReplayMode_Static: _ = y; json.write_string(b, "Static")
 	case ReplayMode_Scheduled: strings.write_byte(b, '{'); json.write_string(b, "Scheduled"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "count"); encode_IterationCount(b, y.count)
@@ -44364,6 +44688,7 @@ encode_DecisionGroupKey_members :: proc(b: ^strings.Builder, x: DecisionGroupKey
 }
 
 decode_YieldTarget :: proc(v: json.Value, out: ^YieldTarget) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("YieldTarget")
 	variant: string
 	body: json.Value
@@ -44399,6 +44724,7 @@ decode_YieldTarget :: proc(v: json.Value, out: ^YieldTarget) -> bool {
 
 encode_YieldTarget :: proc(b: ^strings.Builder, x: YieldTarget) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case YieldTarget_ThisObject: strings.write_byte(b, '{'); json.write_string(b, "ThisObject"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "source_id"); encode_ObjectId(b, y.source_id)
 	member(b, first, "incarnation"); enc_opt_u64(b, y.incarnation)
@@ -44458,6 +44784,7 @@ encode_Parity :: proc(b: ^strings.Builder, x: Parity) {
 }
 
 decode_CardPredicateChoice :: proc(v: json.Value, out: ^CardPredicateChoice) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CardPredicateChoice")
 	variant: string
 	body: json.Value
@@ -44479,6 +44806,7 @@ decode_CardPredicateChoice :: proc(v: json.Value, out: ^CardPredicateChoice) -> 
 
 encode_CardPredicateChoice :: proc(b: ^strings.Builder, x: CardPredicateChoice) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CardPredicateChoice_Land: _ = y; json.write_string(b, "Land")
 	case CardPredicateChoice_Nonland: _ = y; json.write_string(b, "Nonland")
 	case CardPredicateChoice_Color: strings.write_byte(b, '{'); json.write_string(b, "Color"); strings.write_byte(b, ':'); encode_ManaColor(b, y._0); strings.write_byte(b, '}')
@@ -44590,6 +44918,7 @@ encode_DelayedAbilityOrigin_members :: proc(b: ^strings.Builder, x: DelayedAbili
 }
 
 decode_ChosenTargetSlots :: proc(v: json.Value, out: ^ChosenTargetSlots) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ChosenTargetSlots")
 	// untagged: the first variant that decodes wins, as in serde.
 	if v.kind == .Null { out^ = ChosenTargetSlots_Unrecorded{}; return true }
@@ -44599,6 +44928,7 @@ decode_ChosenTargetSlots :: proc(v: json.Value, out: ^ChosenTargetSlots) -> bool
 
 encode_ChosenTargetSlots :: proc(b: ^strings.Builder, x: ChosenTargetSlots) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ChosenTargetSlots_Unrecorded: _ = y; strings.write_string(b, "null")
 	case ChosenTargetSlots_Recorded: enc_dyn_int(b, y._0)
 	}
@@ -44695,6 +45025,7 @@ encode_ResolvedCoinBranches_members :: proc(b: ^strings.Builder, x: ResolvedCoin
 }
 
 decode_AbilityCondition :: proc(v: json.Value, out: ^AbilityCondition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AbilityCondition")
 	if v.kind != .Object do return fail("AbilityCondition: not an object")
 	tv, found := json.get(v, "type")
@@ -45040,6 +45371,7 @@ decode_AbilityCondition :: proc(v: json.Value, out: ^AbilityCondition) -> bool {
 
 encode_AbilityCondition :: proc(b: ^strings.Builder, x: AbilityCondition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AbilityCondition_TriggerEventTargetDamagedBySourceThisTurn: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "TriggerEventTargetDamagedBySourceThisTurn"); strings.write_byte(b, '}')
 	case AbilityCondition_TriggerEventTargetExploitedBySource: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "TriggerEventTargetExploitedBySource"); strings.write_byte(b, '}')
 	case AbilityCondition_AdditionalCostPaid: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "AdditionalCostPaid")
@@ -45589,6 +45921,7 @@ encode_TargetSelectionMode_members :: proc(b: ^strings.Builder, x: TargetSelecti
 }
 
 decode_RepeatContinuation :: proc(v: json.Value, out: ^RepeatContinuation) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RepeatContinuation")
 	if v.kind != .Object do return fail("RepeatContinuation: not an object")
 	tv, found := json.get(v, "type")
@@ -45618,6 +45951,7 @@ decode_RepeatContinuation :: proc(v: json.Value, out: ^RepeatContinuation) -> bo
 
 encode_RepeatContinuation :: proc(b: ^strings.Builder, x: RepeatContinuation) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case RepeatContinuation_ControllerChoice: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ControllerChoice"); strings.write_byte(b, '}')
 	case RepeatContinuation_UntilStopConditions: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "UntilStopConditions"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "stop_on_put_to_hand"); encode_bool(b, y.stop_on_put_to_hand)
@@ -45711,6 +46045,7 @@ encode_InstructionJoin :: proc(b: ^strings.Builder, x: InstructionJoin) {
 }
 
 decode_ControlChangeInstructionCarrier :: proc(v: json.Value, out: ^ControlChangeInstructionCarrier) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ControlChangeInstructionCarrier")
 	variant: string
 	body: json.Value
@@ -45731,6 +46066,7 @@ decode_ControlChangeInstructionCarrier :: proc(v: json.Value, out: ^ControlChang
 
 encode_ControlChangeInstructionCarrier :: proc(b: ^strings.Builder, x: ControlChangeInstructionCarrier) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ControlChangeInstructionCarrier_Captured: strings.write_byte(b, '{'); json.write_string(b, "Captured"); strings.write_byte(b, ':'); encode_u64(b, y._0); strings.write_byte(b, '}')
 	case ControlChangeInstructionCarrier_Unobservable: _ = y; json.write_string(b, "Unobservable")
 	}
@@ -45835,6 +46171,7 @@ encode_RawDamagePortion_members :: proc(b: ^strings.Builder, x: RawDamagePortion
 }
 
 decode_EachDamageRecipient :: proc(v: json.Value, out: ^EachDamageRecipient) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EachDamageRecipient")
 	if v.kind != .Object do return fail("EachDamageRecipient: not an object")
 	tv, found := json.get(v, "type")
@@ -45856,6 +46193,7 @@ decode_EachDamageRecipient :: proc(v: json.Value, out: ^EachDamageRecipient) -> 
 
 encode_EachDamageRecipient :: proc(b: ^strings.Builder, x: EachDamageRecipient) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case EachDamageRecipient_Shared: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Shared"); member(b, &f, "data"); encode_TargetFilter(b, y._0); strings.write_byte(b, '}')
 	case EachDamageRecipient_EachController: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "EachController"); strings.write_byte(b, '}')
 	case EachDamageRecipient_OtherBatchSource: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "OtherBatchSource"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -45865,6 +46203,7 @@ encode_EachDamageRecipient :: proc(b: ^strings.Builder, x: EachDamageRecipient) 
 }
 
 decode_CounterSourceRider :: proc(v: json.Value, out: ^CounterSourceRider) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CounterSourceRider")
 	if v.kind != .Object do return fail("CounterSourceRider: not an object")
 	tv, found := json.get(v, "type")
@@ -45887,6 +46226,7 @@ decode_CounterSourceRider :: proc(v: json.Value, out: ^CounterSourceRider) -> bo
 
 encode_CounterSourceRider :: proc(b: ^strings.Builder, x: CounterSourceRider) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CounterSourceRider_LosesAbilities: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "LosesAbilities")
 	member(b, first, "static_def"); enc_ptr_StaticDefinition(b, y.static_def)
 	if !(y.source_filter == nil) { member(b, first, "source_filter"); enc_ptr_TargetFilter(b, y.source_filter) }
@@ -45908,6 +46248,7 @@ encode_CounterSourceRider_members :: proc(b: ^strings.Builder, x: CounterSourceR
 }
 
 decode_SpellStackToGraveyardReplacement :: proc(v: json.Value, out: ^SpellStackToGraveyardReplacement) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SpellStackToGraveyardReplacement")
 	if v.kind != .Object do return fail("SpellStackToGraveyardReplacement: not an object")
 	tv, found := json.get(v, "type")
@@ -45929,6 +46270,7 @@ decode_SpellStackToGraveyardReplacement :: proc(v: json.Value, out: ^SpellStackT
 
 encode_SpellStackToGraveyardReplacement :: proc(b: ^strings.Builder, x: SpellStackToGraveyardReplacement) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case SpellStackToGraveyardReplacement_Exile: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Exile"); strings.write_byte(b, '}')
 	case SpellStackToGraveyardReplacement_Library: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Library")
 	member(b, first, "position"); encode_LibraryPosition(b, y.position)
@@ -45948,6 +46290,7 @@ encode_SpellStackToGraveyardReplacement_members :: proc(b: ^strings.Builder, x: 
 }
 
 decode_TokenAttackDestination :: proc(v: json.Value, out: ^TokenAttackDestination) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TokenAttackDestination")
 	if v.kind != .Object do return fail("TokenAttackDestination: not an object")
 	tv, found := json.get(v, "type")
@@ -45977,6 +46320,7 @@ decode_TokenAttackDestination :: proc(v: json.Value, out: ^TokenAttackDestinatio
 
 encode_TokenAttackDestination :: proc(b: ^strings.Builder, x: TokenAttackDestination) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TokenAttackDestination_ControllerChooses: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ControllerChooses"); strings.write_byte(b, '}')
 	case TokenAttackDestination_Player: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Player"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "player"); encode_ControllerRef(b, y.player)
@@ -46050,6 +46394,7 @@ encode_TapStateChange_members :: proc(b: ^strings.Builder, x: TapStateChange, fi
 }
 
 decode_LibraryInstructionActor :: proc(v: json.Value, out: ^LibraryInstructionActor) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LibraryInstructionActor")
 	variant: string
 	body: json.Value
@@ -46077,6 +46422,7 @@ decode_LibraryInstructionActor :: proc(v: json.Value, out: ^LibraryInstructionAc
 
 encode_LibraryInstructionActor :: proc(b: ^strings.Builder, x: LibraryInstructionActor) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case LibraryInstructionActor_Controller: _ = y; json.write_string(b, "Controller")
 	case LibraryInstructionActor_LibraryPlayer: _ = y; json.write_string(b, "LibraryPlayer")
 	case LibraryInstructionActor_Player: strings.write_byte(b, '{'); json.write_string(b, "Player"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -46106,6 +46452,7 @@ encode_DigSource :: proc(b: ^strings.Builder, x: DigSource) {
 }
 
 decode_AttachSelection :: proc(v: json.Value, out: ^AttachSelection) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AttachSelection")
 	variant: string
 	body: json.Value
@@ -46132,6 +46479,7 @@ decode_AttachSelection :: proc(v: json.Value, out: ^AttachSelection) -> bool {
 
 encode_AttachSelection :: proc(b: ^strings.Builder, x: AttachSelection) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AttachSelection_Targeted: _ = y; json.write_string(b, "targeted")
 	case AttachSelection_AtResolution: strings.write_byte(b, '{'); json.write_string(b, "at_resolution"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	if !(skip_AttachSelection_AttachCardinality_is_one_AttachCardinality(y.count)) { member(b, first, "count"); encode_AttachCardinality(b, y.count) }
@@ -46194,6 +46542,7 @@ encode_VoterScope_members :: proc(b: ^strings.Builder, x: VoterScope, first: ^bo
 }
 
 decode_VoteSubject :: proc(v: json.Value, out: ^VoteSubject) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("VoteSubject")
 	if v.kind != .Object do return fail("VoteSubject: not an object")
 	tv, found := json.get(v, "type")
@@ -46215,6 +46564,7 @@ decode_VoteSubject :: proc(v: json.Value, out: ^VoteSubject) -> bool {
 
 encode_VoteSubject :: proc(b: ^strings.Builder, x: VoteSubject) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case VoteSubject_Named: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Named"); strings.write_byte(b, '}')
 	case VoteSubject_Objects: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Objects"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "candidate_filter"); encode_TargetFilter(b, y.candidate_filter)
@@ -46265,6 +46615,7 @@ encode_EpicEffectId :: proc(b: ^strings.Builder, x: EpicEffectId) {
 }
 
 decode_CombineSource :: proc(v: json.Value, out: ^CombineSource) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CombineSource")
 	variant: string
 	body: json.Value
@@ -46292,6 +46643,7 @@ decode_CombineSource :: proc(v: json.Value, out: ^CombineSource) -> bool {
 
 encode_CombineSource :: proc(b: ^strings.Builder, x: CombineSource) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CombineSource_Source: _ = y; json.write_string(b, "Source")
 	case CombineSource_ParentTarget: _ = y; json.write_string(b, "ParentTarget")
 	case CombineSource_SpecificObject: strings.write_byte(b, '{'); json.write_string(b, "SpecificObject"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -46301,6 +46653,7 @@ encode_CombineSource :: proc(b: ^strings.Builder, x: CombineSource) {
 }
 
 decode_PermanentEntryMode :: proc(v: json.Value, out: ^PermanentEntryMode) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PermanentEntryMode")
 	if v.kind != .Object do return fail("PermanentEntryMode: not an object")
 	tv, found := json.get(v, "type")
@@ -46321,6 +46674,7 @@ decode_PermanentEntryMode :: proc(v: json.Value, out: ^PermanentEntryMode) -> bo
 
 encode_PermanentEntryMode :: proc(b: ^strings.Builder, x: PermanentEntryMode) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PermanentEntryMode_Normal: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Normal"); strings.write_byte(b, '}')
 	case PermanentEntryMode_TappedAndAttacking: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "TappedAndAttacking"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "destination"); encode_EntryAttackDestination(b, y.destination)
@@ -46365,6 +46719,7 @@ encode_PermissionGrantee_members :: proc(b: ^strings.Builder, x: PermissionGrant
 }
 
 decode_CopyRecipient :: proc(v: json.Value, out: ^CopyRecipient) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CopyRecipient")
 	if v.kind != .Object do return fail("CopyRecipient: not an object")
 	tv, found := json.get(v, "type")
@@ -46380,6 +46735,7 @@ decode_CopyRecipient :: proc(v: json.Value, out: ^CopyRecipient) -> bool {
 
 encode_CopyRecipient :: proc(b: ^strings.Builder, x: CopyRecipient) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CopyRecipient_Source: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Source"); strings.write_byte(b, '}')
 	case CopyRecipient_Target: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Target"); member(b, &f, "filter"); encode_TargetFilter(b, y._0); strings.write_byte(b, '}')
 	case CopyRecipient_Untargeted: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Untargeted"); member(b, &f, "filter"); encode_TargetFilter(b, y._0); strings.write_byte(b, '}')
@@ -46425,6 +46781,7 @@ encode_GrantedAbilityScope :: proc(b: ^strings.Builder, x: GrantedAbilityScope) 
 }
 
 decode_CounterKindDomain :: proc(v: json.Value, out: ^CounterKindDomain) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CounterKindDomain")
 	if v.kind != .Object do return fail("CounterKindDomain: not an object")
 	tv, found := json.get(v, "type")
@@ -46446,6 +46803,7 @@ decode_CounterKindDomain :: proc(v: json.Value, out: ^CounterKindDomain) -> bool
 
 encode_CounterKindDomain :: proc(b: ^strings.Builder, x: CounterKindDomain) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CounterKindDomain_OnTarget: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "OnTarget"); strings.write_byte(b, '}')
 	case CounterKindDomain_Printed: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Printed")
 	member(b, first, "kinds"); enc_dyn_CounterType(b, y.kinds)
@@ -46601,6 +46959,7 @@ encode_CounterMoveSelection :: proc(b: ^strings.Builder, x: CounterMoveSelection
 }
 
 decode_EventCounterReproductionCount :: proc(v: json.Value, out: ^EventCounterReproductionCount) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EventCounterReproductionCount")
 	variant: string
 	body: json.Value
@@ -46621,12 +46980,14 @@ decode_EventCounterReproductionCount :: proc(v: json.Value, out: ^EventCounterRe
 
 encode_EventCounterReproductionCount :: proc(b: ^strings.Builder, x: EventCounterReproductionCount) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case EventCounterReproductionCount_SameNumber: _ = y; json.write_string(b, "SameNumber")
 	case EventCounterReproductionCount_PerKind: strings.write_byte(b, '{'); json.write_string(b, "PerKind"); strings.write_byte(b, ':'); encode_u32(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_ManaProduction :: proc(v: json.Value, out: ^ManaProduction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaProduction")
 	if v.kind != .Object do return fail("ManaProduction: not an object")
 	tv, found := json.get(v, "type")
@@ -46757,6 +47118,7 @@ decode_ManaProduction :: proc(v: json.Value, out: ^ManaProduction) -> bool {
 
 encode_ManaProduction :: proc(b: ^strings.Builder, x: ManaProduction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaProduction_Fixed: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Fixed")
 	member(b, first, "colors"); enc_dyn_ManaColor(b, y.colors)
 	if !(skip_ManaProduction_is_default_mana_contribution_ManaContribution(y.contribution)) { member(b, first, "contribution"); encode_ManaContribution(b, y.contribution) }
@@ -46882,6 +47244,7 @@ encode_ManaProduction_members :: proc(b: ^strings.Builder, x: ManaProduction, fi
 }
 
 decode_ManaSpendRestriction :: proc(v: json.Value, out: ^ManaSpendRestriction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaSpendRestriction")
 	variant: string
 	body: json.Value
@@ -46954,6 +47317,7 @@ decode_ManaSpendRestriction :: proc(v: json.Value, out: ^ManaSpendRestriction) -
 
 encode_ManaSpendRestriction :: proc(b: ^strings.Builder, x: ManaSpendRestriction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaSpendRestriction_SpellOnly: _ = y; json.write_string(b, "SpellOnly")
 	case ManaSpendRestriction_SpellType: strings.write_byte(b, '{'); json.write_string(b, "SpellType"); strings.write_byte(b, ':'); encode_string(b, y._0); strings.write_byte(b, '}')
 	case ManaSpendRestriction_ChosenCreatureType: _ = y; json.write_string(b, "ChosenCreatureType")
@@ -46992,6 +47356,7 @@ encode_ManaSpendRestriction :: proc(b: ^strings.Builder, x: ManaSpendRestriction
 }
 
 decode_ManaSpellGrant :: proc(v: json.Value, out: ^ManaSpellGrant) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaSpellGrant")
 	variant: string
 	body: json.Value
@@ -47043,6 +47408,7 @@ decode_ManaSpellGrant :: proc(v: json.Value, out: ^ManaSpellGrant) -> bool {
 
 encode_ManaSpellGrant :: proc(b: ^strings.Builder, x: ManaSpellGrant) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaSpellGrant_CantBeCountered: strings.write_byte(b, '{'); json.write_string(b, "CantBeCountered"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "filter"); encode_TargetFilter(b, y.filter)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -47086,6 +47452,7 @@ encode_ManaExpiry :: proc(b: ^strings.Builder, x: ManaExpiry) {
 }
 
 decode_ManaTargetRole :: proc(v: json.Value, out: ^ManaTargetRole) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaTargetRole")
 	if v.kind != .Object do return fail("ManaTargetRole: not an object")
 	tv, found := json.get(v, "role")
@@ -47120,6 +47487,7 @@ decode_ManaTargetRole :: proc(v: json.Value, out: ^ManaTargetRole) -> bool {
 
 encode_ManaTargetRole :: proc(b: ^strings.Builder, x: ManaTargetRole) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaTargetRole_Recipient: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "role"); json.write_string(b, "Recipient")
 	member(b, first, "recipient"); encode_TargetFilter(b, y.recipient)
 	}; strings.write_byte(b, '}')
@@ -47179,6 +47547,7 @@ encode_OutsideGameSourcePool_members :: proc(b: ^strings.Builder, x: OutsideGame
 }
 
 decode_GuessSubject :: proc(v: json.Value, out: ^GuessSubject) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("GuessSubject")
 	if v.kind != .Object do return fail("GuessSubject: not an object")
 	tv, found := json.get(v, "type")
@@ -47207,6 +47576,7 @@ decode_GuessSubject :: proc(v: json.Value, out: ^GuessSubject) -> bool {
 
 encode_GuessSubject :: proc(b: ^strings.Builder, x: GuessSubject) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case GuessSubject_CommittedChoice: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "CommittedChoice")
 	member(b, first, "choice_type"); encode_ChoiceType(b, y.choice_type)
 	}; strings.write_byte(b, '}')
@@ -47282,6 +47652,7 @@ encode_CardPlayMode :: proc(b: ^strings.Builder, x: CardPlayMode) {
 }
 
 decode_CastPermissionConstraint :: proc(v: json.Value, out: ^CastPermissionConstraint) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastPermissionConstraint")
 	if v.kind != .Object do return fail("CastPermissionConstraint: not an object")
 	tv, found := json.get(v, "type")
@@ -47302,6 +47673,7 @@ decode_CastPermissionConstraint :: proc(v: json.Value, out: ^CastPermissionConst
 
 encode_CastPermissionConstraint :: proc(b: ^strings.Builder, x: CastPermissionConstraint) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CastPermissionConstraint_ManaValue: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ManaValue"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "comparator"); encode_Comparator(b, y.comparator)
 	member(b, first, "value"); encode_QuantityExpr(b, y.value)
@@ -47310,6 +47682,7 @@ encode_CastPermissionConstraint :: proc(b: ^strings.Builder, x: CastPermissionCo
 }
 
 decode_CastFromZoneDriver :: proc(v: json.Value, out: ^CastFromZoneDriver) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastFromZoneDriver")
 	variant: string
 	body: json.Value
@@ -47337,6 +47710,7 @@ decode_CastFromZoneDriver :: proc(v: json.Value, out: ^CastFromZoneDriver) -> bo
 
 encode_CastFromZoneDriver :: proc(b: ^strings.Builder, x: CastFromZoneDriver) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CastFromZoneDriver_LingeringPermission: _ = y; json.write_string(b, "LingeringPermission")
 	case CastFromZoneDriver_DuringResolution: _ = y; json.write_string(b, "DuringResolution")
 	case CastFromZoneDriver_ResolutionWindow: strings.write_byte(b, '{'); json.write_string(b, "ResolutionWindow"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -47366,6 +47740,7 @@ encode_CastCostModifier_members :: proc(b: ^strings.Builder, x: CastCostModifier
 }
 
 decode_PreventionAmount :: proc(v: json.Value, out: ^PreventionAmount) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PreventionAmount")
 	variant: string
 	body: json.Value
@@ -47387,6 +47762,7 @@ decode_PreventionAmount :: proc(v: json.Value, out: ^PreventionAmount) -> bool {
 
 encode_PreventionAmount :: proc(b: ^strings.Builder, x: PreventionAmount) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PreventionAmount_Next: strings.write_byte(b, '{'); json.write_string(b, "Next"); strings.write_byte(b, ':'); encode_u32(b, y._0); strings.write_byte(b, '}')
 	case PreventionAmount_All: _ = y; json.write_string(b, "All")
 	case PreventionAmount_AllBut: strings.write_byte(b, '{'); json.write_string(b, "AllBut"); strings.write_byte(b, ':'); encode_u32(b, y._0); strings.write_byte(b, '}')
@@ -47434,6 +47810,7 @@ encode_CombatDamageScope :: proc(b: ^strings.Builder, x: CombatDamageScope) {
 }
 
 decode_DamageTargetFilter :: proc(v: json.Value, out: ^DamageTargetFilter) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DamageTargetFilter")
 	variant: string
 	body: json.Value
@@ -47469,6 +47846,7 @@ decode_DamageTargetFilter :: proc(v: json.Value, out: ^DamageTargetFilter) -> bo
 
 encode_DamageTargetFilter :: proc(b: ^strings.Builder, x: DamageTargetFilter) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DamageTargetFilter_CreatureOnly: _ = y; json.write_string(b, "CreatureOnly")
 	case DamageTargetFilter_Player: strings.write_byte(b, '{'); json.write_string(b, "Player"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "player"); encode_DamageTargetPlayerScope(b, y.player)
@@ -47482,6 +47860,7 @@ encode_DamageTargetFilter :: proc(b: ^strings.Builder, x: DamageTargetFilter) {
 }
 
 decode_DamageModification :: proc(v: json.Value, out: ^DamageModification) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DamageModification")
 	if v.kind != .Object do return fail("DamageModification: not an object")
 	tv, found := json.get(v, "type")
@@ -47532,6 +47911,7 @@ decode_DamageModification :: proc(v: json.Value, out: ^DamageModification) -> bo
 
 encode_DamageModification :: proc(b: ^strings.Builder, x: DamageModification) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DamageModification_Double: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Double"); strings.write_byte(b, '}')
 	case DamageModification_Triple: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Triple"); strings.write_byte(b, '}')
 	case DamageModification_Plus: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Plus")
@@ -47643,6 +48023,7 @@ encode_RedirectionLifetime_members :: proc(b: ^strings.Builder, x: RedirectionLi
 }
 
 decode_CoinFlipRun :: proc(v: json.Value, out: ^CoinFlipRun) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CoinFlipRun")
 	if v.kind != .Object do return fail("CoinFlipRun: not an object")
 	tv, found := json.get(v, "type")
@@ -47663,6 +48044,7 @@ decode_CoinFlipRun :: proc(v: json.Value, out: ^CoinFlipRun) -> bool {
 
 encode_CoinFlipRun :: proc(b: ^strings.Builder, x: CoinFlipRun) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CoinFlipRun_Exactly: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Exactly")
 	member(b, first, "count"); encode_QuantityExpr(b, y.count)
 	}; strings.write_byte(b, '}')
@@ -47720,6 +48102,7 @@ encode_StickerTicketCostPayment :: proc(b: ^strings.Builder, x: StickerTicketCos
 }
 
 decode_ZoneOwner :: proc(v: json.Value, out: ^ZoneOwner) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ZoneOwner")
 	variant: string
 	body: json.Value
@@ -47744,6 +48127,7 @@ decode_ZoneOwner :: proc(v: json.Value, out: ^ZoneOwner) -> bool {
 
 encode_ZoneOwner :: proc(b: ^strings.Builder, x: ZoneOwner) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ZoneOwner_Controller: _ = y; json.write_string(b, "Controller")
 	case ZoneOwner_TargetedPlayer: _ = y; json.write_string(b, "TargetedPlayer")
 	case ZoneOwner_Opponent: _ = y; json.write_string(b, "Opponent")
@@ -47754,6 +48138,7 @@ encode_ZoneOwner :: proc(b: ^strings.Builder, x: ZoneOwner) {
 }
 
 decode_ZoneChoiceChooser :: proc(v: json.Value, out: ^ZoneChoiceChooser) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ZoneChoiceChooser")
 	variant: string
 	body: json.Value
@@ -47789,6 +48174,7 @@ decode_ZoneChoiceChooser :: proc(v: json.Value, out: ^ZoneChoiceChooser) -> bool
 
 encode_ZoneChoiceChooser :: proc(b: ^strings.Builder, x: ZoneChoiceChooser) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ZoneChoiceChooser_Controller: _ = y; json.write_string(b, "Controller")
 	case ZoneChoiceChooser_Opponent: _ = y; json.write_string(b, "Opponent")
 	case ZoneChoiceChooser_OwningPlayer: _ = y; json.write_string(b, "OwningPlayer")
@@ -47892,6 +48278,7 @@ encode_Chooser :: proc(b: ^strings.Builder, x: Chooser) {
 }
 
 decode_ForEachCategoryAction :: proc(v: json.Value, out: ^ForEachCategoryAction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ForEachCategoryAction")
 	if v.kind != .Object do return fail("ForEachCategoryAction: not an object")
 	tv, found := json.get(v, "type")
@@ -47921,6 +48308,7 @@ decode_ForEachCategoryAction :: proc(v: json.Value, out: ^ForEachCategoryAction)
 
 encode_ForEachCategoryAction :: proc(b: ^strings.Builder, x: ForEachCategoryAction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ForEachCategoryAction_ExileFromPool: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "exile_from_pool")
 	member(b, first, "zone"); encode_Zone(b, y.zone)
 	member(b, first, "up_to"); encode_bool(b, y.up_to)
@@ -47948,6 +48336,7 @@ encode_ForEachCategoryAction_members :: proc(b: ^strings.Builder, x: ForEachCate
 }
 
 decode_ObjectSelectionEligibility :: proc(v: json.Value, out: ^ObjectSelectionEligibility) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ObjectSelectionEligibility")
 	variant: string
 	body: json.Value
@@ -47973,6 +48362,7 @@ decode_ObjectSelectionEligibility :: proc(v: json.Value, out: ^ObjectSelectionEl
 
 encode_ObjectSelectionEligibility :: proc(b: ^strings.Builder, x: ObjectSelectionEligibility) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ObjectSelectionEligibility_RemovableCounter: strings.write_byte(b, '{'); json.write_string(b, "RemovableCounter"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "counter_type"); enc_opt_CounterType(b, y.counter_type)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -47980,6 +48370,7 @@ encode_ObjectSelectionEligibility :: proc(b: ^strings.Builder, x: ObjectSelectio
 }
 
 decode_KeeperConstraint :: proc(v: json.Value, out: ^KeeperConstraint) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("KeeperConstraint")
 	if v.kind != .Object do return fail("KeeperConstraint: not an object")
 	tv, found := json.get(v, "type")
@@ -47999,6 +48390,7 @@ decode_KeeperConstraint :: proc(v: json.Value, out: ^KeeperConstraint) -> bool {
 
 encode_KeeperConstraint :: proc(b: ^strings.Builder, x: KeeperConstraint) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case KeeperConstraint_ExactCount: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "exact_count")
 	member(b, first, "count"); encode_QuantityExpr(b, y.count)
 	}; strings.write_byte(b, '}')
@@ -48034,6 +48426,7 @@ encode_KeeperCounterMark_members :: proc(b: ^strings.Builder, x: KeeperCounterMa
 }
 
 decode_UntilCondition :: proc(v: json.Value, out: ^UntilCondition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UntilCondition")
 	if v.kind != .Object do return fail("UntilCondition: not an object")
 	tv, found := json.get(v, "type")
@@ -48063,6 +48456,7 @@ decode_UntilCondition :: proc(v: json.Value, out: ^UntilCondition) -> bool {
 
 encode_UntilCondition :: proc(b: ^strings.Builder, x: UntilCondition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case UntilCondition_NextMatches: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "NextMatches")
 	member(b, first, "filter"); encode_TargetFilter(b, y.filter)
 	if !(skip_UntilCondition_is_default_quantity_one_QuantityExpr(y.count)) { member(b, first, "count"); encode_QuantityExpr(b, y.count) }
@@ -48122,6 +48516,7 @@ encode_RevealUntilDisposition_members :: proc(b: ^strings.Builder, x: RevealUnti
 }
 
 decode_StepSkipTarget :: proc(v: json.Value, out: ^StepSkipTarget) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StepSkipTarget")
 	if v.kind != .Object do return fail("StepSkipTarget: not an object")
 	tv, found := json.get(v, "type")
@@ -48136,6 +48531,7 @@ decode_StepSkipTarget :: proc(v: json.Value, out: ^StepSkipTarget) -> bool {
 
 encode_StepSkipTarget :: proc(b: ^strings.Builder, x: StepSkipTarget) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case StepSkipTarget_Step: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Step"); member(b, &f, "data"); encode_Phase(b, y._0); strings.write_byte(b, '}')
 	case StepSkipTarget_CombatPhase: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CombatPhase"); strings.write_byte(b, '}')
 	}
@@ -48162,6 +48558,7 @@ encode_SkipScope :: proc(b: ^strings.Builder, x: SkipScope) {
 }
 
 decode_ExtraPhaseRecipient :: proc(v: json.Value, out: ^ExtraPhaseRecipient) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ExtraPhaseRecipient")
 	if v.kind != .Object do return fail("ExtraPhaseRecipient: not an object")
 	tv, found := json.get(v, "type")
@@ -48178,6 +48575,7 @@ decode_ExtraPhaseRecipient :: proc(v: json.Value, out: ^ExtraPhaseRecipient) -> 
 
 encode_ExtraPhaseRecipient :: proc(b: ^strings.Builder, x: ExtraPhaseRecipient) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ExtraPhaseRecipient_NoPlayer: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NoPlayer"); strings.write_byte(b, '}')
 	case ExtraPhaseRecipient_Controller: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Controller"); strings.write_byte(b, '}')
 	case ExtraPhaseRecipient_TriggeringPlayer: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "TriggeringPlayer"); strings.write_byte(b, '}')
@@ -48186,6 +48584,7 @@ encode_ExtraPhaseRecipient :: proc(b: ^strings.Builder, x: ExtraPhaseRecipient) 
 }
 
 decode_ExtraPhaseAnchor :: proc(v: json.Value, out: ^ExtraPhaseAnchor) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ExtraPhaseAnchor")
 	if v.kind != .Object do return fail("ExtraPhaseAnchor: not an object")
 	tv, found := json.get(v, "type")
@@ -48208,6 +48607,7 @@ decode_ExtraPhaseAnchor :: proc(v: json.Value, out: ^ExtraPhaseAnchor) -> bool {
 
 encode_ExtraPhaseAnchor :: proc(b: ^strings.Builder, x: ExtraPhaseAnchor) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ExtraPhaseAnchor_Step: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Step"); member(b, &f, "data"); encode_Phase(b, y._0); strings.write_byte(b, '}')
 	case ExtraPhaseAnchor_ThisStep: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ThisStep"); strings.write_byte(b, '}')
 	case ExtraPhaseAnchor_ThisPhase: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ThisPhase"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -48218,6 +48618,7 @@ encode_ExtraPhaseAnchor :: proc(b: ^strings.Builder, x: ExtraPhaseAnchor) {
 }
 
 decode_XModification :: proc(v: json.Value, out: ^XModification) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("XModification")
 	if v.kind != .Object do return fail("XModification: not an object")
 	tv, found := json.get(v, "type")
@@ -48237,6 +48638,7 @@ decode_XModification :: proc(v: json.Value, out: ^XModification) -> bool {
 
 encode_XModification :: proc(b: ^strings.Builder, x: XModification) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case XModification_Times: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Times")
 	member(b, first, "factor"); encode_u32(b, y.factor)
 	}; strings.write_byte(b, '}')
@@ -48252,6 +48654,7 @@ encode_XModification_members :: proc(b: ^strings.Builder, x: XModification, firs
 }
 
 decode_DoubleTarget :: proc(v: json.Value, out: ^DoubleTarget) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DoubleTarget")
 	if v.kind != .Object do return fail("DoubleTarget: not an object")
 	tv, found := json.get(v, "type")
@@ -48279,6 +48682,7 @@ decode_DoubleTarget :: proc(v: json.Value, out: ^DoubleTarget) -> bool {
 
 encode_DoubleTarget :: proc(b: ^strings.Builder, x: DoubleTarget) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DoubleTarget_Counters: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Counters"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "counter_type"); enc_opt_CounterType(b, y.counter_type)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -48372,6 +48776,7 @@ encode_ConjureCard_members :: proc(b: ^strings.Builder, x: ConjureCard, first: ^
 }
 
 decode_IntensityScope :: proc(v: json.Value, out: ^IntensityScope) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("IntensityScope")
 	if v.kind != .Object do return fail("IntensityScope: not an object")
 	tv, found := json.get(v, "type")
@@ -48393,6 +48798,7 @@ decode_IntensityScope :: proc(v: json.Value, out: ^IntensityScope) -> bool {
 
 encode_IntensityScope :: proc(b: ^strings.Builder, x: IntensityScope) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case IntensityScope_Source: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Source"); strings.write_byte(b, '}')
 	case IntensityScope_OwnedSameName: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "OwnedSameName"); strings.write_byte(b, '}')
 	case IntensityScope_OwnedSubtype: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "OwnedSubtype")
@@ -48496,6 +48902,7 @@ encode_CombatHistoryScope :: proc(b: ^strings.Builder, x: CombatHistoryScope) {
 }
 
 decode_RestrictionExpiry :: proc(v: json.Value, out: ^RestrictionExpiry) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RestrictionExpiry")
 	if v.kind != .Object do return fail("RestrictionExpiry: not an object")
 	tv, found := json.get(v, "type")
@@ -48525,6 +48932,7 @@ decode_RestrictionExpiry :: proc(v: json.Value, out: ^RestrictionExpiry) -> bool
 
 encode_RestrictionExpiry :: proc(b: ^strings.Builder, x: RestrictionExpiry) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case RestrictionExpiry_EndOfTurn: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "EndOfTurn"); strings.write_byte(b, '}')
 	case RestrictionExpiry_EndOfCombat: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "EndOfCombat"); strings.write_byte(b, '}')
 	case RestrictionExpiry_UntilPlayerNextTurn: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "UntilPlayerNextTurn")
@@ -48552,6 +48960,7 @@ encode_RestrictionExpiry_members :: proc(b: ^strings.Builder, x: RestrictionExpi
 }
 
 decode_RestrictionScope :: proc(v: json.Value, out: ^RestrictionScope) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RestrictionScope")
 	if v.kind != .Object do return fail("RestrictionScope: not an object")
 	tv, found := json.get(v, "type")
@@ -48567,6 +48976,7 @@ decode_RestrictionScope :: proc(v: json.Value, out: ^RestrictionScope) -> bool {
 
 encode_RestrictionScope :: proc(b: ^strings.Builder, x: RestrictionScope) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case RestrictionScope_SourcesControlledBy: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SourcesControlledBy"); member(b, &f, "data"); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	case RestrictionScope_SpecificSource: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SpecificSource"); member(b, &f, "data"); encode_ObjectId(b, y._0); strings.write_byte(b, '}')
 	case RestrictionScope_DamageToTarget: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "DamageToTarget"); member(b, &f, "data"); encode_ObjectId(b, y._0); strings.write_byte(b, '}')
@@ -48574,6 +48984,7 @@ encode_RestrictionScope :: proc(b: ^strings.Builder, x: RestrictionScope) {
 }
 
 decode_RestrictionPlayerScope :: proc(v: json.Value, out: ^RestrictionPlayerScope) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RestrictionPlayerScope")
 	if v.kind != .Object do return fail("RestrictionPlayerScope: not an object")
 	tv, found := json.get(v, "type")
@@ -48595,6 +49006,7 @@ decode_RestrictionPlayerScope :: proc(v: json.Value, out: ^RestrictionPlayerScop
 
 encode_RestrictionPlayerScope :: proc(b: ^strings.Builder, x: RestrictionPlayerScope) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case RestrictionPlayerScope_AllPlayers: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "AllPlayers"); strings.write_byte(b, '}')
 	case RestrictionPlayerScope_SpecificPlayer: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SpecificPlayer"); member(b, &f, "data"); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	case RestrictionPlayerScope_TargetedPlayer: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "TargetedPlayer"); strings.write_byte(b, '}')
@@ -48608,6 +49020,7 @@ encode_RestrictionPlayerScope :: proc(b: ^strings.Builder, x: RestrictionPlayerS
 }
 
 decode_ProhibitedActivity :: proc(v: json.Value, out: ^ProhibitedActivity) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ProhibitedActivity")
 	if v.kind != .Object do return fail("ProhibitedActivity: not an object")
 	tv, found := json.get(v, "type")
@@ -48665,6 +49078,7 @@ decode_ProhibitedActivity :: proc(v: json.Value, out: ^ProhibitedActivity) -> bo
 
 encode_ProhibitedActivity :: proc(b: ^strings.Builder, x: ProhibitedActivity) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ProhibitedActivity_CastOnlyFromZones: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "CastOnlyFromZones")
 	member(b, first, "allowed_zones"); enc_dyn_Zone(b, y.allowed_zones)
 	}; strings.write_byte(b, '}')
@@ -48736,6 +49150,7 @@ encode_ActivationExemption :: proc(b: ^strings.Builder, x: ActivationExemption) 
 }
 
 decode_AttackTargetFilter :: proc(v: json.Value, out: ^AttackTargetFilter) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AttackTargetFilter")
 	variant: string
 	body: json.Value
@@ -48769,6 +49184,7 @@ decode_AttackTargetFilter :: proc(v: json.Value, out: ^AttackTargetFilter) -> bo
 
 encode_AttackTargetFilter :: proc(b: ^strings.Builder, x: AttackTargetFilter) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AttackTargetFilter_Player: _ = y; json.write_string(b, "Player")
 	case AttackTargetFilter_Planeswalker: strings.write_byte(b, '{'); json.write_string(b, "Planeswalker"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "subtype"); enc_opt_string(b, y.subtype)
@@ -48793,6 +49209,7 @@ encode_ReplacementContinuationId :: proc(b: ^strings.Builder, x: ReplacementCont
 }
 
 decode_ReplacementMode :: proc(v: json.Value, out: ^ReplacementMode) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ReplacementMode")
 	if v.kind != .Object do return fail("ReplacementMode: not an object")
 	tv, found := json.get(v, "type")
@@ -48821,6 +49238,7 @@ decode_ReplacementMode :: proc(v: json.Value, out: ^ReplacementMode) -> bool {
 
 encode_ReplacementMode :: proc(b: ^strings.Builder, x: ReplacementMode) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ReplacementMode_Mandatory: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mandatory"); strings.write_byte(b, '}')
 	case ReplacementMode_Optional: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Optional")
 	member(b, first, "decline"); enc_ptr_AbilityDefinition(b, y.decline)
@@ -48866,6 +49284,7 @@ encode_ReplacementChoiceAuthority :: proc(b: ^strings.Builder, x: ReplacementCho
 }
 
 decode_ReplacementCondition :: proc(v: json.Value, out: ^ReplacementCondition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ReplacementCondition")
 	if v.kind != .Object do return fail("ReplacementCondition: not an object")
 	tv, found := json.get(v, "type")
@@ -49076,6 +49495,7 @@ decode_ReplacementCondition :: proc(v: json.Value, out: ^ReplacementCondition) -
 
 encode_ReplacementCondition :: proc(b: ^strings.Builder, x: ReplacementCondition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ReplacementCondition_And: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "And")
 	member(b, first, "conditions"); enc_dyn_ReplacementCondition(b, y.conditions)
 	}; strings.write_byte(b, '}')
@@ -49321,6 +49741,7 @@ encode_PlaneswalkReplacementScope :: proc(b: ^strings.Builder, x: PlaneswalkRepl
 }
 
 decode_ShieldKind :: proc(v: json.Value, out: ^ShieldKind) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ShieldKind")
 	variant: string
 	body: json.Value
@@ -49359,6 +49780,7 @@ decode_ShieldKind :: proc(v: json.Value, out: ^ShieldKind) -> bool {
 
 encode_ShieldKind :: proc(b: ^strings.Builder, x: ShieldKind) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ShieldKind_None: _ = y; json.write_string(b, "None")
 	case ShieldKind_Regeneration: _ = y; json.write_string(b, "Regeneration")
 	case ShieldKind_Prevention: strings.write_byte(b, '{'); json.write_string(b, "Prevention"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -49375,6 +49797,7 @@ encode_ShieldKind :: proc(b: ^strings.Builder, x: ShieldKind) {
 }
 
 decode_QuantityModification :: proc(v: json.Value, out: ^QuantityModification) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("QuantityModification")
 	if v.kind != .Object do return fail("QuantityModification: not an object")
 	tv, found := json.get(v, "type")
@@ -49410,6 +49833,7 @@ decode_QuantityModification :: proc(v: json.Value, out: ^QuantityModification) -
 
 encode_QuantityModification :: proc(b: ^strings.Builder, x: QuantityModification) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case QuantityModification_Times: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Times")
 	member(b, first, "factor"); encode_u32(b, y.factor)
 	}; strings.write_byte(b, '}')
@@ -49463,6 +49887,7 @@ encode_ReplacementPlayerScope :: proc(b: ^strings.Builder, x: ReplacementPlayerS
 }
 
 decode_ManaModification :: proc(v: json.Value, out: ^ManaModification) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaModification")
 	if v.kind != .Object do return fail("ManaModification: not an object")
 	tv, found := json.get(v, "type")
@@ -49489,6 +49914,7 @@ decode_ManaModification :: proc(v: json.Value, out: ^ManaModification) -> bool {
 
 encode_ManaModification :: proc(b: ^strings.Builder, x: ManaModification) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaModification_ReplaceWith: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "ReplaceWith")
 	member(b, first, "mana_type"); encode_ManaType(b, y.mana_type)
 	}; strings.write_byte(b, '}')
@@ -49580,6 +50006,7 @@ encode_CounterReplacementSubject :: proc(b: ^strings.Builder, x: CounterReplacem
 }
 
 decode_StepEndManaAction :: proc(v: json.Value, out: ^StepEndManaAction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StepEndManaAction")
 	variant: string
 	body: json.Value
@@ -49600,6 +50027,7 @@ decode_StepEndManaAction :: proc(v: json.Value, out: ^StepEndManaAction) -> bool
 
 encode_StepEndManaAction :: proc(b: ^strings.Builder, x: StepEndManaAction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case StepEndManaAction_Retain: _ = y; json.write_string(b, "Retain")
 	case StepEndManaAction_Transform: strings.write_byte(b, '{'); json.write_string(b, "Transform"); strings.write_byte(b, ':'); encode_ManaType(b, y._0); strings.write_byte(b, '}')
 	}
@@ -49650,6 +50078,7 @@ encode_PhaseTransitionDrainState :: proc(b: ^strings.Builder, x: PhaseTransition
 }
 
 decode_PendingCostMoveCompletion :: proc(v: json.Value, out: ^PendingCostMoveCompletion) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingCostMoveCompletion")
 	variant: string
 	body: json.Value
@@ -49696,6 +50125,7 @@ decode_PendingCostMoveCompletion :: proc(v: json.Value, out: ^PendingCostMoveCom
 
 encode_PendingCostMoveCompletion :: proc(b: ^strings.Builder, x: PendingCostMoveCompletion) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingCostMoveCompletion_FinishPending: _ = y; json.write_string(b, "FinishPending")
 	case PendingCostMoveCompletion_CompleteSelectedReturnToHand: strings.write_byte(b, '{'); json.write_string(b, "CompleteSelectedReturnToHand"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "selected"); enc_dyn_ObjectId(b, y.selected)
@@ -49716,6 +50146,7 @@ encode_PendingCostMoveCompletion :: proc(b: ^strings.Builder, x: PendingCostMove
 }
 
 decode_PendingSacrificeCostCompletion :: proc(v: json.Value, out: ^PendingSacrificeCostCompletion) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingSacrificeCostCompletion")
 	if v.kind != .Object do return fail("PendingSacrificeCostCompletion: not an object")
 	tv, found := json.get(v, "type")
@@ -49746,6 +50177,7 @@ decode_PendingSacrificeCostCompletion :: proc(v: json.Value, out: ^PendingSacrif
 
 encode_PendingSacrificeCostCompletion :: proc(b: ^strings.Builder, x: PendingSacrificeCostCompletion) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingSacrificeCostCompletion_FinalizeSpell: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "FinalizeSpell")
 	member(b, first, "phyrexian_choices"); enc_opt_dyn_ShardChoice(b, y.phyrexian_choices)
 	member(b, first, "pre_payment_checks"); enc_ptr_FinalizePrePaymentChecks(b, y.pre_payment_checks)
@@ -49775,6 +50207,7 @@ encode_PendingSacrificeCostCompletion_members :: proc(b: ^strings.Builder, x: Pe
 }
 
 decode_WardSacrificePaymentResume :: proc(v: json.Value, out: ^WardSacrificePaymentResume) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("WardSacrificePaymentResume")
 	if v.kind != .Object do return fail("WardSacrificePaymentResume: not an object")
 	tv, found := json.get(v, "type")
@@ -49803,6 +50236,7 @@ decode_WardSacrificePaymentResume :: proc(v: json.Value, out: ^WardSacrificePaym
 
 encode_WardSacrificePaymentResume :: proc(b: ^strings.Builder, x: WardSacrificePaymentResume) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case WardSacrificePaymentResume_MultiSacrifice: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "MultiSacrifice")
 	member(b, first, "remaining"); enc_dyn_ObjectId(b, y.remaining)
 	}; strings.write_byte(b, '}')
@@ -49998,6 +50432,7 @@ encode_PlayerScopeUnlessSettlement_members :: proc(b: ^strings.Builder, x: Playe
 }
 
 decode_ManaAbilityResume :: proc(v: json.Value, out: ^ManaAbilityResume) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaAbilityResume")
 	variant: string
 	body: json.Value
@@ -50148,6 +50583,7 @@ decode_ManaAbilityResume :: proc(v: json.Value, out: ^ManaAbilityResume) -> bool
 
 encode_ManaAbilityResume :: proc(b: ^strings.Builder, x: ManaAbilityResume) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaAbilityResume_Priority: _ = y; json.write_string(b, "Priority")
 	case ManaAbilityResume_CompanionToHand: strings.write_byte(b, '{'); json.write_string(b, "CompanionToHand"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "player"); encode_PlayerId(b, y.player)
@@ -50252,6 +50688,7 @@ encode_CollectedTriggerContextBatch_members :: proc(b: ^strings.Builder, x: Coll
 }
 
 decode_ManaTriggerFixedPointResume :: proc(v: json.Value, out: ^ManaTriggerFixedPointResume) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaTriggerFixedPointResume")
 	if v.kind != .Object do return fail("ManaTriggerFixedPointResume: not an object")
 	tv, found := json.get(v, "type")
@@ -50274,6 +50711,7 @@ decode_ManaTriggerFixedPointResume :: proc(v: json.Value, out: ^ManaTriggerFixed
 
 encode_ManaTriggerFixedPointResume :: proc(b: ^strings.Builder, x: ManaTriggerFixedPointResume) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaTriggerFixedPointResume_Parent: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Parent"); strings.write_byte(b, '}')
 	case ManaTriggerFixedPointResume_Root: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Root"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "player"); encode_PlayerId(b, y.player)
@@ -50336,6 +50774,7 @@ encode_CostReductionElection_members :: proc(b: ^strings.Builder, x: CostReducti
 }
 
 decode_DeferredHandDiscardCost :: proc(v: json.Value, out: ^DeferredHandDiscardCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DeferredHandDiscardCost")
 	if v.kind != .Object do return fail("DeferredHandDiscardCost: not an object")
 	tv, found := json.get(v, "type")
@@ -50356,6 +50795,7 @@ decode_DeferredHandDiscardCost :: proc(v: json.Value, out: ^DeferredHandDiscardC
 
 encode_DeferredHandDiscardCost :: proc(b: ^strings.Builder, x: DeferredHandDiscardCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DeferredHandDiscardCost_Random: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Random")
 	member(b, first, "count"); encode_int(b, y.count)
 	}; strings.write_byte(b, '}')
@@ -50393,6 +50833,7 @@ encode_PrepaidSpellFinalization_members :: proc(b: ^strings.Builder, x: PrepaidS
 }
 
 decode_DeferredLifeGainCost :: proc(v: json.Value, out: ^DeferredLifeGainCost) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DeferredLifeGainCost")
 	if v.kind != .Object do return fail("DeferredLifeGainCost: not an object")
 	tv, found := json.get(v, "type")
@@ -50422,6 +50863,7 @@ decode_DeferredLifeGainCost :: proc(v: json.Value, out: ^DeferredLifeGainCost) -
 
 encode_DeferredLifeGainCost :: proc(b: ^strings.Builder, x: DeferredLifeGainCost) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DeferredLifeGainCost_Unpaid: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Unpaid")
 	member(b, first, "cost"); enc_ptr_AbilityCost(b, y.cost)
 	}; strings.write_byte(b, '}')
@@ -50545,6 +50987,7 @@ encode_SpellAlternativeCostElection :: proc(b: ^strings.Builder, x: SpellAlterna
 }
 
 decode_DeferredSpellSacrifice :: proc(v: json.Value, out: ^DeferredSpellSacrifice) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DeferredSpellSacrifice")
 	if v.kind != .Object do return fail("DeferredSpellSacrifice: not an object")
 	tv, found := json.get(v, "type")
@@ -50572,6 +51015,7 @@ decode_DeferredSpellSacrifice :: proc(v: json.Value, out: ^DeferredSpellSacrific
 
 encode_DeferredSpellSacrifice :: proc(b: ^strings.Builder, x: DeferredSpellSacrifice) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DeferredSpellSacrifice_Selected: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Selected")
 	member(b, first, "object_id"); encode_ObjectId(b, y.object_id)
 	member(b, first, "filter"); encode_TargetFilter(b, y.filter)
@@ -50615,6 +51059,7 @@ encode_DeferredSpellTap_members :: proc(b: ^strings.Builder, x: DeferredSpellTap
 }
 
 decode_AssistState :: proc(v: json.Value, out: ^AssistState) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AssistState")
 	variant: string
 	body: json.Value
@@ -50659,6 +51104,7 @@ decode_AssistState :: proc(v: json.Value, out: ^AssistState) -> bool {
 
 encode_AssistState :: proc(b: ^strings.Builder, x: AssistState) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AssistState_NotOffered: _ = y; json.write_string(b, "NotOffered")
 	case AssistState_Offered: _ = y; json.write_string(b, "Offered")
 	case AssistState_Committed: strings.write_byte(b, '{'); json.write_string(b, "Committed"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -50838,6 +51284,7 @@ encode_EventOutcomes_members :: proc(b: ^strings.Builder, x: EventOutcomes, firs
 }
 
 decode_MulliganChoice :: proc(v: json.Value, out: ^MulliganChoice) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("MulliganChoice")
 	if v.kind != .Object do return fail("MulliganChoice: not an object")
 	tv, found := json.get(v, "type")
@@ -50860,6 +51307,7 @@ decode_MulliganChoice :: proc(v: json.Value, out: ^MulliganChoice) -> bool {
 
 encode_MulliganChoice :: proc(b: ^strings.Builder, x: MulliganChoice) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case MulliganChoice_Keep: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Keep"); strings.write_byte(b, '}')
 	case MulliganChoice_Mulligan: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Mulligan"); strings.write_byte(b, '}')
 	case MulliganChoice_UseSerumPowder: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "UseSerumPowder"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -50892,6 +51340,7 @@ encode_CounterCostChoice_members :: proc(b: ^strings.Builder, x: CounterCostChoi
 }
 
 decode_OutsideGameSelection :: proc(v: json.Value, out: ^OutsideGameSelection) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("OutsideGameSelection")
 	if v.kind != .Object do return fail("OutsideGameSelection: not an object")
 	tv, found := json.get(v, "type")
@@ -50926,6 +51375,7 @@ decode_OutsideGameSelection :: proc(v: json.Value, out: ^OutsideGameSelection) -
 
 encode_OutsideGameSelection :: proc(b: ^strings.Builder, x: OutsideGameSelection) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case OutsideGameSelection_Sideboard: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Sideboard"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "sideboard_index"); encode_int(b, y.sideboard_index)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -51020,6 +51470,7 @@ encode_AlternativeCastDecision_members :: proc(b: ^strings.Builder, x: Alternati
 }
 
 decode_ResolutionOptionalPaymentChoice :: proc(v: json.Value, out: ^ResolutionOptionalPaymentChoice) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolutionOptionalPaymentChoice")
 	if v.kind != .Object do return fail("ResolutionOptionalPaymentChoice: not an object")
 	tv, found := json.get(v, "type")
@@ -51040,6 +51491,7 @@ decode_ResolutionOptionalPaymentChoice :: proc(v: json.Value, out: ^ResolutionOp
 
 encode_ResolutionOptionalPaymentChoice :: proc(b: ^strings.Builder, x: ResolutionOptionalPaymentChoice) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolutionOptionalPaymentChoice_Decline: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Decline"); strings.write_byte(b, '}')
 	case ResolutionOptionalPaymentChoice_Pay: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Pay"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "index"); encode_int(b, y.index)
@@ -51078,6 +51530,7 @@ encode_MayTriggerAutoChoiceScope_members :: proc(b: ^strings.Builder, x: MayTrig
 }
 
 decode_UnlessCostBranch :: proc(v: json.Value, out: ^UnlessCostBranch) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UnlessCostBranch")
 	if v.kind != .Object do return fail("UnlessCostBranch: not an object")
 	tv, found := json.get(v, "type")
@@ -51098,6 +51551,7 @@ decode_UnlessCostBranch :: proc(v: json.Value, out: ^UnlessCostBranch) -> bool {
 
 encode_UnlessCostBranch :: proc(b: ^strings.Builder, x: UnlessCostBranch) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case UnlessCostBranch_Decline: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Decline"); strings.write_byte(b, '}')
 	case UnlessCostBranch_Pay: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Pay"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "index"); encode_int(b, y.index)
@@ -51106,6 +51560,7 @@ encode_UnlessCostBranch :: proc(b: ^strings.Builder, x: UnlessCostBranch) {
 }
 
 decode_CompanionDeclaration :: proc(v: json.Value, out: ^CompanionDeclaration) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CompanionDeclaration")
 	if v.kind != .Object do return fail("CompanionDeclaration: not an object")
 	tv, found := json.get(v, "type")
@@ -51120,6 +51575,7 @@ decode_CompanionDeclaration :: proc(v: json.Value, out: ^CompanionDeclaration) -
 
 encode_CompanionDeclaration :: proc(b: ^strings.Builder, x: CompanionDeclaration) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CompanionDeclaration_Reveal: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Reveal"); member(b, &f, "data"); encode_CompanionRevealChoice(b, y._0); strings.write_byte(b, '}')
 	case CompanionDeclaration_Decline: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Decline"); strings.write_byte(b, '}')
 	}
@@ -51176,6 +51632,7 @@ encode_MergeSide :: proc(b: ^strings.Builder, x: MergeSide) {
 }
 
 decode_AutoPassRequest :: proc(v: json.Value, out: ^AutoPassRequest) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AutoPassRequest")
 	if v.kind != .Object do return fail("AutoPassRequest: not an object")
 	tv, found := json.get(v, "type")
@@ -51196,6 +51653,7 @@ decode_AutoPassRequest :: proc(v: json.Value, out: ^AutoPassRequest) -> bool {
 
 encode_AutoPassRequest :: proc(b: ^strings.Builder, x: AutoPassRequest) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AutoPassRequest_UntilStackEmpty: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "UntilStackEmpty"); strings.write_byte(b, '}')
 	case AutoPassRequest_UntilTurnBoundary: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "UntilTurnBoundary")
 	member(b, first, "until"); encode_TurnBoundary(b, y.until)
@@ -51213,6 +51671,7 @@ encode_AutoPassRequest_members :: proc(b: ^strings.Builder, x: AutoPassRequest, 
 }
 
 decode_PriorityYieldOp :: proc(v: json.Value, out: ^PriorityYieldOp) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PriorityYieldOp")
 	if v.kind != .Object do return fail("PriorityYieldOp: not an object")
 	tv, found := json.get(v, "type")
@@ -51241,6 +51700,7 @@ decode_PriorityYieldOp :: proc(v: json.Value, out: ^PriorityYieldOp) -> bool {
 
 encode_PriorityYieldOp :: proc(b: ^strings.Builder, x: PriorityYieldOp) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PriorityYieldOp_Add: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Add"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "source_id"); encode_ObjectId(b, y.source_id)
 	member(b, first, "scope"); encode_YieldScope(b, y.scope)
@@ -51253,6 +51713,7 @@ encode_PriorityYieldOp :: proc(b: ^strings.Builder, x: PriorityYieldOp) {
 }
 
 decode_MayTriggerAutoChoiceOp :: proc(v: json.Value, out: ^MayTriggerAutoChoiceOp) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("MayTriggerAutoChoiceOp")
 	if v.kind != .Object do return fail("MayTriggerAutoChoiceOp: not an object")
 	tv, found := json.get(v, "type")
@@ -51273,6 +51734,7 @@ decode_MayTriggerAutoChoiceOp :: proc(v: json.Value, out: ^MayTriggerAutoChoiceO
 
 encode_MayTriggerAutoChoiceOp :: proc(b: ^strings.Builder, x: MayTriggerAutoChoiceOp) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case MayTriggerAutoChoiceOp_Remove: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Remove"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "selector"); encode_MayTriggerAutoChoiceSelector(b, y.selector)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -51281,6 +51743,7 @@ encode_MayTriggerAutoChoiceOp :: proc(b: ^strings.Builder, x: MayTriggerAutoChoi
 }
 
 decode_UnAction :: proc(v: json.Value, out: ^UnAction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UnAction")
 	if v.kind != .Object do return fail("UnAction: not an object")
 	tv, found := json.get(v, "type")
@@ -51322,6 +51785,7 @@ decode_UnAction :: proc(v: json.Value, out: ^UnAction) -> bool {
 
 encode_UnAction :: proc(b: ^strings.Builder, x: UnAction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case UnAction_SetEnabled: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SetEnabled"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "enabled"); encode_bool(b, y.enabled)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -51409,6 +51873,7 @@ encode_CounterRemoveChoice_members :: proc(b: ^strings.Builder, x: CounterRemove
 }
 
 decode_LearnOption :: proc(v: json.Value, out: ^LearnOption) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LearnOption")
 	if v.kind != .Object do return fail("LearnOption: not an object")
 	tv, found := json.get(v, "type")
@@ -51429,6 +51894,7 @@ decode_LearnOption :: proc(v: json.Value, out: ^LearnOption) -> bool {
 
 encode_LearnOption :: proc(b: ^strings.Builder, x: LearnOption) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case LearnOption_Rummage: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Rummage"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "card_id"); encode_ObjectId(b, y.card_id)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -51467,6 +51933,7 @@ encode_ShardChoice_members :: proc(b: ^strings.Builder, x: ShardChoice, first: ^
 }
 
 decode_ManaChoice :: proc(v: json.Value, out: ^ManaChoice) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaChoice")
 	if v.kind != .Object do return fail("ManaChoice: not an object")
 	tv, found := json.get(v, "type")
@@ -51481,12 +51948,14 @@ decode_ManaChoice :: proc(v: json.Value, out: ^ManaChoice) -> bool {
 
 encode_ManaChoice :: proc(b: ^strings.Builder, x: ManaChoice) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaChoice_SingleColor: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SingleColor"); member(b, &f, "data"); encode_ManaType(b, y._0); strings.write_byte(b, '}')
 	case ManaChoice_Combination: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Combination"); member(b, &f, "data"); enc_dyn_ManaType(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_DebugAction :: proc(v: json.Value, out: ^DebugAction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DebugAction")
 	if v.kind != .Object do return fail("DebugAction: not an object")
 	tv, found := json.get(v, "type")
@@ -51768,6 +52237,7 @@ decode_DebugAction :: proc(v: json.Value, out: ^DebugAction) -> bool {
 
 encode_DebugAction :: proc(b: ^strings.Builder, x: DebugAction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DebugAction_MoveToZone: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "MoveToZone"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "object_id"); encode_ObjectId(b, y.object_id)
 	member(b, first, "to_zone"); encode_Zone(b, y.to_zone)
@@ -51913,6 +52383,7 @@ encode_DebugAction :: proc(b: ^strings.Builder, x: DebugAction) {
 }
 
 decode_IterationCount :: proc(v: json.Value, out: ^IterationCount) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("IterationCount")
 	variant: string
 	body: json.Value
@@ -51933,12 +52404,14 @@ decode_IterationCount :: proc(v: json.Value, out: ^IterationCount) -> bool {
 
 encode_IterationCount :: proc(b: ^strings.Builder, x: IterationCount) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case IterationCount_Fixed: strings.write_byte(b, '{'); json.write_string(b, "Fixed"); strings.write_byte(b, ':'); encode_u32(b, y._0); strings.write_byte(b, '}')
 	case IterationCount_WithoutEnd: _ = y; json.write_string(b, "WithoutEnd")
 	}
 }
 
 decode_ShortcutResponse :: proc(v: json.Value, out: ^ShortcutResponse) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ShortcutResponse")
 	variant: string
 	body: json.Value
@@ -51965,6 +52438,7 @@ decode_ShortcutResponse :: proc(v: json.Value, out: ^ShortcutResponse) -> bool {
 
 encode_ShortcutResponse :: proc(b: ^strings.Builder, x: ShortcutResponse) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ShortcutResponse_Accept: _ = y; json.write_string(b, "Accept")
 	case ShortcutResponse_Shorten: strings.write_byte(b, '{'); json.write_string(b, "Shorten"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "at_iteration"); encode_u32(b, y.at_iteration)
@@ -51973,6 +52447,7 @@ encode_ShortcutResponse :: proc(b: ^strings.Builder, x: ShortcutResponse) {
 }
 
 decode_PrecastCopyShortcutResponse :: proc(v: json.Value, out: ^PrecastCopyShortcutResponse) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PrecastCopyShortcutResponse")
 	if v.kind != .Object do return fail("PrecastCopyShortcutResponse: not an object")
 	tv, found := json.get(v, "type")
@@ -52001,6 +52476,7 @@ decode_PrecastCopyShortcutResponse :: proc(v: json.Value, out: ^PrecastCopyShort
 
 encode_PrecastCopyShortcutResponse :: proc(b: ^strings.Builder, x: PrecastCopyShortcutResponse) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PrecastCopyShortcutResponse_Propose: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Propose"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "route_id"); encode_u64(b, y.route_id)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -52043,6 +52519,7 @@ encode_ResolveAllConsentDecision_members :: proc(b: ^strings.Builder, x: Resolve
 }
 
 decode_ManaSourceOutput :: proc(v: json.Value, out: ^ManaSourceOutput) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaSourceOutput")
 	if v.kind != .Object do return fail("ManaSourceOutput: not an object")
 	tv, found := json.get(v, "type")
@@ -52063,6 +52540,7 @@ decode_ManaSourceOutput :: proc(v: json.Value, out: ^ManaSourceOutput) -> bool {
 
 encode_ManaSourceOutput :: proc(b: ^strings.Builder, x: ManaSourceOutput) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaSourceOutput_Concrete: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Concrete"); member(b, &f, "data"); encode_ManaType(b, y._0); strings.write_byte(b, '}')
 	case ManaSourceOutput_DeferredColorChoice: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "DeferredColorChoice"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "quantity"); encode_ManaSourceQuantity(b, y.quantity)
@@ -52071,6 +52549,7 @@ encode_ManaSourceOutput :: proc(b: ^strings.Builder, x: ManaSourceOutput) {
 }
 
 decode_ManaRestriction :: proc(v: json.Value, out: ^ManaRestriction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaRestriction")
 	variant: string
 	body: json.Value
@@ -52143,6 +52622,7 @@ decode_ManaRestriction :: proc(v: json.Value, out: ^ManaRestriction) -> bool {
 
 encode_ManaRestriction :: proc(b: ^strings.Builder, x: ManaRestriction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaRestriction_OnlyForSpell: _ = y; json.write_string(b, "OnlyForSpell")
 	case ManaRestriction_OnlyForSpellType: strings.write_byte(b, '{'); json.write_string(b, "OnlyForSpellType"); strings.write_byte(b, ':'); encode_string(b, y._0); strings.write_byte(b, '}')
 	case ManaRestriction_OnlyForCreatureType: strings.write_byte(b, '{'); json.write_string(b, "OnlyForCreatureType"); strings.write_byte(b, ':'); encode_string(b, y._0); strings.write_byte(b, '}')
@@ -52179,6 +52659,7 @@ encode_ManaRestriction :: proc(b: ^strings.Builder, x: ManaRestriction) {
 }
 
 decode_ManaSourcePenalty :: proc(v: json.Value, out: ^ManaSourcePenalty) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaSourcePenalty")
 	variant: string
 	body: json.Value
@@ -52214,6 +52695,7 @@ decode_ManaSourcePenalty :: proc(v: json.Value, out: ^ManaSourcePenalty) -> bool
 
 encode_ManaSourcePenalty :: proc(b: ^strings.Builder, x: ManaSourcePenalty) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaSourcePenalty_None: _ = y; json.write_string(b, "None")
 	case ManaSourcePenalty_HasIrreversibleContinuation: _ = y; json.write_string(b, "HasIrreversibleContinuation")
 	case ManaSourcePenalty_DealsDamageOnResolution: strings.write_byte(b, '{'); json.write_string(b, "DealsDamageOnResolution"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -52249,6 +52731,7 @@ encode_TapsForManaSelection_members :: proc(b: ^strings.Builder, x: TapsForManaS
 }
 
 decode_ManaSourceQuantity :: proc(v: json.Value, out: ^ManaSourceQuantity) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaSourceQuantity")
 	if v.kind != .Object do return fail("ManaSourceQuantity: not an object")
 	tv, found := json.get(v, "type")
@@ -52263,12 +52746,14 @@ decode_ManaSourceQuantity :: proc(v: json.Value, out: ^ManaSourceQuantity) -> bo
 
 encode_ManaSourceQuantity :: proc(b: ^strings.Builder, x: ManaSourceQuantity) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaSourceQuantity_Fixed: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Fixed"); member(b, &f, "data"); encode_u32(b, y._0); strings.write_byte(b, '}')
 	case ManaSourceQuantity_Variable: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Variable"); strings.write_byte(b, '}')
 	}
 }
 
 decode_CompanionChoiceSource :: proc(v: json.Value, out: ^CompanionChoiceSource) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CompanionChoiceSource")
 	if v.kind != .Object do return fail("CompanionChoiceSource: not an object")
 	tv, found := json.get(v, "type")
@@ -52289,6 +52774,7 @@ decode_CompanionChoiceSource :: proc(v: json.Value, out: ^CompanionChoiceSource)
 
 encode_CompanionChoiceSource :: proc(b: ^strings.Builder, x: CompanionChoiceSource) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CompanionChoiceSource_Sideboard: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Sideboard"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "index"); encode_int(b, y.index)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -52361,6 +52847,7 @@ encode_DebugCardCreationKind :: proc(b: ^strings.Builder, x: DebugCardCreationKi
 }
 
 decode_DebugTokenRequest :: proc(v: json.Value, out: ^DebugTokenRequest) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DebugTokenRequest")
 	if v.kind != .Object do return fail("DebugTokenRequest: not an object")
 	tv, found := json.get(v, "type")
@@ -52393,6 +52880,7 @@ decode_DebugTokenRequest :: proc(v: json.Value, out: ^DebugTokenRequest) -> bool
 
 encode_DebugTokenRequest :: proc(b: ^strings.Builder, x: DebugTokenRequest) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DebugTokenRequest_Preset: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Preset"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "preset_id"); encode_string(b, y.preset_id)
 	member(b, first, "owner"); encode_PlayerId(b, y.owner)
@@ -52409,6 +52897,7 @@ encode_DebugTokenRequest :: proc(b: ^strings.Builder, x: DebugTokenRequest) {
 }
 
 decode_MulliganDecisionPhase :: proc(v: json.Value, out: ^MulliganDecisionPhase) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("MulliganDecisionPhase")
 	if v.kind != .Object do return fail("MulliganDecisionPhase: not an object")
 	tv, found := json.get(v, "type")
@@ -52430,6 +52919,7 @@ decode_MulliganDecisionPhase :: proc(v: json.Value, out: ^MulliganDecisionPhase)
 
 encode_MulliganDecisionPhase :: proc(b: ^strings.Builder, x: MulliganDecisionPhase) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case MulliganDecisionPhase_Declare: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Declare"); strings.write_byte(b, '}')
 	case MulliganDecisionPhase_BottomCards: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "BottomCards")
 	member(b, first, "count"); encode_u8(b, y.count)
@@ -52449,6 +52939,7 @@ encode_MulliganDecisionPhase_members :: proc(b: ^strings.Builder, x: MulliganDec
 }
 
 decode_PendingMulliganAction :: proc(v: json.Value, out: ^PendingMulliganAction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingMulliganAction")
 	if v.kind != .Object do return fail("PendingMulliganAction: not an object")
 	tv, found := json.get(v, "type")
@@ -52469,6 +52960,7 @@ decode_PendingMulliganAction :: proc(v: json.Value, out: ^PendingMulliganAction)
 
 encode_PendingMulliganAction :: proc(b: ^strings.Builder, x: PendingMulliganAction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingMulliganAction_Keep: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Keep"); strings.write_byte(b, '}')
 	case PendingMulliganAction_UseSerumPowder: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "UseSerumPowder")
 	member(b, first, "object_id"); encode_ObjectId(b, y.object_id)
@@ -52516,6 +53008,7 @@ encode_MulliganDeclarationKind_members :: proc(b: ^strings.Builder, x: MulliganD
 }
 
 decode_TargetEffectDetail :: proc(v: json.Value, out: ^TargetEffectDetail) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TargetEffectDetail")
 	if v.kind != .Object do return fail("TargetEffectDetail: not an object")
 	tv, found := json.get(v, "type")
@@ -52531,6 +53024,7 @@ decode_TargetEffectDetail :: proc(v: json.Value, out: ^TargetEffectDetail) -> bo
 
 encode_TargetEffectDetail :: proc(b: ^strings.Builder, x: TargetEffectDetail) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TargetEffectDetail_None: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "None"); strings.write_byte(b, '}')
 	case TargetEffectDetail_Destination: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Destination"); member_json_key(b, &f, y._0, encode_Zone); strings.write_string(b, "null"); strings.write_byte(b, '}')
 	case TargetEffectDetail_Modification: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Modification"); encode_PtDirection_members(b, y._0, &f); strings.write_byte(b, '}')
@@ -52648,6 +53142,7 @@ encode_EventObjectRelationSnapshot_members :: proc(b: ^strings.Builder, x: Event
 }
 
 decode_BatchCompletion :: proc(v: json.Value, out: ^BatchCompletion) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("BatchCompletion")
 	variant: string
 	body: json.Value
@@ -53047,6 +53542,7 @@ decode_BatchCompletion :: proc(v: json.Value, out: ^BatchCompletion) -> bool {
 
 encode_BatchCompletion :: proc(b: ^strings.Builder, x: BatchCompletion) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case BatchCompletion_RecordInstructionZoneResult: strings.write_byte(b, '{'); json.write_string(b, "RecordInstructionZoneResult"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "occurrence_id"); encode_ReturnResultOccurrenceId(b, y.occurrence_id)
 	member(b, first, "result_id"); encode_ReturnResultId(b, y.result_id)
@@ -53370,6 +53866,7 @@ encode_SharedQualityRelation :: proc(b: ^strings.Builder, x: SharedQualityRelati
 }
 
 decode_OutsideGameChoiceSource :: proc(v: json.Value, out: ^OutsideGameChoiceSource) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("OutsideGameChoiceSource")
 	if v.kind != .Object do return fail("OutsideGameChoiceSource: not an object")
 	tv, found := json.get(v, "type")
@@ -53413,6 +53910,7 @@ decode_OutsideGameChoiceSource :: proc(v: json.Value, out: ^OutsideGameChoiceSou
 
 encode_OutsideGameChoiceSource :: proc(b: ^strings.Builder, x: OutsideGameChoiceSource) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case OutsideGameChoiceSource_Sideboard: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Sideboard"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "sideboard_index"); encode_int(b, y.sideboard_index)
 	member(b, first, "card"); encode_CardFace(b, y.card)
@@ -53432,6 +53930,7 @@ encode_OutsideGameChoiceSource :: proc(b: ^strings.Builder, x: OutsideGameChoice
 }
 
 decode_PackOrigin :: proc(v: json.Value, out: ^PackOrigin) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PackOrigin")
 	if v.kind != .Object do return fail("PackOrigin: not an object")
 	tv, found := json.get(v, "type")
@@ -53446,6 +53945,7 @@ decode_PackOrigin :: proc(v: json.Value, out: ^PackOrigin) -> bool {
 
 encode_PackOrigin :: proc(b: ^strings.Builder, x: PackOrigin) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PackOrigin_Set: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Set"); member(b, &f, "data"); encode_string(b, y._0); strings.write_byte(b, '}')
 	case PackOrigin_Cube: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Cube"); strings.write_byte(b, '}')
 	}
@@ -53573,6 +54073,7 @@ encode_GuessOutcome :: proc(b: ^strings.Builder, x: GuessOutcome) {
 }
 
 decode_ChainStep :: proc(v: json.Value, out: ^ChainStep) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ChainStep")
 	variant: string
 	body: json.Value
@@ -53600,6 +54101,7 @@ decode_ChainStep :: proc(v: json.Value, out: ^ChainStep) -> bool {
 
 encode_ChainStep :: proc(b: ^strings.Builder, x: ChainStep) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ChainStep_SubAbility: _ = y; json.write_string(b, "SubAbility")
 	case ChainStep_ElseAbility: _ = y; json.write_string(b, "ElseAbility")
 	case ChainStep_CoinFlipBranch: strings.write_byte(b, '{'); json.write_string(b, "CoinFlipBranch"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -53656,6 +54158,7 @@ encode_TargetDamageSourceBinding :: proc(b: ^strings.Builder, x: TargetDamageSou
 }
 
 decode_AbilityProvenance :: proc(v: json.Value, out: ^AbilityProvenance) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AbilityProvenance")
 	if v.kind != .Object do return fail("AbilityProvenance: not an object")
 	tv, found := json.get(v, "type")
@@ -53670,6 +54173,7 @@ decode_AbilityProvenance :: proc(v: json.Value, out: ^AbilityProvenance) -> bool
 
 encode_AbilityProvenance :: proc(b: ^strings.Builder, x: AbilityProvenance) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AbilityProvenance_Characteristic: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Characteristic"); member(b, &f, "data"); encode_CharacteristicSetRef(b, y._0); strings.write_byte(b, '}')
 	case AbilityProvenance_Granted: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Granted"); strings.write_byte(b, '}')
 	}
@@ -53842,6 +54346,7 @@ encode_NamedChoiceSourceBinding :: proc(b: ^strings.Builder, x: NamedChoiceSourc
 }
 
 decode_ModalSelectionConstraint :: proc(v: json.Value, out: ^ModalSelectionConstraint) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ModalSelectionConstraint")
 	if v.kind != .Object do return fail("ModalSelectionConstraint: not an object")
 	tv, found := json.get(v, "type")
@@ -53866,6 +54371,7 @@ decode_ModalSelectionConstraint :: proc(v: json.Value, out: ^ModalSelectionConst
 
 encode_ModalSelectionConstraint :: proc(b: ^strings.Builder, x: ModalSelectionConstraint) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ModalSelectionConstraint_DifferentTargetPlayers: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "DifferentTargetPlayers"); strings.write_byte(b, '}')
 	case ModalSelectionConstraint_ConditionalMaxChoices: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "ConditionalMaxChoices")
 	member(b, first, "condition"); encode_ModalSelectionCondition(b, y.condition)
@@ -53911,6 +54417,7 @@ encode_AdditionalCostRepeatability :: proc(b: ^strings.Builder, x: AdditionalCos
 }
 
 decode_ReductionProvenance :: proc(v: json.Value, out: ^ReductionProvenance) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ReductionProvenance")
 	if v.kind != .Object do return fail("ReductionProvenance: not an object")
 	tv, found := json.get(v, "type")
@@ -53952,6 +54459,7 @@ decode_ReductionProvenance :: proc(v: json.Value, out: ^ReductionProvenance) -> 
 
 encode_ReductionProvenance :: proc(b: ^strings.Builder, x: ReductionProvenance) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ReductionProvenance_Static: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Static"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "source"); encode_ObjectId(b, y.source)
 	member(b, first, "ordinal"); encode_u8(b, y.ordinal)
@@ -54031,6 +54539,7 @@ encode_ResolutionCastCleanup_members :: proc(b: ^strings.Builder, x: ResolutionC
 }
 
 decode_EmergeSacrificeQuality :: proc(v: json.Value, out: ^EmergeSacrificeQuality) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EmergeSacrificeQuality")
 	if v.kind != .Object do return fail("EmergeSacrificeQuality: not an object")
 	tv, found := json.get(v, "type")
@@ -54055,6 +54564,7 @@ decode_EmergeSacrificeQuality :: proc(v: json.Value, out: ^EmergeSacrificeQualit
 
 encode_EmergeSacrificeQuality :: proc(b: ^strings.Builder, x: EmergeSacrificeQuality) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case EmergeSacrificeQuality_Artifact: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Artifact"); strings.write_byte(b, '}')
 	case EmergeSacrificeQuality_Battle: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Battle"); strings.write_byte(b, '}')
 	case EmergeSacrificeQuality_Card: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Card"); strings.write_byte(b, '}')
@@ -54210,6 +54720,7 @@ encode_SettledTail :: proc(b: ^strings.Builder, x: SettledTail) {
 }
 
 decode_ActivationCostLock :: proc(v: json.Value, out: ^ActivationCostLock) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ActivationCostLock")
 	if v.kind != .Object do return fail("ActivationCostLock: not an object")
 	tv, found := json.get(v, "type")
@@ -54237,6 +54748,7 @@ decode_ActivationCostLock :: proc(v: json.Value, out: ^ActivationCostLock) -> bo
 
 encode_ActivationCostLock :: proc(b: ^strings.Builder, x: ActivationCostLock) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ActivationCostLock_Open: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Open"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "point"); encode_ActivationCostLockPoint(b, y.point)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -54450,6 +54962,7 @@ encode_PeriodReach :: proc(b: ^strings.Builder, x: PeriodReach) {
 }
 
 decode_CountedBy :: proc(v: json.Value, out: ^CountedBy) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CountedBy")
 	variant: string
 	body: json.Value
@@ -54476,6 +54989,7 @@ decode_CountedBy :: proc(v: json.Value, out: ^CountedBy) -> bool {
 
 encode_CountedBy :: proc(b: ^strings.Builder, x: CountedBy) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CountedBy_Threshold: _ = y; json.write_string(b, "Threshold")
 	case CountedBy_Replay: strings.write_byte(b, '{'); json.write_string(b, "Replay"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "departures"); enc_dyn_PredictedDeparture(b, y.departures)
@@ -54612,6 +55126,7 @@ encode_ExileCostSourceZone :: proc(b: ^strings.Builder, x: ExileCostSourceZone) 
 }
 
 decode_TapCreaturesSelectionMode :: proc(v: json.Value, out: ^TapCreaturesSelectionMode) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TapCreaturesSelectionMode")
 	variant: string
 	body: json.Value
@@ -54633,6 +55148,7 @@ decode_TapCreaturesSelectionMode :: proc(v: json.Value, out: ^TapCreaturesSelect
 
 encode_TapCreaturesSelectionMode :: proc(b: ^strings.Builder, x: TapCreaturesSelectionMode) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TapCreaturesSelectionMode_Fixed: _ = y; json.write_string(b, "Fixed")
 	case TapCreaturesSelectionMode_VariableX: _ = y; json.write_string(b, "VariableX")
 	case TapCreaturesSelectionMode_Aggregate: strings.write_byte(b, '{'); json.write_string(b, "Aggregate"); strings.write_byte(b, ':'); encode_TapCreaturesAggregate(b, y._0); strings.write_byte(b, '}')
@@ -54742,6 +55258,7 @@ encode_Contestant_members :: proc(b: ^strings.Builder, x: Contestant, first: ^bo
 }
 
 decode_ContestantConnection :: proc(v: json.Value, out: ^ContestantConnection) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ContestantConnection")
 	variant: string
 	body: json.Value
@@ -54768,6 +55285,7 @@ decode_ContestantConnection :: proc(v: json.Value, out: ^ContestantConnection) -
 
 encode_ContestantConnection :: proc(b: ^strings.Builder, x: ContestantConnection) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ContestantConnection_Connected: _ = y; json.write_string(b, "Connected")
 	case ContestantConnection_Disconnected: strings.write_byte(b, '{'); json.write_string(b, "Disconnected"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "since_ms"); encode_u64(b, y.since_ms)
@@ -54776,6 +55294,7 @@ encode_ContestantConnection :: proc(b: ^strings.Builder, x: ContestantConnection
 }
 
 decode_ContestOutcome :: proc(v: json.Value, out: ^ContestOutcome) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ContestOutcome")
 	variant: string
 	body: json.Value
@@ -54804,6 +55323,7 @@ decode_ContestOutcome :: proc(v: json.Value, out: ^ContestOutcome) -> bool {
 
 encode_ContestOutcome :: proc(b: ^strings.Builder, x: ContestOutcome) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ContestOutcome_Decided: strings.write_byte(b, '{'); json.write_string(b, "Decided"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "winner"); encode_PlayerId(b, y.winner)
 	member(b, first, "loser"); encode_PlayerId(b, y.loser)
@@ -54858,6 +55378,7 @@ encode_ContestLossReason :: proc(b: ^strings.Builder, x: ContestLossReason) {
 }
 
 decode_TieResolution :: proc(v: json.Value, out: ^TieResolution) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TieResolution")
 	if v.kind != .Object do return fail("TieResolution: not an object")
 	tv, found := json.get(v, "type")
@@ -54872,6 +55393,7 @@ decode_TieResolution :: proc(v: json.Value, out: ^TieResolution) -> bool {
 
 encode_TieResolution :: proc(b: ^strings.Builder, x: TieResolution) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TieResolution_Breaker: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Breaker"); member(b, &f, "data"); encode_u8(b, y._0); strings.write_byte(b, '}')
 	case TieResolution_AllTied: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "AllTied"); strings.write_byte(b, '}')
 	}
@@ -54902,6 +55424,7 @@ encode_DisplayIdentity_members :: proc(b: ^strings.Builder, x: DisplayIdentity, 
 }
 
 decode_TextSubstitutionSpec :: proc(v: json.Value, out: ^TextSubstitutionSpec) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TextSubstitutionSpec")
 	if v.kind != .Object do return fail("TextSubstitutionSpec: not an object")
 	tv, found := json.get(v, "type")
@@ -54922,6 +55445,7 @@ decode_TextSubstitutionSpec :: proc(v: json.Value, out: ^TextSubstitutionSpec) -
 
 encode_TextSubstitutionSpec :: proc(b: ^strings.Builder, x: TextSubstitutionSpec) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TextSubstitutionSpec_Fixed: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Fixed"); member(b, &f, "data"); encode_TextSubstitution(b, y._0); strings.write_byte(b, '}')
 	case TextSubstitutionSpec_Chosen: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Chosen"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "domains"); enc_dyn_TextWordDomain(b, y.domains)
@@ -54980,6 +55504,7 @@ encode_CostBearingKeywordKind :: proc(b: ^strings.Builder, x: CostBearingKeyword
 }
 
 decode_CostDerivation :: proc(v: json.Value, out: ^CostDerivation) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CostDerivation")
 	if v.kind != .Object do return fail("CostDerivation: not an object")
 	tv, found := json.get(v, "type")
@@ -54993,6 +55518,7 @@ decode_CostDerivation :: proc(v: json.Value, out: ^CostDerivation) -> bool {
 
 encode_CostDerivation :: proc(b: ^strings.Builder, x: CostDerivation) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CostDerivation_ManaCostReducedBy: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ManaCostReducedBy"); member(b, &f, "data"); encode_ManaCost(b, y._0); strings.write_byte(b, '}')
 	}
 }
@@ -55038,6 +55564,7 @@ encode_ColorChangeMode :: proc(b: ^strings.Builder, x: ColorChangeMode) {
 }
 
 decode_StaticMode :: proc(v: json.Value, out: ^StaticMode) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StaticMode")
 	variant: string
 	body: json.Value
@@ -55616,6 +56143,7 @@ decode_StaticMode :: proc(v: json.Value, out: ^StaticMode) -> bool {
 
 encode_StaticMode :: proc(b: ^strings.Builder, x: StaticMode) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case StaticMode_Continuous: _ = y; json.write_string(b, "Continuous")
 	case StaticMode_DamageNotRemovedDuringCleanup: _ = y; json.write_string(b, "DamageNotRemovedDuringCleanup")
 	case StaticMode_LethalDamageDeterminedByPower: _ = y; json.write_string(b, "LethalDamageDeterminedByPower")
@@ -56218,6 +56746,7 @@ encode_DeckList_members :: proc(b: ^strings.Builder, x: DeckList, first: ^bool) 
 }
 
 decode_RecordedActionKind :: proc(v: json.Value, out: ^RecordedActionKind) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RecordedActionKind")
 	if v.kind != .Object do return fail("RecordedActionKind: not an object")
 	tv, found := json.get(v, "type")
@@ -56238,6 +56767,7 @@ decode_RecordedActionKind :: proc(v: json.Value, out: ^RecordedActionKind) -> bo
 
 encode_RecordedActionKind :: proc(b: ^strings.Builder, x: RecordedActionKind) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case RecordedActionKind_Submitted: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Submitted"); strings.write_byte(b, '}')
 	case RecordedActionKind_VerifiedAiPriorityPass: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "VerifiedAiPriorityPass")
 	member(b, first, "semantic_owner"); encode_PlayerId(b, y.semantic_owner)
@@ -56255,6 +56785,7 @@ encode_RecordedActionKind_members :: proc(b: ^strings.Builder, x: RecordedAction
 }
 
 decode_TriggerMode :: proc(v: json.Value, out: ^TriggerMode) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerMode")
 	variant: string
 	body: json.Value
@@ -56474,6 +57005,7 @@ decode_TriggerMode :: proc(v: json.Value, out: ^TriggerMode) -> bool {
 
 encode_TriggerMode :: proc(b: ^strings.Builder, x: TriggerMode) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TriggerMode_ChangesZone: _ = y; json.write_string(b, "ChangesZone")
 	case TriggerMode_ChangesZoneAll: _ = y; json.write_string(b, "ChangesZoneAll")
 	case TriggerMode_ChangesController: strings.write_byte(b, '{'); json.write_string(b, "ChangesController"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -56687,6 +57219,7 @@ encode_ZoneChangeClause_members :: proc(b: ^strings.Builder, x: ZoneChangeClause
 }
 
 decode_OriginConstraint :: proc(v: json.Value, out: ^OriginConstraint) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("OriginConstraint")
 	if v.kind != .Object do return fail("OriginConstraint: not an object")
 	tv, found := json.get(v, "type")
@@ -56703,6 +57236,7 @@ decode_OriginConstraint :: proc(v: json.Value, out: ^OriginConstraint) -> bool {
 
 encode_OriginConstraint :: proc(b: ^strings.Builder, x: OriginConstraint) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case OriginConstraint_Any: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Any"); strings.write_byte(b, '}')
 	case OriginConstraint_Equals: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Equals"); member(b, &f, "data"); encode_Zone(b, y._0); strings.write_byte(b, '}')
 	case OriginConstraint_NotEquals: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "NotEquals"); member(b, &f, "data"); encode_Zone(b, y._0); strings.write_byte(b, '}')
@@ -56711,6 +57245,7 @@ encode_OriginConstraint :: proc(b: ^strings.Builder, x: OriginConstraint) {
 }
 
 decode_TriggerConstraint :: proc(v: json.Value, out: ^TriggerConstraint) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerConstraint")
 	if v.kind != .Object do return fail("TriggerConstraint: not an object")
 	tv, found := json.get(v, "type")
@@ -56773,6 +57308,7 @@ decode_TriggerConstraint :: proc(v: json.Value, out: ^TriggerConstraint) -> bool
 
 encode_TriggerConstraint :: proc(b: ^strings.Builder, x: TriggerConstraint) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TriggerConstraint_OncePerTurn: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "OncePerTurn")
 	if !(skip_TriggerConstraint_TriggerLimitSpend_is_triggering_TriggerLimitSpend(y.spent_by)) { member(b, first, "spent_by"); encode_TriggerLimitSpend(b, y.spent_by) }
 	}; strings.write_byte(b, '}')
@@ -56854,6 +57390,7 @@ encode_CounterTriggerFilter_members :: proc(b: ^strings.Builder, x: CounterTrigg
 }
 
 decode_GotchaCondition :: proc(v: json.Value, out: ^GotchaCondition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("GotchaCondition")
 	if v.kind != .Object do return fail("GotchaCondition: not an object")
 	tv, found := json.get(v, "type")
@@ -56876,6 +57413,7 @@ decode_GotchaCondition :: proc(v: json.Value, out: ^GotchaCondition) -> bool {
 
 encode_GotchaCondition :: proc(b: ^strings.Builder, x: GotchaCondition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case GotchaCondition_Physical: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Physical"); member(b, &f, "data"); encode_PhysicalTell(b, y._0); strings.write_byte(b, '}')
 	case GotchaCondition_SaysAnyOf: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SaysAnyOf"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "words"); enc_dyn_string(b, y.words)
@@ -56928,6 +57466,7 @@ encode_DamageAmountThreshold_members :: proc(b: ^strings.Builder, x: DamageAmoun
 }
 
 decode_DieResultFilter :: proc(v: json.Value, out: ^DieResultFilter) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DieResultFilter")
 	variant: string
 	body: json.Value
@@ -56948,6 +57487,7 @@ decode_DieResultFilter :: proc(v: json.Value, out: ^DieResultFilter) -> bool {
 
 encode_DieResultFilter :: proc(b: ^strings.Builder, x: DieResultFilter) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DieResultFilter_Exact: strings.write_byte(b, '{'); json.write_string(b, "Exact"); strings.write_byte(b, ':'); enc_dyn_u8(b, y._0); strings.write_byte(b, '}')
 	case DieResultFilter_AtLeast: strings.write_byte(b, '{'); json.write_string(b, "AtLeast"); strings.write_byte(b, ':'); encode_u8(b, y._0); strings.write_byte(b, '}')
 	}
@@ -57002,6 +57542,7 @@ encode_ControlChangeSide :: proc(b: ^strings.Builder, x: ControlChangeSide) {
 }
 
 decode_TriggerCause :: proc(v: json.Value, out: ^TriggerCause) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerCause")
 	variant: string
 	body: json.Value
@@ -57064,6 +57605,7 @@ decode_TriggerCause :: proc(v: json.Value, out: ^TriggerCause) -> bool {
 
 encode_TriggerCause :: proc(b: ^strings.Builder, x: TriggerCause) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TriggerCause_Any: _ = y; json.write_string(b, "Any")
 	case TriggerCause_EntersBattlefield: strings.write_byte(b, '{'); json.write_string(b, "EntersBattlefield"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "core_types"); enc_dyn_CoreType(b, y.core_types)
@@ -57216,6 +57758,7 @@ encode_PlayerCauseAction :: proc(b: ^strings.Builder, x: PlayerCauseAction) {
 }
 
 decode_ZoneChangeQualifier :: proc(v: json.Value, out: ^ZoneChangeQualifier) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ZoneChangeQualifier")
 	variant: string
 	body: json.Value
@@ -57236,12 +57779,14 @@ decode_ZoneChangeQualifier :: proc(v: json.Value, out: ^ZoneChangeQualifier) -> 
 
 encode_ZoneChangeQualifier :: proc(b: ^strings.Builder, x: ZoneChangeQualifier) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ZoneChangeQualifier_CoreType: strings.write_byte(b, '{'); json.write_string(b, "CoreType"); strings.write_byte(b, ':'); encode_CoreType(b, y._0); strings.write_byte(b, '}')
 	case ZoneChangeQualifier_Supertype: strings.write_byte(b, '{'); json.write_string(b, "Supertype"); strings.write_byte(b, ':'); encode_Supertype(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_ParsedCondition :: proc(v: json.Value, out: ^ParsedCondition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ParsedCondition")
 	if v.kind != .Object do return fail("ParsedCondition: not an object")
 	tv, found := json.get(v, "type")
@@ -57603,6 +58148,7 @@ decode_ParsedCondition :: proc(v: json.Value, out: ^ParsedCondition) -> bool {
 
 encode_ParsedCondition :: proc(b: ^strings.Builder, x: ParsedCondition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ParsedCondition_SourceInZone: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "SourceInZone")
 	member(b, first, "zone"); encode_Zone(b, y.zone)
 	}; strings.write_byte(b, '}')
@@ -58156,6 +58702,7 @@ encode_SpecialAction :: proc(b: ^strings.Builder, x: SpecialAction) {
 }
 
 decode_CostPaymentProhibition :: proc(v: json.Value, out: ^CostPaymentProhibition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CostPaymentProhibition")
 	variant: string
 	body: json.Value
@@ -58182,6 +58729,7 @@ decode_CostPaymentProhibition :: proc(v: json.Value, out: ^CostPaymentProhibitio
 
 encode_CostPaymentProhibition :: proc(b: ^strings.Builder, x: CostPaymentProhibition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CostPaymentProhibition_PayLife: _ = y; json.write_string(b, "PayLife")
 	case CostPaymentProhibition_Sacrifice: strings.write_byte(b, '{'); json.write_string(b, "Sacrifice"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "filter"); encode_TargetFilter(b, y.filter)
@@ -58190,6 +58738,7 @@ encode_CostPaymentProhibition :: proc(b: ^strings.Builder, x: CostPaymentProhibi
 }
 
 decode_RequiredDefender :: proc(v: json.Value, out: ^RequiredDefender) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RequiredDefender")
 	if v.kind != .Object do return fail("RequiredDefender: not an object")
 	tv, found := json.get(v, "type")
@@ -58223,6 +58772,7 @@ decode_RequiredDefender :: proc(v: json.Value, out: ^RequiredDefender) -> bool {
 
 encode_RequiredDefender :: proc(b: ^strings.Builder, x: RequiredDefender) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case RequiredDefender_Fixed: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Fixed")
 	member(b, first, "player"); encode_PlayerId(b, y.player)
 	}; strings.write_byte(b, '}')
@@ -58418,6 +58968,7 @@ encode_SuppressedTriggerEvent :: proc(b: ^strings.Builder, x: SuppressedTriggerE
 }
 
 decode_BlockExceptionKind :: proc(v: json.Value, out: ^BlockExceptionKind) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("BlockExceptionKind")
 	variant: string
 	body: json.Value
@@ -58444,6 +58995,7 @@ decode_BlockExceptionKind :: proc(v: json.Value, out: ^BlockExceptionKind) -> bo
 
 encode_BlockExceptionKind :: proc(b: ^strings.Builder, x: BlockExceptionKind) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case BlockExceptionKind_Quality: strings.write_byte(b, '{'); json.write_string(b, "Quality"); strings.write_byte(b, ':'); encode_TargetFilter(b, y._0); strings.write_byte(b, '}')
 	case BlockExceptionKind_MinBlockers: strings.write_byte(b, '{'); json.write_string(b, "MinBlockers"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "min"); encode_u32(b, y.min)
@@ -58492,6 +59044,7 @@ encode_CombatAloneRequirement :: proc(b: ^strings.Builder, x: CombatAloneRequire
 }
 
 decode_CrewContributionKind :: proc(v: json.Value, out: ^CrewContributionKind) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CrewContributionKind")
 	variant: string
 	body: json.Value
@@ -58518,6 +59071,7 @@ decode_CrewContributionKind :: proc(v: json.Value, out: ^CrewContributionKind) -
 
 encode_CrewContributionKind :: proc(b: ^strings.Builder, x: CrewContributionKind) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CrewContributionKind_PowerDelta: strings.write_byte(b, '{'); json.write_string(b, "PowerDelta"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "delta"); encode_i32(b, y.delta)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -58548,6 +59102,7 @@ encode_CrewAction :: proc(b: ^strings.Builder, x: CrewAction) {
 }
 
 decode_HandSizeModification :: proc(v: json.Value, out: ^HandSizeModification) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("HandSizeModification")
 	variant: string
 	body: json.Value
@@ -58569,6 +59124,7 @@ decode_HandSizeModification :: proc(v: json.Value, out: ^HandSizeModification) -
 
 encode_HandSizeModification :: proc(b: ^strings.Builder, x: HandSizeModification) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case HandSizeModification_SetTo: strings.write_byte(b, '{'); json.write_string(b, "SetTo"); strings.write_byte(b, ':'); encode_u32(b, y._0); strings.write_byte(b, '}')
 	case HandSizeModification_AdjustedBy: strings.write_byte(b, '{'); json.write_string(b, "AdjustedBy"); strings.write_byte(b, ':'); encode_i32(b, y._0); strings.write_byte(b, '}')
 	case HandSizeModification_EqualTo: strings.write_byte(b, '{'); json.write_string(b, "EqualTo"); strings.write_byte(b, ':'); encode_QuantityExpr(b, y._0); strings.write_byte(b, '}')
@@ -58637,6 +59193,7 @@ encode_OracleItemId :: proc(b: ^strings.Builder, x: OracleItemId) {
 }
 
 decode_ClauseGap :: proc(v: json.Value, out: ^ClauseGap) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ClauseGap")
 	if v.kind != .Object do return fail("ClauseGap: not an object")
 	tv, found := json.get(v, "kind")
@@ -58685,6 +59242,7 @@ decode_ClauseGap :: proc(v: json.Value, out: ^ClauseGap) -> bool {
 
 encode_ClauseGap :: proc(b: ^strings.Builder, x: ClauseGap) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ClauseGap_Replacement: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "kind"); json.write_string(b, "unparsed_replacement")
 	member(b, first, "antecedent"); encode_string(b, y.antecedent)
 	}; strings.write_byte(b, '}')
@@ -58846,6 +59404,7 @@ encode_ProtectionColorSet :: proc(b: ^strings.Builder, x: ProtectionColorSet) {
 }
 
 decode_EffectOutcomeSignal :: proc(v: json.Value, out: ^EffectOutcomeSignal) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EffectOutcomeSignal")
 	variant: string
 	body: json.Value
@@ -58875,6 +59434,7 @@ decode_EffectOutcomeSignal :: proc(v: json.Value, out: ^EffectOutcomeSignal) -> 
 
 encode_EffectOutcomeSignal :: proc(b: ^strings.Builder, x: EffectOutcomeSignal) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case EffectOutcomeSignal_OptionalEffectPerformed: _ = y; json.write_string(b, "OptionalEffectPerformed")
 	case EffectOutcomeSignal_CurrentScopeSucceeded: _ = y; json.write_string(b, "CurrentScopeSucceeded")
 	case EffectOutcomeSignal_Guessed: strings.write_byte(b, '{'); json.write_string(b, "Guessed"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -58966,6 +59526,7 @@ encode_AttackedYouScope :: proc(b: ^strings.Builder, x: AttackedYouScope) {
 }
 
 decode_UnlessPayScaling :: proc(v: json.Value, out: ^UnlessPayScaling) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UnlessPayScaling")
 	if v.kind != .Object do return fail("UnlessPayScaling: not an object")
 	tv, found := json.get(v, "type")
@@ -59001,6 +59562,7 @@ decode_UnlessPayScaling :: proc(v: json.Value, out: ^UnlessPayScaling) -> bool {
 
 encode_UnlessPayScaling :: proc(b: ^strings.Builder, x: UnlessPayScaling) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case UnlessPayScaling_Flat: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Flat"); strings.write_byte(b, '}')
 	case UnlessPayScaling_PerAffectedCreature: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "PerAffectedCreature"); strings.write_byte(b, '}')
 	case UnlessPayScaling_PerQuantityRef: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "PerQuantityRef"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -59036,6 +59598,7 @@ encode_DamageAmountScope :: proc(b: ^strings.Builder, x: DamageAmountScope) {
 }
 
 decode_PreventionFormula :: proc(v: json.Value, out: ^PreventionFormula) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PreventionFormula")
 	// untagged: the first variant that decodes wins, as in serde.
 	{ tmp: PreventionFormula_Fixed; if decode_quiet_proc(v, &tmp._0, decode_u32) { out^ = tmp; return true } }
@@ -59054,6 +59617,7 @@ decode_PreventionFormula :: proc(v: json.Value, out: ^PreventionFormula) -> bool
 
 encode_PreventionFormula :: proc(b: ^strings.Builder, x: PreventionFormula) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PreventionFormula_Fixed: encode_u32(b, y._0)
 	case PreventionFormula_Quantity: strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "quantity"); encode_QuantityExpr(b, y.quantity)
@@ -59067,6 +59631,7 @@ encode_PreventionFormula :: proc(b: ^strings.Builder, x: PreventionFormula) {
 }
 
 decode_DamageTargetPlayerScope :: proc(v: json.Value, out: ^DamageTargetPlayerScope) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DamageTargetPlayerScope")
 	if v.kind != .Object do return fail("DamageTargetPlayerScope: not an object")
 	tv, found := json.get(v, "type")
@@ -59084,6 +59649,7 @@ decode_DamageTargetPlayerScope :: proc(v: json.Value, out: ^DamageTargetPlayerSc
 
 encode_DamageTargetPlayerScope :: proc(b: ^strings.Builder, x: DamageTargetPlayerScope) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DamageTargetPlayerScope_Any: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Any"); strings.write_byte(b, '}')
 	case DamageTargetPlayerScope_Opponent: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Opponent"); strings.write_byte(b, '}')
 	case DamageTargetPlayerScope_Controller: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Controller"); strings.write_byte(b, '}')
@@ -59127,6 +59693,7 @@ encode_TokenCharacteristics_members :: proc(b: ^strings.Builder, x: TokenCharact
 }
 
 decode_TokenAttackRequest :: proc(v: json.Value, out: ^TokenAttackRequest) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TokenAttackRequest")
 	variant: string
 	body: json.Value
@@ -59154,6 +59721,7 @@ decode_TokenAttackRequest :: proc(v: json.Value, out: ^TokenAttackRequest) -> bo
 
 encode_TokenAttackRequest :: proc(b: ^strings.Builder, x: TokenAttackRequest) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TokenAttackRequest_Unspecified: _ = y; json.write_string(b, "Unspecified")
 	case TokenAttackRequest_Named: strings.write_byte(b, '{'); json.write_string(b, "Named"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "first"); encode_PlayerId(b, y.first_)
@@ -59163,6 +59731,7 @@ encode_TokenAttackRequest :: proc(b: ^strings.Builder, x: TokenAttackRequest) {
 }
 
 decode_TokenHostRequest :: proc(v: json.Value, out: ^TokenHostRequest) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TokenHostRequest")
 	variant: string
 	body: json.Value
@@ -59184,6 +59753,7 @@ decode_TokenHostRequest :: proc(v: json.Value, out: ^TokenHostRequest) -> bool {
 
 encode_TokenHostRequest :: proc(b: ^strings.Builder, x: TokenHostRequest) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TokenHostRequest_NotRequested: _ = y; json.write_string(b, "NotRequested")
 	case TokenHostRequest_Bound: strings.write_byte(b, '{'); json.write_string(b, "Bound"); strings.write_byte(b, ':'); encode_AttachTarget(b, y._0); strings.write_byte(b, '}')
 	case TokenHostRequest_Unbound: _ = y; json.write_string(b, "Unbound")
@@ -59191,6 +59761,7 @@ encode_TokenHostRequest :: proc(b: ^strings.Builder, x: TokenHostRequest) {
 }
 
 decode_ModalSelectionCondition :: proc(v: json.Value, out: ^ModalSelectionCondition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ModalSelectionCondition")
 	if v.kind != .Object do return fail("ModalSelectionCondition: not an object")
 	tv, found := json.get(v, "type")
@@ -59222,6 +59793,7 @@ decode_ModalSelectionCondition :: proc(v: json.Value, out: ^ModalSelectionCondit
 
 encode_ModalSelectionCondition :: proc(b: ^strings.Builder, x: ModalSelectionCondition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ModalSelectionCondition_Static: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Static")
 	member(b, first, "condition"); encode_StaticCondition(b, y.condition)
 	}; strings.write_byte(b, '}')
@@ -59293,6 +59865,7 @@ encode_LatchedCopiableSnapshot_members :: proc(b: ^strings.Builder, x: LatchedCo
 }
 
 decode_ActiveSearchDecisionAuthority :: proc(v: json.Value, out: ^ActiveSearchDecisionAuthority) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ActiveSearchDecisionAuthority")
 	if v.kind != .Object do return fail("ActiveSearchDecisionAuthority: not an object")
 	tv, found := json.get(v, "type")
@@ -59313,6 +59886,7 @@ decode_ActiveSearchDecisionAuthority :: proc(v: json.Value, out: ^ActiveSearchDe
 
 encode_ActiveSearchDecisionAuthority :: proc(b: ^strings.Builder, x: ActiveSearchDecisionAuthority) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ActiveSearchDecisionAuthority_LatchedController: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "latched_controller")
 	member(b, first, "controller"); encode_PlayerId(b, y.controller)
 	}; strings.write_byte(b, '}')
@@ -59330,6 +59904,7 @@ encode_ActiveSearchDecisionAuthority_members :: proc(b: ^strings.Builder, x: Act
 }
 
 decode_ResolvedRulesCommand :: proc(v: json.Value, out: ^ResolvedRulesCommand) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedRulesCommand")
 	variant: string
 	body: json.Value
@@ -59373,6 +59948,7 @@ decode_ResolvedRulesCommand :: proc(v: json.Value, out: ^ResolvedRulesCommand) -
 
 encode_ResolvedRulesCommand :: proc(b: ^strings.Builder, x: ResolvedRulesCommand) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolvedRulesCommand_ManaInsert: strings.write_byte(b, '{'); json.write_string(b, "ManaInsert"); strings.write_byte(b, ':'); encode_ResolvedManaInsertCommand(b, y._0); strings.write_byte(b, '}')
 	case ResolvedRulesCommand_ManaSpend: strings.write_byte(b, '{'); json.write_string(b, "ManaSpend"); strings.write_byte(b, ':'); encode_ResolvedManaSpendCommand(b, y._0); strings.write_byte(b, '}')
 	case ResolvedRulesCommand_PlayerEdit: strings.write_byte(b, '{'); json.write_string(b, "PlayerEdit"); strings.write_byte(b, ':'); encode_ResolvedPlayerEditCommand(b, y._0); strings.write_byte(b, '}')
@@ -59600,6 +60176,7 @@ encode_ResolvedDelayedTriggerCommand_members :: proc(b: ^strings.Builder, x: Res
 }
 
 decode_ResolvedContinuousEffectEdit :: proc(v: json.Value, out: ^ResolvedContinuousEffectEdit) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedContinuousEffectEdit")
 	variant: string
 	body: json.Value
@@ -59620,6 +60197,7 @@ decode_ResolvedContinuousEffectEdit :: proc(v: json.Value, out: ^ResolvedContinu
 
 encode_ResolvedContinuousEffectEdit :: proc(b: ^strings.Builder, x: ResolvedContinuousEffectEdit) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolvedContinuousEffectEdit_Install: strings.write_byte(b, '{'); json.write_string(b, "Install"); strings.write_byte(b, ':'); encode_ResolvedContinuousEffectCommand(b, y._0); strings.write_byte(b, '}')
 	case ResolvedContinuousEffectEdit_Retire: strings.write_byte(b, '{'); json.write_string(b, "Retire"); strings.write_byte(b, ':'); encode_ResolvedContinuousEffectRetirementCommand(b, y._0); strings.write_byte(b, '}')
 	}
@@ -60066,6 +60644,7 @@ encode_ManaSupertype :: proc(b: ^strings.Builder, x: ManaSupertype) {
 }
 
 decode_RulesExecutionNodeKind :: proc(v: json.Value, out: ^RulesExecutionNodeKind) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RulesExecutionNodeKind")
 	variant: string
 	body: json.Value
@@ -60109,6 +60688,7 @@ decode_RulesExecutionNodeKind :: proc(v: json.Value, out: ^RulesExecutionNodeKin
 
 encode_RulesExecutionNodeKind :: proc(b: ^strings.Builder, x: RulesExecutionNodeKind) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case RulesExecutionNodeKind_Proposal: _ = y; json.write_string(b, "Proposal")
 	case RulesExecutionNodeKind_ActivatedMana: strings.write_byte(b, '{'); json.write_string(b, "ActivatedMana"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "source"); encode_ObjectIncarnationRef(b, y.source)
@@ -60126,6 +60706,7 @@ encode_RulesExecutionNodeKind :: proc(b: ^strings.Builder, x: RulesExecutionNode
 }
 
 decode_ManaPaymentRecipient :: proc(v: json.Value, out: ^ManaPaymentRecipient) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaPaymentRecipient")
 	variant: string
 	body: json.Value
@@ -60146,12 +60727,14 @@ decode_ManaPaymentRecipient :: proc(v: json.Value, out: ^ManaPaymentRecipient) -
 
 encode_ManaPaymentRecipient :: proc(b: ^strings.Builder, x: ManaPaymentRecipient) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ManaPaymentRecipient_Object: strings.write_byte(b, '{'); json.write_string(b, "Object"); strings.write_byte(b, ':'); encode_ObjectIncarnationRef(b, y._0); strings.write_byte(b, '}')
 	case ManaPaymentRecipient_Player: strings.write_byte(b, '{'); json.write_string(b, "Player"); strings.write_byte(b, ':'); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_DamageTarget :: proc(v: json.Value, out: ^DamageTarget) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DamageTarget")
 	variant: string
 	body: json.Value
@@ -60172,12 +60755,14 @@ decode_DamageTarget :: proc(v: json.Value, out: ^DamageTarget) -> bool {
 
 encode_DamageTarget :: proc(b: ^strings.Builder, x: DamageTarget) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DamageTarget_Object: strings.write_byte(b, '{'); json.write_string(b, "Object"); strings.write_byte(b, ':'); encode_ObjectId(b, y._0); strings.write_byte(b, '}')
 	case DamageTarget_Player: strings.write_byte(b, '{'); json.write_string(b, "Player"); strings.write_byte(b, ':'); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	}
 }
 
 decode_StackResolutionEntryProvenance :: proc(v: json.Value, out: ^StackResolutionEntryProvenance) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StackResolutionEntryProvenance")
 	if v.kind != .Object do return fail("StackResolutionEntryProvenance: not an object")
 	tv, found := json.get(v, "type")
@@ -60224,6 +60809,7 @@ decode_StackResolutionEntryProvenance :: proc(v: json.Value, out: ^StackResoluti
 
 encode_StackResolutionEntryProvenance :: proc(b: ^strings.Builder, x: StackResolutionEntryProvenance) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case StackResolutionEntryProvenance_Spell: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Spell"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "card_id"); encode_CardId(b, y.card_id)
 	member(b, first, "ability"); enc_ptr_ResolvedAbility(b, y.ability)
@@ -60348,6 +60934,7 @@ encode_PendingCombatDamageEntry_members :: proc(b: ^strings.Builder, x: PendingC
 }
 
 decode_PendingCombatLegProgress :: proc(v: json.Value, out: ^PendingCombatLegProgress) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingCombatLegProgress")
 	if v.kind != .Object do return fail("PendingCombatLegProgress: not an object")
 	tv, found := json.get(v, "type")
@@ -60377,6 +60964,7 @@ decode_PendingCombatLegProgress :: proc(v: json.Value, out: ^PendingCombatLegPro
 
 encode_PendingCombatLegProgress :: proc(b: ^strings.Builder, x: PendingCombatLegProgress) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingCombatLegProgress_Unstarted: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Unstarted"); member(b, &f, "data"); encode_ProposedEvent(b, y._0); strings.write_byte(b, '}')
 	case PendingCombatLegProgress_Settled: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Settled"); member(b, &f, "data"); enc_opt_ProposedEvent(b, y._0); strings.write_byte(b, '}')
 	case PendingCombatLegProgress_AwaitingChoice: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "AwaitingChoice"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -60576,6 +61164,7 @@ encode_Layer :: proc(b: ^strings.Builder, x: Layer) {
 }
 
 decode_EffectRef :: proc(v: json.Value, out: ^EffectRef) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EffectRef")
 	if v.kind != .Object do return fail("EffectRef: not an object")
 	tv, found := json.get(v, "type")
@@ -60605,6 +61194,7 @@ decode_EffectRef :: proc(v: json.Value, out: ^EffectRef) -> bool {
 
 encode_EffectRef :: proc(b: ^strings.Builder, x: EffectRef) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case EffectRef_Transient: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Transient"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "id"); encode_u64(b, y.id)
 	member(b, first, "mod_index"); encode_int(b, y.mod_index)
@@ -60652,6 +61242,7 @@ encode_ChallengeDeck :: proc(b: ^strings.Builder, x: ChallengeDeck) {
 }
 
 decode_WaveTermination :: proc(v: json.Value, out: ^WaveTermination) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("WaveTermination")
 	if v.kind != .Object do return fail("WaveTermination: not an object")
 	tv, found := json.get(v, "type")
@@ -60673,6 +61264,7 @@ decode_WaveTermination :: proc(v: json.Value, out: ^WaveTermination) -> bool {
 
 encode_WaveTermination :: proc(b: ^strings.Builder, x: WaveTermination) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case WaveTermination_FixedCount: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "FixedCount"); member(b, &f, "data"); encode_u32(b, y._0); strings.write_byte(b, '}')
 	case WaveTermination_UntilNonToken: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "UntilNonToken"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "count"); encode_WaveCount(b, y.count)
@@ -60764,6 +61356,7 @@ encode_BossStages_members :: proc(b: ^strings.Builder, x: BossStages, first: ^bo
 }
 
 decode_WaveCount :: proc(v: json.Value, out: ^WaveCount) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("WaveCount")
 	if v.kind != .Object do return fail("WaveCount: not an object")
 	tv, found := json.get(v, "type")
@@ -60785,6 +61378,7 @@ decode_WaveCount :: proc(v: json.Value, out: ^WaveCount) -> bool {
 
 encode_WaveCount :: proc(b: ^strings.Builder, x: WaveCount) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case WaveCount_Fixed: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Fixed"); member(b, &f, "data"); encode_u32(b, y._0); strings.write_byte(b, '}')
 	case WaveCount_Snaking: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Snaking"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "min"); encode_u32(b, y.min)
@@ -60858,6 +61452,7 @@ encode_LegalityRules_members :: proc(b: ^strings.Builder, x: LegalityRules, firs
 }
 
 decode_CommandZoneMode :: proc(v: json.Value, out: ^CommandZoneMode) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CommandZoneMode")
 	variant: string
 	body: json.Value
@@ -60885,6 +61480,7 @@ decode_CommandZoneMode :: proc(v: json.Value, out: ^CommandZoneMode) -> bool {
 
 encode_CommandZoneMode :: proc(b: ^strings.Builder, x: CommandZoneMode) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CommandZoneMode_Disabled: _ = y; json.write_string(b, "Disabled")
 	case CommandZoneMode_Enabled: strings.write_byte(b, '{'); json.write_string(b, "Enabled"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "commander_damage_threshold"); enc_opt_u8(b, y.commander_damage_threshold)
@@ -60970,6 +61566,7 @@ encode_GameLogEntry_members :: proc(b: ^strings.Builder, x: GameLogEntry, first:
 }
 
 decode_SpellCastUndo :: proc(v: json.Value, out: ^SpellCastUndo) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SpellCastUndo")
 	variant: string
 	body: json.Value
@@ -61015,6 +61612,7 @@ decode_SpellCastUndo :: proc(v: json.Value, out: ^SpellCastUndo) -> bool {
 
 encode_SpellCastUndo :: proc(b: ^strings.Builder, x: SpellCastUndo) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case SpellCastUndo_Value: strings.write_byte(b, '{'); json.write_string(b, "Value"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "path"); enc_dyn_string(b, y.path)
 	member(b, first, "before"); enc_opt_json_Value(b, y.before)
@@ -61034,6 +61632,7 @@ encode_SpellCastUndo :: proc(b: ^strings.Builder, x: SpellCastUndo) {
 }
 
 decode_PendingPlayerScopeSacrificeFollowUp :: proc(v: json.Value, out: ^PendingPlayerScopeSacrificeFollowUp) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingPlayerScopeSacrificeFollowUp")
 	if v.kind != .Object do return fail("PendingPlayerScopeSacrificeFollowUp: not an object")
 	tv, found := json.get(v, "type")
@@ -61054,6 +61653,7 @@ decode_PendingPlayerScopeSacrificeFollowUp :: proc(v: json.Value, out: ^PendingP
 
 encode_PendingPlayerScopeSacrificeFollowUp :: proc(b: ^strings.Builder, x: PendingPlayerScopeSacrificeFollowUp) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingPlayerScopeSacrificeFollowUp_Exploit: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Exploit")
 	member(b, first, "exploiter"); encode_ObjectId(b, y.exploiter)
 	if !(y.exploiter_incarnation == nil) { member(b, first, "exploiter_incarnation"); enc_opt_u64(b, y.exploiter_incarnation) }
@@ -61243,6 +61843,7 @@ encode_FrozenScopedSearchFoundDisposition_members :: proc(b: ^strings.Builder, x
 }
 
 decode_TargetPin :: proc(v: json.Value, out: ^TargetPin) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TargetPin")
 	variant: string
 	body: json.Value
@@ -61264,6 +61865,7 @@ decode_TargetPin :: proc(v: json.Value, out: ^TargetPin) -> bool {
 
 encode_TargetPin :: proc(b: ^strings.Builder, x: TargetPin) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TargetPin_ByIdentity: strings.write_byte(b, '{'); json.write_string(b, "ByIdentity"); strings.write_byte(b, ':'); encode_YieldTarget(b, y._0); strings.write_byte(b, '}')
 	case TargetPin_Player: strings.write_byte(b, '{'); json.write_string(b, "Player"); strings.write_byte(b, ':'); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	case TargetPin_Scheduled: strings.write_byte(b, '{'); json.write_string(b, "Scheduled"); strings.write_byte(b, ':'); encode_TargetSchedule(b, y._0); strings.write_byte(b, '}')
@@ -61615,6 +62217,7 @@ encode_ReplacementSubtreeBoundary_members :: proc(b: ^strings.Builder, x: Replac
 }
 
 decode_UnpaidCostRemainder :: proc(v: json.Value, out: ^UnpaidCostRemainder) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UnpaidCostRemainder")
 	variant: string
 	body: json.Value
@@ -61635,6 +62238,7 @@ decode_UnpaidCostRemainder :: proc(v: json.Value, out: ^UnpaidCostRemainder) -> 
 
 encode_UnpaidCostRemainder :: proc(b: ^strings.Builder, x: UnpaidCostRemainder) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case UnpaidCostRemainder_Legs: strings.write_byte(b, '{'); json.write_string(b, "Legs"); strings.write_byte(b, ':'); encode_AbilityCost(b, y._0); strings.write_byte(b, '}')
 	case UnpaidCostRemainder_Repeated: strings.write_byte(b, '{'); json.write_string(b, "Repeated"); strings.write_byte(b, ':'); encode_u32(b, y._0); strings.write_byte(b, '}')
 	}
@@ -61701,6 +62305,7 @@ encode_TriggerCollectionOverlay_members :: proc(b: ^strings.Builder, x: TriggerC
 }
 
 decode_TriggerCollectionOperation :: proc(v: json.Value, out: ^TriggerCollectionOperation) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerCollectionOperation")
 	variant: string
 	body: json.Value
@@ -61768,6 +62373,7 @@ decode_TriggerCollectionOperation :: proc(v: json.Value, out: ^TriggerCollection
 
 encode_TriggerCollectionOperation :: proc(b: ^strings.Builder, x: TriggerCollectionOperation) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TriggerCollectionOperation_PrepareEventBatch: strings.write_byte(b, '{'); json.write_string(b, "PrepareEventBatch"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "events"); enc_dyn_GameEvent(b, y.events)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -61897,6 +62503,7 @@ encode_PostReplacementDrain_members :: proc(b: ^strings.Builder, x: PostReplacem
 }
 
 decode_DrainStatus :: proc(v: json.Value, out: ^DrainStatus) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DrainStatus")
 	variant: string
 	body: json.Value
@@ -61918,6 +62525,7 @@ decode_DrainStatus :: proc(v: json.Value, out: ^DrainStatus) -> bool {
 
 encode_DrainStatus :: proc(b: ^strings.Builder, x: DrainStatus) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DrainStatus_Ready: strings.write_byte(b, '{'); json.write_string(b, "Ready"); strings.write_byte(b, ':'); encode_PostReplacementContinuation(b, y._0); strings.write_byte(b, '}')
 	case DrainStatus_Dispatching: _ = y; json.write_string(b, "Dispatching")
 	case DrainStatus_Paused: _ = y; json.write_string(b, "Paused")
@@ -61925,6 +62533,7 @@ encode_DrainStatus :: proc(b: ^strings.Builder, x: DrainStatus) {
 }
 
 decode_PostReplacementContinuation :: proc(v: json.Value, out: ^PostReplacementContinuation) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PostReplacementContinuation")
 	if v.kind != .Object do return fail("PostReplacementContinuation: not an object")
 	tv, found := json.get(v, "kind")
@@ -61939,6 +62548,7 @@ decode_PostReplacementContinuation :: proc(v: json.Value, out: ^PostReplacementC
 
 encode_PostReplacementContinuation :: proc(b: ^strings.Builder, x: PostReplacementContinuation) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PostReplacementContinuation_Template: strings.write_byte(b, '{'); f := true; member(b, &f, "kind"); json.write_string(b, "Template"); member(b, &f, "ability"); enc_ptr_AbilityDefinition(b, y._0); strings.write_byte(b, '}')
 	case PostReplacementContinuation_Resolved: strings.write_byte(b, '{'); f := true; member(b, &f, "kind"); json.write_string(b, "Resolved"); member(b, &f, "ability"); enc_ptr_ResolvedAbility(b, y._0); strings.write_byte(b, '}')
 	}
@@ -61965,6 +62575,7 @@ encode_AbilityActivationScope :: proc(b: ^strings.Builder, x: AbilityActivationS
 }
 
 decode_SpellCostCriterion :: proc(v: json.Value, out: ^SpellCostCriterion) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SpellCostCriterion")
 	variant: string
 	body: json.Value
@@ -61992,6 +62603,7 @@ decode_SpellCostCriterion :: proc(v: json.Value, out: ^SpellCostCriterion) -> bo
 
 encode_SpellCostCriterion :: proc(b: ^strings.Builder, x: SpellCostCriterion) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case SpellCostCriterion_ManaValue: strings.write_byte(b, '{'); json.write_string(b, "ManaValue"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "comparator"); encode_Comparator(b, y.comparator)
 	member(b, first, "value"); encode_u32(b, y.value)
@@ -62021,6 +62633,7 @@ encode_ZoneSpend_members :: proc(b: ^strings.Builder, x: ZoneSpend, first: ^bool
 }
 
 decode_ProtectionGrantOccurrence :: proc(v: json.Value, out: ^ProtectionGrantOccurrence) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ProtectionGrantOccurrence")
 	if v.kind != .Object do return fail("ProtectionGrantOccurrence: not an object")
 	tv, found := json.get(v, "type")
@@ -62047,6 +62660,7 @@ decode_ProtectionGrantOccurrence :: proc(v: json.Value, out: ^ProtectionGrantOcc
 
 encode_ProtectionGrantOccurrence :: proc(b: ^strings.Builder, x: ProtectionGrantOccurrence) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ProtectionGrantOccurrence_Static: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Static"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "definition_index"); encode_int(b, y.definition_index)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -62057,6 +62671,7 @@ encode_ProtectionGrantOccurrence :: proc(b: ^strings.Builder, x: ProtectionGrant
 }
 
 decode_TriggerProducerOrigin :: proc(v: json.Value, out: ^TriggerProducerOrigin) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerProducerOrigin")
 	if v.kind != .Object do return fail("TriggerProducerOrigin: not an object")
 	tv, found := json.get(v, "type")
@@ -62086,6 +62701,7 @@ decode_TriggerProducerOrigin :: proc(v: json.Value, out: ^TriggerProducerOrigin)
 
 encode_TriggerProducerOrigin :: proc(b: ^strings.Builder, x: TriggerProducerOrigin) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TriggerProducerOrigin_Static: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Static"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "source"); encode_ObjectIncarnationRef(b, y.source)
 	member(b, first, "definition_index"); encode_int(b, y.definition_index)
@@ -62099,6 +62715,7 @@ encode_TriggerProducerOrigin :: proc(b: ^strings.Builder, x: TriggerProducerOrig
 }
 
 decode_PerpetualGrantModification :: proc(v: json.Value, out: ^PerpetualGrantModification) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PerpetualGrantModification")
 	if v.kind != .Object do return fail("PerpetualGrantModification: not an object")
 	tv, found := json.get(v, "type")
@@ -62139,6 +62756,7 @@ decode_PerpetualGrantModification :: proc(v: json.Value, out: ^PerpetualGrantMod
 
 encode_PerpetualGrantModification :: proc(b: ^strings.Builder, x: PerpetualGrantModification) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PerpetualGrantModification_AddKeyword: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "AddKeyword")
 	member(b, first, "keyword"); encode_Keyword(b, y.keyword)
 	}; strings.write_byte(b, '}')
@@ -62289,6 +62907,7 @@ encode_AbilityBlockKind_members :: proc(b: ^strings.Builder, x: AbilityBlockKind
 }
 
 decode_CharacteristicSetRef :: proc(v: json.Value, out: ^CharacteristicSetRef) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CharacteristicSetRef")
 	if v.kind != .Object do return fail("CharacteristicSetRef: not an object")
 	tv, found := json.get(v, "type")
@@ -62303,6 +62922,7 @@ decode_CharacteristicSetRef :: proc(v: json.Value, out: ^CharacteristicSetRef) -
 
 encode_CharacteristicSetRef :: proc(b: ^strings.Builder, x: CharacteristicSetRef) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CharacteristicSetRef_Own: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Own"); strings.write_byte(b, '}')
 	case CharacteristicSetRef_Copied: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Copied"); member(b, &f, "data"); encode_CopyEffectInstanceRef(b, y._0); strings.write_byte(b, '}')
 	}
@@ -62397,6 +63017,7 @@ encode_PhaseOutCause :: proc(b: ^strings.Builder, x: PhaseOutCause) {
 }
 
 decode_SacrificeRequirement :: proc(v: json.Value, out: ^SacrificeRequirement) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SacrificeRequirement")
 	if v.kind != .Object do return fail("SacrificeRequirement: not an object")
 	tv, found := json.get(v, "requirement")
@@ -62426,6 +63047,7 @@ decode_SacrificeRequirement :: proc(v: json.Value, out: ^SacrificeRequirement) -
 
 encode_SacrificeRequirement :: proc(b: ^strings.Builder, x: SacrificeRequirement) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case SacrificeRequirement_Count: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "requirement"); json.write_string(b, "count")
 	member(b, first, "count"); encode_u32(b, y.count)
 	}; strings.write_byte(b, '}')
@@ -62509,6 +63131,7 @@ encode_NamedDefenderScope :: proc(b: ^strings.Builder, x: NamedDefenderScope) {
 }
 
 decode_AttachCardinality :: proc(v: json.Value, out: ^AttachCardinality) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AttachCardinality")
 	variant: string
 	body: json.Value
@@ -62531,6 +63154,7 @@ decode_AttachCardinality :: proc(v: json.Value, out: ^AttachCardinality) -> bool
 
 encode_AttachCardinality :: proc(b: ^strings.Builder, x: AttachCardinality) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AttachCardinality_One: _ = y; json.write_string(b, "one")
 	case AttachCardinality_UpTo: strings.write_byte(b, '{'); json.write_string(b, "up_to"); strings.write_byte(b, ':'); encode_QuantityExpr(b, y._0); strings.write_byte(b, '}')
 	case AttachCardinality_AnyNumber: _ = y; json.write_string(b, "any_number")
@@ -62631,6 +63255,7 @@ encode_PerPlayerScope :: proc(b: ^strings.Builder, x: PerPlayerScope) {
 }
 
 decode_ConjureSource :: proc(v: json.Value, out: ^ConjureSource) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ConjureSource")
 	// untagged: the first variant that decodes wins, as in serde.
 	if v.kind == .Object { tmp: ConjureSource_Named; if decode_quiet_proc(v, &tmp, proc(v: json.Value, out: ^ConjureSource_Named) -> bool {
@@ -62646,6 +63271,7 @@ decode_ConjureSource :: proc(v: json.Value, out: ^ConjureSource) -> bool {
 
 encode_ConjureSource :: proc(b: ^strings.Builder, x: ConjureSource) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ConjureSource_Named: strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "name"); encode_string(b, y.name)
 	}; strings.write_byte(b, '}')
@@ -62667,6 +63293,7 @@ encode_ConjureSource_members :: proc(b: ^strings.Builder, x: ConjureSource, firs
 }
 
 decode_AssignedDamageRecipient :: proc(v: json.Value, out: ^AssignedDamageRecipient) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AssignedDamageRecipient")
 	if v.kind != .Object do return fail("AssignedDamageRecipient: not an object")
 	tv, found := json.get(v, "type")
@@ -62681,6 +63308,7 @@ decode_AssignedDamageRecipient :: proc(v: json.Value, out: ^AssignedDamageRecipi
 
 encode_AssignedDamageRecipient :: proc(b: ^strings.Builder, x: AssignedDamageRecipient) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AssignedDamageRecipient_Object: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Object"); member(b, &f, "data"); encode_ObjectIncarnationRef(b, y._0); strings.write_byte(b, '}')
 	case AssignedDamageRecipient_Player: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Player"); member(b, &f, "data"); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	}
@@ -62971,6 +63599,7 @@ encode_ResolutionMvRejectAction_members :: proc(b: ^strings.Builder, x: Resoluti
 }
 
 decode_ResolutionCastSuccessAction :: proc(v: json.Value, out: ^ResolutionCastSuccessAction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolutionCastSuccessAction")
 	if v.kind != .Object do return fail("ResolutionCastSuccessAction: not an object")
 	tv, found := json.get(v, "type")
@@ -63005,6 +63634,7 @@ decode_ResolutionCastSuccessAction :: proc(v: json.Value, out: ^ResolutionCastSu
 
 encode_ResolutionCastSuccessAction :: proc(b: ^strings.Builder, x: ResolutionCastSuccessAction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolutionCastSuccessAction_BottomMisses: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "BottomMisses"); strings.write_byte(b, '}')
 	case ResolutionCastSuccessAction_RippleOfferRemaining: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "RippleOfferRemaining")
 	member(b, first, "remaining_hits"); enc_dyn_ObjectId(b, y.remaining_hits)
@@ -63238,6 +63868,7 @@ encode_InstructedMill_members :: proc(b: ^strings.Builder, x: InstructedMill, fi
 }
 
 decode_DecisionPointKind :: proc(v: json.Value, out: ^DecisionPointKind) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DecisionPointKind")
 	variant: string
 	body: json.Value
@@ -63300,6 +63931,7 @@ decode_DecisionPointKind :: proc(v: json.Value, out: ^DecisionPointKind) -> bool
 
 encode_DecisionPointKind :: proc(b: ^strings.Builder, x: DecisionPointKind) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DecisionPointKind_Targets: strings.write_byte(b, '{'); json.write_string(b, "Targets"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "legal_targets"); enc_dyn_TargetRef(b, y.legal_targets)
 	member(b, first, "min_targets"); encode_u32(b, y.min_targets)
@@ -63368,6 +64000,7 @@ encode_RoomMarkerPoint_members :: proc(b: ^strings.Builder, x: RoomMarkerPoint, 
 }
 
 decode_TextSubstitution :: proc(v: json.Value, out: ^TextSubstitution) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TextSubstitution")
 	if v.kind != .Object do return fail("TextSubstitution: not an object")
 	tv, found := json.get(v, "type")
@@ -63396,6 +64029,7 @@ decode_TextSubstitution :: proc(v: json.Value, out: ^TextSubstitution) -> bool {
 
 encode_TextSubstitution :: proc(b: ^strings.Builder, x: TextSubstitution) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TextSubstitution_Color: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Color")
 	member(b, first, "from"); encode_ManaColor(b, y.from)
 	member(b, first, "to"); encode_ManaColor(b, y.to)
@@ -63461,6 +64095,7 @@ encode_EnterWithGrant_members :: proc(b: ^strings.Builder, x: EnterWithGrant, fi
 }
 
 decode_UnitDisposition :: proc(v: json.Value, out: ^UnitDisposition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UnitDisposition")
 	variant: string
 	body: json.Value
@@ -63482,6 +64117,7 @@ decode_UnitDisposition :: proc(v: json.Value, out: ^UnitDisposition) -> bool {
 
 encode_UnitDisposition :: proc(b: ^strings.Builder, x: UnitDisposition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case UnitDisposition_Drop: _ = y; json.write_string(b, "Drop")
 	case UnitDisposition_Keep: _ = y; json.write_string(b, "Keep")
 	case UnitDisposition_Recolor: strings.write_byte(b, '{'); json.write_string(b, "Recolor"); strings.write_byte(b, ':'); encode_ManaType(b, y._0); strings.write_byte(b, '}')
@@ -63531,6 +64167,7 @@ encode_PendingCombatLegChoice_members :: proc(b: ^strings.Builder, x: PendingCom
 }
 
 decode_TriggerGrantProducerKey :: proc(v: json.Value, out: ^TriggerGrantProducerKey) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerGrantProducerKey")
 	if v.kind != .Object do return fail("TriggerGrantProducerKey: not an object")
 	tv, found := json.get(v, "type")
@@ -63578,6 +64215,7 @@ decode_TriggerGrantProducerKey :: proc(v: json.Value, out: ^TriggerGrantProducer
 
 encode_TriggerGrantProducerKey :: proc(b: ^strings.Builder, x: TriggerGrantProducerKey) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TriggerGrantProducerKey_KeywordCompanion: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "KeywordCompanion"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "origin"); encode_TriggerProducerOrigin(b, y.origin)
 	member(b, first, "keyword_output_index"); encode_int(b, y.keyword_output_index)
@@ -63601,6 +64239,7 @@ encode_TriggerGrantProducerKey :: proc(b: ^strings.Builder, x: TriggerGrantProdu
 }
 
 decode_CombatRelation :: proc(v: json.Value, out: ^CombatRelation) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CombatRelation")
 	variant: string
 	body: json.Value
@@ -63627,6 +64266,7 @@ decode_CombatRelation :: proc(v: json.Value, out: ^CombatRelation) -> bool {
 
 encode_CombatRelation :: proc(b: ^strings.Builder, x: CombatRelation) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CombatRelation_BlockPairing: strings.write_byte(b, '{'); json.write_string(b, "BlockPairing"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "direction"); encode_BlockPairDirection(b, y.direction)
 	if !(y.scope == nil) { member(b, first, "scope"); enc_opt_CombatHistoryScope(b, y.scope) }
@@ -63697,6 +64337,7 @@ encode_CrewRelation :: proc(b: ^strings.Builder, x: CrewRelation) {
 }
 
 decode_ParitySource :: proc(v: json.Value, out: ^ParitySource) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ParitySource")
 	if v.kind != .Object do return fail("ParitySource: not an object")
 	tv, found := json.get(v, "type")
@@ -63712,6 +64353,7 @@ decode_ParitySource :: proc(v: json.Value, out: ^ParitySource) -> bool {
 
 encode_ParitySource :: proc(b: ^strings.Builder, x: ParitySource) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ParitySource_Fixed: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Fixed"); member(b, &f, "value"); encode_Parity(b, y._0); strings.write_byte(b, '}')
 	case ParitySource_LastNamedChoice: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "LastNamedChoice"); strings.write_byte(b, '}')
 	case ParitySource_SourceChosen: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SourceChosen"); strings.write_byte(b, '}')
@@ -63719,6 +64361,7 @@ encode_ParitySource :: proc(b: ^strings.Builder, x: ParitySource) {
 }
 
 decode_AttachmentReferent :: proc(v: json.Value, out: ^AttachmentReferent) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AttachmentReferent")
 	if v.kind != .Object do return fail("AttachmentReferent: not an object")
 	tv, found := json.get(v, "type")
@@ -63754,6 +64397,7 @@ decode_AttachmentReferent :: proc(v: json.Value, out: ^AttachmentReferent) -> bo
 
 encode_AttachmentReferent :: proc(b: ^strings.Builder, x: AttachmentReferent) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AttachmentReferent_Source: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Source"); strings.write_byte(b, '}')
 	case AttachmentReferent_Recipient: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Recipient"); strings.write_byte(b, '}')
 	case AttachmentReferent_Player: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Player")
@@ -65080,6 +65724,7 @@ encode_LogicalZoneChangeProspectiveMember_members :: proc(b: ^strings.Builder, x
 }
 
 decode_LogicalZoneChangeTerminalOutcome :: proc(v: json.Value, out: ^LogicalZoneChangeTerminalOutcome) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LogicalZoneChangeTerminalOutcome")
 	if v.kind != .Object do return fail("LogicalZoneChangeTerminalOutcome: not an object")
 	tv, found := json.get(v, "type")
@@ -65104,6 +65749,7 @@ decode_LogicalZoneChangeTerminalOutcome :: proc(v: json.Value, out: ^LogicalZone
 
 encode_LogicalZoneChangeTerminalOutcome :: proc(b: ^strings.Builder, x: LogicalZoneChangeTerminalOutcome) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case LogicalZoneChangeTerminalOutcome_Pending: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "pending"); strings.write_byte(b, '}')
 	case LogicalZoneChangeTerminalOutcome_Prevented: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "prevented"); strings.write_byte(b, '}')
 	case LogicalZoneChangeTerminalOutcome_Remained: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "remained"); strings.write_byte(b, '}')
@@ -65372,6 +66018,7 @@ encode_PendingCounterMove_members :: proc(b: ^strings.Builder, x: PendingCounter
 }
 
 decode_PendingCounterAddition :: proc(v: json.Value, out: ^PendingCounterAddition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingCounterAddition")
 	variant: string
 	body: json.Value
@@ -65422,6 +66069,7 @@ decode_PendingCounterAddition :: proc(v: json.Value, out: ^PendingCounterAdditio
 
 encode_PendingCounterAddition :: proc(b: ^strings.Builder, x: PendingCounterAddition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingCounterAddition_Object: strings.write_byte(b, '{'); json.write_string(b, "Object"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "actor"); encode_PlayerId(b, y.actor)
 	member(b, first, "object_id"); encode_ObjectId(b, y.object_id)
@@ -65624,6 +66272,7 @@ encode_ParkedOpponentMayPoll_members :: proc(b: ^strings.Builder, x: ParkedOppon
 }
 
 decode_PendingCoinFlipKind :: proc(v: json.Value, out: ^PendingCoinFlipKind) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingCoinFlipKind")
 	variant: string
 	body: json.Value
@@ -65656,6 +66305,7 @@ decode_PendingCoinFlipKind :: proc(v: json.Value, out: ^PendingCoinFlipKind) -> 
 
 encode_PendingCoinFlipKind :: proc(b: ^strings.Builder, x: PendingCoinFlipKind) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingCoinFlipKind_Exactly: strings.write_byte(b, '{'); json.write_string(b, "Exactly"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "remaining"); encode_u32(b, y.remaining)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -65808,6 +66458,7 @@ encode_LogCategory :: proc(b: ^strings.Builder, x: LogCategory) {
 }
 
 decode_LogSegment :: proc(v: json.Value, out: ^LogSegment) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LogSegment")
 	if v.kind != .Object do return fail("LogSegment: not an object")
 	tv, found := json.get(v, "type")
@@ -65841,6 +66492,7 @@ decode_LogSegment :: proc(v: json.Value, out: ^LogSegment) -> bool {
 
 encode_LogSegment :: proc(b: ^strings.Builder, x: LogSegment) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case LogSegment_Text: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Text"); member(b, &f, "value"); encode_string(b, y._0); strings.write_byte(b, '}')
 	case LogSegment_CardName: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CardName"); member(b, &f, "value"); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "name"); encode_string(b, y.name)
@@ -65882,6 +66534,7 @@ encode_LogPresentation_members :: proc(b: ^strings.Builder, x: LogPresentation, 
 }
 
 decode_PendingSacrificeMove :: proc(v: json.Value, out: ^PendingSacrificeMove) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingSacrificeMove")
 	variant: string
 	body: json.Value
@@ -65924,6 +66577,7 @@ decode_PendingSacrificeMove :: proc(v: json.Value, out: ^PendingSacrificeMove) -
 
 encode_PendingSacrificeMove :: proc(b: ^strings.Builder, x: PendingSacrificeMove) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingSacrificeMove_Sacrifice: strings.write_byte(b, '{'); json.write_string(b, "Sacrifice"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "object_id"); encode_ObjectId(b, y.object_id)
 	member(b, first, "player_id"); encode_PlayerId(b, y.player_id)
@@ -65997,6 +66651,7 @@ encode_UnionSources :: proc(b: ^strings.Builder, x: UnionSources) {
 }
 
 decode_TargetSchedule :: proc(v: json.Value, out: ^TargetSchedule) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TargetSchedule")
 	variant: string
 	body: json.Value
@@ -66018,6 +66673,7 @@ decode_TargetSchedule :: proc(v: json.Value, out: ^TargetSchedule) -> bool {
 
 encode_TargetSchedule :: proc(b: ^strings.Builder, x: TargetSchedule) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case TargetSchedule_Constant: strings.write_byte(b, '{'); json.write_string(b, "Constant"); strings.write_byte(b, ':'); encode_Ranking(b, y._0); strings.write_byte(b, '}')
 	case TargetSchedule_RoundRobin: strings.write_byte(b, '{'); json.write_string(b, "RoundRobin"); strings.write_byte(b, ':'); enc_dyn_Ranking(b, y._0); strings.write_byte(b, '}')
 	case TargetSchedule_Piecewise: strings.write_byte(b, '{'); json.write_string(b, "Piecewise"); strings.write_byte(b, ':'); enc_dyn_t2_u32_Ranking(b, y._0); strings.write_byte(b, '}')
@@ -66034,6 +66690,7 @@ encode_Ranking :: proc(b: ^strings.Builder, x: Ranking) {
 }
 
 decode_AnnouncementSubject :: proc(v: json.Value, out: ^AnnouncementSubject) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AnnouncementSubject")
 	variant: string
 	body: json.Value
@@ -66054,6 +66711,7 @@ decode_AnnouncementSubject :: proc(v: json.Value, out: ^AnnouncementSubject) -> 
 
 encode_AnnouncementSubject :: proc(b: ^strings.Builder, x: AnnouncementSubject) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case AnnouncementSubject_Object: strings.write_byte(b, '{'); json.write_string(b, "Object"); strings.write_byte(b, ':'); encode_YieldTarget(b, y._0); strings.write_byte(b, '}')
 	case AnnouncementSubject_Seat: strings.write_byte(b, '{'); json.write_string(b, "Seat"); strings.write_byte(b, ':'); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	}
@@ -66170,6 +66828,7 @@ encode_ChangeZoneArrangementPlan :: proc(b: ^strings.Builder, x: ChangeZoneArran
 }
 
 decode_ChangeZoneCountPolicy :: proc(v: json.Value, out: ^ChangeZoneCountPolicy) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ChangeZoneCountPolicy")
 	variant: string
 	body: json.Value
@@ -66203,6 +66862,7 @@ decode_ChangeZoneCountPolicy :: proc(v: json.Value, out: ^ChangeZoneCountPolicy)
 
 encode_ChangeZoneCountPolicy :: proc(b: ^strings.Builder, x: ChangeZoneCountPolicy) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ChangeZoneCountPolicy_TargetedArrivals: strings.write_byte(b, '{'); json.write_string(b, "TargetedArrivals"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "selected"); enc_dyn_ObjectId(b, y.selected)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -66296,6 +66956,7 @@ encode_PlayerDeckList_members :: proc(b: ^strings.Builder, x: PlayerDeckList, fi
 }
 
 decode_ComboDeclaration :: proc(v: json.Value, out: ^ComboDeclaration) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ComboDeclaration")
 	if v.kind != .Object do return fail("ComboDeclaration: not an object")
 	tv, found := json.get(v, "kind")
@@ -66317,6 +66978,7 @@ decode_ComboDeclaration :: proc(v: json.Value, out: ^ComboDeclaration) -> bool {
 
 encode_ComboDeclaration :: proc(b: ^strings.Builder, x: ComboDeclaration) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ComboDeclaration_Undeclared: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "kind"); json.write_string(b, "undeclared"); strings.write_byte(b, '}')
 	case ComboDeclaration_NoneIntended: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "kind"); json.write_string(b, "none_intended"); strings.write_byte(b, '}')
 	case ComboDeclaration_Intended: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "kind"); json.write_string(b, "intended")
@@ -66356,6 +67018,7 @@ encode_ResolvedManaSpentUnit_members :: proc(b: ^strings.Builder, x: ResolvedMan
 }
 
 decode_ResolvedPlayerEdit :: proc(v: json.Value, out: ^ResolvedPlayerEdit) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedPlayerEdit")
 	variant: string
 	body: json.Value
@@ -66404,6 +67067,7 @@ decode_ResolvedPlayerEdit :: proc(v: json.Value, out: ^ResolvedPlayerEdit) -> bo
 
 encode_ResolvedPlayerEdit :: proc(b: ^strings.Builder, x: ResolvedPlayerEdit) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolvedPlayerEdit_Life: strings.write_byte(b, '{'); json.write_string(b, "Life"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "delta"); encode_i32(b, y.delta)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -66442,6 +67106,7 @@ encode_ResolvedObjectStatus :: proc(b: ^strings.Builder, x: ResolvedObjectStatus
 }
 
 decode_ResolvedObjectCounterEdit :: proc(v: json.Value, out: ^ResolvedObjectCounterEdit) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedObjectCounterEdit")
 	variant: string
 	body: json.Value
@@ -66475,6 +67140,7 @@ decode_ResolvedObjectCounterEdit :: proc(v: json.Value, out: ^ResolvedObjectCoun
 
 encode_ResolvedObjectCounterEdit :: proc(b: ^strings.Builder, x: ResolvedObjectCounterEdit) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolvedObjectCounterEdit_Add: strings.write_byte(b, '{'); json.write_string(b, "Add"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "actor"); encode_PlayerId(b, y.actor)
 	member(b, first, "count"); encode_u32(b, y.count)
@@ -66534,6 +67200,7 @@ encode_ResolvedContinuousEffectRetirementCommand_members :: proc(b: ^strings.Bui
 }
 
 decode_ResolvedCombatMembershipEdit :: proc(v: json.Value, out: ^ResolvedCombatMembershipEdit) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedCombatMembershipEdit")
 	variant: string
 	body: json.Value
@@ -66584,6 +67251,7 @@ decode_ResolvedCombatMembershipEdit :: proc(v: json.Value, out: ^ResolvedCombatM
 
 encode_ResolvedCombatMembershipEdit :: proc(b: ^strings.Builder, x: ResolvedCombatMembershipEdit) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolvedCombatMembershipEdit_Attack: strings.write_byte(b, '{'); json.write_string(b, "Attack"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "resulting_defending_player"); encode_PlayerId(b, y.resulting_defending_player)
 	member(b, first, "resulting_attack_target"); encode_AttackTarget(b, y.resulting_attack_target)
@@ -66632,6 +67300,7 @@ encode_CombatParticipation_members :: proc(b: ^strings.Builder, x: CombatPartici
 }
 
 decode_ResolvedTokenBody :: proc(v: json.Value, out: ^ResolvedTokenBody) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedTokenBody")
 	variant: string
 	body: json.Value
@@ -66666,6 +67335,7 @@ decode_ResolvedTokenBody :: proc(v: json.Value, out: ^ResolvedTokenBody) -> bool
 
 encode_ResolvedTokenBody :: proc(b: ^strings.Builder, x: ResolvedTokenBody) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolvedTokenBody_Spec: strings.write_byte(b, '{'); json.write_string(b, "Spec"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "spec"); enc_ptr_TokenSpec(b, y.spec)
 	member(b, first, "token_image_ref"); enc_opt_TokenImageRef(b, y.token_image_ref)
@@ -66678,6 +67348,7 @@ encode_ResolvedTokenBody :: proc(b: ^strings.Builder, x: ResolvedTokenBody) {
 }
 
 decode_ResolvedCopyBodyModifications :: proc(v: json.Value, out: ^ResolvedCopyBodyModifications) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedCopyBodyModifications")
 	variant: string
 	body: json.Value
@@ -66712,6 +67383,7 @@ decode_ResolvedCopyBodyModifications :: proc(v: json.Value, out: ^ResolvedCopyBo
 
 encode_ResolvedCopyBodyModifications :: proc(b: ^strings.Builder, x: ResolvedCopyBodyModifications) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolvedCopyBodyModifications_NoExceptions: _ = y; json.write_string(b, "NoExceptions")
 	case ResolvedCopyBodyModifications_Folded: strings.write_byte(b, '{'); json.write_string(b, "Folded"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "modifications"); enc_dyn_ContinuousModification(b, y.modifications)
@@ -66724,6 +67396,7 @@ encode_ResolvedCopyBodyModifications :: proc(b: ^strings.Builder, x: ResolvedCop
 }
 
 decode_ResolvedInformationAudience :: proc(v: json.Value, out: ^ResolvedInformationAudience) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedInformationAudience")
 	variant: string
 	body: json.Value
@@ -66744,12 +67417,14 @@ decode_ResolvedInformationAudience :: proc(v: json.Value, out: ^ResolvedInformat
 
 encode_ResolvedInformationAudience :: proc(b: ^strings.Builder, x: ResolvedInformationAudience) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolvedInformationAudience_Controller: strings.write_byte(b, '{'); json.write_string(b, "Controller"); strings.write_byte(b, ':'); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
 	case ResolvedInformationAudience_Public: _ = y; json.write_string(b, "Public")
 	}
 }
 
 decode_ResolvedInformationLifetime :: proc(v: json.Value, out: ^ResolvedInformationLifetime) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedInformationLifetime")
 	variant: string
 	body: json.Value
@@ -66777,6 +67452,7 @@ decode_ResolvedInformationLifetime :: proc(v: json.Value, out: ^ResolvedInformat
 
 encode_ResolvedInformationLifetime :: proc(b: ^strings.Builder, x: ResolvedInformationLifetime) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolvedInformationLifetime_UntilActionBoundary: _ = y; json.write_string(b, "UntilActionBoundary")
 	case ResolvedInformationLifetime_UntilZoneChange: _ = y; json.write_string(b, "UntilZoneChange")
 	case ResolvedInformationLifetime_UntilStackObjectLeaves: strings.write_byte(b, '{'); json.write_string(b, "UntilStackObjectLeaves"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -66806,6 +67482,7 @@ encode_ResolvedInformationEdit :: proc(b: ^strings.Builder, x: ResolvedInformati
 }
 
 decode_ResolvedLedgerEdit :: proc(v: json.Value, out: ^ResolvedLedgerEdit) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedLedgerEdit")
 	variant: string
 	body: json.Value
@@ -66902,6 +67579,7 @@ decode_ResolvedLedgerEdit :: proc(v: json.Value, out: ^ResolvedLedgerEdit) -> bo
 
 encode_ResolvedLedgerEdit :: proc(b: ^strings.Builder, x: ResolvedLedgerEdit) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolvedLedgerEdit_CompletedCycle: strings.write_byte(b, '{'); json.write_string(b, "CompletedCycle"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "player"); encode_PlayerId(b, y.player)
 	member(b, first, "record"); encode_CyclingRecord(b, y.record)
@@ -66956,6 +67634,7 @@ encode_ResolvedLedgerEdit :: proc(b: ^strings.Builder, x: ResolvedLedgerEdit) {
 }
 
 decode_ResolvedTriggerLedgerEdit :: proc(v: json.Value, out: ^ResolvedTriggerLedgerEdit) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedTriggerLedgerEdit")
 	variant: string
 	body: json.Value
@@ -66997,6 +67676,7 @@ decode_ResolvedTriggerLedgerEdit :: proc(v: json.Value, out: ^ResolvedTriggerLed
 
 encode_ResolvedTriggerLedgerEdit :: proc(b: ^strings.Builder, x: ResolvedTriggerLedgerEdit) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolvedTriggerLedgerEdit_OncePerTurn: _ = y; json.write_string(b, "OncePerTurn")
 	case ResolvedTriggerLedgerEdit_OncePerGame: _ = y; json.write_string(b, "OncePerGame")
 	case ResolvedTriggerLedgerEdit_OncePerOpponentPerTurn: strings.write_byte(b, '{'); json.write_string(b, "OncePerOpponentPerTurn"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
@@ -67012,6 +67692,7 @@ encode_ResolvedTriggerLedgerEdit :: proc(b: ^strings.Builder, x: ResolvedTrigger
 }
 
 decode_ResolvedOncePerTurnPermission :: proc(v: json.Value, out: ^ResolvedOncePerTurnPermission) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedOncePerTurnPermission")
 	variant: string
 	body: json.Value
@@ -67043,6 +67724,7 @@ decode_ResolvedOncePerTurnPermission :: proc(v: json.Value, out: ^ResolvedOncePe
 
 encode_ResolvedOncePerTurnPermission :: proc(b: ^strings.Builder, x: ResolvedOncePerTurnPermission) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolvedOncePerTurnPermission_GraveyardCast: _ = y; json.write_string(b, "GraveyardCast")
 	case ResolvedOncePerTurnPermission_GraveyardCastPermanentType: strings.write_byte(b, '{'); json.write_string(b, "GraveyardCastPermanentType"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "permanent_type"); encode_CoreType(b, y.permanent_type)
@@ -67078,6 +67760,7 @@ encode_RetainedStickerTimestamp_members :: proc(b: ^strings.Builder, x: Retained
 }
 
 decode_ResolvedFrameTransition :: proc(v: json.Value, out: ^ResolvedFrameTransition) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedFrameTransition")
 	variant: string
 	body: json.Value
@@ -67131,6 +67814,7 @@ decode_ResolvedFrameTransition :: proc(v: json.Value, out: ^ResolvedFrameTransit
 
 encode_ResolvedFrameTransition :: proc(b: ^strings.Builder, x: ResolvedFrameTransition) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolvedFrameTransition_Push: strings.write_byte(b, '{'); json.write_string(b, "Push"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "frame"); encode_ResolutionFrame(b, y.frame)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -67224,6 +67908,7 @@ encode_FrameKind :: proc(b: ^strings.Builder, x: FrameKind) {
 }
 
 decode_ResolvedTriggerCollection :: proc(v: json.Value, out: ^ResolvedTriggerCollection) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedTriggerCollection")
 	variant: string
 	body: json.Value
@@ -67256,6 +67941,7 @@ decode_ResolvedTriggerCollection :: proc(v: json.Value, out: ^ResolvedTriggerCol
 
 encode_ResolvedTriggerCollection :: proc(b: ^strings.Builder, x: ResolvedTriggerCollection) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case ResolvedTriggerCollection_DeferPending: strings.write_byte(b, '{'); json.write_string(b, "DeferPending"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "contexts"); enc_dyn_PendingTriggerContext(b, y.contexts)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -67478,6 +68164,7 @@ encode_LogVisibility :: proc(b: ^strings.Builder, x: LogVisibility) {
 }
 
 decode_SimultaneousUnlessAnswer :: proc(v: json.Value, out: ^SimultaneousUnlessAnswer) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SimultaneousUnlessAnswer")
 	if v.kind != .Object do return fail("SimultaneousUnlessAnswer: not an object")
 	tv, found := json.get(v, "type")
@@ -67499,6 +68186,7 @@ decode_SimultaneousUnlessAnswer :: proc(v: json.Value, out: ^SimultaneousUnlessA
 
 encode_SimultaneousUnlessAnswer :: proc(b: ^strings.Builder, x: SimultaneousUnlessAnswer) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case SimultaneousUnlessAnswer_Declined: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Declined"); strings.write_byte(b, '}')
 	case SimultaneousUnlessAnswer_Sacrifice: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Sacrifice")
 	member(b, first, "permanent"); encode_ObjectIncarnationRef(b, y.permanent)
@@ -67542,6 +68230,7 @@ encode_ExiledStopInput_members :: proc(b: ^strings.Builder, x: ExiledStopInput, 
 }
 
 decode_RepeatIterationChoice :: proc(v: json.Value, out: ^RepeatIterationChoice) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RepeatIterationChoice")
 	variant: string
 	body: json.Value
@@ -67562,6 +68251,7 @@ decode_RepeatIterationChoice :: proc(v: json.Value, out: ^RepeatIterationChoice)
 
 encode_RepeatIterationChoice :: proc(b: ^strings.Builder, x: RepeatIterationChoice) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case RepeatIterationChoice_MandatoryOnly: strings.write_byte(b, '{'); json.write_string(b, "MandatoryOnly"); strings.write_byte(b, ':'); encode_RepeatIterationMovement(b, y._0); strings.write_byte(b, '}')
 	case RepeatIterationChoice_OptionalOffered: _ = y; json.write_string(b, "OptionalOffered")
 	}
@@ -67650,6 +68340,7 @@ encode_PausedZoneChangeDeliveryCount :: proc(b: ^strings.Builder, x: PausedZoneC
 }
 
 decode_PendingBatchZoneChangeCause :: proc(v: json.Value, out: ^PendingBatchZoneChangeCause) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingBatchZoneChangeCause")
 	if v.kind != .Object do return fail("PendingBatchZoneChangeCause: not an object")
 	tv, found := json.get(v, "type")
@@ -67697,6 +68388,7 @@ decode_PendingBatchZoneChangeCause :: proc(v: json.Value, out: ^PendingBatchZone
 
 encode_PendingBatchZoneChangeCause :: proc(b: ^strings.Builder, x: PendingBatchZoneChangeCause) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingBatchZoneChangeCause_Effect: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "effect")
 	member(b, first, "source"); encode_ObjectId(b, y.source)
 	}; strings.write_byte(b, '}')
@@ -67830,6 +68522,7 @@ encode_PendingEffectResolutionEvent :: proc(b: ^strings.Builder, x: PendingEffec
 }
 
 decode_PendingCounterPostAction :: proc(v: json.Value, out: ^PendingCounterPostAction) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingCounterPostAction")
 	variant: string
 	body: json.Value
@@ -68103,6 +68796,7 @@ decode_PendingCounterPostAction :: proc(v: json.Value, out: ^PendingCounterPostA
 
 encode_PendingCounterPostAction :: proc(b: ^strings.Builder, x: PendingCounterPostAction) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case PendingCounterPostAction_EmitEffectResolved: strings.write_byte(b, '{'); json.write_string(b, "EmitEffectResolved"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "kind"); encode_EffectKind(b, y.kind)
 	member(b, first, "source_id"); encode_ObjectId(b, y.source_id)
@@ -68368,6 +69062,7 @@ encode_StagedBatchMemberState :: proc(b: ^strings.Builder, x: StagedBatchMemberS
 }
 
 decode_StagedMemberOutcome :: proc(v: json.Value, out: ^StagedMemberOutcome) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StagedMemberOutcome")
 	variant: string
 	body: json.Value
@@ -68388,12 +69083,14 @@ decode_StagedMemberOutcome :: proc(v: json.Value, out: ^StagedMemberOutcome) -> 
 
 encode_StagedMemberOutcome :: proc(b: ^strings.Builder, x: StagedMemberOutcome) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case StagedMemberOutcome_Approved: strings.write_byte(b, '{'); json.write_string(b, "Approved"); strings.write_byte(b, ':'); encode_ProposedEvent(b, y._0); strings.write_byte(b, '}')
 	case StagedMemberOutcome_Prevented: _ = y; json.write_string(b, "Prevented")
 	}
 }
 
 decode_StagedMemberOperation :: proc(v: json.Value, out: ^StagedMemberOperation) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StagedMemberOperation")
 	variant: string
 	body: json.Value
@@ -68414,6 +69111,7 @@ decode_StagedMemberOperation :: proc(v: json.Value, out: ^StagedMemberOperation)
 
 encode_StagedMemberOperation :: proc(b: ^strings.Builder, x: StagedMemberOperation) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case StagedMemberOperation_ZoneMove: _ = y; json.write_string(b, "ZoneMove")
 	case StagedMemberOperation_Destroy: strings.write_byte(b, '{'); json.write_string(b, "Destroy"); strings.write_byte(b, ':'); encode_StagedDestroyOperation(b, y._0); strings.write_byte(b, '}')
 	}
@@ -68542,6 +69240,7 @@ encode_TokenEntryEventEmission :: proc(b: ^strings.Builder, x: TokenEntryEventEm
 }
 
 decode_CopyEntryResumeStage :: proc(v: json.Value, out: ^CopyEntryResumeStage) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CopyEntryResumeStage")
 	variant: string
 	body: json.Value
@@ -68564,6 +69263,7 @@ decode_CopyEntryResumeStage :: proc(v: json.Value, out: ^CopyEntryResumeStage) -
 
 encode_CopyEntryResumeStage :: proc(b: ^strings.Builder, x: CopyEntryResumeStage) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case CopyEntryResumeStage_ChoiceOwedAfterCounters: _ = y; json.write_string(b, "ChoiceOwedAfterCounters")
 	case CopyEntryResumeStage_ChoiceSettled: _ = y; json.write_string(b, "ChoiceSettled")
 	case CopyEntryResumeStage_BeforeCounters: strings.write_byte(b, '{'); json.write_string(b, "BeforeCounters"); strings.write_byte(b, ':'); enc_ptr_CopyEntryPendingCounters(b, y._0); strings.write_byte(b, '}')
@@ -68601,6 +69301,7 @@ encode_DrawSequenceFrameId :: proc(b: ^strings.Builder, x: DrawSequenceFrameId) 
 }
 
 decode_DrawSequenceOrigin :: proc(v: json.Value, out: ^DrawSequenceOrigin) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DrawSequenceOrigin")
 	variant: string
 	body: json.Value
@@ -68635,6 +69336,7 @@ decode_DrawSequenceOrigin :: proc(v: json.Value, out: ^DrawSequenceOrigin) -> bo
 
 encode_DrawSequenceOrigin :: proc(b: ^strings.Builder, x: DrawSequenceOrigin) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DrawSequenceOrigin_Plain: _ = y; json.write_string(b, "Plain")
 	case DrawSequenceOrigin_ConniveTail: strings.write_byte(b, '{'); json.write_string(b, "ConniveTail"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "conniver"); enc_ptr_ConniveSubject(b, y.conniver)
@@ -68695,6 +69397,7 @@ encode_DrawDealer_members :: proc(b: ^strings.Builder, x: DrawDealer, first: ^bo
 }
 
 decode_DrawDealerStage :: proc(v: json.Value, out: ^DrawDealerStage) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DrawDealerStage")
 	variant: string
 	body: json.Value
@@ -68727,6 +69430,7 @@ decode_DrawDealerStage :: proc(v: json.Value, out: ^DrawDealerStage) -> bool {
 
 encode_DrawDealerStage :: proc(b: ^strings.Builder, x: DrawDealerStage) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case DrawDealerStage_Settling: strings.write_byte(b, '{'); json.write_string(b, "Settling"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
 	member(b, first, "next"); encode_int(b, y.next)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
@@ -68823,6 +69527,7 @@ encode_StagedDestroyOuterApproval :: proc(b: ^strings.Builder, x: StagedDestroyO
 }
 
 decode_HeldDecisionPrompt :: proc(v: json.Value, out: ^HeldDecisionPrompt) -> bool {
+	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("HeldDecisionPrompt")
 	variant: string
 	body: json.Value
@@ -68843,6 +69548,7 @@ decode_HeldDecisionPrompt :: proc(v: json.Value, out: ^HeldDecisionPrompt) -> bo
 
 encode_HeldDecisionPrompt :: proc(b: ^strings.Builder, x: HeldDecisionPrompt) {
 	#partial switch y in x {
+	case nil: strings.write_string(b, "null")
 	case HeldDecisionPrompt_Replacement: _ = y; json.write_string(b, "Replacement")
 	case HeldDecisionPrompt_Raised: strings.write_byte(b, '{'); json.write_string(b, "Raised"); strings.write_byte(b, ':'); enc_ptr_WaitingFor(b, y._0); strings.write_byte(b, '}')
 	}
