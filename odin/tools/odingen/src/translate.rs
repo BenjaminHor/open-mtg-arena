@@ -43,6 +43,31 @@ pub fn proc_name(owner: Option<&str>, name: &str) -> String {
 
 /// The procedure name for an engine function: methods `Owner_method`; free functions `<file>_<name>` (free
 /// functions repeat names across modules, and some match Odin builtins such as `append`).
+thread_local! {
+    /// The file of the function being translated (free calls resolve against it).
+    pub static CURRENT_FILE: std::cell::RefCell<Option<std::path::PathBuf>> = const { std::cell::RefCell::new(None) };
+    /// Procedure names more than one engine function would get: never translated or called.
+    pub static COLLIDING: std::cell::RefCell<std::collections::BTreeSet<String>> = const { std::cell::RefCell::new(std::collections::BTreeSet::new()) };
+}
+
+/// A file's module name: its stem, or its directory's name for `mod.rs`.
+pub fn file_module(p: &std::path::Path) -> &str {
+    let stem = p.file_stem().and_then(|s| s.to_str()).unwrap_or("");
+    if stem == "mod" {
+        p.parent().and_then(|d| d.file_name()).and_then(|s| s.to_str()).unwrap_or(stem)
+    } else {
+        stem
+    }
+}
+
+/// The module `super` names from a file: the parent of its module.
+fn parent_module(p: &std::path::Path) -> Option<&str> {
+    let dir = p.parent()?;
+    let dir = if p.file_stem().and_then(|s| s.to_str()) == Some("mod") { dir.parent()? } else { dir };
+    let name = dir.file_name()?.to_str()?;
+    Some(if name == "src" { "lib" } else { name })
+}
+
 pub fn proc_name_for(owner: Option<&str>, name: &str, f: &FnDef) -> String {
     match owner {
         Some(o) => format!("{o}_{name}"),
@@ -93,6 +118,44 @@ pub fn odin_string(v: &str) -> String {
 
 impl<'a, 'b> Tx<'a, 'b> {
     /// The owner a path names: `Self::x` is the impl type, `T::x` is T, a bare `x` has none.
+    /// The engine function a call names. Free functions are found by their module path (`topology::is_opponent`
+    /// is the one in topology.rs), or, unqualified, in the caller's file, or as the only one of that name; anything
+    /// else is ambiguous and refused. Looking them up by bare name once made `players::is_opponent`, which delegates
+    /// to `topology::is_opponent`, call itself. Procedure names two functions share are refused too.
+    pub fn resolve_fn(&self, owner: Option<&str>, segs: &[String], last: &str) -> Option<FnDef> {
+        let defs = self.e.reg.fns.get(&(owner.map(str::to_string), last.to_string()))?;
+        let f = if owner.is_some() {
+            if defs.len() != 1 {
+                return None;
+            }
+            defs[0].clone()
+        } else {
+            let here = CURRENT_FILE.with(|c| c.borrow().clone());
+            let module = if segs.len() >= 2 { Some(segs[segs.len() - 2].as_str()) } else { None };
+            let cands: Vec<&FnDef> = match module {
+                None | Some("self") => {
+                    let same: Vec<&FnDef> = defs.iter().filter(|d| Some(&d.file) == here.as_ref()).collect();
+                    if same.is_empty() && module.is_none() && defs.len() == 1 { defs.iter().collect() } else { same }
+                }
+                Some("super") => {
+                    let parent = here.as_deref().and_then(parent_module);
+                    defs.iter().filter(|d| Some(file_module(&d.file)) == parent).collect()
+                }
+                Some("crate") => defs.iter().filter(|d| file_module(&d.file) == "lib").collect(),
+                Some(m) => defs.iter().filter(|d| file_module(&d.file) == m).collect(),
+            };
+            if cands.len() != 1 {
+                return None;
+            }
+            cands[0].clone()
+        };
+        let pname = proc_name_for(owner, last, &f);
+        if COLLIDING.with(|c| c.borrow().contains(&pname)) {
+            return None;
+        }
+        Some(f)
+    }
+
     fn owner_of(&self, segs: &[String]) -> Option<String> {
         if segs.len() >= 2 {
             let o = &segs[segs.len() - 2];
@@ -356,7 +419,9 @@ impl<'a, 'b> Tx<'a, 'b> {
                             let v = self.expr(args[0], t)?;
                             format!("{ty}{{ok = {v}}}")
                         } else {
+                            // `err` is a Maybe: an untyped `{}`/`nil` there would read as "no error".
                             let v = self.expr(args[0], er)?;
+                            let v = self.typed_value(&v, er);
                             format!("{ty}{{err = {v}}}")
                         });
                     }
@@ -366,7 +431,14 @@ impl<'a, 'b> Tx<'a, 'b> {
                             Shape::OptPtr(i, sh) => Shape::Ptr(i.clone(), *sh),
                             s => s.clone(),
                         };
-                        return self.expr(args[0], &inner);
+                        let v = self.expr(args[0], &inner)?;
+                        // `Some(Vec::new())` is `{}` and `Some(None)` is `nil`: untyped, they'd take the Maybe's own
+                        // type and become None. Typed, they're a present value.
+                        return Ok(if matches!(want, Shape::Option(_)) {
+                            format!("{}({})", self.e.odin(want), self.typed_value(&v, &inner))
+                        } else {
+                            v
+                        });
                     }
                     (_, "new") if segs.len() == 2 && matches!(segs[0].as_str(), "Box" | "Arc" | "Rc") => {
                         let inner = match want {
@@ -436,7 +508,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
                 let owner = self.owner_of(&segs);
                 if self.calls {
-                    if let Some(f) = self.e.reg.fns.get(&(owner.clone(), last.clone())).and_then(|v| v.first()).cloned() {
+                    if let Some(f) = self.resolve_fn(owner.as_deref(), &segs, &last) {
                         return self.call_with_sig(&proc_name_for(owner.as_deref(), &last, &f), &f, None, &args);
                     }
                     return Err(format!("call {}", segs.join("::")));
@@ -608,7 +680,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                         let args: Vec<&Expr> = mc.args.iter().collect();
                         if self.calls {
                             if let Some(o) = owner.as_ref() {
-                                if let Some(f) = self.e.reg.fns.get(&(Some(o.clone()), m.to_string())).and_then(|v| v.first()).cloned() {
+                                if let Some(f) = self.resolve_fn(Some(o), &[], m) {
                                     return self.call_with_sig(&proc_name_for(Some(o), m, &f), &f, Some(recv), &args);
                                 }
                             }
@@ -711,7 +783,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                     _ => {}
                 }
                 let Shape::Named(o, _) = recv else { return None };
-                let f = self.e.reg.fns.get(&(Some(o.clone()), mc.method.to_string())).and_then(|v| v.first()).cloned()?;
+                let f = self.resolve_fn(Some(&o), &[], &mc.method.to_string())?;
                 self.return_shape(&f, Some(&o))
             }
             Expr::Call(c) if self.calls => {
@@ -735,7 +807,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                     return Some(Shape::Named(last, vec![]));
                 }
                 let owner = self.owner_of(&segs);
-                let f = self.e.reg.fns.get(&(owner.clone(), last)).and_then(|v| v.first()).cloned()?;
+                let f = self.resolve_fn(owner.as_deref(), &segs, &last)?;
                 self.return_shape(&f, owner.as_deref())
             }
             Expr::Lit(l) => match &l.lit {
@@ -802,6 +874,17 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
             }
             _ => None,
+        }
+    }
+
+    /// An Odin value given its type when it is an untyped literal (`{..}` or `nil`).
+    fn typed_value(&self, v: &str, shape: &Shape) -> String {
+        if v.starts_with('{') {
+            format!("{}{v}", self.e.odin(shape))
+        } else if v == "nil" {
+            format!("({})(nil)", self.e.odin(shape))
+        } else {
+            v.to_string()
         }
     }
 

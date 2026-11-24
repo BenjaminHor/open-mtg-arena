@@ -83,8 +83,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     check rejects until it checks cleanly). Engine-wide 4,087 of 15,923 functions translate (25.7%) and, with typed
     stubs for the rest, the whole engine type-checks in Odin. **Type-checking is not correctness**: two silent
     mistranslations were found after the code checked cleanly (Known issues, 2026-11-24, both now fixed or refused),
-    so the next step is the vector check (Rust results vs Odin, over functions the recorded games execute) before
-    more breadth, then a general pattern compiler that binds `&mut` scrutinees as pointers. Translator now: value
+    so every translated procedure is now checked against Rust by **the vector check** (`odin/tools/vector-check.sh`;
+    docs/odin-port.md, "Verifying translated code"): calls logged from a patched scratch engine during a recorded game,
+    replayed against the translation. First run, red-vs-green seed 1, 400 steps: 605 translated procedures executed,
+    **344 pass, 1 fails, 260 only reach untranslated code**. The failure is explained: it reads a `#[serde(skip)]`
+    runtime field the log can't carry. Next: a general pattern compiler that binds `&mut` scrutinees as pointers,
+    with blockers ranked over executed functions. Translator now: value
     `if`/`match`/block initializers (each branch assigns), empty collections typed by their later use, Option/Result
     combinators, labelled loops. Next blockers: generic calls/functions (~1,280), nested items (527), patterns (let
     457, let-else 423, for 236, or-with-bindings 221, if-let 173, nested 147), match on non-enums (432), mutable
@@ -2656,7 +2660,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `as_mut`/`get_mut`/`*_mut`, `ref mut`, `match self` in a `&mut self` method) became copies, losing writes;
   now refused (320 functions, plus 183 that return `&mut`) until the pattern compiler binds pointers. Hoisted
   statements under `&&`/`||` (which would run unconditionally) are refused too. Lesson: a clean type check proves
-  little; the vector check comes next.
+  little. The vector check then found two more, both fixed: (3) free functions were looked up by bare name, so
+  `players::is_opponent`, which delegates to `topology::is_opponent`, called itself (now resolved by module path or
+  the caller's file, ambiguous calls and shared procedure names refused); (4) `Some(Vec::new())`, `Some(None)` and
+  `Err(Default::default())` became untyped `{}`/`nil`, which Odin reads as None/no error (now typed explicitly).
 - (2026-11-24, found by the Odin port) A game state whose WaitingFor holds a target slot with
   `TargetEffectDetail::Modification(..)` can't round-trip through `serde_json::Value`: serde writes `"type"` twice
   (`{"type":"Modification","type":"Increase"}`, an internally tagged enum inside another with the same tag) and a
