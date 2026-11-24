@@ -323,16 +323,14 @@ export function HomeDashboard() {
   const cardStatus = useCardDataStore((s) => s.status);
   const cardsPending = cardStatus !== "ready" && cardStatus !== "error";
 
-  // Left-aligned wordmark masthead at the grid's left edge. The wordmark carries
-  // the name without re-stating the sigil the rail already owns, so the brand
-  // reads once (rail = sigil, masthead = wordmark) with no repeated shape.
+  // Left-aligned name masthead at the grid's left edge. It carries the name
+  // without re-stating the mark the rail already owns, so the brand reads once
+  // (rail = mark, masthead = name) with no repeated shape.
   const masthead = (
     <div className="flex w-full flex-col items-start">
-      <img
-        src={publicUrl("wordmark.webp")}
-        alt="Open MTG Arena"
-        className="h-10 w-auto drop-shadow-[0_0_16px_rgba(251,146,60,0.25)]"
-      />
+      <h1 className="text-4xl font-semibold tracking-tight text-white drop-shadow-[0_0_16px_rgba(251,146,60,0.25)]">
+        Open MTG Arena
+      </h1>
       <p className="mt-3 max-w-xl text-[1.02rem] leading-relaxed text-fg-muted">
         {t("home.dashboard.tagline")}
       </p>
