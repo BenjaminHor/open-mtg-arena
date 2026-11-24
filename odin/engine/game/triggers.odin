@@ -52,6 +52,7 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	// "you" as the one acting is read only by spell-cast triggers ("whenever you cast").
 	_, is_cast := t.mode.(types.TriggerMode_SpellCast)
 	_, is_damage := t.mode.(types.TriggerMode_DamageDone)
+	if _, batched := t.mode.(types.TriggerMode_DamageDoneOnceByController); batched do is_damage = true
 	if !is_cast && !is_damage && t.valid_target != nil do return false
 	if !is_damage && t.valid_source != nil do return false
 	if len(t.origin_zones) > 0 || len(t.zone_change_clauses) > 0 || t.counter_filter != nil || t.saga_chapter != nil do return false
@@ -79,18 +80,13 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	case types.TriggerMode_YouAttack:
 		// "Whenever you attack": the plain form (CR 508.3d).
 		return t.valid_card == nil && t.attack_target_filter == nil
-	case types.TriggerMode_DamageDone:
-		// "Whenever [this / a creature you control] deals [combat] damage to [a player / an opponent / a creature]".
+	case types.TriggerMode_DamageDone, types.TriggerMode_DamageDoneOnceByController:
+		// "Whenever [this / a creature you control / enchanted creature] deals [combat] damage to [a player / an
+		// opponent / a creature / you]"; "whenever one or more creatures you control deal combat damage to a
+		// player" (once per batch, CR 603.2c).
 		if t.damage_kind == .NoncombatOnly || t.damage_amount != nil do return false
 		src, has_src := t.valid_source.?
-		if !has_src do return false
-		#partial switch x in src {
-		case types.TargetFilter_SelfRef:
-		case types.TargetFilter_Typed:
-			if !typed_supported(x._0) do return false
-		case:
-			return false
-		}
+		if !has_src || !damage_source_supported(src) do return false
 		if v, has := t.valid_target.?; has && !damage_recipient_supported(v) do return false
 		return true
 	case types.TriggerMode_SpellCast:
@@ -102,10 +98,43 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	return false
 }
 
+damage_source_supported :: proc(f: types.TargetFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_SelfRef, types.TargetFilter_AttachedTo:
+		return true
+	case types.TargetFilter_Typed:
+		return typed_supported(x._0)
+	case types.TargetFilter_Or:
+		for y in x.filters do if !damage_source_supported(y) do return false
+		return len(x.filters) > 0
+	}
+	return false
+}
+
+// Whether the object that dealt damage is what the trigger watches: itself, a kind of permanent, or the permanent
+// its watcher is attached to ("enchanted creature", "equipped creature").
+damage_source_matches :: proc(s: ^types.GameState, f: types.TargetFilter, dealer: ^types.GameObject, watcher: ^types.GameObject) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_SelfRef:
+		return dealer.id == watcher.id
+	case types.TargetFilter_AttachedTo:
+		host := host_of(s, watcher)
+		return host != nil && host.id == dealer.id
+	case types.TargetFilter_Typed:
+		return object_matches(s, dealer, x._0, watcher.controller, watcher.id)
+	case types.TargetFilter_Or:
+		for y in x.filters do if damage_source_matches(s, y, dealer, watcher) do return true
+	}
+	return false
+}
+
 damage_recipient_supported :: proc(f: types.TargetFilter) -> bool {
 	#partial switch x in f {
-	case types.TargetFilter_Player, types.TargetFilter_Opponent:
+	case types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_Controller:
 		return true
+	case types.TargetFilter_Or:
+		for y in x.filters do if !damage_recipient_supported(y) do return false
+		return len(x.filters) > 0
 	case types.TargetFilter_Typed:
 		// No types and an opponent controller: "an opponent".
 		if len(x._0.type_filters) == 0 && len(x._0.properties) == 0 {
@@ -124,12 +153,20 @@ damage_recipient_matches :: proc(s: ^types.GameState, f: types.TargetFilter, rec
 		#partial switch x in f {
 		case types.TargetFilter_Player:
 			return true
+		case types.TargetFilter_Controller:
+			return r._0 == watcher.controller // "deals damage to you"
+		case types.TargetFilter_Or:
+			for y in x.filters do if damage_recipient_matches(s, y, recipient, watcher) do return true
 		case types.TargetFilter_Opponent:
 			return r._0 != watcher.controller
 		case types.TargetFilter_Typed:
 			return len(x._0.type_filters) == 0 && r._0 != watcher.controller
 		}
 	case types.TargetRef_Object:
+		if either, is_or := f.(types.TargetFilter_Or); is_or {
+			for y in either.filters do if damage_recipient_matches(s, y, recipient, watcher) do return true
+			return false
+		}
 		if x, typed := f.(types.TargetFilter_Typed); typed && len(x._0.type_filters) > 0 {
 			return object_matches(s, object(s, r._0), x._0, watcher.controller, watcher.id)
 		}
@@ -195,6 +232,7 @@ has_zone :: proc(zones: []types.Zone, z: types.Zone) -> bool {
 // change; the abilities wait in the pending list until a player would receive priority.
 collect_triggers :: proc(g: ^Game) {
 	s := &g.state
+	fired := make([dynamic]^types.TriggerDefinition, context.temp_allocator) // batched triggers already triggered
 	for e in g.events {
 		switch e.kind {
 		case .Zone_Change:
@@ -252,16 +290,18 @@ collect_triggers :: proc(g: ^Game) {
 			for w in watchers {
 				for &entry in trigger_definitions(w) {
 					t := &entry.definition
-					if _, dmg := t.mode.(types.TriggerMode_DamageDone); !dmg || !trigger_supported(t^) do continue
+					_, dmg := t.mode.(types.TriggerMode_DamageDone)
+					_, batched := t.mode.(types.TriggerMode_DamageDoneOnceByController)
+					if (!dmg && !batched) || !trigger_supported(t^) do continue
 					if t.damage_kind == .CombatOnly && !e.combat do continue
 					src, _ := t.valid_source.?
-					#partial switch x in src {
-					case types.TargetFilter_SelfRef:
-						if w.id != source.id do continue
-					case types.TargetFilter_Typed:
-						if !object_matches(s, source, x._0, w.controller, w.id) do continue
-					}
+					if !damage_source_matches(s, src, source, w) do continue
 					if v, has := t.valid_target.?; has && !damage_recipient_matches(s, v, e.target, w) do continue
+					// "One or more ... deal combat damage": once for the batch (CR 603.2c).
+					if batched {
+						if slice.contains(fired[:], t) do continue
+						append(&fired, t)
+					}
 					add_trigger(g, w.id, w.controller, t)
 				}
 			}

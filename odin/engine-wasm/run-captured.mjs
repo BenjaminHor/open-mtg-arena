@@ -8,7 +8,7 @@
 // difference>\t<card names, separated by |>"), and a rerun with the same file skips the tests already in it, so a
 // long run can be resumed; --only <file> runs just the files listed there. Run on Rust, the passing tests are the
 // usable fixtures; the card names map tests to cards, to count a card as validated when its tests pass.
-// --max-mb N (default 20) leaves out recordings larger than N megabytes compressed.
+// --max-mb N (default 20) leaves out recordings larger than N megabytes compressed; --max-tests N stops after N.
 // Usage: node odin/engine-wasm/run-captured.mjs <rust|odin> <capture dir> [--verbose] [--results f] [--only f] [--max-mb N]
 import { appendFileSync, existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
@@ -55,8 +55,12 @@ const record = (file, status, why, names) =>
 const read = (f) => (f.endsWith(".gz") ? gunzipSync(readFileSync(f)).toString("utf8") : readFileSync(f, "utf8"));
 let passed = 0, steps = 0, stepsPassed = 0, unreadable = 0, done = 0, tooLarge = 0;
 const maxBytes = Number(option("--max-mb") ?? 20) * 1024 * 1024;
+// --max-tests N: stop after N tests (with --results, a loop can then resume in a fresh process, since memory grows
+// as an engine restores state after state).
+const maxTests = Number(option("--max-tests") ?? Infinity);
 const failures = new Map(); // first difference path -> count
 for (const file of files) {
+  if (done >= maxTests) break;
   if (++done % 500 === 0) console.error(`${done}/${files.length}`);
   let prev = null, ok = true, firstFail = null;
   // A few loop tests recorded hundreds of megabytes; replaying one exhausts memory. They're left out and counted.

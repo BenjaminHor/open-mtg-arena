@@ -1442,3 +1442,30 @@ condition_instead :: proc(t: ^testing.T) {
 	testing.expect(t, run(t, "Hill Giant") == 2, "a creature: 2")
 	testing.expect(t, run(t, "Darksteel Colossus") == 4, "an artifact creature: 4 instead")
 }
+
+@(test)
+enchanted_creature_deals_damage :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 603.2: Curiosity: "Whenever enchanted creature deals damage to an opponent, you may draw a card."
+	g := new_game()
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	curiosity := add(t, g, "Curiosity", 0, .Battlefield)
+	game.attach(&g.state, curiosity, bears)
+	pl := game.player(&g.state, 0)
+	library := types.pvec_len(pl.library)
+	game.begin_step(g, .DeclareAttackers)
+	attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{bears.id, types.AttackTarget_Player{1}}}
+	testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
+	for i := 0; i < 20 && g.state.phase != .PostCombatMain; i += 1 {
+		#partial switch w in g.state.waiting_for {
+		case types.WaitingFor_OptionalEffectChoice:
+			game.apply(g, w.player, types.GameAction_DecideOptionalEffect{accept = true})
+		case types.WaitingFor_DeclareBlockers:
+			game.apply(g, w.player, types.GameAction_DeclareBlockers{})
+		case:
+			game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+		}
+	}
+	testing.expect(t, game.player(&g.state, 1).life == 18, "2 combat damage")
+	testing.expect(t, types.pvec_len(pl.library) == library - 1, "Curiosity drew a card")
+}
