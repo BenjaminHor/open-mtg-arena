@@ -1565,6 +1565,8 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
     };
     let mut ex_reasons: BTreeMap<String, usize> = BTreeMap::new();
     let (mut ex_total, mut ex_ok) = (0usize, 0usize);
+    // Executed generic or closure-taking functions, refused alone (they exist only as per-call-site instances).
+    let mut ex_generic: Vec<String> = Vec::new();
     for ((owner, name), d) in &fns {
         let ex = is_executed(d);
         ex_total += ex as usize;
@@ -1584,6 +1586,9 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
                 }
                 if ex {
                     *ex_reasons.entry(r.clone()).or_default() += 1;
+                    if r.starts_with("generic function") {
+                        ex_generic.push(proc_name_for(owner.as_deref(), name, d));
+                    }
                 }
                 // ODINGEN_WHY=<text>: name the functions refused for a reason containing it (debugging the translator).
                 if let Ok(w) = std::env::var("ODINGEN_WHY") {
@@ -1609,6 +1614,17 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
     }
     if executed.is_some() {
         println!("executed functions {ex_total}: translated {ex_ok} ({:.1}%)", 100.0 * ex_ok as f64 / ex_total.max(1) as f64);
+        // Those with at least one instance made (and not rejected by the Odin type check): translated where the
+        // translated callers use them, though other call sites may still lack instances.
+        let instanced: std::collections::BTreeSet<String> = crate::closures::INSTANCES.with(|i| {
+            i.borrow().1.iter().filter(|(n, _)| !DENY.with(|d| d.contains(n))).filter_map(|(n, _)| n.split("__cl").next().map(|b| b.split("__g").next().unwrap_or(b).to_string())).collect()
+        });
+        let via = ex_generic.iter().filter(|g| instanced.contains(*g)).count();
+        println!(
+            "  plus {via} of {} executed generic/closure-taking functions translated as instances ({:.1}% counting them)",
+            ex_generic.len(),
+            100.0 * (ex_ok + via) as f64 / ex_total.max(1) as f64
+        );
         let mut rs: Vec<_> = ex_reasons.into_iter().collect();
         rs.sort_by(|a, b| b.1.cmp(&a.1));
         for (r, n) in rs.iter().take(top) {

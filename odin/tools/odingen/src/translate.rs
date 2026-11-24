@@ -2312,7 +2312,11 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let cond = self.closure_in(&mut body, &c, &cur, &cur_shape, &Shape::Bool)?;
                 (format!("{res}: Maybe(int); p{n}_ := 0"), format!("if {cond} {{ {res} = p{n}_; break {outer} }}; p{n}_ += 1"), res.clone())
             }
-            "count" if args.is_empty() => (format!("{res} := 0"), format!("{res} += 1"), res.clone()),
+            // Typed by the destination where it is a number (`as u32` or a u32 result), else Rust's usize.
+            "count" if args.is_empty() => match want {
+                Shape::Int(_) => (format!("{res}: {} = 0", self.e.odin(want)), format!("{res} += 1"), res.clone()),
+                _ => (format!("{res} := 0"), format!("{res} += 1"), res.clone()),
+            },
             "sum" if args.is_empty() => {
                 let ty = self.e.odin(&cur_shape);
                 (format!("{res}: {ty}"), format!("{res} += {cur}"), res.clone())
