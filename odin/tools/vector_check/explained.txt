@@ -1,0 +1,2 @@
+# Failures of the vector check that are understood and not translation bugs: "<procedure>: <why>".
+GameState_live_active_rules_execution_node: reads active_rules_execution_node, a #[serde(skip)] runtime field the log can't carry, so Odin sees its default
