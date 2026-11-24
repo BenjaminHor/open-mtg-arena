@@ -314,8 +314,11 @@ export function useAiDeckCatalog({
         setLibraryRevision((revision) => revision + 1);
       }, LIBRARY_RESCAN_DEBOUNCE_MS);
     };
-    const onStorage = (event: StorageEvent) => {
-      if (isInventoryStorageKey(event.key)) scheduleRescan();
+    const onStorage = (event: Event) => {
+      // Same-tab code also dispatches a plain `Event("storage")` (activeGameChange.ts),
+      // which has no key and says nothing about decks; same-tab deck changes arrive
+      // as DECKS_CHANGED_EVENT. Only a real cross-tab StorageEvent names a key.
+      if (event instanceof StorageEvent && isInventoryStorageKey(event.key)) scheduleRescan();
     };
     window.addEventListener(DECKS_CHANGED_EVENT, scheduleRescan);
     window.addEventListener("storage", onStorage);

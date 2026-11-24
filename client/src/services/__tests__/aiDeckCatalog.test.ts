@@ -540,6 +540,29 @@ describe("useAiDeckCatalog", () => {
       unmount();
     }
   });
+
+  it("ignores a same-tab storage notification that carries no key", async () => {
+    // Starting a game dispatches a plain `new Event("storage")` (activeGameChange.ts)
+    // so Home's resume list revalidates. It has no `key`, and the catalog's listener
+    // used to call `key.startsWith` on undefined and throw.
+    const thrown: unknown[] = [];
+    const onError = (event: ErrorEvent) => {
+      thrown.push(event.error);
+      event.preventDefault();
+    };
+    window.addEventListener("error", onError);
+    const { result, unmount } = renderHook(() =>
+      useAiDeckCatalog({ selectedFormat: "Standard", selectedMatchType: "Bo1" }),
+    );
+    try {
+      await waitFor(() => expect(result.current.loading).toBe(false));
+      window.dispatchEvent(new Event("storage"));
+      expect(thrown).toEqual([]);
+    } finally {
+      unmount();
+      window.removeEventListener("error", onError);
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------

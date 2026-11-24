@@ -428,7 +428,18 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     - Found then: the AI has no decks in 60-card formats. In Standard, Modern and the rest it drew from the scraped
       metagame feeds the strip removed; the five starter decks are labelled "standard" but aren't Standard-legal
       (Lightning Bolt, Jackal Pup...), so the legality check drops them. Commander still has 200 AI decks (MTGJSON
-      precons). To fix before the owner plays.
+      precons). Fixed (f47a0fd, the owner asked for the feeds back): the import's MTGGoldfish and TopDeck.gg snapshots
+      are bundled again (client/public/feeds/, never refreshed, credited in NOTICE). AI decks now: Standard 9,
+      Modern 10, Commander 223. A Standard match (Mono-Green Landfall, picked from the Standard Meta feed) played
+      several turns under /open-mtg-arena/ with no failed request.
+    - Found in that match (2026-11-24): every card was a text-only frame, no art. The image index files
+      (scryfall-data.json, scryfall-printings.json, scryfall-token-images.json, scryfall-sets.json) come from four
+      `scripts/gen-scryfall-*.sh` that their setup.sh runs after the card data; I hadn't run them and pages.yml
+      didn't either. Both fixed: they ran here in about a minute, and pages.yml now runs them. (The per-language art
+      maps, gen-scryfall-locale-images.sh, aren't generated: a missing one falls back to English art.)
+    - Also found: starting a game threw "reading 'startsWith'" (from the import, not the strip): activeGameChange.ts
+      dispatches a plain `Event("storage")` with no key, and the AI deck catalog's listener assumed a StorageEvent.
+      Fixed to ignore non-StorageEvents; test in aiDeckCatalog.test.ts.
     - Subpath: their client assumes the site's root (`BrowserRouter` with no basename; about 90 root-absolute paths
       such as `/audio/...`, `/card-data.json`; the manifest's `start_url` "/"). For GitHub Pages at /open-mtg-arena/:
       Vite `base`, the router's basename, one helper that prefixes `import.meta.env.BASE_URL` to asset paths, a copy
