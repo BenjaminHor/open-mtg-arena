@@ -2060,6 +2060,13 @@ impl<'a, 'b> Tx<'a, 'b> {
                 self.unbind(saved);
                 return r;
             }
+            // An `if` or `match` body: its branches' values, by the same dry run.
+            e @ (Expr::If(_) | Expr::Match(_)) if self.shape_of(e).is_none() => {
+                let block: syn::Block = syn::parse_quote!({ #e });
+                let r = crate::body::infer_block_shape(self, &block);
+                self.unbind(saved);
+                return r;
+            }
             e => e.clone(),
         };
         let r = self.shape_of(&body);
@@ -2121,6 +2128,14 @@ impl<'a, 'b> Tx<'a, 'b> {
             other => return Err(format!("iterator over a non-Vec: {}", crate::body::shape_kind(other))),
         };
         let pvec = matches!(src_shape, Shape::PVec(_));
+        // What the last stage must give, when the terminal fixes it: a collect's item, a find_map's Option. A map or
+        // filter_map closure whose own result can't be inferred takes it from here.
+        let last_hint: Option<Shape> = match (mc.method.to_string().as_str(), want) {
+            ("collect", Shape::Vec(i)) => Some((**i).clone()),
+            ("find_map", Shape::Option(i)) => Some((**i).clone()),
+            _ => None,
+        };
+        let last_stage = stages.len().saturating_sub(1);
         // Each stage refines the current value (`cur`) or skips the item.
         let mut body: Vec<String> = Vec::new();
         let mut cur = item.clone();
@@ -2136,7 +2151,10 @@ impl<'a, 'b> Tx<'a, 'b> {
                     body.push(format!("if !({cond}) do continue"));
                 }
                 Stage::Map(c) => {
-                    let out_shape = self.closure_shape(c, &cur, &cur_shape).ok_or("map closure of an untyped value")?;
+                    let out_shape = self
+                        .closure_shape(c, &cur, &cur_shape)
+                        .or_else(|| if k == last_stage && mc.method != "find_map" { last_hint.clone() } else { None })
+                        .ok_or("map closure of an untyped value")?;
                     let v = self.closure_in(&mut body, c, &cur, &cur_shape, &out_shape)?;
                     let next = format!("m{n}_{k}_");
                     body.push(format!("{next} := {v}"));
@@ -2144,7 +2162,10 @@ impl<'a, 'b> Tx<'a, 'b> {
                     cur_shape = out_shape;
                 }
                 Stage::FilterMap(c) => {
-                    let out_shape = self.closure_shape(c, &cur, &cur_shape).ok_or("filter_map closure of an untyped value")?;
+                    let out_shape = self
+                        .closure_shape(c, &cur, &cur_shape)
+                        .or_else(|| if k == last_stage && mc.method != "find_map" { last_hint.clone().map(|i| Shape::Option(Box::new(i))) } else { None })
+                        .ok_or("filter_map closure of an untyped value")?;
                     let Shape::Option(inner) = out_shape else { return Err("filter_map closure not returning Option".into()) };
                     let v = self.closure_in(&mut body, c, &cur, &cur_shape, &Shape::Option(inner.clone()))?;
                     let next = format!("m{n}_{k}_");
@@ -2234,7 +2255,10 @@ impl<'a, 'b> Tx<'a, 'b> {
             }
             "find_map" => {
                 let c = Self::closure_of(args.first().ok_or("find_map")?)?;
-                let out_shape = self.closure_shape(&c, &cur, &cur_shape).ok_or("find_map closure of an untyped value")?;
+                let out_shape = self
+                    .closure_shape(&c, &cur, &cur_shape)
+                    .or_else(|| last_hint.clone().map(|i| Shape::Option(Box::new(i))))
+                    .ok_or("find_map closure of an untyped value")?;
                 let v = self.closure_in(&mut body, &c, &cur, &cur_shape, &out_shape)?;
                 let ty = self.e.odin(&out_shape);
                 (format!("{res}: {ty}"), format!("if fm_ := {v}; fm_ != nil {{ {res} = fm_; break {outer} }}"), res.clone())
