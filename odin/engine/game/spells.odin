@@ -66,6 +66,8 @@ keyword_supported :: proc(k: types.Keyword) -> bool {
 	case types.Keyword_Equip:
 		_, ok := k._0.(types.ManaCost_Cost)
 		return ok
+	case types.Keyword_Kicker:
+		return true // carried out through the card's additional cost (kicker_cost), which card_supported checks
 	case types.Keyword_Cycling:
 		// CR 702.29a: the card data spells it out as an activated ability from the hand ("[cost], Discard this
 		// card: Draw a card"), checked like any other.
@@ -866,7 +868,7 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 	}
 	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !cost_modifier_supported(st) do append(&out, static_gap(st))
 	for r in face.replacements do if !replacement_supported(r) do append(&out, name("replacement:", r.event))
-	if face.additional_cost != nil do append(&out, "additional cost")
+	if !additional_cost_supported(face) do append(&out, "additional cost")
 	if !modal_supported(face) do append(&out, "modal")
 	if len(face.casting_options) > 0 do append(&out, "casting option")
 	for a in face.abilities {

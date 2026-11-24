@@ -1402,3 +1402,23 @@ kicker_instead :: proc(t: ^testing.T) {
 	testing.expect(t, run(t, false) == 2, "not kicked: 2")
 	testing.expect(t, run(t, true) == 4, "kicked: 4 instead")
 }
+
+@(test)
+kicked_creature_enters_with_counters :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.33d, 614.12: a kicked creature spell becomes a permanent that was kicked: Goblin Bushwhacker's "When
+	// this enters, if it was kicked, ..." triggers only then.
+	run :: proc(t: ^testing.T, kick: bool) -> int {
+		g := new_game()
+		for _ in 0 ..< 2 do add(t, g, "Mountain", 0, .Battlefield)
+		goblin := add(t, g, "Goblin Bushwhacker", 0, .Hand)
+		testing.expect(t, game.card_supported(&card(t, "Goblin Bushwhacker").face))
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = goblin.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalCost{index = 0 if kick else 1}))
+		game.apply(g, 0, types.GameAction_PassPriority{})
+		game.apply(g, 1, types.GameAction_PassPriority{})
+		return types.pvec_len(g.state.stack)
+	}
+	testing.expect(t, run(t, true) == 1, "kicked: its enters trigger")
+	testing.expect(t, run(t, false) == 0, "not kicked: no trigger")
+}

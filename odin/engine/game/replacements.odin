@@ -28,6 +28,8 @@ replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
 // "Enters tapped unless ...": the conditions lands check as they enter.
 entry_condition_supported :: proc(c: types.ReplacementCondition) -> bool {
 	#partial switch x in c {
+	case types.ReplacementCondition_CastViaKicker:
+		return x.variant == nil && x.kicker_cost == nil // the one kicker cost
 	case types.ReplacementCondition_UnlessControlsSubtype, types.ReplacementCondition_UnlessPlayerLifeAtMost,
 	     types.ReplacementCondition_UnlessMultipleOpponents, types.ReplacementCondition_UnlessYourTurn:
 		return true
@@ -68,6 +70,8 @@ entry_condition_holds :: proc(s: ^types.GameState, o: ^types.GameObject, c: type
 		return len(s.players) <= 2 // a two-player game has one opponent
 	case types.ReplacementCondition_UnlessYourTurn:
 		return s.active_player != o.controller
+	case types.ReplacementCondition_CastViaKicker:
+		return kicked(o) // "if it was kicked, it enters with ..." (CR 702.33d)
 	}
 	return true
 }
