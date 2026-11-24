@@ -2798,7 +2798,11 @@ Progress:
 - Step 1 full capture (2026-11-24): 12,326 tests recorded (3.3 GB, in the session scratchpad, not committed;
   ~100 min). Shards integration, integration_2 and integration_3 completed (one Rust test failed in the first);
   integration_4 failed partway, likely killed in a memory squeeze (the container's processes share ~15 GB).
-  Next: replay on Rust to keep the clean recordings, then on Odin for the pass rate, then the card-to-test map.
+  Rust self-replay done: 11,160 of 12,326 recordings replay cleanly on Rust (the usable fixtures); 1,074 differ on
+  Rust itself (mostly states it can't restore), 37 unreadable, 55 over 5 MB (loop tests, left out; replaying them
+  exhausted memory). The replayer restarts every few hundred tests (memory grows with each restore) and writes
+  each result as it goes. Next: the Odin pass rate over the fixtures, and validated coverage (cards whose tests
+  pass on Odin).
 - Step 3 progress (2026-11-24, night 2): you may / if you do, library search and shuffle, sacrifice effects,
   counterspells, blink and graveyard either-or targets, each player / each opponent instructions, cycling,
   required additional costs, kicker, predefined tokens (Treasure, Food, Clue, Shard, Heartwood; others

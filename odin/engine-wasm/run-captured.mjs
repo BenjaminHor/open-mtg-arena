@@ -24,8 +24,10 @@ const option = (name) => (flags.indexOf(name) >= 0 ? flags[flags.indexOf(name) +
 const resultsFile = option("--results"), onlyFile = option("--only");
 const root = new URL("../../", import.meta.url).pathname;
 const [glueDir, wasmFile] = which === "rust" ? ["wasm", "engine_wasm_bg.wasm"] : ["wasm-odin", "engine_odin.wasm"];
-const engine = await import(`${root}client/src/${glueDir}/engine_wasm.js`);
-engine.initSync({ module: readFileSync(`${root}client/src/${glueDir}/${wasmFile}`) });
+// --engine-dir D: the engine's glue and wasm from D instead of client/src (a frozen copy for a long run).
+const engineDir = option("--engine-dir") ?? `${root}client/src/${glueDir}`;
+const engine = await import(`${engineDir}/engine_wasm.js`);
+engine.initSync({ module: readFileSync(`${engineDir}/${wasmFile}`) });
 // A restored state's cards are looked up in the card database (the Rust engine rehydrates their abilities from it).
 engine.load_card_database(readFileSync(`${root}client/public/card-data.json`, "utf8"));
 
