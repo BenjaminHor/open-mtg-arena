@@ -66,7 +66,8 @@ Facts that shape the plan:
   the engine worker; parse a slice of `card-data.json` (the AST) in Odin; ChaCha20 and rand 0.9's `shuffle` and
   `random_range` reproduced bit for bit against Rust test vectors; measure build time and wasm size. Decision point: if
   Odin's wasm target or JSON handling falls short, we learn it here, cheaply.
-- **O-1 Reference recorder.** The checkpoint format and its normalizer (Rust side); `ai-duel` writes recordings; the
+- **O-1 Data model and recorder.** Generate the Odin types and JSON codecs from the Rust types (above), proven by a
+  byte-equal round trip of `card-data.json` and of saved game states. Then the checkpoint format and its normalizer (Rust side); `ai-duel` writes recordings; the
   integration tests dump theirs; a corpus committed (or generated in CI) with a size budget.
 - **O-2 Harness.** An Odin command-line runner that replays recordings and reports the first divergence; the shadow mode
   in the client worker; CI runs the Odin engine over the corpus and reports the pass count per slice.
@@ -78,6 +79,27 @@ Facts that shape the plan:
   tail. Each slice: its recordings pass, the Odin-ready card share goes up, status.md records it.
 - **Later:** the AI (port or new), the per-game switch to Odin, drafting, then removing the Rust engine. Porting the
   parser is a separate, optional decision at the end.
+
+## O-0 spike results (2026-11-24): go
+
+Everything in `odin/spike/`, Odin `dev-2026-11a` built from source (the release downloads are blocked in this container;
+`git clone` of the tag plus `apt-get install llvm-18-dev`, then `./build_odin.sh release`, 76 s).
+
+| Question | Result |
+| --- | --- |
+| Toolchain | Builds here from the pinned tag in 76 s (LLVM 18). CI can do the same or cache the binary. |
+| RNG bit for bit | **Identical.** `odin/spike/rng` (ChaCha20 seeded via PCG32, the 4-block buffer, `next_u32`/`next_u64` across the buffer edge, `shuffle` with `IncreasingUniform`, `random_range` for u32/usize/i32/u8/u64, `random_bool`, `choose`) prints the same 90 lines as `odin/spike/rng-vectors` (the exact Rust crates) over six seeds. Ranges over `usize` sample through u32 on both 32- and 64-bit targets, so native recordings match the browser. Still to add: `get/set_word_pos` (saves restore the RNG by word position). |
+| WASM boundary | `-target:js_wasm32 -no-entry-point`: a 243 KB module whose only imports are `odin_env.write` and `odin_env.rand_bytes` (hash-map seeding), so a 10-line JS shim replaces Odin's browser glue. JSON bytes in through an exported `alloc_bytes`, JSON bytes out through `result_ptr/len`, as the worker needs. |
+| Card data | All 36,406 cards from the 98 MB `card-data.json`: natively 0.47 s typed (a field subset) and 1.3 s as a generic tree; in wasm (Node) 0.94 s typed, 156 MB of wasm memory. |
+| Build time | 2.6 s for the spike at `-o:speed`, native or wasm (the Rust engine: ~20-25 min). Engine-sized code will be slower, to measure as it grows. |
+
+**The one real cost found:** `core:encoding/json` doesn't decode serde's tagged enums (`{"type": "Cost", ...}`,
+`{"type": ..., "data": ...}`) on its own, and the AST has hundreds of them (Effect ~241 variants, TriggerMode 176,
+Keyword 200, StaticMode 125). Writing those types and their decoders by hand would be slow and error-prone, so the data
+model should be **generated from the Rust type definitions**: a Rust tool reads `phase-ast` and the engine's state and
+action types (with `syn`, already a dev-dependency, or serde reflection) and emits Odin types plus their JSON
+decode/encode. That becomes part of O-1, and a generated round trip (Rust JSON → Odin → JSON, byte-equal over the whole
+card file) is its test.
 
 ## Decided (D-179)
 

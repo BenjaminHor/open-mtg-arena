@@ -26,6 +26,10 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
      for bit against vectors from a small Rust program using the same crates.
   5. Build time and wasm size of the spike.
   Code in `odin/` at the repo root (spike under `odin/spike/`). Result and verdict go here and in docs/odin-port.md.
+  - **Result (2026-11-24): go.** Toolchain builds here (76 s); the RNG is byte-identical to Rust over six seeds; a
+    243 KB js_wasm32 module with two trivial imports does JSON in/out; the full card data parses in 0.94 s in wasm
+    (156 MB); builds take ~2.6 s. Cost found: serde's tagged enums need generated Odin types and decoders (folded into
+    O-1). Details in docs/odin-port.md. Next: O-1 (generated data model, then the recorder).
 - **M3 — First playable**, started 2026-11-22 (owner: "Get started"; Arena is the North Star, expect heavy UI
   refinement). Phase 1: M3-01 match host, M3-02 heuristic AI, M3-03 web scaffold, M3-04 landscape phone board.
   M3-01 plan, one PR per slice:
