@@ -46,6 +46,8 @@ pub fn proc_name(owner: Option<&str>, name: &str) -> String {
 thread_local! {
     /// The file of the function being translated (free calls resolve against it).
     pub static CURRENT_FILE: std::cell::RefCell<Option<std::path::PathBuf>> = const { std::cell::RefCell::new(None) };
+    /// Procedures written by hand (hand_logic.odin and the runtime): callable even when the Rust one is generic.
+    pub static HAND: std::cell::RefCell<std::collections::BTreeSet<String>> = const { std::cell::RefCell::new(std::collections::BTreeSet::new()) };
     /// Procedure names more than one engine function would get: never translated or called.
     pub static COLLIDING: std::cell::RefCell<std::collections::BTreeSet<String>> = const { std::cell::RefCell::new(std::collections::BTreeSet::new()) };
 }
@@ -925,9 +927,12 @@ impl<'a, 'b> Tx<'a, 'b> {
 
     /// A call to a translated engine function: arguments shaped by its parameters, `&mut` ones by pointer.
     pub fn call_with_sig(&mut self, name: &str, f: &FnDef, recv: Option<String>, args: &[&Expr]) -> R<String> {
-        if !f.sig.generics.params.is_empty() {
-            return Err("call to a generic function".into());
+        // A generic function is callable only written by hand, its parameters typed by the call's arguments.
+        let hand_generic = !f.sig.generics.params.is_empty();
+        if hand_generic && !HAND.with(|h| h.borrow().contains(name)) {
+            return Err(format!("call to a generic function: {name}"));
         }
+        let generics: Vec<String> = f.sig.generics.type_params().map(|t| t.ident.to_string()).collect();
         let mut parts = Vec::new();
         let mut ai = 0;
         for input in &f.sig.inputs {
@@ -939,7 +944,8 @@ impl<'a, 'b> Tx<'a, 'b> {
                 syn::FnArg::Typed(pt) => {
                     let a = args.get(ai).ok_or("argument count")?;
                     ai += 1;
-                    let sh = self.e.shape(&pt.ty, &[]);
+                    let sh = self.e.shape(&pt.ty, &generics);
+                    let sh = if shape_mentions_param(&sh) { self.shape_of(a).ok_or("argument to a generic parameter")? } else { sh };
                     let v = self.expr(a, &sh)?;
                     let by_mut_ref = matches!(&*pt.ty, syn::Type::Reference(r) if r.mutability.is_some());
                     parts.push(if by_mut_ref { format!("&{v}") } else { v });
@@ -1608,5 +1614,17 @@ impl<'a, 'b> Tx<'a, 'b> {
             }
             other => Some(other),
         }
+    }
+}
+
+/// Whether a shape involves a type parameter.
+fn shape_mentions_param(s: &Shape) -> bool {
+    match s {
+        Shape::Param(_) => true,
+        Shape::Option(i) | Shape::OptPtr(i, _) | Shape::Ptr(i, _) | Shape::Vec(i) | Shape::PVec(i) | Shape::Array(i, _) => shape_mentions_param(i),
+        Shape::Result(a, b) | Shape::Map(a, b) => shape_mentions_param(a) || shape_mentions_param(b),
+        Shape::Tuple(v) => v.iter().any(shape_mentions_param),
+        Shape::Named(_, a) => a.iter().any(shape_mentions_param),
+        _ => false,
     }
 }

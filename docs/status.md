@@ -87,8 +87,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     docs/odin-port.md, "Verifying translated code"): calls logged from a patched scratch engine during a recorded game,
     replayed against the translation. First run, red-vs-green seed 1, 400 steps: 605 translated procedures executed,
     **344 pass, 1 fails, 260 only reach untranslated code**. The failure is explained: it reads a `#[serde(skip)]`
-    runtime field the log can't carry. Next: a general pattern compiler that binds `&mut` scrutinees as pointers,
-    with blockers ranked over executed functions. Translator now: value
+    runtime field the log can't carry. Blockers are now also ranked over the functions the recorded games execute
+    (`ODINGEN_EXECUTED`, from an lcov profile): 27.4% of 5,852 executed functions translate (26.7% overall, 4,252). A
+    hand-written `ObjectMap_get` (odin/engine/types/hand_logic.odin, for generic Rust functions) cleared the top
+    executed blocker (294 callers). Next: a general pattern compiler (patterns block ~760 executed functions) that
+    binds `&mut` scrutinees as pointers. Translator now: value
     `if`/`match`/block initializers (each branch assigns), empty collections typed by their later use, Option/Result
     combinators, labelled loops. Next blockers: generic calls/functions (~1,280), nested items (527), patterns (let
     457, let-else 423, for 236, or-with-bindings 221, if-let 173, nested 147), match on non-enums (432), mutable
