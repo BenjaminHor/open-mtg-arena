@@ -25,6 +25,15 @@ Game :: struct {
 	// saved and restored game forgets them (to be moved into the state's continuous effects).
 	pumps:   [dynamic]Pump,
 	bottoms: [dynamic]types.MulliganBottomEntry, // players who kept after mulligans, owing cards to the bottom
+	// Triggered abilities (triggers.odin): what happened since the last check, what triggered and waits to go on the
+	// stack, a trigger whose targets are being chosen, and the definition of each ability on the stack. Kept beside
+	// the state like the pumps: a restored game loses abilities that were mid-flight.
+	events:            [dynamic]Event,
+	pending_triggers:  [dynamic]Pending_Trigger,
+	trigger_targets:   Trigger_Target_Choice,
+	stack_abilities:   map[types.ObjectId]^types.AbilityDefinition,
+	optional_entry:    types.StackEntry, // a "may" ability waiting for its controller's answer
+	optional_accepted: bool,
 }
 
 // CR 103: starts a two-player game. The first player (CR 103.1) is given; each library is shuffled with the game's

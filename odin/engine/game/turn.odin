@@ -80,6 +80,8 @@ begin_step :: proc(g: ^Game, step: types.Phase) {
 		return
 	case .Upkeep, .PreCombatMain, .End:
 	}
+	// CR 503.1, 513.1, 507.1 ...: "at the beginning of" a step, abilities trigger once its turn-based actions are done.
+	append(&g.events, Event{kind = .Step_Begin, step = step})
 	give_priority(g, s.active_player)
 }
 
@@ -95,9 +97,17 @@ cleanup :: proc(g: ^Game) {
 
 give_priority :: proc(g: ^Game, p: types.PlayerId) {
 	s := &g.state
-	// CR 117.5: state-based actions are checked before a player would receive priority.
-	check_state_based_actions(g)
-	if game_over(s) do return
+	// CR 117.5: state-based actions are checked, then triggered abilities go on the stack, repeating until neither
+	// happens, before a player receives priority.
+	for {
+		check_state_based_actions(g)
+		if game_over(s) do return
+		before := types.pvec_len(s.stack)
+		if !place_triggers(g) do return // a player is choosing a trigger's target
+		collect_triggers(g)
+		if types.pvec_len(s.stack) == before && len(g.events) == 0 && len(g.pending_triggers) == 0 do break
+	}
+	// CR 117.3c-d: after abilities are put on the stack, the active player gets priority, unless a player just acted.
 	s.priority_player = p
 	s.waiting_for = types.WaitingFor_Priority{player = p}
 }
@@ -115,10 +125,8 @@ pass_priority :: proc(g: ^Game, p: types.PlayerId) {
 	if types.pvec_len(s.stack) > 0 {
 		resolve_top_of_stack(g)
 		if game_over(s) do return
-		// CR 117.3b: after a spell or ability resolves, the active player receives priority.
-		if _, waiting := s.waiting_for.(types.WaitingFor_Priority); waiting || s.waiting_for == nil {
-			give_priority(g, s.active_player)
-		}
+		if _, asking := s.waiting_for.(types.WaitingFor_OptionalEffectChoice); asking do return
+		after_resolution(g)
 		return
 	}
 	step, same_turn := next_step(s.phase)
@@ -144,4 +152,9 @@ ask_discard_to_hand_size :: proc(g: ^Game) -> bool {
 	append(&cards, ..ids_of(p.hand))
 	s.waiting_for = types.WaitingFor_DiscardToHandSize{player = s.active_player, count = n, cards = cards}
 	return true
+}
+
+// CR 117.3b: after a spell or ability resolves, the active player receives priority.
+after_resolution :: proc(g: ^Game) {
+	give_priority(g, g.state.active_player)
 }

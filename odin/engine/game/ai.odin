@@ -26,6 +26,14 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		return types.GameAction_SelectCards{cards = worst_cards(g, p, w.count)}, true
 	case types.WaitingFor_TargetSelection:
 		return types.GameAction_ChooseTarget{target = best_target(g, p, w.selection.current_legal_targets[:])}, true
+	case types.WaitingFor_TriggerTargetSelection:
+		a: ^types.AbilityDefinition
+		if g.trigger_targets.definition != nil do a = g.trigger_targets.definition.execute
+		t, good := chosen_target(g, p, w.selection.current_legal_targets[:], a)
+		if !good do t = w.selection.current_legal_targets[0]
+		return types.GameAction_ChooseTarget{target = t}, true
+	case types.WaitingFor_OptionalEffectChoice:
+		return types.GameAction_DecideOptionalEffect{accept = true}, true
 	case types.WaitingFor_DeclareAttackers:
 		return types.GameAction_DeclareAttackers{attacks = choose_attacks(g, p)}, true
 	case types.WaitingFor_DeclareBlockers:

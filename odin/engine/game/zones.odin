@@ -60,12 +60,14 @@ zone_list :: proc(s: ^types.GameState, zone: types.Zone, owner: types.PlayerId) 
 // CR 400.7: an object that moves from one zone to another becomes a new object with no memory of its previous
 // existence: it enters untapped, without damage, counters or attachments, and with its printed characteristics.
 // (The id stays, with the incarnation counting the new object, so the client can follow the card.)
-move_object :: proc(s: ^types.GameState, id: types.ObjectId, to: types.Zone) {
+move_object :: proc(g: ^Game, id: types.ObjectId, to: types.Zone) {
+	s := &g.state
 	o := object(s, id)
 	if o.zone != .Stack {
 		if list := zone_list(s, o.zone, o.owner); list != nil do remove_id(list, id)
 	}
 	from := o.zone
+	last_controller := o.controller // CR 603.10: a leaves-the-battlefield trigger looks back at the object as it was
 	o.zone = to
 	o.incarnation += 1
 	o.tapped = false
@@ -85,11 +87,12 @@ move_object :: proc(s: ^types.GameState, id: types.ObjectId, to: types.Zone) {
 	} else {
 		o.entered_battlefield_turn = nil
 	}
-	_ = from
 	if to != .Stack {
 		list := zone_list(s, to, o.owner)
 		types.pvec_push(list, id, copy_id)
 	}
+	// CR 603.2, 603.6: a zone change is an event abilities can trigger on.
+	append(&g.events, Event{kind = .Zone_Change, object = id, from = from, to = to, controller = last_controller})
 }
 
 // Back to the printed characteristics (CR 613: no continuous effects apply to the new object yet).

@@ -126,6 +126,10 @@ dispatch :: proc(b: ^strings.Builder, fn: string, args: []json.Value) {
 		supported_cards(b, arg(args, 0))
 	case "odin_card_gaps":
 		card_gaps(b, arg(args, 0))
+	case "resume_restored_game_state":
+		// Nothing to resume: this engine doesn't automate the stack, so a restored game continues as saved.
+		if current == nil do reply_err(b, "NOT_INITIALIZED: no game")
+		else do reply_ok_raw(b, `{"outcome":"noop","automatedResolutionCount":0,"omittedEventCount":0,"logEntries":[]}`)
 	case "estimate_bracket_for_deck":
 		// No bracket estimate yet: the Rust engine also answers null when it has none.
 		reply_ok_raw(b, "null")

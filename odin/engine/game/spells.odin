@@ -19,7 +19,8 @@ has_keyword :: proc(o: ^types.GameObject, $T: typeid) -> bool {
 // keywords. Triggered, static and replacement abilities, and activated abilities other than mana abilities, come
 // later.
 card_supported :: proc(face: ^types.CardFace) -> bool {
-	if len(face.triggers) > 0 || len(face.static_abilities) > 0 || len(face.replacements) > 0 do return false
+	if len(face.static_abilities) > 0 || len(face.replacements) > 0 do return false
+	for t in face.triggers do if !trigger_supported(t) do return false
 	if face.additional_cost != nil || face.modal != nil || len(face.casting_options) > 0 do return false
 	for a in face.abilities {
 		switch a.kind {
@@ -46,11 +47,17 @@ keyword_supported :: proc(k: types.Keyword) -> bool {
 }
 
 spell_ability_supported :: proc(a: types.AbilityDefinition) -> bool {
-	if a.effect == nil || a.condition != nil || a.optional || a.optional_targeting || a.modal != nil do return false
+	return !a.optional && ability_supported(a)
+}
+
+// An ability this engine can carry out: each effect in its chain supported, with no conditions or choices beyond
+// targets and (for triggered abilities, CR 603.5) whether to do it at all.
+ability_supported :: proc(a: types.AbilityDefinition) -> bool {
+	if a.effect == nil || a.condition != nil || a.optional_targeting || a.modal != nil do return false
 	if a.multi_target != nil || a.distribute != nil || a.repeat_for != nil || a.unless_pay != nil do return false
 	if a.else_ability != nil do return false
 	if !effect_supported(a.effect^, a.duration) do return false
-	if a.sub_ability != nil do return spell_ability_supported(a.sub_ability^)
+	if a.sub_ability != nil do return a.sub_ability.optional == a.optional && ability_supported(a.sub_ability^)
 	return true
 }
 
@@ -64,7 +71,18 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		_, tf := x.toughness.(types.PtValue_Fixed)
 		d, has := duration.?
 		_, eot := d.(types.Duration_UntilEndOfTurn)
-		return pf && tf && has && eot && filter_supported(x.target)
+		return pf && tf && has && eot && (is_self(x.target) || filter_supported(x.target))
+	case types.Effect_LoseLife:
+		_, fixed := fixed_quantity(x.amount)
+		t, has := x.target.?
+		_, you := t.(types.TargetFilter_Controller)
+		return fixed && (!has || you)
+	case types.Effect_Token:
+		_, fixed := fixed_quantity(x.count)
+		_, pf := x.power.(types.PtValue_Fixed)
+		_, tf := x.toughness.(types.PtValue_Fixed)
+		_, you := x.owner.(types.TargetFilter_Controller)
+		return fixed && pf && tf && you && x.attach_to == nil && !x.enters_attacking && len(x.static_abilities) == 0 && len(x.enter_with_counters) == 0
 	case types.Effect_Draw:
 		_, fixed := fixed_quantity(x.count)
 		_, you := x.target.(types.TargetFilter_Controller)
@@ -108,17 +126,30 @@ filter_supported :: proc(f: types.TargetFilter) -> bool {
 
 // ---- Targets (CR 115) ----------------------------------------------------------------------------------------
 
-// The target an effect asks for, if it targets.
+// The target an effect asks for, if it targets (CR 115.1: the word "target"; here, a filter naming what can be
+// chosen rather than "this" or "you").
 effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
+	f: types.TargetFilter
 	#partial switch x in e {
 	case types.Effect_DealDamage:
-		return x.target, true
+		f = x.target
 	case types.Effect_Pump:
-		return x.target, true
+		f = x.target
 	case types.Effect_Destroy:
-		return x.target, true
+		f = x.target
+	case:
+		return nil, false
+	}
+	#partial switch _ in f {
+	case types.TargetFilter_Any, types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_Typed:
+		return f, true
 	}
 	return nil, false
+}
+
+is_self :: proc(f: types.TargetFilter) -> bool {
+	_, ok := f.(types.TargetFilter_SelfRef)
+	return ok
 }
 
 // The targets of a spell, one per targeting effect in its chain, in order.
@@ -310,7 +341,7 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	o := object(s, id)
 	taps, _ := plan_payment(s, p, o.mana_cost)
 	for t in taps do t.tapped = true // CR 605.3: the mana abilities are activated while paying
-	move_object(s, id, .Stack)
+	move_object(g, id, .Stack)
 	o.controller = p
 	resolved := new(types.ResolvedAbility)
 	resolved.source_id = id
@@ -329,40 +360,26 @@ copy_entry :: proc(x: types.StackEntry) -> types.StackEntry {return x}
 resolve_top_of_stack :: proc(g: ^Game) {
 	s := &g.state
 	entry := types.pvec_pop(&s.stack, copy_entry)
+	#partial switch k in entry.kind {
+	case types.StackEntryKind_TriggeredAbility:
+		resolve_ability(g, entry, k.ability)
+		return
+	case types.StackEntryKind_ActivatedAbility:
+		resolve_ability(g, entry, k.ability)
+		return
+	}
 	spell, is_spell := entry.kind.(types.StackEntryKind_Spell)
 	if !is_spell do return
 	o := object(s, entry.source_id)
 	if is_permanent_card(o) {
 		// CR 608.3: a permanent spell resolving becomes a permanent on the battlefield under its controller.
-		move_object(s, o.id, .Battlefield)
+		move_object(g, o.id, .Battlefield)
 		o.controller = entry.controller
 		return
 	}
-	a := spell_ability(o)
-	slots := target_slots(a)
-	targets := spell.ability.targets[:]
-	// CR 608.2b: a spell whose targets are all illegal now doesn't resolve; it's removed from the stack.
-	any_legal := len(slots) == 0
-	legal := make([]bool, len(targets), context.temp_allocator)
-	for t, i in targets do if i < len(slots) && target_still_legal(s, t, slots[i], entry.controller) {
-		legal[i] = true
-		any_legal = true
-	}
-	if any_legal {
-		slot := 0
-		for x := a; x != nil; x = x.sub_ability {
-			if x.effect == nil do continue
-			target: Maybe(types.TargetRef)
-			if _, targets_one := effect_target(x.effect^); targets_one {
-				if slot < len(targets) && legal[slot] do target = targets[slot]
-				slot += 1
-				if target == nil do continue // CR 608.2b: an illegal target is unaffected
-			}
-			do_effect(g, x, entry.controller, o.id, target)
-		}
-	}
+	if a := spell_ability(o); a != nil do run_ability(g, a, entry.controller, o.id, spell.ability.targets[:])
 	// CR 608.2n: an instant or sorcery spell goes to its owner's graveyard as the final step of resolving.
-	move_object(s, o.id, .Graveyard)
+	move_object(g, o.id, .Graveyard)
 }
 
 is_permanent_card :: proc(o: ^types.GameObject) -> bool {
@@ -377,9 +394,17 @@ do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Playe
 		n, _ := fixed_quantity(x.amount)
 		deal_damage(g, source, target.?, n)
 	case types.Effect_Pump:
-		if t, ok := target.?.(types.TargetRef_Object); ok {
-			pump(g, object(s, t._0), x.power.(types.PtValue_Fixed)._0, x.toughness.(types.PtValue_Fixed)._0)
-		}
+		pumped: ^types.GameObject
+		if t, ok := target.?.(types.TargetRef_Object); ok do pumped = object(s, t._0)
+		else if is_self(x.target) do pumped = object(s, source)
+		// "This creature gets +N/+N": only while it's still the same object on the battlefield (CR 400.7).
+		if pumped != nil && pumped.zone == .Battlefield do pump(g, pumped, x.power.(types.PtValue_Fixed)._0, x.toughness.(types.PtValue_Fixed)._0)
+	case types.Effect_LoseLife:
+		n, _ := fixed_quantity(x.amount)
+		lose_life(s, controller, n)
+	case types.Effect_Token:
+		n, _ := fixed_quantity(x.count)
+		for _ in 0 ..< n do create_token(g, x, controller)
 	case types.Effect_Draw:
 		n, _ := fixed_quantity(x.count)
 		for _ in 0 ..< n do draw_card(s, player(s, controller))
@@ -387,7 +412,7 @@ do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Playe
 		n, _ := fixed_quantity(x.amount)
 		gain_life(s, controller, n)
 	case types.Effect_Destroy:
-		if t, ok := target.?.(types.TargetRef_Object); ok do destroy(s, object(s, t._0))
+		if t, ok := target.?.(types.TargetRef_Object); ok do destroy(g, object(s, t._0))
 	}
 }
 
@@ -428,9 +453,9 @@ lose_life :: proc(s: ^types.GameState, p: types.PlayerId, n: int) {
 }
 
 // CR 701.8: destroying a permanent moves it to its owner's graveyard (CR 702.12b: unless it's indestructible).
-destroy :: proc(s: ^types.GameState, o: ^types.GameObject) {
+destroy :: proc(g: ^Game, o: ^types.GameObject) {
 	if o.zone != .Battlefield || has_keyword(o, types.Keyword_Indestructible) do return
-	move_object(s, o.id, .Graveyard)
+	move_object(g, o.id, .Graveyard)
 }
 
 // CR 611.2: "+N/+N until end of turn" changes the creature's power and toughness until the cleanup step
@@ -468,7 +493,16 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 		if i := strings.last_index_byte(full, '_'); i >= 0 do full = full[i + 1:]
 		return strings.concatenate({prefix, full}, context.temp_allocator)
 	}
-	for t in face.triggers do append(&out, name("trigger:", t.mode))
+	for t in face.triggers do if !trigger_supported(t) {
+		// For a kind of trigger the engine handles, what's missing is its effect or a condition on it.
+		#partial switch _ in t.mode {
+		case types.TriggerMode_ChangesZone, types.TriggerMode_Phase, types.TriggerMode_Attacks:
+			if t.execute != nil && !ability_supported(t.execute^) do ability_gaps(&out, t.execute^, "trigger")
+			else do append(&out, name("trigger condition:", t.mode))
+		case:
+			append(&out, name("trigger:", t.mode))
+		}
+	}
 	for st in face.static_abilities do append(&out, name("static:", st.mode))
 	for r in face.replacements do append(&out, name("replacement:", r.event))
 	if face.additional_cost != nil do append(&out, "additional cost")

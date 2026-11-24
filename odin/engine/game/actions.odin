@@ -22,6 +22,10 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_DiscardToHandSize:
 		return w.player, true
+	case types.WaitingFor_TriggerTargetSelection:
+		return w.player, true
+	case types.WaitingFor_OptionalEffectChoice:
+		return w.player, true
 	}
 	return 0, false
 }
@@ -96,6 +100,14 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			give_priority(g, p)
 			return true
 		}
+	case types.WaitingFor_TriggerTargetSelection:
+		a, ok := action.(types.GameAction_ChooseTarget)
+		if !ok do return false
+		t, has := a.target.?
+		return has && choose_trigger_target(g, p, t)
+	case types.WaitingFor_OptionalEffectChoice:
+		a, ok := action.(types.GameAction_DecideOptionalEffect)
+		return ok && decide_optional(g, p, a.accept)
 	case types.WaitingFor_DeclareAttackers:
 		a, ok := action.(types.GameAction_DeclareAttackers)
 		return ok && declare_attackers(g, a.attacks[:])
@@ -106,7 +118,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		a, ok := action.(types.GameAction_SelectCards)
 		if !ok || len(a.cards) != w.count do return false
 		for id in a.cards do if !slice.contains(w.cards[:], id) do return false
-		for id in a.cards do move_object(s, id, .Graveyard)
+		for id in a.cards do move_object(g, id, .Graveyard)
 		cleanup(g)
 		return true
 	}
@@ -126,7 +138,7 @@ mulligan_decision :: proc(g: ^Game, p: types.PlayerId, index: int, choice: types
 	case types.MulliganChoice_Mulligan:
 		if int(entry.mulligan_count) >= STARTING_HAND_SIZE do return false
 		pl := player(s, p)
-		for id in ids_of(pl.hand) do move_object(s, id, .Library)
+		for id in ids_of(pl.hand) do move_object(g, id, .Library)
 		library := ids_of(pl.library)
 		rng.shuffle(&g.rng, library)
 		pl.library = {}
@@ -160,7 +172,7 @@ bottom_cards :: proc(g: ^Game, p: types.PlayerId, cards: []types.ObjectId) -> bo
 	pl := player(s, p)
 	hand := ids_of(pl.hand)
 	for id in cards do if !slice.contains(hand, id) do return false
-	for id in cards do move_object(s, id, .Library)
+	for id in cards do move_object(g, id, .Library)
 	// The library's top is its end, so the bottom is the front: rebuild with these first.
 	rest := make([dynamic]types.ObjectId, context.temp_allocator)
 	for id in ids_of(pl.library) do if !slice.contains(cards, id) do append(&rest, id)
@@ -184,7 +196,7 @@ play_land :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId) -> bool {
 	s := &g.state
 	o := object(s, id)
 	if o == nil || !can_play_land(s, p, o) || !object_supported(o, g.card_db) do return false
-	move_object(s, id, .Battlefield)
+	move_object(g, id, .Battlefield)
 	player(s, p).lands_played_this_turn += 1
 	s.lands_played_this_turn += 1
 	s.priority_passes = nil
@@ -213,6 +225,11 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		}
 	case types.WaitingFor_TargetSelection:
 		for t in w.selection.current_legal_targets do append(&out, types.GameAction_ChooseTarget{target = t})
+	case types.WaitingFor_TriggerTargetSelection:
+		for t in w.selection.current_legal_targets do append(&out, types.GameAction_ChooseTarget{target = t})
+	case types.WaitingFor_OptionalEffectChoice:
+		append(&out, types.GameAction_DecideOptionalEffect{accept = true})
+		append(&out, types.GameAction_DecideOptionalEffect{accept = false})
 	case types.WaitingFor_DeclareAttackers:
 		append(&out, types.GameAction_DeclareAttackers{})
 	case types.WaitingFor_DeclareBlockers:

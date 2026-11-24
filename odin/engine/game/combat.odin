@@ -50,6 +50,7 @@ declare_attackers :: proc(g: ^Game, attacks: []types.Tuple2(types.ObjectId, type
 		o := object(s, a._0)
 		if !has_keyword(o, types.Keyword_Vigilance) do o.tapped = true
 		append(&combat.attackers, types.AttackerInfo{object_id = a._0, defending_player = defender, attack_target = a._1})
+		append(&g.events, Event{kind = .Attack, object = a._0, controller = o.controller}) // CR 508.3a
 	}
 	s.combat = combat
 	if len(attacks) == 0 {
@@ -216,14 +217,14 @@ check_state_based_actions :: proc(g: ^Game) {
 			if !is_type(o, .Creature) do continue
 			t := toughness_of(o)
 			if t <= 0 {
-				move_object(s, id, .Graveyard) // CR 704.5f
+				move_object(g, id, .Graveyard) // CR 704.5f
 				changed = true
 			} else if int(o.damage_marked) >= t || o.dealt_deathtouch_damage {
 				// CR 704.5g, 704.5h: lethal damage, or any damage from a source with deathtouch.
 				if has_keyword(o, types.Keyword_Indestructible) {
 					o.dealt_deathtouch_damage = false
 				} else {
-					move_object(s, id, .Graveyard)
+					move_object(g, id, .Graveyard)
 					changed = true
 				}
 			}
@@ -232,10 +233,11 @@ check_state_based_actions :: proc(g: ^Game) {
 			// CR 704.5i: a planeswalker with no loyalty goes to its owner's graveyard.
 			o := object(s, id)
 			if is_type(o, .Planeswalker) && (o.loyalty.? or_else 0) == 0 {
-				move_object(s, id, .Graveyard)
+				move_object(g, id, .Graveyard)
 				changed = true
 			}
 		}
+		if remove_departed_tokens(g) do changed = true
 		if !changed do break
 	}
 	// CR 704.5a-c: a player with no life, who drew from an empty library, or with ten poison counters loses.
