@@ -378,7 +378,10 @@ each such failure is part of the check.
 Every step starts from the recorded state, not from the harness's own previous result, so one divergence doesn't
 hide later steps. Steps run in forked children with a timeout: a panic, or a loop on made-up values, ends only that
 step. Host settlements of physical contests aren't game actions (the host plays them out with the AI's own RNG), so
-they are skipped and counted. Not compared yet: the events and log entries a step returns.
+they are skipped and counted. Not compared yet: the events and log entries a step returns. A payment's recovery checkpoint (a
+nested state) gets its RNG as a saved game's restore gives it (its own seed and high-water position), while the
+recorder's kept its live generator: a step that settles one may differ in the RNG position for that reason. The
+trace doesn't see functions nested in other functions or macros, or impls for non-path types (`&T`, `[T]`).
 
 The report gives the counts per outcome, the first step that doesn't pass (with the RNG position), the first
 difference, and the stubs that block steps (each step's first stub, with its reason and the number of steps it

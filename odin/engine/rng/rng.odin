@@ -204,7 +204,7 @@ shuffle :: proc(r: ^Chacha20, s: []$T) {
 // position is that block's first word plus the read index. A fresh generator (index BUF_WORDS, counter 0) is at 0:
 // the block subtraction wraps, as Rust's `wrapping_sub` does, and the index puts it back.
 get_word_pos :: proc(r: ^Chacha20) -> u128 {
-	buf_start_block := r.counter - 4 // wrapping, as u64 arithmetic is in Odin
+	buf_start_block := r.counter - BUF_WORDS / 16 // wrapping, as u64 arithmetic is in Odin
 	pos_block := buf_start_block + u64(r.index / 16)
 	return u128(pos_block) * 16 + u128(r.index % 16)
 }

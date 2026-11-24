@@ -4,7 +4,9 @@
 //! untranslated functions a whole game needs, ordered by first use, beyond the first stub each step stops at.
 //! Never run on the real tree.
 //!
-//! Each function body (free functions, inherent and trait-impl methods; not `const fn`) gets one statement first:
+//! Each function body (free functions, inherent and trait-impl methods, trait methods' default bodies; not `const fn`,
+//! not functions nested in other functions or in macros, not impls for non-path types such as `&T` or `[T]`) gets
+//! one statement first:
 //! a per-function static flag and a call to `phase_ast::__first_use::hit`, which logs only inside the reducer call
 //! that phase_ai's `run_ai_action` makes (the AI's own search and simulations call the same functions, but they
 //! aren't what the Odin engine must run to replay a game). `record-games` tells it the step. Edits are byte splices
@@ -13,7 +15,7 @@
 use std::path::Path;
 
 use syn::spanned::Spanned;
-use syn::{ImplItem, Item};
+use syn::{ImplItem, Item, TraitItem};
 
 use crate::translate::proc_name_for;
 
@@ -139,6 +141,16 @@ fn collect(items: &[Item], text: &str, rel: &Path, rt: &str, edits: &mut Vec<(us
                     }
                 }
             }
+            Item::Trait(t) if !is_test(&t.attrs) => {
+                let owner = t.ident.to_string();
+                for ti in &t.items {
+                    if let TraitItem::Fn(f) = ti {
+                        if let (Some(block), false) = (&f.default, is_test(&f.attrs)) {
+                            trace(Some(&owner), &f.sig, block, text, rel, rt, edits);
+                        }
+                    }
+                }
+            }
             Item::Mod(m) if !is_test(&m.attrs) => {
                 if let Some((_, items)) = &m.content {
                     collect(items, text, rel, rt, edits);
@@ -153,7 +165,10 @@ fn is_test(attrs: &[syn::Attribute]) -> bool {
     use quote::ToTokens;
     attrs.iter().any(|a| {
         let s = a.to_token_stream().to_string();
-        s.contains("cfg (test)") || s.contains("cfg(test)") || s.starts_with("# [test]")
+        let s: String = s.chars().filter(|c| !c.is_whitespace()).collect();
+        // `cfg(test)`, `cfg(any(test, ..))`; not `cfg(not(test))`, which is production code.
+        let names_test = ["(test)", "(test,", ",test)", ",test,"].iter().any(|t| s.contains(t));
+        (s.starts_with("#[cfg(") && names_test && !s.contains("not(test")) || s.starts_with("#[test]")
     })
 }
 
@@ -161,7 +176,11 @@ fn trace(owner: Option<&str>, sig: &syn::Signature, block: &syn::Block, text: &s
     if sig.constness.is_some() {
         return;
     }
+    // A body starting with inner attributes (`#![allow(..)]`) must keep them first.
     let open = block.brace_token.span.open().byte_range();
+    if text.get(open.end..).is_some_and(|t| t.trim_start().starts_with("#!")) {
+        return;
+    }
     if text.get(open.clone()) != Some("{") || block.span().byte_range().is_empty() {
         return; // spans unavailable or off: leave the function alone
     }

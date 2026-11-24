@@ -10,12 +10,19 @@
 # TRACE=0 skips it: the game is recorded by target/tool/record-games (built if missing), or RECORDING=<file> replays
 # an existing recording, and the report ranks only the first stub of each step.
 set -euo pipefail
+if [ $# -lt 2 ]; then
+  echo "usage: replay.sh <odingen> <work-dir> [matchup] [seed] [max-steps] [-- replay options]" >&2
+  exit 2
+fi
+[ -f Cargo.toml ] && [ -d odin/tools/replay ] || { echo "replay.sh: run it from the repository root" >&2; exit 2; }
 ODINGEN=$(realpath "$1"); WORK=$(realpath -m "$2"); shift 2
 MATCHUP=red-vs-green; SEED=1; STEPS=400
-[ $# -gt 0 ] && [ "$1" != "--" ] && { MATCHUP=$1; shift; }
-[ $# -gt 0 ] && [ "$1" != "--" ] && { SEED=$1; shift; }
-[ $# -gt 0 ] && [ "$1" != "--" ] && { STEPS=$1; shift; }
-[ $# -gt 0 ] && [ "$1" = "--" ] && shift
+# Positionals stop at `--` or at the first option (`-top:30`), which goes to the harness.
+positional() { [ $# -gt 0 ] && [ "${1#-}" = "$1" ]; }
+if positional "$@"; then MATCHUP=$1; shift; fi
+if positional "$@"; then SEED=$1; shift; fi
+if positional "$@"; then STEPS=$1; shift; fi
+if [ $# -gt 0 ] && [ "$1" = "--" ]; then shift; fi
 ODIN=${ODIN:-odin}
 TRACE=${TRACE:-1}
 ROOT=$(pwd)
@@ -24,7 +31,7 @@ rm -rf "$WORK/tx/engine/json" "$WORK/tx/engine/rng" "$WORK/tx/engine/types"
 cp -r odin/engine/json odin/engine/rng odin/engine/types "$WORK/tx/engine/"
 
 # 1. Translate (stubbing what Odin rejects).
-ODIN=$ODIN bash odin/tools/translate-loop.sh "$ODINGEN" "$WORK/tx/engine/types" src/ | grep -E "^round|^functions"
+ODIN=$ODIN bash odin/tools/translate-loop.sh "$ODINGEN" "$WORK/tx/engine/types" src/ | { grep -E "^round|^functions" || true; }
 
 # 2. The harness, built so a stub reports itself and returns a zero value instead of panicking.
 "$ODIN" build odin/tools/replay -collection:eng="$WORK/tx/engine" -define:VECTOR=true -no-escape-analysis -out:"$WORK/replay"
@@ -53,6 +60,9 @@ fi
 
 # 4. The harness checks itself on the first 50 steps (recorded results through its restore and comparison), then the
 #    report.
-"$WORK/replay" "$REC" -self-check -steps:50 | sed -n 2p | sed 's/^ */self-check: /'
+if ! check=$("$WORK/replay" "$REC" -self-check -steps:50); then
+  echo "the harness's self-check failed:"; echo "$check"; exit 1
+fi
+echo "$check" | sed -n 2p | sed 's/^ */self-check: /'
 "$WORK/replay" "$REC" "-translation:$WORK/tx/engine/types/translated.odin" "${NEEDS[@]}" "$@"
 if [ "$TRACE" = 1 ]; then echo "the whole list: $WORK/needs.tsv"; fi

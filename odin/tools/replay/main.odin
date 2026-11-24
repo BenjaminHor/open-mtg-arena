@@ -45,6 +45,7 @@ import "core:slice"
 import "core:strconv"
 import "core:strings"
 import "core:sys/posix"
+import "core:time"
 import json "eng:json"
 import "eng:rng"
 import types "eng:types"
@@ -106,9 +107,7 @@ run_step :: proc(prev, line: json.Value, prev_word_pos: u128) -> (Outcome, strin
 	state: types.GameState
 	types.decode_error = ""
 	if !types.decode_GameState(prev, &state) do return .Undecodable, fmt.tprintf("previous state: %v", types.decode_error)
-	// GameState::rehydrate_rng, at the live position the recorder read after the previous step.
-	state.rng = types.GameRng{generator = rng.from_u64(state.rng_seed)}
-	rng.set_word_pos(&state.rng.generator, prev_word_pos)
+	restore_rng(&state, prev_word_pos)
 
 	action: types.GameAction
 	action_v, _ := json.get(line, "action")
@@ -127,9 +126,8 @@ run_step :: proc(prev, line: json.Value, prev_word_pos: u128) -> (Outcome, strin
 		if !types.decode_GameState(after_v, &state) do return .Undecodable, fmt.tprintf("state: %v", types.decode_error)
 		pos_v, _ := json.get(line, "rng_word_pos")
 		pos: u128
-		types.decode_u128(pos_v, &pos)
-		state.rng = types.GameRng{generator = rng.from_u64(state.rng_seed)}
-		rng.set_word_pos(&state.rng.generator, pos)
+		if !types.decode_u128(pos_v, &pos) do return .Undecodable, "rng_word_pos"
+		restore_rng(&state, pos)
 	} else if _, verified := types.engine_verified_ai_stack_pass_player(state, action).?; verified {
 		contract := types.AiDecisionContract_issue(state, types.PlayerId(owner))
 		result = types.engine_apply_verified_ai_priority_pass(&state, types.PlayerId(actor), contract, action)
@@ -141,7 +139,7 @@ run_step :: proc(prev, line: json.Value, prev_word_pos: u128) -> (Outcome, strin
 
 	want_pos_v, _ := json.get(line, "rng_word_pos")
 	want_pos: u128
-	types.decode_u128(want_pos_v, &want_pos)
+	if !types.decode_u128(want_pos_v, &want_pos) do return .Undecodable, "rng_word_pos"
 	got_pos := rng.get_word_pos(&state.rng.generator)
 
 	b := strings.builder_make()
@@ -190,6 +188,20 @@ sort_pair_lists :: proc(v: ^json.Value) {
 	}
 }
 
+// GameState.rng is skipped on the wire. As GameState::rehydrate_rng, at the live position the recorder read (the
+// recorded rng_word_pos). A payment's recovery checkpoint, a whole state that becomes the game when the payment
+// settles, is restored as a saved game restores it (rehydrate_recovered_checkpoint_rng: its own seed and high-water
+// position); the recorder's checkpoint kept its live generator, so a step that settles one may differ in the RNG.
+restore_rng :: proc(state: ^types.GameState, word_pos: u128) {
+	state.rng = types.GameRng{generator = rng.from_u64(state.rng_seed)}
+	rng.set_word_pos(&state.rng.generator, word_pos)
+	if t := state.payment_transaction; t != nil && t.recovered != nil && t.recovered.state != nil {
+		cs := t.recovered.state
+		cs.rng = types.GameRng{generator = rng.from_u64(cs.rng_seed)}
+		rng.set_word_pos(&cs.rng.generator, cs.rng_word_pos)
+	}
+}
+
 Step_Result :: struct {
 	outcome: Outcome,
 	detail:  string,
@@ -205,12 +217,19 @@ run_isolated :: proc(prev, line: json.Value, prev_word_pos: u128, timeout_s: int
 		return res
 	}
 	pid := posix.fork()
+	if pid < 0 {
+		posix.close(fds[0])
+		posix.close(fds[1])
+		res.outcome, res.detail = .Crash, "fork failed"
+		return res
+	}
 	if pid == 0 {
 		posix.close(fds[0])
 		child_fd = fds[1]
 		types.vector_on_stub = on_stub
 		o, why := run_step(prev, line, prev_word_pos)
-		child_send(fmt.tprintf("R\t%d\t%v\n", int(o), why))
+		detail, _ := strings.replace_all(why, "\n", " ")
+		child_send(fmt.tprintf("R\t%d\t%v\n", int(o), detail))
 		posix._exit(0)
 	}
 	posix.close(fds[1])
@@ -218,11 +237,21 @@ run_isolated :: proc(prev, line: json.Value, prev_word_pos: u128, timeout_s: int
 	chunk: [4096]byte
 	timed_out := false
 	pfd := posix.pollfd{fd = fds[0], events = {.IN}}
+	// One deadline for the whole step: a child that keeps reporting stubs mustn't renew it.
+	start := time.tick_now()
 	for {
-		ready := posix.poll(&pfd, 1, c.int(timeout_s * 1000))
+		left := timeout_s * 1000 - int(time.duration_milliseconds(time.tick_since(start)))
+		if left <= 0 {
+			timed_out = true
+			break
+		}
+		ready := posix.poll(&pfd, 1, c.int(left))
+		if ready < 0 {
+			if posix.get_errno() == .EINTR do continue
+			break
+		}
 		if ready == 0 {
 			timed_out = true
-			posix.kill(pid, .SIGKILL)
 			break
 		}
 		n := posix.read(fds[0], &chunk[0], len(chunk))
@@ -230,6 +259,8 @@ run_isolated :: proc(prev, line: json.Value, prev_word_pos: u128, timeout_s: int
 		append(&buf, ..chunk[:n])
 	}
 	posix.close(fds[0])
+	// A child still running (timed out, or the pipe failed) is ended before waiting for it.
+	posix.kill(pid, .SIGKILL)
 	status: c.int
 	posix.waitpid(pid, &status, {})
 
@@ -332,7 +363,10 @@ main :: proc() {
 		}
 		pos_v, _ := json.get(line, "rng_word_pos")
 		word_pos: u128
-		types.decode_u128(pos_v, &word_pos)
+		if !types.decode_u128(pos_v, &word_pos) {
+			fmt.eprintln(path, "line", line_no, "has no rng_word_pos")
+			os.exit(1)
+		}
 		defer {
 			// This line's state is the next step's input.
 			if s, ok := json.get(line, "initial_state"); ok do prev_state = s
@@ -429,14 +463,14 @@ read_translation :: proc(path: string) -> Translation {
 			text, ferr := os.read_entire_file_from_path(f.fullpath, context.allocator)
 			if ferr != nil do continue
 			r := string(text)
-			for line in strings.split_lines_iterator(&r) do if i := strings.index(line, " :: proc"); i > 0 && line[0] != '\t' && line[0] != ' ' do t.procs[line[:i]] = true
+			for line in strings.split_lines_iterator(&r) do if name, ok := proc_def(line); ok do t.procs[name] = true
 		}
 	}
 	rest := string(data)
 	PANIC :: "panic(\"not translated yet: "
 	for line in strings.split_lines_iterator(&rest) {
-		if i := strings.index(line, " :: proc"); i > 0 && line[0] != '\t' && line[0] != ' ' {
-			t.procs[line[:i]] = true
+		if name, ok := proc_def(line); ok {
+			t.procs[name] = true
 		} else if j := strings.index(line, PANIC); j >= 0 {
 			body := line[j + len(PANIC):]
 			sp := strings.index(body, " (")
@@ -446,12 +480,28 @@ read_translation :: proc(path: string) -> Translation {
 			t.stubs[body[:sp]] = why
 		}
 	}
+	// An instance counts for its function only if it is translated itself.
 	for name in t.procs {
+		if name in t.stubs do continue
 		for marker in ([]string{"__cl", "__g"}) {
-			if i := strings.index(name, marker); i > 0 do t.instanced[name[:i]] = true
+			i := strings.index(name, marker)
+			if i > 0 && i + len(marker) < len(name) && strings.index_byte("0123456789abcdef", name[i + len(marker)]) >= 0 {
+				t.instanced[name[:i]] = true
+			}
 		}
 	}
 	return t
+}
+
+// A top-level procedure definition: `name :: proc(...) {` or `name :: #force_inline proc(...) {` (not a procedure
+// type alias, which has no body).
+proc_def :: proc(line: string) -> (string, bool) {
+	if len(line) == 0 || line[0] == '\t' || line[0] == ' ' || line[0] == '/' do return "", false
+	i := strings.index(line, " :: ")
+	if i <= 0 do return "", false
+	rest := strings.trim_prefix(line[i + 4:], "#force_inline ")
+	if !strings.has_prefix(rest, "proc") || !strings.has_suffix(strings.trim_right_space(line), "{") do return "", false
+	return line[:i], true
 }
 
 // Every function the Rust reducer called in the recorded game (the first-use log), against the translation: the
