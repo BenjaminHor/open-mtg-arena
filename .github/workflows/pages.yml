@@ -9,8 +9,7 @@ name: Pages
 
 on:
   push:
-    # TEMPORARY (remove before merging): build on the import branch to prove the release WASM fits the runner.
-    branches: [main, claude/eloquent-mayer-qcx0e1]
+    branches: [main]
   workflow_dispatch:
 
 permissions:

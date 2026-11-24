@@ -454,8 +454,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       "phase.rs". None of it reaches the app, and the Odin port replaces that code. Also left: docs/engine/ (their
       docs, kept as they came), internal names such as the `phase-deck:` storage keys, `PHASE_` env names and the
       `__PHASE_CONFIG__`-era comments, and the version number (0.131.0, theirs).
-    - Proving the release WASM on GitHub's runner: pages.yml temporarily also builds on this branch (deploy only
-      from main); remove the branch from its `on.push` before merging.
+    - The release WASM builds on GitHub's runner (Pages run 17 on this branch, 2026-11-24, deploy skipped as
+      designed): engine 25 min, card data 31 min (MTGJSON cold; cached per ISO week after), image index 1 min,
+      client 6 min, about 66 min in all. The temporary branch trigger is removed again; deploy runs only from main.
     - Also found: starting a game threw "reading 'startsWith'" (from the import, not the strip): activeGameChange.ts
       dispatches a plain `Event("storage")` with no key, and the AI deck catalog's listener assumed a StorageEvent.
       Fixed to ignore non-StorageEvents; test in aiDeckCatalog.test.ts.
