@@ -153,10 +153,12 @@ fn translate_fn_with(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef
     let saved_exit = crate::translate::TRY_EXIT.with(|t| t.replace(None));
     let saved_return = crate::translate::RETURN_EXIT.with(|t| t.replace(None));
     let saved_pending = crate::translate::PENDING.with(|p| std::mem::take(&mut *p.borrow_mut()));
+    let saved_names = PROC_NAMES.with(|p| std::mem::take(&mut *p.borrow_mut()));
     let r = translate_fn_inner(e, owner, name, f, pname_override, extra);
     crate::translate::TRY_EXIT.with(|t| t.replace(saved_exit));
     crate::translate::RETURN_EXIT.with(|t| t.replace(saved_return));
     crate::translate::PENDING.with(|p| *p.borrow_mut() = saved_pending);
+    PROC_NAMES.with(|p| *p.borrow_mut() = saved_names);
     r
 }
 
@@ -231,6 +233,7 @@ fn translate_fn_inner(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDe
     let mut b = Body { tx: &mut tx, out: String::new(), indent: 1, ret, declared: Default::default(), target: None, loops: Vec::new() };
     for (_, (odin, _)) in b.tx.vars.clone() {
         b.declared.insert(odin.trim_end_matches('^').to_string());
+        PROC_NAMES.with(|p| p.borrow_mut().insert(odin.trim_end_matches('^').to_string()));
     }
     // Odin parameters can't be assigned; a Rust `mut` parameter is a local copy.
     for p in &mut_params {
@@ -386,12 +389,14 @@ impl Body<'_, '_, '_> {
     /// (pattern bindings and the branches' own locals are in scope there, unlike for `shape_of` on the whole).
     fn infer_tail_shape(&mut self, e: &Expr) -> Option<Shape> {
         let snap = (self.out.len(), self.tx.vars.clone(), self.declared.clone(), self.tx.pre.clone(), self.tx.temps, self.indent);
+        let names = PROC_NAMES.with(|p| p.borrow().clone());
         let loops = self.loops.clone();
         let saved = self.target.replace(Target { ident: String::new(), shape: None, weak: false, infer: true });
         let _ = self.tail_expr(e);
         let t = std::mem::replace(&mut self.target, saved).expect("target");
         self.out.truncate(snap.0);
         (self.tx.vars, self.declared, self.tx.pre, self.tx.temps, self.indent) = (snap.1, snap.2, snap.3, snap.4, snap.5);
+        PROC_NAMES.with(|p| *p.borrow_mut() = names);
         self.loops = loops;
         t.shape
     }
@@ -716,10 +721,12 @@ impl Body<'_, '_, '_> {
     /// Runs an emitter and undoes everything it did if it fails (for trying a faster form first).
     fn attempt(&mut self, f: impl FnOnce(&mut Self) -> R<()>) -> R<()> {
         let snap = (self.out.len(), self.tx.vars.clone(), self.declared.clone(), self.tx.pre.clone(), self.tx.temps, self.indent, self.loops.clone());
+        let names = PROC_NAMES.with(|p| p.borrow().clone());
         let r = f(self);
         if r.is_err() {
             self.out.truncate(snap.0);
             (self.tx.vars, self.declared, self.tx.pre, self.tx.temps, self.indent, self.loops) = (snap.1, snap.2, snap.3, snap.4, snap.5, snap.6);
+            PROC_NAMES.with(|p| *p.borrow_mut() = names);
         }
         r
     }
@@ -788,11 +795,12 @@ impl Body<'_, '_, '_> {
     fn fresh(&mut self, base: &str) -> String {
         let mut n = base.to_string();
         let mut i = 2;
-        while self.declared.contains(&n) {
+        while self.declared.contains(&n) || PROC_NAMES.with(|p| p.borrow().contains(&n)) {
             n = format!("{base}_{i}");
             i += 1;
         }
         self.declared.insert(n.clone());
+        PROC_NAMES.with(|p| p.borrow_mut().insert(n.clone()));
         n
     }
 
@@ -1871,6 +1879,13 @@ fn source_kind(e: &Expr) -> String {
     }
 }
 
+thread_local! {
+    /// Every name declared in the procedure being translated, across the bodies inlined into it (closure blocks get
+    /// a Body of their own): Odin labels are procedure-wide, and a closure's local must not shadow a name its
+    /// captures are read through.
+    static PROC_NAMES: std::cell::RefCell<BTreeSet<String>> = std::cell::RefCell::new(BTreeSet::new());
+}
+
 /// The placeholder type of a pending local's declaration, replaced when the function is finished.
 fn pending_marker(ident: &str) -> String {
     format!("«pending:{ident}»")
@@ -2152,6 +2167,7 @@ pub fn inline_block(tx: &mut Tx, block: &Block, shape: &Shape) -> R<String> {
 /// The shape of a block's value, by a dry run of its statements (nothing is kept).
 pub fn infer_block_shape(tx: &mut Tx, block: &Block) -> Option<Shape> {
     let (vars, temps) = (tx.vars.clone(), tx.temps);
+    let names = PROC_NAMES.with(|p| p.borrow().clone());
     let outer = std::mem::take(&mut tx.pre);
     let saved_exit = crate::translate::TRY_EXIT.with(|t| t.replace(Some((String::new(), String::new(), Shape::Unknown("dry run".into())))));
     let saved_return = crate::translate::RETURN_EXIT.with(|t| t.replace(Some((String::new(), String::new(), Shape::Unknown("dry run".into())))));
@@ -2165,6 +2181,7 @@ pub fn infer_block_shape(tx: &mut Tx, block: &Block) -> Option<Shape> {
     tx.vars = vars;
     tx.temps = temps;
     tx.pre = outer;
+    PROC_NAMES.with(|p| *p.borrow_mut() = names);
     shape
 }
 
