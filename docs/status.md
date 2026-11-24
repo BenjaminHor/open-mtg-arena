@@ -2801,8 +2801,15 @@ Progress:
   Rust self-replay done: 11,160 of 12,326 recordings replay cleanly on Rust (the usable fixtures); 1,074 differ on
   Rust itself (mostly states it can't restore), 37 unreadable, 55 over 5 MB (loop tests, left out; replaying them
   exhausted memory). The replayer restarts every few hundred tests (memory grows with each restore) and writes
-  each result as it goes. Next: the Odin pass rate over the fixtures, and validated coverage (cards whose tests
-  pass on Odin).
+  each result as it goes.
+- First Odin replay over the 11,160 fixtures (2026-11-24, engine at 3221bf1, 571 s on three workers): 388 pass
+  (3.5%), 10,765 fail, 7 too large. Failures: CastSpell rejected 5,481, ActivateAbility rejected 1,839 (nearly all at
+  step 0: the card under test isn't supported yet), stack contents 1,058, waiting_for 663, phase 227. Most fixtures
+  are narrow regression tests built on synthetic cards for one mechanic each, so the pass rate grows with mechanics
+  rather than with cards. Pool cards with all their fixtures passing on Odin: 19 of the 2,017 that appear in one.
+  Tools (scratchpad): fixture-reach.mjs (pass rate among fixtures whose real cards Odin supports: 152 of 2,165) and
+  reach-fails.txt. Next: rank the failing fixtures by the Odin gap that rejects them, and build by that ranking
+  alongside the static coverage ranking.
 - Step 3 progress (2026-11-24, night 2): you may / if you do, library search and shuffle, sacrifice effects,
   counterspells, blink and graveyard either-or targets, each player / each opponent instructions, cycling,
   required additional costs, kicker, predefined tokens (Treasure, Food, Clue, Shard, Heartwood; others
