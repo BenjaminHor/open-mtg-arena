@@ -1034,3 +1034,25 @@ second_spell_and_opponent_casts :: proc(t: ^testing.T) {
 	testing.expect(t, cast_shock(t, g, shocks[1]) == 3, "second spell: Clarion Spirit triggers too")
 	testing.expect(t, cast_shock(t, g, shocks[2]) == 2, "third spell: not Clarion Spirit")
 }
+
+@(test)
+activate_only_once_each_turn :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 602.5b: "Activate only once each turn" (Azimaet Drake: {U}: +1/+0 until end of turn).
+	g := new_game()
+	for _ in 0 ..< 2 do add(t, g, "Island", 0, .Battlefield)
+	drake := add(t, g, "Azimaet Drake", 0, .Battlefield)
+	testing.expect(t, game.can_activate(g, 0, drake, 0))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = drake.id, ability_index = 0}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, drake.power.? == 2, "pumped once")
+	testing.expect(t, !game.can_activate(g, 0, drake, 0), "not again this turn, though an Island is untapped")
+	game.begin_turn(g, 0)
+	for id in game.ids_of(g.state.battlefield) do game.object(&g.state, id).tapped = false
+	game.end_until_end_of_turn_effects(g)
+	g.state.phase = .PreCombatMain
+	g.state.priority_player = 0
+	g.state.waiting_for = types.WaitingFor_Priority{player = 0}
+	testing.expect(t, game.can_activate(g, 0, drake, 0), "again on a new turn")
+}

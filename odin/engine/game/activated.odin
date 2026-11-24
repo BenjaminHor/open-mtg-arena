@@ -2,6 +2,7 @@
 // "pay N life", and combinations of them; "activate only as a sorcery". Mana abilities (CR 605) are in mana.odin.
 package game
 
+import "core:fmt"
 import "core:slice"
 import types "../types"
 
@@ -10,14 +11,72 @@ activated_supported :: proc(a: types.AbilityDefinition) -> bool {
 	cost, has := a.cost.?
 	if !has || !cost_supported(cost) do return false
 	if a.activation_zone != nil || a.activator_filter != nil || a.activation_mana_payment_restriction != nil do return false
-	for r in a.activation_restrictions {
-		#partial switch _ in r {
-		case types.ActivationRestriction_AsSorcery, types.ActivationRestriction_AsInstant:
-		case:
-			return false
+	for r in a.activation_restrictions do if !restriction_supported(r) do return false
+	return true
+}
+
+// "Activate only ..." (CR 602.5): timing, how often, and "only if" conditions on an amount.
+restriction_supported :: proc(r: types.ActivationRestriction) -> bool {
+	#partial switch x in r {
+	case types.ActivationRestriction_AsSorcery, types.ActivationRestriction_AsInstant, types.ActivationRestriction_OnlyOnceEachTurn,
+	     types.ActivationRestriction_OnlyOnce, types.ActivationRestriction_DuringYourTurn, types.ActivationRestriction_DuringYourUpkeep,
+	     types.ActivationRestriction_BeforeAttackersDeclared:
+		return true
+	case types.ActivationRestriction_RequiresCondition:
+		c, has := x.condition.?
+		if !has do return false
+		#partial switch y in c {
+		case types.ParsedCondition_QuantityComparison:
+			return quantity_supported(y.lhs) && quantity_supported(y.rhs)
 		}
 	}
+	return false
+}
+
+restriction_met :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: int, r: types.ActivationRestriction) -> bool {
+	s := &g.state
+	#partial switch x in r {
+	case types.ActivationRestriction_AsSorcery:
+		return sorcery_timing(s, p) // CR 602.5d
+	case types.ActivationRestriction_OnlyOnceEachTurn:
+		return activations(s.activated_abilities_this_turn, o, index) == 0
+	case types.ActivationRestriction_OnlyOnce:
+		return activations(s.activated_abilities_this_game, o, index) == 0
+	case types.ActivationRestriction_DuringYourTurn:
+		return s.active_player == p
+	case types.ActivationRestriction_DuringYourUpkeep:
+		return s.active_player == p && s.phase == .Upkeep
+	case types.ActivationRestriction_BeforeAttackersDeclared:
+		return s.phase < .DeclareAttackers
+	case types.ActivationRestriction_RequiresCondition:
+		c := x.condition.?.(types.ParsedCondition_QuantityComparison)
+		return compare(quantity_value(s, c.lhs, p, o.id, 0), c.comparator, quantity_value(s, c.rhs, p, o.id, 0))
+	}
 	return true
+}
+
+// How many times this object's ability has been activated (this turn or this game), as the state counts them: by
+// the object (its incarnation, CR 400.7) and the ability's index.
+activations :: proc(list: ^[dynamic]types.Tuple2(types.AbilityUsageKey, u32), o: ^types.GameObject, index: int) -> u32 {
+	if list == nil do return 0
+	for e in list^ do if usage_matches(e._0, o, index) do return e._1
+	return 0
+}
+
+record_activation :: proc(list: ^^[dynamic]types.Tuple2(types.AbilityUsageKey, u32), o: ^types.GameObject, index: int) {
+	if list^ == nil do list^ = new([dynamic]types.Tuple2(types.AbilityUsageKey, u32))
+	for &e in list^^ do if usage_matches(e._0, o, index) {
+		e._1 += 1
+		return
+	}
+	key := types.AbilityUsageKey{source = o.id, provenance = types.ObjectIncarnationRef{object_id = o.id, incarnation = o.incarnation}, fingerprint = fmt.aprintf("ability %d", index)}
+	append(list^, types.Tuple2(types.AbilityUsageKey, u32){key, 1})
+}
+
+@(private = "file")
+usage_matches :: proc(k: types.AbilityUsageKey, o: ^types.GameObject, index: int) -> bool {
+	ref, has := k.provenance.?
+	return k.source == o.id && has && ref.incarnation == o.incarnation && k.fingerprint == fmt.tprintf("ability %d", index)
 }
 
 cost_supported :: proc(c: types.AbilityCost) -> bool {
@@ -131,9 +190,7 @@ can_activate :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: i
 	a := activated_ability(o, index)
 	if a == nil || o.zone != .Battlefield || o.controller != p || !object_supported(o, g.card_db) do return false
 	if _, _, mana := tap_mana_ability(a^); mana || !activated_supported(a^) do return false
-	for r in a.activation_restrictions {
-		if _, sorcery := r.(types.ActivationRestriction_AsSorcery); sorcery && !sorcery_timing(s, p) do return false
-	}
+	for r in a.activation_restrictions do if !restriction_met(g, p, o, index, r) do return false
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
 	cost, _ := a.cost.?
 	cost_parts(cost, &parts)
@@ -225,6 +282,8 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 	// abilities be activated first, so a land tapped for mana can still be sacrificed).
 	for id in g.pending.cost_objects do move_object(g, id, .Graveyard)
 	push_ability(g, source, p, a, targets, false, g.pending.counts[:])
+	record_activation(&s.activated_abilities_this_turn, o, index)
+	record_activation(&s.activated_abilities_this_game, o, index)
 	// Sacrificing it last: the ability on the stack is independent of its source (CR 113.7a).
 	for part in parts do if sac, ok := part.(types.AbilityCost_Sacrifice); ok && is_self(sac._0.target) do move_object(g, source, .Graveyard)
 	s.priority_passes = nil

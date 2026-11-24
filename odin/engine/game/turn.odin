@@ -23,6 +23,7 @@ begin_turn :: proc(g: ^Game, active: types.PlayerId) {
 	s.active_player = active
 	s.lands_played_this_turn = 0
 	s.spells_cast_this_turn = 0
+	if s.activated_abilities_this_turn != nil do clear(s.activated_abilities_this_turn)
 	clear(&s.spells_cast_this_turn_by_player)
 	for &p in s.players {
 		p.lands_played_this_turn = 0
