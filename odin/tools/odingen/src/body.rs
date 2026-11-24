@@ -139,6 +139,11 @@ pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef)
     let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: owner.map(str::to_string), depth: 0, calls: true, pre: Vec::new(), fn_ret: Shape::Unit, temps: 0 };
     let (sig, ret, mut_params) = signature(&mut tx, owner, f)?;
     tx.fn_ret = ret.clone();
+    // `Self` in the body's types (`let x: Self`, `Vec<Self>`) is the impl's type.
+    let saved_subst = tx.e.subst.clone();
+    if let Some(o) = owner {
+        tx.e.subst.insert("Self".into(), Shape::Named(o.to_string(), vec![]));
+    }
     let pname = proc_name_for(owner, name, f);
     let mut b = Body { tx: &mut tx, out: String::new(), indent: 1, ret, declared: Default::default(), target: None, loops: Vec::new() };
     for (_, (odin, _)) in b.tx.vars.clone() {
@@ -148,8 +153,11 @@ pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef)
     for p in &mut_params {
         b.line(&format!("{p} := {p}"));
     }
-    b.block(&f.block, true)?;
-    let code = format!("{pname} :: proc{sig} {{\n{}}}\n", b.out);
+    let r = b.block(&f.block, true);
+    let out = std::mem::take(&mut b.out);
+    tx.e.subst = saved_subst;
+    r?;
+    let code = format!("{pname} :: proc{sig} {{\n{out}}}\n");
     Ok(Translated { name: pname, code })
 }
 
@@ -203,7 +211,20 @@ impl Body<'_, '_, '_> {
                     self.tail_expr(e)?
                 }
                 Stmt::Expr(e, _) => self.stmt_expr(e)?,
-                Stmt::Item(_) => return Err("item inside a function".into()),
+                // A `use` inside a body changes nothing here: calls resolve by module path or file on their own.
+                Stmt::Item(syn::Item::Use(_)) => {}
+                Stmt::Item(it) => {
+                    let kind = match it {
+                        syn::Item::Fn(_) => "fn",
+                        syn::Item::Const(_) => "const",
+                        syn::Item::Struct(_) | syn::Item::Enum(_) => "type",
+                        syn::Item::Impl(_) => "impl",
+                        syn::Item::Static(_) => "static",
+                        syn::Item::Macro(_) => "macro",
+                        _ => "other",
+                    };
+                    return Err(format!("item inside a function: {kind}"));
+                }
                 Stmt::Macro(_) => return Err("statement macro".into()),
             }
         }
@@ -349,7 +370,7 @@ impl Body<'_, '_, '_> {
         let check = |tx: &mut Tx, sh: Shape| -> R<Shape> {
             // A local's type must be one Odin knows (not a lifetime-generic or out-of-model type).
             if shape_unknown(&sh) {
-                return Err("let of a type outside the model".into());
+                return Err(format!("let of a type outside the model: {sh:?}").chars().take(90).collect());
             }
             let mut names = Vec::new();
             crate::emit::shape_names_pub(&sh, &mut names);
@@ -359,7 +380,9 @@ impl Body<'_, '_, '_> {
             }
         };
         let sh = match ty {
-            Some(t) => self.tx.e.shape(t, &[]),
+            Some(t) if !shape_unknown(&self.tx.e.shape(t, &[])) => self.tx.e.shape(t, &[]),
+            // A partial annotation (`Vec<_>`): the value's own shape.
+            Some(_) => self.shape_of(&init.expr).ok_or("let with a partial type of an untyped value")?,
             None => match self.shape_of(&init.expr) {
                 Some(s) => Some(s),
                 None if control => self.infer_tail_shape(&init.expr),
@@ -481,7 +504,18 @@ impl Body<'_, '_, '_> {
             }
             mode = Mode::Mut;
         }
-        let sh = self.shape_of(e).ok_or("pattern on an untyped value")?;
+        // An `if`/`match`/block subject: computed into a temporary, each branch assigning it.
+        if matches!(e, Expr::If(_) | Expr::Match(_) | Expr::Block(_)) {
+            let sh = self.infer_tail_shape(e).ok_or("pattern on an untyped if/match")?;
+            let tmp = self.fresh("ms");
+            self.line(&format!("{tmp}: {}", self.tx.e.odin(&sh)));
+            let saved = self.target.replace(Target { ident: tmp.clone(), shape: Some(sh.clone()), weak: false, infer: false });
+            let r = self.tail_expr(e);
+            self.target = saved;
+            r?;
+            return Ok((tmp, sh, mode));
+        }
+        let sh = self.shape_of(e).ok_or_else(|| format!("pattern on an untyped value: {}", expr_kind(e)))?;
         let v = self.tx.expr(e, &sh)?;
         if is_place(e) {
             return Ok((v, sh, mode));
@@ -1209,6 +1243,12 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
                 }
                 if ex {
                     *ex_reasons.entry(r.clone()).or_default() += 1;
+                }
+                // ODINGEN_WHY=<text>: name the functions refused for a reason containing it (debugging the translator).
+                if let Ok(w) = std::env::var("ODINGEN_WHY") {
+                    if r.contains(&w) {
+                        eprintln!("why: {} ({}) {}", proc_name_for(owner.as_deref(), name, d), d.file.display(), r);
+                    }
                 }
                 *reasons.entry(r).or_default() += 1
             }

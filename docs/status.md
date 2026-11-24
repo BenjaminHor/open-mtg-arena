@@ -94,11 +94,13 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     off the blocker list: nested, tuple, slice, literal and range patterns, `@` bindings, guards, or-patterns, matches
     on non-enums, `let`/`let else`/`if let`/`for` patterns (with `.enumerate()`), and matches through a mutable
     reference, which bind pointers into the subject. Plain arithmetic is translated too; adapters take function paths
-    (`.map(ObjectId::from)`). Now 5,218 of 15,922 (32.8%) overall, 33.8% of executed functions. **Vector check after
+    (`.map(ObjectId::from)`); `&&`/`||` operands needing statements are evaluated inside an `if`; `Self` and `Vec<_>`
+    in locals and chain terminals (`find`, `collect`, ...) are typed. Now 5,726 of 15,922 (36.0%) overall, 36.3% of
+    executed functions. **Vector check after
     the pattern compiler: 717 procedures exercised, 442 pass, 0 unexplained failures, 0 crashes, 274 reach only
     untranslated code** (odin/tools/vector_check/explained.txt lists the one understood failure). Next blockers
-    (executed): generic functions (196), out-of-model local types (148), nested items (134), patterns on untyped
-    values (122), hoists under `&&`/`||` (121). Translator now: value
+    (executed): generic functions (196), iterating non-Vec collections (maps, sets, PVec, ranges: ~260), `get` on
+    maps (78), `matches!` with field conditions (70), statement macros (66). Translator now: value
     `if`/`match`/block initializers (each branch assigns), empty collections typed by their later use, Option/Result
     combinators, labelled loops. Next blockers: generic calls/functions (~1,280), nested items (527), patterns (let
     457, let-else 423, for 236, or-with-bindings 221, if-let 173, nested 147), match on non-enums (432), mutable

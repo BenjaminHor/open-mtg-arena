@@ -643,12 +643,21 @@ impl<'a, 'b> Tx<'a, 'b> {
                 // Comparisons take the left side's type for the right (literals, variants).
                 let left_shape = self.shape_of(&b.left).unwrap_or(Shape::Bool);
                 let l = self.expr(&b.left, &left_shape)?;
-                let hoisted = self.pre.len();
-                let r = self.expr(&b.right, &left_shape)?;
-                // `a && b` evaluates b only when a holds: statements b needs can't be hoisted before the whole.
-                if matches!(op, "&&" | "||") && self.pre.len() > hoisted {
-                    return Err("hoisted statement under && or ||".into());
+                let outer = std::mem::take(&mut self.pre);
+                let r = self.expr(&b.right, &left_shape);
+                let inner = std::mem::replace(&mut self.pre, outer);
+                let r = r?;
+                // `a && b` evaluates b only when a holds (`a || b` only when it doesn't): statements b needs go
+                // inside an `if` on a's value.
+                if matches!(op, "&&" | "||") && !inner.is_empty() {
+                    let n = self.next_temp();
+                    let t = format!("sc{n}_");
+                    let cond = if op == "&&" { t.clone() } else { format!("!{t}") };
+                    self.pre.push(format!("{t} := {l}"));
+                    self.pre.push(format!("if {cond} {{\n{}\n{t} = {r}\n}}", inner.join("\n")));
+                    return Ok(t);
                 }
+                self.pre.extend(inner);
                 if matches!(op, "==" | "!=") {
                     if let Shape::Named(n, _) = &left_shape {
                         if !self.enum_variants(n).map(|x| x.0).unwrap_or(true) {
@@ -773,6 +782,22 @@ impl<'a, 'b> Tx<'a, 'b> {
                 };
                 let args: Vec<&Expr> = mc.args.iter().collect();
                 // Combinators: the result follows from the receiver and the closure.
+                if m == "collect" && args.is_empty() {
+                    if let Some(item) = self.chain_item_shape(&mc.receiver) {
+                        return Some(Shape::Vec(Box::new(item)));
+                    }
+                }
+                // Terminals giving one item of the chain.
+                if matches!(m.as_str(), "find" | "next" | "last" | "max_by_key" | "min_by_key" | "max_by" | "min_by") {
+                    if let Some(item) = self.chain_item_shape(&mc.receiver) {
+                        return Some(Shape::Option(Box::new(item)));
+                    }
+                }
+                if m == "find_map" && args.len() == 1 {
+                    if let (Some(item), Ok(c)) = (self.chain_item_shape(&mc.receiver), Self::closure_of(args[0])) {
+                        return self.closure_shape(&c, "_", &item).filter(|s| matches!(s, Shape::Option(_)));
+                    }
+                }
                 match (m.as_str(), &recv, args.len()) {
                     ("map", Shape::Option(i), 1) => {
                         let c = Self::closure_of(args[0]).ok()?;
@@ -800,7 +825,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                     ("unwrap" | "expect", Shape::Result(v, _), _) => return Some((**v).clone()),
                     ("is_ok" | "is_err", Shape::Result(..), 0) => return Some(Shape::Bool),
                     ("min" | "max" | "saturating_sub" | "saturating_add" | "abs" | "clamp", Shape::Int(_), _) => return Some(recv.clone()),
-                    ("to_vec", Shape::Vec(_), 0) => return Some(recv.clone()),
+                    ("to_vec" | "as_slice" | "as_mut_slice", Shape::Vec(_), 0) => return Some(recv.clone()),
                     ("remove", Shape::Vec(i), 1) => return Some((**i).clone()),
                     ("pop", Shape::Vec(i), 0) => return Some(Shape::Option(i.clone())),
                     _ => {}
@@ -959,8 +984,12 @@ impl<'a, 'b> Tx<'a, 'b> {
             syn::ReturnType::Type(_, t) => {
                 let s = self.e.shape(t, &[]);
                 Some(match s {
-                    Shape::Named(ref n, _) if n == "Self" => Shape::Named(owner?.to_string(), vec![]),
-                    s => s,
+                    Shape::Named(ref n, _) | Shape::Unknown(ref n) if n == "Self" => Shape::Named(owner?.to_string(), vec![]),
+                    // `Option<Self>`, `Vec<Self>`, `Result<Self, E>`: the owner inside too.
+                    s => {
+                        let o = owner.map(str::to_string);
+                        subst_self(s, o.as_deref())?
+                    }
                 })
             }
         }
@@ -1264,6 +1293,39 @@ impl<'a, 'b> Tx<'a, 'b> {
     }
 
     /// An adapter's one-argument closure; a function path `f` (`.map(ObjectId::from)`) is the closure `|x| f(x)`.
+    /// The item shape of an iterator chain (`v.iter().filter(..).map(..)`), following each stage's closure.
+    fn chain_item_shape(&mut self, e: &Expr) -> Option<Shape> {
+        match e {
+            Expr::MethodCall(m) => match m.method.to_string().as_str() {
+                "iter" | "into_iter" | "copied" | "cloned" if m.args.is_empty() => match self.shape_of(&m.receiver)? {
+                    Shape::Vec(i) | Shape::PVec(i) | Shape::Array(i, _) => Some(*i),
+                    Shape::Ptr(p, _) => match *p {
+                        Shape::Vec(i) => Some(*i),
+                        _ => None,
+                    },
+                    _ => self.chain_item_shape(&m.receiver),
+                },
+                "filter" => self.chain_item_shape(&m.receiver),
+                "map" | "filter_map" => {
+                    let cur = self.chain_item_shape(&m.receiver)?;
+                    let c = Self::closure_of(m.args.first()?).ok()?;
+                    let out = self.closure_shape(&c, "_", &cur)?;
+                    if m.method == "map" {
+                        Some(out)
+                    } else {
+                        match out {
+                            Shape::Option(i) => Some(*i),
+                            _ => None,
+                        }
+                    }
+                }
+                _ => None,
+            },
+            Expr::Paren(p) => self.chain_item_shape(&p.expr),
+            _ => None,
+        }
+    }
+
     fn closure_of(a: &Expr) -> R<syn::ExprClosure> {
         match a {
             Expr::Closure(c) if c.inputs.len() == 1 => Ok(c.clone()),
@@ -1644,6 +1706,8 @@ impl<'a, 'b> Tx<'a, 'b> {
                     format!("r{n}_")
                 }
                 ("clear", Shape::Vec(_), 0) if deref.is_empty() => format!("clear(&{recv})"),
+                // A slice of a Vec reads like the Vec itself here (len, indexing, iteration).
+                ("as_slice", Shape::Vec(_), 0) => recv,
                 ("is_some_and", Shape::Option(i), 1) | ("is_none_or", Shape::Option(i), 1) => {
                     let c = Self::closure_of(args[0])?;
                     self.temps += 1;
@@ -1681,4 +1745,21 @@ fn shape_mentions_param(s: &Shape) -> bool {
         Shape::Named(_, a) => a.iter().any(shape_mentions_param),
         _ => false,
     }
+}
+
+/// A shape with `Self` replaced by the impl's type (None without an owner to replace it with).
+fn subst_self(s: Shape, owner: Option<&str>) -> Option<Shape> {
+    let b = |s: Box<Shape>| -> Option<Box<Shape>> { Some(Box::new(subst_self(*s, owner)?)) };
+    Some(match s {
+        Shape::Named(n, _) | Shape::Unknown(n) if n == "Self" => Shape::Named(owner?.to_string(), vec![]),
+        Shape::Option(i) => Shape::Option(b(i)?),
+        Shape::Vec(i) => Shape::Vec(b(i)?),
+        Shape::PVec(i) => Shape::PVec(b(i)?),
+        Shape::Ptr(i, sh) => Shape::Ptr(b(i)?, sh),
+        Shape::OptPtr(i, sh) => Shape::OptPtr(b(i)?, sh),
+        Shape::Result(a, e) => Shape::Result(b(a)?, b(e)?),
+        Shape::Map(k, v) => Shape::Map(b(k)?, b(v)?),
+        Shape::Tuple(v) => Shape::Tuple(v.into_iter().map(|x| subst_self(x, owner)).collect::<Option<Vec<_>>>()?),
+        s => s,
+    })
 }
