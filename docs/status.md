@@ -422,6 +422,13 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       (PreviewBadge, commit links, "report an issue"), Aetherhub links, `multiplayer` names that now hold only seat
       names and best-of-three sideboarding. The integration suite (`pnpm test:integration`) needs the built engine
       WASM; not run yet.
+    - Subpath done (94198bd) and checked locally: built with BASE_PATH=/open-mtg-arena/ and served there, every
+      file loads (no failed request), navigation and a direct link (/open-mtg-arena/my-decks) work, the only outside
+      host is Scryfall. (Serve it with `BASE_PATH=/open-mtg-arena/ npx vite preview`, or files 404.)
+    - Found then: the AI has no decks in 60-card formats. In Standard, Modern and the rest it drew from the scraped
+      metagame feeds the strip removed; the five starter decks are labelled "standard" but aren't Standard-legal
+      (Lightning Bolt, Jackal Pup...), so the legality check drops them. Commander still has 200 AI decks (MTGJSON
+      precons). To fix before the owner plays.
     - Subpath: their client assumes the site's root (`BrowserRouter` with no basename; about 90 root-absolute paths
       such as `/audio/...`, `/card-data.json`; the manifest's `start_url` "/"). For GitHub Pages at /open-mtg-arena/:
       Vite `base`, the router's basename, one helper that prefixes `import.meta.env.BASE_URL` to asset paths, a copy
