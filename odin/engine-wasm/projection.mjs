@@ -93,6 +93,8 @@ export function firstDifference(a, b, path = "") {
       const d = firstDifference(a[k], b[k], `${path}.${k}`);
       if (d) return d;
     }
+    // The same keys and values in another order (JSON.stringify above compares key order too).
+    if (Array.isArray(a) === Array.isArray(b)) return null;
   }
   return { path, a, b };
 }
