@@ -57,6 +57,9 @@ thread_local! {
     /// Inside an inlined closure body: where `?` goes instead of returning (the block's label, the result variable,
     /// the closure's result shape).
     pub static TRY_EXIT: std::cell::RefCell<Option<(String, String, Shape)>> = const { std::cell::RefCell::new(None) };
+    /// Inside an inlined closure body: where `return` goes (the same block, result variable and shape as TRY_EXIT).
+    /// A closure's `return` gives the closure's value, not the enclosing procedure's.
+    pub static RETURN_EXIT: std::cell::RefCell<Option<(String, String, Shape)>> = const { std::cell::RefCell::new(None) };
     /// Locals declared empty (`let mut v = Vec::new()`) whose element type only a later use shows (`v.push(id)` with
     /// `id` bound further on): Odin name → (a map rather than a sequence, the shape once a use fixes it). The
     /// declaration carries a placeholder type that the finished function's text gets in its place (body.rs).
@@ -1148,9 +1151,6 @@ impl<'a, 'b> Tx<'a, 'b> {
         if c.inputs.len() != args.len() {
             return Err("closure called with a different number of arguments".into());
         }
-        if crate::closures::has_return(&c.body) {
-            return Err("closure with return".into());
-        }
         if !crate::closures::simple_params(c) {
             return Err("closure parameter pattern".into());
         }
@@ -1185,9 +1185,9 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
             }
         }
-        // A body using `?` goes the block way, so `?` can leave it.
+        // A body using `?` or `return` goes the block way, so they can leave it.
         let single = match &*c.body {
-            _ if has_try(&c.body) => None,
+            _ if has_try(&c.body) || crate::closures::has_return(&c.body) => None,
             Expr::Block(b) if b.block.stmts.len() == 1 => match &b.block.stmts[0] {
                 Stmt::Expr(e, None) => Some(e.clone()),
                 _ => None,
@@ -2011,10 +2011,7 @@ impl<'a, 'b> Tx<'a, 'b> {
     fn closure_expr(&mut self, c: &syn::ExprClosure, value: &str, shape: &Shape, want: &Shape) -> R<String> {
         // `?` in a closure leaves the closure: the body goes the block way (inline_block), where `?` breaks out of it
         // with None/Err as the closure's value instead of returning from the enclosing procedure.
-        if has_try(&c.body) && !matches!(&*c.body, Expr::Block(b) if b.block.stmts.len() != 1) {
-            if crate::closures::has_return(&c.body) {
-                return Err("closure with return".into());
-            }
+        if (has_try(&c.body) || crate::closures::has_return(&c.body)) && !matches!(&*c.body, Expr::Block(b) if b.block.stmts.len() != 1) {
             let body = &*c.body;
             let block: syn::Block = match body {
                 Expr::Block(b) => b.block.clone(),
@@ -2036,10 +2033,6 @@ impl<'a, 'b> Tx<'a, 'b> {
             },
             // Statements: a block assigning the value, emitted where the closure runs (closure_in keeps them there).
             Expr::Block(b) => {
-                if crate::closures::has_return(&c.body) {
-                    self.unbind(saved);
-                    return Err("closure with return".into());
-                }
                 let r = crate::body::inline_block(self, &b.block, want);
                 self.unbind(saved);
                 return r;
