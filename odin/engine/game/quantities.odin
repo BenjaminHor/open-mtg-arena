@@ -27,10 +27,22 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			kind, has := r.counter_type.?
 			return from_source && (!has || counter_kind_supported(kind))
 		case types.QuantityRef_HandSize:
-			#partial switch _ in r.player {
-			case types.PlayerScope_Controller, types.PlayerScope_Opponent:
-				return true
+			return player_scope_supported(r.player)
+		case types.QuantityRef_GraveyardSize:
+			return player_scope_supported(r.player)
+		case types.QuantityRef_LifeTotal:
+			return player_scope_supported(r.player)
+		case types.QuantityRef_ObjectManaValue:
+			return scope_supported(r.scope)
+		case types.QuantityRef_ZoneCardCount:
+			if r.filter != nil do return false
+			#partial switch r.scope {
+			case .Controller, .All, .Opponents:
+			case:
+				return false
 			}
+			for t in r.card_types do if !type_filter_supported(t) do return false
+			return true
 		}
 	}
 	return false
@@ -73,9 +85,36 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			return n
 		case types.QuantityRef_HandSize:
 			// "The number of cards in your hand" (or an opponent's, in a two-player game).
-			who := controller
-			if _, opp := r.player.(types.PlayerScope_Opponent); opp do who = opponent(s, controller)
-			return types.pvec_len(player(s, who).hand)
+			return types.pvec_len(player(s, scope_player(s, r.player, controller)).hand)
+		case types.QuantityRef_GraveyardSize:
+			return types.pvec_len(player(s, scope_player(s, r.player, controller)).graveyard)
+		case types.QuantityRef_LifeTotal:
+			return int(player(s, scope_player(s, r.player, controller)).life)
+		case types.QuantityRef_ObjectManaValue:
+			// CR 202.3: the mana value of the object.
+			if o := scope_object(s, r.scope, source, target); o != nil do return mana_value(o.mana_cost)
+		case types.QuantityRef_ZoneCardCount:
+			// "The number of creature cards in your graveyard": cards of any of the listed types.
+			n := 0
+			for &p in s.players {
+				#partial switch r.scope {
+				case .Controller:
+					if p.id != controller do continue
+				case .Opponents:
+					if p.id == controller do continue
+				}
+				list := zone_list(s, zone_of_ref(r.zone), p.id)
+				for i in 0 ..< types.pvec_len(list^) {
+					o := object(s, types.pvec_get(list^, i))
+					if o.owner != p.id do continue // exile is shared: count each player's own cards
+					if len(r.card_types) == 0 do n += 1
+					else do for t in r.card_types do if type_matches(o, t) {
+						n += 1
+						break
+					}
+				}
+			}
+			return n
 		}
 	}
 	return 0
@@ -90,4 +129,34 @@ scope_object :: proc(s: ^types.GameState, scope: types.ObjectScope, source, targ
 		if target != 0 do return object(s, target)
 	}
 	return nil
+}
+
+// "You" or "an opponent" (the only one, in a two-player game).
+player_scope_supported :: proc(p: types.PlayerScope) -> bool {
+	#partial switch _ in p {
+	case types.PlayerScope_Controller, types.PlayerScope_Opponent:
+		return true
+	}
+	return false
+}
+
+@(private = "file")
+scope_player :: proc(s: ^types.GameState, p: types.PlayerScope, controller: types.PlayerId) -> types.PlayerId {
+	if _, opp := p.(types.PlayerScope_Opponent); opp do return opponent(s, controller)
+	return controller
+}
+
+@(private = "file")
+zone_of_ref :: proc(z: types.ZoneRef) -> types.Zone {
+	switch z {
+	case .Graveyard:
+		return .Graveyard
+	case .Exile:
+		return .Exile
+	case .Library:
+		return .Library
+	case .Hand:
+		return .Hand
+	}
+	return .Graveyard
 }

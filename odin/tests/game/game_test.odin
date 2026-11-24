@@ -752,3 +752,27 @@ intervening_if_is_checked_twice :: proc(t: ^testing.T) {
 	game.apply(g, 1, types.GameAction_PassPriority{})
 	testing.expect(t, game.player(&g.state, 0).life == 24, "seven cards throughout: 4 life")
 }
+
+@(test)
+amounts_from_zones_and_players :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 608.2h: amounts read from the game: "the number of creature cards in your graveyard", your life total,
+	// and (CR 202.3) a mana value.
+	g := new_game()
+	s := &g.state
+	add(t, g, "Grizzly Bears", 0, .Graveyard)
+	add(t, g, "Shock", 0, .Graveyard)
+	add(t, g, "Hill Giant", 1, .Graveyard) // the opponent's
+	creature_cards := types.QuantityRef_ZoneCardCount{zone = .Graveyard, scope = .Controller}
+	append(&creature_cards.card_types, types.TypeFilter(types.TypeFilter_Creature{}))
+	q := types.QuantityExpr(types.QuantityExpr_Ref{creature_cards})
+	testing.expect(t, game.quantity_supported(q))
+	testing.expect(t, game.quantity_value(s, q, 0, 0, 0) == 1, "one creature card in your graveyard")
+	creature_cards.scope = .All
+	testing.expect(t, game.quantity_value(s, types.QuantityExpr_Ref{creature_cards}, 0, 0, 0) == 2, "two in all graveyards")
+	life := types.QuantityExpr(types.QuantityExpr_Ref{types.QuantityRef_LifeTotal{player = types.PlayerScope_Controller{}}})
+	testing.expect(t, game.quantity_value(s, life, 0, 0, 0) == 20)
+	giant := add(t, g, "Hill Giant", 0, .Battlefield)
+	mv := types.QuantityExpr(types.QuantityExpr_Ref{types.QuantityRef_ObjectManaValue{scope = types.ObjectScope_Source{}}})
+	testing.expect(t, game.quantity_value(s, mv, 0, giant.id, 0) == 4, "Hill Giant's mana value")
+}
