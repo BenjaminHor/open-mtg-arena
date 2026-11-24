@@ -43,8 +43,8 @@ begin_step :: proc(g: ^Game, step: types.Phase) {
 	case .Untap:
 		// CR 502.3: the active player untaps their permanents; nobody gets priority (CR 502.4).
 		for o in permanents_of(s, s.active_player) {
-			o.tapped = false
 			o.summoning_sick = false
+			if !has_rule(g, o, .Cant_Untap) do o.tapped = false // CR 502.3, "doesn't untap"
 		}
 		begin_step(g, .Upkeep)
 		return
@@ -153,6 +153,7 @@ game_over :: proc(s: ^types.GameState) -> bool {
 ask_discard_to_hand_size :: proc(g: ^Game) -> bool {
 	s := &g.state
 	p := player(s, s.active_player)
+	if player_rule_count(g, s.active_player, .No_Max_Hand_Size) > 0 do return false // CR 402.2
 	n := types.pvec_len(p.hand) - MAX_HAND_SIZE
 	if n <= 0 do return false
 	cards: [dynamic]types.ObjectId

@@ -8,15 +8,18 @@ toughness_of :: proc(o: ^types.GameObject) -> int {return int(o.toughness.? or_e
 
 // CR 508.1a, 702.3b: an untapped creature its controller has controlled since the turn began (or with haste), and
 // without defender.
-can_attack :: proc(s: ^types.GameState, o: ^types.GameObject) -> bool {
+can_attack :: proc(g: ^Game, o: ^types.GameObject) -> bool {
+	s := &g.state
 	if !is_type(o, .Creature) || o.tapped || o.controller != s.active_player do return false
-	if has_keyword(o, types.Keyword_Defender) do return false
+	if has_keyword(o, types.Keyword_Defender) && !has_rule(g, o, .Attack_With_Defender) do return false
+	if has_rule(g, o, .Cant_Attack) do return false
 	return !o.summoning_sick || has_keyword(o, types.Keyword_Haste)
 }
 
 // CR 509.1a, 702.9b: an untapped creature can block an attacker; a flying attacker only by flying or reach.
-can_block :: proc(blocker, attacker: ^types.GameObject) -> bool {
+can_block :: proc(g: ^Game, blocker, attacker: ^types.GameObject) -> bool {
 	if !is_type(blocker, .Creature) || blocker.tapped do return false
+	if has_rule(g, blocker, .Cant_Block) || has_rule(g, attacker, .Cant_Be_Blocked) do return false
 	if has_keyword(attacker, types.Keyword_Flying) && !has_keyword(blocker, types.Keyword_Flying) && !has_keyword(blocker, types.Keyword_Reach) do return false
 	return true
 }
@@ -24,7 +27,7 @@ can_block :: proc(blocker, attacker: ^types.GameObject) -> bool {
 ask_attackers :: proc(g: ^Game) -> bool {
 	s := &g.state
 	valid: [dynamic]types.ObjectId
-	for o in permanents_of(s, s.active_player) do if can_attack(s, o) do append(&valid, o.id)
+	for o in permanents_of(s, s.active_player) do if can_attack(g, o) do append(&valid, o.id)
 	if len(valid) == 0 do return false
 	targets: [dynamic]types.AttackTarget
 	append(&targets, types.AttackTarget_Player{opponent(s, s.active_player)})
@@ -40,11 +43,13 @@ declare_attackers :: proc(g: ^Game, attacks: []types.Tuple2(types.ObjectId, type
 	seen := make(map[types.ObjectId]bool, context.temp_allocator)
 	for a in attacks {
 		o := object(s, a._0)
-		if o == nil || o.zone != .Battlefield || !can_attack(s, o) || seen[a._0] do return false
+		if o == nil || o.zone != .Battlefield || !can_attack(g, o) || seen[a._0] do return false
 		t, to_player := a._1.(types.AttackTarget_Player)
 		if !to_player || t._0 != defender do return false
 		seen[a._0] = true
 	}
+	// CR 508.1d: a creature that attacks each combat if able must be declared when it can attack.
+	for o in permanents_of(s, s.active_player) do if !seen[o.id] && can_attack(g, o) && has_rule(g, o, .Must_Attack) do return false
 	combat := types.CombatState{}
 	for a in attacks {
 		o := object(s, a._0)
@@ -67,7 +72,7 @@ ask_blockers :: proc(g: ^Game) -> bool {
 	targets: map[types.ObjectId][dynamic]types.ObjectId
 	for o in permanents_of(s, defender) {
 		blockable: [dynamic]types.ObjectId
-		for a in combat.attackers do if can_block(o, object(s, a.object_id)) do append(&blockable, a.object_id)
+		for a in combat.attackers do if can_block(g, o, object(s, a.object_id)) do append(&blockable, a.object_id)
 		if len(blockable) > 0 {
 			append(&valid, o.id)
 			targets[o.id] = blockable
@@ -89,7 +94,7 @@ declare_blockers :: proc(g: ^Game, assignments: []types.Tuple2(types.ObjectId, t
 	for a in assignments {
 		blocker, attacker := object(s, a._0), object(s, a._1)
 		if blocker == nil || attacker == nil || blocker.zone != .Battlefield || blocker.controller != defender || used[a._0] do return false
-		if !is_attacking(combat, a._1) || !can_block(blocker, attacker) do return false
+		if !is_attacking(combat, a._1) || !can_block(g, blocker, attacker) do return false
 		used[a._0] = true
 		count[a._1] += 1
 	}
@@ -337,6 +342,7 @@ check_state_based_actions :: proc(g: ^Game) {
 			}
 		}
 		if remove_departed_tokens(g) do changed = true
+		if attachment_state_actions(g) do changed = true
 		// CR 903.9a: a commander put into a graveyard or exile goes back to the command zone (its owner may choose
 		// this; this engine always does).
 		for list in ([?]^types.PVec(types.ObjectId){&s.exile, &s.players[0].graveyard, &s.players[len(s.players) - 1].graveyard}) {

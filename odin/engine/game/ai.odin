@@ -55,7 +55,7 @@ priority_action :: proc(g: ^Game, p: types.PlayerId) -> types.GameAction {
 	hand := ids_of(player(s, p).hand)
 	for id in hand {
 		o := object(s, id)
-		if can_play_land(s, p, o) && object_supported(o, g.card_db) do return types.GameAction_PlayLand{object_id = id, card_id = o.card_id}
+		if can_play_land(g, p, o) && object_supported(o, g.card_db) do return types.GameAction_PlayLand{object_id = id, card_id = o.card_id}
 	}
 	// Only spells cast on its own turn's main phase, or burn aimed at a creature it can kill; it doesn't hold tricks.
 	best: ^types.GameObject
@@ -185,7 +185,7 @@ choose_attacks :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.Tuple2(typ
 	s := &g.state
 	defender := opponent(s, p)
 	attackers := make([dynamic]^types.GameObject, context.temp_allocator)
-	for o in permanents_of(s, p) do if can_attack(s, o) do append(&attackers, o)
+	for o in permanents_of(s, p) do if can_attack(g, o) do append(&attackers, o)
 	blockers := make([dynamic]^types.GameObject, context.temp_allocator)
 	for o in permanents_of(s, defender) do if is_type(o, .Creature) && !o.tapped do append(&blockers, o)
 	total := 0
@@ -195,8 +195,8 @@ choose_attacks :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.Tuple2(typ
 	for a in attackers {
 		if power_of(a) <= 0 do continue
 		safe := true
-		for b in blockers do if can_block(b, a) && power_of(b) >= toughness_of(a) && toughness_of(b) > power_of(a) do safe = false
-		if all_in || safe do append(&out, types.Tuple2(types.ObjectId, types.AttackTarget){a.id, types.AttackTarget_Player{defender}})
+		for b in blockers do if can_block(g, b, a) && power_of(b) >= toughness_of(a) && toughness_of(b) > power_of(a) do safe = false
+		if all_in || safe || has_rule(g, a, .Must_Attack) do append(&out, types.Tuple2(types.ObjectId, types.AttackTarget){a.id, types.AttackTarget_Player{defender}})
 	}
 	return out
 }
@@ -222,7 +222,7 @@ choose_blocks :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.Tuple2(type
 		if has_keyword(attacker, types.Keyword_Menace) do continue
 		pick: ^types.GameObject
 		for b in permanents_of(s, p) {
-			if used[b.id] || !can_block(b, attacker) do continue
+			if used[b.id] || !can_block(g, b, attacker) do continue
 			kills := power_of(b) >= toughness_of(attacker)
 			survives := toughness_of(b) > power_of(attacker)
 			trade := kills && mana_value(attacker.mana_cost) >= mana_value(b.mana_cost)

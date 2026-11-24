@@ -28,13 +28,23 @@ load_db :: proc() -> bool {
 	return db_ok
 }
 
+// The card database decodes cards lazily into a shared map, and the test runner runs tests on several threads.
+@(private = "file")
+db_lock: sync.Mutex
+
+find :: proc(name: string) -> (^types.CardExportEntry, bool) {
+	sync.mutex_lock(&db_lock)
+	defer sync.mutex_unlock(&db_lock)
+	return carddb.find(&db, name)
+}
+
 lookup :: proc(name: string) -> ^types.CardExportEntry {
-	e, _ := carddb.find(&db, name)
+	e, _ := find(name)
 	return e
 }
 
 card :: proc(t: ^testing.T, name: string) -> ^types.CardExportEntry {
-	e, ok := carddb.find(&db, name)
+	e, ok := find(name)
 	testing.expectf(t, ok, "card %q is in the card data", name)
 	return e
 }
@@ -43,7 +53,7 @@ card :: proc(t: ^testing.T, name: string) -> ^types.CardExportEntry {
 // basic lands, so nothing else is around unless a test adds it.
 new_game :: proc() -> ^game.Game {
 	lands := make([]^types.CardExportEntry, 40)
-	forest, _ := carddb.find(&db, "Forest")
+	forest, _ := find("Forest")
 	for &l in lands do l = forest
 	decks := []game.Deck{{main = lands}, {main = lands}}
 	format: types.FormatConfig
@@ -417,4 +427,31 @@ draw_a_card_for_each_creature :: proc(t: ^testing.T) {
 	game.apply(g, 0, types.GameAction_PassPriority{})
 	game.apply(g, 1, types.GameAction_PassPriority{})
 	testing.expect(t, types.pvec_len(game.player(&g.state, 0).hand) == before - 1 + 2, "two cards drawn")
+}
+
+@(test)
+creature_that_cant_block :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 509.1b: a blocking restriction ("can't block") makes that block illegal.
+	g := new_game()
+	goblin := add(t, g, "Hulking Goblin", 1, .Battlefield) // can't block
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	testing.expect(t, !game.can_block(g, goblin, bears))
+	warrior := add(t, g, "Phantom Warrior", 0, .Battlefield) // can't be blocked
+	other := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, !game.can_block(g, other, warrior), "Phantom Warrior can't be blocked")
+	testing.expect(t, game.can_block(g, other, bears))
+}
+
+@(test)
+creature_that_must_attack :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 508.1d: a declaration that leaves out a creature that attacks each combat if able is illegal.
+	g := new_game()
+	cyclops := add(t, g, "Bloodrock Cyclops", 0, .Battlefield) // attacks each combat if able
+	game.begin_step(g, .DeclareAttackers)
+	none: [dynamic]types.Tuple2(types.ObjectId, types.AttackTarget)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = none}), "it has to attack")
+	attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{cyclops.id, types.AttackTarget_Player{1}}}
+	testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
 }

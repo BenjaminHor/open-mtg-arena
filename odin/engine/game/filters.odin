@@ -23,6 +23,8 @@ type_filter_supported :: proc(t: types.TypeFilter) -> bool {
 
 property_supported :: proc(p: types.FilterProp) -> bool {
 	#partial switch x in p {
+	case types.FilterProp_EnchantedBy, types.FilterProp_EquippedBy:
+		return true
 	case types.FilterProp_Another, types.FilterProp_Tapped, types.FilterProp_Untapped, types.FilterProp_Token,
 	     types.FilterProp_NonToken, types.FilterProp_HasColor, types.FilterProp_NotColor, types.FilterProp_HasSupertype,
 	     types.FilterProp_NotSupertype, types.FilterProp_Blocking:
@@ -189,6 +191,12 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 			c, in_combat := &s.combat.?
 			if !in_combat do return false
 			if _, blocking := c.blocker_to_attacker[o.id]; !blocking do return false
+		case types.FilterProp_EnchantedBy, types.FilterProp_EquippedBy:
+			// "Enchanted/equipped creature": the permanent the source is attached to.
+			src := object(s, source)
+			if src == nil do return false
+			host := host_of(s, src)
+			if host == nil || host.id != o.id do return false
 		case types.FilterProp_InZone, types.FilterProp_Owned:
 		// The zone and owner are checked where the candidates are gathered (graveyard_targets).
 		}

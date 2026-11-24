@@ -20,7 +20,7 @@ has_keyword :: proc(o: ^types.GameObject, $T: typeid) -> bool {
 // later.
 card_supported :: proc(face: ^types.CardFace) -> bool {
 	for r in face.replacements do if !replacement_supported(r) do return false
-	for st in face.static_abilities do if !static_supported(st) do return false
+	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) do return false
 	for t in face.triggers do if !trigger_supported(t) do return false
 	if face.additional_cost != nil || face.modal != nil || len(face.casting_options) > 0 do return false
 	// A spell needs a mana cost it can pay (CR 118.6, 107.4e-f); lands aren't cast.
@@ -44,11 +44,19 @@ card_supported :: proc(face: ^types.CardFace) -> bool {
 }
 
 keyword_supported :: proc(k: types.Keyword) -> bool {
-	#partial switch _ in k {
+	#partial switch k in k {
 	case types.Keyword_Flying, types.Keyword_Reach, types.Keyword_Haste, types.Keyword_Vigilance,
 	     types.Keyword_Defender, types.Keyword_Trample, types.Keyword_Lifelink, types.Keyword_Deathtouch,
-	     types.Keyword_FirstStrike, types.Keyword_DoubleStrike, types.Keyword_Flash, types.Keyword_Menace:
+	     types.Keyword_FirstStrike, types.Keyword_DoubleStrike, types.Keyword_Flash, types.Keyword_Menace,
+	     types.Keyword_Indestructible, types.Keyword_Hexproof, types.Keyword_Shroud:
 		return true
+	case types.Keyword_Enchant:
+		// CR 702.5a: an Aura enchants a permanent of a kind (enchanting players isn't modelled yet).
+		t, typed := k._0.(types.TargetFilter_Typed)
+		return typed && typed_supported(t._0)
+	case types.Keyword_Equip:
+		_, ok := k._0.(types.ManaCost_Cost)
+		return ok
 	}
 	return false
 }
@@ -101,6 +109,8 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return fixed && you
 	case types.Effect_GenericEffect:
 		return generic_effect_supported(x)
+	case types.Effect_Attach:
+		return attach_effect_supported(x)
 	case types.Effect_Scry:
 		_, fixed := fixed_quantity(x.count)
 		return fixed && (x.target == nil || is_controller(x.target))
@@ -151,6 +161,8 @@ effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
 		f = x.target
 	case types.Effect_Bounce:
 		f = x.target
+	case types.Effect_Attach:
+		f = x.target
 	case types.Effect_PutCounter:
 		f = x.target
 	case types.Effect_SetTapState:
@@ -180,6 +192,18 @@ is_any :: proc(f: types.TargetFilter) -> bool {
 is_self :: proc(f: types.TargetFilter) -> bool {
 	_, ok := f.(types.TargetFilter_SelfRef)
 	return ok
+}
+
+// The targets of a spell: an Aura spell's single target from its enchant ability (CR 303.4a), or one per
+// targeting instruction.
+spell_target_slots :: proc(o: ^types.GameObject) -> [dynamic]types.TargetFilter {
+	if is_aura(o) {
+		out := make([dynamic]types.TargetFilter, context.temp_allocator)
+		f, _ := enchant_filter(o)
+		append(&out, f)
+		return out
+	}
+	return target_slots(spell_ability(o))
 }
 
 // The targets of a spell, one per targeting effect in its chain, in order.
@@ -262,9 +286,7 @@ castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c
 	// From the hand, or a commander from the command zone (CR 903.8).
 	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander)) do return false
 	if !object_supported(o, card_db) || !can_cast_now(s, p, o) do return false
-	if a := spell_ability(o); a != nil {
-		for f in target_slots(a) do if len(legal_targets(s, f, p, o.id)) == 0 do return false
-	}
+	for f in spell_target_slots(o) do if len(legal_targets(s, f, p, o.id)) == 0 do return false
 	_, payable := plan_payment(s, p, spell_cost(s, o))
 	return payable
 }
@@ -303,8 +325,7 @@ cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []t
 	s := &g.state
 	o := object(s, id)
 	if !castable(s, p, o, g.card_db) do return false
-	a := spell_ability(o)
-	slots := target_slots(a) if a != nil else nil
+	slots := spell_target_slots(o)
 	chosen: [dynamic]types.TargetRef
 	for t, i in targets {
 		if i >= len(slots) || !target_still_legal(s, t, slots[i], p, id) do return false
@@ -333,10 +354,17 @@ pending_ability :: proc(g: ^Game) -> ^types.AbilityDefinition {
 	return spell_ability(o)
 }
 
+// The target slots of what's being cast or activated.
+pending_slots :: proc(g: ^Game) -> [dynamic]types.TargetFilter {
+	o := object(&g.state, g.pending.object)
+	if g.pending.ability_index >= 0 do return target_slots(activated_ability(o, g.pending.ability_index))
+	return spell_target_slots(o)
+}
+
 ask_target :: proc(g: ^Game, p: types.PlayerId) {
 	s := &g.state
 	o := object(s, g.pending.object)
-	slots := target_slots(pending_ability(g))
+	slots := pending_slots(g)
 	slot := len(g.pending.targets)
 	legal := legal_targets(s, slots[slot], p, o.id)
 	pending := new(types.PendingCast)
@@ -359,7 +387,7 @@ ask_target :: proc(g: ^Game, p: types.PlayerId) {
 
 choose_target :: proc(g: ^Game, p: types.PlayerId, t: types.TargetRef) -> bool {
 	s := &g.state
-	slots := target_slots(pending_ability(g))
+	slots := pending_slots(g)
 	slot := len(g.pending.targets)
 	if !target_still_legal(s, t, slots[slot], p, g.pending.object) do return false
 	append(&g.pending.targets, t)
@@ -417,9 +445,21 @@ resolve_top_of_stack :: proc(g: ^Game) {
 	if !is_spell do return
 	o := object(s, entry.source_id)
 	if is_permanent_card(o) {
+		host: ^types.GameObject
+		if is_aura(o) {
+			// CR 608.3b-c: an Aura spell whose target is illegal doesn't resolve; otherwise it enters attached to it.
+			f, _ := enchant_filter(o)
+			if len(spell.ability.targets) == 0 || !same_object_as_chosen(s, spell.ability, 0) || !target_still_legal(s, spell.ability.targets[0], f, entry.controller, o.id) {
+				move_object(g, o.id, .Graveyard)
+				return
+			}
+			id, _ := target_object(spell.ability.targets[0])
+			host = object(s, id)
+		}
 		// CR 608.3: a permanent spell resolving becomes a permanent on the battlefield under its controller.
 		move_object(g, o.id, .Battlefield)
 		o.controller = entry.controller
+		if host != nil do attach(s, o, host)
 		return
 	}
 	// CR 608.2n: an instant or sorcery spell goes to its owner's graveyard as the final step of resolving.
@@ -440,6 +480,10 @@ do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Playe
 		return
 	}
 	#partial switch x in a.effect^ {
+	case types.Effect_Attach:
+		// CR 702.6a, 701.3: the source (an Equipment) becomes attached to the target.
+		equipment := object(s, source)
+		if id, ok := target_object(target); ok && equipment != nil && equipment.zone == .Battlefield do attach(s, equipment, object(s, id))
 	case types.Effect_Scry:
 		n, _ := fixed_quantity(x.count)
 		return ask_scry(g, controller, n, false)
@@ -566,7 +610,7 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 			append(&out, name("trigger:", t.mode))
 		}
 	}
-	for st in face.static_abilities do if !static_supported(st) do append(&out, name("static:", st.mode))
+	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) do append(&out, name("static:", st.mode))
 	for r in face.replacements do if !replacement_supported(r) do append(&out, name("replacement:", r.event))
 	if face.additional_cost != nil do append(&out, "additional cost")
 	if face.modal != nil do append(&out, "modal")

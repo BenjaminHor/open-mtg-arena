@@ -207,16 +207,19 @@ bottom_cards :: proc(g: ^Game, p: types.PlayerId, cards: []types.ObjectId) -> bo
 
 // CR 305.2, 505.6b: on their own turn, in a main phase with an empty stack, a player may play a land if they haven't
 // played their land for the turn.
-can_play_land :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject) -> bool {
+can_play_land :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool {
+	s := &g.state
 	if o.zone != .Hand || o.owner != p || !is_type(o, .Land) do return false
-	return sorcery_timing(s, p) && player(s, p).lands_played_this_turn < s.max_lands_per_turn
+	// CR 305.2: one land a turn, plus one for each effect allowing an additional land.
+	allowed := int(s.max_lands_per_turn) + player_rule_count(g, p, .Extra_Land)
+	return sorcery_timing(s, p) && int(player(s, p).lands_played_this_turn) < allowed
 }
 
 // CR 305.1: playing a land puts it onto the battlefield; it doesn't use the stack.
 play_land :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId) -> bool {
 	s := &g.state
 	o := object(s, id)
-	if o == nil || !can_play_land(s, p, o) || !object_supported(o, g.card_db) do return false
+	if o == nil || !can_play_land(g, p, o) || !object_supported(o, g.card_db) do return false
 	move_object(g, id, .Battlefield)
 	player(s, p).lands_played_this_turn += 1
 	s.lands_played_this_turn += 1
@@ -238,7 +241,7 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		append(&out, types.GameAction_PassPriority{})
 		for id in castable_zone_ids(s, p) {
 			o := object(s, id)
-			if can_play_land(s, p, o) && object_supported(o, g.card_db) {
+			if can_play_land(g, p, o) && object_supported(o, g.card_db) {
 				append(&out, types.GameAction_PlayLand{object_id = id, card_id = o.card_id})
 			} else if castable(s, p, o, g.card_db) {
 				append(&out, types.GameAction_CastSpell{object_id = id, card_id = o.card_id})

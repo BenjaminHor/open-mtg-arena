@@ -69,7 +69,11 @@ move_object :: proc(g: ^Game, id: types.ObjectId, to: types.Zone) {
 		if list := zone_list(s, o.zone, o.owner); list != nil do remove_id(list, id)
 	}
 	from := o.zone
-	if from == .Battlefield do remove_from_combat(s, id) // CR 506.4
+	if from == .Battlefield {
+		remove_from_combat(s, id) // CR 506.4
+		detach_all_from(s, o)
+		unattach(s, o)
+	}
 	last_controller := o.controller // CR 603.10: a leaves-the-battlefield trigger looks back at the object as it was
 	o.zone = to
 	o.incarnation += 1

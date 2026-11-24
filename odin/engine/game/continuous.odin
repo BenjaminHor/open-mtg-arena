@@ -34,6 +34,9 @@ modification_supported :: proc(m: types.ContinuousModification) -> bool {
 		return true
 	case types.ContinuousModification_AddKeyword:
 		return keyword_supported(k.keyword)
+	case types.ContinuousModification_AddStaticMode:
+		modes := rule_modes(k.mode)
+		return modes != {} && modes & PLAYER_MODES == {} && .Flash not_in modes
 	}
 	return false
 }
