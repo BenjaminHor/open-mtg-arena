@@ -16,6 +16,13 @@ use engine::types::game_state::GameState;
 
 const REPS: u32 = 200;
 
+/// A recording line's state, read straight from the text: never through serde_json::Value, which keeps one member
+/// per key and so loses the repeated "type" key some states have (docs/status.md, Known issues).
+#[derive(serde::Deserialize)]
+struct Line {
+    state: Option<GameState>,
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() < 2 {
@@ -31,8 +38,9 @@ fn main() {
             continue;
         }
         let line = line.expect("line");
-        let value: serde_json::Value = serde_json::from_str(&line).expect("json");
-        let state: GameState = serde_json::from_value(value["state"].clone()).expect("state decodes");
+        let Some(state) = serde_json::from_str::<Line>(&line).expect("state decodes").state else {
+            continue;
+        };
         let ids: Vec<_> = state.objects.keys().copied().collect();
         if ids.is_empty() {
             continue;

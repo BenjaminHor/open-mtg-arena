@@ -17,12 +17,16 @@ on:
 permissions:
   contents: read
 
+# A newer push waits for the run under way instead of cancelling it: the job is long, and a cancelled run checks
+# nothing.
 concurrency:
   group: odin-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   ODIN_TAG: dev-2026-11a
+  # The engine is built twice in the tool profile (card data, recorder); without debug info it fits the runner's disk.
+  CARGO_PROFILE_TOOL_DEBUG: "0"
 
 jobs:
   model:
@@ -41,11 +45,17 @@ jobs:
       # calls clang at run time, so those are installed even when the build comes from the cache.
       - name: LLVM 18 and clang
         run: sudo apt-get update && sudo apt-get install -y llvm-18-dev clang-18
+      # The runner image (ImageOS/ImageVersion are runner environment variables, not workflow `env`).
+      - name: Runner image
+        id: image
+        run: |
+          echo "image=${ImageOS:-unknown}-${ImageVersion:-unknown}" >> "$GITHUB_OUTPUT"
+          df -h /
       - uses: actions/cache@v4
         id: odin-cache
         with:
           path: ~/odin
-          key: odin-${{ env.ODIN_TAG }}-${{ hashFiles('odin/toolchain/*.patch') }}-${{ runner.os }}-${{ env.ImageOS }}-${{ env.ImageVersion }}
+          key: odin-${{ env.ODIN_TAG }}-${{ hashFiles('odin/toolchain/*.patch') }}-${{ steps.image.outputs.image }}
       - name: Build Odin
         if: steps.odin-cache.outputs.cache-hit != 'true'
         run: |
