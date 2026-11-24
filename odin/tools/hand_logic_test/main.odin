@@ -48,4 +48,35 @@ main :: proc() {
 		}
 	}
 	fmt.println("ok: ObjectMap iterates in the Rust order (", len(got), "ids )")
+	check_get_mut_copies_on_write()
+}
+
+// ObjectMap::get_mut is `Arc::make_mut` on the map and the object: a write through a clone's object leaves the
+// original state's object (and map) untouched, and a second write through the same clone copies nothing again.
+check_get_mut_copies_on_write :: proc() {
+	m := types.shared_from(make(map[types.ObjectId]^types.GameObject))
+	obj := types.shared_from(types.GameObject{})
+	m^[7] = obj
+	original := types.ObjectMap{inner = m}
+	copy := types.clone_ObjectMap(original)
+	p, ok := types.ObjectMap_get_mut(&copy, 7).?
+	if !ok {
+		fmt.eprintln("FAIL: get_mut found nothing")
+		os.exit(1)
+	}
+	p.tapped = true
+	if original.inner^[7].tapped || original.inner == copy.inner || original.inner^[7] == copy.inner^[7] {
+		fmt.eprintln("FAIL: get_mut on a clone wrote into the original")
+		os.exit(1)
+	}
+	q, _ := types.ObjectMap_get_mut(&copy, 7).?
+	if q != p || !copy.inner^[7].tapped {
+		fmt.eprintln("FAIL: a second get_mut copied again or lost the write")
+		os.exit(1)
+	}
+	if _, none := types.ObjectMap_get_mut(&copy, 99).?; none {
+		fmt.eprintln("FAIL: get_mut found a missing id")
+		os.exit(1)
+	}
+	fmt.println("ok: ObjectMap.get_mut copies on write")
 }
