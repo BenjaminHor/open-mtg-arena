@@ -78,7 +78,7 @@ spell_ability_supported :: proc(a: types.AbilityDefinition) -> bool {
 // targets and (for triggered abilities, CR 603.5) whether to do it at all.
 // `after_target`: an earlier instruction of the same ability chose a target, which "it" or "that creature" can
 // refer to.
-ability_supported :: proc(a: types.AbilityDefinition, after_target := false) -> bool {
+ability_supported :: proc(a: types.AbilityDefinition, after_target := false, after_search := false) -> bool {
 	if a.effect == nil || a.optional_targeting || a.modal != nil do return false
 	if c, has := a.condition.?; has && !ability_condition_supported(c) do return false
 	// "Each player draws", "an opponent draws", "for each creature chosen": scopes and groups not carried out yet.
@@ -89,8 +89,10 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false) -> 
 	if a.else_ability != nil do return false
 	if !effect_supported(a.effect^, a.duration) do return false
 	if refers_to_parent_target(a.effect^) && !after_target do return false
+	if moves_found_cards(a.effect^) && !after_search do return false
 	_, targets := effect_target(a.effect^)
-	if a.sub_ability != nil do return ability_supported(a.sub_ability^, after_target || targets)
+	_, searches := a.effect^.(types.Effect_SearchLibrary)
+	if a.sub_ability != nil do return ability_supported(a.sub_ability^, after_target || targets, after_search || searches)
 	return true
 }
 
@@ -126,6 +128,10 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return fixed && you
 	case types.Effect_GenericEffect:
 		return generic_effect_supported(x)
+	case types.Effect_SearchLibrary:
+		return search_supported(x)
+	case types.Effect_Shuffle:
+		return is_controller(x.target)
 	case types.Effect_Attach:
 		return attach_effect_supported(x)
 	case types.Effect_Discard:
@@ -200,6 +206,7 @@ player_typed :: proc(f: types.TypedFilter) -> (types.ControllerRef, bool) {
 // The target an effect asks for, if it targets (CR 115.1: the word "target"; here, a filter naming what can be
 // chosen rather than "this" or "you").
 effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
+	if moves_found_cards(e) do return nil, false // "those cards" a search found
 	f := effect_target_filter(e)
 	#partial switch _ in f {
 	case types.TargetFilter_Any, types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_Typed, types.TargetFilter_Or:
@@ -697,7 +704,13 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		n := amount(g, x.amount, controller, source, target)
 		lose_life(s, controller, n)
 	case types.Effect_ChangeZone:
-		do_change_zone(g, x, controller, source, target)
+		if moves_found_cards(effect) do move_found_cards(g, x, controller)
+		else do do_change_zone(g, x, controller, source, target)
+	case types.Effect_SearchLibrary:
+		start_search(g, x, controller, source)
+		return true
+	case types.Effect_Shuffle:
+		shuffle_library(g, controller)
 	case types.Effect_Bounce:
 		if id, ok := target_object(target); ok && object(s, id).zone == .Battlefield do move_object(g, id, .Hand)
 	case types.Effect_GenericEffect:

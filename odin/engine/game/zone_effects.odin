@@ -41,6 +41,7 @@ change_zone_supported :: proc(x: types.Effect_ChangeZone) -> bool {
 	}
 	origin, has_origin := x.origin.?
 	if is_self(x.target) do return true
+	if has_origin && origin == .Library && is_any(x.target) do return x.destination != .Library // the found cards
 	if _, from_graveyard := graveyard_filter(x.target); from_graveyard do return has_origin && origin == .Graveyard
 	// A permanent on the battlefield.
 	return (!has_origin || origin == .Battlefield) && x.destination != .Battlefield && filter_supported(x.target) && !may_name_player(x.target)

@@ -24,6 +24,13 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		for e in w.pending do if e.player == p do return types.GameAction_SelectCards{cards = worst_cards(g, p, int(e.count))}, true
 	case types.WaitingFor_DiscardToHandSize:
 		return types.GameAction_SelectCards{cards = worst_cards(g, p, w.count)}, true
+	case types.WaitingFor_SearchChoice:
+		// As many as allowed, the first ones found.
+		cards := slice.clone(w.cards[:], context.temp_allocator)
+		slice.sort_by(cards, proc(a, b: types.ObjectId) -> bool {return a < b})
+		out := make([dynamic]types.ObjectId, context.temp_allocator)
+		append(&out, ..cards[:min(w.count, len(cards))])
+		return types.GameAction_SelectCards{cards = out}, true
 	case types.WaitingFor_ModeChoice:
 		modes, _ := ai_modes(g, p, object(s, g.pending.object))
 		return types.GameAction_SelectModes{indices = modes}, true

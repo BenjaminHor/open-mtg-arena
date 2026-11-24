@@ -18,6 +18,7 @@ Resolution :: struct {
 	asked:        ^types.ResolvedAbility, // a "you may" instruction waiting for its controller's answer
 	answer:       Maybe(bool),
 	performed:    bool, // whether the latest "you may" instruction was done: "if you do" (CR 608.2c)
+	found:        [dynamic]types.ObjectId, // the cards a library search found: "those cards" next
 }
 
 // The spell or ability as it goes on the stack: one node per instruction, each with the targets chosen for it (CR
@@ -80,6 +81,7 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 	g.resolution = Resolution{active = true, next = top, controller = controller, source = source, spell = spell, stack_id = stack_id}
 	g.resolution.last_targets = make([dynamic]types.TargetRef)
 	g.resolution.all_targets = make([dynamic]types.TargetRef)
+	g.resolution.found = make([dynamic]types.ObjectId)
 	for n := top; n != nil; n = n.sub_ability do append(&g.resolution.all_targets, ..n.targets[:])
 	// CR 608.2b: with every target illegal, the spell or ability does nothing.
 	if any_target && !any_legal do g.resolution.next = nil

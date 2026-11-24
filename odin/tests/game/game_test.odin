@@ -1142,3 +1142,43 @@ you_may_then_if_you_do :: proc(t: ^testing.T) {
 	drawn, discarded = run(t, false)
 	testing.expect(t, drawn == 0 && discarded == 0, "declined: neither")
 }
+
+@(test)
+search_library :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 701.23a-b, 701.24a: Rampant Growth: search for a basic land card, put it onto the battlefield tapped,
+	// then shuffle. A card with a stated quality may be left unfound; "a card" (Demonic Tutor) can't.
+	g := new_game()
+	for _ in 0 ..< 2 do add(t, g, "Forest", 0, .Battlefield)
+	growth := add(t, g, "Rampant Growth", 0, .Hand)
+	pl := game.player(&g.state, 0)
+	library := types.pvec_len(pl.library)
+	lands := len(game.ids_of(g.state.battlefield))
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = growth.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	w, asked := g.state.waiting_for.(types.WaitingFor_SearchChoice)
+	testing.expect(t, asked && w.count == 1 && w.allows_partial_find, "asked to find up to one basic land")
+	if !asked do return
+	one: [dynamic]types.ObjectId
+	append(&one, w.cards[0])
+	found := game.object(&g.state, w.cards[0])
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = one}))
+	testing.expect(t, found.zone == .Battlefield && found.tapped, "onto the battlefield tapped")
+	testing.expect(t, types.pvec_len(pl.library) == library - 1 && len(game.ids_of(g.state.battlefield)) == lands + 1)
+
+	g2 := new_game()
+	for _ in 0 ..< 2 do add(t, g2, "Swamp", 0, .Battlefield)
+	tutor := add(t, g2, "Demonic Tutor", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = tutor.id}))
+	game.apply(g2, 0, types.GameAction_PassPriority{})
+	game.apply(g2, 1, types.GameAction_PassPriority{})
+	w2, asked2 := g2.state.waiting_for.(types.WaitingFor_SearchChoice)
+	testing.expect(t, asked2 && !w2.allows_partial_find, "a card must be found")
+	none: [dynamic]types.ObjectId
+	testing.expect(t, !game.apply(g2, 0, types.GameAction_SelectCards{cards = none}), "not none")
+	pick: [dynamic]types.ObjectId
+	append(&pick, w2.cards[0])
+	testing.expect(t, game.apply(g2, 0, types.GameAction_SelectCards{cards = pick}))
+	testing.expect(t, game.object(&g2.state, w2.cards[0]).zone == .Hand, "into the hand")
+}
