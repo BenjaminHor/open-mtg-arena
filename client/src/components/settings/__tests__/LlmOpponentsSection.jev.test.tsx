@@ -56,18 +56,18 @@ describe("Jev as an AI opponent provider", () => {
     expect(screen.getByRole("button", { name: "Model" })).toHaveTextContent("Jev (latest)");
   });
 
-  it("explains that it is reached through a phase server relay, and only for Jev", async () => {
+  it("explains that it is reached through a relay you run, and only for Jev", async () => {
     const jev = addJev();
     useLlmStore.getState().addProfile({
       name: "GPT", provider: "OpenAi", model: "gpt-5", apiKey: "sk", enabled: true,
     });
     render(<LlmOpponentsSection />);
 
-    const hints = await screen.findAllByText(/relays each request to TypeSafe/i);
+    const hints = await screen.findAllByText(/Jev needs a relay/i);
     expect(hints).toHaveLength(1);
     expect(useLlmStore.getState().profiles[0].id).toBe(jev);
-    // With no endpoint of its own the field says which server it will use.
-    expect(screen.getByPlaceholderText("Defaults to your multiplayer server")).toBeInTheDocument();
+    // With no endpoint of its own the field asks for the relay's address.
+    expect(screen.getByPlaceholderText("The address of your relay")).toBeInTheDocument();
   });
 
   it("can seat a game opponent and draft the pod's bots like any other provider", async () => {
@@ -75,7 +75,7 @@ describe("Jev as an AI opponent provider", () => {
     useLlmStore.getState().bindSeat(0, id);
     useLlmStore.getState().setDraftEnabled(true);
     render(<LlmOpponentsSection />);
-    await screen.findAllByText(/relays each request to TypeSafe/i);
+    await screen.findAllByText(/Jev needs a relay/i);
 
     expect(profileForSeat(useLlmStore.getState(), 0, CATALOG_ROWS)?.id).toBe(id);
     expect(profileForSeat(useLlmStore.getState(), 1, CATALOG_ROWS)).toBeUndefined();
@@ -89,7 +89,7 @@ describe("Jev as an AI opponent provider", () => {
     const id = addJev({ apiKey: "" });
     useLlmStore.getState().bindSeat(0, id);
     render(<LlmOpponentsSection />);
-    await screen.findAllByText(/relays each request to TypeSafe/i);
+    await screen.findAllByText(/Jev needs a relay/i);
 
     expect(profileForSeat(useLlmStore.getState(), 0, CATALOG_ROWS)).toBeUndefined();
     fireEvent.click(screen.getByRole("button", { name: "Test connection" }));

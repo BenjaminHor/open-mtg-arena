@@ -78,7 +78,7 @@ describe("AppShell responsive draft chrome", () => {
     endActionClick.mockClear();
   });
 
-  it("replaces phone navigation and socials with a top-row Home button", async () => {
+  it("replaces phone navigation with a top-row Home button", async () => {
     useConnectivityStore.setState({ forcedOffline: true, browserOnline: true });
 
     render(
@@ -121,7 +121,6 @@ describe("AppShell responsive draft chrome", () => {
     expect(offlineStatus).toHaveClass("pointer-events-none", "relative");
     expect(offlineStatus).not.toHaveClass("fixed");
     expect(screen.getByText("Draft")).toHaveAttribute("aria-current", "step");
-    expect(screen.queryByTestId("social-bar")).not.toBeInTheDocument();
     expect(screen.queryByRole("navigation", { name: "Desktop navigation" })).not.toBeInTheDocument();
     expect(screen.queryByRole("navigation", { name: "Mobile navigation" })).not.toBeInTheDocument();
     expect(screen.getByTestId("chrome-controls")).toBeInTheDocument();
@@ -142,7 +141,7 @@ describe("AppShell responsive draft chrome", () => {
     await waitFor(() => expect(document.querySelector("[data-shell-draft-steps]")).not.toBeInTheDocument());
   });
 
-  it("hides tablet socials while retaining navigation and restores default chrome", async () => {
+  it("keeps tablet navigation and restores default chrome", async () => {
     render(
       <MemoryRouter initialEntries={["/draft"]}>
         <Routes>
@@ -165,7 +164,6 @@ describe("AppShell responsive draft chrome", () => {
     expect(screen.getByRole("button", { name: "End Draft" })).toHaveTextContent("End Draft");
     expect(document.querySelector(".menu-scene")).toHaveClass("h-dvh", "min-h-0", "overflow-y-hidden");
     expect(document.querySelector("main.shell-content")).toHaveClass("min-h-0", "overflow-hidden");
-    expect(screen.queryByTestId("social-bar")).not.toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Desktop navigation" })).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Mobile navigation" })).toBeInTheDocument();
     expect(document.querySelectorAll("[data-step-arrow]")).toHaveLength(0);
@@ -186,8 +184,7 @@ describe("AppShell responsive draft chrome", () => {
     expect(endActionClick).toHaveBeenCalledOnce();
 
     fireEvent.click(screen.getByRole("button", { name: "Default mode" }));
-    await waitFor(() => expect(screen.getByTestId("social-bar")).toBeInTheDocument());
-    expect(screen.getByRole("navigation", { name: "Desktop navigation" })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("navigation", { name: "Desktop navigation" })).toBeInTheDocument());
     expect(screen.getByRole("navigation", { name: "Mobile navigation" })).toBeInTheDocument();
   });
 });

@@ -120,10 +120,9 @@ describe("ensurePreload SFX deadline", () => {
     // Latched off so no later pipeline (theme load, music, ensurePlayback)
     // opens another decode that will hang the same way.
     expect(audioManager.isDisabled).toBe(true);
-    // Actionable, not just "audio failed": names the missing plugin set and
-    // where to see which plugins (§ acceptance criterion 4).
+    // Diagnosed once, so a silent app is explained in the console.
     expect(diagnostic).toHaveBeenCalledOnce();
-    expect(diagnostic.mock.calls[0][0]).toMatch(/GStreamer/);
+    expect(diagnostic.mock.calls[0][0]).toMatch(/cannot play sound/);
     diagnostic.mockRestore();
   });
 

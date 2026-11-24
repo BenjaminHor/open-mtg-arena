@@ -34,8 +34,6 @@ export interface ChangelogEntry {
   tags: ChangelogTag[];
   /** Plain text, emoji-sectioned, newline-separated. Rendered as text — never HTML. */
   body: string;
-  /** Optional deep link to the matching Discord #announcements post. */
-  discordUrl?: string;
 }
 
 export interface ChangelogMeta {

@@ -9,7 +9,6 @@ import {
   isCardCommanderEligibleForFormat,
   signatureSpellSelectionPolicy,
 } from "../../../services/engineRuntime";
-import { IMPORT_ERROR_KEYS } from "../../../services/deckUrlImport";
 import { setSavedDeckTxnLockWaitForTests, withSavedDeckLibrary } from "../../../services/savedDeckTransaction";
 import { useAppNotificationStore } from "../../../stores/appToastStore";
 import { useConnectivityStore } from "../../../stores/connectivityStore";
@@ -21,7 +20,6 @@ import {
 import { ImportDeckModal } from "../ImportDeckModal";
 
 const mocks = vi.hoisted(() => ({
-  fetchDeckFromUrl: vi.fn(),
   canonicalCardNames: vi.fn(
     async (names: string[]): Promise<(string | null)[]> => names.map(() => null),
   ),
@@ -31,12 +29,6 @@ vi.mock("../../../services/engineRuntime", () => ({
   isCardCommanderEligible: vi.fn(),
   isCardCommanderEligibleForFormat: vi.fn(),
   signatureSpellSelectionPolicy: vi.fn(),
-}));
-
-vi.mock("../../../services/deckUrlImport", async (importOriginal) => ({
-  fetchDeckFromUrl: mocks.fetchDeckFromUrl,
-  IMPORT_ERROR_KEYS: (await importOriginal<typeof import("../../../services/deckUrlImport")>())
-    .IMPORT_ERROR_KEYS,
 }));
 
 vi.mock("../../../adapter/wasm-adapter", () => ({
@@ -50,7 +42,6 @@ describe("ImportDeckModal", () => {
     vi.mocked(isCardCommanderEligible).mockResolvedValue(false);
     vi.mocked(isCardCommanderEligibleForFormat).mockReset();
     vi.mocked(signatureSpellSelectionPolicy).mockReset();
-    mocks.fetchDeckFromUrl.mockReset();
     mocks.canonicalCardNames.mockReset();
     mocks.canonicalCardNames.mockImplementation(async (names: string[]) => names.map(() => null));
     useConnectivityStore.setState({ forcedOffline: false, browserOnline: true });
@@ -60,65 +51,6 @@ describe("ImportDeckModal", () => {
     cleanup();
     useConnectivityStore.setState({ forcedOffline: false, browserOnline: true });
     vi.unstubAllGlobals();
-  });
-
-  it("keeps URL import visible but unavailable offline without calling the service", async () => {
-    const user = userEvent.setup();
-    render(<ImportDeckModal open onClose={vi.fn()} onImported={vi.fn()} />);
-
-    await user.click(screen.getByRole("button", { name: "From URL" }));
-    const urlInput = screen.getByPlaceholderText(/moxfield\.com\/decks/i);
-    const importButton = screen.getByRole("button", { name: "Import" });
-    await user.type(urlInput, "https://moxfield.com/decks/abc");
-    expect(importButton).toBeEnabled();
-
-    act(() => useConnectivityStore.getState().setForcedOffline(true));
-
-    expect(urlInput).toBeDisabled();
-    expect(screen.getByText(/URL imports are unavailable offline/i)).toBeInTheDocument();
-    expect(importButton).toBeDisabled();
-    await user.click(importButton);
-    expect(mocks.fetchDeckFromUrl).not.toHaveBeenCalled();
-  });
-
-  it("imports canonical deck text from a URL online", async () => {
-    const user = userEvent.setup();
-    const onImported = vi.fn();
-    mocks.fetchDeckFromUrl.mockResolvedValue(
-      "Name: URL Deck\n[Main]\n1 Sol Ring\n",
-    );
-    render(<ImportDeckModal open onClose={vi.fn()} onImported={onImported} />);
-
-    await user.click(screen.getByRole("button", { name: "From URL" }));
-    await user.type(screen.getByPlaceholderText(/moxfield\.com\/decks/i), "https://moxfield.com/decks/abc");
-    await user.click(screen.getByRole("button", { name: "Import" }));
-
-    await waitFor(() => expect(onImported).toHaveBeenCalledWith("URL Deck", ["URL Deck"], "open"));
-    expect(mocks.fetchDeckFromUrl).toHaveBeenCalledWith("https://moxfield.com/decks/abc");
-    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "URL Deck")).not.toBeNull();
-  });
-
-  it.each([
-    [
-      "translates a frontend-authored error key",
-      IMPORT_ERROR_KEYS.offline,
-      "URL imports are unavailable offline. Use Paste Text or From File instead.",
-    ],
-    [
-      "shows a server-authored error verbatim",
-      "Deck is private on Moxfield",
-      "Deck is private on Moxfield",
-    ],
-  ])("%s when the URL import rejects", async (_name, message, shown) => {
-    const user = userEvent.setup();
-    mocks.fetchDeckFromUrl.mockRejectedValue(new Error(message));
-    render(<ImportDeckModal open onClose={vi.fn()} onImported={vi.fn()} />);
-
-    await user.click(screen.getByRole("button", { name: "From URL" }));
-    await user.type(screen.getByPlaceholderText(/moxfield\.com\/decks/i), "https://moxfield.com/decks/abc");
-    await user.click(screen.getByRole("button", { name: "Import" }));
-
-    expect(await screen.findByText(shown)).toBeInTheDocument();
   });
 
   it("saves imported card names in the engine's canonical spelling", async () => {
@@ -173,7 +105,6 @@ describe("ImportDeckModal", () => {
     await user.upload(fileInput, new File([""], "file-deck.txt", { type: "text/plain" }));
 
     await waitFor(() => expect(onImported).toHaveBeenCalledWith("File Deck", ["File Deck", "Paste Deck"], "open"));
-    expect(mocks.fetchDeckFromUrl).not.toHaveBeenCalled();
   });
 
   it("derives the saved deck name from pasted metadata when the name field is empty", async () => {
@@ -446,32 +377,6 @@ Deck
       await waitFor(() => expect(onImported).toHaveBeenCalledWith("Paste Deck", ["Paste Deck"], "dismissed"));
       expect(onClose).toHaveBeenCalledTimes(1);
       expect(screen.getByPlaceholderText(/Paste deck list here/i)).toHaveValue("second session");
-    });
-
-    it("a URL import dismissed while its fetch is pending leaves the reopened modal open", async () => {
-      const user = userEvent.setup();
-      const onImported = vi.fn();
-      const onClose = vi.fn();
-      let releaseFetch!: (content: string) => void;
-      mocks.fetchDeckFromUrl.mockImplementation(
-        () => new Promise<string>((resolve) => { releaseFetch = resolve; }),
-      );
-
-      render(<Harness onImported={onImported} onClose={onClose} />);
-      await user.click(screen.getByRole("button", { name: "From URL" }));
-      await user.type(screen.getByPlaceholderText(/moxfield\.com\/decks/i), "https://moxfield.com/decks/abc");
-      await user.click(screen.getByRole("button", { name: "Import" }));
-      await vi.waitFor(() => expect(mocks.fetchDeckFromUrl).toHaveBeenCalled());
-
-      await user.click(screen.getByRole("button", { name: /cancel/i }));
-      await user.click(screen.getByRole("button", { name: "reopen" }));
-
-      releaseFetch("Name: URL Deck\n[Main]\n1 Sol Ring\n");
-      await waitFor(() =>
-        expect(onImported).toHaveBeenCalledWith("URL Deck", ["URL Deck"], "dismissed"),
-      );
-      expect(onClose).toHaveBeenCalledTimes(1);
-      expect(screen.queryByPlaceholderText(/Paste deck list here/i)).not.toBeNull();
     });
 
     it("a file import dismissed while its read is pending leaves the reopened modal open", async () => {

@@ -58,32 +58,19 @@ afterEach(() => {
   useUiStore.setState({ inspectedObjectId: null });
 });
 
-// Regression tests for #11001: Report and Flip were drawn on the card face,
+// Regression tests for #11001: the preview's actions were drawn on the card face,
 // where they covered its rules text. They now sit in a strip beside the card.
 describe("CardPreview mobile action strip", () => {
-  it("puts Report outside the card face", () => {
-    inspectInGame("ai");
-    render(<CardPreview cardName={CARD_NAME} />);
-
-    const cardFace = screen.getByAltText(CARD_NAME).parentElement;
-    const report = screen.getByRole("button", { name: "Report a problem" });
-
-    expect(cardFace).not.toBeNull();
-    expect(cardFace).not.toContainElement(report);
-    expect(report.closest("[data-card-preview-actions]")).not.toBeNull();
-  });
-
-  it("puts a flip card's Flip beside Report, outside the card face", () => {
+  it("puts a flip card's Flip outside the card face", () => {
     vi.mocked(useCardImage).mockImplementation(() => cardImage(true));
     inspectInGame("ai");
     render(<CardPreview cardName={CARD_NAME} />);
 
     const image = screen.getByAltText(CARD_NAME);
     const flip = screen.getByRole("button", { name: /Flip/ });
-    const report = screen.getByRole("button", { name: "Report a problem" });
 
     expect(image.parentElement).not.toContainElement(flip);
-    expect(flip.closest("[data-card-preview-actions]")).toContainElement(report);
+    expect(flip.closest("[data-card-preview-actions]")).not.toBeNull();
 
     // Moving the button kept what it does: a tap turns the card over.
     fireEvent.click(flip);
@@ -92,17 +79,18 @@ describe("CardPreview mobile action strip", () => {
 
   it("keeps the preview open when an action is tapped", () => {
     const onDismiss = vi.fn();
+    vi.mocked(useCardImage).mockImplementation(() => cardImage(true));
     inspectInGame("ai");
     const { container } = render(<CardPreview cardName={CARD_NAME} onDismiss={onDismiss} />);
 
-    const report = screen.getByRole("button", { name: "Report a problem" });
-    fireEvent.pointerDown(report);
+    const flip = screen.getByRole("button", { name: /Flip/ });
+    fireEvent.pointerDown(flip);
     expect(onDismiss).not.toHaveBeenCalled();
 
     // The strip, its padding included, sits inside the wrapper that stops the
     // event, so a tap on it does not dismiss either.
-    const strip = report.closest<HTMLElement>("[data-card-preview-actions]");
-    if (strip == null) throw new Error("the Report button is not in the action strip");
+    const strip = flip.closest<HTMLElement>("[data-card-preview-actions]");
+    if (strip == null) throw new Error("the Flip button is not in the action strip");
     fireEvent.pointerDown(strip);
     expect(onDismiss).not.toHaveBeenCalled();
 
@@ -124,8 +112,8 @@ describe("CardPreview mobile action strip", () => {
   });
 
   it("draws no action strip when the card has no action", () => {
-    // Spectators do not report, and this card has no flip side.
-    inspectInGame("spectate");
+    // This card has no flip side.
+    inspectInGame("ai");
     render(<CardPreview cardName={CARD_NAME} />);
 
     expect(screen.getByAltText(CARD_NAME)).toBeInTheDocument();

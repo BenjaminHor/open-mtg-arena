@@ -132,7 +132,13 @@ describe("ProliferateModal (via CardChoiceModal)", () => {
   });
 
   it("renders nothing when the current player cannot act", () => {
-    setUp([{ Object: 42 }]);
+    const state = makeState([{ Object: 42 }]);
+    const waitingFor: WaitingFor = { type: "ProliferateChoice", data: { player: 1, eligible: [{ Object: 42 }] } };
+    useGameStore.setState({
+      gameMode: "ai",
+      gameState: { ...state, waiting_for: waitingFor },
+      waitingFor,
+    });
     const { container } = render(<CardChoiceModal />);
     expect(container).toBeEmptyDOMElement();
   });

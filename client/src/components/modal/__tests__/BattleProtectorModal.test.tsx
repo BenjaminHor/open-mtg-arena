@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { GameState } from "../../../adapter/types.ts";
+import type { GameState, WaitingFor } from "../../../adapter/types.ts";
 import { BattleProtectorModal } from "../BattleProtectorModal.tsx";
 import { useGameStore } from "../../../stores/gameStore.ts";
 import { buildGameObjectWithCoreTypes, buildObjectMap } from "../../../test/factories/gameObjectFactory.ts";
@@ -78,6 +78,14 @@ describe("BattleProtectorModal", () => {
   });
 
   it("renders nothing when the current player cannot act", () => {
+    const waitingFor: WaitingFor = {
+      type: "BattleProtectorChoice",
+      data: { player: 1, battle_id: 42, candidates: [0, 2] },
+    };
+    useGameStore.setState({
+      gameState: { ...makeState(), waiting_for: waitingFor },
+      waitingFor,
+    });
     const { container } = render(<BattleProtectorModal />);
     expect(container).toBeEmptyDOMElement();
   });

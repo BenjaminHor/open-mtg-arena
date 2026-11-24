@@ -11,7 +11,6 @@ import deckBuilder from "./i18n/locales/en/deck-builder.json";
 import draft from "./i18n/locales/en/draft.json";
 import settings from "./i18n/locales/en/settings.json";
 import multiplayer from "./i18n/locales/en/multiplayer.json";
-import tournament from "./i18n/locales/en/tournament.json";
 
 if (typeof window !== "undefined" && typeof window.Animation !== "undefined") {
   const cancel = window.Animation.prototype.cancel;
@@ -39,7 +38,7 @@ if (typeof window !== "undefined" && typeof window.Animation !== "undefined") {
 void i18n.use(initReactI18next).init({
   lng: "en",
   fallbackLng: "en",
-  ns: ["common", "menu", "game", "deck-builder", "draft", "settings", "multiplayer", "tournament"],
+  ns: ["common", "menu", "game", "deck-builder", "draft", "settings", "multiplayer"],
   defaultNS: "common",
   resources: {
     en: {
@@ -50,7 +49,6 @@ void i18n.use(initReactI18next).init({
       draft,
       settings,
       multiplayer,
-      tournament,
     },
   },
   interpolation: { escapeValue: false }, // React already escapes

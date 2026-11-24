@@ -149,24 +149,26 @@ function setOpponentLibraryTop(
   });
 }
 
+/** The opponent (seat 1) holds the shared library; the local player (seat 0)
+ *  is the non-holder. */
 function setSharedLibrary({ shared }: { shared: boolean }) {
   const top = makeObject(11, "Sol Ring");
   top.display_visible_to_viewer = true;
   const action = castAction(11);
   const gameState = buildGameState({
-    active_player: 0,
-    priority_player: 1,
+    active_player: 1,
+    priority_player: 0,
     objects: buildObjectMap(top),
     players: buildPlayers([
-      { id: 0, library: [11, 12, 13] },
-      { id: 1, library: [] },
+      { id: 0, library: [] },
+      { id: 1, library: [11, 12, 13] },
     ]),
     battlefield: [],
     exile: [],
     stack: [],
     revealed_cards: [],
-    waiting_for: buildPriorityWaitingFor({ data: { player: 1 } }),
-    ...(shared ? { derived: { shared_piles: { library: 0, graveyard: 0 } } } : {}),
+    waiting_for: buildPriorityWaitingFor({ data: { player: 0 } }),
+    ...(shared ? { derived: { shared_piles: { library: 1, graveyard: 1 } } } : {}),
   });
   useGameStore.setState({
     gameState,
@@ -189,9 +191,9 @@ describe("LibraryPile shared library", () => {
 
   it("renders the holder's pile for the non-holder seat's request", () => {
     setSharedLibrary({ shared: true });
-    const { container } = render(<LibraryPile playerId={1} />);
-    expect(container.querySelector('[data-library-pile="0"]')).not.toBeNull();
-    expect(container.querySelector('[data-library-pile="1"]')).toBeNull();
+    const { container } = render(<LibraryPile playerId={0} />);
+    expect(container.querySelector('[data-library-pile="1"]')).not.toBeNull();
+    expect(container.querySelector('[data-library-pile="0"]')).toBeNull();
     expect(container.querySelector("button[data-grouped-ids]")).toHaveAttribute(
       "data-grouped-ids",
       "11",
@@ -200,7 +202,7 @@ describe("LibraryPile shared library", () => {
 
   it("lets the non-holder seat play from the shared top the engine offers", () => {
     setSharedLibrary({ shared: true });
-    render(<LibraryPile playerId={0} />);
+    render(<LibraryPile playerId={1} />);
     const button = screen.getByRole("button", { name: /play sol ring from top of library/i });
     expect(button).not.toBeDisabled();
     fireEvent.click(button);
@@ -209,7 +211,7 @@ describe("LibraryPile shared library", () => {
 
   it("still refuses the opponent's own library when nothing is shared", () => {
     setSharedLibrary({ shared: false });
-    render(<LibraryPile playerId={0} />);
+    render(<LibraryPile playerId={1} />);
     const button = screen.getByRole("button", { name: /library \(3 cards\)/i });
     expect(button).toHaveAttribute("data-library-top-cast", "false");
     fireEvent.click(button);

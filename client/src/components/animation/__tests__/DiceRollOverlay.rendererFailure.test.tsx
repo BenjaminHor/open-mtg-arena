@@ -8,8 +8,6 @@ import type { DiceRollPayload } from "../../../stores/uiStore";
 
 const renderer = vi.hoisted(() => vi.fn(() => { throw new Error("WebGL renderer failed"); }));
 const coinRenderer = vi.hoisted(() => vi.fn(() => { throw new Error("WebGL coin failed"); }));
-const reportBoundaryError = vi.hoisted(() => vi.fn());
-
 vi.mock("../dice3d/loaders", () => ({
   loadDice3DModule: () => Promise.resolve({ Dice3D: renderer }),
   loadCoin3DModule: () => Promise.resolve({ Coin3D: coinRenderer }),
@@ -38,7 +36,6 @@ afterEach(() => {
   vi.restoreAllMocks();
   renderer.mockClear();
   coinRenderer.mockClear();
-  reportBoundaryError.mockClear();
   useUiStore.getState().resetDiceRoll();
   usePreferencesStore.setState({ animationSpeedMultiplier: 1 });
 });
@@ -79,17 +76,6 @@ it("contains a throwing renderer, preserves the mounted parent state and lets Es
   expect(screen.getByRole("button", { name: "Parent turn 2" })).toBe(parent);
 });
 
-it("reports a throwing renderer to telemetry so a real WebGL crash is not swallowed", async () => {
-  render(<DiceRollOverlay />);
-  await showRoll({
-    kind: "die", context: "ability", sides: 20, rolls: [{ playerId: 0, value: 17 }],
-  } as DiceRollPayload);
-  expect(reportBoundaryError).toHaveBeenCalledTimes(1);
-  expect(reportBoundaryError).toHaveBeenCalledWith(
-    expect.objectContaining({ message: "WebGL renderer failed" }),
-  );
-});
-
 it("keeps the starting-player result visible after the renderer throws", async () => {
   render(<DiceRollOverlay />);
   await showRoll({
@@ -103,7 +89,6 @@ it("keeps the starting-player result visible after the renderer throws", async (
     viewerTurnNumber: 2,
   } as unknown as DiceRollPayload);
   expect(renderer).toHaveBeenCalled();
-  expect(reportBoundaryError).toHaveBeenCalled();
   // The caption and the rolled values come from the static fallback; a stale payload's turn rows are not presented.
   expect(screen.getByText(/you won the roll/i)).toBeInTheDocument();
   expect(screen.getAllByText("17").length).toBeGreaterThan(0);
@@ -116,9 +101,6 @@ it("keeps the coin outcome visible after the coin renderer throws", async () => 
   render(<DiceRollOverlay />);
   await showRoll({ kind: "coin", playerId: 0, won: true } as DiceRollPayload);
   expect(coinRenderer).toHaveBeenCalled();
-  expect(reportBoundaryError).toHaveBeenCalledWith(
-    expect.objectContaining({ message: "WebGL coin failed" }),
-  );
   expect(screen.getByText(/you won the flip/i)).toBeInTheDocument();
   expect(screen.getAllByText(/heads/i).length).toBeGreaterThan(0);
 });

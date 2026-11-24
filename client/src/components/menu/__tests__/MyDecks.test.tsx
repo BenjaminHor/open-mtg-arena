@@ -1566,13 +1566,13 @@ describe("MyDecks", () => {
       // Feed-owned: the mirror sits in its feed group, included …
       await screen.findByText("Mirror Deck");
       await userEvent.click(screen.getByRole("button", { name: /Your random pool/ }));
-      expect(screen.getByRole("checkbox", { name: "Standard Meta" })).toBeInTheDocument();
-      await userEvent.click(screen.getByRole("button", { name: /Standard Meta/ }));
+      expect(screen.getByRole("checkbox", { name: "Starter Decks" })).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: /Starter Decks/ }));
       expect(screen.getByRole("checkbox", { name: "Mirror Deck" })).toBeChecked();
 
       // … adopting it regroups the same id into excluded folder F.
       rerender(renderDecks(adopted));
-      expect(screen.queryByRole("checkbox", { name: "Standard Meta" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("checkbox", { name: "Starter Decks" })).not.toBeInTheDocument();
       await userEvent.click(screen.getByRole("button", { name: /F 0 of 1/ }));
       expect(screen.getByRole("checkbox", { name: "Mirror Deck" })).not.toBeChecked();
       expect(screen.getByRole("button", { name: /Your random pool 1 of 2/ })).toBeInTheDocument();

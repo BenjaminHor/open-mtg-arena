@@ -472,7 +472,7 @@
     "modelPlaceholder": "Model id (e.g. gpt-5, claude-sonnet-5)",
     "endpoint": "Endpoint",
     "endpointPlaceholder": "https://your-server/v1",
-    "jevEndpointPlaceholder": "Defaults to your multiplayer server",
+    "jevEndpointPlaceholder": "The address of your relay",
     "jevEndpointHint": "TypeSafe refuses requests made straight from a browser, so Jev needs a relay: enter the address of one you run. Your key travels only inside each request.",
     "apiKey": "API key",
     "apiKeyPlaceholder": "Paste your API key",

@@ -17,16 +17,14 @@ import {
 } from "../../services/deckParser";
 import { resolveCommander } from "../../services/commanderResolution";
 import { canonicalizeDeckNames } from "../../services/canonicalCardNames";
-import { fetchDeckFromUrl, IMPORT_ERROR_KEYS } from "../../services/deckUrlImport";
 import {
   isCardCommanderEligibleForFormat,
   signatureSpellSelectionPolicy,
 } from "../../services/engineRuntime";
 import { useAppNotificationStore } from "../../stores/appToastStore";
-import { useEffectiveOffline } from "../../stores/connectivityStore";
 import { useImportSession, type ImportSession } from "./importSession";
 
-type ImportTab = "paste" | "url" | "file";
+type ImportTab = "paste" | "file";
 
 interface ImportDeckModalProps {
   open: boolean;
@@ -68,13 +66,9 @@ function initialSignatureSpell(deck: ParsedDeck, candidates: string[]): string {
 
 export function ImportDeckModal({ open, onClose, onImported }: ImportDeckModalProps) {
   const { t } = useTranslation(["menu", "common"]);
-  const effectiveOffline = useEffectiveOffline();
   const showNotification = useAppNotificationStore((s) => s.showNotification);
   const [tab, setTab] = useState<ImportTab>("paste");
   const [pasteText, setPasteText] = useState("");
-  const [urlText, setUrlText] = useState("");
-  const [urlError, setUrlError] = useState<string | null>(null);
-  const [urlLoading, setUrlLoading] = useState(false);
   const [pasteError, setPasteError] = useState<string | null>(null);
   const [pasteLoading, setPasteLoading] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -225,26 +219,6 @@ export function ImportDeckModal({ open, onClose, onImported }: ImportDeckModalPr
     }
   };
 
-  const handleUrlImport = async () => {
-    const trimmed = urlText.trim();
-    if (!trimmed || urlLoading) return;
-    setUrlError(null);
-    setUrlLoading(true);
-    const started = importSession.begin();
-    try {
-      const content = await fetchDeckFromUrl(trimmed);
-      if (!(await stageImport(started, content))) {
-        setUrlError(t("importDeck.errorNoCards"));
-      }
-    } catch (err) {
-      const raw = err instanceof Error ? err.message : t("importDeck.errorGeneric");
-      const key = Object.values(IMPORT_ERROR_KEYS).find((k) => k === raw);
-      setUrlError(key ? t(key) : raw);
-    } finally {
-      setUrlLoading(false);
-    }
-  };
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -268,9 +242,6 @@ export function ImportDeckModal({ open, onClose, onImported }: ImportDeckModalPr
 
   const resetAndClose = () => {
     setPasteText("");
-    setUrlText("");
-    setUrlError(null);
-    setUrlLoading(false);
     setPasteError(null);
     setPasteLoading(false);
     setFileError(null);
@@ -391,9 +362,6 @@ export function ImportDeckModal({ open, onClose, onImported }: ImportDeckModalPr
                   <button className={TAB_CLASS(tab === "paste")} onClick={() => { setTab("paste"); setFileError(null); }}>
                     {t("importDeck.tabPaste")}
                   </button>
-                  <button className={TAB_CLASS(tab === "url")} onClick={() => setTab("url")}>
-                    {t("importDeck.tabUrl")}
-                  </button>
                   <button className={TAB_CLASS(tab === "file")} onClick={() => { setTab("file"); setPasteError(null); }}>
                     {t("importDeck.tabFile")}
                   </button>
@@ -444,53 +412,6 @@ export function ImportDeckModal({ open, onClose, onImported }: ImportDeckModalPr
                   })}
                 >
                   {pasteLoading ? t("importDeck.importing") : t("importDeck.import")}
-                </button>
-              </div>
-                )}
-
-                {tab === "url" && (
-              <div className="flex flex-col gap-3">
-                <input
-                  type="text"
-                  value={deckName}
-                  onChange={(e) => setDeckName(e.target.value)}
-                  placeholder={t("importDeck.deckNamePlaceholder")}
-                  className="rounded-xl border border-white/25 bg-white/8 px-3 py-2 text-sm text-white placeholder-white/30 outline-none backdrop-blur-sm focus:border-amber-300/70"
-                />
-                <input
-                  type="url"
-                  value={urlText}
-                  disabled={effectiveOffline}
-                  onChange={(e) => {
-                    setUrlText(e.target.value);
-                    if (urlError) setUrlError(null);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") void handleUrlImport();
-                  }}
-                  placeholder={t("importDeck.urlPlaceholder")}
-                  className="rounded-xl border border-white/25 bg-white/8 px-3 py-2 text-sm text-white placeholder-white/30 outline-none backdrop-blur-sm focus:border-amber-300/70"
-                />
-                <p className="text-xs text-white/40">
-                  {t("importDeck.urlHint")}
-                </p>
-                {effectiveOffline && (
-                  <p className="text-xs text-amber-200/80">
-                    {t("importDeck.errorOffline")}
-                  </p>
-                )}
-                {urlError && <p className="text-xs text-red-400">{urlError}</p>}
-                <button
-                  onClick={handleUrlImport}
-                  disabled={effectiveOffline || !urlText.trim() || urlLoading}
-                  className={menuButtonClass({
-                    tone: "amber",
-                    size: "md",
-                    disabled: effectiveOffline || !urlText.trim() || urlLoading,
-                    className: "w-full font-bold",
-                  })}
-                >
-                  {urlLoading ? t("importDeck.importing") : t("importDeck.import")}
                 </button>
               </div>
                 )}

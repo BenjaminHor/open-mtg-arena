@@ -20,13 +20,13 @@ import { describe, expect, it } from "vitest";
  * `components/chrome/__tests__/DebugLibraryViewer.focus.test.tsx`.
  */
 describe("test-harness i18n registration", () => {
-  it("resolves_the_tournament_namespace_through_the_test_harness_instance", () => {
+  it("resolves_the_multiplayer_namespace_through_the_test_harness_instance", () => {
     // Reach-guard: prove the negative below is not vacuous. A namespace that is
     // registered nowhere resolves to its bare key path, `ns:` prefix stripped.
     // @ts-expect-error unknown namespace: deliberately outside the typed key set
     expect(i18n.t("definitelyNotARealNamespace:someKey")).toBe("someKey");
 
-    // The claim: `tournament` IS registered, so this is NOT the bare key path.
-    expect(i18n.t("tournament:list.heading")).not.toBe("list.heading");
+    // The claim: `multiplayer` IS registered, so this is NOT the bare key path.
+    expect(i18n.t("multiplayer:sideboardModal.title")).not.toBe("sideboardModal.title");
   });
 });

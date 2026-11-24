@@ -611,21 +611,4 @@ describe("CommandZone owner-printing groups", () => {
     await waitFor(() => expect(container.querySelectorAll(`img[src="/${V}-crop.jpg"]`)).toHaveLength(first === printingA ? 1 : 2));
   });
 
-  it("keeps the sibling action inert from another seat, with the own-seat action as a control", () => {
-    seedPrintings([printingA, printingA]);
-    const { rerender } = render(<CommandZone playerId={0} />);
-    act(() => {
-      useGameStore.setState({ gameMode: "ai" });
-    });
-    const chip = screen.getByTestId("emblem-card");
-    expect(chip).not.toHaveAttribute("data-activatable");
-    fireEvent.click(chip);
-    expect(dispatchAction).not.toHaveBeenCalled();
-    rerender(<CommandZone playerId={0} />);
-    expect(screen.getByTestId("emblem-card")).toHaveAttribute("data-activatable", "true");
-    fireEvent.click(screen.getByTestId("emblem-card"));
-    expect(dispatchAction).toHaveBeenCalledExactlyOnceWith({
-      type: "ActivateAbility", data: { source_id: 701, ability_index: 0 },
-    });
-  });
 });

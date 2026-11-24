@@ -212,10 +212,10 @@ describe("GamePage unless-payment card identity", () => {
     const bear = gameObjectFactory.creature(2, 2).named("Grizzly Bears").withId(CARD_A).build();
     const state = gameStateFactory.withPlayers(0, 1, 2).withObjects(bear).build();
     state.pending_player_scope_unless_punishment = {
-      declining_players: [1],
+      declining_players: [2],
       payments: [
         {
-          player: 0,
+          player: 1,
           action: "Sacrifice",
           objects: [{ object_id: CARD_A, incarnation: 0 }],
         },
@@ -226,12 +226,12 @@ describe("GamePage unless-payment card identity", () => {
         gameId: "unless-poll-choices",
         gameMode: "ai",
         gameState: state,
-        waitingFor: paymentPrompt(2, null) as never,
+        waitingFor: paymentPrompt(0, null) as never,
       });
     });
     render(gamePageTree());
 
-    expect(await screen.findByText("Player 1: Grizzly Bears")).toBeInTheDocument();
-    expect(screen.getByText(/Player 2:/)).toBeInTheDocument();
+    expect(await screen.findByText("Player 2: Grizzly Bears")).toBeInTheDocument();
+    expect(screen.getByText(/Player 3:/)).toBeInTheDocument();
   });
 });

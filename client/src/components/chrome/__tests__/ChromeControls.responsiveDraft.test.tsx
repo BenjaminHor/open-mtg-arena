@@ -14,12 +14,11 @@ vi.mock("../VolumeControl", () => ({ VolumeControl: () => <div data-testid="volu
 describe("ChromeControls responsive draft visibility", () => {
   afterEach(cleanup);
 
-  it("hides Volume and Language but retains Account and Settings for phone draft chrome", () => {
+  it("hides Volume and Language but retains Settings for phone draft chrome", () => {
     render(<ChromeControls hideVolume hideLanguage />);
 
     expect(screen.queryByTestId("volume-control")).not.toBeInTheDocument();
     expect(screen.queryByTestId("language-flag")).not.toBeInTheDocument();
-    expect(screen.getByTestId("account-control")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Settings" })).toBeInTheDocument();
     expect(screen.getByTestId("fullscreen-control")).toBeInTheDocument();
   });

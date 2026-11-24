@@ -16,7 +16,6 @@ export const NAMESPACES = [
   "settings",
   "multiplayer",
   "replay",
-  "tournament",
 ] as const;
 
 // Resources are eager-bundled and synchronous (see resources.ts), so init runs

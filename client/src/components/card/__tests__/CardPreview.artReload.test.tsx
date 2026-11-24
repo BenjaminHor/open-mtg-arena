@@ -13,7 +13,7 @@ import { CardPreview } from "../CardPreview.tsx";
 // Regression tests for #11008: the long-press preview of a card whose art
 // failed was a blank panel with only the name. It now shows the rules text and
 // offers a one-tap reload, and the desktop preview's Alt-pinned panel offers
-// the reload beside Report.
+// the reload too.
 
 vi.mock("../../../hooks/useCardImage.ts", () => ({
   useCardBackImage: vi.fn(() => ({ src: "card-back.png", isLoading: false })),
@@ -222,7 +222,6 @@ describe("CardPreview artless mobile tile", () => {
     // Reach guard: the preview's own art and its strip are on screen, with no
     // pill while no surface of the card failed.
     expect(screen.getByAltText(SCULPTOR)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Report a problem" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: DESKTOP_RELOAD })).toBeNull();
 
     vi.mocked(useCardImage).mockImplementation(() => ({ ...loadedArt, cardArtFailed: true }));
@@ -315,14 +314,14 @@ describe("CardPreview Alt-pinned panel (desktop)", () => {
     useUiStore.setState({ altHeld: true });
   });
 
-  it("offers the reload beside Report when the card's art failed", () => {
+  it("offers the reload when the card's art failed", () => {
     const reload = vi.fn();
     vi.mocked(useCardImage).mockImplementation(() => failedArt(reload));
     inspect(sculptor());
     render(<CardPreview cardName={SCULPTOR} />);
 
-    // Reach guard: the pinned panel, with its Report button, is what rendered.
-    expect(screen.getByRole("button", { name: "Report a problem" })).toBeInTheDocument();
+    // Reach guard: the pinned panel is what rendered.
+    expect(document.querySelector("[data-card-hover]")).not.toBeNull();
     fireEvent.click(screen.getByRole("button", { name: DESKTOP_RELOAD }));
     expect(reload).toHaveBeenCalledTimes(1);
   });
@@ -334,8 +333,8 @@ describe("CardPreview Alt-pinned panel (desktop)", () => {
     inspect(sculptor());
     render(<CardPreview cardName={SCULPTOR} />);
 
-    // Reach guard: the pinned panel, with its Report button, is what rendered.
-    expect(screen.getByRole("button", { name: "Report a problem" })).toBeInTheDocument();
+    // Reach guard: the pinned panel is what rendered.
+    expect(document.querySelector("[data-card-hover]")).not.toBeNull();
     expect(screen.queryByRole("button", { name: DESKTOP_RELOAD })).toBeNull();
   });
 
@@ -347,8 +346,8 @@ describe("CardPreview Alt-pinned panel (desktop)", () => {
     inspect(sculptor());
     render(<CardPreview cardName={SCULPTOR} />);
 
-    // Reach guard: the pinned panel, with its Report button, is what rendered.
-    expect(screen.getByRole("button", { name: "Report a problem" })).toBeInTheDocument();
+    // Reach guard: the pinned panel is what rendered.
+    expect(document.querySelector("[data-card-hover]")).not.toBeNull();
     fireEvent.click(screen.getByRole("button", { name: DESKTOP_RELOAD }));
     expect(reload).toHaveBeenCalledTimes(1);
   });

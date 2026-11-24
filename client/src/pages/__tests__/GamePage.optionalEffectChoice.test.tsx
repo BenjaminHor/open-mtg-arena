@@ -163,7 +163,11 @@ describe("GamePage optional-effect routed player gate", () => {
     expect(screen.getByRole("img", { name: "Grizzly Bears" })).toBeInTheDocument();
     expect(screen.queryByRole("img", { name: "Bre of Clan Stoutarm" })).not.toBeInTheDocument();
 
+    // The same prompt routed to the other seat is not this player's to answer.
     act(() => {
+      const { gameState, waitingFor } = useGameStore.getState();
+      const routed = { ...waitingFor!, data: { ...(waitingFor as { data: object }).data, player: 1 } } as typeof waitingFor;
+      useGameStore.setState({ waitingFor: routed, gameState: { ...gameState!, waiting_for: routed! } });
       view.rerender(gamePageTree());
     });
 

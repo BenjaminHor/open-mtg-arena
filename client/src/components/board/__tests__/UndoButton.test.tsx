@@ -30,12 +30,12 @@ describe("UndoButton", () => {
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
-  it("never renders in multiplayer, even with history", () => {
-    // Multiplayer state is authoritative and shared — a client-side rewind
-    // would desync, so the affordance must stay hidden regardless of history.
+  it("never renders in the replay viewer, even with history", () => {
+    // A replay is a recording this client only steps through — a client-side
+    // rewind has nothing to undo, so the affordance stays hidden regardless of history.
     useGameStore.setState({
       stateHistory: [{ state: buildGameState(), logSeq: 0 }],
-      gameMode: "ai",
+      gameMode: "spectate",
     });
 
     render(<UndoButton />);

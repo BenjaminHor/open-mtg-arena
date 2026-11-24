@@ -65,7 +65,7 @@ describe("PreferencesModal visual packs", () => {
     expect(body).toHaveClass(DESKTOP_BODY_HEIGHT_CLASS);
     expect(body).not.toHaveClass("h-[36rem]", "md:h-[36rem]");
 
-    for (const tab of ["Visual", "Pacing", "Audio", "Multiplayer", "Data", "Gameplay"]) {
+    for (const tab of ["Visual", "Pacing", "Audio", "Data", "Gameplay"]) {
       fireEvent.click(screen.getByRole("button", { name: tab }));
       expect(preferencesBody()).toBe(body);
       expect(body).toHaveClass(DESKTOP_BODY_HEIGHT_CLASS);

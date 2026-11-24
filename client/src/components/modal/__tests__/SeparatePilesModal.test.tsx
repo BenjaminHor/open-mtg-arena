@@ -52,11 +52,11 @@ describe("SeparatePilesPartitionModal (via CardChoiceModal)", () => {
     const waitingFor: WaitingFor = {
       type: "SeparatePilesPartition",
       data: {
-        player: 1,
+        player: 0,
         eligible: [10, 11, 12],
         remaining_subjects: [],
         completed: [],
-        chooser: 0,
+        chooser: 1,
         source_id: 99,
       },
     };

@@ -28,13 +28,13 @@ function makeState(): GameState {
     entered_battlefield_turn: 1,
   });
   return buildGameState({
-    priority_player: 1,
+    priority_player: 0,
     objects: buildObjectMap(creature),
     next_object_id: 100,
     battlefield: [17],
     waiting_for: {
       type: "TributeChoice",
-      data: { player: 1, source_id: 17, count: 3 },
+      data: { player: 0, source_id: 17, count: 3 },
     },
     next_timestamp: 2,
   });
@@ -83,6 +83,11 @@ describe("TributeModal", () => {
   });
 
   it("renders nothing when the current player is not the chosen opponent", () => {
+    const waitingFor = { type: "TributeChoice", data: { player: 1, source_id: 17, count: 3 } } as const;
+    useGameStore.setState({
+      gameState: { ...makeState(), priority_player: 1, waiting_for: waitingFor },
+      waitingFor,
+    });
     const { container } = render(<TributeModal />);
     expect(container).toBeEmptyDOMElement();
   });

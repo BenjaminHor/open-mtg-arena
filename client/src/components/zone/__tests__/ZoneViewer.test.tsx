@@ -704,20 +704,20 @@ describe("ZoneViewer", () => {
       data: { object_id: 7, mana_type: "Colorless" },
     };
 
-    function seatOneDelving({ withAction }: { withAction: boolean }) {
+    function nonHolderDelving({ withAction }: { withAction: boolean }) {
       const object = makeObject();
       const gameState = buildGameState({
-        active_player: 1,
-        priority_player: 1,
-        players: buildPlayers([{ id: 0, graveyard: [object.id] }, { id: 1 }]),
+        active_player: 0,
+        priority_player: 0,
+        players: buildPlayers([{ id: 0 }, { id: 1, graveyard: [object.id] }]),
         objects: buildObjectMap(object),
         battlefield: [],
         exile: [],
         stack: [],
         waiting_for: buildManaPaymentWaitingFor({
-          data: { player: 1, convoke_mode: "Delve" },
+          data: { player: 0, convoke_mode: "Delve" },
         }),
-        derived: { shared_piles: { library: 0, graveyard: 0 } },
+        derived: { shared_piles: { library: 1, graveyard: 1 } },
       });
       useGameStore.setState({
         gameState,
@@ -728,12 +728,9 @@ describe("ZoneViewer", () => {
       });
     }
 
-    afterEach(() => {
-    });
-
     it("offers the engine's delve action to the seat that is not the holder", () => {
-      seatOneDelving({ withAction: true });
-      render(<ZoneViewer zone="graveyard" playerId={0} onClose={vi.fn()} />);
+      nonHolderDelving({ withAction: true });
+      render(<ZoneViewer zone="graveyard" playerId={1} onClose={vi.fn()} />);
 
       fireEvent.click(screen.getByTestId("card-image"));
 
@@ -741,8 +738,8 @@ describe("ZoneViewer", () => {
     });
 
     it("offers nothing for a card the engine reports no delve action for", () => {
-      seatOneDelving({ withAction: false });
-      render(<ZoneViewer zone="graveyard" playerId={0} onClose={vi.fn()} />);
+      nonHolderDelving({ withAction: false });
+      render(<ZoneViewer zone="graveyard" playerId={1} onClose={vi.fn()} />);
 
       expect(screen.getByTestId("card-image")).toBeInTheDocument();
       fireEvent.click(screen.getByTestId("card-image"));

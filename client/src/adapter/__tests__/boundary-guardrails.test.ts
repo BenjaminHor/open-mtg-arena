@@ -10,8 +10,6 @@ import { isWaitingForHandled } from "../../game/waitingForRegistry";
 import { repoRoot, rustEnumVariants } from "./rustEnumVariants";
 
 const ADAPTER_FILES = [
-  "ws-adapter.ts",
-  "p2p-adapter.ts",
   "wasm-adapter.ts",
   "engine-worker-client.ts",
   "engine-worker.ts",

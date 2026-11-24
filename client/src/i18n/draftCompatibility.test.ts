@@ -18,10 +18,6 @@ type RequiredLocale = (typeof REQUIRED_LOCALES)[number];
 // one key from every catalog must still make this test fail.
 const REQUIRED_LEAF_PATHS = [
   "pack.waitingNext",
-  "podError.incompatible",
-  "podError.retry",
-  "hostControls.pauseDraft",
-  "hostControls.resumeDraft",
 ] as const;
 
 const CATALOGS: Record<RequiredLocale, Record<string, unknown>> = {

@@ -1095,7 +1095,6 @@ describe("owner printing remaining carrier surfaces (group 2)", () => {
       "components/hand/CompanionFanCard.tsx": 1,
     };
     const excludedHooks: Record<string, number> = {
-      "components/card/CardReportDialog.tsx": 1,
       "components/controls/CardCoverageDashboard.tsx": 1, "components/deck-builder/CardGrid.tsx": 1,
       "components/deck-builder/DeckStack.tsx": 1, "components/deck-builder/PrintingPickerModal.tsx": 1,
       "components/draft/DraftCardFace.tsx": 1, "components/draft/LimitedDeckBuilder.tsx": 1,
@@ -1234,7 +1233,7 @@ describe("owner printing remaining carrier surfaces (group 2)", () => {
     scan(src);
     expect(failures, failures.join("\n")).toEqual([]);
     expect(hooks).toEqual({ ...objectHooks, ...excludedHooks });
-    expect(Object.values(hooks).reduce((sum, count) => sum + count, 0)).toBe(30);
+    expect(Object.values(hooks).reduce((sum, count) => sum + count, 0)).toBe(29);
     expect(Object.values(objectHooks).reduce((sum, count) => sum + count, 0)).toBe(18);
     expect(images).toEqual(expectedImages);
     expect(Object.values(images).reduce((sum, count) => sum + count, 0)).toBe(48);

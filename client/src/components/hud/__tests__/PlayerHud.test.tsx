@@ -265,17 +265,6 @@ describe("PlayerHud", () => {
       expect(dispatch).not.toHaveBeenCalled();
     });
 
-    // The multiplayer-spectator shape the old inline gate also missed: a
-    // spectator whose `gameMode` is still null but whose seat is spectating.
-    it("gives an isSpectator client no affordance even when gameMode is null", () => {
-      act(() => {
-      });
-      const { dispatch } = mount(targetSelection([0]));
-
-      expect(plateTag()).toBe("DIV");
-      expect(dispatch).not.toHaveBeenCalled();
-    });
-
     // V12 — CR 723.1 turn control (a player controls another player for that
     // player's whole turn), and CR 723.3: only control of the player changes —
     // a controlled player is still the active player. So

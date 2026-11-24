@@ -516,6 +516,7 @@ describe("ContestOverlay staring eye", () => {
 
   it("never closes a spectator's eyes, though the board shows them seat 0's side", () => {
     showContest(contestState("Active"), { submitContestClick: vi.fn(() => true) });
+    useGameStore.setState({ gameMode: "spectate" });
     render(<ContestOverlay />);
 
     settle({ Outcome: "Tie" });

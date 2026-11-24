@@ -12,19 +12,8 @@
  *
  * Mode matrix:
  * - `ai` / `local` → `adapter.restoreState(storeState)`. Supported here.
- * - `p2p-host`     → Host recovery requires the full resume-from-persisted
- *                    session path (guest seat reservations, WebRTC grace
- *                    windows, multiplayer-flag flip via
- *                    `resumeMultiplayerHostState`). The P2PHostAdapter
- *                    doesn't expose those on the EngineAdapter interface,
- *                    and a mid-recovery hiccup could desync seats. We
- *                    punt to the Layer 3 reload path, which triggers the
- *                    host's existing `initialize()` resume flow from IDB.
- * - `p2p-join`     → Guests do not hold authoritative WASM state; their
- *                    failure mode is host-disconnect, handled by the P2P
- *                    adapter's auto-reconnect loop. Skipped here.
- * - `online` (WS)  → Server is authoritative; local rehydrate is impossible.
- *                    The WS adapter has its own reconnection logic.
+ * - `spectate`     → The Replay Viewer steps through a recording; it holds
+ *                    no live engine game to recover. Skipped here.
  *
  * Recovery is best-effort. `false` means the caller must escalate to the
  * user-facing Layer 3 reload prompt via `notifyEngineLost`.
@@ -49,8 +38,8 @@ export async function attemptStateRehydrate(): Promise<boolean> {
     return false;
   }
 
-  // Only AI/local games rehydrate locally. Other modes either can't
-  // (guest/WS) or need a full resume flow (p2p-host). See module header.
+  // Only AI/local games rehydrate locally; a replay has no live engine game.
+  // See module header.
   if (gameMode !== "ai" && gameMode !== "local") {
     debugLog(`engine-recovery: mode=${gameMode} not locally recoverable`, "warn");
     return false;

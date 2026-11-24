@@ -239,9 +239,9 @@ describe("SandboxLifeCorrection", () => {
     }
   });
 
-  it("hides in a remote game even when this local sandbox flag is enabled", () => {
+  it("hides in the replay viewer even when this local sandbox flag is enabled", () => {
     makeHarness();
-    act(() => useGameStore.setState({ gameMode: "ai" }));
+    act(() => useGameStore.setState({ gameMode: "spectate" }));
 
     render(<SandboxLifeCorrection />);
 

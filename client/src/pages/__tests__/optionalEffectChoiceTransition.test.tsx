@@ -282,7 +282,18 @@ describe("issue #459 — optional + targeted landfall trigger prompt sequence", 
     expect(screen.getByRole("img", { name: "Grizzly Bears" })).toBeInTheDocument();
     expect(screen.queryByRole("img", { name: "Bre of Clan Stoutarm" })).not.toBeInTheDocument();
 
+    // The same prompt routed to the other seat is not this player's to answer.
+    const routed = gameStateFactory
+      .withPlayers(0, 1)
+      .withObjects(source, subject)
+      .optionalEffectChoice({
+        player: 1,
+        source_id: source.id,
+        decision_subject_id: subject.id,
+      })
+      .build();
     act(() => {
+      useGameStore.setState({ gameState: routed, waitingFor: routed.waiting_for });
     });
     rerender(<GameDialogHarness />);
 

@@ -241,17 +241,6 @@ export function WhatsNewModal({
                 )}
 
                 <ChangelogBody body={entry.body} />
-
-                {entry.discordUrl && (
-                  <a
-                    href={entry.discordUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-block text-xs font-medium text-indigo-300 hover:text-indigo-200 hover:underline"
-                  >
-                    {t("whatsNew.discordLink")}
-                  </a>
-                )}
               </li>
             ))}
           </ul>

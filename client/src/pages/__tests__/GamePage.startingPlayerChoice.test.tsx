@@ -187,22 +187,21 @@ describe("GamePage starting-player choice", () => {
   });
 
   it("non-chooser sees the chooser's name", async () => {
-    act(() => {
-    });
-    showPrompt(startingPlayerPrompt(0, [0, 1]), [0, 1]);
+    showPrompt(startingPlayerPrompt(1, [0, 1]), [0, 1]);
     renderGamePage();
 
     expect(
-      await screen.findByText("Alice is choosing who plays first…"),
+      await screen.findByText("Bob is choosing who plays first…"),
     ).toBeInTheDocument();
     expect(screen.queryByText(TITLE)).toBeNull();
     expect(screen.queryByRole("button", { name: /plays first|Play First/ })).toBeNull();
   });
 
   it("spectator sees the chooser's name, not the chooser's prompt", async () => {
-    act(() => {
-    });
     showPrompt(startingPlayerPrompt(0, [0, 1]), [0, 1]);
+    act(() => {
+      useGameStore.setState({ gameMode: "spectate" });
+    });
     renderGamePage();
 
     expect(
@@ -213,8 +212,6 @@ describe("GamePage starting-player choice", () => {
   });
 
   it("spectator is not shown the between-games play/draw prompt", async () => {
-    act(() => {
-    });
     showPrompt(
       {
         type: "BetweenGamesChoosePlayDraw",
@@ -222,6 +219,9 @@ describe("GamePage starting-player choice", () => {
       },
       [0, 1],
     );
+    act(() => {
+      useGameStore.setState({ gameMode: "spectate" });
+    });
     renderGamePage();
 
     expect(screen.queryByText(PLAY_DRAW_TITLE)).toBeNull();
@@ -229,6 +229,7 @@ describe("GamePage starting-player choice", () => {
 
     // Reach guard: the same seat, seated rather than spectating, is shown the prompt.
     act(() => {
+      useGameStore.setState({ gameMode: "ai" });
     });
     expect(await screen.findByText(PLAY_DRAW_TITLE)).toBeInTheDocument();
   });

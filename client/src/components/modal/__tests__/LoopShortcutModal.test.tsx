@@ -2729,13 +2729,13 @@ const WITHOUT_END_OFFER_VIEW: ViewerInteraction = {
 const WITHOUT_END_REPLY: WaitingFor = {
   type: "RespondToShortcut",
   data: {
-    player: 1,
-    proposal: { proposer: 0, predicted_winner: null, count: "WithoutEnd", unbounded: [] },
+    player: 0,
+    proposal: { proposer: 1, predicted_winner: null, count: "WithoutEnd", unbounded: [] },
   },
 };
 const WITHOUT_END_REPLY_VIEW: ViewerInteraction = {
   waitingForKind: { simultaneous: null, terminal: false, code: "shortcut" },
-  authorizedSubmitters: [1],
+  authorizedSubmitters: [0],
   canSubmit: true,
   autoPassRecommended: false,
   opportunities: [

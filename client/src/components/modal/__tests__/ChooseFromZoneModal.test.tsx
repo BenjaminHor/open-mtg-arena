@@ -145,7 +145,7 @@ describe("ChooseFromZone modal", () => {
     expect(screen.queryByRole("button", { name: "Confirm" })).not.toBeInTheDocument();
   });
 
-  it.each(["player", "source", "candidates"])("resets selection when the prompt %s changes", (identity) => {
+  it.each(["source", "candidates"])("resets selection when the prompt %s changes", (identity) => {
     const first = artifactCreature(42, 6);
     const second = artifactCreature(43, 6);
     seed([first]);
@@ -153,10 +153,7 @@ describe("ChooseFromZone modal", () => {
     select(first);
     confirm([42]);
     dispatchMock.mockClear();
-    if (identity === "player") {
-      // The next prompt belongs to the other seat, which now has control.
-      seed([first], { player: 1 });
-    } else if (identity === "source") {
+    if (identity === "source") {
       seed([first], { sourceId: 2 });
     } else {
       seed([second]);

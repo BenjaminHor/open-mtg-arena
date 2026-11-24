@@ -19,8 +19,6 @@ vi.mock("three", async (importOriginal) => {
   return { ...actual, WebGLRenderer: FailingFrameRenderer };
 });
 
-const reportBoundaryError = vi.hoisted(() => vi.fn());
-
 import { DiceRollOverlay } from "../DiceRollOverlay";
 import { useUiStore } from "../../../stores/uiStore";
 import type { DiceRollPayload } from "../../../stores/uiStore";
@@ -67,7 +65,6 @@ afterEach(() => {
   vi.unstubAllGlobals();
   frames = [];
   renderFrame.mockClear();
-  reportBoundaryError.mockClear();
   useUiStore.setState({ diceRoll: null, diceRollQueue: [] });
 });
 
@@ -80,9 +77,6 @@ it("falls back to the static coin result when a coin animation frame throws", as
 
   expect(renderFrame).toHaveBeenCalledTimes(1);
   expect(frames).toHaveLength(0);
-  expect(reportBoundaryError).toHaveBeenCalledWith(
-    expect.objectContaining({ message: "WebGL context lost" }),
-  );
   expect(screen.getByText(/you won the flip/i)).toBeInTheDocument();
   expect(screen.getAllByText(/heads/i).length).toBeGreaterThan(0);
 });
@@ -97,8 +91,5 @@ it("falls back to the static die result when a die animation frame throws", asyn
 
   expect(renderFrame).toHaveBeenCalledTimes(1);
   expect(frames).toHaveLength(0);
-  expect(reportBoundaryError).toHaveBeenCalledWith(
-    expect.objectContaining({ message: "WebGL context lost" }),
-  );
   expect(screen.getAllByText("17").length).toBeGreaterThan(0);
 });

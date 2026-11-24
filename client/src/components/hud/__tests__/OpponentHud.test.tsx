@@ -86,31 +86,6 @@ describe("OpponentHud", () => {
     expect(screen.getByTitle("This player's turn is next.")).toHaveTextContent("Next Up");
   });
 
-  it("renders opponent tabs clockwise from a non-zero viewer, including eliminated seats", () => {
-    useUiStore.setState({ focusedOpponent: 2 });
-    useGameStore.setState({
-      gameMode: "ai",
-      gameState: createGameState({
-        seat_order: [0, 3, 1, 2],
-        eliminated_players: [0],
-        derived: {
-          turn_order: [
-            { player: 2, slot_index: 1, turns_from_now: 1, turn_number: 2 },
-            { player: 3, slot_index: 2, turns_from_now: 2, turn_number: 3 },
-            { player: 1, slot_index: 3, turns_from_now: 3, turn_number: 4 },
-          ],
-        },
-      }),
-    });
-
-    render(<OpponentHud />);
-
-    const tabs = Array.from(document.querySelectorAll('button[data-player-hud]'));
-    expect(tabs.map((tab) => tab.getAttribute("data-player-hud"))).toEqual(["2", "0", "3"]);
-    expect(tabs[1]).toBeDisabled();
-    expect(screen.getByTitle("This player's turn is next.")).toHaveTextContent("Next Up");
-  });
-
   it("shows a tooltip and hover preview for opponent avatars with art", async () => {
     useMultiplayerStore.setState({
       playerAvatars: new Map([
