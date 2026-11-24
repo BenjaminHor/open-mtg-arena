@@ -70,8 +70,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
        `Arc`-shared objects. The Odin state must offer the same cheap snapshot/rollback, so its layout is decided
        before translating logic, not with the AI (docs/odin-port.md said the latter; corrected).
     3. Hash order: the `RandomState` maps already vary per process and recordings repeat byte for byte, so their
-       order isn't observable. The Fx-hashed ObjectMap is being tested (switched to `RandomState` in a scratch
-       copy, seed 1 re-recorded).
+       order isn't observable. The Fx-hashed ObjectMap's order is: with a random hasher, elves-mirror diverged at
+       step 111. That order is a function of the ids, reproduced exactly by a formula (D-182), so the Odin
+       ObjectMap iterates the same way; no Rust change.
     Also found: **the card-text parser runs during play.** Token creation parses a token's catalog rules text
     (`game/effects/token.rs` `catalog_rules_text_abilities`, 274 calls in nine games), and other engine modules
     call into the parser (triggers, layers, combat, effects). An all-Odin engine needs those parses precomputed

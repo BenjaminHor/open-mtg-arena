@@ -2897,3 +2897,21 @@ owner's answer to the D-089 open question, option (a))
   model either; the ported logic derives them, as Rust does.
 - Why: one exact wire format keeps the Rust and Odin engines comparable step by step (D-179's recordings) without
   porting a decade of save migrations up front.
+
+**D-182: The Odin ObjectMap iterates in the Rust engine's order (2026-11-24)** · 2026-11-24 · accepted
+- Found by experiment: the order of `GameState.objects` is observable. With ObjectMap's FxBuildHasher swapped for
+  a random one, an elves-mirror recording diverged at step 111 (`last_zone_changed_ids` [23, 24] vs [24, 23]),
+  where an effect moved several objects in map order. (Three other matchups didn't diverge; the randomly seeded
+  `std` maps elsewhere never do.)
+- That order is a pure function of the ids: `im::HashMap` (15.1) walks its hash trie by the key hash's 5-bit
+  chunks from the lowest, and the hash of `ObjectId(i)` is rustc-hash 2.1's FxHash, `((i * K) rotl 26)` truncated
+  to u32 (K = 0xf1357aea2e62a9c5). Sorting ids by those chunks reproduces im's order exactly, also after removals
+  (checked against the real crates over 400 ids with removals and large ids).
+- So the Odin ObjectMap keeps its objects in that order, with no change to the Rust engine and no re-recording.
+  The alternative, switching Rust to an ordered map, would re-record everything and risk speed in its hottest
+  lookup.
+- It is the 64-bit order. The shipped browser build (wasm32) hashes with the 32-bit FxHash constants, so today's
+  browser game already iterates differently from native runs; both are arbitrary tie orders. The Odin engine uses
+  the 64-bit order everywhere, so it matches the native recordings it is checked against.
+- Not covered: two ids with equal 32-bit hashes (im keeps them in a collision node, in insertion order); none
+  exist below 2^32 ids in practice, but the Odin map asserts it.
