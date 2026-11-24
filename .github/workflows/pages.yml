@@ -76,6 +76,10 @@ jobs:
       # Everything published, the WASM and the generated data included, is free of the upstream project's name (D-177).
       - name: Brand check (built site)
         run: ./scripts/check-brand.sh client/dist
+      # The engine and card data this site was built with, as one archive at /dev-bundle/: a fresh checkout of main
+      # fetches it (scripts/fetch-dev-bundle.sh) and runs the client without building Rust or generating card data.
+      - name: Dev bundle
+        run: ./scripts/make-dev-bundle.sh client/dist/dev-bundle
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
