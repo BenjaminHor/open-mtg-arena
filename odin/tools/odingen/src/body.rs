@@ -762,6 +762,17 @@ impl Body<'_, '_, '_> {
                 Ok(())
             }
             Expr::Macro(m) => self.stmt_macro(&m.mac),
+            // `f()?;`: the check and early return happen; the value is dropped.
+            Expr::Try(_) => {
+                let sh = self.shape_of(e).ok_or("? statement on an untyped value")?;
+                let v = self.tx.expr(e, &sh)?;
+                if matches!(sh, Shape::Unit) {
+                    self.line(&format!("_ = {v}"));
+                } else {
+                    self.line(&format!("_ = {v}"));
+                }
+                Ok(())
+            }
             other => Err(format!("statement {}", kind(other))),
         }
     }

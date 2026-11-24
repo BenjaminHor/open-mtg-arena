@@ -870,6 +870,11 @@ impl<'a, 'b> Tx<'a, 'b> {
                     ("is_ok" | "is_err", Shape::Result(..), 0) => return Some(Shape::Bool),
                     ("min" | "max" | "saturating_sub" | "saturating_add" | "abs" | "clamp", Shape::Int(_), _) => return Some(recv.clone()),
                     ("to_vec" | "as_slice" | "as_mut_slice" | "iter" | "into_iter", Shape::Vec(_), 0) => return Some(recv.clone()),
+                    ("then_some", Shape::Bool, 1) => return Some(Shape::Option(Box::new(self.shape_of(args[0])?))),
+                    ("then", Shape::Bool, 1) => {
+                        let Expr::Closure(c) = args[0] else { return None };
+                        return Some(Shape::Option(Box::new(self.shape_of(&c.body)?)));
+                    }
                     ("as_deref" | "as_ref", Shape::OptPtr(..), 0) => return Some(recv.clone()),
                     ("get", Shape::Map(_, v), 1) => return Some(Shape::Option(v.clone())),
                     ("or_else", Shape::Option(_), 1) => return Some(recv.clone()),
@@ -2047,6 +2052,40 @@ impl<'a, 'b> Tx<'a, 'b> {
                     format!("r{n}_")
                 }
                 ("clear", Shape::Vec(_), 0) if deref.is_empty() => format!("clear(&{recv})"),
+                // `b.then_some(x)` evaluates x either way; `b.then(|| x)` only when b holds.
+                ("then_some", Shape::Bool, 1) => {
+                    let Some(Shape::Option(i)) = self.shape_of_pub_mc(mc) else { return Err("then_some of an untyped value".into()) };
+                    let v = self.expr(args[0], &i)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("ts{n}_ := {v}"));
+                    format!("(Maybe({})(ts{n}_) if {recv} else nil)", self.e.odin(&i))
+                }
+                ("then", Shape::Bool, 1) => {
+                    let Some(Shape::Option(i)) = self.shape_of_pub_mc(mc) else { return Err("then of an untyped value".into()) };
+                    let Expr::Closure(c) = args[0] else { return Err("then without a closure".into()) };
+                    if has_try(&c.body) {
+                        return Err("? inside a closure".into());
+                    }
+                    let n = self.next_temp();
+                    let outer = std::mem::take(&mut self.pre);
+                    let v = self.expr(&c.body, &i);
+                    let inner = std::mem::replace(&mut self.pre, outer);
+                    let v = v?;
+                    self.pre.push(format!("tt{n}_: Maybe({})", self.e.odin(&i)));
+                    self.pre.push(format!("if {recv} {{\n{}\ntt{n}_ = {v}\n}}", inner.join("\n")));
+                    format!("tt{n}_")
+                }
+                // `v.retain(|x| keep)`: kept elements moved down in order, the rest cut off.
+                ("retain", Shape::Vec(i), 1) if deref.is_empty() => {
+                    let c = Self::closure_of(args[0])?;
+                    let n = self.next_temp();
+                    let (w, k, x) = (format!("w{n}_"), format!("k{n}_"), format!("x{n}_"));
+                    let mut body = Vec::new();
+                    let keep = self.closure_in(&mut body, &c, &x, i, &Shape::Bool)?;
+                    self.pre.push(format!("{w} := 0"));
+                    self.pre.push(format!("for {k} in 0 ..< len({recv}) {{\n{x} := {recv}[{k}]\n{}\nif {keep} {{ {recv}[{w}] = {recv}[{k}]; {w} += 1 }}\n}}", body.join("\n")));
+                    format!("resize(&{recv}, {w})")
+                }
                 // An iterator over a Vec, taken whole: the Vec (translated logic materializes iterators).
                 ("iter" | "into_iter", Shape::Vec(_), 0) if deref.is_empty() => recv,
                 ("as_deref" | "as_ref", Shape::OptPtr(..), 0) => recv,
