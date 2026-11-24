@@ -8,8 +8,9 @@
 // difference>\t<card names, separated by |>"), and a rerun with the same file skips the tests already in it, so a
 // long run can be resumed; --only <file> runs just the files listed there. Run on Rust, the passing tests are the
 // usable fixtures; the card names map tests to cards, to count a card as validated when its tests pass.
-// Usage: node odin/engine-wasm/run-captured.mjs <rust|odin> <capture dir> [--verbose] [--results f] [--only f]
-import { appendFileSync, existsSync, readFileSync, readdirSync } from "node:fs";
+// --max-mb N (default 20) leaves out recordings larger than N megabytes compressed.
+// Usage: node odin/engine-wasm/run-captured.mjs <rust|odin> <capture dir> [--verbose] [--results f] [--only f] [--max-mb N]
+import { appendFileSync, existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { project, firstDifference } from "./projection.mjs";
 
@@ -52,11 +53,18 @@ if (resultsFile && existsSync(resultsFile)) {
 const record = (file, status, why, names) =>
   resultsFile && appendFileSync(resultsFile, `${file}\t${status}\t${why ?? ""}\t${[...(names ?? [])].join("|")}\n`);
 const read = (f) => (f.endsWith(".gz") ? gunzipSync(readFileSync(f)).toString("utf8") : readFileSync(f, "utf8"));
-let passed = 0, steps = 0, stepsPassed = 0, unreadable = 0, done = 0;
+let passed = 0, steps = 0, stepsPassed = 0, unreadable = 0, done = 0, tooLarge = 0;
+const maxBytes = Number(option("--max-mb") ?? 20) * 1024 * 1024;
 const failures = new Map(); // first difference path -> count
 for (const file of files) {
   if (++done % 500 === 0) console.error(`${done}/${files.length}`);
   let prev = null, ok = true, firstFail = null;
+  // A few loop tests recorded hundreds of megabytes; replaying one exhausts memory. They're left out and counted.
+  if (statSync(`${dir}/${file}`).size > maxBytes) {
+    tooLarge++;
+    record(file, "too-large");
+    continue;
+  }
   let parsed;
   try {
     parsed = read(`${dir}/${file}`).split("\n").filter(Boolean).map((line) => JSON.parse(line));
@@ -95,6 +103,6 @@ for (const file of files) {
     if (verbose) console.log(`FAIL ${file} step ${firstFail.step} at ${firstFail.path}\n  expected: ${JSON.stringify(firstFail.a)?.slice(0, 300)}\n  got:      ${JSON.stringify(firstFail.b)?.slice(0, 300)}`);
   }
 }
-console.log(`${which}: ${passed}/${files.length - unreadable} tests pass (${stepsPassed}/${steps} steps); ${unreadable} unreadable recordings left out`);
+console.log(`${which}: ${passed}/${files.length - unreadable} tests pass (${stepsPassed}/${steps} steps); ${unreadable} unreadable and ${tooLarge} over the size limit left out`);
 
 for (const [k, n] of [...failures].sort((a, b) => b[1] - a[1]).slice(0, 15)) console.log(`  ${n}  first difference at ${k}`);

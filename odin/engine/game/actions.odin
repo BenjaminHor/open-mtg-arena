@@ -40,6 +40,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_ChooseXValue:
 		return w.player, true
+	case types.WaitingFor_ModeChoice:
+		return w.player, true
 	}
 	return 0, false
 }
@@ -152,6 +154,15 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_SurveilChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		return ok && answer_scry(g, p, w.cards[:], a.cards[:], true)
+	case types.WaitingFor_ModeChoice:
+		#partial switch a in action {
+		case types.GameAction_SelectModes:
+			return select_modes(g, p, w, a.indices[:])
+		case types.GameAction_CancelCast:
+			g.pending = {}
+			give_priority(g, p)
+			return true
+		}
 	case types.WaitingFor_ChooseXValue:
 		#partial switch a in action {
 		case types.GameAction_ChooseX:
@@ -296,6 +307,14 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		for t in w.selection.current_legal_targets do append(&out, types.GameAction_ChooseTarget{target = t})
 		slot := w.selection.current_slot
 		if slot < len(w.target_slots) && w.target_slots[slot].optional do append(&out, types.GameAction_ChooseTarget{})
+	case types.WaitingFor_ModeChoice:
+		if w.modal.min_choices == 1 {
+			for i in 0 ..< w.modal.mode_count do if !slice.contains(w.unavailable_modes[:], i) {
+				one: [dynamic]int
+				append(&one, i)
+				append(&out, types.GameAction_SelectModes{indices = one})
+			}
+		}
 	case types.WaitingFor_OptionalEffectChoice:
 		append(&out, types.GameAction_DecideOptionalEffect{accept = true})
 		append(&out, types.GameAction_DecideOptionalEffect{accept = false})

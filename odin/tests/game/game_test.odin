@@ -978,3 +978,34 @@ mana_value_counts_x_on_the_stack :: proc(t: ^testing.T) {
 	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
 	testing.expect(t, game.object_mana_value(blaze) == 5, "on the stack with X = 4: 5")
 }
+
+@(test)
+modal_spell_choose_one :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 700.2a: the mode is chosen as the spell is cast; a mode whose targets can't be chosen can't be.
+	// CR 700.2c: targets only for the chosen mode. Boros Charm: 4 damage to target player or planeswalker /
+	// permanents you control gain indestructible / target creature gains double strike.
+	g := new_game()
+	add(t, g, "Mountain", 0, .Battlefield)
+	add(t, g, "Plains", 0, .Battlefield)
+	charm := add(t, g, "Boros Charm", 0, .Hand)
+	testing.expect(t, game.card_supported(&card(t, "Boros Charm").face))
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = charm.id}))
+	w, asked := g.state.waiting_for.(types.WaitingFor_ModeChoice)
+	testing.expect(t, asked && len(w.unavailable_modes) == 1 && w.unavailable_modes[0] == 2, "no creature: the double strike mode is unavailable")
+	two: [dynamic]int
+	append(&two, 0, 1)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_SelectModes{indices = two}), "choose one, not two")
+	third: [dynamic]int
+	append(&third, 2)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_SelectModes{indices = third}), "not the unavailable one")
+	first: [dynamic]int
+	append(&first, 0)
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectModes{indices = first}))
+	tw, targeting := g.state.waiting_for.(types.WaitingFor_TargetSelection)
+	testing.expect(t, targeting && len(tw.target_slots) == 1, "one target, for the chosen mode")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, game.player(&g.state, 1).life == 16 && charm.zone == .Graveyard, "4 damage, then the graveyard")
+}

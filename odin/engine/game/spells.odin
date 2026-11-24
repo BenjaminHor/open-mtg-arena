@@ -23,7 +23,7 @@ card_supported :: proc(face: ^types.CardFace) -> bool {
 	for r in face.replacements do if !replacement_supported(r) do return false
 	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !cost_modifier_supported(st) do return false
 	for t in face.triggers do if !trigger_supported(t) do return false
-	if face.additional_cost != nil || face.modal != nil || len(face.casting_options) > 0 do return false
+	if face.additional_cost != nil || len(face.casting_options) > 0 || !modal_supported(face) do return false
 	// A spell needs a mana cost it can pay (CR 118.6, 107.4e-f); lands aren't cast.
 	if !is_land_face(face) {
 		c, is_cost := face.mana_cost.(types.ManaCost_Cost)
@@ -34,6 +34,7 @@ card_supported :: proc(face: ^types.CardFace) -> bool {
 	for a in face.abilities {
 		switch a.kind {
 		case .Spell:
+			if face.modal != nil do continue // the modes, checked by modal_supported
 			// One spell ability is what casting carries out (spell_ability); a second paragraph isn't yet.
 			spells += 1
 			if spells > 1 do return false
@@ -269,7 +270,23 @@ is_self :: proc(f: types.TargetFilter) -> bool {
 
 // The targets of a spell: an Aura spell's single target from its enchant ability (CR 303.4a), or its
 // instructions' slots.
-spell_slot_list :: proc(o: ^types.GameObject) -> [dynamic]Target_Slot {
+spell_slot_list :: proc(o: ^types.GameObject, modes: []int = nil) -> [dynamic]Target_Slot {
+	if is_modal(o) {
+		// CR 700.2c: only the chosen modes' targets.
+		out := make([dynamic]Target_Slot, context.temp_allocator)
+		abilities := mode_abilities(o)
+		groups := 0
+		for i in modes {
+			mode_slots := slot_list(abilities[i])
+			last := -1
+			for slot in mode_slots {
+				append(&out, Target_Slot{filter = slot.filter, optional = slot.optional, group = slot.group + groups})
+				last = slot.group
+			}
+			groups += last + 1
+		}
+		return out
+	}
 	if is_aura(o) {
 		out := make([dynamic]Target_Slot, context.temp_allocator)
 		f, _ := enchant_filter(o)
@@ -374,7 +391,9 @@ castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c
 	// From the hand, or a commander from the command zone (CR 903.8).
 	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander)) do return false
 	if !object_supported(o, card_db) || !can_cast_now(s, p, o) do return false
-	if !slots_fillable(s, spell_slot_list(o)[:], p, o.id) do return false
+	if is_modal(o) {
+		if !modes_castable(s, p, o) do return false
+	} else if !slots_fillable(s, spell_slot_list(o)[:], p, o.id) do return false
 	_, payable := plan_payment(s, p, spell_cost(s, o, p))
 	return payable
 }
@@ -436,6 +455,15 @@ cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []t
 			return false
 		}
 		take_target(slots[:], &g.pending.choice, t)
+	}
+	if is_modal(o) {
+		// CR 601.2b, 700.2a: the modes are chosen first.
+		if len(targets) > 0 {
+			g.pending = {}
+			return false
+		}
+		ask_modes(g, p, o)
+		return true
 	}
 	if has_x(o.mana_cost) {
 		// CR 601.2b, 107.3a: the value of X is announced first.
@@ -499,6 +527,8 @@ choose_x :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_ChooseXValue, 
 Pending_Cast :: struct {
 	object:        types.ObjectId,
 	using choice:  Target_Choice, // the targets chosen so far
+	modes:         [dynamic]int, // a modal spell's chosen modes, in printed order (CR 700.2d)
+	modes_chosen:  bool,
 	ability_index: int, // an activated ability being activated, or -1 for a spell being cast
 	cost_objects:  [dynamic]types.ObjectId, // the permanents to sacrifice or cards to discard for the cost, once chosen
 	cost_chosen:   bool,
@@ -508,6 +538,7 @@ Pending_Cast :: struct {
 pending_ability :: proc(g: ^Game) -> ^types.AbilityDefinition {
 	o := object(&g.state, g.pending.object)
 	if g.pending.ability_index >= 0 do return activated_ability(o, g.pending.ability_index)
+	if is_modal(o) && len(g.pending.modes) > 0 do return mode_abilities(o)[g.pending.modes[0]]
 	return spell_ability(o)
 }
 
@@ -515,7 +546,7 @@ pending_ability :: proc(g: ^Game) -> ^types.AbilityDefinition {
 pending_slot_list :: proc(g: ^Game) -> [dynamic]Target_Slot {
 	o := object(&g.state, g.pending.object)
 	if g.pending.ability_index >= 0 do return slot_list(activated_ability(o, g.pending.ability_index))
-	return spell_slot_list(o)
+	return spell_slot_list(o, g.pending.modes[:])
 }
 
 ask_target :: proc(g: ^Game, p: types.PlayerId) {
@@ -571,7 +602,8 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	}
 	move_object(g, id, .Stack)
 	o.controller = p
-	resolved := resolved_tree(s, spell_ability(o), targets, g.pending.counts[:], p, id)
+	chain := chosen_mode_chain(o, g.pending.modes[:]) if is_modal(o) else spell_ability(o)
+	resolved := resolved_tree(s, chain, targets, g.pending.counts[:], p, id)
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = id, controller = p, kind = types.StackEntryKind_Spell{card_id = o.card_id, ability = resolved}}, copy_entry)
 	append(&g.events, Event{kind = .Spell_Cast, object = id, controller = p}) // CR 601.2i
 	s.priority_passes = nil
@@ -772,7 +804,7 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !cost_modifier_supported(st) do append(&out, static_gap(st))
 	for r in face.replacements do if !replacement_supported(r) do append(&out, name("replacement:", r.event))
 	if face.additional_cost != nil do append(&out, "additional cost")
-	if face.modal != nil do append(&out, "modal")
+	if !modal_supported(face) do append(&out, "modal")
 	if len(face.casting_options) > 0 do append(&out, "casting option")
 	for a in face.abilities {
 		switch a.kind {

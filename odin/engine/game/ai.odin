@@ -24,6 +24,9 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		for e in w.pending do if e.player == p do return types.GameAction_SelectCards{cards = worst_cards(g, p, int(e.count))}, true
 	case types.WaitingFor_DiscardToHandSize:
 		return types.GameAction_SelectCards{cards = worst_cards(g, p, w.count)}, true
+	case types.WaitingFor_ModeChoice:
+		modes, _ := ai_modes(g, p, object(s, g.pending.object))
+		return types.GameAction_SelectModes{indices = modes}, true
 	case types.WaitingFor_ChooseXValue:
 		return types.GameAction_ChooseX{value = w.max}, true // as much as it can pay
 	case types.WaitingFor_PayCost:
@@ -133,6 +136,10 @@ worth_casting :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool
 		return false
 	}
 	if has_x(o.mana_cost) && max_x(s, p, o) == 0 do return false // an X spell for X = 0 does little
+	if is_modal(o) {
+		_, good := ai_modes(g, p, o)
+		return good && sorcery_timing(s, p)
+	}
 	if is_permanent_card(o) do return sorcery_timing(s, p)
 	a := spell_ability(o)
 	if a == nil do return false
@@ -435,4 +442,36 @@ generic_helps :: proc(e: types.Effect_GenericEffect) -> bool {
 		}
 	}
 	return true
+}
+
+// The modes to choose: the first available ones whose required targets are good ones (or that need none and
+// draw, make tokens or gain life), as many as the minimum.
+ai_modes :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> (modes: [dynamic]int, good: bool) {
+	s := &g.state
+	m := modal_of(o)
+	unavailable := unavailable_modes(s, p, o)
+	modes = make([dynamic]int)
+	fallback := make([dynamic]int, context.temp_allocator)
+	for a, i in mode_abilities(o) {
+		if slice.contains(unavailable[:], i) do continue
+		append(&fallback, i)
+		ok := true
+		targets := 0
+		for slot in slot_list(a) do if !slot.optional {
+			targets += 1
+			if _, good := chosen_target(g, p, legal_targets(s, slot.filter, p, o.id)[:], a); !good do ok = false
+		}
+		if targets == 0 && a.effect != nil {
+			#partial switch _ in a.effect^ {
+			case types.Effect_Draw, types.Effect_Token, types.Effect_GainLife:
+			case:
+				ok = false
+			}
+		}
+		if ok && len(modes) < m.max_choices do append(&modes, i)
+	}
+	good = len(modes) >= m.min_choices
+	for _, i in fallback do if len(modes) < m.min_choices && !slice.contains(modes[:], fallback[i]) do append(&modes, fallback[i])
+	slice.sort(modes[:])
+	return modes, good
 }
