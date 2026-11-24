@@ -9,7 +9,8 @@ name: Pages
 
 on:
   push:
-    branches: [main]
+    # TEMPORARY (remove before merging): build on the import branch to prove the release WASM fits the runner.
+    branches: [main, claude/eloquent-mayer-qcx0e1]
   workflow_dispatch:
 
 permissions:
@@ -81,6 +82,8 @@ jobs:
 
   deploy:
     needs: build
+    # Only main is published; a build on any other branch is a check.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
