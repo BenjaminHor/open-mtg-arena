@@ -1,0 +1,86 @@
+# The Odin port's checks (docs/odin-port.md, D-180), on pull requests that touch the Odin code or the Rust crates it
+# mirrors:
+# 1. the pinned Odin compiler, built from source with our patch (odin/toolchain),
+# 2. odingen's output matches the committed model (a Rust type change regenerates it) and the model type-checks,
+# 3. the card data round-trips through the model, and so do the states and actions of a game the Rust engine records.
+name: Odin
+
+on:
+  pull_request:
+    paths:
+      - "odin/**"
+      - "crates/**"
+      - "Cargo.lock"
+      - ".github/workflows/odin.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: odin-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ODIN_TAG: dev-2026-11a
+
+jobs:
+  model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            .
+            odin/tools/odingen
+
+      # The compiler: the pinned tag plus our patches, cached by both.
+      - uses: actions/cache@v4
+        id: odin-cache
+        with:
+          path: ~/odin
+          key: odin-${{ env.ODIN_TAG }}-${{ hashFiles('odin/toolchain/*.patch') }}
+      - name: Build Odin
+        if: steps.odin-cache.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update && sudo apt-get install -y llvm-18-dev clang-18
+          git clone --depth 1 --branch "$ODIN_TAG" https://github.com/odin-lang/Odin.git ~/odin
+          cd ~/odin
+          for p in "$GITHUB_WORKSPACE"/odin/toolchain/*.patch; do git apply "$p"; done
+          LLVM_CONFIG=llvm-config-18 ./build_odin.sh release
+      - run: echo "$HOME/odin" >> "$GITHUB_PATH"
+
+      - name: The committed model is odingen's output
+        run: |
+          cargo run --release --manifest-path odin/tools/odingen/Cargo.toml -- gen crates odin/engine/types \
+            CardExportEntry GameState GameAction WaitingFor GameEvent ReplayLog
+          git diff --exit-code -- odin/engine/types
+      - name: The model type-checks
+        run: odin check odin/engine/types -no-entry-point
+
+      # MTGJSON's files change weekly at most; the script refreshes them once a week (UTC), as in Pages.
+      - name: Week for the MTGJSON cache
+        id: week
+        run: echo "week=$(date -u +%Y-W%V)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: data/mtgjson
+          key: mtgjson-${{ steps.week.outputs.week }}
+      - name: Generate the card data
+        run: ./scripts/gen-card-data.sh
+
+      - name: Card data round trip
+        run: |
+          odin build odin/tools/carddata_roundtrip -out:carddata_roundtrip
+          ./carddata_roundtrip client/public/card-data.json
+      - name: Record a game with the Rust engine
+        run: |
+          cargo build --profile tool -p phase-ai --bin record-games
+          ./target/tool/record-games client/public/card-data.json recordings red-vs-green 1 1 400
+      - name: Game state round trip
+        run: |
+          odin build odin/tools/gamestate_roundtrip -out:gamestate_roundtrip
+          ./gamestate_roundtrip recordings/*.jsonl
