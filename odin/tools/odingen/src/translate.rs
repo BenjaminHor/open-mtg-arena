@@ -312,7 +312,40 @@ impl<'a, 'b> Tx<'a, 'b> {
     }
 
     /// An expression in value position, given the type it must have.
+    /// An expression as an Odin value of the wanted shape: translated, then adapted where Rust converts silently
+    /// (a `Box`/`Arc` read as its contents; a place handed out as `&mut`).
     pub fn expr(&mut self, ex: &Expr, want: &Shape) -> R<String> {
+        if !self.calls {
+            return self.expr_raw(ex, want);
+        }
+        match want {
+            // A `&mut` result from a value place (`self` in a `-> &mut Self` builder, `self.field`).
+            Shape::MutRef(inner) if !matches!(ex, Expr::Reference(_)) => {
+                let actual = self.shape_of(ex);
+                if matches!(actual, Some(Shape::MutRef(_))) || actual.is_none() {
+                    return self.expr_raw(ex, want);
+                }
+                let v = self.expr_raw(ex, inner)?;
+                return Ok(match v.strip_suffix('^') {
+                    Some(p) if !p.contains(['.', '[', '(']) => p.to_string(),
+                    _ => format!("&{v}"),
+                });
+            }
+            Shape::Ptr(..) | Shape::OptPtr(..) | Shape::Option(_) | Shape::Unit => self.expr_raw(ex, want),
+            _ => {
+                // A Box/Arc where its contents are wanted: dereferenced.
+                if let Some(Shape::Ptr(inner, _)) = self.shape_of(ex) {
+                    if *inner == *want {
+                        let v = self.expr_raw(ex, &Shape::Ptr(inner.clone(), false))?;
+                        return Ok(format!("{v}^"));
+                    }
+                }
+                self.expr_raw(ex, want)
+            }
+        }
+    }
+
+    fn expr_raw(&mut self, ex: &Expr, want: &Shape) -> R<String> {
         match ex {
             Expr::Lit(l) => lit(&l.lit),
             Expr::Field(fe) => {
