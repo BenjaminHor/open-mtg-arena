@@ -1,0 +1,296 @@
+{
+  "actions": {
+    "cancel": "キャンセル",
+    "save": "保存",
+    "close": "閉じる",
+    "closeNamed": "{{name}}を閉じる"
+  },
+  "debug": {
+    "copyDisplaySnapshot": "表示スナップショットをコピー（復元不可）",
+    "exportAuthoritative": "正本ゲーム状態をエクスポート",
+    "exportAuthoritativeTitle": "ゲームの診断と復元に使うエンジン管理状態をダウンロード"
+  },
+  "quantityRef": {
+    "highestNumber": "最大の数",
+    "lowestNumber": "最小の数",
+    "chosenNumber": "選ばれた数",
+    "energyPaidOrLostThisTurn": "このターンに支払ったまたは失ったエネルギー"
+  },
+  "scryOutcome": {
+    "title": "占術完了",
+    "you": "あなた",
+    "result": "{{player}} — 上に{{top}} · 下に{{bottom}}"
+  },
+  "modal": {
+    "defaultEyebrow": "ワークスペースツール"
+  },
+  "pausedBanner": {
+    "message": "ゲーム一時停止 — {{reason}}",
+    "resume": "ゲームを再開"
+  },
+  "fullscreen": {
+    "enter": "全画面表示",
+    "exit": "全画面表示を終了"
+  },
+  "buildBadge": {
+    "downloading": "ダウンロード中… {{progress}}%",
+    "checking": "確認中…",
+    "updating": "更新中…",
+    "updatePending": "ゲーム終了後に更新予定",
+    "cards": "カード {{age}}（{{commit}}）",
+    "cardDataTitle": "{{commit}}から{{date}}に生成されたカードデータ",
+    "checkForUpdates": "更新を確認",
+    "updaterDebugInfo": "アップデータのデバッグ情報",
+    "updaterIssue": "アップデータの問題: {{error}}",
+    "updateIssue": "更新の問題",
+    "updated": "更新済み"
+  },
+  "offlineBadge": {
+    "label": "オフライン",
+    "servicesPaused": "オンライン更新とサービスは一時停止しています。",
+    "forced": "オフライン作業が有効です。",
+    "connection": "ネットワーク接続がありません。"
+  },
+  "comboDetector": {
+    "label": "コンボ検出（実験的）",
+    "title": "無限ループを検出: 必須ループを自動終了し、プレイヤーが制御するループにはショートカットを提案し、∞リソースを表示（既定ではオフ）",
+    "off": "オフ",
+    "interactive": "対話式"
+  },
+  "gameMenu": {
+    "sections": {
+      "view": "表示",
+      "tools": "ツール",
+      "game": "ゲーム"
+    },
+    "menu": "ゲームメニュー",
+    "sandboxTools": "サンドボックスツール",
+    "sandboxToolsTitle": "サンドボックスツール — 任意の盤面状態を設定（`）",
+    "openSandboxTools": "サンドボックスツールを開く",
+    "clickMode": "クリックモード",
+    "clickModeButton": "クリックモードボタン",
+    "shown": "表示",
+    "hidden": "非表示",
+    "openGameLog": "ゲームログを開く",
+    "closeGameLog": "ゲームログを閉じる",
+    "settings": "設定",
+    "boardLayoutSplit": "分割",
+    "boardLayoutLegacy": "旧式",
+    "switchToSplitView": "分割テーブル表示に切り替え",
+    "switchToLegacyView": "旧式のフォーカス表示に切り替え",
+    "multiplayerSplitLayoutNudge": {
+      "message": "分割テーブル表示なら、すべての対戦相手を同時に確認できます。",
+      "trySplit": "分割表示を試す",
+      "dismiss": "今はしない"
+    },
+    "helpShortcuts": "ヘルプとショートカット",
+    "showAiHand": "AIの手札を表示",
+    "hideAiHand": "AIの手札を隠す",
+    "undoLastAction": "直前の行動を元に戻す",
+    "concede": "投了",
+    "backToDraft": "ドラフトに戻る",
+    "mainMenu": "メインメニュー",
+    "cards": "カード {{commit}}",
+    "cardDataTitle": "カードデータ: {{date}}"
+  },
+  "volume": {
+    "mediaUnavailable": "音声を利用できません — このシステムには再生に必要なメディアコンポーネントがありません。ディストリビューションのGStreamerプラグインパッケージをインストールして、アプリを再起動してください。",
+    "mute": "ミュート",
+    "unmute": "ミュート解除",
+    "volume": "音量"
+  },
+  "grantDebug": {
+    "heading": "サンドボックス: デバッグ権限",
+    "description": "他のプレイヤーにデバッグ操作の送信権限を付与します。操作は公開ログに記録されます。",
+    "playerLabel": "プレイヤー{{number}}",
+    "revoke": "取り消す",
+    "grant": "付与"
+  },
+  "help": {
+    "eyebrow": "ヘルプ",
+    "title": "ヘルプとショートカット",
+    "subtitle": "紙のプレイヤー向けデジタルMagicの流れ: 停止、優先権、パス、復旧ツール。",
+    "closeHelp": "ヘルプを閉じる",
+    "searchPlaceholder": "ヘルプまたはショートカットを検索",
+    "whatCanIDo": "今できることは？",
+    "recoveryTitle": "復旧ツール",
+    "recoveryDescription": "カードが正しく動かない場合は、まず状態をエクスポートしてください。確認や調整が必要なら高度なデバッグパネルを使えます。",
+    "copyState": "状態をコピー",
+    "exportState": "状態をエクスポート",
+    "exportReplay": "リプレイをエクスポート",
+    "openAdvancedDebug": "高度なデバッグを開く",
+    "sections": {
+      "Flow": "流れ",
+      "Shortcuts": "ショートカット",
+      "Recovery": "復旧"
+    },
+    "status": {
+      "copied": "ゲーム状態をクリップボードにコピーしました。",
+      "copyFailed": "ゲーム状態をコピーできませんでした。",
+      "exported": "{{filename}}をエクスポートしました。",
+      "exportFailedDetail": "ゲーム状態をエクスポートできませんでした。{{detail}}",
+      "replayExported": "リプレイを{{filename}}として保存しました。",
+      "replayExportUnavailable": "このゲームのリプレイ記録はありません。",
+      "replayExportFailed": "リプレイをエクスポートできませんでした。"
+    },
+    "prompt": {
+      "starting": "ゲームを開始または状態を復元しています。",
+      "gameOver": "ゲーム終了です。",
+      "mulliganDecide": "この初期手札をキープするかマリガンするか選択してください。",
+      "mulliganWaitDecide": "別のプレイヤーが初期手札を決めるのを待っています。",
+      "mulliganBottom": "マリガン後にキープした手札から、下に置くカードを選択してください。",
+      "mulliganWaitBottom": "別のプレイヤーがマリガンを終えるのを待っています。",
+      "openingHandBottom": "通常のマリガン前に、下に置くカードを選択してください。",
+      "openingHandWait": "別のプレイヤーが初期手札を解決するのを待っています。",
+      "waitOther": "別のプレイヤーの行動を待っています。",
+      "priorityStack": "スタック上に何かある状態であなたに優先権があります。解決を選ぶと、全員がパスしたとき一番上の項目を解決できます。",
+      "priorityAutoPass": "あなたに優先権があります。停止またはフルコントロールが有効でない限り、クライアントは静かなウィンドウを自動でパスする場合があります。",
+      "priorityActions": "あなたに優先権があります。使用可能なカードを使うかパスしてターンを進められます。",
+      "priorityPass": "あなたに優先権があります。パスすると次のステップまたはプレイヤーへ進みます。",
+      "manaPayment": "保留中の呪文または能力のマナを支払ってください。Tキーで使用可能な土地をタップできます。",
+      "targetSelection": "ハイライトされた適正な対象を選ぶか、プロンプトに許可されていればキャンセルしてください。",
+      "declareAttackers": "攻撃クリーチャーを選んで確定してください。攻撃なしも選べます。",
+      "declareBlockers": "ブロッカーを選んで攻撃クリーチャーに割り当て、確定してください。",
+      "chooseXValue": "呪文または能力を続行する前にXの値を選んでください。",
+      "payAmountChoice": "要求されたリソースをいくら支払うか選んでください。",
+      "default": "ゲームはあなたの選択を待っています。現在のプロンプトに従って続行してください。"
+    },
+    "entries": {
+      "automaticPhaseSkips": {
+        "title": "フェイズの自動スキップ",
+        "body": "フェイズは自動的にスキップされます。紙のような優先権ウィンドウが必要なら停止またはフルコントロールを使ってください。"
+      },
+      "phaseStops": {
+        "title": "フェイズ停止",
+        "body": "停止を設定するとそのステップの前で止まります。紙で戦闘前、ドロー前、終了ステップ前に行動できると宣言するのに似ています。"
+      },
+      "fullControl": {
+        "title": "フルコントロール",
+        "body": "フルコントロールでは、デジタルクライアントなら通常進む箇所を含め、優先権ウィンドウをスキップしません。"
+      },
+      "resolve": {
+        "title": "解決",
+        "body": "解決とは優先権をパスし、他の全員もパスした場合にスタックの一番上の呪文または能力を解決できるようにすることです。"
+      },
+      "passToEnd": {
+        "title": "終了までパス",
+        "body": "終了までパスすると、選択、停止、フルコントロールに中断されない限りターン中の優先権をパスし続けます。"
+      },
+      "manaPayment": {
+        "title": "マナの支払い",
+        "body": "マナの支払い中は土地を手動でタップするか、Tキーで使用可能な土地をタップできます。"
+      },
+      "combatDeclarations": {
+        "title": "戦闘の宣言",
+        "body": "ゲームが攻撃クリーチャーとブロッカーを求めるのは宣言ステップだけです。クリーチャーを選び、宣言を確定してください。"
+      },
+      "openHelp": {
+        "title": "ヘルプを開く",
+        "body": "このヘルプシートを開きます。"
+      },
+      "passPriority": {
+        "title": "優先権をパス",
+        "body": "優先権をパスするか、現在の優先権プロンプトを進めます。"
+      },
+      "undo": {
+        "title": "元に戻す",
+        "body": "非公開情報を明らかにしていない最後のローカル操作を元に戻します。"
+      },
+      "cancel": {
+        "title": "キャンセル",
+        "body": "可能な場合、現在の選択、マナ支払い、対象選択、または自動パスをキャンセルします。"
+      },
+      "advancedDebugPanel": {
+        "title": "高度なデバッグパネル",
+        "body": "高度なデバッグパネルを開きます。ほとんどのプレイヤーは最初に復旧ツールを使ってください。"
+      },
+      "toggleClickMode": {
+        "title": "クリックモードの切り替え",
+        "body": "サンドボックスツールが使えるゲームで、クリックモードのオン/オフを切り替えます。オンの間は、カードをクリックするとプレイする代わりにデバッグメニュー（領域、P/T、カウンター、キーワード）が開きます。"
+      },
+      "reportOrExportState": {
+        "title": "状態を報告またはエクスポート",
+        "body": "カードが正しく動かない場合、現在のゲーム状態をエクスポートすると正確な盤面を再現できます。"
+      },
+      "boardRightClickMenu": {
+        "title": "盤面の右クリックメニュー",
+        "body": "デスクトップでは盤面の空白を右クリックすると、ゲームログ、復旧・デバッグツール、背景設定を開けます。"
+      }
+    },
+    "flowNudge": {
+      "message": "フェイズは自動的にスキップされます。紙のような優先権ウィンドウが必要なら停止またはフルコントロールを使ってください。",
+      "dismiss": "閉じる",
+      "learnFlow": "流れを見る"
+    },
+    "sandboxNudge": {
+      "message": "<tools>サンドボックスツール</tools>で任意の盤面状態を設定できます — カードやトークンの追加、ライフやカウンターの変更、パーマネントのコピー、フェイズ移動が可能です。<key>`</key>キーでいつでも開けます。",
+      "dismiss": "閉じる",
+      "open": "サンドボックスツールを開く"
+    }
+  },
+  "splash": {
+    "ready": "準備完了",
+    "loading": "読み込み中…"
+  },
+  "turnBanner": {
+    "turn": "{{number}}ターン目",
+    "yourTurn": "あなたのターン",
+    "opponentTurn": "{{name}}のターン"
+  },
+  "diceRoll": {
+    "rollingForFirst": "先攻を決めるためにダイスを振っています",
+    "tieReroll": "同数 — 振り直し！",
+    "versus": "対",
+    "skip": "タップしてスキップ",
+    "ignoredDie": "無視",
+    "continue": "タップして続行",
+    "you": "あなた",
+    "youWonRoll": "あなたがダイスロールに勝利",
+    "playerWonRoll": "{{name}}がダイスロールに勝利",
+    "heads": "表",
+    "tails": "裏",
+    "coinFlip": "コインフリップ",
+    "wonCoinFlip": "{{name}}がコインフリップに勝利",
+    "lostCoinFlip": "{{name}}がコインフリップに敗北"
+  },
+  "chrome": {
+    "back": "戻る",
+    "settings": "設定",
+    "languageSettings": "言語（{{lang}}） — 設定を開く",
+    "languageTitle": "言語: {{lang}}"
+  },
+  "errorBoundary": {
+    "heading": "問題が発生しました",
+    "body": "予期しないエラーが発生し、この画面を続行できません。通常は再読み込みで解決します。",
+    "reload": "再読み込み"
+  },
+  "stateCodec": {
+    "actionInterrupted": "操作中に状態の配信が中断されました",
+    "submissionNotSent": "状態の配信を復旧中です。この操作は送信されませんでした。",
+    "reconnectSubmissionNotSent": "接続を再確立しています。この操作は送信されませんでした。"
+  },
+  "actionError": {
+    "title": "{{action}}に失敗しました",
+    "skipTarget": "対象をスキップ",
+    "genericAction": "操作",
+    "unknownEngineError": "不明なエンジンエラー"
+  },
+  "savedDeckLibraryBusy": {
+    "description": "別のPhaseタブが使用中です。他のPhaseタブを閉じてから再試行してください。",
+    "title": {
+      "save": "デッキを保存できませんでした",
+      "clone": "デッキを複製できませんでした",
+      "import": "デッキをインポートできませんでした",
+      "delete": "デッキを削除できませんでした",
+      "organize": "デッキの整理を更新できませんでした",
+      "restore": "バックアップを復元できませんでした",
+      "autosaveDraft": "ドラフトデッキを自動保存できませんでした"
+    }
+  },
+  "savedDeckLibraryStorageFailure": {
+    "description": "Phaseはブラウザのストレージにアクセスできませんでした。しばらくしてから再試行してください。"
+  },
+  "savedDeckChanged": {
+    "description": "操作の実行前にこのデッキが変更されたため、何も変更されませんでした。デッキを確認してもう一度お試しください。"
+  }
+}

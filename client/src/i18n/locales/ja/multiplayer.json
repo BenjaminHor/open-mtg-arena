@@ -1,0 +1,25 @@
+{
+  "sideboardModal": {
+    "game": "ゲーム{{number}}",
+    "title": "サイドボード",
+    "matchScore": "マッチスコア {{p0}}-{{p1}}{{draws}}。メインデッキとサイドボードの間でカードを移動して送信してください。",
+    "draws_one": "（{{count}}引き分け）",
+    "draws_other": "（{{count}}引き分け）",
+    "main": "メイン（{{count}}、最低{{min}}）",
+    "mainNoMinimum": "メイン（{{count}}）",
+    "sideboard": "サイドボード（{{count}}）",
+    "sideboardCapped": "サイドボード（{{count}}/{{max}}）",
+    "moveFromSideboard": "サイドボードからカードを移動します。",
+    "moveFromMain": "メインデッキからカードを移動します。",
+    "resetAria": "登録済みデッキに戻す",
+    "reset": "リセット",
+    "submitAria": "次のゲーム用デッキを送信",
+    "submitDeck": "デッキを送信",
+    "readyToSubmit": "デッキは適正です — 送信できます。",
+    "belowMinimum": "メインデッキは最低{{min}}枚必要です — 現在{{count}}枚です。",
+    "overSideboardCap": "サイドボードは{{count}}枚です — 上限は{{max}}枚です。"
+  },
+  "page": {
+    "couldNotLoadDeck": "デッキを読み込めませんでした。再インポートしてください。"
+  }
+}

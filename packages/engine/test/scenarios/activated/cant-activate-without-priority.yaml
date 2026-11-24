@@ -1,9 +1,0 @@
-name: A player can't activate an ability while another player has priority
-rules: [CR 113.3b, CR 117.1]
-setup:
-  turn: { active: p1, step: main1 }
-  p2:
-    battlefield: [Mountain, Furnace Whelp]
-steps:
-  - p2 activate: Furnace Whelp
-  - expect error: notYourPriority

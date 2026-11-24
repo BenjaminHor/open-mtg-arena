@@ -1,5 +1,9 @@
-# Publishes the web app to GitHub Pages on every push to main (D-159), so the owner can follow progress on a phone at
-# https://benjaminhor.github.io/open-mtg-arena/. Main only takes pull requests with CI green, so this only builds.
+# Publishes the app to GitHub Pages on every push to main, at https://benjaminhor.github.io/open-mtg-arena/ (D-159,
+# D-177). Main only takes pull requests with CI green, so this only builds and deploys:
+# 1. the engine and draft WebAssembly, in release (full LTO needs the runner's 16 GB; docs/status.md),
+# 2. the card data from MTGJSON (generated, never committed: card-data.json is about 98 MB) and the card image
+#    index from Scryfall's bulk data,
+# 3. the client, under the repository's name (Pages serves it from /open-mtg-arena/, not the root).
 # Enabled once in the repository: Settings → Pages → Source: "GitHub Actions".
 name: Pages
 
@@ -21,25 +25,67 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v7
+      # rust-toolchain.toml pins the nightly and the wasm32 target.
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      # The wasm-bindgen CLI must match the wasm-bindgen crate in Cargo.lock.
+      - run: cargo install wasm-bindgen-cli --version 0.2.121 --locked
       - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: client/package.json
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      # Pages serves the app under the repository's name, not at the root.
-      - run: pnpm --filter @mtg/web exec vite build
+          cache-dependency-path: client/pnpm-lock.yaml
+
+      - name: Build the engine and draft WebAssembly
+        run: ./scripts/build-wasm.sh release
+
+      # MTGJSON's files change weekly at most; the script refreshes them once a week (UTC).
+      - name: Week for the MTGJSON cache
+        id: week
+        run: echo "week=$(date -u +%Y-W%V)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: data/mtgjson
+          key: mtgjson-${{ steps.week.outputs.week }}
+      - name: Generate the card data
+        run: ./scripts/gen-card-data.sh
+      # Which Scryfall image belongs to each card, printing and token, from Scryfall's bulk data (about a minute).
+      # Without these files every card is drawn as a text-only frame.
+      - name: Generate the card image index
+        run: |
+          ./scripts/gen-scryfall-sets.sh
+          ./scripts/gen-scryfall-images.sh
+          ./scripts/gen-scryfall-printings.sh
+          ./scripts/gen-scryfall-token-images.sh
+
+      - name: Build the client
+        working-directory: client
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
         env:
           BASE_PATH: /open-mtg-arena/
+      # Pages has no server-side routing: a direct link into the app (a deck, a game) serves 404.html, which is the app.
+      - run: cp client/dist/index.html client/dist/404.html
+      # Everything published, the WASM and the generated data included, is free of the upstream project's name (D-177).
+      - name: Brand check (built site)
+        run: ./scripts/check-brand.sh client/dist
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: apps/web/dist
+          path: client/dist
 
   deploy:
     needs: build
+    # Only main is published; a build on any other branch is a check.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

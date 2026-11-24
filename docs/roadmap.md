@@ -39,6 +39,25 @@ another tool, play the deck, and keep everything across sessions.
 A world map, areas, encounters with themed enemy decks and rule modifiers, shops, card rewards,
 progression and save slots. Built in `packages/meta` on top of the unchanged engine.
 
+## Ideas for later (not scheduled)
+
+- **The engine in Odin (owner, 2026-11-23).** After the phase-rs import (D-177), the owner asked what porting its Rust
+  engine to Odin would take: "We can consider it for the future. I think Odin is better than rust". Not impossible:
+  Odin's tagged unions map Rust's enums, it has JSON and a WebAssembly target, and it compiles far faster (our Rust
+  engine takes about 20 minutes from scratch). The cost is a rewrite of about a million lines plus the parser and
+  the browser bridge, by hand where no library exists (serde, `im`, nom, wasm-bindgen). If taken up: move the tests'
+  scenarios to a language-neutral form first, then port subsystem by subsystem behind the same browser bridge,
+  checked against the Rust engine on the same games; a cheap first look is porting one small subsystem (combat
+  damage) and comparing compile time and clarity. The owner: "the Odin rewrite would have to be its own set of
+  milestones for sure", so it gets its own milestones when it's scheduled.
+  Then (2026-11-23): "Honestly, once everything checks out let's just say yolo and plan out the rust to odin
+  rewrite". So once the import is merged, deployed and checked, the next piece of work is a written plan for the
+  rewrite (its milestones, a first spike), for the owner to approve before any of it starts.
+  The approach the owner agreed to (2026-11-23, "Those two main ideas sound great"): safely, by recording many games
+  against the Rust engine (seeds, decks, every action and the state after it) as a reference every ported piece
+  must reproduce exactly; quickly, by porting in vertical slices behind the interface the client already calls, so
+  the client never notices the swap.
+
 ## Always
 - Grow the card pool steadily with the `add-cards` skill, and with it the rules, toward every rule two-player games
   use (CR chapters 1 to 7), the most common mechanics first (D-051). Multiplayer and casual variants (CR 8, 9) stay

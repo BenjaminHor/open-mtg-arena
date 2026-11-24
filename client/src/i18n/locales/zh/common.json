@@ -1,0 +1,296 @@
+{
+  "actions": {
+    "cancel": "取消",
+    "save": "保存",
+    "close": "关闭",
+    "closeNamed": "关闭{{name}}"
+  },
+  "debug": {
+    "copyDisplaySnapshot": "复制显示快照（不可恢复）",
+    "exportAuthoritative": "导出权威游戏状态",
+    "exportAuthoritativeTitle": "下载用于诊断和恢复本局游戏的引擎权威状态"
+  },
+  "quantityRef": {
+    "highestNumber": "最大的数",
+    "lowestNumber": "最小的数",
+    "chosenNumber": "选定的数",
+    "energyPaidOrLostThisTurn": "本回合支付或失去的能量"
+  },
+  "scryOutcome": {
+    "title": "占卜完成",
+    "you": "你",
+    "result": "{{player}} — 牌库顶{{top}} · 牌库底{{bottom}}"
+  },
+  "modal": {
+    "defaultEyebrow": "工作区工具"
+  },
+  "pausedBanner": {
+    "message": "游戏已暂停 — {{reason}}",
+    "resume": "继续游戏"
+  },
+  "fullscreen": {
+    "enter": "进入全屏",
+    "exit": "退出全屏"
+  },
+  "buildBadge": {
+    "downloading": "正在下载… {{progress}}%",
+    "checking": "正在检查…",
+    "updating": "正在更新…",
+    "updatePending": "游戏结束后待更新",
+    "cards": "卡牌 {{age}}（{{commit}}）",
+    "cardDataTitle": "卡牌数据生成于 {{date}}，来源 {{commit}}",
+    "checkForUpdates": "检查更新",
+    "updaterDebugInfo": "更新程序调试信息",
+    "updaterIssue": "更新程序问题：{{error}}",
+    "updateIssue": "更新问题",
+    "updated": "已更新"
+  },
+  "offlineBadge": {
+    "label": "离线",
+    "servicesPaused": "在线更新和服务已暂停。",
+    "forced": "已开启离线工作模式。",
+    "connection": "无网络连接。"
+  },
+  "comboDetector": {
+    "label": "组合技检测器（实验性）",
+    "title": "检测无限循环：自动结束强制循环，为玩家可控的循环提供捷径，并显示 ∞ 资源（默认关闭）",
+    "off": "关闭",
+    "interactive": "交互式"
+  },
+  "gameMenu": {
+    "sections": {
+      "view": "视图",
+      "tools": "工具",
+      "game": "游戏"
+    },
+    "menu": "游戏菜单",
+    "sandboxTools": "沙盒工具",
+    "sandboxToolsTitle": "沙盒工具 — 设置任意盘面状态（`）",
+    "openSandboxTools": "打开沙盒工具",
+    "clickMode": "点击模式",
+    "clickModeButton": "点击模式按钮",
+    "shown": "显示",
+    "hidden": "隐藏",
+    "openGameLog": "打开游戏日志",
+    "closeGameLog": "关闭游戏日志",
+    "settings": "设置",
+    "boardLayoutSplit": "分栏",
+    "boardLayoutLegacy": "经典",
+    "switchToSplitView": "切换到分栏桌面视图",
+    "switchToLegacyView": "切换到经典专注视图",
+    "multiplayerSplitLayoutNudge": {
+      "message": "使用分栏桌面视图可同时看到所有对手。",
+      "trySplit": "试试分栏视图",
+      "dismiss": "以后再说"
+    },
+    "helpShortcuts": "帮助与快捷键",
+    "showAiHand": "显示 AI 手牌",
+    "hideAiHand": "隐藏 AI 手牌",
+    "undoLastAction": "撤销上一步操作",
+    "concede": "认输",
+    "backToDraft": "返回轮抽",
+    "mainMenu": "主菜单",
+    "cards": "卡牌 {{commit}}",
+    "cardDataTitle": "卡牌数据：{{date}}"
+  },
+  "volume": {
+    "mediaUnavailable": "音频不可用 — 本系统缺少播放声音所需的媒体组件。请安装你所使用发行版的 GStreamer 插件包，然后重启应用。",
+    "mute": "静音",
+    "unmute": "取消静音",
+    "volume": "音量"
+  },
+  "grantDebug": {
+    "heading": "沙盒：调试权限",
+    "description": "授予其他牌手提交调试操作的能力。他们的操作会被公开记录。",
+    "playerLabel": "牌手 {{number}}",
+    "revoke": "撤销",
+    "grant": "授予"
+  },
+  "help": {
+    "eyebrow": "帮助",
+    "title": "帮助与快捷键",
+    "subtitle": "面向实体牌牌手的电子万智牌流程：停留点、优先权、让过和恢复工具。",
+    "closeHelp": "关闭帮助",
+    "searchPlaceholder": "搜索帮助或快捷键",
+    "whatCanIDo": "我现在能做什么？",
+    "recoveryTitle": "恢复工具",
+    "recoveryDescription": "如果卡牌行为异常，请先导出状态。需要检查或调整游戏时，可使用高级调试面板。",
+    "copyState": "复制状态",
+    "exportState": "导出状态",
+    "exportReplay": "导出回放",
+    "openAdvancedDebug": "打开高级调试",
+    "sections": {
+      "Flow": "流程",
+      "Shortcuts": "快捷键",
+      "Recovery": "恢复"
+    },
+    "status": {
+      "copied": "已将游戏状态复制到剪贴板。",
+      "copyFailed": "无法复制游戏状态。",
+      "exported": "已导出 {{filename}}。",
+      "exportFailedDetail": "无法导出游戏状态。{{detail}}",
+      "replayExported": "回放已保存为 {{filename}}。",
+      "replayExportUnavailable": "本局游戏没有可用的回放录像。",
+      "replayExportFailed": "无法导出回放。"
+    },
+    "prompt": {
+      "starting": "游戏正在开始或恢复状态。",
+      "gameOver": "游戏已结束。",
+      "mulliganDecide": "选择保留此起手牌还是进行调度。",
+      "mulliganWaitDecide": "正在等待其他牌手决定起手牌。",
+      "mulliganBottom": "保留调度后的手牌后，选择要放到牌库底的牌。",
+      "mulliganWaitBottom": "正在等待其他牌手完成调度。",
+      "openingHandBottom": "在常规调度开始前，选择一张牌放到牌库底。",
+      "openingHandWait": "正在等待其他牌手处理起手牌。",
+      "waitOther": "正在等待其他牌手操作。",
+      "priorityStack": "你拥有优先权，且堆叠上有东西。让过优先权，若其他牌手也都让过，堆叠顶端的项目便会结算。",
+      "priorityAutoPass": "你拥有优先权。除非设置了停留点或开启完全操控，客户端可能会自动让过无操作窗口。",
+      "priorityActions": "你拥有优先权。你可以使用可用的牌，或让过以推进回合。",
+      "priorityPass": "你拥有优先权。让过将进入下一个步骤或下一位牌手。",
+      "manaPayment": "为待处理的咒语或异能支付法术力。按 T 横置可用的地。",
+      "targetSelection": "选择高亮的合法目标，或在提示允许时取消。",
+      "declareAttackers": "选择攻击者，然后确认攻击者。你也可以不派任何生物攻击。",
+      "declareBlockers": "选择阻挡者并将其分配给攻击者，然后确认阻挡者。",
+      "chooseXValue": "在继续施放该咒语或起动该异能前，为 X 选择一个数值。",
+      "payAmountChoice": "选择要支付多少所要求的资源。",
+      "default": "游戏正在等待你的选择。按照当前提示继续。"
+    },
+    "entries": {
+      "automaticPhaseSkips": {
+        "title": "自动跳过阶段",
+        "body": "阶段跳过是自动的。当你需要实体牌式的优先权窗口时，请使用停留点或完全操控。"
+      },
+      "phaseStops": {
+        "title": "阶段停留点",
+        "body": "停留点会在该步骤前暂停，类似于在实体牌中声明你可以在战斗前、抓牌前或结束步骤前行动。"
+      },
+      "fullControl": {
+        "title": "完全操控",
+        "body": "完全操控会阻止优先权窗口被跳过，包括电子客户端通常会推动游戏继续的位置。"
+      },
+      "resolve": {
+        "title": "结算",
+        "body": "结算意味着你让过优先权，如果其他牌手也让过，堆叠顶端的咒语或异能就会结算。"
+      },
+      "passToEnd": {
+        "title": "让过至结束",
+        "body": "让过至结束会在本回合持续让过优先权，直到出现选择、停留点或完全操控而中断。"
+      },
+      "manaPayment": {
+        "title": "支付法术力",
+        "body": "在支付法术力时，你可以手动横置地，或按 T 横置可用的地。"
+      },
+      "combatDeclarations": {
+        "title": "战斗声明",
+        "body": "游戏仅在声明步骤中询问攻击者和阻挡者。选择生物，然后确认声明。"
+      },
+      "openHelp": {
+        "title": "打开帮助",
+        "body": "打开此帮助页。"
+      },
+      "passPriority": {
+        "title": "让过优先权",
+        "body": "让过优先权，或推进当前优先权提示。"
+      },
+      "undo": {
+        "title": "撤销",
+        "body": "撤销上一个未展示隐藏信息的本地操作。"
+      },
+      "cancel": {
+        "title": "取消",
+        "body": "在可用时取消当前的选择、法术力支付、目标选择或自动让过。"
+      },
+      "advancedDebugPanel": {
+        "title": "高级调试面板",
+        "body": "打开高级调试面板。大多数牌手应先用恢复工具。"
+      },
+      "toggleClickMode": {
+        "title": "切换点击模式",
+        "body": "在可使用沙盒工具的对局中开启或关闭点击模式。开启时，点击一张牌会打开其调试菜单（区域、力量/防御力、指示物、关键词），而不是使用它。"
+      },
+      "reportOrExportState": {
+        "title": "报告或导出状态",
+        "body": "如果卡牌行为异常，请导出当前游戏状态，以便精确复现盘面。"
+      },
+      "boardRightClickMenu": {
+        "title": "盘面右键菜单",
+        "body": "在桌面端，右键点击盘面空白处可打开游戏日志、恢复/调试工具和背景设置。"
+      }
+    },
+    "flowNudge": {
+      "message": "阶段跳过是自动的。当你需要实体牌式的优先权窗口时，请使用停留点或完全操控。",
+      "dismiss": "忽略",
+      "learnFlow": "了解流程"
+    },
+    "sandboxNudge": {
+      "message": "使用 <tools>沙盒工具</tools> 设置任意盘面状态 — 添加卡牌和衍生物、更改生命和指示物、复制永久物，或跳转阶段。随时按 <key>`</key> 键打开。",
+      "dismiss": "忽略",
+      "open": "打开沙盒工具"
+    }
+  },
+  "splash": {
+    "ready": "就绪",
+    "loading": "加载中…"
+  },
+  "turnBanner": {
+    "turn": "第 {{number}} 回合",
+    "yourTurn": "你的回合",
+    "opponentTurn": "{{name}}的回合"
+  },
+  "diceRoll": {
+    "rollingForFirst": "掷骰决定先手",
+    "tieReroll": "平手 — 重掷！",
+    "versus": "VS",
+    "skip": "点击跳过",
+    "continue": "点击继续",
+    "you": "你",
+    "youWonRoll": "你赢得了掷骰",
+    "playerWonRoll": "{{name}} 赢得了掷骰",
+    "heads": "正面",
+    "tails": "反面",
+    "coinFlip": "掷硬币",
+    "wonCoinFlip": "{{name}} 掷赢了",
+    "lostCoinFlip": "{{name}} 掷输了",
+    "ignoredDie": "已忽略"
+  },
+  "chrome": {
+    "back": "返回",
+    "settings": "设置",
+    "languageSettings": "语言（{{lang}}） — 打开设置",
+    "languageTitle": "语言：{{lang}}"
+  },
+  "errorBoundary": {
+    "heading": "出错了",
+    "body": "应用遇到意外错误，无法在此界面继续。重新加载通常可以解决。",
+    "reload": "重新加载"
+  },
+  "stateCodec": {
+    "actionInterrupted": "操作期间状态传输中断",
+    "submissionNotSent": "正在恢复状态传输；此次操作尚未发送。",
+    "reconnectSubmissionNotSent": "正在重新建立连接；此次操作尚未发送。"
+  },
+  "actionError": {
+    "title": "{{action}}失败",
+    "skipTarget": "跳过目标",
+    "genericAction": "操作",
+    "unknownEngineError": "未知引擎错误"
+  },
+  "savedDeckLibraryBusy": {
+    "description": "另一个 Open MTG Arena 标签页正忙。请关闭其他 Open MTG Arena 标签页后重试。",
+    "title": {
+      "save": "无法保存套牌",
+      "clone": "无法复制套牌",
+      "import": "无法导入套牌",
+      "delete": "无法删除套牌",
+      "organize": "无法更新套牌整理",
+      "restore": "无法恢复备份",
+      "autosaveDraft": "无法自动保存你的轮抽套牌"
+    }
+  },
+  "savedDeckLibraryStorageFailure": {
+    "description": "Open MTG Arena 无法访问浏览器存储。请稍后重试。"
+  },
+  "savedDeckChanged": {
+    "description": "此套牌在你的操作执行前发生了变化，因此未做任何更改。请检查该套牌并重试。"
+  }
+}

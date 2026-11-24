@@ -334,6 +334,138 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   - **Slice 6a merged (PR #108, squash, 2026-11-23).** Next: 6b, target arrows and the collapse tap.
   - **Slice 6b merged (PR #109, squash, 2026-11-23).** Next: slice 7, finishing (portrait prompt, leftover UX items,
     a full game at phone size), then ask the owner for feedback with the live link.
+  - **Import plan (D-177, 2026-11-23, written before starting).** phase-rs v0.131.0 (57c647e) replaces our engine
+    and client; the repo diverges freely; "Open MTG Arena" on screen; no multiplayer, servers, cloud sync or desktop
+    app. Phases, each its own commit, one PR:
+    - A. Import: their tree copied in; ours (apps/, packages/, our scripts and configs) removed. Kept: docs/ (project
+      memory; their docs into docs/engine/), rules/ (the CR), .claude/ (updated), the license (with their copyright
+      line kept, as MIT and Apache-2.0 require) and a NOTICE crediting the origin.
+    - B. Strip: the server crates, lobby, peer-to-peer, Supabase, Tauri and its updater, telemetry, the MTGGoldfish
+      scraper and feeds, their deploy and infra files, their agent configs, Ko-fi/Discord/DMCA contacts, and assets
+      without a known source (kept only with a source and any credit it needs).
+    - C. Rebrand: every phase-rs name, logo, domain and string in the app, the PWA manifest, i18n, crate and package
+      names; the Magic words "phase" and "phasing" stay.
+    - D. Build and CI: the pinned nightly Rust, the WASM engine, card data from MTGJSON, the client; GitHub Actions
+      to test and deploy to GitHub Pages at the same address.
+    - E. Verify: the build plays a match against the AI in a browser at the folded and unfolded sizes.
+    - F. Docs: CLAUDE.md, README, architecture, roadmap and status rewritten for the new base and the next goals (the
+      LLM opponent, the single-player RPG or roguelike).
+    - Revised after review (before starting): build the untouched clone first and play it from a /open-mtg-arena/
+      subpath (Pages); leave out their CLAUDE.md, AGENTS.md, GEMINI.md, agent config folders and .github/workflows at
+      copy time (a root CLAUDE.md is loaded as instructions; their workflows would run on our push); the import
+      commit brings our own CLAUDE.md, CI and commit helper with it; green on the untouched import first, then strip
+      leaf-first building after each removal (anything that can't come out green is disabled and listed), then
+      rebrand by an explicit token list (phase-rs, phase.rs, phase_rs, phase-rs.dev, data.phase-rs.dev, the crate
+      names phase-ai/-ast/-llm/-parser/-server), never bare "phase", with a CI grep over the built output; this PR
+      changes no behaviour (the fair AI and phone work come after); NOTICE names the upstream commit.
+    - Progress (2026-11-23): their pinned toolchain (nightly-2026-11-19, wasm32 target) installs here; crates.io,
+      MTGJSON and the Rust dist are reachable; building wasm-bindgen-cli 0.2.121 and the release engine WASM in the
+      clone at scratchpad/phase-src/repo. The owner: keep their art and audio (credit Kevin MacLeod), keep the copyright
+      line and NOTICE in the license files (D-177).
+    - Rebrand inventory (in the clone, excluding target/ and node_modules): "phase-rs" in 381 files, "phase.rs" in
+      127, their domain "phase-rs.dev" in 76, "PHASE_" (env and config names) in 462, Ko-fi/Discord/contact email in a
+      handful; crate names phase-ai (136 files), phase-ast (88), phase-llm (10), phase-parser (364), phase-server (164).
+    - Strip map (Rust): phase-server, server-core and lobby-broker are leaves (nothing the browser game needs depends on
+      them) and go whole, with lobby-worker/, deploy/, docker/, supabase/, Dockerfile, Caddyfile, Tiltfile;
+      feed-scraper, combo-table-gen (Commander Spellbook data), manabrew-compat (another app's wire protocol),
+      probe-pin and engine-inventory-gen are dev tools to drop or keep after a look. engine-wasm depends on
+      seat-reducer and state-codec (kept for now: snapshots and saves). draft-core/draft-wasm are offline drafting
+      against the AI (kept).
+    - Strip map (client/src, non-test files): peer-to-peer in about 70 files, the lobby in about 79, Tauri APIs in 15,
+      the updater in 17, telemetry in 25, Supabase in 2, the feeds in 1, Ko-fi in 1: the online pages and services go,
+      then type errors lead to each remaining use.
+    - No `pre-import` tag (the owner: "Never mind then, not a big deal"); our own engine and client's last state is
+      main at 46cc91c, the M3-05 merge.
+    - Build facts (this container, 4 cores, 15 GB): the release engine WASM compiles from scratch in about 20 minutes
+      (`cargo build -p engine-wasm --target wasm32-unknown-unknown --release`); wasm-bindgen-cli 0.2.121 (their
+      lockfile's) installs with cargo; the client's packages install from their lockfile in seconds (pnpm 9.15.9).
+    - Their release WASM profile (opt-level z, full LTO, one codegen unit) runs out of memory at the engine's final
+      link in this 15 GB container (killed twice; a first run's exit was hidden by a pipe). Their CI builds it on a
+      standard 16 GB ubuntu-latest runner in under 30 minutes, so our CI can too. Locally the evaluation uses their
+      `wasm-dev` profile (`./scripts/build-wasm.sh wasm-dev`: opt-level 2, no LTO). That compiles the engine WASM in
+      about 21 minutes using about 8 GB, but carries debug info (an 818 MB .wasm) that wasm-bindgen can't load in
+      the memory left; stripping the `.debug_*` custom sections first (a small node script) leaves 271 MB, which
+      binds. The release build is the one to ship; its size is still to measure on CI.
+    - Untouched build plays (2026-11-23): card data generated in about 15 minutes (MTGJSON cached): 36,406 cards,
+      29,622 fully supported (81.4%), 1,396 decks (681 fully playable); `card-data.json` is 98 MB (7.6 MB brotli),
+      so it's generated in CI, never committed (GitHub's file limit is 100 MB). The client builds in about 5
+      minutes (`pnpm build`). Served locally, a match against the AI at 812x375 ran from the die roll through the
+      mulligan and several turns to the cleanup discard, with every phase-rs host blocked and no request made to
+      one; two console errors ("reading 'startsWith'" of undefined) to trace.
+    - The owner, on the strip: "we can probably remove any online multiplayer related frontend client code and
+      tests" (as D-177 has it).
+    - **A. Import committed (ed49f34, 2026-11-23)** on the working branch, not yet in a PR: their tree at 57c647e by
+      `git archive` (none of the local build outputs), minus the exclusion list in the commit message; their docs in
+      docs/engine/; our CR scripts in tools/rules/; LICENSE-MIT with both copyright lines, NOTICE with the origin and
+      the Kevin MacLeod credit; new CLAUDE.md, README and CI (.github/workflows/ci.yml: client type-check and unit
+      tests, `cargo check` of the engine WASM). No Pages workflow yet (main still has the old app). A scan of the
+      import for keys and tokens found none; its largest file is 6.5 MB. Their client type-check passes here (about
+      a minute). `.claude/settings.json` still allows `node scripts/rule.mjs`: editing permissions isn't Claude's to
+      do, so the moved script may prompt.
+    - B. Strip, in progress (2026-11-23). Client unit tests at import: 754 files pass, 2 fail (they test the Caddy,
+      Tilt and Helm files left out at import, so they go), 12,949 tests pass, about 7 minutes. A helper is removing
+      online multiplayer, cloud sync, Tauri, telemetry and the scraped feeds from client/ (working tree only,
+      reviewed before commit). Rust: phase-server, server-core, lobby-broker, feed-scraper and lobby-worker/ removed;
+      the workspace's cargo-release block (it bumped the desktop app's versions) and two aliases for removed crates
+      gone; Cargo.lock updates on the next cargo run.
+    - Client strip, first pass (helper agent; WIP commits up to 41c324c): 429 files deleted, 296 changed; type-check
+      and lint clean; unit tests 574 files, 7,414 tests pass (from 12,949: online-only tests went with their code).
+      Removed: peer-to-peer and WebSocket play, the lobby, tournaments, spectating, pod drafts, Supabase sync, Tauri
+      (src-tauri, updater, deep links, native engine), telemetry and card reports, the eight scraped metagame feeds
+      (starter-decks.json kept), Discord/Ko-fi links, the `tournament` i18n namespace; packages @supabase/supabase-js,
+      @tauri-apps/*, peerjs, wrangler. Behaviour the owner will see: no deck import from a Moxfield/Archidekt link (it
+      went through their server; restorable from 4fb4ed6's parent ed49f34), no Commander/Winston pod drafts, no
+      Multiplayer or Experimental settings tabs, no status banner; the Jev LLM provider needs a relay address
+      entered by hand. Checked: no offline takeback was lost (only the online adapters ever offered the menu's
+      takeback; a vs-AI game's undo is the Undo button by the player's info, unchanged), and a vs-AI game seats the
+      human at 0 as before (the tests that moved to seat 0 were set up as online games). Left for the rebrand: links to the upstream project
+      (PreviewBadge, commit links, "report an issue"), Aetherhub links, `multiplayer` names that now hold only seat
+      names and best-of-three sideboarding. The integration suite (`pnpm test:integration`) needs the built engine
+      WASM; not run yet.
+    - Subpath done (94198bd) and checked locally: built with BASE_PATH=/open-mtg-arena/ and served there, every
+      file loads (no failed request), navigation and a direct link (/open-mtg-arena/my-decks) work, the only outside
+      host is Scryfall. (Serve it with `BASE_PATH=/open-mtg-arena/ npx vite preview`, or files 404.)
+    - Found then: the AI has no decks in 60-card formats. In Standard, Modern and the rest it drew from the scraped
+      metagame feeds the strip removed; the five starter decks are labelled "standard" but aren't Standard-legal
+      (Lightning Bolt, Jackal Pup...), so the legality check drops them. Commander still has 200 AI decks (MTGJSON
+      precons). Fixed (f47a0fd, the owner asked for the feeds back): the import's MTGGoldfish and TopDeck.gg snapshots
+      are bundled again (client/public/feeds/, never refreshed, credited in NOTICE). AI decks now: Standard 9,
+      Modern 10, Commander 223. A Standard match (Mono-Green Landfall, picked from the Standard Meta feed) played
+      several turns under /open-mtg-arena/ with no failed request.
+    - Found in that match (2026-11-24): every card was a text-only frame, no art. The image index files
+      (scryfall-data.json, scryfall-printings.json, scryfall-token-images.json, scryfall-sets.json) come from four
+      `scripts/gen-scryfall-*.sh` that their setup.sh runs after the card data; I hadn't run them and pages.yml
+      didn't either. Both fixed: they ran here in about a minute, and pages.yml now runs them. (The per-language art
+      maps, gen-scryfall-locale-images.sh, aren't generated: a missing one falls back to English art.)
+      Checked after a rebuild: the same match shows card art and portraits, no failed request, no page error.
+    - Rebrand done (25c14de, 2026-11-24), driven by `scripts/check-brand.sh` (explicit tokens, case-sensitive since
+      "Phasers" is a card, never bare "phase", path-like `types/phase.rs` excluded). CI runs it over the client's
+      sources and data/; pages.yml over the whole built site, WASM and generated data included, before upload. Done:
+      name everywhere on screen and in all nine languages, manifest, title, loading shell; new logo and icons from
+      `client/public/icons/logo.svg` (our earlier two-card mark) and a plain house for the Home tab (theirs was a gear
+      with a sparkle, like their logo); repo and "report an issue" links point here; the "Try Preview" badge,
+      config.js, their data host's cache rules and dev-proxy hosts removed; What's New holds one entry of ours
+      (`client/public/changelog.json`, written by hand from now on); starter decks' author; the two engine strings
+      that ship in the WASM; 40 upstream-only scripts deleted (hosting, bots, releases, PR analytics, SSL, Tauri,
+      lobby). Also restored what the strip removed with the feeds: the "Data provided by" credit under MTGGoldfish
+      and TopDeck.gg decks and the original MyDecks tests. Client: type-check, lint (0 errors), 7,404 unit tests.
+    - Deferred on purpose (advisor, 2026-11-24): renaming the crates (phase-ai, phase-parser, phase-ast, phase-llm:
+      about 540 files, a cold engine rebuild) and the ~250 engine files whose comments link upstream issues or say
+      "phase.rs". None of it reaches the app, and the Odin port replaces that code. Also left: docs/engine/ (their
+      docs, kept as they came), internal names such as the `phase-deck:` storage keys, `PHASE_` env names and the
+      `__PHASE_CONFIG__`-era comments, and the version number (0.131.0, theirs).
+    - The release WASM builds on GitHub's runner (Pages run 17 on this branch, 2026-11-24, deploy skipped as
+      designed): engine 25 min, card data 31 min (MTGJSON cold; cached per ISO week after), image index 1 min,
+      client 6 min, about 66 min in all. The temporary branch trigger is removed again; deploy runs only from main.
+    - Also found: starting a game threw "reading 'startsWith'" (from the import, not the strip): activeGameChange.ts
+      dispatches a plain `Event("storage")` with no key, and the AI deck catalog's listener assumed a StorageEvent.
+      Fixed to ignore non-StorageEvents; test in aiDeckCatalog.test.ts.
+    - Subpath: their client assumes the site's root (`BrowserRouter` with no basename; about 90 root-absolute paths
+      such as `/audio/...`, `/card-data.json`; the manifest's `start_url` "/"). For GitHub Pages at /open-mtg-arena/:
+      Vite `base`, the router's basename, one helper that prefixes `import.meta.env.BASE_URL` to asset paths, a copy
+      of index.html as 404.html for deep links, and a relative manifest.
+  - **M3-05 merged (PR #115, squash, 2026-11-23).** Paused after it: the owner is weighing building on phase-rs
+    (Open questions; docs/phase-rs-evaluation.md).
   - **M3-05 built (2026-11-23, D-176): the full layout, picked by size, switching live.** `layout/full.ts`,
     `layout/layout-for.ts`; lands shrink before overlapping, start clear of the info block only when level with it,
     the stack capped in width; tests: test/full-layout.test.ts (eight full sizes, mutation-checked),
@@ -2308,6 +2440,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
 
 ## Open questions
 
+- Settled (2026-11-23, D-178): after the import is playable, the Rust to Odin port comes next, planned first; the
+  LLM opponent and the RPG are on hold.
+
 - (2026-11-23, owner) Fork phase-rs and build on it instead? The owner: "Are you familiar with phase-rs the open source
   engine and client", then "im actually considering that we fork the repo and build upon that instead...is that too
   much?". phase-rs/phase: a Rust MTG rules engine compiled to native and WASM (desktop app, browser PWA, WebSocket
@@ -2317,7 +2452,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   those are the two biggest things. we would save a ton of time and would be able to get started on the higher value
   initiatives like an LLM powered opponent and the single player RPG or rogue like". So the evaluation is of those
   two: phase's rules engine, and its client for a match against the AI, as the base for the LLM opponent and a
-  single-player RPG or roguelike (vision.md).
+  single-player RPG or roguelike (vision.md). Evaluated (2026-11-23): `docs/phase-rs-evaluation.md`. Decided: import
+  and rebrand it (D-177).
 
 - (2026-11-23, M3-05, D-176) The owner's unfolded screen size in CSS pixels, both ways up: the full layout is picked
   from 560 px tall, and the "turn your phone" prompt shows for an upright screen under 700 px wide. A screenshot of

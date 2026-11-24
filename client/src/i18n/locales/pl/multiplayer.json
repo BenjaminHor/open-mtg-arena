@@ -1,0 +1,25 @@
+{
+  "sideboardModal": {
+    "game": "Gra {{number}}",
+    "title": "Wymiana kart bocznych",
+    "matchScore": "Wynik meczu {{p0}}-{{p1}}{{draws}}. Przenoś karty między talią główną a kartami bocznymi, a potem zatwierdź.",
+    "draws_one": " ({{count}} remis)",
+    "draws_other": " ({{count}} remisów)",
+    "main": "Główna ({{count}}, min {{min}})",
+    "mainNoMinimum": "Główna ({{count}})",
+    "sideboard": "Karty boczne ({{count}})",
+    "sideboardCapped": "Karty boczne ({{count}}/{{max}})",
+    "moveFromSideboard": "Przenieś karty z kart bocznych.",
+    "moveFromMain": "Przenieś karty z talii głównej.",
+    "resetAria": "Przywróć zarejestrowaną talię",
+    "reset": "Resetuj",
+    "submitAria": "Zatwierdź talię na następną grę",
+    "submitDeck": "Zatwierdź talię",
+    "readyToSubmit": "Talia jest legalna — można zatwierdzić.",
+    "belowMinimum": "Talia główna wymaga co najmniej {{min}} kart — obecnie {{count}}.",
+    "overSideboardCap": "Karty boczne: {{count}} — maksimum {{max}}."
+  },
+  "page": {
+    "couldNotLoadDeck": "Nie udało się wczytać talii. Spróbuj zaimportować ją ponownie."
+  }
+}

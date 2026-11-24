@@ -1,0 +1,392 @@
+import type { Feed, FeedDeck, FeedSubscription } from "../types/feed";
+import { repairParsedDeck, type ParsedDeck } from "./deckParser";
+import { normalizeCardName } from "./scryfall";
+import { FEED_REGISTRY } from "../data/feedRegistry";
+import {
+  ACTIVE_DECK_KEY,
+  STORAGE_KEY_PREFIX,
+  captureSavedDeck,
+  loadDeckOrigins,
+  loadFeedSubscriptions,
+  profileReplacementGeneration,
+  removeDeckMeta,
+  removeSavedDeckData,
+  requireSavedDeckUnchanged,
+  saveDeckOrigins,
+  saveFeedSubscriptions,
+  stampDeckMeta,
+  writeSavedDeckData,
+} from "../constants/storage";
+import {
+  withSavedDeckLibrary,
+  withSavedDeckLibraryOrSkip,
+  type SavedDeckTxn,
+  type SavedDeckTxnFailure,
+  type SavedDeckTxnResult,
+} from "./savedDeckTransaction";
+import {
+  getCachedFeed,
+  hydrateFeedCache,
+  setCachedFeed,
+} from "./feedPersistence";
+
+// --- Validation ---
+
+function isObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === "object" && v !== null && !Array.isArray(v);
+}
+
+function isNonEmptyString(v: unknown): v is string {
+  return typeof v === "string" && v.length > 0;
+}
+
+function isValidDeckEntry(v: unknown): boolean {
+  // `count` must be a positive integer. `typeof v.count === "number"` alone
+  // admits 0, negatives, fractional, and NaN from untrusted feed JSON — which
+  // then flow into card-total counters and copy-expansion (a 2.5 becomes 3
+  // copies while the displayed total shows 2.5; a 0 becomes a phantom row).
+  return (
+    isObject(v) &&
+    Number.isInteger(v.count) &&
+    (v.count as number) > 0 &&
+    isNonEmptyString(v.name)
+  );
+}
+
+function isValidFeedDeck(v: unknown): v is FeedDeck {
+  if (!isObject(v)) return false;
+  if (!isNonEmptyString(v.name)) return false;
+  if (!Array.isArray(v.colors)) return false;
+  if (!Array.isArray(v.main) || !v.main.every(isValidDeckEntry)) return false;
+  if (!Array.isArray(v.sideboard) || !v.sideboard.every(isValidDeckEntry)) return false;
+  return true;
+}
+
+export function validateFeed(data: unknown): Feed | null {
+  if (!isObject(data)) return null;
+  if (!isNonEmptyString(data.id)) return null;
+  if (!isNonEmptyString(data.name)) return null;
+  if (typeof data.version !== "number") return null;
+  if (!isNonEmptyString(data.updated)) return null;
+  if (!Array.isArray(data.decks)) return null;
+  if (data.decks.length === 0) return null;
+  if (!data.decks.every(isValidFeedDeck)) return null;
+  return data as unknown as Feed;
+}
+
+/** A refetch that finds the feed unchanged still records itself as this
+ *  device's refresh once the last one is older than this. */
+const FEED_STALE_AFTER_MS = 24 * 60 * 60 * 1000;
+
+// --- Internal helpers ---
+
+function normalizeFeedDeckEntries(deck: FeedDeck): FeedDeck {
+  return {
+    ...deck,
+    main: deck.main.map((entry) => ({ ...entry, name: normalizeCardName(entry.name) })),
+    sideboard: deck.sideboard.map((entry) => ({ ...entry, name: normalizeCardName(entry.name) })),
+    commander: deck.commander?.map(normalizeCardName),
+    companion: deck.companion ? normalizeCardName(deck.companion) : undefined,
+  };
+}
+
+function throwIfAborted(signal?: AbortSignal): void {
+  if (signal?.aborted) throw new DOMException("Feed initialization aborted", "AbortError");
+}
+
+async function fetchFeed(url: string, signal?: AbortSignal): Promise<Feed> {
+  throwIfAborted(signal);
+  const response = await fetch(url, { signal });
+  throwIfAborted(signal);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch feed: ${response.status} ${response.statusText}`);
+  }
+  const data: unknown = await response.json();
+  throwIfAborted(signal);
+  const feed = validateFeed(data);
+  if (!feed) {
+    throw new Error("Invalid feed format: missing required fields or malformed deck entries");
+  }
+  return normalizeFeed(feed);
+}
+
+/**
+ * For commander-format feeds, MTGGoldfish-style decks store `commander: null`
+ * with the convention that the deck NAME is the commander (and is included in
+ * `main`). Without this normalization, deck-compatibility evaluation gets an
+ * empty commander array and rejects the deck as commander-illegal.
+ */
+function normalizeFeed(feed: Feed): Feed {
+  const normalizedDecks = feed.decks.map(normalizeFeedDeckEntries);
+  if (feed.format !== "commander") return { ...feed, decks: normalizedDecks };
+  return {
+    ...feed,
+    decks: normalizedDecks.map((deck) => {
+      if (!deck.main.some((entry) => entry.name === deck.name)) return deck;
+      const parsed = repairParsedDeck({
+        main: deck.main,
+        sideboard: deck.sideboard,
+        commander: deck.commander?.length ? deck.commander : [deck.name],
+        companion: deck.companion,
+      });
+      return { ...deck, ...parsed };
+    }),
+  };
+}
+
+export function feedDeckToParsedDeck(deck: FeedDeck): ParsedDeck {
+  const normalized = normalizeFeedDeckEntries(deck);
+  return repairParsedDeck({
+    main: normalized.main,
+    sideboard: normalized.sideboard,
+    commander: normalized.commander?.length
+      ? normalized.commander
+      : normalized.main.some((entry) => entry.name === normalized.name)
+        ? [normalized.name]
+        : undefined,
+    companion: normalized.companion,
+  });
+}
+
+function syncFeedDecksToStorage(txn: SavedDeckTxn, feed: Feed): void {
+  const origins = loadDeckOrigins();
+
+  // Add/update decks from the feed
+  for (const deck of feed.decks) {
+    const key = STORAGE_KEY_PREFIX + deck.name;
+    const existingOrigin = origins[deck.name];
+
+    if (existingOrigin === feed.id) {
+      // Origin matches this feed — overwrite (feed is authoritative)
+      writeSavedDeckData(txn, deck.name, JSON.stringify(feedDeckToParsedDeck(deck)));
+    } else if (existingOrigin) {
+      // Origin is a different feed — skip
+      continue;
+    } else if (localStorage.getItem(key)) {
+      // User deck with same name — skip
+      continue;
+    } else {
+      // New deck — write it
+      writeSavedDeckData(txn, deck.name, JSON.stringify(feedDeckToParsedDeck(deck)));
+      stampDeckMeta(txn, deck.name, 0);
+    }
+
+    origins[deck.name] = feed.id;
+  }
+
+  // Remove stale decks that are no longer in the feed
+  const feedDeckNames = new Set(feed.decks.map((d) => d.name));
+  for (const [deckName, feedId] of Object.entries(origins)) {
+    if (feedId === feed.id && !feedDeckNames.has(deckName)) {
+      removeSavedDeckData(txn, deckName);
+      removeDeckMeta(txn, deckName);
+      delete origins[deckName];
+
+      // Clear active deck if it was removed
+      if (localStorage.getItem(ACTIVE_DECK_KEY) === deckName) {
+        localStorage.removeItem(ACTIVE_DECK_KEY);
+      }
+    }
+  }
+
+  saveDeckOrigins(origins);
+}
+
+/**
+ * Runs `publish` inside `withSavedDeckLibraryOrSkip` unless, by the time the body runs, this initialization has
+ * been aborted or a profile replacement (`backup.ts::applyBackup` bumps the generation) has superseded it.
+ * Everything a sync makes visible — the cached feed, its decks, its subscription record — goes in `publish`, so a
+ * superseded or skipped sync shows none of it. The transaction awaits `publish`'s result while holding the
+ * library lock, so return a pending cache write wrapped, not bare.
+ */
+function publishUnlessSuperseded<T>(
+  signal: AbortSignal | undefined,
+  replacement: number,
+  publish: (txn: SavedDeckTxn) => T,
+): Promise<SavedDeckTxnResult<T, SavedDeckTxnFailure>> {
+  return withSavedDeckLibraryOrSkip((txn) => {
+    throwIfAborted(signal);
+    if (profileReplacementGeneration() !== replacement) {
+      throw new DOMException("Feed initialization superseded by a profile replacement", "AbortError");
+    }
+    return publish(txn);
+  }, "run-unguarded");
+}
+
+// --- Public API ---
+
+export interface InitializeFeedsOptions {
+  allowRefresh?: boolean;
+  signal?: AbortSignal;
+}
+
+export async function initializeFeeds({ allowRefresh = true, signal }: InitializeFeedsOptions = {}): Promise<void> {
+  await hydrateFeedCache();
+  throwIfAborted(signal);
+
+  const subs = loadFeedSubscriptions();
+  const replacement = profileReplacementGeneration();
+
+  if (!allowRefresh) {
+    for (const sub of subs) {
+      const cached = getCachedFeed(sub.sourceId);
+      if (!cached) continue;
+      await publishUnlessSuperseded(signal, replacement, (txn) => {
+        // `cached` was read before this call ever requested the library lock, so a concurrent
+        // writer may have already dropped this subscription by the time the lock is
+        // granted. Re-check under the lock rather than publishing an unsubscribed feed's decks.
+        if (!loadFeedSubscriptions().some((s) => s.sourceId === sub.sourceId)) return;
+        syncFeedDecksToStorage(txn, cached);
+      });
+    }
+    return;
+  }
+
+  const subscribedIds = new Set(subs.map((s) => s.sourceId));
+
+  // Auto-subscribe to any bundled feeds not yet subscribed
+  for (const source of FEED_REGISTRY) {
+    if (source.type !== "bundled") continue;
+    if (subscribedIds.has(source.id)) continue;
+
+    try {
+      const feed = await fetchFeed(source.url, signal);
+      throwIfAborted(signal);
+      // Use the registry ID as the canonical key — this ensures the
+      // subscription sourceId always matches the cache key even if the
+      // fetched feed.id differs from the registry.
+      const feedId = source.id;
+      const normalizedFeed = { ...feed, id: feedId, format: source.format ?? feed.format };
+      const published = await publishUnlessSuperseded(signal, replacement, (txn) => {
+        const cachePersistence = setCachedFeed(feedId, normalizedFeed);
+        syncFeedDecksToStorage(txn, normalizedFeed);
+        // Re-read the current list under the lock rather than writing back the `subs` snapshot
+        // loaded before the loop started — a concurrent writer (another tab, a backup restore) may have
+        // committed while this fetch was in flight.
+        const currentSubs = loadFeedSubscriptions();
+        if (!currentSubs.some((s) => s.sourceId === feedId)) {
+          currentSubs.push({
+            sourceId: feedId,
+            url: source.url,
+            type: "bundled",
+            subscribedAt: Date.now(),
+            lastRefreshedAt: Date.now(),
+            lastVersion: feed.version,
+          });
+          saveFeedSubscriptions(currentSubs);
+        }
+        return { cachePersistence };
+      });
+      if (published.status === "committed") await published.value.cachePersistence;
+    } catch (err) {
+      if (signal?.aborted || (err instanceof DOMException && err.name === "AbortError")) throw err;
+      console.error(`Failed to initialize feed "${source.id}":`, err);
+    }
+  }
+
+  // Bundled feeds are deployment assets and may change without their legacy
+  // numeric version changing. Fetch them on initialization so a fresh local
+  // timestamp can never pin an older IndexedDB copy. A subscription to a feed
+  // the registry no longer lists (an older profile or backup) is left alone:
+  // its file is gone, and its decks stay as they are.
+  const now = Date.now();
+  for (const sub of subs) {
+    const registrySource = FEED_REGISTRY.find((r) => r.id === sub.sourceId);
+    if (!registrySource) continue;
+
+    const cached = getCachedFeed(sub.sourceId);
+    const isStale = now - sub.lastRefreshedAt >= FEED_STALE_AFTER_MS;
+    try {
+      const feed = await fetchFeed(registrySource.url, signal);
+      throwIfAborted(signal);
+      const normalizedFeed = { ...feed, id: sub.sourceId, format: registrySource.format ?? feed.format };
+      const published = await publishUnlessSuperseded(signal, replacement, (txn) => {
+        // Same reasoning as the auto-subscribe loop above: re-read under the lock and update only
+        // this feed's entry, so a concurrent writer isn't clobbered by writing
+        // back the pre-fetch `subs` snapshot. Look this up BEFORE publishing anything — if this
+        // feed was dropped while the fetch was in flight, there's no entry left to update,
+        // and the cache/decks a plain lookup-after-publish would have just written back must
+        // never become visible for a feed with no subscription.
+        const currentSubs = loadFeedSubscriptions();
+        const currentSub = currentSubs.find((s) => s.sourceId === sub.sourceId);
+        if (!currentSub) return { cachePersistence: Promise.resolve() };
+
+        const cachePersistence = setCachedFeed(sub.sourceId, normalizedFeed);
+        syncFeedDecksToStorage(txn, normalizedFeed);
+        const feedChanged = cached?.updated !== normalizedFeed.updated;
+        const metadataChanged = currentSub.lastVersion !== feed.version || currentSub.error !== undefined;
+        currentSub.lastVersion = feed.version;
+        if (isStale || feedChanged) currentSub.lastRefreshedAt = Date.now();
+        if (currentSub.error !== undefined) currentSub.error = undefined;
+        if (isStale || feedChanged || metadataChanged) saveFeedSubscriptions(currentSubs);
+        return { cachePersistence };
+      });
+      if (published.status === "committed") await published.value.cachePersistence;
+    } catch (err) {
+      if (signal?.aborted || (err instanceof DOMException && err.name === "AbortError")) throw err;
+      // Fall back to cached data
+      const cached = getCachedFeed(sub.sourceId);
+      if (cached) {
+        await publishUnlessSuperseded(signal, replacement, (txn) => {
+          // Same re-check as the other cached-only publishes above: `cached` was read after the
+          // failed fetch but before this call requested the library lock, so a concurrent
+          // writer may have already dropped this subscription by the time the lock is
+          // granted.
+          if (!loadFeedSubscriptions().some((s) => s.sourceId === sub.sourceId)) return;
+          syncFeedDecksToStorage(txn, cached);
+        });
+      }
+    }
+  }
+}
+
+export function listSubscriptions(): FeedSubscription[] {
+  return loadFeedSubscriptions();
+}
+
+export { getCachedFeed } from "./feedPersistence";
+
+export function getDeckFeedOrigin(deckName: string): string | null {
+  return loadDeckOrigins()[deckName] ?? null;
+}
+
+export function adoptFeedDeck(deckName: string, newName?: string): Promise<string> {
+  const source = captureSavedDeck(deckName);
+  return withSavedDeckLibrary((txn) => {
+    requireSavedDeckUnchanged(txn, source);
+    const origins = loadDeckOrigins();
+    const targetName = newName ?? deckName;
+
+    if (newName && newName !== deckName) {
+      // Copy deck data to new name
+      writeSavedDeckData(txn, targetName, source.raw!);
+      stampDeckMeta(txn, targetName);
+    }
+
+    // Remove feed origin tracking (deck is now user-owned)
+    delete origins[deckName];
+    if (newName && newName !== deckName) {
+      // Don't track the new name either
+      delete origins[targetName];
+    }
+    saveDeckOrigins(origins);
+
+    return targetName;
+  });
+}
+
+export function getFeedDecksByFeed(): Map<string, string[]> {
+  const origins = loadDeckOrigins();
+  const result = new Map<string, string[]>();
+
+  for (const [deckName, feedId] of Object.entries(origins)) {
+    const list = result.get(feedId);
+    if (list) {
+      list.push(deckName);
+    } else {
+      result.set(feedId, [deckName]);
+    }
+  }
+
+  return result;
+}

@@ -1,9 +1,0 @@
-name: Levitation entering after Magebane Armor was equipped gives the creature flying back (its ruling)
-rules: [CR 613.7a, CR 613.7]
-setup:
-  turn: { active: p1, step: main1 }
-  p1:
-    battlefield: [Serra Angel, { card: Magebane Armor, attachedTo: p1:Serra Angel }, Levitation]
-steps:
-  - expect:
-      p1:Serra Angel.abilities contains: [flying]

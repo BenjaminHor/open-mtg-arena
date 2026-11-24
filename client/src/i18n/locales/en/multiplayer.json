@@ -1,0 +1,25 @@
+{
+  "sideboardModal": {
+    "game": "Game {{number}}",
+    "title": "Sideboarding",
+    "matchScore": "Match score {{p0}}-{{p1}}{{draws}}. Move cards between main and sideboard, then submit.",
+    "draws_one": " ({{count}} draw)",
+    "draws_other": " ({{count}} draws)",
+    "main": "Main ({{count}}, min {{min}})",
+    "mainNoMinimum": "Main ({{count}})",
+    "sideboard": "Sideboard ({{count}})",
+    "sideboardCapped": "Sideboard ({{count}}/{{max}})",
+    "moveFromSideboard": "Move cards from the sideboard.",
+    "moveFromMain": "Move cards from the main deck.",
+    "resetAria": "Reset to registered deck",
+    "reset": "Reset",
+    "submitAria": "Submit deck for next game",
+    "submitDeck": "Submit Deck",
+    "readyToSubmit": "Deck is legal — ready to submit.",
+    "belowMinimum": "Main deck needs at least {{min}} cards — {{count}} now.",
+    "overSideboardCap": "Sideboard holds {{count}} cards — maximum {{max}}."
+  },
+  "page": {
+    "couldNotLoadDeck": "Could not load deck. Try re-importing it."
+  }
+}

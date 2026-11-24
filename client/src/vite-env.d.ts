@@ -1,0 +1,47 @@
+/// <reference types="vite/client" />
+/// <reference types="vite-plugin-pwa/client" />
+
+declare const __APP_VERSION__: string;
+declare const __BUILD_HASH__: string;
+declare const __ENGINE_WASM_URL__: string | undefined;
+
+declare const __CARD_DATA_URL__: string;
+declare const __CARD_DATA_LOCALE_URL_TEMPLATE__: string;
+declare const __SCRYFALL_IMAGES_LOCALE_URL_TEMPLATE__: string;
+// Manifest-driven data file URLs. Keep this block in sync with data-files.json.
+declare const __CARD_DATA_META_URL__: string;
+declare const __CARD_DATA_DE_URL__: string;
+declare const __CARD_DATA_ES_URL__: string;
+declare const __CARD_DATA_FR_URL__: string;
+declare const __CARD_DATA_IT_URL__: string;
+declare const __CARD_DATA_JA_URL__: string;
+declare const __CARD_DATA_PT_URL__: string;
+declare const __CARD_DATA_ZH_URL__: string;
+declare const __CARD_NAMES_URL__: string;
+declare const __CHANGELOG_URL__: string;
+declare const __CHANGELOG_META_URL__: string;
+declare const __COMBO_TABLE_URL__: string;
+declare const __COVERAGE_DATA_URL__: string;
+declare const __COVERAGE_SUMMARY_URL__: string;
+declare const __DECKS_URL__: string;
+declare const __DRAFT_POOLS_URL__: string;
+declare const __SCRYFALL_DATA_URL__: string;
+declare const __SCRYFALL_IMAGES_V2_DE_URL__: string;
+declare const __SCRYFALL_IMAGES_V2_ES_URL__: string;
+declare const __SCRYFALL_IMAGES_V2_FR_URL__: string;
+declare const __SCRYFALL_IMAGES_V2_IT_URL__: string;
+declare const __SCRYFALL_IMAGES_V2_JA_URL__: string;
+declare const __SCRYFALL_IMAGES_V2_PT_URL__: string;
+declare const __SCRYFALL_IMAGES_V2_ZH_URL__: string;
+declare const __SCRYFALL_TOKEN_IMAGES_URL__: string;
+declare const __SCRYFALL_PRINTINGS_URL__: string;
+declare const __SCRYFALL_SETS_URL__: string;
+declare const __SEMANTIC_AUDIT_URL__: string;
+declare const __SET_LIST_URL__: string;
+// End manifest-driven data file URLs.
+declare const __GIT_REPO_URL__: string;
+declare const __IS_PREVIEW_BUILD__: boolean;
+
+// Fontsource packages ship only side-effect CSS (no type declarations); Vite
+// resolves the import at build time, but tsc needs an ambient module.
+declare module "@fontsource-variable/*";

@@ -1,0 +1,25 @@
+{
+  "sideboardModal": {
+    "game": "Partida {{number}}",
+    "title": "Banquillo",
+    "matchScore": "Marcador de la serie {{p0}}-{{p1}}{{draws}}. Mueve cartas entre el mazo principal y el banquillo, luego envía.",
+    "draws_one": " ({{count}} empate)",
+    "draws_other": " ({{count}} empates)",
+    "main": "Principal ({{count}}, mín. {{min}})",
+    "mainNoMinimum": "Principal ({{count}})",
+    "sideboard": "Banquillo ({{count}})",
+    "sideboardCapped": "Banquillo ({{count}}/{{max}})",
+    "moveFromSideboard": "Mueve cartas del banquillo.",
+    "moveFromMain": "Mueve cartas del mazo principal.",
+    "resetAria": "Restablecer al mazo registrado",
+    "reset": "Restablecer",
+    "submitAria": "Enviar el mazo para el siguiente juego",
+    "submitDeck": "Enviar mazo",
+    "readyToSubmit": "El mazo es legal: listo para enviar.",
+    "belowMinimum": "El mazo principal necesita al menos {{min}} cartas — ahora tiene {{count}}.",
+    "overSideboardCap": "El banquillo tiene {{count}} cartas — máximo {{max}}."
+  },
+  "page": {
+    "couldNotLoadDeck": "No se pudo cargar el mazo. Intenta volver a importarlo."
+  }
+}

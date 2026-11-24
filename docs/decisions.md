@@ -2820,3 +2820,41 @@ owner's answer to the D-089 open question, option (a))
 - Future impact: a third value (a multiplayer board, the RPG's) is more data and a line in `layoutFor`. The owner's
   unfolded screen size is a guess until they send a screenshot (status, Open questions).
 
+**D-177: Build on phase-rs's engine and client, imported and rebranded (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner, after the evaluation (`docs/phase-rs-evaluation.md`) and playing it: "I'm okay with just forking the
+  current version and then allowing our repo diverge over time. I just want to borrow the major pieces of their
+  implementation so we could build freely on other features." "I think what we could do instead of forking is just
+  clone the repo and replace everything in our repo." "I would want to do a major clean up so that it's not phase-rs
+  branded anymore in any shape or form." "I'm okay with dropping the "nothing a black box" rule for the engine. the
+  match screen feels very good to build on and it feels passable on my phone layout so far."
+- So: phase-rs at a fixed version (v0.131.0, 57c647e) is copied into this repo, replacing our TypeScript engine and
+  client; no upstream tracking; the repo diverges freely. The aim is the higher-value work: the LLM opponent and a
+  single-player RPG or roguelike.
+- Reverses, for the engine: "nothing may become a black box" (CLAUDE.md), the TypeScript pure reducer and its package
+  layout (architecture.md), hand-written card definitions (card-scripting.md). Our phone-first work (D-141 to D-176) is
+  superseded by their client; what it taught (pacing, the stack's labels, the walking ladder, the layouts) is kept in
+  these docs to bring across where it still matters.
+- Branding: every phase-rs name, logo, domain, link, contact and service is removed or replaced. Their copyright and
+  license notices stay, as MIT and Apache-2.0 require: the license files keep their copyright line, and a NOTICE
+  credits the code's origin. That's attribution in the license files, not branding in the app.
+- The owner's answers (2026-11-23): the app is called "Open MTG Arena" on screen too; online multiplayer, its servers,
+  the lobby, peer-to-peer and Supabase cloud sync are removed (offline only: the AI, the LLM opponent, the RPG); the
+  Tauri desktop app and its updater are removed (the web app installs as a PWA).
+- The owner (2026-11-23): their art and audio without a recorded source (the battlefields, most music and sound
+  effects) are kept as part of the MIT/Apache code we copy, the Kevin MacLeod tracks credited (CC-BY), the unknown
+  sources noted, revisited if anyone objects ("Keep, credit what we can"). And the copyright line and NOTICE stay in
+  the license files ("Yes, keep it in the license files"); nothing in the app names them.
+
+**D-178: Next: a playable build, then port the engine from Rust to Odin; the LLM opponent and the RPG wait (owner, 2026-11-23)** · 2026-11-23 · accepted
+- The owner: "Honestly, once everything checks out let's just say yolo and plan out the rust to odin rewrite", then
+  "We can hold off on the LLM opponent and single player RPG/roguelike for now. I just want to be able to play this
+  build and then iterate safely on porting this from rust to Odin as efficiently and quickly as possible".
+- Order: finish the import (D-177) to a build the owner can play on the live site; then the Rust to Odin port, as
+  its own milestones, planned first and approved by the owner, done safely (every ported piece checked against the
+  Rust engine on the same games) and quickly. The LLM opponent and the single-player RPG or roguelike are on hold.
+- The owner (2026-11-24), on hearing the AI had no 60-card decks once the scraped feeds went: "Then can we get the
+  scraped tournament decks back?" So the eight metagame deck files (MTGGoldfish Standard, Pioneer, Modern, Legacy,
+  Vintage, Pauper, Commander; TopDeck.gg cEDH) come back as they were at import: static snapshots bundled with the
+  app, which no longer refresh (the scraper and its daily job stay removed). The starter decks' feed gets back its
+  original "no format" (the strip had labelled it Standard, which they aren't legal in).
+

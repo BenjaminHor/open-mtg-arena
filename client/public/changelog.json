@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {
+      "id": 1,
+      "date": "2026-11-24",
+      "title": "A new engine and match client",
+      "tags": [
+        "new-cards",
+        "gameplay",
+        "interface",
+        "ai"
+      ],
+      "body": "✨ What's new\n• Open MTG Arena now runs on a much larger rules engine and match client, adopted from an open-source project (see NOTICE).\n• Tens of thousands of cards, parsed from their rules text. A card the engine can't fully handle is marked unsupported.\n• Play against the AI in Standard, Modern, Pioneer, Legacy, Vintage, Pauper and Commander, with tournament deck lists bundled for the AI.\n• Everything runs in your browser and works offline once loaded. No accounts, no servers, no online play."
+    }
+  ]
+}

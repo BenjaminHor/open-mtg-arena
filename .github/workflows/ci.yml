@@ -1,9 +1,7 @@
-# Runs `pnpm check` (typecheck, lint, all tests) and the web app's browser tests on every push and pull request.
-# A pull request merges into main only with this green (CLAUDE.md, "How to work").
+# Checks every pull request and every push to main (CLAUDE.md, "How to work"): the brand check, the client's type-check
+# and unit tests, and that the engine's WebAssembly build compiles. A pull request merges into main only with this green.
 name: CI
 
-# Pull requests run it before merging; pushes to main run it again on the merged result.
-# (Only main for pushes, so a pull request branch doesn't run CI twice per commit.)
 on:
   push:
     branches: [main]
@@ -12,19 +10,41 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  check:
+  client:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
     steps:
       - uses: actions/checkout@v7
-      # Installs the pnpm version named in package.json's "packageManager".
+      # The upstream project's name stays out of what the app ships (D-177). Pages checks the whole built site too.
+      - name: Brand check (client sources)
+        working-directory: .
+        run: ./scripts/check-brand.sh client/src client/public client/index.html client/vite.config.ts data
+      # Installs the pnpm version named in client/package.json's "packageManager".
       - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: client/package.json
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
+          cache-dependency-path: client/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check
-      # The web app's browser tests, against its production build (D-151).
-      - run: pnpm --filter @mtg/web exec playwright install --with-deps chromium
-      - run: pnpm test:e2e
+      - run: pnpm type-check
+      - run: pnpm vitest run
+
+  engine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # rust-toolchain.toml pins the nightly and the wasm32 target; rustup installs them on first use.
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      # What ships to the browser compiles. (The full release build, with its link-time optimisation, is Pages'.)
+      - run: cargo check --package engine-wasm --target wasm32-unknown-unknown

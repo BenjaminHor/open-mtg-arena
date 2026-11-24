@@ -1,0 +1,296 @@
+{
+  "actions": {
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "close": "Fechar",
+    "closeNamed": "Fechar {{name}}"
+  },
+  "debug": {
+    "copyDisplaySnapshot": "Copiar instantâneo de exibição (não restaurável)",
+    "exportAuthoritative": "Exportar estado de jogo autoritativo",
+    "exportAuthoritativeTitle": "Baixa o estado controlado pelo mecanismo usado para diagnosticar e restaurar este jogo"
+  },
+  "quantityRef": {
+    "highestNumber": "o número mais alto",
+    "lowestNumber": "o número mais baixo",
+    "chosenNumber": "o número escolhido",
+    "energyPaidOrLostThisTurn": "energia paga ou perdida neste turno"
+  },
+  "scryOutcome": {
+    "title": "Vidência concluída",
+    "you": "Você",
+    "result": "{{player}} — {{top}} no topo · {{bottom}} no fundo"
+  },
+  "modal": {
+    "defaultEyebrow": "Ferramenta de Workspace"
+  },
+  "pausedBanner": {
+    "message": "Jogo pausado — {{reason}}",
+    "resume": "Retomar jogo"
+  },
+  "fullscreen": {
+    "enter": "Entrar em tela cheia",
+    "exit": "Sair da tela cheia"
+  },
+  "buildBadge": {
+    "downloading": "baixando… {{progress}}%",
+    "checking": "verificando…",
+    "updating": "atualizando…",
+    "updatePending": "atualização pendente após o jogo",
+    "cards": "cartas {{age}} ({{commit}})",
+    "cardDataTitle": "Dados das cartas gerados em {{date}} a partir de {{commit}}",
+    "checkForUpdates": "Verificar atualizações",
+    "updaterDebugInfo": "Informações de depuração do atualizador",
+    "updaterIssue": "Problema no atualizador: {{error}}",
+    "updateIssue": "problema na atualização",
+    "updated": "atualizado"
+  },
+  "offlineBadge": {
+    "label": "Offline",
+    "servicesPaused": "As atualizações e os serviços online estão pausados.",
+    "forced": "Trabalhar offline está ativado.",
+    "connection": "Sem conexão de rede."
+  },
+  "comboDetector": {
+    "label": "Detector de combos (experimental)",
+    "title": "Detectar loops infinitos: encerrar loops obrigatórios automaticamente, oferecer atalhos para loops que um jogador controla e mostrar recursos ∞ (desativado por padrão)",
+    "off": "Desligado",
+    "interactive": "Interativo"
+  },
+  "gameMenu": {
+    "sections": {
+      "view": "Visualização",
+      "tools": "Ferramentas",
+      "game": "Jogo"
+    },
+    "menu": "Menu do jogo",
+    "sandboxTools": "Ferramentas de Sandbox",
+    "sandboxToolsTitle": "Ferramentas de Sandbox — configure qualquer estado de tabuleiro (`)",
+    "openSandboxTools": "Abrir Ferramentas de Sandbox",
+    "clickMode": "Modo de clique",
+    "clickModeButton": "Botão de modo de clique",
+    "shown": "Visível",
+    "hidden": "Oculto",
+    "openGameLog": "Abrir o registro do jogo",
+    "closeGameLog": "Fechar o registro do jogo",
+    "settings": "Configurações",
+    "boardLayoutSplit": "Dividido",
+    "boardLayoutLegacy": "Legacy",
+    "switchToSplitView": "Alternar para visualização de mesa dividida",
+    "switchToLegacyView": "Alternar para visualização legacy focada",
+    "multiplayerSplitLayoutNudge": {
+      "message": "Veja todos os oponentes de uma vez na visualização de mesa dividida.",
+      "trySplit": "Experimentar visualização dividida",
+      "dismiss": "Agora não"
+    },
+    "helpShortcuts": "Ajuda e Atalhos",
+    "showAiHand": "Mostrar Mão da IA",
+    "hideAiHand": "Ocultar Mão da IA",
+    "undoLastAction": "Desfazer última ação",
+    "concede": "Conceder",
+    "backToDraft": "Voltar ao Draft",
+    "mainMenu": "Menu Principal",
+    "cards": "cartas {{commit}}",
+    "cardDataTitle": "Dados das cartas: {{date}}"
+  },
+  "volume": {
+    "mediaUnavailable": "Áudio indisponível — faltam neste sistema os componentes de mídia necessários para reproduzir som. Instale os pacotes de plugins do GStreamer da sua distribuição e reinicie o aplicativo.",
+    "mute": "Silenciar",
+    "unmute": "Reativar som",
+    "volume": "Volume"
+  },
+  "grantDebug": {
+    "heading": "Sandbox: Permissões de Depuração",
+    "description": "Conceda a outros jogadores a capacidade de enviar ações de depuração. Suas ações são registradas publicamente.",
+    "playerLabel": "Jogador {{number}}",
+    "revoke": "REVOGAR",
+    "grant": "CONCEDER"
+  },
+  "help": {
+    "eyebrow": "Ajuda",
+    "title": "Ajuda e Atalhos",
+    "subtitle": "Fluxo de Magic digital para jogadores de papel: paradas, prioridade, passes e ferramentas de recuperação.",
+    "closeHelp": "Fechar ajuda",
+    "searchPlaceholder": "Buscar ajuda ou atalhos",
+    "whatCanIDo": "O que posso fazer agora?",
+    "recoveryTitle": "Ferramentas de Recuperação",
+    "recoveryDescription": "Se uma carta se comportar mal, exporte o estado primeiro. O painel de depuração avançada está disponível quando você precisar inspecionar ou ajustar o jogo.",
+    "copyState": "Copiar Estado",
+    "exportState": "Exportar Estado",
+    "exportReplay": "Exportar Replay",
+    "openAdvancedDebug": "Abrir Depuração Avançada",
+    "sections": {
+      "Flow": "Fluxo",
+      "Shortcuts": "Atalhos",
+      "Recovery": "Recuperação"
+    },
+    "status": {
+      "copied": "Estado do jogo copiado para a área de transferência.",
+      "copyFailed": "Não foi possível copiar o estado do jogo.",
+      "exported": "{{filename}} exportado.",
+      "exportFailedDetail": "Não foi possível exportar o estado do jogo. {{detail}}",
+      "replayExported": "Replay salvo como {{filename}}.",
+      "replayExportUnavailable": "Nenhuma gravação de replay disponível para esta partida.",
+      "replayExportFailed": "Não foi possível exportar o replay."
+    },
+    "prompt": {
+      "starting": "O jogo está iniciando ou restaurando o estado.",
+      "gameOver": "O jogo acabou.",
+      "mulliganDecide": "Escolha se mantém esta mão inicial ou faz um mulligan.",
+      "mulliganWaitDecide": "Aguardando outro jogador decidir sua mão inicial.",
+      "mulliganBottom": "Escolha cartas para colocar no fundo após manter uma mão de mulligan.",
+      "mulliganWaitBottom": "Aguardando outro jogador concluir seu mulligan.",
+      "openingHandBottom": "Escolha uma carta para colocar no fundo antes de os mulligans normais começarem.",
+      "openingHandWait": "Aguardando outro jogador resolver sua mão inicial.",
+      "waitOther": "Aguardando outro jogador agir.",
+      "priorityStack": "Você tem prioridade com algo na pilha. Resolver passa a prioridade para que o item do topo possa resolver.",
+      "priorityAutoPass": "Você tem prioridade. O cliente pode passar automaticamente em janelas tranquilas, a menos que uma parada ou o Controle Total esteja ativo.",
+      "priorityActions": "Você tem prioridade. Você pode usar as cartas disponíveis ou passar para manter o turno avançando.",
+      "priorityPass": "Você tem prioridade. Passar continua para a próxima etapa ou jogador.",
+      "manaPayment": "Pague mana para a mágica ou habilidade pendente. Pressione T para virar terrenos disponíveis.",
+      "targetSelection": "Escolha o alvo válido destacado ou cancele se o prompt permitir.",
+      "declareAttackers": "Escolha os atacantes e depois confirme. Você também pode atacar sem nenhum.",
+      "declareBlockers": "Escolha os bloqueadores e atribua-os aos atacantes, depois confirme.",
+      "chooseXValue": "Escolha um valor para X antes de continuar com a mágica ou habilidade.",
+      "payAmountChoice": "Escolha quanto do recurso solicitado pagar.",
+      "default": "O jogo está aguardando sua escolha. Siga o prompt ativo para continuar."
+    },
+    "entries": {
+      "automaticPhaseSkips": {
+        "title": "Pulos automáticos de fase",
+        "body": "Os pulos de fase são automáticos. Use paradas ou o Controle Total quando quiser janelas de prioridade no estilo papel."
+      },
+      "phaseStops": {
+        "title": "Paradas de fase",
+        "body": "Uma parada pausa antes daquela etapa, semelhante a dizer que você pode agir antes do combate, antes da compra ou antes da etapa final no papel."
+      },
+      "fullControl": {
+        "title": "Controle Total",
+        "body": "O Controle Total impede que as janelas de prioridade sejam puladas, incluindo pontos onde o cliente digital normalmente manteria o jogo avançando."
+      },
+      "resolve": {
+        "title": "Resolver",
+        "body": "Resolver significa que você passa a prioridade para que a mágica ou habilidade do topo da pilha possa resolver se todos os outros também passarem."
+      },
+      "passToEnd": {
+        "title": "Passar até o Fim",
+        "body": "Passar até o Fim continua passando a prioridade durante o turno, a menos que uma escolha, parada ou o Controle Total interrompa."
+      },
+      "manaPayment": {
+        "title": "Pagamento de mana",
+        "body": "Durante o pagamento de mana, você pode virar terrenos manualmente ou pressionar T para virar terrenos disponíveis."
+      },
+      "combatDeclarations": {
+        "title": "Declarações de combate",
+        "body": "O jogo solicita atacantes e bloqueadores apenas durante as etapas de declaração. Escolha as criaturas e depois confirme a declaração."
+      },
+      "openHelp": {
+        "title": "Abrir Ajuda",
+        "body": "Abra esta tela de ajuda."
+      },
+      "passPriority": {
+        "title": "Passar prioridade",
+        "body": "Passe a prioridade ou avance pelo prompt de prioridade atual."
+      },
+      "undo": {
+        "title": "Desfazer",
+        "body": "Desfaça a última ação local que não revelou informações ocultas."
+      },
+      "cancel": {
+        "title": "Cancelar",
+        "body": "Cancele a seleção atual, o pagamento de mana, a seleção de alvo ou o passe automático quando disponível."
+      },
+      "advancedDebugPanel": {
+        "title": "Painel de depuração avançada",
+        "body": "Abra o painel de depuração avançada. A maioria dos jogadores deve começar pelas Ferramentas de Recuperação primeiro."
+      },
+      "toggleClickMode": {
+        "title": "Alternar modo de clique",
+        "body": "Em partidas com Ferramentas de Sandbox, ativa ou desativa o modo de clique. Enquanto ativo, clicar em uma carta abre o menu de depuração dela (zonas, P/R, marcadores, palavras-chave) em vez de jogá-la."
+      },
+      "reportOrExportState": {
+        "title": "Reportar ou exportar estado",
+        "body": "Se uma carta se comportar mal, exporte o estado atual do jogo para que a posição exata do tabuleiro possa ser reproduzida."
+      },
+      "boardRightClickMenu": {
+        "title": "Menu de clique direito no tabuleiro",
+        "body": "No desktop, clique com o botão direito em um espaço vazio do tabuleiro para acessar o registro do jogo, as ferramentas de recuperação/depuração e as configurações de plano de fundo."
+      }
+    },
+    "flowNudge": {
+      "message": "Os pulos de fase são automáticos. Use paradas ou o Controle Total quando quiser janelas de prioridade no estilo papel.",
+      "dismiss": "Dispensar",
+      "learnFlow": "Aprender o Fluxo"
+    },
+    "sandboxNudge": {
+      "message": "Configure qualquer estado de tabuleiro com as <tools>Ferramentas de Sandbox</tools> — adicione cartas e fichas, altere vidas e marcadores, copie permanentes ou avance fases. Abra a qualquer momento com a tecla <key>`</key>.",
+      "dismiss": "Dispensar",
+      "open": "Abrir Ferramentas de Sandbox"
+    }
+  },
+  "splash": {
+    "ready": "Pronto",
+    "loading": "Carregando..."
+  },
+  "turnBanner": {
+    "turn": "Turno {{number}}",
+    "yourTurn": "Sua vez",
+    "opponentTurn": "Vez de {{name}}"
+  },
+  "diceRoll": {
+    "rollingForFirst": "Rolagem para ver quem começa",
+    "tieReroll": "Empate — rolar de novo!",
+    "versus": "VS",
+    "skip": "Toque para pular",
+    "continue": "Toque para continuar",
+    "you": "Você",
+    "youWonRoll": "Você venceu a rolagem",
+    "playerWonRoll": "{{name}} venceu a rolagem",
+    "heads": "Cara",
+    "tails": "Coroa",
+    "coinFlip": "Cara ou coroa",
+    "wonCoinFlip": "{{name}} venceu o lançamento",
+    "lostCoinFlip": "{{name}} perdeu o lançamento",
+    "ignoredDie": "Ignorado"
+  },
+  "chrome": {
+    "back": "Voltar",
+    "settings": "Configurações",
+    "languageSettings": "Idioma ({{lang}}) — abrir configurações",
+    "languageTitle": "Idioma: {{lang}}"
+  },
+  "errorBoundary": {
+    "heading": "Algo deu errado",
+    "body": "O aplicativo encontrou um erro inesperado e não pode continuar nesta tela. Recarregar geralmente resolve.",
+    "reload": "Recarregar"
+  },
+  "stateCodec": {
+    "actionInterrupted": "A transmissão do estado foi interrompida durante a ação",
+    "submissionNotSent": "A transmissão do estado está sendo restabelecida; esta ação não foi enviada.",
+    "reconnectSubmissionNotSent": "A conexão está sendo restabelecida; esta ação não foi enviada."
+  },
+  "actionError": {
+    "title": "{{action}} falhou",
+    "skipTarget": "Pular alvo",
+    "genericAction": "Ação",
+    "unknownEngineError": "Erro desconhecido do motor"
+  },
+  "savedDeckLibraryBusy": {
+    "description": "Outra aba do Phase está ocupada. Fecha as outras abas do Phase e tenta novamente.",
+    "title": {
+      "save": "Não foi possível salvar o baralho",
+      "clone": "Não foi possível clonar o baralho",
+      "import": "Não foi possível importar o baralho",
+      "delete": "Não foi possível excluir o baralho",
+      "organize": "Não foi possível atualizar a organização dos baralhos",
+      "restore": "Não foi possível restaurar o backup",
+      "autosaveDraft": "Não foi possível salvar automaticamente o baralho do draft"
+    }
+  },
+  "savedDeckLibraryStorageFailure": {
+    "description": "O Phase não conseguiu acessar o armazenamento do navegador. Tenta novamente em um instante."
+  },
+  "savedDeckChanged": {
+    "description": "Este baralho mudou antes de a tua ação ser executada, por isso nada foi alterado. Verifica o baralho e tenta novamente."
+  }
+}

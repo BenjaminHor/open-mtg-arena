@@ -1,0 +1,862 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+
+vi.mock("idb-keyval", () => {
+  const db = new Map<string, unknown>();
+  return {
+    createStore: vi.fn(() => ({})),
+    get: vi.fn((key: string) => Promise.resolve(db.get(key) ?? undefined)),
+    set: vi.fn((key: string, value: unknown) => {
+      db.set(key, value);
+      return Promise.resolve();
+    }),
+    del: vi.fn((key: string) => {
+      db.delete(key);
+      return Promise.resolve();
+    }),
+    entries: vi.fn(() => Promise.resolve([...db.entries()])),
+    _db: db,
+  };
+});
+
+import * as idbKeyval from "idb-keyval";
+const getIdbDb = () => (idbKeyval as unknown as { _db: Map<string, unknown> })._db;
+
+import {
+  validateFeed,
+  initializeFeeds,
+  getDeckFeedOrigin,
+  adoptFeedDeck,
+  feedDeckToParsedDeck,
+  listSubscriptions,
+  getCachedFeed,
+  getFeedDecksByFeed,
+} from "../feedService";
+import { _resetFeedCacheForTests, setCachedFeed } from "../feedPersistence";
+import {
+  STORAGE_KEY_PREFIX,
+  FEED_SUBSCRIPTIONS_KEY,
+  bumpProfileReplacementGeneration,
+} from "../../constants/storage";
+import { set as idbSet, entries as idbEntries } from "idb-keyval";
+import { useConnectivityStore } from "../../stores/connectivityStore";
+import { FEED_REGISTRY } from "../../data/feedRegistry";
+import type { FeedSubscription } from "../../types/feed";
+import {
+  setSavedDeckTxnLockWaitForTests,
+  withSavedDeckLibrary,
+  withSavedDeckLibraryOrSkip,
+} from "../savedDeckTransaction";
+import { installFifoWebLocks, uninstallWebLocks } from "../../test/helpers/webLocks";
+
+const STARTER_FEED = {
+  id: "starter-decks",
+  name: "Starter Decks",
+  version: 1,
+  updated: "2026-03-20T00:00:00Z",
+  decks: [
+    {
+      name: "Test Deck",
+      colors: ["R"],
+      main: [{ count: 4, name: "Lightning Bolt" }],
+      sideboard: [],
+    },
+  ],
+};
+
+const ALL_BUNDLED_FEEDS: Record<string, unknown> = {
+  "starter-decks": STARTER_FEED,
+};
+
+const VALID_FEED = {
+  id: "test-feed",
+  name: "Test Feed",
+  version: 1,
+  updated: "2026-03-20T00:00:00Z",
+  decks: [
+    {
+      name: "Test Deck",
+      colors: ["R"],
+      main: [{ count: 4, name: "Lightning Bolt" }],
+      sideboard: [],
+    },
+    {
+      name: "Another Deck",
+      colors: ["U"],
+      main: [{ count: 4, name: "Counterspell" }],
+      sideboard: [],
+    },
+  ],
+};
+
+function mockFetch(data: unknown, ok = true) {
+  global.fetch = vi.fn().mockResolvedValue({
+    ok,
+    status: ok ? 200 : 404,
+    statusText: ok ? "OK" : "Not Found",
+    json: () => Promise.resolve(data),
+  });
+}
+
+beforeEach(() => {
+  localStorage.clear();
+  getIdbDb().clear();
+  _resetFeedCacheForTests();
+  vi.restoreAllMocks();
+  useConnectivityStore.setState({ forcedOffline: false, browserOnline: true });
+});
+
+describe("validateFeed", () => {
+  it("accepts a valid feed", () => {
+    expect(validateFeed(VALID_FEED)).not.toBeNull();
+  });
+
+  it("rejects null", () => {
+    expect(validateFeed(null)).toBeNull();
+  });
+
+  it("rejects missing id", () => {
+    expect(validateFeed({ ...VALID_FEED, id: "" })).toBeNull();
+  });
+
+  it("rejects missing name", () => {
+    expect(validateFeed({ ...VALID_FEED, name: "" })).toBeNull();
+  });
+
+  it("rejects non-number version", () => {
+    expect(validateFeed({ ...VALID_FEED, version: "1" })).toBeNull();
+  });
+
+  it("rejects missing updated", () => {
+    const { updated: _, ...noUpdated } = VALID_FEED;
+    expect(validateFeed(noUpdated)).toBeNull();
+  });
+
+  it("rejects non-array decks", () => {
+    expect(validateFeed({ ...VALID_FEED, decks: "not array" })).toBeNull();
+  });
+
+  it("rejects an empty feed so it cannot erase a valid cached catalog", () => {
+    expect(validateFeed({ ...VALID_FEED, decks: [] })).toBeNull();
+  });
+
+  it("rejects deck with missing name", () => {
+    const bad = {
+      ...VALID_FEED,
+      decks: [{ colors: ["R"], main: [], sideboard: [] }],
+    };
+    expect(validateFeed(bad)).toBeNull();
+  });
+
+  it("rejects deck with invalid main entry", () => {
+    const bad = {
+      ...VALID_FEED,
+      decks: [{
+        name: "Bad",
+        colors: [],
+        main: [{ count: "four", name: "Bolt" }],
+        sideboard: [],
+      }],
+    };
+    expect(validateFeed(bad)).toBeNull();
+  });
+});
+
+describe("feedDeckToParsedDeck", () => {
+  it("removes the commander from main when the feed already identifies it", () => {
+    const deck = feedDeckToParsedDeck({
+      name: "Zimone, Infinite Analyst",
+      colors: ["G", "U"],
+      commander: ["Zimone, Infinite Analyst"],
+      main: [
+        { count: 1, name: "Zimone, Infinite Analyst" },
+        { count: 1, name: "Sol Ring" },
+      ],
+      sideboard: [],
+    });
+
+    expect(deck.commander).toEqual(["Zimone, Infinite Analyst"]);
+    expect(deck.main).toEqual([{ count: 1, name: "Sol Ring" }]);
+  });
+
+  it("strips MTGGoldfish card treatment and printing annotations", () => {
+    const deck = feedDeckToParsedDeck({
+      name: "Y'shtola, Night's Blessed",
+      colors: ["W", "B"],
+      commander: null,
+      main: [
+        { count: 1, name: "Y'shtola, Night's Blessed <surge foil> [FIC] (F)" },
+        { count: 1, name: "Sol Ring" },
+      ],
+      sideboard: [
+        { count: 1, name: "Krenko, Mob Boss <retro> [RVR] (F)" },
+      ],
+    });
+
+    expect(deck.commander).toEqual(["Y'shtola, Night's Blessed"]);
+    expect(deck.main).toEqual([{ count: 1, name: "Sol Ring" }]);
+    expect(deck.sideboard).toEqual([{ count: 1, name: "Krenko, Mob Boss" }]);
+  });
+});
+
+function mockFetchByUrl(feedMap: Record<string, unknown>) {
+  global.fetch = vi.fn().mockImplementation((url: string) => {
+    const data = Object.entries(feedMap).find(([pattern]) => url.includes(pattern))?.[1];
+    return Promise.resolve({
+      ok: !!data,
+      status: data ? 200 : 404,
+      statusText: data ? "OK" : "Not Found",
+      json: () => Promise.resolve(data ?? {}),
+    });
+  });
+}
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((done) => { resolve = done; });
+  return { promise, resolve };
+}
+
+/** Stands in for a subscription this device already holds: caches the feed,
+ *  records the subscription, and publishes its decks the way start-up does. */
+async function seedSubscription(feed: typeof VALID_FEED): Promise<void> {
+  await setCachedFeed(feed.id, feed);
+  localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, JSON.stringify([
+    ...listSubscriptions(),
+    {
+      sourceId: feed.id,
+      url: `/feeds/${feed.id}.json`,
+      type: "bundled",
+      subscribedAt: Date.now(),
+      lastRefreshedAt: Date.now(),
+      lastVersion: feed.version,
+    } satisfies FeedSubscription,
+  ]));
+  await initializeFeeds({ allowRefresh: false });
+}
+
+async function seedFreshBundledSubscriptions(
+  additionalSubscriptions: FeedSubscription[] = [],
+): Promise<string> {
+  const now = Date.now();
+  const bundledSubscriptions = FEED_REGISTRY
+    .filter((source) => source.type === "bundled")
+    .map((source) => ({
+      sourceId: source.id,
+      url: source.url,
+      type: source.type,
+      subscribedAt: 1,
+      lastRefreshedAt: now,
+      lastVersion: 1,
+    }));
+
+  for (const sub of bundledSubscriptions) {
+    await setCachedFeed(sub.sourceId, { ...STARTER_FEED, id: sub.sourceId, decks: [] });
+  }
+
+  const raw = JSON.stringify([...bundledSubscriptions, ...additionalSubscriptions]);
+  localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, raw);
+  return raw;
+}
+
+describe("initializeFeeds", () => {
+  it("subscribes to bundled feeds and seeds decks on first run", async () => {
+    mockFetchByUrl(ALL_BUNDLED_FEEDS);
+
+    await initializeFeeds();
+
+    // Starter deck should be in localStorage
+    const raw = localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck");
+    expect(raw).not.toBeNull();
+    const deck = JSON.parse(raw!);
+    expect(deck.main[0].name).toBe("Lightning Bolt");
+
+    // Origins tracked with registry IDs (not feed.id)
+    expect(getDeckFeedOrigin("Test Deck")).toBe("starter-decks");
+
+    // One subscription per bundled feed in the registry
+    const subs = listSubscriptions();
+    expect(subs).toHaveLength(1);
+
+  });
+
+  it("picks up new bundled feeds on subsequent calls", async () => {
+    // First call subscribes to all bundled feeds
+    mockFetchByUrl(ALL_BUNDLED_FEEDS);
+    await initializeFeeds();
+    expect(listSubscriptions()).toHaveLength(1);
+
+    // Second call re-fetches for updates but should not create new subscriptions
+    await initializeFeeds();
+    expect(listSubscriptions()).toHaveLength(1);
+  });
+
+  it("does not overwrite existing user decks", async () => {
+    // User already has a deck named "Test Deck"
+    localStorage.setItem(
+      STORAGE_KEY_PREFIX + "Test Deck",
+      JSON.stringify({ main: [{ count: 1, name: "User Card" }], sideboard: [] }),
+    );
+
+    mockFetchByUrl(ALL_BUNDLED_FEEDS);
+    await initializeFeeds();
+
+    const raw = localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")!;
+    const deck = JSON.parse(raw);
+    expect(deck.main[0].name).toBe("User Card");
+  });
+
+  it("hydrates and publishes every cached subscription offline without fetching or mutating subscriptions", async () => {
+    const cached = { ...VALID_FEED, id: "cached" };
+    await setCachedFeed("cached", cached);
+    const subscriptions = [{
+      sourceId: "cached",
+      url: "/feeds/cached.json",
+      type: "bundled" as const,
+      subscribedAt: 1,
+      lastRefreshedAt: 0,
+      lastVersion: 1,
+      error: "previous failure",
+    }];
+    localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, JSON.stringify(subscriptions));
+    global.fetch = vi.fn().mockRejectedValue(new Error("offline"));
+
+    await initializeFeeds({ allowRefresh: false });
+
+    expect(global.fetch).not.toHaveBeenCalled();
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).not.toBeNull();
+    expect(getDeckFeedOrigin("Test Deck")).toBe("cached");
+    expect(JSON.parse(localStorage.getItem(FEED_SUBSCRIPTIONS_KEY)!)).toEqual(subscriptions);
+  });
+
+  it("hydrates durable cached subscriptions from a cold offline start without fetching", async () => {
+    const cached = { ...VALID_FEED, id: "cached" };
+    getIdbDb().set("cached", cached);
+    localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, JSON.stringify([{
+      sourceId: "cached",
+      url: "/feeds/cached.json",
+      type: "bundled",
+      subscribedAt: 1,
+      lastRefreshedAt: 0,
+      lastVersion: 1,
+    }]));
+    global.fetch = vi.fn();
+
+    await initializeFeeds({ allowRefresh: false });
+
+    expect(global.fetch).not.toHaveBeenCalled();
+    expect(getCachedFeed("cached")).toEqual(cached);
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).not.toBeNull();
+    expect(getDeckFeedOrigin("Test Deck")).toBe("cached");
+  });
+
+  it("persists refresh metadata after a stale subscription refresh", async () => {
+    await seedFreshBundledSubscriptions();
+    const subs = listSubscriptions().map((sub) => ({ ...sub, lastRefreshedAt: 0 }));
+    localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, JSON.stringify(subs));
+    mockFetchByUrl({ "starter-decks.json": { ...STARTER_FEED, version: 2 } });
+
+    await initializeFeeds();
+
+    const refreshed = listSubscriptions().find((sub) => sub.sourceId === "starter-decks")!;
+    expect(refreshed.lastVersion).toBe(2);
+    expect(refreshed.lastRefreshedAt).toBeGreaterThan(0);
+    expect(localStorage.getItem(FEED_SUBSCRIPTIONS_KEY)).toContain('"lastVersion":2');
+  });
+
+  it("refreshes a changed bundled feed even when its timestamp is fresh and version is unchanged", async () => {
+    const oldFeed = {
+      ...STARTER_FEED,
+      updated: "2026-03-19T00:00:00Z",
+      decks: [{ ...STARTER_FEED.decks[0], name: "Old Default" }],
+    };
+    await setCachedFeed("starter-decks", oldFeed);
+    await seedFreshBundledSubscriptions();
+    await setCachedFeed("starter-decks", oldFeed);
+    mockFetchByUrl(ALL_BUNDLED_FEEDS);
+
+    await initializeFeeds();
+
+    expect(global.fetch).toHaveBeenCalledWith("/feeds/starter-decks.json", { signal: undefined });
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Old Default")).toBeNull();
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).not.toBeNull();
+    expect(getCachedFeed("starter-decks")?.updated).toBe(STARTER_FEED.updated);
+  });
+
+  it("persists refresh metadata when a subscription has no cache on this device", async () => {
+    const lastRefreshedAt = Date.now();
+    localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, JSON.stringify([{
+      sourceId: "starter-decks",
+      url: "/feeds/starter-decks.json",
+      type: "bundled",
+      subscribedAt: 1,
+      lastRefreshedAt,
+      lastVersion: 1,
+      error: "previous failure",
+    }]));
+    mockFetchByUrl({ "starter-decks.json": { ...STARTER_FEED, version: 2 } });
+
+    await initializeFeeds();
+
+    const refreshed = listSubscriptions().find((sub) => sub.sourceId === "starter-decks")!;
+    expect(refreshed.lastVersion).toBe(2);
+    expect(refreshed.lastRefreshedAt).toBeGreaterThanOrEqual(lastRefreshedAt);
+    expect(refreshed).not.toHaveProperty("error");
+    expect(getCachedFeed("starter-decks")).toMatchObject({ version: 2 });
+  });
+
+  it("leaves a subscription the registry no longer lists alone, without fetching it", async () => {
+    await seedFreshBundledSubscriptions([{
+      sourceId: "retired-feed",
+      url: "/feeds/retired-feed.json",
+      type: "bundled",
+      subscribedAt: 1,
+      lastRefreshedAt: 0,
+      lastVersion: 1,
+    }]);
+    mockFetchByUrl(ALL_BUNDLED_FEEDS);
+
+    await initializeFeeds();
+
+    expect(global.fetch).toHaveBeenCalledWith("/feeds/starter-decks.json", { signal: undefined });
+    expect(global.fetch).not.toHaveBeenCalledWith("/feeds/retired-feed.json", expect.anything());
+    expect(listSubscriptions().map((sub) => sub.sourceId)).toContain("retired-feed");
+  });
+
+  it("does not commit a deferred online fetch after its generation is aborted", async () => {
+    const fetching = deferred<Response>();
+    global.fetch = vi.fn(() => fetching.promise);
+    const controller = new AbortController();
+    const initialization = initializeFeeds({ signal: controller.signal });
+
+    await vi.waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
+    controller.abort();
+    fetching.resolve(new Response(JSON.stringify(STARTER_FEED), { status: 200 }));
+
+    await expect(initialization).rejects.toMatchObject({ name: "AbortError" });
+    expect(getCachedFeed("starter-decks")).toBeNull();
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).toBeNull();
+    expect(listSubscriptions()).toEqual([]);
+  });
+
+  it("uses stale cached data after an ordinary online refresh failure", async () => {
+    await setCachedFeed("starter-decks", { ...VALID_FEED, id: "starter-decks" });
+    localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, JSON.stringify([{
+      sourceId: "starter-decks",
+      url: "/feeds/starter-decks.json",
+      type: "bundled",
+      subscribedAt: 1,
+      lastRefreshedAt: 0,
+      lastVersion: 1,
+    }]));
+    mockFetch({}, false);
+
+    await initializeFeeds();
+
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).not.toBeNull();
+    expect(getDeckFeedOrigin("Test Deck")).toBe("starter-decks");
+  });
+
+  it("stops after hydration when an aborted generation was waiting for the durable cache", async () => {
+    const cached = { ...VALID_FEED, id: "cached" };
+    getIdbDb().set("cached", cached);
+    const subscriptions = [{
+      sourceId: "cached",
+      url: "/feeds/cached.json",
+      type: "bundled",
+      subscribedAt: 1,
+      lastRefreshedAt: 0,
+      lastVersion: 1,
+    }];
+    localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, JSON.stringify(subscriptions));
+    const reading = deferred<Array<[IDBValidKey, unknown]>>();
+    vi.mocked(idbEntries).mockReturnValueOnce(reading.promise);
+    global.fetch = vi.fn();
+    const controller = new AbortController();
+    const initialization = initializeFeeds({ signal: controller.signal });
+
+    controller.abort();
+    reading.resolve([["cached", cached]]);
+
+    await expect(initialization).rejects.toMatchObject({ name: "AbortError" });
+    expect(getCachedFeed("cached")).toEqual(cached);
+    expect(global.fetch).not.toHaveBeenCalled();
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).toBeNull();
+    expect(localStorage.getItem(FEED_SUBSCRIPTIONS_KEY)).toBe(JSON.stringify(subscriptions));
+  });
+
+  it("finishes a staged local publication after aborting while cache persistence is pending", async () => {
+    const persisting = deferred<void>();
+    vi.mocked(idbSet).mockClear();
+    vi.mocked(idbSet).mockReturnValueOnce(persisting.promise);
+    mockFetch(STARTER_FEED);
+    const controller = new AbortController();
+    const initialization = initializeFeeds({ signal: controller.signal });
+
+    await vi.waitFor(() => expect(vi.mocked(idbSet)).toHaveBeenCalled());
+    controller.abort();
+    persisting.resolve();
+
+    // The abort lands after the last feed was staged, so whether the run then
+    // rejects depends only on whether any step is left to check the signal.
+    await initialization.catch((err: unknown) => expect(err).toMatchObject({ name: "AbortError" }));
+    expect(getCachedFeed("starter-decks")).not.toBeNull();
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).not.toBeNull();
+    expect(listSubscriptions()).toHaveLength(1);
+    expect(getDeckFeedOrigin("Test Deck")).toBe("starter-decks");
+  });
+
+});
+
+describe("cross-tab saved-deck transactions", () => {
+  beforeEach(() => {
+    installFifoWebLocks();
+  });
+  afterEach(() => {
+    uninstallWebLocks();
+  });
+
+  async function heldLock(): Promise<{ release: () => void; holder: Promise<void> }> {
+    let release!: () => void;
+    const held = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const holder = withSavedDeckLibrary(() => held);
+    await vi.waitFor(async () => {
+      expect((await navigator.locks.query()).held).toHaveLength(1);
+    });
+    return { release, holder };
+  }
+
+  it("initializeFeeds skips a busy library and syncs on its next run", async () => {
+    await seedSubscription(VALID_FEED);
+    localStorage.removeItem(STORAGE_KEY_PREFIX + "Test Deck");
+    localStorage.removeItem(STORAGE_KEY_PREFIX + "Another Deck");
+
+    setSavedDeckTxnLockWaitForTests(20);
+    const { release, holder } = await heldLock();
+    await initializeFeeds({ allowRefresh: false });
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).toBeNull();
+    setSavedDeckTxnLockWaitForTests(Number.POSITIVE_INFINITY);
+    release();
+    await holder;
+
+    await initializeFeeds({ allowRefresh: false });
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).not.toBeNull();
+  });
+
+  function bundledSubs(): FeedSubscription[] {
+    return FEED_REGISTRY.filter((source) => source.type === "bundled").map((source) => ({
+      sourceId: source.id,
+      url: source.url,
+      type: source.type,
+      subscribedAt: 1,
+      lastRefreshedAt: Date.now(),
+      lastVersion: 1,
+    }));
+  }
+
+  it("aborts a cached-only sync without writing the deck when the abort lands while it waits for the saved-deck lock", async () => {
+    await setCachedFeed("cached", { ...VALID_FEED, id: "cached" });
+    localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, JSON.stringify([{
+      sourceId: "cached", url: "/feeds/cached.json", type: "bundled",
+      subscribedAt: 1, lastRefreshedAt: Date.now(), lastVersion: 1,
+    }]));
+    const { release, holder } = await heldLock();
+    const controller = new AbortController();
+    const initialization = initializeFeeds({ allowRefresh: false, signal: controller.signal });
+    await vi.waitFor(async () => expect((await navigator.locks.query()).pending).toHaveLength(1));
+
+    controller.abort();
+    release();
+    await holder;
+
+    await expect(initialization).rejects.toMatchObject({ name: "AbortError" });
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).toBeNull();
+  });
+
+  it("aborts a first-run bundled feed fetch without writing the deck or its subscription when the abort lands while it waits for the saved-deck lock", async () => {
+    mockFetchByUrl(ALL_BUNDLED_FEEDS);
+    const { release, holder } = await heldLock();
+    const controller = new AbortController();
+    const initialization = initializeFeeds({ signal: controller.signal });
+    await vi.waitFor(async () => expect((await navigator.locks.query()).pending).toHaveLength(1));
+
+    controller.abort();
+    release();
+    await holder;
+
+    await expect(initialization).rejects.toMatchObject({ name: "AbortError" });
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).toBeNull();
+    expect(listSubscriptions()).toEqual([]);
+  });
+
+  it("aborts a refetched subscription sync without writing the deck when the abort lands while it waits for the saved-deck lock", async () => {
+    localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, JSON.stringify(bundledSubs()));
+    mockFetchByUrl({ "starter-decks.json": VALID_FEED });
+    const { release, holder } = await heldLock();
+    const controller = new AbortController();
+    const initialization = initializeFeeds({ signal: controller.signal });
+    await vi.waitFor(async () => expect((await navigator.locks.query()).pending).toHaveLength(1));
+
+    controller.abort();
+    release();
+    await holder;
+
+    await expect(initialization).rejects.toMatchObject({ name: "AbortError" });
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).toBeNull();
+  });
+
+  it("aborts a cached fallback sync after a failed refetch without writing the deck when the abort lands while it waits for the saved-deck lock", async () => {
+    await setCachedFeed("starter-decks", { ...VALID_FEED, id: "starter-decks" });
+    localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, JSON.stringify(bundledSubs()));
+    mockFetch({}, false);
+    const { release, holder } = await heldLock();
+    const controller = new AbortController();
+    const initialization = initializeFeeds({ signal: controller.signal });
+    await vi.waitFor(async () => expect((await navigator.locks.query()).pending).toHaveLength(1));
+
+    controller.abort();
+    release();
+    await holder;
+
+    await expect(initialization).rejects.toMatchObject({ name: "AbortError" });
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).toBeNull();
+  });
+
+  it("skips a feed sync superseded by a profile replacement that lands while it waits for the saved-deck lock", async () => {
+    localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, JSON.stringify(bundledSubs()));
+    mockFetchByUrl({
+      "starter-decks.json": {
+        ...VALID_FEED,
+        id: "starter-decks",
+        decks: [{ ...VALID_FEED.decks[0], name: "Superseded Deck" }],
+      },
+    });
+
+    let release!: () => void;
+    const held = new Promise<void>((resolve) => { release = resolve; });
+    const restoredSubs = bundledSubs().map((sub) => ({ ...sub, lastVersion: 7 }));
+    // Shaped like backup.ts::applyBackup: holds the lock, then overwrites the subscription
+    // list and bumps the profile-replacement generation from inside its body.
+    const applyHolder = withSavedDeckLibraryOrSkip((txn) => {
+      return held.then(() => {
+        localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, JSON.stringify(restoredSubs));
+        bumpProfileReplacementGeneration(txn);
+      });
+    }, "run-unguarded");
+    await vi.waitFor(async () => expect((await navigator.locks.query()).held).toHaveLength(1));
+
+    const initialization = initializeFeeds();
+    await vi.waitFor(async () => expect((await navigator.locks.query()).pending).toHaveLength(1));
+
+    release();
+    await applyHolder;
+
+    await expect(initialization).rejects.toMatchObject({ name: "AbortError" });
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Superseded Deck")).toBeNull();
+    expect(JSON.parse(localStorage.getItem(FEED_SUBSCRIPTIONS_KEY)!)).toEqual(restoredSubs);
+  });
+
+  const OLD_CACHED_FEED = {
+    id: "starter-decks",
+    name: "Starter Decks",
+    version: 1,
+    updated: "2026-01-01T00:00:00Z",
+    decks: [{ name: "Old Deck", colors: ["R"], main: [{ count: 1, name: "Lightning Bolt" }], sideboard: [] }],
+  };
+  const NEWER_FEED = {
+    id: "starter-decks",
+    name: "Starter Decks",
+    version: 2,
+    updated: "2026-03-20T00:00:00Z",
+    decks: [{ name: "New Deck", colors: ["U"], main: [{ count: 1, name: "Counterspell" }], sideboard: [] }],
+  };
+
+  async function seedRefetch() {
+    await setCachedFeed("starter-decks", OLD_CACHED_FEED);
+    localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, JSON.stringify(
+      bundledSubs().map((sub) => ({ ...sub, lastRefreshedAt: 0 })),
+    ));
+    mockFetchByUrl({ "starter-decks.json": NEWER_FEED });
+  }
+
+  afterEach(() => {
+    setSavedDeckTxnLockWaitForTests(Number.POSITIVE_INFINITY);
+  });
+
+  it("a first-run bundled feed aborted while it waits for the saved-deck lock publishes neither its cache, decks nor subscription", async () => {
+    mockFetchByUrl(ALL_BUNDLED_FEEDS);
+    const { release, holder } = await heldLock();
+    const controller = new AbortController();
+    const initialization = initializeFeeds({ signal: controller.signal });
+    await vi.waitFor(async () => expect((await navigator.locks.query()).pending).toHaveLength(1));
+
+    controller.abort();
+    release();
+    await holder;
+
+    await expect(initialization).rejects.toMatchObject({ name: "AbortError" });
+    expect(getCachedFeed("starter-decks")).toBeNull();
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).toBeNull();
+    expect(listSubscriptions()).toEqual([]);
+  });
+
+  it("a refetched subscription aborted while it waits for the saved-deck lock keeps its previous cache and refresh metadata", async () => {
+    await seedRefetch();
+    const { release, holder } = await heldLock();
+    const controller = new AbortController();
+    const initialization = initializeFeeds({ signal: controller.signal });
+    await vi.waitFor(async () => expect((await navigator.locks.query()).pending).toHaveLength(1));
+
+    controller.abort();
+    release();
+    await holder;
+
+    await expect(initialization).rejects.toMatchObject({ name: "AbortError" });
+    expect(getCachedFeed("starter-decks")).toMatchObject({ version: 1 });
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "New Deck")).toBeNull();
+    const subs = listSubscriptions();
+    expect(subs.find((s) => s.sourceId === "starter-decks")?.lastVersion).toBe(1);
+  });
+
+  it("a refetched subscription superseded by a profile replacement while it waits keeps its previous cache", async () => {
+    await seedRefetch();
+
+    let release!: () => void;
+    const held = new Promise<void>((resolve) => { release = resolve; });
+    const restoredSubs = bundledSubs();
+    // Shaped like the existing profile-replacement test: holds the lock, then overwrites the
+    // subscription list and bumps the profile-replacement generation from inside its body.
+    const applyHolder = withSavedDeckLibraryOrSkip((txn) => {
+      return held.then(() => {
+        localStorage.setItem(FEED_SUBSCRIPTIONS_KEY, JSON.stringify(restoredSubs));
+        bumpProfileReplacementGeneration(txn);
+      });
+    }, "run-unguarded");
+    await vi.waitFor(async () => expect((await navigator.locks.query()).held).toHaveLength(1));
+
+    const initialization = initializeFeeds();
+    await vi.waitFor(async () => expect((await navigator.locks.query()).pending).toHaveLength(1));
+
+    release();
+    await applyHolder;
+
+    await expect(initialization).rejects.toMatchObject({ name: "AbortError" });
+    expect(getCachedFeed("starter-decks")).toMatchObject({ version: 1 });
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "New Deck")).toBeNull();
+  });
+
+  it("a first-run bundled feed refused by a busy library publishes neither its cache, decks nor subscription", async () => {
+    mockFetchByUrl(ALL_BUNDLED_FEEDS);
+    setSavedDeckTxnLockWaitForTests(20);
+    const { release, holder } = await heldLock();
+
+    await initializeFeeds();
+
+    release();
+    await holder;
+
+    expect(getCachedFeed("starter-decks")).toBeNull();
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).toBeNull();
+    expect(listSubscriptions()).toEqual([]);
+  });
+
+  it("a refetched subscription refused by a busy library keeps its previous cache, decks and refresh metadata", async () => {
+    await seedRefetch();
+    setSavedDeckTxnLockWaitForTests(20);
+    const { release, holder } = await heldLock();
+
+    await initializeFeeds();
+
+    release();
+    await holder;
+
+    expect(getCachedFeed("starter-decks")).toMatchObject({ version: 1 });
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "New Deck")).toBeNull();
+    const subs = listSubscriptions();
+    expect(subs.find((s) => s.sourceId === "starter-decks")?.lastVersion).toBe(1);
+  });
+
+  it("publishes a first-run feed's decks and subscription without holding the saved-deck lock until its cache write settles", async () => {
+    mockFetchByUrl(ALL_BUNDLED_FEEDS);
+    vi.mocked(idbSet).mockClear();
+    const persisting = deferred<void>();
+    // Defer only the feed-cache write; the barrier's own "generation" write must keep the real
+    // implementation.
+    vi.mocked(idbSet).mockImplementation((key: unknown, value: unknown) => {
+      if (key === "starter-decks") return persisting.promise;
+      getIdbDb().set(key as string, value);
+      return Promise.resolve();
+    });
+
+    const initialization = initializeFeeds();
+    await vi.waitFor(() =>
+      expect(vi.mocked(idbSet)).toHaveBeenCalledWith("starter-decks", expect.anything(), expect.anything()),
+    );
+
+    await expect(withSavedDeckLibrary(() => "next")).resolves.toBe("next");
+
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).not.toBeNull();
+    expect(listSubscriptions().map((s) => s.sourceId)).toContain("starter-decks");
+
+    persisting.resolve();
+    await initialization;
+  });
+
+});
+
+describe("adoptFeedDeck", () => {
+  it("removes feed origin tracking", async () => {
+    await seedSubscription(VALID_FEED);
+
+    expect(getDeckFeedOrigin("Test Deck")).toBe("test-feed");
+
+    await adoptFeedDeck("Test Deck");
+
+    expect(getDeckFeedOrigin("Test Deck")).toBeNull();
+    // Deck data still exists
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "Test Deck")).not.toBeNull();
+  });
+
+  it("copies deck to new name", async () => {
+    await seedSubscription(VALID_FEED);
+
+    const result = await adoptFeedDeck("Test Deck", "My Copy");
+
+    expect(result).toBe("My Copy");
+    expect(localStorage.getItem(STORAGE_KEY_PREFIX + "My Copy")).not.toBeNull();
+    expect(getDeckFeedOrigin("My Copy")).toBeNull();
+  });
+});
+
+describe("getFeedDecksByFeed", () => {
+  it("groups deck names by feed ID", async () => {
+    await seedSubscription(VALID_FEED);
+
+    const result = getFeedDecksByFeed();
+    expect(result.get("test-feed")).toEqual(
+      expect.arrayContaining(["Test Deck", "Another Deck"]),
+    );
+  });
+});
+
+describe("validateFeed — a deck entry count must be a positive integer", () => {
+  const feedWithMainCount = (count: unknown) => ({
+    ...VALID_FEED,
+    decks: [
+      { ...VALID_FEED.decks[0], main: [{ count, name: "Lightning Bolt" }] },
+      VALID_FEED.decks[1],
+    ],
+  });
+
+  it("accepts a positive integer count", () => {
+    expect(validateFeed(feedWithMainCount(3))).not.toBeNull();
+  });
+
+  it.each([0, -1, 2.5, NaN])(
+    "rejects a non-positive / fractional / NaN count from untrusted feed JSON: %s",
+    (count) => {
+      expect(validateFeed(feedWithMainCount(count))).toBeNull();
+    },
+  );
+});

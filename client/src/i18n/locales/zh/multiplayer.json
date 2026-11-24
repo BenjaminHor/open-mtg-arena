@@ -1,0 +1,25 @@
+{
+  "page": {
+    "couldNotLoadDeck": "无法加载套牌。请尝试重新导入。"
+  },
+  "sideboardModal": {
+    "belowMinimum": "主牌至少需要 {{min}} 张牌 — 目前有 {{count}} 张。",
+    "draws_one": "（{{count}} 场平局）",
+    "draws_other": "（{{count}} 场平局）",
+    "game": "第 {{number}} 局",
+    "main": "主牌（{{count}}，最少 {{min}}）",
+    "mainNoMinimum": "主牌（{{count}}）",
+    "matchScore": "对局比分 {{p0}}-{{p1}}{{draws}}。在主牌与备牌之间移动牌张，然后提交。",
+    "moveFromMain": "从主牌中移出牌张。",
+    "moveFromSideboard": "从备牌中移出牌张。",
+    "overSideboardCap": "备牌中有 {{count}} 张牌 — 上限为 {{max}} 张。",
+    "readyToSubmit": "套牌合法 — 可以提交。",
+    "reset": "重置",
+    "resetAria": "重置为登记的套牌",
+    "sideboard": "备牌（{{count}}）",
+    "sideboardCapped": "备牌（{{count}}/{{max}}）",
+    "submitAria": "提交下一局的套牌",
+    "submitDeck": "提交套牌",
+    "title": "备牌调整"
+  }
+}
