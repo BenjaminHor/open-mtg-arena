@@ -2803,7 +2803,7 @@ Progress:
   counterspells, blink and graveyard either-or targets, each player / each opponent instructions, cycling,
   required additional costs, kicker, predefined tokens (Treasure, Food, Clue, Shard, Heartwood; others
   unsupported), whenever you attack, Nth spell and opponent-cast triggers, activation restrictions. Rules tests:
-  67. Coverage: 4,138 of 15,772.
+  62. Coverage: 4,138 of 15,772.
 - Edit to app (measured 2026-11-24, 4-core container, one core busy with a replay): `scripts/build-odin-engine.sh
   dev` 13.8 s, then the running `ENGINE=odin` dev server reloads the page 0.4 s later: about 14 s from an engine edit
   to the app. LLVM code generation is 88% of the build (type check 1.1 s, which is the quick check after an edit);
