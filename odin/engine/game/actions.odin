@@ -54,6 +54,7 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 
 // Applies one action from a player. False (and nothing changed) when it isn't legal now.
 apply :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> bool {
+	rejection = ""
 	ok := apply_action(g, p, action)
 	if ok {
 		apply_continuous_effects(g)

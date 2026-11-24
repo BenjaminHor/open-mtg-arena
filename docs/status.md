@@ -2803,10 +2803,13 @@ Progress:
   exhausted memory). The replayer restarts every few hundred tests (memory grows with each restore) and writes
   each result as it goes.
 - First Odin replay over the 11,160 fixtures (2026-11-24, engine at 3221bf1, 571 s on three workers): 388 pass
-  (3.5%), 10,765 fail, 7 too large. Failures: CastSpell rejected 5,481, ActivateAbility rejected 1,839 (nearly all at
-  step 0: the card under test isn't supported yet), stack contents 1,058, waiting_for 663, phase 227. Most fixtures
-  are narrow regression tests built on synthetic cards for one mechanic each, so the pass rate grows with mechanics
-  rather than with cards. Pool cards with all their fixtures passing on Odin: 19 of the 2,017 that appear in one.
+  (3.5%), 10,765 fail, 7 too large. Failures: CastSpell rejected 5,481, ActivateAbility rejected 1,839, stack
+  contents 1,058, waiting_for 663, phase 227. The 7,320 rejected casts and activations split three ways (scratchpad
+  cast-scan.mjs): 1,816 act on a synthetic test card (not in the card database: Odin's support check looks the card
+  up by name, while the fixture's object carries its own abilities); 4,963 on a real card Odin doesn't support yet
+  (top gaps: spell conditions 392, Moved replacements 372, ChangeZone 289, delayed triggers 270, multiple targets
+  262); 541 on a card Odin supports, to be explained (the replayer now records Odin's refusal reason). Most fixtures
+  are narrow regression tests for one mechanic each, so the pass rate grows with mechanics rather than with cards. Pool cards with all their fixtures passing on Odin: 19 of the 2,017 that appear in one.
   Tools (scratchpad): fixture-reach.mjs (pass rate among fixtures whose real cards Odin supports: 152 of 2,165) and
   reach-fails.txt. Next: rank the failing fixtures by the Odin gap that rejects them, and build by that ranking
   alongside the static coverage ranking.

@@ -36,7 +36,7 @@ function submit(actor, action) {
   try {
     const r = engine.submit_action(actor, action);
     if (typeof r === "string") return { accepted: false, why: r };
-    if (r && (r.rejected || r.rejection || r.error)) return { accepted: false, why: JSON.stringify(r).slice(0, 200) };
+    if (r && (r.rejected || r.rejection || r.error)) return { accepted: false, why: r.rejection?.reason || JSON.stringify(r).slice(0, 200) };
     return { accepted: true };
   } catch (e) {
     return { accepted: false, why: String(e.message ?? e) };
@@ -100,7 +100,9 @@ for (const file of files) {
       firstFail ??= { step: i, ...why };
     } else stepsPassed++;
   }
-  record(file, ok ? "pass" : "fail", ok ? "" : `step ${firstFail.step} ${firstFail.path}`, names);
+  // A refused action carries the engine's reason, when it gave one.
+  const reason = !ok && firstFail.path.startsWith("accepted") && firstFail.a ? `: ${String(firstFail.b).replace(/^false\s*/, "")}` : "";
+  record(file, ok ? "pass" : "fail", ok ? "" : `step ${firstFail.step} ${firstFail.path}${reason}`.replace(/\s+/g, " "), names);
   if (ok) {
     passed++;
   } else {

@@ -191,7 +191,10 @@ write_outcome :: proc(b: ^strings.Builder, applied: bool) {
 		revision += 1
 		reply_ok_raw(b, `{"status":"applied","result":{"events":[],"log_entries":[]}}`)
 	} else {
-		reply_ok_raw(b, `{"status":"rejected","rejection":{"code":"invalid_action","disposition":"invalid","message":"That action isn't legal now.","related_object_ids":[]}}`)
+		// The engine's reason, when it gave one, after the client's usual message.
+		strings.write_string(b, `{"ok":{"status":"rejected","rejection":{"code":"invalid_action","disposition":"invalid","message":"That action isn't legal now.","reason":`)
+		json.write_string(b, game.rejection)
+		strings.write_string(b, `,"related_object_ids":[]}}}`)
 	}
 }
 

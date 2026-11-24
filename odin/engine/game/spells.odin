@@ -436,14 +436,25 @@ sorcery_timing :: proc(s: ^types.GameState, p: types.PlayerId) -> bool {
 castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, card_db: Card_Lookup) -> bool {
 	// From the hand, a commander from the command zone (CR 903.8), or a card with flashback from the graveyard
 	// (CR 702.34a).
-	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander) || flashback_castable(o, p)) do return false
-	if !object_supported(o, card_db) || !can_cast_now(s, p, o) do return false
+	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander) || flashback_castable(o, p)) do return refuse("not castable from its zone")
+	if !object_supported(o, card_db) do return refuse("card not supported")
+	if !can_cast_now(s, p, o) do return refuse("not now (timing or priority)")
 	if is_modal(o) {
-		if !modes_castable(s, p, o) do return false
-	} else if !slots_fillable(s, spell_slot_list(o)[:], p, o.id) do return false
-	if !additional_cost_payable(s, p, o) do return false
+		if !modes_castable(s, p, o) do return refuse("no castable modes")
+	} else if !slots_fillable(s, spell_slot_list(o)[:], p, o.id) do return refuse("no legal targets")
+	if !additional_cost_payable(s, p, o) do return refuse("additional cost unpayable")
 	_, payable := plan_payment(s, p, spell_cost(s, o, p))
-	return payable
+	return payable || refuse("mana cost unpayable")
+}
+
+// Why the last action was refused, for the client's rejection message and the fixture replayer's report (no rules
+// effect).
+@(thread_local)
+rejection: string
+
+refuse :: proc(why: string) -> bool {
+	rejection = why
+	return false
 }
 
 // The total cost to cast it: its mana cost, plus {2} for each earlier cast of a commander from the command zone

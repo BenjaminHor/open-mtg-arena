@@ -197,14 +197,16 @@ activated_ability :: proc(o: ^types.GameObject, index: int) -> ^types.AbilityDef
 can_activate :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: int) -> bool {
 	s := &g.state
 	a := activated_ability(o, index)
-	if a == nil || !object_supported(o, g.card_db) do return false
+	if a == nil do return refuse("no such ability")
+	if !object_supported(o, g.card_db) do return refuse("card not supported")
 	// CR 602.2: a permanent's ability, by its controller; a hand ability (cycling), by the card's owner from their
 	// hand (CR 702.29a).
 	if zone, from_hand := a.activation_zone.?; from_hand {
-		if zone != .Hand || o.zone != .Hand || o.owner != p do return false
-	} else if o.zone != .Battlefield || o.controller != p do return false
-	if _, _, mana := tap_mana_ability(a^); mana || !activated_supported(a^) do return false
-	for r in a.activation_restrictions do if !restriction_met(g, p, o, index, r) do return false
+		if zone != .Hand || o.zone != .Hand || o.owner != p do return refuse("not activatable from its zone")
+	} else if o.zone != .Battlefield || o.controller != p do return refuse("not activatable from its zone")
+	if _, _, mana := tap_mana_ability(a^); mana do return refuse("a mana ability (activated through mana payment)")
+	if !activated_supported(a^) do return refuse("ability not supported")
+	for r in a.activation_restrictions do if !restriction_met(g, p, o, index, r) do return refuse("activation restriction")
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
 	cost, _ := a.cost.?
 	cost_parts(cost, &parts)
@@ -214,20 +216,20 @@ can_activate :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: i
 		#partial switch x in part {
 		case types.AbilityCost_Tap:
 			// CR 302.6: a creature's {T} ability needs it to have been under control since the turn began.
-			if !can_tap_for_cost(o) do return false
+			if !can_tap_for_cost(o) do return refuse("can't tap")
 			taps_self = true
 		case types.AbilityCost_PayLife:
 			n, _ := fixed_quantity(x.amount)
-			if int(player(s, p).life) < n do return false // CR 119.4: a player can pay life only up to their total
+			if int(player(s, p).life) < n do return refuse("not enough life") // CR 119.4: a player can pay life only up to their total
 		case types.AbilityCost_Mana:
 			mana = x.cost
 		}
 	}
-	if !slots_fillable(s, slot_list(a)[:], p, o.id) do return false
-	if c, has := object_cost(g, p, o, a); has && !cost_objects_leave_mana(s, p, c.choices[:], c.count, mana, o.id if taps_self else 0) do return false
+	if !slots_fillable(s, slot_list(a)[:], p, o.id) do return refuse("no legal targets")
+	if c, has := object_cost(g, p, o, a); has && !cost_objects_leave_mana(s, p, c.choices[:], c.count, mana, o.id if taps_self else 0) do return refuse("cost objects unavailable")
 	if mana == nil do return true // no mana in the cost ("Sacrifice a creature: ...")
 	_, payable := plan_payment(s, p, mana, o.id if taps_self else 0)
-	return payable
+	return payable || refuse("mana cost unpayable")
 }
 
 // CR 602.2: activating. The ability goes on the stack, its targets are chosen (the player is asked when the action
