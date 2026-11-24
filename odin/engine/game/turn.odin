@@ -22,6 +22,8 @@ begin_turn :: proc(g: ^Game, active: types.PlayerId) {
 	s := &g.state
 	s.active_player = active
 	s.lands_played_this_turn = 0
+	s.spells_cast_this_turn = 0
+	clear(&s.spells_cast_this_turn_by_player)
 	for &p in s.players {
 		p.lands_played_this_turn = 0
 		p.cards_drawn_this_turn = 0

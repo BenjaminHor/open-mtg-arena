@@ -1009,3 +1009,28 @@ modal_spell_choose_one :: proc(t: ^testing.T) {
 	game.apply(g, 1, types.GameAction_PassPriority{})
 	testing.expect(t, game.player(&g.state, 1).life == 16 && charm.zone == .Graveyard, "4 damage, then the graveyard")
 }
+
+@(test)
+second_spell_and_opponent_casts :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 603.2, 601.2i: Clarion Spirit triggers on its controller's second spell of the turn only; Mogg Sentry
+	// on a spell its controller's opponent casts.
+	g := new_game()
+	for _ in 0 ..< 3 do add(t, g, "Mountain", 0, .Battlefield)
+	add(t, g, "Clarion Spirit", 0, .Battlefield)
+	sentry := add(t, g, "Mogg Sentry", 1, .Battlefield)
+	shocks: [3]^types.GameObject
+	for &x in shocks do x = add(t, g, "Shock", 0, .Hand)
+	cast_shock :: proc(t: ^testing.T, g: ^game.Game, spell: ^types.GameObject) -> int {
+		before := types.pvec_len(g.state.stack)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+		n := types.pvec_len(g.state.stack) - before
+		for types.pvec_len(g.state.stack) > 0 do game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+		return n
+	}
+	testing.expect(t, cast_shock(t, g, shocks[0]) == 2, "first spell: Shock and Mogg Sentry's trigger")
+	testing.expect(t, sentry.power.? == 3, "the opponent's spell pumped Mogg Sentry")
+	testing.expect(t, cast_shock(t, g, shocks[1]) == 3, "second spell: Clarion Spirit triggers too")
+	testing.expect(t, cast_shock(t, g, shocks[2]) == 2, "third spell: not Clarion Spirit")
+}

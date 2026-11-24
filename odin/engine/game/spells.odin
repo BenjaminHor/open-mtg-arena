@@ -605,6 +605,7 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	chain := chosen_mode_chain(o, g.pending.modes[:]) if is_modal(o) else spell_ability(o)
 	resolved := resolved_tree(s, chain, targets, g.pending.counts[:], p, id)
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = id, controller = p, kind = types.StackEntryKind_Spell{card_id = o.card_id, ability = resolved}}, copy_entry)
+	record_spell_cast(s, p, o)
 	append(&g.events, Event{kind = .Spell_Cast, object = id, controller = p}) // CR 601.2i
 	s.priority_passes = nil
 	give_priority(g, p)
@@ -991,4 +992,19 @@ ability_condition_holds :: proc(s: ^types.GameState, c: types.AbilityCondition, 
 		return o != nil && object_matches(s, o, x.filter.(types.TargetFilter_Typed)._0, controller, source)
 	}
 	return false
+}
+
+// The spells each player has cast this turn ("your second spell each turn"), kept in the state.
+record_spell_cast :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject) {
+	s.spells_cast_this_turn += 1
+	if s.spells_cast_this_turn_by_player == nil do s.spells_cast_this_turn_by_player = make(map[types.PlayerId]types.PVec(types.SpellCastRecord))
+	list := s.spells_cast_this_turn_by_player[p]
+	rec := types.SpellCastRecord{name = o.name, mana_value = u32(object_mana_value(o)), spell_object_id = o.id, from_zone = .Hand}
+	types.pvec_push(&list, rec, proc(x: types.SpellCastRecord) -> types.SpellCastRecord {return x})
+	s.spells_cast_this_turn_by_player[p] = list
+}
+
+spells_cast_this_turn_by :: proc(s: ^types.GameState, p: types.PlayerId) -> int {
+	if list, ok := s.spells_cast_this_turn_by_player[p]; ok do return types.pvec_len(list)
+	return 0
 }

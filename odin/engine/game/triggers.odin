@@ -55,8 +55,11 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	if !is_damage && t.valid_source != nil do return false
 	if len(t.origin_zones) > 0 || len(t.zone_change_clauses) > 0 || t.counter_filter != nil || t.saga_chapter != nil do return false
 	if c, has := t.constraint.?; has {
-		#partial switch _ in c {
+		#partial switch x in c {
 		case types.TriggerConstraint_OnlyDuringYourTurn, types.TriggerConstraint_OnlyDuringOpponentsTurn:
+		case types.TriggerConstraint_NthSpellThisTurn:
+			// "Whenever you cast your second spell each turn": the caster's count, any spell.
+			if !is_cast || x.filter != nil do return false
 		case:
 			return false
 		}
@@ -88,7 +91,7 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		return true
 	case types.TriggerMode_SpellCast:
 		// "Whenever you cast a [kind of] spell", or "when you cast this spell".
-		if v, has := t.valid_target.?; has && !is_you(v) do return false
+		if v, has := t.valid_target.?; has && !is_you(v) && !is_any_player(v) && !is_an_opponent(v) do return false
 		f, has := t.valid_card.?
 		return !has || spell_filter_supported(f)
 	}
@@ -224,7 +227,16 @@ collect_triggers :: proc(g: ^Game) {
 					f, has := t.valid_card.?
 					if w.id == spell.id && !(has && is_self(f)) do continue // a spell's own triggers are "this spell" ones
 					if has && !spell_matches(s, spell, f, w) do continue
-					if _, you := t.valid_target.?; you && e.controller != w.controller do continue
+					// Whose spell: "you cast", "an opponent casts", "a player casts".
+					if v, has := t.valid_target.?; has {
+						if is_you(v) && e.controller != w.controller do continue
+						if is_an_opponent(v) && e.controller == w.controller do continue
+					}
+					if c, has := t.constraint.?; has {
+						if nth, is_nth := c.(types.TriggerConstraint_NthSpellThisTurn); is_nth {
+							if !compare(spells_cast_this_turn_by(s, e.controller), nth.comparator, int(nth.n)) do continue
+						} else if !turn_constraint_met(s, t^, w.controller) do continue
+					}
 					add_trigger(g, w.id, w.controller, t)
 				}
 			}
@@ -649,6 +661,24 @@ is_you :: proc(f: types.TargetFilter) -> bool {
 		c, has := x._0.controller.?
 		_, you := c.(types.ControllerRef_You)
 		return has && you && len(x._0.type_filters) == 0 && len(x._0.properties) == 0
+	}
+	return false
+}
+
+is_any_player :: proc(f: types.TargetFilter) -> bool {
+	_, ok := f.(types.TargetFilter_Player)
+	return ok
+}
+
+// "An opponent", written as a player filter with no types and an opponent as the controller, or as Opponent.
+is_an_opponent :: proc(f: types.TargetFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Opponent:
+		return true
+	case types.TargetFilter_Typed:
+		c, has := x._0.controller.?
+		_, opp := c.(types.ControllerRef_Opponent)
+		return has && opp && len(x._0.type_filters) == 0 && len(x._0.properties) == 0
 	}
 	return false
 }
