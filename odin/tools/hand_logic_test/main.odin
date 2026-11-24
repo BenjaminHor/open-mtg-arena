@@ -4,6 +4,7 @@ package hand_logic_test
 
 import "core:fmt"
 import "core:os"
+import rng "../../engine/rng"
 import types "../../engine/types"
 
 // The iteration order of an im::HashMap<ObjectId, _, FxBuildHasher> (im 15, rustc-hash 2, 64-bit) after inserting ids
@@ -49,6 +50,7 @@ main :: proc() {
 	}
 	fmt.println("ok: ObjectMap iterates in the Rust order (", len(got), "ids )")
 	check_get_mut_copies_on_write()
+	check_rng_word_pos()
 }
 
 // ObjectMap::get_mut is `Arc::make_mut` on the map and the object: a write through a clone's object leaves the
@@ -79,4 +81,28 @@ check_get_mut_copies_on_write :: proc() {
 		os.exit(1)
 	}
 	fmt.println("ok: ObjectMap.get_mut copies on write")
+}
+
+// rand_chacha's get_word_pos/set_word_pos, which the replay harness uses to restore the game RNG (GameState.rng is
+// skipped on the wire; GameState::rehydrate_rng). Expected values printed by rand_chacha 0.9.0 itself, seed 7.
+check_rng_word_pos :: proc() {
+	fail :: proc(what: string, got, want: $T) {
+		fmt.eprintln("FAIL: rng", what, got, "want", want)
+		os.exit(1)
+	}
+	r := rng.from_u64(7)
+	if p := rng.get_word_pos(&r); p != 0 do fail("fresh position", p, 0)
+	for _ in 0 ..< 70 do rng.next_u32(&r)
+	if p := rng.get_word_pos(&r); p != 70 do fail("position after 70 words", p, 70)
+	if v := rng.next_u64(&r); v != 9740124526150893278 do fail("u64 at 70", v, 9740124526150893278)
+	if p := rng.get_word_pos(&r); p != 72 do fail("position after a u64", p, 72)
+	rng.set_word_pos(&r, 1000)
+	if p := rng.get_word_pos(&r); p != 1000 do fail("position after seeking 1000", p, 1000)
+	if v := rng.next_u32(&r); v != 2579269477 do fail("u32 at 1000", v, 2579269477)
+	// A u64 straddling the buffer's end, from a seek to its last word.
+	f := rng.from_u64(7)
+	rng.set_word_pos(&f, 63)
+	if v := rng.next_u64(&f); v != 8657037805721133790 do fail("u64 at 63", v, 8657037805721133790)
+	if p := rng.get_word_pos(&f); p != 65 do fail("position after the straddling u64", p, 65)
+	fmt.println("ok: rng word positions match rand_chacha")
 }

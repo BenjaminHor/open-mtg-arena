@@ -198,3 +198,21 @@ shuffle :: proc(r: ^Chacha20, s: []$T) {
 		s[i], s[index] = s[index], s[i]
 	}
 }
+
+// rand_chacha 0.9.0 chacha.rs `get_word_pos`: the offset from the start of the stream, in 32-bit words. The buffer
+// holds the BUF_WORDS words starting at block `counter - 4` (refill has already advanced the counter), so the
+// position is that block's first word plus the read index. A fresh generator (index BUF_WORDS, counter 0) is at 0:
+// the block subtraction wraps, as Rust's `wrapping_sub` does, and the index puts it back.
+get_word_pos :: proc(r: ^Chacha20) -> u128 {
+	buf_start_block := r.counter - 4 // wrapping, as u64 arithmetic is in Odin
+	pos_block := buf_start_block + u64(r.index / 16)
+	return u128(pos_block) * 16 + u128(r.index % 16)
+}
+
+// rand_chacha 0.9.0 chacha.rs `set_word_pos`: seek to the block holding the word, generate the buffer from there
+// (rand_core block.rs `generate_and_set`), and read on from the word's offset within its block.
+set_word_pos :: proc(r: ^Chacha20, word_offset: u128) {
+	r.counter = u64(word_offset / 16)
+	refill(r)
+	r.index = int(word_offset % 16)
+}
