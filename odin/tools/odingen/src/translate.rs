@@ -628,6 +628,28 @@ impl<'a, 'b> Tx<'a, 'b> {
                         }
                     }
                 }
+                // `mem::take(&mut x)` / `mem::replace(&mut x, v)`: the old value out, the default (or v) in.
+                if self.calls && matches!(last.as_str(), "take" | "replace") && segs.len() >= 2 && segs[segs.len() - 2] == "mem" {
+                    let Some(Expr::Reference(r)) = args.first() else { return Err(format!("call {}", segs.join("::"))) };
+                    if r.mutability.is_none() || args.len() != if last == "take" { 1 } else { 2 } {
+                        return Err(format!("call {}", segs.join("::")));
+                    }
+                    let sh = self.shape_of(&r.expr).ok_or("mem::take of an untyped place")?;
+                    let place = self.expr(&r.expr, &sh)?;
+                    let new = if last == "take" {
+                        match self.e.default_expr(&sh) {
+                            Some(d) => d,
+                            None if matches!(sh, Shape::Ptr(..)) => return Err("mem::take of a shared or boxed value".into()),
+                            None => format!("{}{{}}", self.e.odin(&sh)),
+                        }
+                    } else {
+                        self.expr(args[1], &sh)?
+                    };
+                    let n = self.next_temp();
+                    self.pre.push(format!("mt{n}_ := {place}"));
+                    self.pre.push(format!("{place} = {new}"));
+                    return Ok(format!("mt{n}_"));
+                }
                 let owner = self.owner_of(&segs);
                 if self.calls {
                     if let Some(f) = self.resolve_fn(owner.as_deref(), &segs, &last) {
