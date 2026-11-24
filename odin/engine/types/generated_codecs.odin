@@ -257,7 +257,7 @@ decode_GameState :: proc(v: json.Value, out: ^GameState) -> bool {
 	if fv, found := get_any(v, "public_revealed_cards"); found { if !dec_ptr_dyn_ObjectId(fv, &out.public_revealed_cards) do return fail("GameState.public_revealed_cards") }
 	if fv, found := get_any(v, "stack_bound_reveals"); found { if !dec_ptr_map_ObjectId_dyn_ObjectIncarnationRef(fv, &out.stack_bound_reveals) do return fail("GameState.stack_bound_reveals") }
 	if !dec_ptr_ProductKnowledgeState(v, &out.product_knowledge_state) do return fail("GameState.product_knowledge_state (flattened)")
-	if fv, found := get_any(v, "resolution_stack"); found { if !dec_ptr_ResolutionStack(fv, &out.resolution_stack) do return fail("GameState.resolution_stack") }
+	if fv, found := get_any(v, "resolution_stack"); found { if !dec_ptr_ResolutionStack(fv, &out.resolution_stack) do return fail("GameState.resolution_stack") } else { out.resolution_stack = new_clone(ResolutionStack{}) }
 	if fv, found := get_any(v, "payment_transaction"); found { if !dec_ptr_ResolutionPaymentTransaction(fv, &out.payment_transaction) do return fail("GameState.payment_transaction") }
 	if fv, found := get_any(v, "spell_cast_reversal"); found { if !dec_ptr_SpellCastReversal(fv, &out.spell_cast_reversal) do return fail("GameState.spell_cast_reversal") }
 	if fv, found := get_any(v, "merged_card_component_route"); found { if !dec_opt_MergedCardComponentRoute(fv, &out.merged_card_component_route) do return fail("GameState.merged_card_component_route") }
@@ -283,7 +283,7 @@ decode_GameState :: proc(v: json.Value, out: ^GameState) -> bool {
 	if fv, found := get_any(v, "pending_search_found_batch"); found { if !dec_opt_PendingSearchFoundBatch(fv, &out.pending_search_found_batch) do return fail("GameState.pending_search_found_batch") }
 	if fv, found := get_any(v, "pending_die_roll_instruction"); found { if !dec_ptr_PendingDieRollInstruction(fv, &out.pending_die_roll_instruction) do return fail("GameState.pending_die_roll_instruction") }
 	if fv, found := get_any(v, "may_trigger_auto_choices"); found { if !dec_dyn_MayTriggerAutoChoiceRecord(fv, &out.may_trigger_auto_choices) do return fail("GameState.may_trigger_auto_choices") }
-	if fv, found := get_any(v, "un_actions"); found { if !dec_ptr_UnActionState(fv, &out.un_actions) do return fail("GameState.un_actions") }
+	if fv, found := get_any(v, "un_actions"); found { if !dec_ptr_UnActionState(fv, &out.un_actions) do return fail("GameState.un_actions") } else { out.un_actions = new_clone(UnActionState{}) }
 	if fv, found := get_any(v, "replacement_auto_choices"); found { if !dec_dyn_ReplacementAutoChoiceRecord(fv, &out.replacement_auto_choices) do return fail("GameState.replacement_auto_choices") }
 	if fv, found := get_any(v, "replacement_auto_choice_tail"); found { if !dec_opt_ReplacementAutoChoiceTail(fv, &out.replacement_auto_choice_tail) do return fail("GameState.replacement_auto_choice_tail") }
 	if fv, found := get_any(v, "decision_templates"); found { if !dec_dyn_DecisionTemplate(fv, &out.decision_templates) do return fail("GameState.decision_templates") }
@@ -552,7 +552,7 @@ encode_GameState_members :: proc(b: ^strings.Builder, x: GameState, first: ^bool
 	if !(x.pending_permanent_type_slot == nil) { member(b, first, "pending_permanent_type_slot"); enc_opt_t2_ObjectId_CoreType(b, x.pending_permanent_type_slot) }
 	member(b, first, "hand_cast_free_permissions_used"); enc_dyn_ObjectId(b, x.hand_cast_free_permissions_used)
 	member(b, first, "alt_cost_grant_permissions_used"); enc_dyn_ObjectId(b, x.alt_cost_grant_permissions_used)
-	if !(len(x.abilities_activated_this_turn_by_player) == 0) { member(b, first, "abilities_activated_this_turn_by_player"); enc_ptr_map_PlayerId_dyn_AbilityActivationRecord(b, x.abilities_activated_this_turn_by_player) }
+	if !((x.abilities_activated_this_turn_by_player == nil || len(x.abilities_activated_this_turn_by_player^) == 0)) { member(b, first, "abilities_activated_this_turn_by_player"); enc_ptr_map_PlayerId_dyn_AbilityActivationRecord(b, x.abilities_activated_this_turn_by_player) }
 	member(b, first, "exile_play_permissions_used"); enc_dyn_ObjectId(b, x.exile_play_permissions_used)
 	member(b, first, "exile_play_single_use_consumed"); enc_dyn_TrackedSetId(b, x.exile_play_single_use_consumed)
 	member(b, first, "exile_cast_permissions_used"); enc_dyn_ObjectId(b, x.exile_cast_permissions_used)
@@ -574,7 +574,7 @@ encode_GameState_members :: proc(b: ^strings.Builder, x: GameState, first: ^bool
 	member(b, first, "attacking_creatures_this_turn"); enc_map_PlayerId_u32(b, x.attacking_creatures_this_turn)
 	member(b, first, "attacked_defenders_this_turn"); enc_map_PlayerId_dyn_PlayerId(b, x.attacked_defenders_this_turn)
 	member(b, first, "attacked_players_directly_this_turn"); enc_map_PlayerId_dyn_PlayerId(b, x.attacked_players_directly_this_turn)
-	if !(len(x.attacked_defenders_last_turn) == 0) { member(b, first, "attacked_defenders_last_turn"); enc_ptr_map_PlayerId_dyn_PlayerId(b, x.attacked_defenders_last_turn) }
+	if !((x.attacked_defenders_last_turn == nil || len(x.attacked_defenders_last_turn^) == 0)) { member(b, first, "attacked_defenders_last_turn"); enc_ptr_map_PlayerId_dyn_PlayerId(b, x.attacked_defenders_last_turn) }
 	member(b, first, "creature_attacked_defenders_this_turn"); enc_map_ObjectId_dyn_PlayerId(b, x.creature_attacked_defenders_this_turn)
 	member(b, first, "creature_blocked_attackers_this_turn"); enc_dyn_BlockHistoryPair(b, x.creature_blocked_attackers_this_turn)
 	if !(skip_GameState_StepTally_is_empty_StepTally(x.steps_started_this_turn)) { member(b, first, "steps_started_this_turn"); encode_StepTally(b, x.steps_started_this_turn) }
@@ -673,9 +673,9 @@ encode_GameState_members :: proc(b: ^strings.Builder, x: GameState, first: ^bool
 	if !(x.exiled_from_hand_this_resolution == 0) { member(b, first, "exiled_from_hand_this_resolution"); encode_u32(b, x.exiled_from_hand_this_resolution) }
 	if !(x.monarch == nil) { member(b, first, "monarch"); enc_opt_PlayerId(b, x.monarch) }
 	if !(len(x.city_blessing) == 0) { member(b, first, "city_blessing"); enc_dyn_PlayerId(b, x.city_blessing) }
-	if !(len(x.enduring_story) == 0) { member(b, first, "enduring_story"); enc_ptr_dyn_PlayerId(b, x.enduring_story) }
+	if !((x.enduring_story == nil || len(x.enduring_story^) == 0)) { member(b, first, "enduring_story"); enc_ptr_dyn_PlayerId(b, x.enduring_story) }
 	if !(len(x.epic_effects) == 0) { member(b, first, "epic_effects"); enc_dyn_EpicEffect(b, x.epic_effects) }
-	if !(len(x.replacement_continuations) == 0) { member(b, first, "replacement_continuations"); enc_ptr_dyn_ResolvedAbility(b, x.replacement_continuations) }
+	if !((x.replacement_continuations == nil || len(x.replacement_continuations^) == 0)) { member(b, first, "replacement_continuations"); enc_ptr_dyn_ResolvedAbility(b, x.replacement_continuations) }
 	if !(len(x.restrictions) == 0) { member(b, first, "restrictions"); enc_dyn_GameRestriction(b, x.restrictions) }
 	if !(len(x.pending_damage_replacements) == 0) { member(b, first, "pending_damage_replacements"); enc_dyn_ReplacementDefinition(b, x.pending_damage_replacements) }
 	if !(len(x.pending_step_end_mana_handlers) == 0) { member(b, first, "pending_step_end_mana_handlers"); enc_dyn_StepEndManaScanEntry(b, x.pending_step_end_mana_handlers) }
@@ -12732,6 +12732,131 @@ encode_TriggerSourceContext_members :: proc(b: ^strings.Builder, x: TriggerSourc
 	if !(x.granting_object == nil) { member(b, first, "granting_object"); enc_opt_ObjectIncarnationRef(b, x.granting_object) }
 }
 
+decode_FrameVec :: proc(v: json.Value, out: ^FrameVec) -> bool {
+	return dec_dyn_ResolutionFrame(v, &out.frames)
+}
+
+encode_FrameVec :: proc(b: ^strings.Builder, x: FrameVec) {
+	enc_dyn_ResolutionFrame(b, x.frames)
+}
+
+decode_ResolutionFrame :: proc(v: json.Value, out: ^ResolutionFrame) -> bool {
+	if v.kind != .Object do return fail("ResolutionFrame: not an object")
+	tv, found := json.get(v, "type")
+	if !found || tv.kind != .String do return fail("ResolutionFrame: no tag")
+	switch tv.text {
+	case "AbilityContinuation": tmp: ResolutionFrame_AbilityContinuation; if !decode_AbilityContinuationFrame(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::AbilityContinuation"); out^ = tmp
+	case "RepeatFor": tmp: ResolutionFrame_RepeatFor; if !decode_PendingRepeatIteration(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::RepeatFor"); out^ = tmp
+	case "RepeatUntil": tmp: ResolutionFrame_RepeatUntil; if !decode_PendingRepeatUntil(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::RepeatUntil"); out^ = tmp
+	case "RepeatedOptionalPayment": tmp: ResolutionFrame_RepeatedOptionalPayment; if !decode_RepeatedOptionalPaymentFrame(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::RepeatedOptionalPayment"); out^ = tmp
+	case "ChangeZone": tmp: ResolutionFrame_ChangeZone; if !dec_ptr_ChangeZoneFrame(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::ChangeZone"); out^ = tmp
+	case "BatchDelivery": tmp: ResolutionFrame_BatchDelivery; if !dec_ptr_PendingBatchDeliveries(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::BatchDelivery"); out^ = tmp
+	case "CounterMoves": tmp: ResolutionFrame_CounterMoves; if !decode_PendingCounterMoveQueue(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::CounterMoves"); out^ = tmp
+	case "CounterRemovals": tmp: ResolutionFrame_CounterRemovals; if !decode_PendingCounterRemovalQueue(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::CounterRemovals"); out^ = tmp
+	case "CounterAdditions": tmp: ResolutionFrame_CounterAdditions; if !decode_PendingCounterAdditionQueue(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::CounterAdditions"); out^ = tmp
+	case "CopyToken": tmp: ResolutionFrame_CopyToken; if !decode_PendingCopyTokenResolution(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::CopyToken"); out^ = tmp
+	case "DebugCardEntries": tmp: ResolutionFrame_DebugCardEntries; if !dec_ptr_PendingDebugCardEntries(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::DebugCardEntries"); out^ = tmp
+	case "EachPlayerCopyChosen": tmp: ResolutionFrame_EachPlayerCopyChosen; if !decode_PendingEachPlayerCopyChosen(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::EachPlayerCopyChosen"); out^ = tmp
+	case "ChooseOneOf": tmp: ResolutionFrame_ChooseOneOf; if !decode_PendingChooseOneOf(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::ChooseOneOf"); out^ = tmp
+	case "VoteBallot": tmp: ResolutionFrame_VoteBallot; if !decode_PendingVoteBallotIteration(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::VoteBallot"); out^ = tmp
+	case "PerPlayerZoneChoice": tmp: ResolutionFrame_PerPlayerZoneChoice; if !decode_PendingPerPlayerZoneChoice(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::PerPlayerZoneChoice"); out^ = tmp
+	case "PerCategoryZoneChoice": tmp: ResolutionFrame_PerCategoryZoneChoice; if !decode_PerCategoryZoneChoiceFrame(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::PerCategoryZoneChoice"); out^ = tmp
+	case "OptionalEffect": tmp: ResolutionFrame_OptionalEffect; if !decode_OptionalEffectFrame(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::OptionalEffect"); out^ = tmp
+	case "CoinFlip": tmp: ResolutionFrame_CoinFlip; if !decode_PendingCoinFlip(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::CoinFlip"); out^ = tmp
+	case "DieRoll": tmp: ResolutionFrame_DieRoll; if !dec_ptr_PendingDieRoll(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::DieRoll"); out^ = tmp
+	case "Proliferate": tmp: ResolutionFrame_Proliferate; if !decode_PendingProliferateActions(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::Proliferate"); out^ = tmp
+	case "MultiDraw": tmp: ResolutionFrame_MultiDraw; if !decode_MultiDrawFrame(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::MultiDraw"); out^ = tmp
+	case "Discard": tmp: ResolutionFrame_Discard; if !dec_ptr_DiscardFrame(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::Discard"); out^ = tmp
+	case "ConniveReentry": tmp: ResolutionFrame_ConniveReentry; if !decode_PendingConniveReentry(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::ConniveReentry"); out^ = tmp
+	case "LifeTotalAssignment": tmp: ResolutionFrame_LifeTotalAssignment; if !decode_PendingLifeTotalAssignment(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::LifeTotalAssignment"); out^ = tmp
+	case "SpellResolution": tmp: ResolutionFrame_SpellResolution; if !decode_PendingSpellResolution(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::SpellResolution"); out^ = tmp
+	case "MutateMerge": tmp: ResolutionFrame_MutateMerge; if !decode_PendingMutateMerge(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::MutateMerge"); out^ = tmp
+	case "CipherEncode": tmp: ResolutionFrame_CipherEncode; if !decode_PendingCipherEncode(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::CipherEncode"); out^ = tmp
+	case "EntryAttackSeat": tmp: ResolutionFrame_EntryAttackSeat; if !decode_PendingEntryAttackSeat(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::EntryAttackSeat"); out^ = tmp
+	case "PostReplacement": tmp: ResolutionFrame_PostReplacement; if !decode_PostReplacementDrainStack(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::PostReplacement"); out^ = tmp
+	case: return fail("ResolutionFrame: unknown variant")
+	}
+	return true
+}
+
+encode_ResolutionFrame :: proc(b: ^strings.Builder, x: ResolutionFrame) {
+	#partial switch y in x {
+	case ResolutionFrame_AbilityContinuation: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "AbilityContinuation"); member(b, &f, "data"); encode_AbilityContinuationFrame(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_RepeatFor: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "RepeatFor"); member(b, &f, "data"); encode_PendingRepeatIteration(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_RepeatUntil: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "RepeatUntil"); member(b, &f, "data"); encode_PendingRepeatUntil(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_RepeatedOptionalPayment: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "RepeatedOptionalPayment"); member(b, &f, "data"); encode_RepeatedOptionalPaymentFrame(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_ChangeZone: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ChangeZone"); member(b, &f, "data"); enc_ptr_ChangeZoneFrame(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_BatchDelivery: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "BatchDelivery"); member(b, &f, "data"); enc_ptr_PendingBatchDeliveries(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_CounterMoves: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CounterMoves"); member(b, &f, "data"); encode_PendingCounterMoveQueue(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_CounterRemovals: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CounterRemovals"); member(b, &f, "data"); encode_PendingCounterRemovalQueue(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_CounterAdditions: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CounterAdditions"); member(b, &f, "data"); encode_PendingCounterAdditionQueue(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_CopyToken: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CopyToken"); member(b, &f, "data"); encode_PendingCopyTokenResolution(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_DebugCardEntries: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "DebugCardEntries"); member(b, &f, "data"); enc_ptr_PendingDebugCardEntries(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_EachPlayerCopyChosen: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "EachPlayerCopyChosen"); member(b, &f, "data"); encode_PendingEachPlayerCopyChosen(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_ChooseOneOf: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ChooseOneOf"); member(b, &f, "data"); encode_PendingChooseOneOf(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_VoteBallot: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "VoteBallot"); member(b, &f, "data"); encode_PendingVoteBallotIteration(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_PerPlayerZoneChoice: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "PerPlayerZoneChoice"); member(b, &f, "data"); encode_PendingPerPlayerZoneChoice(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_PerCategoryZoneChoice: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "PerCategoryZoneChoice"); member(b, &f, "data"); encode_PerCategoryZoneChoiceFrame(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_OptionalEffect: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "OptionalEffect"); member(b, &f, "data"); encode_OptionalEffectFrame(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_CoinFlip: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CoinFlip"); member(b, &f, "data"); encode_PendingCoinFlip(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_DieRoll: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "DieRoll"); member(b, &f, "data"); enc_ptr_PendingDieRoll(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_Proliferate: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Proliferate"); member(b, &f, "data"); encode_PendingProliferateActions(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_MultiDraw: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "MultiDraw"); member(b, &f, "data"); encode_MultiDrawFrame(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_Discard: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Discard"); member(b, &f, "data"); enc_ptr_DiscardFrame(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_ConniveReentry: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ConniveReentry"); member(b, &f, "data"); encode_PendingConniveReentry(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_LifeTotalAssignment: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "LifeTotalAssignment"); member(b, &f, "data"); encode_PendingLifeTotalAssignment(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_SpellResolution: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SpellResolution"); member(b, &f, "data"); encode_PendingSpellResolution(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_MutateMerge: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "MutateMerge"); member(b, &f, "data"); encode_PendingMutateMerge(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_CipherEncode: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CipherEncode"); member(b, &f, "data"); encode_PendingCipherEncode(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_EntryAttackSeat: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "EntryAttackSeat"); member(b, &f, "data"); encode_PendingEntryAttackSeat(b, y._0); strings.write_byte(b, '}')
+	case ResolutionFrame_PostReplacement: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "PostReplacement"); member(b, &f, "data"); encode_PostReplacementDrainStack(b, y._0); strings.write_byte(b, '}')
+	}
+}
+
+decode_UnTellKind :: proc(v: json.Value, out: ^UnTellKind) -> bool {
+	if v.kind != .Object do return fail("UnTellKind: not an object")
+	tv, found := json.get(v, "type")
+	if !found || tv.kind != .String do return fail("UnTellKind: no tag")
+	switch tv.text {
+	case "Physical": tmp: UnTellKind_Physical; if !decode_PhysicalTell(json.get_or_null(v, "data"), &tmp._0) do return fail("UnTellKind::Physical"); out^ = tmp
+	case "SaysWord": out^ = UnTellKind_SaysWord{}
+	case "SaysNumber": out^ = UnTellKind_SaysNumber{}
+	case: return fail("UnTellKind: unknown variant")
+	}
+	return true
+}
+
+encode_UnTellKind :: proc(b: ^strings.Builder, x: UnTellKind) {
+	#partial switch y in x {
+	case UnTellKind_Physical: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Physical"); member(b, &f, "data"); encode_PhysicalTell(b, y._0); strings.write_byte(b, '}')
+	case UnTellKind_SaysWord: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SaysWord"); strings.write_byte(b, '}')
+	case UnTellKind_SaysNumber: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SaysNumber"); strings.write_byte(b, '}')
+	}
+}
+
+decode_GotchaOffer :: proc(v: json.Value, out: ^GotchaOffer) -> bool {
+	if v.kind != .Object do return fail("GotchaOffer: not an object")
+	if fv, found := get_any(v, "id"); found { if !decode_u64(fv, &out.id) do return fail("GotchaOffer.id") } else { return fail("GotchaOffer.id missing") }
+	if fv, found := get_any(v, "player"); found { if !decode_PlayerId(fv, &out.player) do return fail("GotchaOffer.player") } else { return fail("GotchaOffer.player missing") }
+	if fv, found := get_any(v, "source"); found { if !decode_ObjectIdentityBinding(fv, &out.source) do return fail("GotchaOffer.source") } else { return fail("GotchaOffer.source missing") }
+	if fv, found := get_any(v, "returns"); found { if !decode_ObjectIdentityBinding(fv, &out.returns) do return fail("GotchaOffer.returns") } else { return fail("GotchaOffer.returns missing") }
+	return true
+}
+
+encode_GotchaOffer :: proc(b: ^strings.Builder, x: GotchaOffer) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_GotchaOffer_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_GotchaOffer_members :: proc(b: ^strings.Builder, x: GotchaOffer, first: ^bool) {
+	member(b, first, "id"); encode_u64(b, x.id)
+	member(b, first, "player"); encode_PlayerId(b, x.player)
+	member(b, first, "source"); encode_ObjectIdentityBinding(b, x.source)
+	member(b, first, "returns"); encode_ObjectIdentityBinding(b, x.returns)
+}
+
 decode_AttackTarget :: proc(v: json.Value, out: ^AttackTarget) -> bool {
 	if v.kind != .Object do return fail("AttackTarget: not an object")
 	tv, found := json.get(v, "type")
@@ -22889,14 +23014,14 @@ encode_GameObject_members :: proc(b: ^strings.Builder, x: GameObject, first: ^bo
 	if !(skip_GameObject_is_default_CardType(x.base_card_types)) { member(b, first, "base_card_types"); encode_CardType(b, x.base_card_types) }
 	if !(skip_GameObject_is_default_ManaCost(x.base_mana_cost)) { member(b, first, "base_mana_cost"); encode_ManaCost(b, x.base_mana_cost) }
 	member(b, first, "base_keywords"); enc_dyn_Keyword(b, x.base_keywords)
-	if !(len(x.base_abilities) == 0) { member(b, first, "base_abilities"); enc_ptr_dyn_AbilityDefinition(b, x.base_abilities) }
-	if !(len(x.base_trigger_definitions) == 0) { member(b, first, "base_trigger_definitions"); enc_ptr_dyn_TriggerDefinition(b, x.base_trigger_definitions) }
+	if !((x.base_abilities == nil || len(x.base_abilities^) == 0)) { member(b, first, "base_abilities"); enc_ptr_dyn_AbilityDefinition(b, x.base_abilities) }
+	if !((x.base_trigger_definitions == nil || len(x.base_trigger_definitions^) == 0)) { member(b, first, "base_trigger_definitions"); enc_ptr_dyn_TriggerDefinition(b, x.base_trigger_definitions) }
 	if !(len(x.base_trigger_printed_origins) == 0) { member(b, first, "base_trigger_printed_origins"); enc_dyn_opt_TriggerPrintedOrigin(b, x.base_trigger_printed_origins) }
 	if !(skip_GameObject_is_initial_trigger_base_set_instance_TriggerBaseSetInstanceRef(x.trigger_base_set_instance)) { member(b, first, "trigger_base_set_instance"); encode_TriggerBaseSetInstanceRef(b, x.trigger_base_set_instance) }
 	if !(skip_GameObject_is_initial_next_trigger_base_set_instance_u64(x.next_trigger_base_set_instance)) { member(b, first, "next_trigger_base_set_instance"); encode_u64(b, x.next_trigger_base_set_instance) }
 	if !(skip_GameObject_is_default_TriggerOccurrenceState(x.trigger_occurrence_state)) { member(b, first, "trigger_occurrence_state"); encode_TriggerOccurrenceState(b, x.trigger_occurrence_state) }
-	if !(len(x.base_replacement_definitions) == 0) { member(b, first, "base_replacement_definitions"); enc_ptr_dyn_ReplacementDefinition(b, x.base_replacement_definitions) }
-	if !(len(x.base_static_definitions) == 0) { member(b, first, "base_static_definitions"); enc_ptr_dyn_StaticDefinition(b, x.base_static_definitions) }
+	if !((x.base_replacement_definitions == nil || len(x.base_replacement_definitions^) == 0)) { member(b, first, "base_replacement_definitions"); enc_ptr_dyn_ReplacementDefinition(b, x.base_replacement_definitions) }
+	if !((x.base_static_definitions == nil || len(x.base_static_definitions^) == 0)) { member(b, first, "base_static_definitions"); enc_ptr_dyn_StaticDefinition(b, x.base_static_definitions) }
 	member(b, first, "base_color"); enc_dyn_ManaColor(b, x.base_color)
 	if !(x.base_printed_ref == nil) { member(b, first, "base_printed_ref"); enc_opt_PrintedCardRef(b, x.base_printed_ref) }
 	if !(skip_GameObject_DisplayOnly_is_none_DisplayOnly_ptr_CardPrinting(x.base_printing)) { member(b, first, "base_printing"); encode_DisplayOnly_ptr_CardPrinting(b, x.base_printing) }
@@ -28130,14 +28255,6 @@ encode_ZoneChangeLibraryKnowledgeStamp_members :: proc(b: ^strings.Builder, x: Z
 	if !(x.destination == nil) { member(b, first, "destination"); enc_opt_LibraryKnowledgeStamp(b, x.destination) }
 }
 
-decode_FrameVec :: proc(v: json.Value, out: ^FrameVec) -> bool {
-	return dec_dyn_ResolutionFrame(v, &out.frames)
-}
-
-encode_FrameVec :: proc(b: ^strings.Builder, x: FrameVec) {
-	enc_dyn_ResolutionFrame(b, x.frames)
-}
-
 decode_ResolutionPaymentTranscriptEntry :: proc(v: json.Value, out: ^ResolutionPaymentTranscriptEntry) -> bool {
 	if v.kind != .Object do return fail("ResolutionPaymentTranscriptEntry: not an object")
 	if fv, found := get_any(v, "authenticated_actor"); found { if !decode_PlayerId(fv, &out.authenticated_actor) do return fail("ResolutionPaymentTranscriptEntry.authenticated_actor") } else { return fail("ResolutionPaymentTranscriptEntry.authenticated_actor missing") }
@@ -29153,50 +29270,6 @@ encode_MayTriggerAutoChoiceSelector :: proc(b: ^strings.Builder, x: MayTriggerAu
 	member(b, first, "printed_occurrence"); encode_int(b, y.printed_occurrence)
 	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
 	}
-}
-
-decode_UnTellKind :: proc(v: json.Value, out: ^UnTellKind) -> bool {
-	if v.kind != .Object do return fail("UnTellKind: not an object")
-	tv, found := json.get(v, "type")
-	if !found || tv.kind != .String do return fail("UnTellKind: no tag")
-	switch tv.text {
-	case "Physical": tmp: UnTellKind_Physical; if !decode_PhysicalTell(json.get_or_null(v, "data"), &tmp._0) do return fail("UnTellKind::Physical"); out^ = tmp
-	case "SaysWord": out^ = UnTellKind_SaysWord{}
-	case "SaysNumber": out^ = UnTellKind_SaysNumber{}
-	case: return fail("UnTellKind: unknown variant")
-	}
-	return true
-}
-
-encode_UnTellKind :: proc(b: ^strings.Builder, x: UnTellKind) {
-	#partial switch y in x {
-	case UnTellKind_Physical: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Physical"); member(b, &f, "data"); encode_PhysicalTell(b, y._0); strings.write_byte(b, '}')
-	case UnTellKind_SaysWord: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SaysWord"); strings.write_byte(b, '}')
-	case UnTellKind_SaysNumber: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SaysNumber"); strings.write_byte(b, '}')
-	}
-}
-
-decode_GotchaOffer :: proc(v: json.Value, out: ^GotchaOffer) -> bool {
-	if v.kind != .Object do return fail("GotchaOffer: not an object")
-	if fv, found := get_any(v, "id"); found { if !decode_u64(fv, &out.id) do return fail("GotchaOffer.id") } else { return fail("GotchaOffer.id missing") }
-	if fv, found := get_any(v, "player"); found { if !decode_PlayerId(fv, &out.player) do return fail("GotchaOffer.player") } else { return fail("GotchaOffer.player missing") }
-	if fv, found := get_any(v, "source"); found { if !decode_ObjectIdentityBinding(fv, &out.source) do return fail("GotchaOffer.source") } else { return fail("GotchaOffer.source missing") }
-	if fv, found := get_any(v, "returns"); found { if !decode_ObjectIdentityBinding(fv, &out.returns) do return fail("GotchaOffer.returns") } else { return fail("GotchaOffer.returns missing") }
-	return true
-}
-
-encode_GotchaOffer :: proc(b: ^strings.Builder, x: GotchaOffer) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_GotchaOffer_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_GotchaOffer_members :: proc(b: ^strings.Builder, x: GotchaOffer, first: ^bool) {
-	member(b, first, "id"); encode_u64(b, x.id)
-	member(b, first, "player"); encode_PlayerId(b, x.player)
-	member(b, first, "source"); encode_ObjectIdentityBinding(b, x.source)
-	member(b, first, "returns"); encode_ObjectIdentityBinding(b, x.returns)
 }
 
 decode_ReplacementAutoChoiceIdentity :: proc(v: json.Value, out: ^ReplacementAutoChoiceIdentity) -> bool {
@@ -38944,6 +39017,767 @@ encode_ManaSpentSourceSnapshot_members :: proc(b: ^strings.Builder, x: ManaSpent
 	member(b, first, "lki"); encode_LKISnapshot(b, x.lki)
 }
 
+decode_AbilityContinuationFrame :: proc(v: json.Value, out: ^AbilityContinuationFrame) -> bool {
+	if v.kind != .Object do return fail("AbilityContinuationFrame: not an object")
+	if fv, found := get_any(v, "pending"); found { if !decode_PendingContinuation(fv, &out.pending) do return fail("AbilityContinuationFrame.pending") } else { return fail("AbilityContinuationFrame.pending missing") }
+	if fv, found := get_any(v, "choose_zone_trigger_context"); found { if !dec_opt_ResolvingTriggerContext(fv, &out.choose_zone_trigger_context) do return fail("AbilityContinuationFrame.choose_zone_trigger_context") }
+	return true
+}
+
+encode_AbilityContinuationFrame :: proc(b: ^strings.Builder, x: AbilityContinuationFrame) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_AbilityContinuationFrame_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_AbilityContinuationFrame_members :: proc(b: ^strings.Builder, x: AbilityContinuationFrame, first: ^bool) {
+	member(b, first, "pending"); encode_PendingContinuation(b, x.pending)
+	if !(x.choose_zone_trigger_context == nil) { member(b, first, "choose_zone_trigger_context"); enc_opt_ResolvingTriggerContext(b, x.choose_zone_trigger_context) }
+}
+
+decode_PendingRepeatIteration :: proc(v: json.Value, out: ^PendingRepeatIteration) -> bool {
+	if v.kind != .Object do return fail("PendingRepeatIteration: not an object")
+	if fv, found := get_any(v, "ability"); found { if !dec_ptr_ResolvedAbility(fv, &out.ability) do return fail("PendingRepeatIteration.ability") } else { return fail("PendingRepeatIteration.ability missing") }
+	if fv, found := get_any(v, "tracked_members"); found { if !dec_dyn_ObjectId(fv, &out.tracked_members) do return fail("PendingRepeatIteration.tracked_members") }
+	if fv, found := get_any(v, "iterated_counter_kinds"); found { if !dec_dyn_CounterType(fv, &out.iterated_counter_kinds) do return fail("PendingRepeatIteration.iterated_counter_kinds") }
+	if fv, found := get_any(v, "next_iteration"); found { if !decode_int(fv, &out.next_iteration) do return fail("PendingRepeatIteration.next_iteration") } else { return fail("PendingRepeatIteration.next_iteration missing") }
+	if fv, found := get_any(v, "total_iterations"); found { if !decode_int(fv, &out.total_iterations) do return fail("PendingRepeatIteration.total_iterations") } else { return fail("PendingRepeatIteration.total_iterations missing") }
+	if fv, found := get_any(v, "order_fixed", "copy_order_fixed"); found { if !dec_opt_int(fv, &out.order_fixed) do return fail("PendingRepeatIteration.order_fixed") }
+	return true
+}
+
+encode_PendingRepeatIteration :: proc(b: ^strings.Builder, x: PendingRepeatIteration) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingRepeatIteration_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingRepeatIteration_members :: proc(b: ^strings.Builder, x: PendingRepeatIteration, first: ^bool) {
+	member(b, first, "ability"); enc_ptr_ResolvedAbility(b, x.ability)
+	if !(len(x.tracked_members) == 0) { member(b, first, "tracked_members"); enc_dyn_ObjectId(b, x.tracked_members) }
+	if !(len(x.iterated_counter_kinds) == 0) { member(b, first, "iterated_counter_kinds"); enc_dyn_CounterType(b, x.iterated_counter_kinds) }
+	member(b, first, "next_iteration"); encode_int(b, x.next_iteration)
+	member(b, first, "total_iterations"); encode_int(b, x.total_iterations)
+	if !(x.order_fixed == nil) { member(b, first, "order_fixed"); enc_opt_int(b, x.order_fixed) }
+}
+
+decode_PendingRepeatUntil :: proc(v: json.Value, out: ^PendingRepeatUntil) -> bool {
+	if v.kind != .Object do return fail("PendingRepeatUntil: not an object")
+	if fv, found := get_any(v, "ability"); found { if !dec_ptr_ResolvedAbility(fv, &out.ability) do return fail("PendingRepeatUntil.ability") } else { return fail("PendingRepeatUntil.ability missing") }
+	if fv, found := get_any(v, "stop_progress"); found { if !dec_opt_RepeatUntilStopWitness(fv, &out.stop_progress) do return fail("PendingRepeatUntil.stop_progress") }
+	if fv, found := get_any(v, "iteration_progress"); found { if !dec_opt_RepeatUntilIterationWitness(fv, &out.iteration_progress) do return fail("PendingRepeatUntil.iteration_progress") }
+	return true
+}
+
+encode_PendingRepeatUntil :: proc(b: ^strings.Builder, x: PendingRepeatUntil) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingRepeatUntil_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingRepeatUntil_members :: proc(b: ^strings.Builder, x: PendingRepeatUntil, first: ^bool) {
+	member(b, first, "ability"); enc_ptr_ResolvedAbility(b, x.ability)
+	if !(x.stop_progress == nil) { member(b, first, "stop_progress"); enc_opt_RepeatUntilStopWitness(b, x.stop_progress) }
+	if !(x.iteration_progress == nil) { member(b, first, "iteration_progress"); enc_opt_RepeatUntilIterationWitness(b, x.iteration_progress) }
+}
+
+decode_RepeatedOptionalPaymentFrame :: proc(v: json.Value, out: ^RepeatedOptionalPaymentFrame) -> bool {
+	if v.kind != .Object do return fail("RepeatedOptionalPaymentFrame: not an object")
+	if fv, found := get_any(v, "pending"); found { if !dec_ptr_PendingRepeatedOptionalPayment(fv, &out.pending) do return fail("RepeatedOptionalPaymentFrame.pending") }
+	if fv, found := get_any(v, "optional_cost_payments_this_resolution"); found { if !decode_u32(fv, &out.optional_cost_payments_this_resolution) do return fail("RepeatedOptionalPaymentFrame.optional_cost_payments_this_resolution") } else { return fail("RepeatedOptionalPaymentFrame.optional_cost_payments_this_resolution missing") }
+	return true
+}
+
+encode_RepeatedOptionalPaymentFrame :: proc(b: ^strings.Builder, x: RepeatedOptionalPaymentFrame) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_RepeatedOptionalPaymentFrame_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_RepeatedOptionalPaymentFrame_members :: proc(b: ^strings.Builder, x: RepeatedOptionalPaymentFrame, first: ^bool) {
+	if !(x.pending == nil) { member(b, first, "pending"); enc_ptr_PendingRepeatedOptionalPayment(b, x.pending) }
+	member(b, first, "optional_cost_payments_this_resolution"); encode_u32(b, x.optional_cost_payments_this_resolution)
+}
+
+decode_ChangeZoneFrame :: proc(v: json.Value, out: ^ChangeZoneFrame) -> bool {
+	if v.kind != .Object do return fail("ChangeZoneFrame: not an object")
+	if fv, found := get_any(v, "pending"); found { if !dec_opt_PendingChangeZoneIteration(fv, &out.pending) do return fail("ChangeZoneFrame.pending") }
+	if fv, found := get_any(v, "devour_eligible_snapshot"); found { if !dec_opt_dyn_ObjectId(fv, &out.devour_eligible_snapshot) do return fail("ChangeZoneFrame.devour_eligible_snapshot") }
+	if fv, found := get_any(v, "awaiting_batch"); found { if !dec_opt_ChangeZoneBatchMarker(fv, &out.awaiting_batch) do return fail("ChangeZoneFrame.awaiting_batch") }
+	return true
+}
+
+encode_ChangeZoneFrame :: proc(b: ^strings.Builder, x: ChangeZoneFrame) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_ChangeZoneFrame_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_ChangeZoneFrame_members :: proc(b: ^strings.Builder, x: ChangeZoneFrame, first: ^bool) {
+	if !(x.pending == nil) { member(b, first, "pending"); enc_opt_PendingChangeZoneIteration(b, x.pending) }
+	if !(x.devour_eligible_snapshot == nil) { member(b, first, "devour_eligible_snapshot"); enc_opt_dyn_ObjectId(b, x.devour_eligible_snapshot) }
+	if !(x.awaiting_batch == nil) { member(b, first, "awaiting_batch"); enc_opt_ChangeZoneBatchMarker(b, x.awaiting_batch) }
+}
+
+decode_PendingBatchDeliveries :: proc(v: json.Value, out: ^PendingBatchDeliveries) -> bool {
+	if v.kind != .Object do return fail("PendingBatchDeliveries: not an object")
+	if fv, found := get_any(v, "component_delivery_parent"); found { if !dec_opt_PendingComponentDeliveryParent(fv, &out.component_delivery_parent) do return fail("PendingBatchDeliveries.component_delivery_parent") }
+	if fv, found := get_any(v, "logical_zone_change_group"); found { if !decode_LogicalZoneChangeGroup(fv, &out.logical_zone_change_group) do return fail("PendingBatchDeliveries.logical_zone_change_group") } else { return fail("PendingBatchDeliveries.logical_zone_change_group missing") }
+	if fv, found := get_any(v, "paused_current"); found { if !dec_opt_PendingZoneChangeDelivery(fv, &out.paused_current) do return fail("PendingBatchDeliveries.paused_current") }
+	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_ObjectId(fv, &out.remaining) do return fail("PendingBatchDeliveries.remaining") } else { return fail("PendingBatchDeliveries.remaining missing") }
+	if fv, found := get_any(v, "destination"); found { if !decode_Zone(fv, &out.destination) do return fail("PendingBatchDeliveries.destination") } else { return fail("PendingBatchDeliveries.destination missing") }
+	if fv, found := get_any(v, "source_id"); found { if !dec_opt_ObjectId(fv, &out.source_id) do return fail("PendingBatchDeliveries.source_id") }
+	if fv, found := get_any(v, "library_reorder"); found { if !dec_opt_LibraryReorderOperation(fv, &out.library_reorder) do return fail("PendingBatchDeliveries.library_reorder") }
+	if fv, found := get_any(v, "enter_tapped"); found { if !decode_EtbTapState(fv, &out.enter_tapped) do return fail("PendingBatchDeliveries.enter_tapped") }
+	if fv, found := get_any(v, "exile_tracking"); found { if !decode_ZoneDeliveryExileTracking(fv, &out.exile_tracking) do return fail("PendingBatchDeliveries.exile_tracking") }
+	if fv, found := get_any(v, "library_placement"); found { if !dec_opt_LibraryPosition(fv, &out.library_placement) do return fail("PendingBatchDeliveries.library_placement") }
+	if fv, found := get_any(v, "completion"); found { if !dec_opt_BatchCompletion(fv, &out.completion) do return fail("PendingBatchDeliveries.completion") }
+	if fv, found := get_any(v, "replacement_applied"); found { if !dec_dyn_AppliedReplacementKey(fv, &out.replacement_applied) do return fail("PendingBatchDeliveries.replacement_applied") }
+	if fv, found := get_any(v, "requests"); found { if !dec_dyn_PendingBatchZoneMoveRequest(fv, &out.requests) do return fail("PendingBatchDeliveries.requests") }
+	if fv, found := get_any(v, "attempted"); found { if !dec_dyn_ObjectId(fv, &out.attempted) do return fail("PendingBatchDeliveries.attempted") }
+	if fv, found := get_any(v, "zone_change_record_start"); found { if !decode_int(fv, &out.zone_change_record_start) do return fail("PendingBatchDeliveries.zone_change_record_start") }
+	if fv, found := get_any(v, "deferred_events"); found { if !dec_dyn_GameEvent(fv, &out.deferred_events) do return fail("PendingBatchDeliveries.deferred_events") }
+	if fv, found := get_any(v, "staged"); found { if !dec_opt_StagedBatchDelivery(fv, &out.staged) do return fail("PendingBatchDeliveries.staged") }
+	if fv, found := get_any(v, "pre_entry_battlefield"); found { if !dec_opt_dyn_ObjectId(fv, &out.pre_entry_battlefield) do return fail("PendingBatchDeliveries.pre_entry_battlefield") }
+	return true
+}
+
+encode_PendingBatchDeliveries :: proc(b: ^strings.Builder, x: PendingBatchDeliveries) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingBatchDeliveries_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingBatchDeliveries_members :: proc(b: ^strings.Builder, x: PendingBatchDeliveries, first: ^bool) {
+	if !(x.component_delivery_parent == nil) { member(b, first, "component_delivery_parent"); enc_opt_PendingComponentDeliveryParent(b, x.component_delivery_parent) }
+	member(b, first, "logical_zone_change_group"); encode_LogicalZoneChangeGroup(b, x.logical_zone_change_group)
+	member(b, first, "paused_current"); enc_opt_PendingZoneChangeDelivery(b, x.paused_current)
+	member(b, first, "remaining"); enc_dyn_ObjectId(b, x.remaining)
+	member(b, first, "destination"); encode_Zone(b, x.destination)
+	if !(x.source_id == nil) { member(b, first, "source_id"); enc_opt_ObjectId(b, x.source_id) }
+	if !(x.library_reorder == nil) { member(b, first, "library_reorder"); enc_opt_LibraryReorderOperation(b, x.library_reorder) }
+	if !(skip_PendingBatchDeliveries_EtbTapState_is_unspecified_EtbTapState(x.enter_tapped)) { member(b, first, "enter_tapped"); encode_EtbTapState(b, x.enter_tapped) }
+	member(b, first, "exile_tracking"); encode_ZoneDeliveryExileTracking(b, x.exile_tracking)
+	if !(x.library_placement == nil) { member(b, first, "library_placement"); enc_opt_LibraryPosition(b, x.library_placement) }
+	if !(x.completion == nil) { member(b, first, "completion"); enc_opt_BatchCompletion(b, x.completion) }
+	if !(len(x.replacement_applied) == 0) { member(b, first, "replacement_applied"); enc_dyn_AppliedReplacementKey(b, x.replacement_applied) }
+	if !(len(x.requests) == 0) { member(b, first, "requests"); enc_dyn_PendingBatchZoneMoveRequest(b, x.requests) }
+	if !(len(x.attempted) == 0) { member(b, first, "attempted"); enc_dyn_ObjectId(b, x.attempted) }
+	member(b, first, "zone_change_record_start"); encode_int(b, x.zone_change_record_start)
+	if !(len(x.deferred_events) == 0) { member(b, first, "deferred_events"); enc_dyn_GameEvent(b, x.deferred_events) }
+	if !(x.staged == nil) { member(b, first, "staged"); enc_opt_StagedBatchDelivery(b, x.staged) }
+	if !(x.pre_entry_battlefield == nil) { member(b, first, "pre_entry_battlefield"); enc_opt_dyn_ObjectId(b, x.pre_entry_battlefield) }
+}
+
+decode_PendingCounterMoveQueue :: proc(v: json.Value, out: ^PendingCounterMoveQueue) -> bool {
+	if v.kind != .Object do return fail("PendingCounterMoveQueue: not an object")
+	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_PendingCounterMove(fv, &out.remaining) do return fail("PendingCounterMoveQueue.remaining") } else { return fail("PendingCounterMoveQueue.remaining missing") }
+	if fv, found := get_any(v, "effect_kind"); found { if !decode_EffectKind(fv, &out.effect_kind) do return fail("PendingCounterMoveQueue.effect_kind") } else { return fail("PendingCounterMoveQueue.effect_kind missing") }
+	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingCounterMoveQueue.source_id") } else { return fail("PendingCounterMoveQueue.source_id missing") }
+	return true
+}
+
+encode_PendingCounterMoveQueue :: proc(b: ^strings.Builder, x: PendingCounterMoveQueue) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingCounterMoveQueue_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingCounterMoveQueue_members :: proc(b: ^strings.Builder, x: PendingCounterMoveQueue, first: ^bool) {
+	member(b, first, "remaining"); enc_dyn_PendingCounterMove(b, x.remaining)
+	member(b, first, "effect_kind"); encode_EffectKind(b, x.effect_kind)
+	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
+}
+
+decode_PendingCounterRemovalQueue :: proc(v: json.Value, out: ^PendingCounterRemovalQueue) -> bool {
+	if v.kind != .Object do return fail("PendingCounterRemovalQueue: not an object")
+	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_PendingCounterRemoval(fv, &out.remaining) do return fail("PendingCounterRemovalQueue.remaining") } else { return fail("PendingCounterRemovalQueue.remaining missing") }
+	if fv, found := get_any(v, "effect_kind"); found { if !decode_EffectKind(fv, &out.effect_kind) do return fail("PendingCounterRemovalQueue.effect_kind") } else { return fail("PendingCounterRemovalQueue.effect_kind missing") }
+	if fv, found := get_any(v, "source_ability_id"); found { if !decode_ObjectId(fv, &out.source_ability_id) do return fail("PendingCounterRemovalQueue.source_ability_id") } else { return fail("PendingCounterRemovalQueue.source_ability_id missing") }
+	if fv, found := get_any(v, "total"); found { if !decode_u32(fv, &out.total) do return fail("PendingCounterRemovalQueue.total") } else { return fail("PendingCounterRemovalQueue.total missing") }
+	if fv, found := get_any(v, "applied_total"); found { if !decode_u32(fv, &out.applied_total) do return fail("PendingCounterRemovalQueue.applied_total") }
+	if fv, found := get_any(v, "in_flight"); found { if !dec_opt_PendingCounterRemovalInFlight(fv, &out.in_flight) do return fail("PendingCounterRemovalQueue.in_flight") }
+	return true
+}
+
+encode_PendingCounterRemovalQueue :: proc(b: ^strings.Builder, x: PendingCounterRemovalQueue) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingCounterRemovalQueue_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingCounterRemovalQueue_members :: proc(b: ^strings.Builder, x: PendingCounterRemovalQueue, first: ^bool) {
+	member(b, first, "remaining"); enc_dyn_PendingCounterRemoval(b, x.remaining)
+	member(b, first, "effect_kind"); encode_EffectKind(b, x.effect_kind)
+	member(b, first, "source_ability_id"); encode_ObjectId(b, x.source_ability_id)
+	member(b, first, "total"); encode_u32(b, x.total)
+	if !(x.applied_total == 0) { member(b, first, "applied_total"); encode_u32(b, x.applied_total) }
+	if !(x.in_flight == nil) { member(b, first, "in_flight"); enc_opt_PendingCounterRemovalInFlight(b, x.in_flight) }
+}
+
+decode_PendingCounterAdditionQueue :: proc(v: json.Value, out: ^PendingCounterAdditionQueue) -> bool {
+	if v.kind != .Object do return fail("PendingCounterAdditionQueue: not an object")
+	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_PendingCounterAddition(fv, &out.remaining) do return fail("PendingCounterAdditionQueue.remaining") } else { return fail("PendingCounterAdditionQueue.remaining missing") }
+	if fv, found := get_any(v, "completion"); found { if !dec_opt_PendingEffectResolved(fv, &out.completion) do return fail("PendingCounterAdditionQueue.completion") }
+	return true
+}
+
+encode_PendingCounterAdditionQueue :: proc(b: ^strings.Builder, x: PendingCounterAdditionQueue) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingCounterAdditionQueue_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingCounterAdditionQueue_members :: proc(b: ^strings.Builder, x: PendingCounterAdditionQueue, first: ^bool) {
+	member(b, first, "remaining"); enc_dyn_PendingCounterAddition(b, x.remaining)
+	if !(x.completion == nil) { member(b, first, "completion"); enc_opt_PendingEffectResolved(b, x.completion) }
+}
+
+decode_PendingCopyTokenResolution :: proc(v: json.Value, out: ^PendingCopyTokenResolution) -> bool {
+	if v.kind != .Object do return fail("PendingCopyTokenResolution: not an object")
+	if fv, found := get_any(v, "created_ids"); found { if !dec_dyn_ObjectId(fv, &out.created_ids) do return fail("PendingCopyTokenResolution.created_ids") }
+	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_PendingCopyTokenBatch(fv, &out.remaining) do return fail("PendingCopyTokenResolution.remaining") }
+	if fv, found := get_any(v, "effect_kind"); found { if !decode_EffectKind(fv, &out.effect_kind) do return fail("PendingCopyTokenResolution.effect_kind") } else { return fail("PendingCopyTokenResolution.effect_kind missing") }
+	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingCopyTokenResolution.source_id") } else { return fail("PendingCopyTokenResolution.source_id missing") }
+	if fv, found := get_any(v, "referent_set"); found { if !dec_opt_TrackedSetId(fv, &out.referent_set) do return fail("PendingCopyTokenResolution.referent_set") }
+	if fv, found := get_any(v, "offered_batch"); found { if !decode_OfferedBatchCustody(fv, &out.offered_batch) do return fail("PendingCopyTokenResolution.offered_batch") }
+	return true
+}
+
+encode_PendingCopyTokenResolution :: proc(b: ^strings.Builder, x: PendingCopyTokenResolution) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingCopyTokenResolution_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingCopyTokenResolution_members :: proc(b: ^strings.Builder, x: PendingCopyTokenResolution, first: ^bool) {
+	if !(len(x.created_ids) == 0) { member(b, first, "created_ids"); enc_dyn_ObjectId(b, x.created_ids) }
+	if !(len(x.remaining) == 0) { member(b, first, "remaining"); enc_dyn_PendingCopyTokenBatch(b, x.remaining) }
+	member(b, first, "effect_kind"); encode_EffectKind(b, x.effect_kind)
+	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
+	if !(x.referent_set == nil) { member(b, first, "referent_set"); enc_opt_TrackedSetId(b, x.referent_set) }
+	if !(skip_PendingCopyTokenResolution_OfferedBatchCustody_is_settled_OfferedBatchCustody(x.offered_batch)) { member(b, first, "offered_batch"); encode_OfferedBatchCustody(b, x.offered_batch) }
+}
+
+decode_PendingDebugCardEntries :: proc(v: json.Value, out: ^PendingDebugCardEntries) -> bool {
+	if v.kind != .Object do return fail("PendingDebugCardEntries: not an object")
+	if fv, found := get_any(v, "source"); found { if !decode_DebugCardEntrySource(fv, &out.source) do return fail("PendingDebugCardEntries.source") } else { return fail("PendingDebugCardEntries.source missing") }
+	if fv, found := get_any(v, "owner"); found { if !decode_PlayerId(fv, &out.owner) do return fail("PendingDebugCardEntries.owner") } else { return fail("PendingDebugCardEntries.owner missing") }
+	if fv, found := get_any(v, "attach_to"); found { if !dec_opt_AttachTarget(fv, &out.attach_to) do return fail("PendingDebugCardEntries.attach_to") }
+	if fv, found := get_any(v, "nonlegendary"); found { if !decode_bool(fv, &out.nonlegendary) do return fail("PendingDebugCardEntries.nonlegendary") } else { return fail("PendingDebugCardEntries.nonlegendary missing") }
+	if fv, found := get_any(v, "creation_kind"); found { if !decode_DebugCardCreationKind(fv, &out.creation_kind) do return fail("PendingDebugCardEntries.creation_kind") }
+	if fv, found := get_any(v, "remaining"); found { if !decode_u32(fv, &out.remaining) do return fail("PendingDebugCardEntries.remaining") } else { return fail("PendingDebugCardEntries.remaining missing") }
+	return true
+}
+
+encode_PendingDebugCardEntries :: proc(b: ^strings.Builder, x: PendingDebugCardEntries) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingDebugCardEntries_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingDebugCardEntries_members :: proc(b: ^strings.Builder, x: PendingDebugCardEntries, first: ^bool) {
+	member(b, first, "source"); encode_DebugCardEntrySource(b, x.source)
+	member(b, first, "owner"); encode_PlayerId(b, x.owner)
+	if !(x.attach_to == nil) { member(b, first, "attach_to"); enc_opt_AttachTarget(b, x.attach_to) }
+	member(b, first, "nonlegendary"); encode_bool(b, x.nonlegendary)
+	member(b, first, "creation_kind"); encode_DebugCardCreationKind(b, x.creation_kind)
+	member(b, first, "remaining"); encode_u32(b, x.remaining)
+}
+
+decode_PendingEachPlayerCopyChosen :: proc(v: json.Value, out: ^PendingEachPlayerCopyChosen) -> bool {
+	if v.kind != .Object do return fail("PendingEachPlayerCopyChosen: not an object")
+	if fv, found := get_any(v, "stage"); found { if !decode_CopyChosenStage(fv, &out.stage) do return fail("PendingEachPlayerCopyChosen.stage") } else { return fail("PendingEachPlayerCopyChosen.stage missing") }
+	if fv, found := get_any(v, "player"); found { if !decode_PlayerId(fv, &out.player) do return fail("PendingEachPlayerCopyChosen.player") } else { return fail("PendingEachPlayerCopyChosen.player missing") }
+	if fv, found := get_any(v, "chosen"); found { if !dec_dyn_ObjectId(fv, &out.chosen) do return fail("PendingEachPlayerCopyChosen.chosen") } else { return fail("PendingEachPlayerCopyChosen.chosen missing") }
+	if fv, found := get_any(v, "remaining_choices"); found { if !dec_dyn_CopyChosenSelection(fv, &out.remaining_choices) do return fail("PendingEachPlayerCopyChosen.remaining_choices") }
+	if fv, found := get_any(v, "choose_filter"); found { if !decode_TargetFilter(fv, &out.choose_filter) do return fail("PendingEachPlayerCopyChosen.choose_filter") } else { return fail("PendingEachPlayerCopyChosen.choose_filter missing") }
+	if fv, found := get_any(v, "min"); found { if !decode_u32(fv, &out.min) do return fail("PendingEachPlayerCopyChosen.min") } else { return fail("PendingEachPlayerCopyChosen.min missing") }
+	if fv, found := get_any(v, "max"); found { if !decode_u32(fv, &out.max) do return fail("PendingEachPlayerCopyChosen.max") } else { return fail("PendingEachPlayerCopyChosen.max missing") }
+	if fv, found := get_any(v, "copy_modifications"); found { if !dec_dyn_ContinuousModification(fv, &out.copy_modifications) do return fail("PendingEachPlayerCopyChosen.copy_modifications") }
+	if fv, found := get_any(v, "scale"); found { if !dec_opt_CopyScale(fv, &out.scale) do return fail("PendingEachPlayerCopyChosen.scale") }
+	if fv, found := get_any(v, "choose_scope"); found { if !decode_CopyChooseScope(fv, &out.choose_scope) do return fail("PendingEachPlayerCopyChosen.choose_scope") } else { out.choose_scope = CopyChooseScope(CopyChooseScope_Chooser{}) }
+	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingEachPlayerCopyChosen.source_id") } else { return fail("PendingEachPlayerCopyChosen.source_id missing") }
+	if fv, found := get_any(v, "source_controller"); found { if !decode_PlayerId(fv, &out.source_controller) do return fail("PendingEachPlayerCopyChosen.source_controller") } else { return fail("PendingEachPlayerCopyChosen.source_controller missing") }
+	if fv, found := get_any(v, "scoped_players"); found { if !dec_dyn_PlayerId(fv, &out.scoped_players) do return fail("PendingEachPlayerCopyChosen.scoped_players") }
+	if fv, found := get_any(v, "trigger_event"); found { if !dec_opt_GameEvent(fv, &out.trigger_event) do return fail("PendingEachPlayerCopyChosen.trigger_event") }
+	return true
+}
+
+encode_PendingEachPlayerCopyChosen :: proc(b: ^strings.Builder, x: PendingEachPlayerCopyChosen) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingEachPlayerCopyChosen_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingEachPlayerCopyChosen_members :: proc(b: ^strings.Builder, x: PendingEachPlayerCopyChosen, first: ^bool) {
+	member(b, first, "stage"); encode_CopyChosenStage(b, x.stage)
+	member(b, first, "player"); encode_PlayerId(b, x.player)
+	member(b, first, "chosen"); enc_dyn_ObjectId(b, x.chosen)
+	if !(len(x.remaining_choices) == 0) { member(b, first, "remaining_choices"); enc_dyn_CopyChosenSelection(b, x.remaining_choices) }
+	member(b, first, "choose_filter"); encode_TargetFilter(b, x.choose_filter)
+	member(b, first, "min"); encode_u32(b, x.min)
+	member(b, first, "max"); encode_u32(b, x.max)
+	if !(len(x.copy_modifications) == 0) { member(b, first, "copy_modifications"); enc_dyn_ContinuousModification(b, x.copy_modifications) }
+	if !(x.scale == nil) { member(b, first, "scale"); enc_opt_CopyScale(b, x.scale) }
+	member(b, first, "choose_scope"); encode_CopyChooseScope(b, x.choose_scope)
+	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
+	member(b, first, "source_controller"); encode_PlayerId(b, x.source_controller)
+	member(b, first, "scoped_players"); enc_dyn_PlayerId(b, x.scoped_players)
+	if !(x.trigger_event == nil) { member(b, first, "trigger_event"); enc_opt_GameEvent(b, x.trigger_event) }
+}
+
+decode_PendingChooseOneOf :: proc(v: json.Value, out: ^PendingChooseOneOf) -> bool {
+	if v.kind != .Object do return fail("PendingChooseOneOf: not an object")
+	if fv, found := get_any(v, "controller"); found { if !decode_PlayerId(fv, &out.controller) do return fail("PendingChooseOneOf.controller") } else { return fail("PendingChooseOneOf.controller missing") }
+	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingChooseOneOf.source_id") } else { return fail("PendingChooseOneOf.source_id missing") }
+	if fv, found := get_any(v, "branches"); found { if !dec_dyn_AbilityDefinition(fv, &out.branches) do return fail("PendingChooseOneOf.branches") } else { return fail("PendingChooseOneOf.branches missing") }
+	if !decode_ParentTargetOccurrences(v, &out.parent_occurrences) do return fail("PendingChooseOneOf.parent_occurrences (flattened)")
+	if fv, found := get_any(v, "context"); found { if !dec_ptr_SpellContext(fv, &out.context_) do return fail("PendingChooseOneOf.context") } else { out.context_ = new_clone(SpellContext{}) }
+	if fv, found := get_any(v, "continuation"); found { if !dec_ptr_ResolvedAbility(fv, &out.continuation) do return fail("PendingChooseOneOf.continuation") }
+	if fv, found := get_any(v, "replacement_applied"); found { if !dec_dyn_AppliedReplacementKey(fv, &out.replacement_applied) do return fail("PendingChooseOneOf.replacement_applied") }
+	if fv, found := get_any(v, "remaining_players"); found { if !dec_dyn_PlayerId(fv, &out.remaining_players) do return fail("PendingChooseOneOf.remaining_players") } else { return fail("PendingChooseOneOf.remaining_players missing") }
+	if fv, found := get_any(v, "trigger_context"); found { if !dec_opt_ResolvingTriggerContext(fv, &out.trigger_context) do return fail("PendingChooseOneOf.trigger_context") }
+	return true
+}
+
+encode_PendingChooseOneOf :: proc(b: ^strings.Builder, x: PendingChooseOneOf) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingChooseOneOf_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingChooseOneOf_members :: proc(b: ^strings.Builder, x: PendingChooseOneOf, first: ^bool) {
+	member(b, first, "controller"); encode_PlayerId(b, x.controller)
+	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
+	member(b, first, "branches"); enc_dyn_AbilityDefinition(b, x.branches)
+	encode_ParentTargetOccurrences_members(b, x.parent_occurrences, first)
+	member(b, first, "context"); enc_ptr_SpellContext(b, x.context_)
+	if !(x.continuation == nil) { member(b, first, "continuation"); enc_ptr_ResolvedAbility(b, x.continuation) }
+	if !(len(x.replacement_applied) == 0) { member(b, first, "replacement_applied"); enc_dyn_AppliedReplacementKey(b, x.replacement_applied) }
+	member(b, first, "remaining_players"); enc_dyn_PlayerId(b, x.remaining_players)
+	if !(x.trigger_context == nil) { member(b, first, "trigger_context"); enc_opt_ResolvingTriggerContext(b, x.trigger_context) }
+}
+
+decode_PendingVoteBallotIteration :: proc(v: json.Value, out: ^PendingVoteBallotIteration) -> bool {
+	if v.kind != .Object do return fail("PendingVoteBallotIteration: not an object")
+	if fv, found := get_any(v, "ability_template"); found { if !dec_ptr_AbilityDefinition(fv, &out.ability_template) do return fail("PendingVoteBallotIteration.ability_template") } else { return fail("PendingVoteBallotIteration.ability_template missing") }
+	if fv, found := get_any(v, "remaining_voters"); found { if !dec_dyn_PlayerId(fv, &out.remaining_voters) do return fail("PendingVoteBallotIteration.remaining_voters") } else { return fail("PendingVoteBallotIteration.remaining_voters missing") }
+	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingVoteBallotIteration.source_id") } else { return fail("PendingVoteBallotIteration.source_id missing") }
+	if fv, found := get_any(v, "controller"); found { if !decode_PlayerId(fv, &out.controller) do return fail("PendingVoteBallotIteration.controller") } else { return fail("PendingVoteBallotIteration.controller missing") }
+	if fv, found := get_any(v, "chain_root_targets"); found { if !dec_dyn_TargetRef(fv, &out.chain_root_targets) do return fail("PendingVoteBallotIteration.chain_root_targets") }
+	return true
+}
+
+encode_PendingVoteBallotIteration :: proc(b: ^strings.Builder, x: PendingVoteBallotIteration) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingVoteBallotIteration_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingVoteBallotIteration_members :: proc(b: ^strings.Builder, x: PendingVoteBallotIteration, first: ^bool) {
+	member(b, first, "ability_template"); enc_ptr_AbilityDefinition(b, x.ability_template)
+	member(b, first, "remaining_voters"); enc_dyn_PlayerId(b, x.remaining_voters)
+	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
+	member(b, first, "controller"); encode_PlayerId(b, x.controller)
+	member(b, first, "chain_root_targets"); enc_dyn_TargetRef(b, x.chain_root_targets)
+}
+
+decode_PendingPerPlayerZoneChoice :: proc(v: json.Value, out: ^PendingPerPlayerZoneChoice) -> bool {
+	if v.kind != .Object do return fail("PendingPerPlayerZoneChoice: not an object")
+	if fv, found := get_any(v, "ability"); found { if !dec_ptr_ResolvedAbility(fv, &out.ability) do return fail("PendingPerPlayerZoneChoice.ability") } else { return fail("PendingPerPlayerZoneChoice.ability missing") }
+	if fv, found := get_any(v, "remaining_players"); found { if !dec_dyn_PlayerId(fv, &out.remaining_players) do return fail("PendingPerPlayerZoneChoice.remaining_players") } else { return fail("PendingPerPlayerZoneChoice.remaining_players missing") }
+	if fv, found := get_any(v, "accumulated"); found { if !decode_bool(fv, &out.accumulated) do return fail("PendingPerPlayerZoneChoice.accumulated") }
+	if fv, found := get_any(v, "current"); found { if !dec_opt_PlayerId(fv, &out.current) do return fail("PendingPerPlayerZoneChoice.current") }
+	if fv, found := get_any(v, "nominee"); found { if !dec_opt_PlayerId(fv, &out.nominee) do return fail("PendingPerPlayerZoneChoice.nominee") }
+	if fv, found := get_any(v, "tracked_pool"); found { if !dec_opt_TrackedSetId(fv, &out.tracked_pool) do return fail("PendingPerPlayerZoneChoice.tracked_pool") }
+	return true
+}
+
+encode_PendingPerPlayerZoneChoice :: proc(b: ^strings.Builder, x: PendingPerPlayerZoneChoice) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingPerPlayerZoneChoice_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingPerPlayerZoneChoice_members :: proc(b: ^strings.Builder, x: PendingPerPlayerZoneChoice, first: ^bool) {
+	member(b, first, "ability"); enc_ptr_ResolvedAbility(b, x.ability)
+	member(b, first, "remaining_players"); enc_dyn_PlayerId(b, x.remaining_players)
+	member(b, first, "accumulated"); encode_bool(b, x.accumulated)
+	if !(x.current == nil) { member(b, first, "current"); enc_opt_PlayerId(b, x.current) }
+	if !(x.nominee == nil) { member(b, first, "nominee"); enc_opt_PlayerId(b, x.nominee) }
+	if !(x.tracked_pool == nil) { member(b, first, "tracked_pool"); enc_opt_TrackedSetId(b, x.tracked_pool) }
+}
+
+decode_PerCategoryZoneChoiceFrame :: proc(v: json.Value, out: ^PerCategoryZoneChoiceFrame) -> bool {
+	if v.kind != .Object do return fail("PerCategoryZoneChoiceFrame: not an object")
+	if fv, found := get_any(v, "pending"); found { if !decode_PendingPerCategoryZoneChoice(fv, &out.pending) do return fail("PerCategoryZoneChoiceFrame.pending") } else { return fail("PerCategoryZoneChoiceFrame.pending missing") }
+	return true
+}
+
+encode_PerCategoryZoneChoiceFrame :: proc(b: ^strings.Builder, x: PerCategoryZoneChoiceFrame) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PerCategoryZoneChoiceFrame_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PerCategoryZoneChoiceFrame_members :: proc(b: ^strings.Builder, x: PerCategoryZoneChoiceFrame, first: ^bool) {
+	member(b, first, "pending"); encode_PendingPerCategoryZoneChoice(b, x.pending)
+}
+
+decode_OptionalEffectFrame :: proc(v: json.Value, out: ^OptionalEffectFrame) -> bool {
+	if v.kind != .Object do return fail("OptionalEffectFrame: not an object")
+	if fv, found := get_any(v, "ability"); found { if !dec_ptr_ResolvedAbility(fv, &out.ability) do return fail("OptionalEffectFrame.ability") } else { return fail("OptionalEffectFrame.ability missing") }
+	if fv, found := get_any(v, "trigger_event"); found { if !dec_opt_GameEvent(fv, &out.trigger_event) do return fail("OptionalEffectFrame.trigger_event") }
+	if fv, found := get_any(v, "trigger_events"); found { if !dec_dyn_GameEvent(fv, &out.trigger_events) do return fail("OptionalEffectFrame.trigger_events") }
+	if fv, found := get_any(v, "trigger_match_count"); found { if !dec_opt_u32(fv, &out.trigger_match_count) do return fail("OptionalEffectFrame.trigger_match_count") }
+	if fv, found := get_any(v, "return_result_occurrence"); found { if !dec_opt_ReturnResultOccurrenceId(fv, &out.return_result_occurrence) do return fail("OptionalEffectFrame.return_result_occurrence") }
+	if fv, found := get_any(v, "replacement_action"); found { if !dec_opt_ReplacementActionScope(fv, &out.replacement_action) do return fail("OptionalEffectFrame.replacement_action") }
+	if fv, found := get_any(v, "parked_poll"); found { if !dec_ptr_ParkedOpponentMayPoll(fv, &out.parked_poll) do return fail("OptionalEffectFrame.parked_poll") }
+	return true
+}
+
+encode_OptionalEffectFrame :: proc(b: ^strings.Builder, x: OptionalEffectFrame) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_OptionalEffectFrame_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_OptionalEffectFrame_members :: proc(b: ^strings.Builder, x: OptionalEffectFrame, first: ^bool) {
+	member(b, first, "ability"); enc_ptr_ResolvedAbility(b, x.ability)
+	if !(x.trigger_event == nil) { member(b, first, "trigger_event"); enc_opt_GameEvent(b, x.trigger_event) }
+	if !(len(x.trigger_events) == 0) { member(b, first, "trigger_events"); enc_dyn_GameEvent(b, x.trigger_events) }
+	if !(x.trigger_match_count == nil) { member(b, first, "trigger_match_count"); enc_opt_u32(b, x.trigger_match_count) }
+	if !(x.return_result_occurrence == nil) { member(b, first, "return_result_occurrence"); enc_opt_ReturnResultOccurrenceId(b, x.return_result_occurrence) }
+	if !(x.replacement_action == nil) { member(b, first, "replacement_action"); enc_opt_ReplacementActionScope(b, x.replacement_action) }
+	if !(x.parked_poll == nil) { member(b, first, "parked_poll"); enc_ptr_ParkedOpponentMayPoll(b, x.parked_poll) }
+}
+
+decode_PendingDieRoll :: proc(v: json.Value, out: ^PendingDieRoll) -> bool {
+	if v.kind != .Object do return fail("PendingDieRoll: not an object")
+	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingDieRoll.source_id") } else { return fail("PendingDieRoll.source_id missing") }
+	if fv, found := get_any(v, "controller"); found { if !decode_PlayerId(fv, &out.controller) do return fail("PendingDieRoll.controller") } else { return fail("PendingDieRoll.controller missing") }
+	if fv, found := get_any(v, "roller"); found { if !decode_PlayerId(fv, &out.roller) do return fail("PendingDieRoll.roller") } else { return fail("PendingDieRoll.roller missing") }
+	if fv, found := get_any(v, "quantity_controller"); found { if !dec_opt_PlayerId(fv, &out.quantity_controller) do return fail("PendingDieRoll.quantity_controller") }
+	if fv, found := get_any(v, "scoped_player"); found { if !dec_opt_PlayerId(fv, &out.scoped_player) do return fail("PendingDieRoll.scoped_player") }
+	if fv, found := get_any(v, "targets"); found { if !dec_dyn_TargetRef(fv, &out.targets) do return fail("PendingDieRoll.targets") } else { return fail("PendingDieRoll.targets missing") }
+	if fv, found := get_any(v, "sides"); found { if !decode_u8(fv, &out.sides) do return fail("PendingDieRoll.sides") } else { return fail("PendingDieRoll.sides missing") }
+	if fv, found := get_any(v, "results"); found { if !dec_dyn_u8(fv, &out.results) do return fail("PendingDieRoll.results") } else { return fail("PendingDieRoll.results missing") }
+	if fv, found := get_any(v, "ignore_rules"); found { if !dec_dyn_DieRollIgnoreRule(fv, &out.ignore_rules) do return fail("PendingDieRoll.ignore_rules") }
+	if fv, found := get_any(v, "results_table"); found { if !dec_dyn_DieResultBranch(fv, &out.results_table) do return fail("PendingDieRoll.results_table") } else { return fail("PendingDieRoll.results_table missing") }
+	if fv, found := get_any(v, "modifier"); found { if !dec_opt_DieRollModifier(fv, &out.modifier) do return fail("PendingDieRoll.modifier") }
+	if fv, found := get_any(v, "die_result"); found { if !dec_opt_i32(fv, &out.die_result) do return fail("PendingDieRoll.die_result") }
+	if fv, found := get_any(v, "next_index"); found { if !decode_int(fv, &out.next_index) do return fail("PendingDieRoll.next_index") }
+	if fv, found := get_any(v, "running_total"); found { if !decode_i32(fv, &out.running_total) do return fail("PendingDieRoll.running_total") }
+	if fv, found := get_any(v, "rolled_any"); found { if !decode_bool(fv, &out.rolled_any) do return fail("PendingDieRoll.rolled_any") }
+	if fv, found := get_any(v, "forced_ignored"); found { if !dec_dyn_int(fv, &out.forced_ignored) do return fail("PendingDieRoll.forced_ignored") }
+	if fv, found := get_any(v, "chain_root_targets"); found { if !dec_dyn_TargetRef(fv, &out.chain_root_targets) do return fail("PendingDieRoll.chain_root_targets") }
+	if fv, found := get_any(v, "trigger_context"); found { if !dec_opt_ResolvingTriggerContext(fv, &out.trigger_context) do return fail("PendingDieRoll.trigger_context") }
+	if fv, found := get_any(v, "illegal_target_slots"); found { if !dec_dyn_int(fv, &out.illegal_target_slots) do return fail("PendingDieRoll.illegal_target_slots") }
+	if fv, found := get_any(v, "chain_root_target_pins"); found { if !dec_dyn_opt_ObjectIncarnationRef(fv, &out.chain_root_target_pins) do return fail("PendingDieRoll.chain_root_target_pins") }
+	if fv, found := get_any(v, "declared_capture"); found { if !dec_opt_CapturedDeclarationPayload(fv, &out.declared_capture) do return fail("PendingDieRoll.declared_capture") }
+	if fv, found := get_any(v, "local_target_pins"); found { if !dec_dyn_opt_ObjectIncarnationRef(fv, &out.local_target_pins) do return fail("PendingDieRoll.local_target_pins") }
+	if fv, found := get_any(v, "keyed_target_incarnations"); found { if !dec_dyn_ObjectIncarnationRef(fv, &out.keyed_target_incarnations) do return fail("PendingDieRoll.keyed_target_incarnations") }
+	if fv, found := get_any(v, "declared_player"); found { if !dec_opt_DeclaredPlayerTarget(fv, &out.declared_player) do return fail("PendingDieRoll.declared_player") }
+	return true
+}
+
+encode_PendingDieRoll :: proc(b: ^strings.Builder, x: PendingDieRoll) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingDieRoll_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingDieRoll_members :: proc(b: ^strings.Builder, x: PendingDieRoll, first: ^bool) {
+	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
+	member(b, first, "controller"); encode_PlayerId(b, x.controller)
+	member(b, first, "roller"); encode_PlayerId(b, x.roller)
+	if !(x.quantity_controller == nil) { member(b, first, "quantity_controller"); enc_opt_PlayerId(b, x.quantity_controller) }
+	if !(x.scoped_player == nil) { member(b, first, "scoped_player"); enc_opt_PlayerId(b, x.scoped_player) }
+	member(b, first, "targets"); enc_dyn_TargetRef(b, x.targets)
+	member(b, first, "sides"); encode_u8(b, x.sides)
+	member(b, first, "results"); enc_dyn_u8(b, x.results)
+	member(b, first, "ignore_rules"); enc_dyn_DieRollIgnoreRule(b, x.ignore_rules)
+	member(b, first, "results_table"); enc_dyn_DieResultBranch(b, x.results_table)
+	if !(x.modifier == nil) { member(b, first, "modifier"); enc_opt_DieRollModifier(b, x.modifier) }
+	if !(x.die_result == nil) { member(b, first, "die_result"); enc_opt_i32(b, x.die_result) }
+	member(b, first, "next_index"); encode_int(b, x.next_index)
+	member(b, first, "running_total"); encode_i32(b, x.running_total)
+	member(b, first, "rolled_any"); encode_bool(b, x.rolled_any)
+	member(b, first, "forced_ignored"); enc_dyn_int(b, x.forced_ignored)
+	member(b, first, "chain_root_targets"); enc_dyn_TargetRef(b, x.chain_root_targets)
+	if !(x.trigger_context == nil) { member(b, first, "trigger_context"); enc_opt_ResolvingTriggerContext(b, x.trigger_context) }
+	member(b, first, "illegal_target_slots"); enc_dyn_int(b, x.illegal_target_slots)
+	member(b, first, "chain_root_target_pins"); enc_dyn_opt_ObjectIncarnationRef(b, x.chain_root_target_pins)
+	if !(x.declared_capture == nil) { member(b, first, "declared_capture"); enc_opt_CapturedDeclarationPayload(b, x.declared_capture) }
+	member(b, first, "local_target_pins"); enc_dyn_opt_ObjectIncarnationRef(b, x.local_target_pins)
+	member(b, first, "keyed_target_incarnations"); enc_dyn_ObjectIncarnationRef(b, x.keyed_target_incarnations)
+	member(b, first, "declared_player"); enc_opt_DeclaredPlayerTarget(b, x.declared_player)
+}
+
+decode_PendingProliferateActions :: proc(v: json.Value, out: ^PendingProliferateActions) -> bool {
+	if v.kind != .Object do return fail("PendingProliferateActions: not an object")
+	if fv, found := get_any(v, "actor"); found { if !decode_PlayerId(fv, &out.actor) do return fail("PendingProliferateActions.actor") } else { return fail("PendingProliferateActions.actor missing") }
+	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingProliferateActions.source_id") } else { return fail("PendingProliferateActions.source_id missing") }
+	if fv, found := get_any(v, "remaining"); found { if !decode_u32(fv, &out.remaining) do return fail("PendingProliferateActions.remaining") } else { return fail("PendingProliferateActions.remaining missing") }
+	return true
+}
+
+encode_PendingProliferateActions :: proc(b: ^strings.Builder, x: PendingProliferateActions) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingProliferateActions_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingProliferateActions_members :: proc(b: ^strings.Builder, x: PendingProliferateActions, first: ^bool) {
+	member(b, first, "actor"); encode_PlayerId(b, x.actor)
+	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
+	member(b, first, "remaining"); encode_u32(b, x.remaining)
+}
+
+decode_MultiDrawFrame :: proc(v: json.Value, out: ^MultiDrawFrame) -> bool {
+	if v.kind != .Object do return fail("MultiDrawFrame: not an object")
+	if fv, found := get_any(v, "draw_sequences"); found { if !decode_DrawSequenceStack(fv, &out.draw_sequences) do return fail("MultiDrawFrame.draw_sequences") } else { return fail("MultiDrawFrame.draw_sequences missing") }
+	if fv, found := get_any(v, "connive_reentry"); found { if !dec_opt_PendingConniveReentry(fv, &out.connive_reentry) do return fail("MultiDrawFrame.connive_reentry") }
+	return true
+}
+
+encode_MultiDrawFrame :: proc(b: ^strings.Builder, x: MultiDrawFrame) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_MultiDrawFrame_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_MultiDrawFrame_members :: proc(b: ^strings.Builder, x: MultiDrawFrame, first: ^bool) {
+	member(b, first, "draw_sequences"); encode_DrawSequenceStack(b, x.draw_sequences)
+	if !(x.connive_reentry == nil) { member(b, first, "connive_reentry"); enc_opt_PendingConniveReentry(b, x.connive_reentry) }
+}
+
+decode_DiscardFrame :: proc(v: json.Value, out: ^DiscardFrame) -> bool {
+	if v.kind != .Object do return fail("DiscardFrame: not an object")
+	if fv, found := get_any(v, "id"); found { if !decode_DiscardFrameId(fv, &out.id) do return fail("DiscardFrame.id") } else { return fail("DiscardFrame.id missing") }
+	if fv, found := get_any(v, "source_id"); found { if !dec_opt_ObjectId(fv, &out.source_id) do return fail("DiscardFrame.source_id") }
+	if fv, found := get_any(v, "results"); found { if !dec_dyn_DiscardedCardResult(fv, &out.results) do return fail("DiscardFrame.results") }
+	return true
+}
+
+encode_DiscardFrame :: proc(b: ^strings.Builder, x: DiscardFrame) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_DiscardFrame_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_DiscardFrame_members :: proc(b: ^strings.Builder, x: DiscardFrame, first: ^bool) {
+	member(b, first, "id"); encode_DiscardFrameId(b, x.id)
+	if !(x.source_id == nil) { member(b, first, "source_id"); enc_opt_ObjectId(b, x.source_id) }
+	if !(len(x.results) == 0) { member(b, first, "results"); enc_dyn_DiscardedCardResult(b, x.results) }
+}
+
+decode_PendingConniveReentry :: proc(v: json.Value, out: ^PendingConniveReentry) -> bool {
+	if v.kind != .Object do return fail("PendingConniveReentry: not an object")
+	if fv, found := get_any(v, "conniver"); found { if !decode_ConniveSubject(fv, &out.conniver) do return fail("PendingConniveReentry.conniver") } else { return fail("PendingConniveReentry.conniver missing") }
+	if fv, found := get_any(v, "count"); found { if !decode_u32(fv, &out.count) do return fail("PendingConniveReentry.count") } else { return fail("PendingConniveReentry.count missing") }
+	if fv, found := get_any(v, "applied"); found { if !dec_dyn_AppliedReplacementKey(fv, &out.applied) do return fail("PendingConniveReentry.applied") } else { return fail("PendingConniveReentry.applied missing") }
+	return true
+}
+
+encode_PendingConniveReentry :: proc(b: ^strings.Builder, x: PendingConniveReentry) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingConniveReentry_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingConniveReentry_members :: proc(b: ^strings.Builder, x: PendingConniveReentry, first: ^bool) {
+	member(b, first, "conniver"); encode_ConniveSubject(b, x.conniver)
+	member(b, first, "count"); encode_u32(b, x.count)
+	member(b, first, "applied"); enc_dyn_AppliedReplacementKey(b, x.applied)
+}
+
+decode_PendingLifeTotalAssignment :: proc(v: json.Value, out: ^PendingLifeTotalAssignment) -> bool {
+	if v.kind != .Object do return fail("PendingLifeTotalAssignment: not an object")
+	if fv, found := get_any(v, "completion_player"); found { if !decode_PlayerId(fv, &out.completion_player) do return fail("PendingLifeTotalAssignment.completion_player") } else { return fail("PendingLifeTotalAssignment.completion_player missing") }
+	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_t2_PlayerId_i32(fv, &out.remaining) do return fail("PendingLifeTotalAssignment.remaining") } else { return fail("PendingLifeTotalAssignment.remaining missing") }
+	if fv, found := get_any(v, "completion"); found { if !dec_opt_PendingEffectResolved(fv, &out.completion) do return fail("PendingLifeTotalAssignment.completion") }
+	return true
+}
+
+encode_PendingLifeTotalAssignment :: proc(b: ^strings.Builder, x: PendingLifeTotalAssignment) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingLifeTotalAssignment_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingLifeTotalAssignment_members :: proc(b: ^strings.Builder, x: PendingLifeTotalAssignment, first: ^bool) {
+	member(b, first, "completion_player"); encode_PlayerId(b, x.completion_player)
+	member(b, first, "remaining"); enc_dyn_t2_PlayerId_i32(b, x.remaining)
+	if !(x.completion == nil) { member(b, first, "completion"); enc_opt_PendingEffectResolved(b, x.completion) }
+}
+
+decode_PendingSpellResolution :: proc(v: json.Value, out: ^PendingSpellResolution) -> bool {
+	if v.kind != .Object do return fail("PendingSpellResolution: not an object")
+	if fv, found := get_any(v, "object_id"); found { if !decode_ObjectId(fv, &out.object_id) do return fail("PendingSpellResolution.object_id") } else { return fail("PendingSpellResolution.object_id missing") }
+	if fv, found := get_any(v, "controller"); found { if !decode_PlayerId(fv, &out.controller) do return fail("PendingSpellResolution.controller") } else { return fail("PendingSpellResolution.controller missing") }
+	if fv, found := get_any(v, "casting_variant"); found { if !decode_CastingVariant(fv, &out.casting_variant) do return fail("PendingSpellResolution.casting_variant") } else { return fail("PendingSpellResolution.casting_variant missing") }
+	if fv, found := get_any(v, "cast_from_zone"); found { if !dec_opt_Zone(fv, &out.cast_from_zone) do return fail("PendingSpellResolution.cast_from_zone") }
+	if fv, found := get_any(v, "cast_controller"); found { if !dec_opt_PlayerId(fv, &out.cast_controller) do return fail("PendingSpellResolution.cast_controller") }
+	if fv, found := get_any(v, "cast_timing_permission"); found { if !dec_opt_CastTimingPermission(fv, &out.cast_timing_permission) do return fail("PendingSpellResolution.cast_timing_permission") }
+	if fv, found := get_any(v, "spell_targets"); found { if !dec_dyn_TargetRef(fv, &out.spell_targets) do return fail("PendingSpellResolution.spell_targets") } else { return fail("PendingSpellResolution.spell_targets missing") }
+	if fv, found := get_any(v, "actual_mana_spent"); found { if !decode_u32(fv, &out.actual_mana_spent) do return fail("PendingSpellResolution.actual_mana_spent") }
+	if fv, found := get_any(v, "kickers_paid"); found { if !dec_dyn_KickerVariant(fv, &out.kickers_paid) do return fail("PendingSpellResolution.kickers_paid") }
+	if fv, found := get_any(v, "additional_cost_payment_count"); found { if !decode_u32(fv, &out.additional_cost_payment_count) do return fail("PendingSpellResolution.additional_cost_payment_count") }
+	if fv, found := get_any(v, "additional_cost_payments"); found { if !dec_dyn_AdditionalCostInstancePayment(fv, &out.additional_cost_payments) do return fail("PendingSpellResolution.additional_cost_payments") }
+	if fv, found := get_any(v, "convoked_creatures"); found { if !dec_dyn_ObjectId(fv, &out.convoked_creatures) do return fail("PendingSpellResolution.convoked_creatures") }
+	return true
+}
+
+encode_PendingSpellResolution :: proc(b: ^strings.Builder, x: PendingSpellResolution) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingSpellResolution_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingSpellResolution_members :: proc(b: ^strings.Builder, x: PendingSpellResolution, first: ^bool) {
+	member(b, first, "object_id"); encode_ObjectId(b, x.object_id)
+	member(b, first, "controller"); encode_PlayerId(b, x.controller)
+	member(b, first, "casting_variant"); encode_CastingVariant(b, x.casting_variant)
+	member(b, first, "cast_from_zone"); enc_opt_Zone(b, x.cast_from_zone)
+	if !(x.cast_controller == nil) { member(b, first, "cast_controller"); enc_opt_PlayerId(b, x.cast_controller) }
+	if !(x.cast_timing_permission == nil) { member(b, first, "cast_timing_permission"); enc_opt_CastTimingPermission(b, x.cast_timing_permission) }
+	member(b, first, "spell_targets"); enc_dyn_TargetRef(b, x.spell_targets)
+	member(b, first, "actual_mana_spent"); encode_u32(b, x.actual_mana_spent)
+	if !(len(x.kickers_paid) == 0) { member(b, first, "kickers_paid"); enc_dyn_KickerVariant(b, x.kickers_paid) }
+	if !(x.additional_cost_payment_count == 0) { member(b, first, "additional_cost_payment_count"); encode_u32(b, x.additional_cost_payment_count) }
+	if !(len(x.additional_cost_payments) == 0) { member(b, first, "additional_cost_payments"); enc_dyn_AdditionalCostInstancePayment(b, x.additional_cost_payments) }
+	if !(len(x.convoked_creatures) == 0) { member(b, first, "convoked_creatures"); enc_dyn_ObjectId(b, x.convoked_creatures) }
+}
+
+decode_PendingMutateMerge :: proc(v: json.Value, out: ^PendingMutateMerge) -> bool {
+	if v.kind != .Object do return fail("PendingMutateMerge: not an object")
+	if fv, found := get_any(v, "merging_id"); found { if !decode_ObjectId(fv, &out.merging_id) do return fail("PendingMutateMerge.merging_id") } else { return fail("PendingMutateMerge.merging_id missing") }
+	if fv, found := get_any(v, "target_id"); found { if !decode_ObjectId(fv, &out.target_id) do return fail("PendingMutateMerge.target_id") } else { return fail("PendingMutateMerge.target_id missing") }
+	if fv, found := get_any(v, "controller"); found { if !decode_PlayerId(fv, &out.controller) do return fail("PendingMutateMerge.controller") } else { return fail("PendingMutateMerge.controller missing") }
+	return true
+}
+
+encode_PendingMutateMerge :: proc(b: ^strings.Builder, x: PendingMutateMerge) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingMutateMerge_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingMutateMerge_members :: proc(b: ^strings.Builder, x: PendingMutateMerge, first: ^bool) {
+	member(b, first, "merging_id"); encode_ObjectId(b, x.merging_id)
+	member(b, first, "target_id"); encode_ObjectId(b, x.target_id)
+	member(b, first, "controller"); encode_PlayerId(b, x.controller)
+}
+
+decode_PendingCipherEncode :: proc(v: json.Value, out: ^PendingCipherEncode) -> bool {
+	if v.kind != .Object do return fail("PendingCipherEncode: not an object")
+	if fv, found := get_any(v, "stage"); found { if !decode_CipherEncodeStage(fv, &out.stage) do return fail("PendingCipherEncode.stage") } else { return fail("PendingCipherEncode.stage missing") }
+	if fv, found := get_any(v, "card_id"); found { if !decode_ObjectId(fv, &out.card_id) do return fail("PendingCipherEncode.card_id") } else { return fail("PendingCipherEncode.card_id missing") }
+	if fv, found := get_any(v, "controller"); found { if !decode_PlayerId(fv, &out.controller) do return fail("PendingCipherEncode.controller") } else { return fail("PendingCipherEncode.controller missing") }
+	if fv, found := get_any(v, "creatures"); found { if !dec_dyn_ObjectId(fv, &out.creatures) do return fail("PendingCipherEncode.creatures") } else { return fail("PendingCipherEncode.creatures missing") }
+	return true
+}
+
+encode_PendingCipherEncode :: proc(b: ^strings.Builder, x: PendingCipherEncode) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingCipherEncode_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingCipherEncode_members :: proc(b: ^strings.Builder, x: PendingCipherEncode, first: ^bool) {
+	member(b, first, "stage"); encode_CipherEncodeStage(b, x.stage)
+	member(b, first, "card_id"); encode_ObjectId(b, x.card_id)
+	member(b, first, "controller"); encode_PlayerId(b, x.controller)
+	member(b, first, "creatures"); enc_dyn_ObjectId(b, x.creatures)
+}
+
+decode_PendingEntryAttackSeat :: proc(v: json.Value, out: ^PendingEntryAttackSeat) -> bool {
+	if v.kind != .Object do return fail("PendingEntryAttackSeat: not an object")
+	if fv, found := get_any(v, "entrant"); found { if !decode_ObjectIncarnationRef(fv, &out.entrant) do return fail("PendingEntryAttackSeat.entrant") } else { return fail("PendingEntryAttackSeat.entrant missing") }
+	return true
+}
+
+encode_PendingEntryAttackSeat :: proc(b: ^strings.Builder, x: PendingEntryAttackSeat) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingEntryAttackSeat_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingEntryAttackSeat_members :: proc(b: ^strings.Builder, x: PendingEntryAttackSeat, first: ^bool) {
+	member(b, first, "entrant"); encode_ObjectIncarnationRef(b, x.entrant)
+}
+
+decode_PostReplacementDrainStack :: proc(v: json.Value, out: ^PostReplacementDrainStack) -> bool {
+	if v.kind != .Object do return fail("PostReplacementDrainStack: not an object")
+	if fv, found := get_any(v, "drains"); found { if !dec_dyn_PostReplacementDrain(fv, &out.drains) do return fail("PostReplacementDrainStack.drains") } else { return fail("PostReplacementDrainStack.drains missing") }
+	if fv, found := get_any(v, "id"); found { if !dec_opt_PostReplacementFrameId(fv, &out.id) do return fail("PostReplacementDrainStack.id") }
+	return true
+}
+
+encode_PostReplacementDrainStack :: proc(b: ^strings.Builder, x: PostReplacementDrainStack) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PostReplacementDrainStack_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PostReplacementDrainStack_members :: proc(b: ^strings.Builder, x: PostReplacementDrainStack, first: ^bool) {
+	member(b, first, "drains"); enc_dyn_PostReplacementDrain(b, x.drains)
+	if !(x.id == nil) { member(b, first, "id"); enc_opt_PostReplacementFrameId(b, x.id) }
+}
+
+decode_PhysicalTell :: proc(v: json.Value, out: ^PhysicalTell) -> bool {
+	if v.kind != .String do return fail("PhysicalTell: not a string")
+	str := v.text
+	switch str {
+	case "TouchFace": out^ = .TouchFace
+	case "TouchTable": out^ = .TouchTable
+	case "Laugh": out^ = .Laugh
+	case "FlickCards": out^ = .FlickCards
+	case: return fail("PhysicalTell: unknown variant")
+	}
+	return true
+}
+
+encode_PhysicalTell :: proc(b: ^strings.Builder, x: PhysicalTell) {
+	@(static, rodata) NAMES := [PhysicalTell]string{
+		.TouchFace = "TouchFace",
+		.TouchTable = "TouchTable",
+		.Laugh = "Laugh",
+		.FlickCards = "FlickCards",
+	}
+	json.write_string(b, NAMES[x])
+}
+
 decode_ManaSourceOutput :: proc(v: json.Value, out: ^ManaSourceOutput) -> bool {
 	if v.kind != .Object do return fail("ManaSourceOutput: not an object")
 	tv, found := json.get(v, "type")
@@ -39333,7 +40167,7 @@ decode_TargetEffectDetail :: proc(v: json.Value, out: ^TargetEffectDetail) -> bo
 	switch tv.text {
 	case "None": out^ = TargetEffectDetail_None{}
 	case "Destination": tmp: TargetEffectDetail_Destination; if !decode_Zone(json.Value{kind = .String, text = other_member_key(v, "type")}, &tmp._0) do return fail("TargetEffectDetail::Destination"); out^ = tmp
-	case "Modification": tmp: TargetEffectDetail_Modification; if !decode_PtDirection(json.Value{kind = .String, text = other_member_key(v, "type")}, &tmp._0) do return fail("TargetEffectDetail::Modification"); out^ = tmp
+	case "Modification": tmp: TargetEffectDetail_Modification; if !decode_PtDirection(json.without_first(v, "type"), &tmp._0) do return fail("TargetEffectDetail::Modification"); out^ = tmp
 	case: return fail("TargetEffectDetail: unknown variant")
 	}
 	return true
@@ -39343,7 +40177,7 @@ encode_TargetEffectDetail :: proc(b: ^strings.Builder, x: TargetEffectDetail) {
 	#partial switch y in x {
 	case TargetEffectDetail_None: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "None"); strings.write_byte(b, '}')
 	case TargetEffectDetail_Destination: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Destination"); member_json_key(b, &f, y._0, encode_Zone); strings.write_string(b, "null"); strings.write_byte(b, '}')
-	case TargetEffectDetail_Modification: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Modification"); member_json_key(b, &f, y._0, encode_PtDirection); strings.write_string(b, "null"); strings.write_byte(b, '}')
+	case TargetEffectDetail_Modification: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Modification"); encode_PtDirection_members(b, y._0, &f); strings.write_byte(b, '}')
 	}
 }
 
@@ -39351,7 +40185,7 @@ encode_TargetEffectDetail_members :: proc(b: ^strings.Builder, x: TargetEffectDe
 	#partial switch y in x {
 	case TargetEffectDetail_None: _ = y; member(b, first, "type"); json.write_string(b, "None")
 	case TargetEffectDetail_Destination: member(b, first, "type"); json.write_string(b, "Destination"); member_json_key(b, first, y._0, encode_Zone); strings.write_string(b, "null")
-	case TargetEffectDetail_Modification: member(b, first, "type"); json.write_string(b, "Modification"); member_json_key(b, first, y._0, encode_PtDirection); strings.write_string(b, "null")
+	case TargetEffectDetail_Modification: member(b, first, "type"); json.write_string(b, "Modification"); encode_PtDirection_members(b, y._0, first)
 	}
 }
 
@@ -43221,29 +44055,6 @@ encode_ActivationObservers :: proc(b: ^strings.Builder, x: ActivationObservers) 
 	@(static, rodata) NAMES := [ActivationObservers]string{
 		.Unbound = "Unbound",
 		.Bound = "Bound",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_PhysicalTell :: proc(v: json.Value, out: ^PhysicalTell) -> bool {
-	if v.kind != .String do return fail("PhysicalTell: not a string")
-	str := v.text
-	switch str {
-	case "TouchFace": out^ = .TouchFace
-	case "TouchTable": out^ = .TouchTable
-	case "Laugh": out^ = .Laugh
-	case "FlickCards": out^ = .FlickCards
-	case: return fail("PhysicalTell: unknown variant")
-	}
-	return true
-}
-
-encode_PhysicalTell :: proc(b: ^strings.Builder, x: PhysicalTell) {
-	@(static, rodata) NAMES := [PhysicalTell]string{
-		.TouchFace = "TouchFace",
-		.TouchTable = "TouchTable",
-		.Laugh = "Laugh",
-		.FlickCards = "FlickCards",
 	}
 	json.write_string(b, NAMES[x])
 }
@@ -48962,79 +49773,6 @@ encode_LibraryKnowledgeStamp_members :: proc(b: ^strings.Builder, x: LibraryKnow
 	member(b, first, "boundary_generation"); encode_u64(b, x.boundary_generation)
 }
 
-decode_ResolutionFrame :: proc(v: json.Value, out: ^ResolutionFrame) -> bool {
-	if v.kind != .Object do return fail("ResolutionFrame: not an object")
-	tv, found := json.get(v, "type")
-	if !found || tv.kind != .String do return fail("ResolutionFrame: no tag")
-	switch tv.text {
-	case "AbilityContinuation": tmp: ResolutionFrame_AbilityContinuation; if !decode_AbilityContinuationFrame(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::AbilityContinuation"); out^ = tmp
-	case "RepeatFor": tmp: ResolutionFrame_RepeatFor; if !decode_PendingRepeatIteration(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::RepeatFor"); out^ = tmp
-	case "RepeatUntil": tmp: ResolutionFrame_RepeatUntil; if !decode_PendingRepeatUntil(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::RepeatUntil"); out^ = tmp
-	case "RepeatedOptionalPayment": tmp: ResolutionFrame_RepeatedOptionalPayment; if !decode_RepeatedOptionalPaymentFrame(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::RepeatedOptionalPayment"); out^ = tmp
-	case "ChangeZone": tmp: ResolutionFrame_ChangeZone; if !dec_ptr_ChangeZoneFrame(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::ChangeZone"); out^ = tmp
-	case "BatchDelivery": tmp: ResolutionFrame_BatchDelivery; if !dec_ptr_PendingBatchDeliveries(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::BatchDelivery"); out^ = tmp
-	case "CounterMoves": tmp: ResolutionFrame_CounterMoves; if !decode_PendingCounterMoveQueue(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::CounterMoves"); out^ = tmp
-	case "CounterRemovals": tmp: ResolutionFrame_CounterRemovals; if !decode_PendingCounterRemovalQueue(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::CounterRemovals"); out^ = tmp
-	case "CounterAdditions": tmp: ResolutionFrame_CounterAdditions; if !decode_PendingCounterAdditionQueue(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::CounterAdditions"); out^ = tmp
-	case "CopyToken": tmp: ResolutionFrame_CopyToken; if !decode_PendingCopyTokenResolution(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::CopyToken"); out^ = tmp
-	case "DebugCardEntries": tmp: ResolutionFrame_DebugCardEntries; if !dec_ptr_PendingDebugCardEntries(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::DebugCardEntries"); out^ = tmp
-	case "EachPlayerCopyChosen": tmp: ResolutionFrame_EachPlayerCopyChosen; if !decode_PendingEachPlayerCopyChosen(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::EachPlayerCopyChosen"); out^ = tmp
-	case "ChooseOneOf": tmp: ResolutionFrame_ChooseOneOf; if !decode_PendingChooseOneOf(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::ChooseOneOf"); out^ = tmp
-	case "VoteBallot": tmp: ResolutionFrame_VoteBallot; if !decode_PendingVoteBallotIteration(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::VoteBallot"); out^ = tmp
-	case "PerPlayerZoneChoice": tmp: ResolutionFrame_PerPlayerZoneChoice; if !decode_PendingPerPlayerZoneChoice(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::PerPlayerZoneChoice"); out^ = tmp
-	case "PerCategoryZoneChoice": tmp: ResolutionFrame_PerCategoryZoneChoice; if !decode_PerCategoryZoneChoiceFrame(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::PerCategoryZoneChoice"); out^ = tmp
-	case "OptionalEffect": tmp: ResolutionFrame_OptionalEffect; if !decode_OptionalEffectFrame(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::OptionalEffect"); out^ = tmp
-	case "CoinFlip": tmp: ResolutionFrame_CoinFlip; if !decode_PendingCoinFlip(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::CoinFlip"); out^ = tmp
-	case "DieRoll": tmp: ResolutionFrame_DieRoll; if !dec_ptr_PendingDieRoll(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::DieRoll"); out^ = tmp
-	case "Proliferate": tmp: ResolutionFrame_Proliferate; if !decode_PendingProliferateActions(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::Proliferate"); out^ = tmp
-	case "MultiDraw": tmp: ResolutionFrame_MultiDraw; if !decode_MultiDrawFrame(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::MultiDraw"); out^ = tmp
-	case "Discard": tmp: ResolutionFrame_Discard; if !dec_ptr_DiscardFrame(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::Discard"); out^ = tmp
-	case "ConniveReentry": tmp: ResolutionFrame_ConniveReentry; if !decode_PendingConniveReentry(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::ConniveReentry"); out^ = tmp
-	case "LifeTotalAssignment": tmp: ResolutionFrame_LifeTotalAssignment; if !decode_PendingLifeTotalAssignment(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::LifeTotalAssignment"); out^ = tmp
-	case "SpellResolution": tmp: ResolutionFrame_SpellResolution; if !decode_PendingSpellResolution(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::SpellResolution"); out^ = tmp
-	case "MutateMerge": tmp: ResolutionFrame_MutateMerge; if !decode_PendingMutateMerge(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::MutateMerge"); out^ = tmp
-	case "CipherEncode": tmp: ResolutionFrame_CipherEncode; if !decode_PendingCipherEncode(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::CipherEncode"); out^ = tmp
-	case "EntryAttackSeat": tmp: ResolutionFrame_EntryAttackSeat; if !decode_PendingEntryAttackSeat(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::EntryAttackSeat"); out^ = tmp
-	case "PostReplacement": tmp: ResolutionFrame_PostReplacement; if !decode_PostReplacementDrainStack(json.get_or_null(v, "data"), &tmp._0) do return fail("ResolutionFrame::PostReplacement"); out^ = tmp
-	case: return fail("ResolutionFrame: unknown variant")
-	}
-	return true
-}
-
-encode_ResolutionFrame :: proc(b: ^strings.Builder, x: ResolutionFrame) {
-	#partial switch y in x {
-	case ResolutionFrame_AbilityContinuation: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "AbilityContinuation"); member(b, &f, "data"); encode_AbilityContinuationFrame(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_RepeatFor: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "RepeatFor"); member(b, &f, "data"); encode_PendingRepeatIteration(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_RepeatUntil: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "RepeatUntil"); member(b, &f, "data"); encode_PendingRepeatUntil(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_RepeatedOptionalPayment: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "RepeatedOptionalPayment"); member(b, &f, "data"); encode_RepeatedOptionalPaymentFrame(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_ChangeZone: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ChangeZone"); member(b, &f, "data"); enc_ptr_ChangeZoneFrame(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_BatchDelivery: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "BatchDelivery"); member(b, &f, "data"); enc_ptr_PendingBatchDeliveries(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_CounterMoves: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CounterMoves"); member(b, &f, "data"); encode_PendingCounterMoveQueue(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_CounterRemovals: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CounterRemovals"); member(b, &f, "data"); encode_PendingCounterRemovalQueue(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_CounterAdditions: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CounterAdditions"); member(b, &f, "data"); encode_PendingCounterAdditionQueue(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_CopyToken: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CopyToken"); member(b, &f, "data"); encode_PendingCopyTokenResolution(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_DebugCardEntries: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "DebugCardEntries"); member(b, &f, "data"); enc_ptr_PendingDebugCardEntries(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_EachPlayerCopyChosen: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "EachPlayerCopyChosen"); member(b, &f, "data"); encode_PendingEachPlayerCopyChosen(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_ChooseOneOf: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ChooseOneOf"); member(b, &f, "data"); encode_PendingChooseOneOf(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_VoteBallot: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "VoteBallot"); member(b, &f, "data"); encode_PendingVoteBallotIteration(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_PerPlayerZoneChoice: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "PerPlayerZoneChoice"); member(b, &f, "data"); encode_PendingPerPlayerZoneChoice(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_PerCategoryZoneChoice: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "PerCategoryZoneChoice"); member(b, &f, "data"); encode_PerCategoryZoneChoiceFrame(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_OptionalEffect: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "OptionalEffect"); member(b, &f, "data"); encode_OptionalEffectFrame(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_CoinFlip: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CoinFlip"); member(b, &f, "data"); encode_PendingCoinFlip(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_DieRoll: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "DieRoll"); member(b, &f, "data"); enc_ptr_PendingDieRoll(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_Proliferate: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Proliferate"); member(b, &f, "data"); encode_PendingProliferateActions(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_MultiDraw: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "MultiDraw"); member(b, &f, "data"); encode_MultiDrawFrame(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_Discard: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Discard"); member(b, &f, "data"); enc_ptr_DiscardFrame(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_ConniveReentry: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ConniveReentry"); member(b, &f, "data"); encode_PendingConniveReentry(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_LifeTotalAssignment: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "LifeTotalAssignment"); member(b, &f, "data"); encode_PendingLifeTotalAssignment(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_SpellResolution: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "SpellResolution"); member(b, &f, "data"); encode_PendingSpellResolution(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_MutateMerge: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "MutateMerge"); member(b, &f, "data"); encode_PendingMutateMerge(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_CipherEncode: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CipherEncode"); member(b, &f, "data"); encode_PendingCipherEncode(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_EntryAttackSeat: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "EntryAttackSeat"); member(b, &f, "data"); encode_PendingEntryAttackSeat(b, y._0); strings.write_byte(b, '}')
-	case ResolutionFrame_PostReplacement: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "PostReplacement"); member(b, &f, "data"); encode_PostReplacementDrainStack(b, y._0); strings.write_byte(b, '}')
-	}
-}
-
 decode_GameLogEntry :: proc(v: json.Value, out: ^GameLogEntry) -> bool {
 	if v.kind != .Object do return fail("GameLogEntry: not an object")
 	if fv, found := get_any(v, "seq"); found { if !decode_u32(fv, &out.seq) do return fail("GameLogEntry.seq") } else { return fail("GameLogEntry.seq missing") }
@@ -52512,35 +53250,6 @@ encode_FinalizePrePaymentChecks_members :: proc(b: ^strings.Builder, x: Finalize
 	member(b, first, "cast_this_way_enters_mods"); encode_PendingEntersModifications(b, x.cast_this_way_enters_mods)
 }
 
-decode_OptionalEffectFrame :: proc(v: json.Value, out: ^OptionalEffectFrame) -> bool {
-	if v.kind != .Object do return fail("OptionalEffectFrame: not an object")
-	if fv, found := get_any(v, "ability"); found { if !dec_ptr_ResolvedAbility(fv, &out.ability) do return fail("OptionalEffectFrame.ability") } else { return fail("OptionalEffectFrame.ability missing") }
-	if fv, found := get_any(v, "trigger_event"); found { if !dec_opt_GameEvent(fv, &out.trigger_event) do return fail("OptionalEffectFrame.trigger_event") }
-	if fv, found := get_any(v, "trigger_events"); found { if !dec_dyn_GameEvent(fv, &out.trigger_events) do return fail("OptionalEffectFrame.trigger_events") }
-	if fv, found := get_any(v, "trigger_match_count"); found { if !dec_opt_u32(fv, &out.trigger_match_count) do return fail("OptionalEffectFrame.trigger_match_count") }
-	if fv, found := get_any(v, "return_result_occurrence"); found { if !dec_opt_ReturnResultOccurrenceId(fv, &out.return_result_occurrence) do return fail("OptionalEffectFrame.return_result_occurrence") }
-	if fv, found := get_any(v, "replacement_action"); found { if !dec_opt_ReplacementActionScope(fv, &out.replacement_action) do return fail("OptionalEffectFrame.replacement_action") }
-	if fv, found := get_any(v, "parked_poll"); found { if !dec_ptr_ParkedOpponentMayPoll(fv, &out.parked_poll) do return fail("OptionalEffectFrame.parked_poll") }
-	return true
-}
-
-encode_OptionalEffectFrame :: proc(b: ^strings.Builder, x: OptionalEffectFrame) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_OptionalEffectFrame_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_OptionalEffectFrame_members :: proc(b: ^strings.Builder, x: OptionalEffectFrame, first: ^bool) {
-	member(b, first, "ability"); enc_ptr_ResolvedAbility(b, x.ability)
-	if !(x.trigger_event == nil) { member(b, first, "trigger_event"); enc_opt_GameEvent(b, x.trigger_event) }
-	if !(len(x.trigger_events) == 0) { member(b, first, "trigger_events"); enc_dyn_GameEvent(b, x.trigger_events) }
-	if !(x.trigger_match_count == nil) { member(b, first, "trigger_match_count"); enc_opt_u32(b, x.trigger_match_count) }
-	if !(x.return_result_occurrence == nil) { member(b, first, "return_result_occurrence"); enc_opt_ReturnResultOccurrenceId(b, x.return_result_occurrence) }
-	if !(x.replacement_action == nil) { member(b, first, "replacement_action"); enc_opt_ReplacementActionScope(b, x.replacement_action) }
-	if !(x.parked_poll == nil) { member(b, first, "parked_poll"); enc_ptr_ParkedOpponentMayPoll(b, x.parked_poll) }
-}
-
 decode_ManaAbilityActivationStage :: proc(v: json.Value, out: ^ManaAbilityActivationStage) -> bool {
 	if v.kind != .Object do return fail("ManaAbilityActivationStage: not an object")
 	tv, found := json.get(v, "type")
@@ -53568,6 +54277,760 @@ encode_PhaseOutCause :: proc(b: ^strings.Builder, x: PhaseOutCause) {
 	@(static, rodata) NAMES := [PhaseOutCause]string{
 		.Directly = "Directly",
 		.Indirectly = "Indirectly",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_PendingContinuation :: proc(v: json.Value, out: ^PendingContinuation) -> bool {
+	if v.kind != .Object do return fail("PendingContinuation: not an object")
+	if fv, found := get_any(v, "chain"); found { if !dec_ptr_ResolvedAbility(fv, &out.chain) do return fail("PendingContinuation.chain") } else { return fail("PendingContinuation.chain missing") }
+	if fv, found := get_any(v, "return_result_occurrence"); found { if !dec_opt_ReturnResultOccurrenceId(fv, &out.return_result_occurrence) do return fail("PendingContinuation.return_result_occurrence") }
+	if fv, found := get_any(v, "pending_return_result_producer"); found { if !dec_opt_t2_ReturnResultOccurrenceId_ReturnResultId(fv, &out.pending_return_result_producer) do return fail("PendingContinuation.pending_return_result_producer") }
+	if fv, found := get_any(v, "parent_kind"); found { if !dec_opt_EffectKind(fv, &out.parent_kind) do return fail("PendingContinuation.parent_kind") }
+	if fv, found := get_any(v, "search_attach_host"); found { if !dec_opt_AttachTarget(fv, &out.search_attach_host) do return fail("PendingContinuation.search_attach_host") }
+	if fv, found := get_any(v, "trigger_context"); found { if !dec_opt_ResolvingTriggerContext(fv, &out.trigger_context) do return fail("PendingContinuation.trigger_context") }
+	if fv, found := get_any(v, "trigger_firing"); found { if !dec_opt_TriggerFiring(fv, &out.trigger_firing) do return fail("PendingContinuation.trigger_firing") }
+	if fv, found := get_any(v, "attachment_choice"); found { if !dec_opt_PendingAttachmentChoice(fv, &out.attachment_choice) do return fail("PendingContinuation.attachment_choice") }
+	if fv, found := get_any(v, "attachment_remainder"); found { if !dec_opt_PendingAttachmentRemainder(fv, &out.attachment_remainder) do return fail("PendingContinuation.attachment_remainder") }
+	if fv, found := get_any(v, "player_scope_linked_exile"); found { if !dec_opt_PendingPlayerScopeTail(fv, &out.player_scope_tail) do return fail("PendingContinuation.player_scope_tail") }
+	if fv, found := get_any(v, "player_scope_queue_end"); found { if !decode_bool(fv, &out.player_scope_queue_end) do return fail("PendingContinuation.player_scope_queue_end") }
+	if fv, found := get_any(v, "x_announcement"); found { if !dec_opt_ContinuationXAnnouncement(fv, &out.x_announcement) do return fail("PendingContinuation.x_announcement") }
+	if fv, found := get_any(v, "replacement_action"); found { if !dec_opt_ReplacementActionScope(fv, &out.replacement_action) do return fail("PendingContinuation.replacement_action") }
+	if fv, found := get_any(v, "head_payment_origin"); found { if !decode_ResolutionPaymentOrigin(fv, &out.head_payment_origin) do return fail("PendingContinuation.head_payment_origin") }
+	return true
+}
+
+encode_PendingContinuation :: proc(b: ^strings.Builder, x: PendingContinuation) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingContinuation_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingContinuation_members :: proc(b: ^strings.Builder, x: PendingContinuation, first: ^bool) {
+	member(b, first, "chain"); enc_ptr_ResolvedAbility(b, x.chain)
+	if !(x.return_result_occurrence == nil) { member(b, first, "return_result_occurrence"); enc_opt_ReturnResultOccurrenceId(b, x.return_result_occurrence) }
+	if !(x.pending_return_result_producer == nil) { member(b, first, "pending_return_result_producer"); enc_opt_t2_ReturnResultOccurrenceId_ReturnResultId(b, x.pending_return_result_producer) }
+	if !(x.parent_kind == nil) { member(b, first, "parent_kind"); enc_opt_EffectKind(b, x.parent_kind) }
+	if !(x.search_attach_host == nil) { member(b, first, "search_attach_host"); enc_opt_AttachTarget(b, x.search_attach_host) }
+	if !(x.trigger_context == nil) { member(b, first, "trigger_context"); enc_opt_ResolvingTriggerContext(b, x.trigger_context) }
+	if !(x.trigger_firing == nil) { member(b, first, "trigger_firing"); enc_opt_TriggerFiring(b, x.trigger_firing) }
+	if !(x.attachment_choice == nil) { member(b, first, "attachment_choice"); enc_opt_PendingAttachmentChoice(b, x.attachment_choice) }
+	if !(x.attachment_remainder == nil) { member(b, first, "attachment_remainder"); enc_opt_PendingAttachmentRemainder(b, x.attachment_remainder) }
+	if !(x.player_scope_tail == nil) { member(b, first, "player_scope_linked_exile"); enc_opt_PendingPlayerScopeTail(b, x.player_scope_tail) }
+	if !(!x.player_scope_queue_end) { member(b, first, "player_scope_queue_end"); encode_bool(b, x.player_scope_queue_end) }
+	if !(x.x_announcement == nil) { member(b, first, "x_announcement"); enc_opt_ContinuationXAnnouncement(b, x.x_announcement) }
+	if !(x.replacement_action == nil) { member(b, first, "replacement_action"); enc_opt_ReplacementActionScope(b, x.replacement_action) }
+	if !(skip_PendingContinuation_ResolutionPaymentOrigin_is_fresh_choice_ResolutionPaymentOrigin(x.head_payment_origin)) { member(b, first, "head_payment_origin"); encode_ResolutionPaymentOrigin(b, x.head_payment_origin) }
+}
+
+decode_RepeatUntilStopWitness :: proc(v: json.Value, out: ^RepeatUntilStopWitness) -> bool {
+	if v.kind != .Object do return fail("RepeatUntilStopWitness: not an object")
+	if fv, found := get_any(v, "exiled_this_turn"); found { if !dec_dyn_ExiledStopInput(fv, &out.exiled_this_turn) do return fail("RepeatUntilStopWitness.exiled_this_turn") }
+	if fv, found := get_any(v, "linked"); found { if !dec_dyn_ExiledStopInput(fv, &out.linked) do return fail("RepeatUntilStopWitness.linked") }
+	return true
+}
+
+encode_RepeatUntilStopWitness :: proc(b: ^strings.Builder, x: RepeatUntilStopWitness) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_RepeatUntilStopWitness_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_RepeatUntilStopWitness_members :: proc(b: ^strings.Builder, x: RepeatUntilStopWitness, first: ^bool) {
+	if !(len(x.exiled_this_turn) == 0) { member(b, first, "exiled_this_turn"); enc_dyn_ExiledStopInput(b, x.exiled_this_turn) }
+	if !(len(x.linked) == 0) { member(b, first, "linked"); enc_dyn_ExiledStopInput(b, x.linked) }
+}
+
+decode_RepeatUntilIterationWitness :: proc(v: json.Value, out: ^RepeatUntilIterationWitness) -> bool {
+	if v.kind != .Object do return fail("RepeatUntilIterationWitness: not an object")
+	if fv, found := get_any(v, "choice"); found { if !decode_RepeatIterationChoice(fv, &out.choice) do return fail("RepeatUntilIterationWitness.choice") } else { return fail("RepeatUntilIterationWitness.choice missing") }
+	if fv, found := get_any(v, "zone_changes_before"); found { if !decode_int(fv, &out.zone_changes_before) do return fail("RepeatUntilIterationWitness.zone_changes_before") } else { return fail("RepeatUntilIterationWitness.zone_changes_before missing") }
+	return true
+}
+
+encode_RepeatUntilIterationWitness :: proc(b: ^strings.Builder, x: RepeatUntilIterationWitness) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_RepeatUntilIterationWitness_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_RepeatUntilIterationWitness_members :: proc(b: ^strings.Builder, x: RepeatUntilIterationWitness, first: ^bool) {
+	member(b, first, "choice"); encode_RepeatIterationChoice(b, x.choice)
+	member(b, first, "zone_changes_before"); encode_int(b, x.zone_changes_before)
+}
+
+decode_PendingRepeatedOptionalPayment :: proc(v: json.Value, out: ^PendingRepeatedOptionalPayment) -> bool {
+	if v.kind != .Object do return fail("PendingRepeatedOptionalPayment: not an object")
+	if fv, found := get_any(v, "payment_unit"); found { if !dec_ptr_ResolvedAbility(fv, &out.payment_unit) do return fail("PendingRepeatedOptionalPayment.payment_unit") } else { return fail("PendingRepeatedOptionalPayment.payment_unit missing") }
+	if fv, found := get_any(v, "reflexive"); found { if !dec_ptr_ResolvedAbility(fv, &out.reflexive) do return fail("PendingRepeatedOptionalPayment.reflexive") } else { return fail("PendingRepeatedOptionalPayment.reflexive missing") }
+	if fv, found := get_any(v, "remaining"); found { if !decode_u32(fv, &out.remaining) do return fail("PendingRepeatedOptionalPayment.remaining") } else { return fail("PendingRepeatedOptionalPayment.remaining missing") }
+	return true
+}
+
+encode_PendingRepeatedOptionalPayment :: proc(b: ^strings.Builder, x: PendingRepeatedOptionalPayment) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingRepeatedOptionalPayment_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingRepeatedOptionalPayment_members :: proc(b: ^strings.Builder, x: PendingRepeatedOptionalPayment, first: ^bool) {
+	member(b, first, "payment_unit"); enc_ptr_ResolvedAbility(b, x.payment_unit)
+	member(b, first, "reflexive"); enc_ptr_ResolvedAbility(b, x.reflexive)
+	member(b, first, "remaining"); encode_u32(b, x.remaining)
+}
+
+decode_PendingChangeZoneIteration :: proc(v: json.Value, out: ^PendingChangeZoneIteration) -> bool {
+	if v.kind != .Object do return fail("PendingChangeZoneIteration: not an object")
+	if fv, found := get_any(v, "logical_zone_change_group"); found { if !decode_LogicalZoneChangeGroup(fv, &out.logical_zone_change_group) do return fail("PendingChangeZoneIteration.logical_zone_change_group") } else { return fail("PendingChangeZoneIteration.logical_zone_change_group missing") }
+	if fv, found := get_any(v, "pending_return_result_producer"); found { if !dec_opt_t2_ReturnResultOccurrenceId_ReturnResultId(fv, &out.pending_return_result_producer) do return fail("PendingChangeZoneIteration.pending_return_result_producer") }
+	if fv, found := get_any(v, "paused_current"); found { if !dec_opt_PendingZoneChangeDelivery(fv, &out.paused_current) do return fail("PendingChangeZoneIteration.paused_current") }
+	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_ChangeZoneMemberEntry(fv, &out.remaining) do return fail("PendingChangeZoneIteration.remaining") } else { return fail("PendingChangeZoneIteration.remaining missing") }
+	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingChangeZoneIteration.source_id") } else { return fail("PendingChangeZoneIteration.source_id missing") }
+	if fv, found := get_any(v, "controller"); found { if !decode_PlayerId(fv, &out.controller) do return fail("PendingChangeZoneIteration.controller") } else { return fail("PendingChangeZoneIteration.controller missing") }
+	if fv, found := get_any(v, "performed_by"); found { if !decode_PlayerId(fv, &out.performed_by) do return fail("PendingChangeZoneIteration.performed_by") } else { return fail("PendingChangeZoneIteration.performed_by missing") }
+	if fv, found := get_any(v, "origin"); found { if !dec_opt_Zone(fv, &out.origin) do return fail("PendingChangeZoneIteration.origin") }
+	if fv, found := get_any(v, "destination"); found { if !decode_Zone(fv, &out.destination) do return fail("PendingChangeZoneIteration.destination") } else { return fail("PendingChangeZoneIteration.destination missing") }
+	if fv, found := get_any(v, "enter_transformed"); found { if !decode_bool(fv, &out.enter_transformed) do return fail("PendingChangeZoneIteration.enter_transformed") } else { return fail("PendingChangeZoneIteration.enter_transformed missing") }
+	if fv, found := get_any(v, "enters_under_player"); found { if !dec_opt_PlayerId(fv, &out.enters_under_player) do return fail("PendingChangeZoneIteration.enters_under_player") }
+	if fv, found := get_any(v, "duration"); found { if !dec_opt_Duration(fv, &out.duration) do return fail("PendingChangeZoneIteration.duration") }
+	if fv, found := get_any(v, "track_exiled_by_source"); found { if !decode_bool(fv, &out.track_exiled_by_source) do return fail("PendingChangeZoneIteration.track_exiled_by_source") } else { return fail("PendingChangeZoneIteration.track_exiled_by_source missing") }
+	if fv, found := get_any(v, "face_down_in_exile"); found { if !decode_ExileConcealment(fv, &out.face_down_in_exile) do return fail("PendingChangeZoneIteration.face_down_in_exile") }
+	if fv, found := get_any(v, "moved_count"); found { if !dec_opt_i32(fv, &out.moved_count) do return fail("PendingChangeZoneIteration.moved_count") }
+	if fv, found := get_any(v, "face_down_profile"); found { if !dec_opt_FaceDownProfile(fv, &out.face_down_profile) do return fail("PendingChangeZoneIteration.face_down_profile") }
+	if fv, found := get_any(v, "with_entry_effect"); found { if !dec_ptr_WithEntryEffect(fv, &out.with_entry_effect) do return fail("PendingChangeZoneIteration.with_entry_effect") }
+	if fv, found := get_any(v, "library_placement"); found { if !dec_opt_LibraryPosition(fv, &out.library_placement) do return fail("PendingChangeZoneIteration.library_placement") }
+	if fv, found := get_any(v, "library_reorder"); found { if !dec_opt_LibraryReorderOperation(fv, &out.library_reorder) do return fail("PendingChangeZoneIteration.library_reorder") }
+	if fv, found := get_any(v, "library_shuffle"); found { if !decode_LibraryShuffleMode(fv, &out.library_shuffle) do return fail("PendingChangeZoneIteration.library_shuffle") }
+	if fv, found := get_any(v, "enter_attached_to"); found { if !dec_opt_AttachTarget(fv, &out.enter_attached_to) do return fail("PendingChangeZoneIteration.enter_attached_to") }
+	if fv, found := get_any(v, "effect_kind"); found { if !decode_EffectKind(fv, &out.effect_kind) do return fail("PendingChangeZoneIteration.effect_kind") } else { return fail("PendingChangeZoneIteration.effect_kind missing") }
+	return true
+}
+
+encode_PendingChangeZoneIteration :: proc(b: ^strings.Builder, x: PendingChangeZoneIteration) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingChangeZoneIteration_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingChangeZoneIteration_members :: proc(b: ^strings.Builder, x: PendingChangeZoneIteration, first: ^bool) {
+	member(b, first, "logical_zone_change_group"); encode_LogicalZoneChangeGroup(b, x.logical_zone_change_group)
+	if !(x.pending_return_result_producer == nil) { member(b, first, "pending_return_result_producer"); enc_opt_t2_ReturnResultOccurrenceId_ReturnResultId(b, x.pending_return_result_producer) }
+	member(b, first, "paused_current"); enc_opt_PendingZoneChangeDelivery(b, x.paused_current)
+	member(b, first, "remaining"); enc_dyn_ChangeZoneMemberEntry(b, x.remaining)
+	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
+	member(b, first, "controller"); encode_PlayerId(b, x.controller)
+	member(b, first, "performed_by"); encode_PlayerId(b, x.performed_by)
+	member(b, first, "origin"); enc_opt_Zone(b, x.origin)
+	member(b, first, "destination"); encode_Zone(b, x.destination)
+	member(b, first, "enter_transformed"); encode_bool(b, x.enter_transformed)
+	if !(x.enters_under_player == nil) { member(b, first, "enters_under_player"); enc_opt_PlayerId(b, x.enters_under_player) }
+	if !(x.duration == nil) { member(b, first, "duration"); enc_opt_Duration(b, x.duration) }
+	member(b, first, "track_exiled_by_source"); encode_bool(b, x.track_exiled_by_source)
+	if !(skip_PendingChangeZoneIteration_ExileConcealment_is_public_ExileConcealment(x.face_down_in_exile)) { member(b, first, "face_down_in_exile"); encode_ExileConcealment(b, x.face_down_in_exile) }
+	if !(x.moved_count == nil) { member(b, first, "moved_count"); enc_opt_i32(b, x.moved_count) }
+	if !(x.face_down_profile == nil) { member(b, first, "face_down_profile"); enc_opt_FaceDownProfile(b, x.face_down_profile) }
+	if !(x.with_entry_effect == nil) { member(b, first, "with_entry_effect"); enc_ptr_WithEntryEffect(b, x.with_entry_effect) }
+	if !(x.library_placement == nil) { member(b, first, "library_placement"); enc_opt_LibraryPosition(b, x.library_placement) }
+	if !(x.library_reorder == nil) { member(b, first, "library_reorder"); enc_opt_LibraryReorderOperation(b, x.library_reorder) }
+	if !(skip_PendingChangeZoneIteration_LibraryShuffleMode_is_per_object_LibraryShuffleMode(x.library_shuffle)) { member(b, first, "library_shuffle"); encode_LibraryShuffleMode(b, x.library_shuffle) }
+	if !(x.enter_attached_to == nil) { member(b, first, "enter_attached_to"); enc_opt_AttachTarget(b, x.enter_attached_to) }
+	member(b, first, "effect_kind"); encode_EffectKind(b, x.effect_kind)
+}
+
+decode_ChangeZoneBatchMarker :: proc(v: json.Value, out: ^ChangeZoneBatchMarker) -> bool {
+	if v.kind != .Object do return fail("ChangeZoneBatchMarker: not an object")
+	if fv, found := get_any(v, "group_id"); found { if !decode_LogicalZoneChangeGroupId(fv, &out.group_id) do return fail("ChangeZoneBatchMarker.group_id") } else { return fail("ChangeZoneBatchMarker.group_id missing") }
+	if fv, found := get_any(v, "residency"); found { if !decode_BatchMarkerResidency(fv, &out.residency) do return fail("ChangeZoneBatchMarker.residency") }
+	return true
+}
+
+encode_ChangeZoneBatchMarker :: proc(b: ^strings.Builder, x: ChangeZoneBatchMarker) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_ChangeZoneBatchMarker_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_ChangeZoneBatchMarker_members :: proc(b: ^strings.Builder, x: ChangeZoneBatchMarker, first: ^bool) {
+	member(b, first, "group_id"); encode_LogicalZoneChangeGroupId(b, x.group_id)
+	if !(skip_ChangeZoneBatchMarker_BatchMarkerResidency_is_parked_BatchMarkerResidency(x.residency)) { member(b, first, "residency"); encode_BatchMarkerResidency(b, x.residency) }
+}
+
+decode_PendingComponentDeliveryParent :: proc(v: json.Value, out: ^PendingComponentDeliveryParent) -> bool {
+	if v.kind != .Object do return fail("PendingComponentDeliveryParent: not an object")
+	if fv, found := get_any(v, "parent_group_id"); found { if !decode_LogicalZoneChangeGroupId(fv, &out.parent_group_id) do return fail("PendingComponentDeliveryParent.parent_group_id") } else { return fail("PendingComponentDeliveryParent.parent_group_id missing") }
+	if fv, found := get_any(v, "member"); found { if !decode_ObjectIncarnationRef(fv, &out.member) do return fail("PendingComponentDeliveryParent.member") } else { return fail("PendingComponentDeliveryParent.member missing") }
+	if fv, found := get_any(v, "expected_event"); found { if !decode_ProposedEvent(fv, &out.expected_event) do return fail("PendingComponentDeliveryParent.expected_event") } else { return fail("PendingComponentDeliveryParent.expected_event missing") }
+	if fv, found := get_any(v, "inherited_arrangements"); found { if !dec_dyn_StagedLibraryArrangement(fv, &out.inherited_arrangements) do return fail("PendingComponentDeliveryParent.inherited_arrangements") }
+	return true
+}
+
+encode_PendingComponentDeliveryParent :: proc(b: ^strings.Builder, x: PendingComponentDeliveryParent) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingComponentDeliveryParent_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingComponentDeliveryParent_members :: proc(b: ^strings.Builder, x: PendingComponentDeliveryParent, first: ^bool) {
+	member(b, first, "parent_group_id"); encode_LogicalZoneChangeGroupId(b, x.parent_group_id)
+	member(b, first, "member"); encode_ObjectIncarnationRef(b, x.member)
+	member(b, first, "expected_event"); encode_ProposedEvent(b, x.expected_event)
+	if !(len(x.inherited_arrangements) == 0) { member(b, first, "inherited_arrangements"); enc_dyn_StagedLibraryArrangement(b, x.inherited_arrangements) }
+}
+
+decode_LogicalZoneChangeGroup :: proc(v: json.Value, out: ^LogicalZoneChangeGroup) -> bool {
+	if v.kind != .Object do return fail("LogicalZoneChangeGroup: not an object")
+	if fv, found := get_any(v, "logical_group_id"); found { if !decode_LogicalZoneChangeGroupId(fv, &out.logical_group_id) do return fail("LogicalZoneChangeGroup.logical_group_id") } else { return fail("LogicalZoneChangeGroup.logical_group_id missing") }
+	if fv, found := get_any(v, "prospective_battlefield_members"); found { if !dec_dyn_LogicalZoneChangeProspectiveMember(fv, &out.prospective_battlefield_members) do return fail("LogicalZoneChangeGroup.prospective_battlefield_members") } else { return fail("LogicalZoneChangeGroup.prospective_battlefield_members missing") }
+	if fv, found := get_any(v, "prospective_entrants"); found { if !dec_dyn_LogicalZoneChangeProspectiveMember(fv, &out.prospective_entrants) do return fail("LogicalZoneChangeGroup.prospective_entrants") } else { return fail("LogicalZoneChangeGroup.prospective_entrants missing") }
+	if fv, found := get_any(v, "terminal_outcomes"); found { if !dec_dyn_LogicalZoneChangeTerminalOutcome(fv, &out.terminal_outcomes) do return fail("LogicalZoneChangeGroup.terminal_outcomes") } else { return fail("LogicalZoneChangeGroup.terminal_outcomes missing") }
+	if fv, found := get_any(v, "post_event_member_contexts"); found { if !dec_dyn_opt_TriggerSourceContext(fv, &out.post_event_member_contexts) do return fail("LogicalZoneChangeGroup.post_event_member_contexts") } else { return fail("LogicalZoneChangeGroup.post_event_member_contexts missing") }
+	if fv, found := get_any(v, "all_origin_occurrences"); found { if !dec_dyn_LogicalZoneChangeOccurrence(fv, &out.all_origin_occurrences) do return fail("LogicalZoneChangeGroup.all_origin_occurrences") } else { return fail("LogicalZoneChangeGroup.all_origin_occurrences missing") }
+	if fv, found := get_any(v, "immediately_before_latched"); found { if !decode_bool(fv, &out.immediately_before_latched) do return fail("LogicalZoneChangeGroup.immediately_before_latched") } else { return fail("LogicalZoneChangeGroup.immediately_before_latched missing") }
+	if fv, found := get_any(v, "immediately_before_batched_triggers"); found { if !dec_dyn_LatchedBatchedTrigger(fv, &out.immediately_before_batched_triggers) do return fail("LogicalZoneChangeGroup.immediately_before_batched_triggers") } else { return fail("LogicalZoneChangeGroup.immediately_before_batched_triggers missing") }
+	if fv, found := get_any(v, "immediately_before_suppress_triggers"); found { if !dec_dyn_LatchedSuppressTrigger(fv, &out.immediately_before_suppress_triggers) do return fail("LogicalZoneChangeGroup.immediately_before_suppress_triggers") } else { return fail("LogicalZoneChangeGroup.immediately_before_suppress_triggers missing") }
+	if fv, found := get_any(v, "collected_before_departure"); found { if !dec_dyn_CollectedZoneChange(fv, &out.collected_before_departure) do return fail("LogicalZoneChangeGroup.collected_before_departure") }
+	if fv, found := get_any(v, "immediately_after_latched"); found { if !decode_bool(fv, &out.immediately_after_latched) do return fail("LogicalZoneChangeGroup.immediately_after_latched") } else { return fail("LogicalZoneChangeGroup.immediately_after_latched missing") }
+	if fv, found := get_any(v, "immediately_after_batched_triggers"); found { if !dec_dyn_LatchedBatchedTrigger(fv, &out.immediately_after_batched_triggers) do return fail("LogicalZoneChangeGroup.immediately_after_batched_triggers") } else { return fail("LogicalZoneChangeGroup.immediately_after_batched_triggers missing") }
+	if fv, found := get_any(v, "immediately_after_suppress_triggers"); found { if !dec_dyn_LatchedSuppressTrigger(fv, &out.immediately_after_suppress_triggers) do return fail("LogicalZoneChangeGroup.immediately_after_suppress_triggers") } else { return fail("LogicalZoneChangeGroup.immediately_after_suppress_triggers missing") }
+	if fv, found := get_any(v, "announced_members"); found { if !dec_dyn_ObjectIncarnationRef(fv, &out.announced_members) do return fail("LogicalZoneChangeGroup.announced_members") }
+	if fv, found := get_any(v, "departed_owner_after_batched_triggers"); found { if !dec_dyn_LatchedBatchedTrigger(fv, &out.departed_owner_after_batched_triggers) do return fail("LogicalZoneChangeGroup.departed_owner_after_batched_triggers") }
+	if fv, found := get_any(v, "departed_owner_after_suppress_triggers"); found { if !dec_dyn_LatchedSuppressTrigger(fv, &out.departed_owner_after_suppress_triggers) do return fail("LogicalZoneChangeGroup.departed_owner_after_suppress_triggers") }
+	return true
+}
+
+encode_LogicalZoneChangeGroup :: proc(b: ^strings.Builder, x: LogicalZoneChangeGroup) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_LogicalZoneChangeGroup_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_LogicalZoneChangeGroup_members :: proc(b: ^strings.Builder, x: LogicalZoneChangeGroup, first: ^bool) {
+	member(b, first, "logical_group_id"); encode_LogicalZoneChangeGroupId(b, x.logical_group_id)
+	member(b, first, "prospective_battlefield_members"); enc_dyn_LogicalZoneChangeProspectiveMember(b, x.prospective_battlefield_members)
+	member(b, first, "prospective_entrants"); enc_dyn_LogicalZoneChangeProspectiveMember(b, x.prospective_entrants)
+	member(b, first, "terminal_outcomes"); enc_dyn_LogicalZoneChangeTerminalOutcome(b, x.terminal_outcomes)
+	member(b, first, "post_event_member_contexts"); enc_dyn_opt_TriggerSourceContext(b, x.post_event_member_contexts)
+	member(b, first, "all_origin_occurrences"); enc_dyn_LogicalZoneChangeOccurrence(b, x.all_origin_occurrences)
+	member(b, first, "immediately_before_latched"); encode_bool(b, x.immediately_before_latched)
+	member(b, first, "immediately_before_batched_triggers"); enc_dyn_LatchedBatchedTrigger(b, x.immediately_before_batched_triggers)
+	member(b, first, "immediately_before_suppress_triggers"); enc_dyn_LatchedSuppressTrigger(b, x.immediately_before_suppress_triggers)
+	member(b, first, "collected_before_departure"); enc_dyn_CollectedZoneChange(b, x.collected_before_departure)
+	member(b, first, "immediately_after_latched"); encode_bool(b, x.immediately_after_latched)
+	member(b, first, "immediately_after_batched_triggers"); enc_dyn_LatchedBatchedTrigger(b, x.immediately_after_batched_triggers)
+	member(b, first, "immediately_after_suppress_triggers"); enc_dyn_LatchedSuppressTrigger(b, x.immediately_after_suppress_triggers)
+	if !(len(x.announced_members) == 0) { member(b, first, "announced_members"); enc_dyn_ObjectIncarnationRef(b, x.announced_members) }
+	member(b, first, "departed_owner_after_batched_triggers"); enc_dyn_LatchedBatchedTrigger(b, x.departed_owner_after_batched_triggers)
+	member(b, first, "departed_owner_after_suppress_triggers"); enc_dyn_LatchedSuppressTrigger(b, x.departed_owner_after_suppress_triggers)
+}
+
+decode_PendingZoneChangeDelivery :: proc(v: json.Value, out: ^PendingZoneChangeDelivery) -> bool {
+	if v.kind != .Object do return fail("PendingZoneChangeDelivery: not an object")
+	if fv, found := get_any(v, "member"); found { if !decode_ObjectIncarnationRef(fv, &out.member) do return fail("PendingZoneChangeDelivery.member") } else { return fail("PendingZoneChangeDelivery.member missing") }
+	if fv, found := get_any(v, "expected_event"); found { if !decode_ProposedEvent(fv, &out.expected_event) do return fail("PendingZoneChangeDelivery.expected_event") } else { return fail("PendingZoneChangeDelivery.expected_event missing") }
+	if fv, found := get_any(v, "delivery_events"); found { if !dec_dyn_GameEvent(fv, &out.delivery_events) do return fail("PendingZoneChangeDelivery.delivery_events") } else { return fail("PendingZoneChangeDelivery.delivery_events missing") }
+	if fv, found := get_any(v, "terminal_completion"); found { if !dec_opt_ZoneMoveCompletion(fv, &out.terminal_completion) do return fail("PendingZoneChangeDelivery.terminal_completion") }
+	if fv, found := get_any(v, "count"); found { if !decode_PausedZoneChangeDeliveryCount(fv, &out.count) do return fail("PendingZoneChangeDelivery.count") } else { return fail("PendingZoneChangeDelivery.count missing") }
+	if fv, found := get_any(v, "face_down_in_exile"); found { if !decode_ExileConcealment(fv, &out.face_down_in_exile) do return fail("PendingZoneChangeDelivery.face_down_in_exile") }
+	return true
+}
+
+encode_PendingZoneChangeDelivery :: proc(b: ^strings.Builder, x: PendingZoneChangeDelivery) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingZoneChangeDelivery_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingZoneChangeDelivery_members :: proc(b: ^strings.Builder, x: PendingZoneChangeDelivery, first: ^bool) {
+	member(b, first, "member"); encode_ObjectIncarnationRef(b, x.member)
+	member(b, first, "expected_event"); encode_ProposedEvent(b, x.expected_event)
+	member(b, first, "delivery_events"); enc_dyn_GameEvent(b, x.delivery_events)
+	member(b, first, "terminal_completion"); enc_opt_ZoneMoveCompletion(b, x.terminal_completion)
+	member(b, first, "count"); encode_PausedZoneChangeDeliveryCount(b, x.count)
+	if !(skip_PendingZoneChangeDelivery_ExileConcealment_is_public_ExileConcealment(x.face_down_in_exile)) { member(b, first, "face_down_in_exile"); encode_ExileConcealment(b, x.face_down_in_exile) }
+}
+
+decode_LibraryReorderOperation :: proc(v: json.Value, out: ^LibraryReorderOperation) -> bool {
+	if v.kind != .Object do return fail("LibraryReorderOperation: not an object")
+	if fv, found := get_any(v, "members"); found { if !dec_dyn_ObjectId(fv, &out.members) do return fail("LibraryReorderOperation.members") } else { return fail("LibraryReorderOperation.members missing") }
+	if fv, found := get_any(v, "libraries"); found { if !dec_dyn_t2_PlayerId_dyn_ObjectId(fv, &out.libraries) do return fail("LibraryReorderOperation.libraries") } else { return fail("LibraryReorderOperation.libraries missing") }
+	return true
+}
+
+encode_LibraryReorderOperation :: proc(b: ^strings.Builder, x: LibraryReorderOperation) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_LibraryReorderOperation_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_LibraryReorderOperation_members :: proc(b: ^strings.Builder, x: LibraryReorderOperation, first: ^bool) {
+	member(b, first, "members"); enc_dyn_ObjectId(b, x.members)
+	member(b, first, "libraries"); enc_dyn_t2_PlayerId_dyn_ObjectId(b, x.libraries)
+}
+
+decode_PendingBatchZoneMoveRequest :: proc(v: json.Value, out: ^PendingBatchZoneMoveRequest) -> bool {
+	if v.kind != .Object do return fail("PendingBatchZoneMoveRequest: not an object")
+	if fv, found := get_any(v, "object_id"); found { if !decode_ObjectId(fv, &out.object_id) do return fail("PendingBatchZoneMoveRequest.object_id") } else { return fail("PendingBatchZoneMoveRequest.object_id missing") }
+	if fv, found := get_any(v, "destination"); found { if !decode_Zone(fv, &out.destination) do return fail("PendingBatchZoneMoveRequest.destination") } else { return fail("PendingBatchZoneMoveRequest.destination missing") }
+	if fv, found := get_any(v, "cause"); found { if !decode_PendingBatchZoneChangeCause(fv, &out.cause) do return fail("PendingBatchZoneMoveRequest.cause") } else { return fail("PendingBatchZoneMoveRequest.cause missing") }
+	if fv, found := get_any(v, "enter_tapped"); found { if !decode_EtbTapState(fv, &out.enter_tapped) do return fail("PendingBatchZoneMoveRequest.enter_tapped") }
+	if fv, found := get_any(v, "enters_attacking"); found { if !decode_bool(fv, &out.enters_attacking) do return fail("PendingBatchZoneMoveRequest.enters_attacking") }
+	if fv, found := get_any(v, "enter_transformed"); found { if !decode_bool(fv, &out.enter_transformed) do return fail("PendingBatchZoneMoveRequest.enter_transformed") }
+	if fv, found := get_any(v, "controller_override"); found { if !dec_opt_PlayerId(fv, &out.controller_override) do return fail("PendingBatchZoneMoveRequest.controller_override") }
+	if fv, found := get_any(v, "enter_with_counters"); found { if !dec_dyn_t2_CounterType_u32(fv, &out.enter_with_counters) do return fail("PendingBatchZoneMoveRequest.enter_with_counters") }
+	if fv, found := get_any(v, "face_down_profile"); found { if !dec_opt_FaceDownProfile(fv, &out.face_down_profile) do return fail("PendingBatchZoneMoveRequest.face_down_profile") }
+	if fv, found := get_any(v, "chain_referent"); found { if !decode_ChainReferentIntent(fv, &out.chain_referent) do return fail("PendingBatchZoneMoveRequest.chain_referent") }
+	if fv, found := get_any(v, "attach_to"); found { if !dec_opt_AttachTarget(fv, &out.attach_to) do return fail("PendingBatchZoneMoveRequest.attach_to") }
+	if fv, found := get_any(v, "performed_by"); found { if !dec_opt_PlayerId(fv, &out.performed_by) do return fail("PendingBatchZoneMoveRequest.performed_by") }
+	if fv, found := get_any(v, "ownership_actor"); found { if !decode_EntryOwnershipActor(fv, &out.ownership_actor) do return fail("PendingBatchZoneMoveRequest.ownership_actor") } else { out.ownership_actor = EntryOwnershipActor(EntryOwnershipActor_Unrecorded{}) }
+	if fv, found := get_any(v, "with_entry_effect"); found { if !dec_ptr_WithEntryEffect(fv, &out.with_entry_effect) do return fail("PendingBatchZoneMoveRequest.with_entry_effect") }
+	if fv, found := get_any(v, "library_placement"); found { if !dec_opt_LibraryPosition(fv, &out.library_placement) do return fail("PendingBatchZoneMoveRequest.library_placement") }
+	if fv, found := get_any(v, "library_shuffle"); found { if !decode_LibraryShuffleMode(fv, &out.library_shuffle) do return fail("PendingBatchZoneMoveRequest.library_shuffle") }
+	if fv, found := get_any(v, "exile_duration"); found { if !dec_opt_Duration(fv, &out.exile_duration) do return fail("PendingBatchZoneMoveRequest.exile_duration") }
+	if fv, found := get_any(v, "exile_controller"); found { if !dec_opt_PlayerId(fv, &out.exile_controller) do return fail("PendingBatchZoneMoveRequest.exile_controller") }
+	if fv, found := get_any(v, "exile_tracking"); found { if !decode_ZoneDeliveryExileTracking(fv, &out.exile_tracking) do return fail("PendingBatchZoneMoveRequest.exile_tracking") }
+	if fv, found := get_any(v, "replacement_applied"); found { if !dec_dyn_AppliedReplacementKey(fv, &out.replacement_applied) do return fail("PendingBatchZoneMoveRequest.replacement_applied") }
+	if fv, found := get_any(v, "face_down_in_exile"); found { if !decode_ExileConcealment(fv, &out.face_down_in_exile) do return fail("PendingBatchZoneMoveRequest.face_down_in_exile") }
+	return true
+}
+
+encode_PendingBatchZoneMoveRequest :: proc(b: ^strings.Builder, x: PendingBatchZoneMoveRequest) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingBatchZoneMoveRequest_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingBatchZoneMoveRequest_members :: proc(b: ^strings.Builder, x: PendingBatchZoneMoveRequest, first: ^bool) {
+	member(b, first, "object_id"); encode_ObjectId(b, x.object_id)
+	member(b, first, "destination"); encode_Zone(b, x.destination)
+	member(b, first, "cause"); encode_PendingBatchZoneChangeCause(b, x.cause)
+	if !(skip_PendingBatchZoneMoveRequest_EtbTapState_is_unspecified_EtbTapState(x.enter_tapped)) { member(b, first, "enter_tapped"); encode_EtbTapState(b, x.enter_tapped) }
+	if !(!x.enters_attacking) { member(b, first, "enters_attacking"); encode_bool(b, x.enters_attacking) }
+	member(b, first, "enter_transformed"); encode_bool(b, x.enter_transformed)
+	if !(x.controller_override == nil) { member(b, first, "controller_override"); enc_opt_PlayerId(b, x.controller_override) }
+	if !(len(x.enter_with_counters) == 0) { member(b, first, "enter_with_counters"); enc_dyn_t2_CounterType_u32(b, x.enter_with_counters) }
+	if !(x.face_down_profile == nil) { member(b, first, "face_down_profile"); enc_opt_FaceDownProfile(b, x.face_down_profile) }
+	if !(skip_PendingBatchZoneMoveRequest_ChainReferentIntent_is_silent_ChainReferentIntent(x.chain_referent)) { member(b, first, "chain_referent"); encode_ChainReferentIntent(b, x.chain_referent) }
+	if !(x.attach_to == nil) { member(b, first, "attach_to"); enc_opt_AttachTarget(b, x.attach_to) }
+	if !(x.performed_by == nil) { member(b, first, "performed_by"); enc_opt_PlayerId(b, x.performed_by) }
+	if !(skip_PendingBatchZoneMoveRequest_EntryOwnershipActor_is_unrecorded_EntryOwnershipActor(x.ownership_actor)) { member(b, first, "ownership_actor"); encode_EntryOwnershipActor(b, x.ownership_actor) }
+	if !(x.with_entry_effect == nil) { member(b, first, "with_entry_effect"); enc_ptr_WithEntryEffect(b, x.with_entry_effect) }
+	if !(x.library_placement == nil) { member(b, first, "library_placement"); enc_opt_LibraryPosition(b, x.library_placement) }
+	if !(skip_PendingBatchZoneMoveRequest_LibraryShuffleMode_is_per_object_LibraryShuffleMode(x.library_shuffle)) { member(b, first, "library_shuffle"); encode_LibraryShuffleMode(b, x.library_shuffle) }
+	if !(x.exile_duration == nil) { member(b, first, "exile_duration"); enc_opt_Duration(b, x.exile_duration) }
+	if !(x.exile_controller == nil) { member(b, first, "exile_controller"); enc_opt_PlayerId(b, x.exile_controller) }
+	member(b, first, "exile_tracking"); encode_ZoneDeliveryExileTracking(b, x.exile_tracking)
+	if !(len(x.replacement_applied) == 0) { member(b, first, "replacement_applied"); enc_dyn_AppliedReplacementKey(b, x.replacement_applied) }
+	if !(skip_PendingBatchZoneMoveRequest_ExileConcealment_is_public_ExileConcealment(x.face_down_in_exile)) { member(b, first, "face_down_in_exile"); encode_ExileConcealment(b, x.face_down_in_exile) }
+}
+
+decode_StagedBatchDelivery :: proc(v: json.Value, out: ^StagedBatchDelivery) -> bool {
+	if v.kind != .Object do return fail("StagedBatchDelivery: not an object")
+	if fv, found := get_any(v, "stage"); found { if !decode_BatchDeliveryStage(fv, &out.stage) do return fail("StagedBatchDelivery.stage") } else { return fail("StagedBatchDelivery.stage missing") }
+	if fv, found := get_any(v, "members"); found { if !dec_dyn_StagedBatchMember(fv, &out.members) do return fail("StagedBatchDelivery.members") } else { return fail("StagedBatchDelivery.members missing") }
+	if fv, found := get_any(v, "cursor"); found { if !decode_int(fv, &out.cursor) do return fail("StagedBatchDelivery.cursor") } else { return fail("StagedBatchDelivery.cursor missing") }
+	if fv, found := get_any(v, "asking"); found { if !dec_opt_ObjectIncarnationRef(fv, &out.asking) do return fail("StagedBatchDelivery.asking") }
+	if fv, found := get_any(v, "arrangements"); found { if !dec_dyn_StagedLibraryArrangement(fv, &out.arrangements) do return fail("StagedBatchDelivery.arrangements") } else { return fail("StagedBatchDelivery.arrangements missing") }
+	if fv, found := get_any(v, "arrangement_cursor"); found { if !decode_int(fv, &out.arrangement_cursor) do return fail("StagedBatchDelivery.arrangement_cursor") } else { return fail("StagedBatchDelivery.arrangement_cursor missing") }
+	if fv, found := get_any(v, "population_devour_snapshot"); found { if !dec_opt_dyn_ObjectId(fv, &out.population_devour_snapshot) do return fail("StagedBatchDelivery.population_devour_snapshot") }
+	return true
+}
+
+encode_StagedBatchDelivery :: proc(b: ^strings.Builder, x: StagedBatchDelivery) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_StagedBatchDelivery_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_StagedBatchDelivery_members :: proc(b: ^strings.Builder, x: StagedBatchDelivery, first: ^bool) {
+	member(b, first, "stage"); encode_BatchDeliveryStage(b, x.stage)
+	member(b, first, "members"); enc_dyn_StagedBatchMember(b, x.members)
+	member(b, first, "cursor"); encode_int(b, x.cursor)
+	if !(x.asking == nil) { member(b, first, "asking"); enc_opt_ObjectIncarnationRef(b, x.asking) }
+	member(b, first, "arrangements"); enc_dyn_StagedLibraryArrangement(b, x.arrangements)
+	member(b, first, "arrangement_cursor"); encode_int(b, x.arrangement_cursor)
+	if !(x.population_devour_snapshot == nil) { member(b, first, "population_devour_snapshot"); enc_opt_dyn_ObjectId(b, x.population_devour_snapshot) }
+}
+
+decode_PendingCounterMove :: proc(v: json.Value, out: ^PendingCounterMove) -> bool {
+	if v.kind != .Object do return fail("PendingCounterMove: not an object")
+	if fv, found := get_any(v, "actor"); found { if !decode_PlayerId(fv, &out.actor) do return fail("PendingCounterMove.actor") } else { return fail("PendingCounterMove.actor missing") }
+	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingCounterMove.source_id") } else { return fail("PendingCounterMove.source_id missing") }
+	if fv, found := get_any(v, "destination_id"); found { if !decode_ObjectId(fv, &out.destination_id) do return fail("PendingCounterMove.destination_id") } else { return fail("PendingCounterMove.destination_id missing") }
+	if fv, found := get_any(v, "counter_type"); found { if !decode_CounterType(fv, &out.counter_type) do return fail("PendingCounterMove.counter_type") } else { return fail("PendingCounterMove.counter_type missing") }
+	if fv, found := get_any(v, "remove_count"); found { if !decode_u32(fv, &out.remove_count) do return fail("PendingCounterMove.remove_count") } else { return fail("PendingCounterMove.remove_count missing") }
+	if fv, found := get_any(v, "add_count"); found { if !decode_u32(fv, &out.add_count) do return fail("PendingCounterMove.add_count") } else { return fail("PendingCounterMove.add_count missing") }
+	if fv, found := get_any(v, "cause"); found { if !decode_CounterCause(fv, &out.cause) do return fail("PendingCounterMove.cause") } else { out.cause = CounterCause.Other }
+	return true
+}
+
+encode_PendingCounterMove :: proc(b: ^strings.Builder, x: PendingCounterMove) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingCounterMove_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingCounterMove_members :: proc(b: ^strings.Builder, x: PendingCounterMove, first: ^bool) {
+	member(b, first, "actor"); encode_PlayerId(b, x.actor)
+	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
+	member(b, first, "destination_id"); encode_ObjectId(b, x.destination_id)
+	member(b, first, "counter_type"); encode_CounterType(b, x.counter_type)
+	member(b, first, "remove_count"); encode_u32(b, x.remove_count)
+	member(b, first, "add_count"); encode_u32(b, x.add_count)
+	member(b, first, "cause"); encode_CounterCause(b, x.cause)
+}
+
+decode_PendingCounterAddition :: proc(v: json.Value, out: ^PendingCounterAddition) -> bool {
+	variant: string
+	body: json.Value
+	#partial switch v.kind {
+	case .String: variant = v.text
+	case .Object:
+		if len(v.members) != 1 do return fail("PendingCounterAddition: externally tagged object needs one key")
+		variant, body = v.members[0].key, v.members[0].value
+	case: return fail("PendingCounterAddition: not a string or object")
+	}
+	switch variant {
+	case "Object":
+		tmp: PendingCounterAddition_Object
+		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^PendingCounterAddition_Object) -> bool {
+	if fv, found := get_any(v, "actor"); found { if !decode_PlayerId(fv, &out.actor) do return fail("PendingCounterAddition::Object.actor") } else { return fail("PendingCounterAddition::Object.actor missing") }
+	if fv, found := get_any(v, "object_id"); found { if !decode_ObjectId(fv, &out.object_id) do return fail("PendingCounterAddition::Object.object_id") } else { return fail("PendingCounterAddition::Object.object_id missing") }
+	if fv, found := get_any(v, "counter_type"); found { if !decode_CounterType(fv, &out.counter_type) do return fail("PendingCounterAddition::Object.counter_type") } else { return fail("PendingCounterAddition::Object.counter_type missing") }
+	if fv, found := get_any(v, "count"); found { if !decode_u32(fv, &out.count) do return fail("PendingCounterAddition::Object.count") } else { return fail("PendingCounterAddition::Object.count missing") }
+	if fv, found := get_any(v, "cause"); found { if !decode_CounterCause(fv, &out.cause) do return fail("PendingCounterAddition::Object.cause") } else { out.cause = CounterCause.Other }
+	return true
+		}) { return fail("PendingCounterAddition::Object") }
+		out^ = tmp
+	case "Player":
+		tmp: PendingCounterAddition_Player
+		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^PendingCounterAddition_Player) -> bool {
+	if fv, found := get_any(v, "actor"); found { if !decode_PlayerId(fv, &out.actor) do return fail("PendingCounterAddition::Player.actor") } else { return fail("PendingCounterAddition::Player.actor missing") }
+	if fv, found := get_any(v, "player_id"); found { if !decode_PlayerId(fv, &out.player_id) do return fail("PendingCounterAddition::Player.player_id") } else { return fail("PendingCounterAddition::Player.player_id missing") }
+	if fv, found := get_any(v, "counter_kind"); found { if !decode_PlayerCounterKind(fv, &out.counter_kind) do return fail("PendingCounterAddition::Player.counter_kind") } else { return fail("PendingCounterAddition::Player.counter_kind missing") }
+	if fv, found := get_any(v, "count"); found { if !decode_u32(fv, &out.count) do return fail("PendingCounterAddition::Player.count") } else { return fail("PendingCounterAddition::Player.count missing") }
+	if fv, found := get_any(v, "cause"); found { if !decode_CounterCause(fv, &out.cause) do return fail("PendingCounterAddition::Player.cause") } else { out.cause = CounterCause.Other }
+	return true
+		}) { return fail("PendingCounterAddition::Player") }
+		out^ = tmp
+	case "Energy":
+		tmp: PendingCounterAddition_Energy
+		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^PendingCounterAddition_Energy) -> bool {
+	if fv, found := get_any(v, "actor"); found { if !decode_PlayerId(fv, &out.actor) do return fail("PendingCounterAddition::Energy.actor") } else { return fail("PendingCounterAddition::Energy.actor missing") }
+	if fv, found := get_any(v, "player_id"); found { if !decode_PlayerId(fv, &out.player_id) do return fail("PendingCounterAddition::Energy.player_id") } else { return fail("PendingCounterAddition::Energy.player_id missing") }
+	if fv, found := get_any(v, "count"); found { if !decode_u32(fv, &out.count) do return fail("PendingCounterAddition::Energy.count") } else { return fail("PendingCounterAddition::Energy.count missing") }
+	if fv, found := get_any(v, "cause"); found { if !decode_CounterCause(fv, &out.cause) do return fail("PendingCounterAddition::Energy.cause") } else { out.cause = CounterCause.Other }
+	return true
+		}) { return fail("PendingCounterAddition::Energy") }
+		out^ = tmp
+	case: return fail("PendingCounterAddition: unknown variant")
+	}
+	return true
+}
+
+encode_PendingCounterAddition :: proc(b: ^strings.Builder, x: PendingCounterAddition) {
+	#partial switch y in x {
+	case PendingCounterAddition_Object: strings.write_byte(b, '{'); json.write_string(b, "Object"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "actor"); encode_PlayerId(b, y.actor)
+	member(b, first, "object_id"); encode_ObjectId(b, y.object_id)
+	member(b, first, "counter_type"); encode_CounterType(b, y.counter_type)
+	member(b, first, "count"); encode_u32(b, y.count)
+	member(b, first, "cause"); encode_CounterCause(b, y.cause)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	case PendingCounterAddition_Player: strings.write_byte(b, '{'); json.write_string(b, "Player"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "actor"); encode_PlayerId(b, y.actor)
+	member(b, first, "player_id"); encode_PlayerId(b, y.player_id)
+	member(b, first, "counter_kind"); encode_PlayerCounterKind(b, y.counter_kind)
+	member(b, first, "count"); encode_u32(b, y.count)
+	member(b, first, "cause"); encode_CounterCause(b, y.cause)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	case PendingCounterAddition_Energy: strings.write_byte(b, '{'); json.write_string(b, "Energy"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "actor"); encode_PlayerId(b, y.actor)
+	member(b, first, "player_id"); encode_PlayerId(b, y.player_id)
+	member(b, first, "count"); encode_u32(b, y.count)
+	member(b, first, "cause"); encode_CounterCause(b, y.cause)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	}
+}
+
+decode_PendingEffectResolved :: proc(v: json.Value, out: ^PendingEffectResolved) -> bool {
+	if v.kind != .Object do return fail("PendingEffectResolved: not an object")
+	if fv, found := get_any(v, "kind"); found { if !decode_EffectKind(fv, &out.kind) do return fail("PendingEffectResolved.kind") } else { return fail("PendingEffectResolved.kind missing") }
+	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingEffectResolved.source_id") } else { return fail("PendingEffectResolved.source_id missing") }
+	if fv, found := get_any(v, "resolution_event"); found { if !decode_PendingEffectResolutionEvent(fv, &out.resolution_event) do return fail("PendingEffectResolved.resolution_event") }
+	if fv, found := get_any(v, "post_actions"); found { if !dec_dyn_PendingCounterPostAction(fv, &out.post_actions) do return fail("PendingEffectResolved.post_actions") }
+	if fv, found := get_any(v, "player_action"); found { if !dec_opt_PendingPlayerAction(fv, &out.player_action) do return fail("PendingEffectResolved.player_action") }
+	return true
+}
+
+encode_PendingEffectResolved :: proc(b: ^strings.Builder, x: PendingEffectResolved) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingEffectResolved_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingEffectResolved_members :: proc(b: ^strings.Builder, x: PendingEffectResolved, first: ^bool) {
+	member(b, first, "kind"); encode_EffectKind(b, x.kind)
+	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
+	member(b, first, "resolution_event"); encode_PendingEffectResolutionEvent(b, x.resolution_event)
+	if !(len(x.post_actions) == 0) { member(b, first, "post_actions"); enc_dyn_PendingCounterPostAction(b, x.post_actions) }
+	if !(x.player_action == nil) { member(b, first, "player_action"); enc_opt_PendingPlayerAction(b, x.player_action) }
+}
+
+decode_PendingCopyTokenBatch :: proc(v: json.Value, out: ^PendingCopyTokenBatch) -> bool {
+	if v.kind != .Object do return fail("PendingCopyTokenBatch: not an object")
+	if fv, found := get_any(v, "owner"); found { if !decode_PlayerId(fv, &out.owner) do return fail("PendingCopyTokenBatch.owner") } else { return fail("PendingCopyTokenBatch.owner missing") }
+	if fv, found := get_any(v, "copy"); found { if !dec_ptr_CopyTokenSpec(fv, &out.copy) do return fail("PendingCopyTokenBatch.copy") } else { return fail("PendingCopyTokenBatch.copy missing") }
+	if fv, found := get_any(v, "count"); found { if !decode_u32(fv, &out.count) do return fail("PendingCopyTokenBatch.count") } else { return fail("PendingCopyTokenBatch.count missing") }
+	return true
+}
+
+encode_PendingCopyTokenBatch :: proc(b: ^strings.Builder, x: PendingCopyTokenBatch) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingCopyTokenBatch_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingCopyTokenBatch_members :: proc(b: ^strings.Builder, x: PendingCopyTokenBatch, first: ^bool) {
+	member(b, first, "owner"); encode_PlayerId(b, x.owner)
+	member(b, first, "copy"); enc_ptr_CopyTokenSpec(b, x.copy)
+	member(b, first, "count"); encode_u32(b, x.count)
+}
+
+decode_OfferedBatchCustody :: proc(v: json.Value, out: ^OfferedBatchCustody) -> bool {
+	if v.kind != .String do return fail("OfferedBatchCustody: not a string")
+	str := v.text
+	switch str {
+	case "Settled": out^ = .Settled
+	case "AtReplacementPrompt": out^ = .AtReplacementPrompt
+	case: return fail("OfferedBatchCustody: unknown variant")
+	}
+	return true
+}
+
+encode_OfferedBatchCustody :: proc(b: ^strings.Builder, x: OfferedBatchCustody) {
+	@(static, rodata) NAMES := [OfferedBatchCustody]string{
+		.Settled = "Settled",
+		.AtReplacementPrompt = "AtReplacementPrompt",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_DebugCardEntrySource :: proc(v: json.Value, out: ^DebugCardEntrySource) -> bool {
+	if v.kind != .Object do return fail("DebugCardEntrySource: not an object")
+	if fv, found := get_any(v, "face"); found { if !decode_CardFace(fv, &out.face) do return fail("DebugCardEntrySource.face") } else { return fail("DebugCardEntrySource.face missing") }
+	if fv, found := get_any(v, "back_face"); found { if !dec_opt_BackFaceData(fv, &out.back_face) do return fail("DebugCardEntrySource.back_face") }
+	if fv, found := get_any(v, "outside_game_faces"); found { if !decode_OutsideGameFaces(fv, &out.outside_game_faces) do return fail("DebugCardEntrySource.outside_game_faces") }
+	return true
+}
+
+encode_DebugCardEntrySource :: proc(b: ^strings.Builder, x: DebugCardEntrySource) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_DebugCardEntrySource_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_DebugCardEntrySource_members :: proc(b: ^strings.Builder, x: DebugCardEntrySource, first: ^bool) {
+	member(b, first, "face"); encode_CardFace(b, x.face)
+	if !(x.back_face == nil) { member(b, first, "back_face"); enc_opt_BackFaceData(b, x.back_face) }
+	if !(skip_DebugCardEntrySource_OutsideGameFaces_is_empty_OutsideGameFaces(x.outside_game_faces)) { member(b, first, "outside_game_faces"); encode_OutsideGameFaces(b, x.outside_game_faces) }
+}
+
+decode_CopyChosenStage :: proc(v: json.Value, out: ^CopyChosenStage) -> bool {
+	if v.kind != .String do return fail("CopyChosenStage: not a string")
+	str := v.text
+	switch str {
+	case "AwaitingCopy": out^ = .AwaitingCopy
+	case "AwaitingCounters": out^ = .AwaitingCounters
+	case: return fail("CopyChosenStage: unknown variant")
+	}
+	return true
+}
+
+encode_CopyChosenStage :: proc(b: ^strings.Builder, x: CopyChosenStage) {
+	@(static, rodata) NAMES := [CopyChosenStage]string{
+		.AwaitingCopy = "AwaitingCopy",
+		.AwaitingCounters = "AwaitingCounters",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_PendingPerCategoryZoneChoice :: proc(v: json.Value, out: ^PendingPerCategoryZoneChoice) -> bool {
+	if v.kind != .Object do return fail("PendingPerCategoryZoneChoice: not an object")
+	if fv, found := get_any(v, "ability"); found { if !dec_ptr_ResolvedAbility(fv, &out.ability) do return fail("PendingPerCategoryZoneChoice.ability") } else { return fail("PendingPerCategoryZoneChoice.ability missing") }
+	if fv, found := get_any(v, "pool"); found { if !dec_dyn_ObjectId(fv, &out.pool) do return fail("PendingPerCategoryZoneChoice.pool") } else { return fail("PendingPerCategoryZoneChoice.pool missing") }
+	if fv, found := get_any(v, "remaining_member_filters"); found { if !dec_dyn_TargetFilter(fv, &out.remaining_member_filters) do return fail("PendingPerCategoryZoneChoice.remaining_member_filters") } else { return fail("PendingPerCategoryZoneChoice.remaining_member_filters missing") }
+	return true
+}
+
+encode_PendingPerCategoryZoneChoice :: proc(b: ^strings.Builder, x: PendingPerCategoryZoneChoice) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_PendingPerCategoryZoneChoice_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_PendingPerCategoryZoneChoice_members :: proc(b: ^strings.Builder, x: PendingPerCategoryZoneChoice, first: ^bool) {
+	member(b, first, "ability"); enc_ptr_ResolvedAbility(b, x.ability)
+	member(b, first, "pool"); enc_dyn_ObjectId(b, x.pool)
+	member(b, first, "remaining_member_filters"); enc_dyn_TargetFilter(b, x.remaining_member_filters)
+}
+
+decode_ReplacementActionScope :: proc(v: json.Value, out: ^ReplacementActionScope) -> bool {
+	if v.kind != .Object do return fail("ReplacementActionScope: not an object")
+	if fv, found := get_any(v, "amount"); found { if !decode_i32(fv, &out.amount) do return fail("ReplacementActionScope.amount") } else { return fail("ReplacementActionScope.amount missing") }
+	return true
+}
+
+encode_ReplacementActionScope :: proc(b: ^strings.Builder, x: ReplacementActionScope) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_ReplacementActionScope_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_ReplacementActionScope_members :: proc(b: ^strings.Builder, x: ReplacementActionScope, first: ^bool) {
+	member(b, first, "amount"); encode_i32(b, x.amount)
+}
+
+decode_ParkedOpponentMayPoll :: proc(v: json.Value, out: ^ParkedOpponentMayPoll) -> bool {
+	if v.kind != .Object do return fail("ParkedOpponentMayPoll: not an object")
+	if fv, found := get_any(v, "next"); found { if !decode_PlayerId(fv, &out.next) do return fail("ParkedOpponentMayPoll.next") } else { return fail("ParkedOpponentMayPoll.next missing") }
+	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_PlayerId(fv, &out.remaining) do return fail("ParkedOpponentMayPoll.remaining") } else { return fail("ParkedOpponentMayPoll.remaining missing") }
+	if fv, found := get_any(v, "decision_subject_id"); found { if !dec_opt_ObjectId(fv, &out.decision_subject_id) do return fail("ParkedOpponentMayPoll.decision_subject_id") }
+	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("ParkedOpponentMayPoll.source_id") } else { return fail("ParkedOpponentMayPoll.source_id missing") }
+	if fv, found := get_any(v, "description"); found { if !dec_opt_string(fv, &out.description) do return fail("ParkedOpponentMayPoll.description") }
+	return true
+}
+
+encode_ParkedOpponentMayPoll :: proc(b: ^strings.Builder, x: ParkedOpponentMayPoll) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_ParkedOpponentMayPoll_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_ParkedOpponentMayPoll_members :: proc(b: ^strings.Builder, x: ParkedOpponentMayPoll, first: ^bool) {
+	member(b, first, "next"); encode_PlayerId(b, x.next)
+	member(b, first, "remaining"); enc_dyn_PlayerId(b, x.remaining)
+	if !(x.decision_subject_id == nil) { member(b, first, "decision_subject_id"); enc_opt_ObjectId(b, x.decision_subject_id) }
+	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
+	if !(x.description == nil) { member(b, first, "description"); enc_opt_string(b, x.description) }
+}
+
+decode_PendingCoinFlipKind :: proc(v: json.Value, out: ^PendingCoinFlipKind) -> bool {
+	variant: string
+	body: json.Value
+	#partial switch v.kind {
+	case .String: variant = v.text
+	case .Object:
+		if len(v.members) != 1 do return fail("PendingCoinFlipKind: externally tagged object needs one key")
+		variant, body = v.members[0].key, v.members[0].value
+	case: return fail("PendingCoinFlipKind: not a string or object")
+	}
+	switch variant {
+	case "Exactly":
+		tmp: PendingCoinFlipKind_Exactly
+		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^PendingCoinFlipKind_Exactly) -> bool {
+	if fv, found := get_any(v, "remaining"); found { if !decode_u32(fv, &out.remaining) do return fail("PendingCoinFlipKind::Exactly.remaining") } else { return fail("PendingCoinFlipKind::Exactly.remaining missing") }
+	return true
+		}) { return fail("PendingCoinFlipKind::Exactly") }
+		out^ = tmp
+	case "UntilLoss":
+		tmp: PendingCoinFlipKind_UntilLoss
+		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^PendingCoinFlipKind_UntilLoss) -> bool {
+	if fv, found := get_any(v, "wins_so_far"); found { if !decode_u32(fv, &out.wins_so_far) do return fail("PendingCoinFlipKind::UntilLoss.wins_so_far") } else { return fail("PendingCoinFlipKind::UntilLoss.wins_so_far missing") }
+	return true
+		}) { return fail("PendingCoinFlipKind::UntilLoss") }
+		out^ = tmp
+	case: return fail("PendingCoinFlipKind: unknown variant")
+	}
+	return true
+}
+
+encode_PendingCoinFlipKind :: proc(b: ^strings.Builder, x: PendingCoinFlipKind) {
+	#partial switch y in x {
+	case PendingCoinFlipKind_Exactly: strings.write_byte(b, '{'); json.write_string(b, "Exactly"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "remaining"); encode_u32(b, y.remaining)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	case PendingCoinFlipKind_UntilLoss: strings.write_byte(b, '{'); json.write_string(b, "UntilLoss"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "wins_so_far"); encode_u32(b, y.wins_so_far)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	}
+}
+
+decode_FlipBranchContext :: proc(v: json.Value, out: ^FlipBranchContext) -> bool {
+	if v.kind != .Object do return fail("FlipBranchContext: not an object")
+	if fv, found := get_any(v, "chosen_players"); found { if !dec_dyn_PlayerId(fv, &out.chosen_players) do return fail("FlipBranchContext.chosen_players") }
+	if fv, found := get_any(v, "parent_occurrences"); found { if !decode_ParentTargetOccurrences(fv, &out.parent_occurrences) do return fail("FlipBranchContext.parent_occurrences") }
+	if fv, found := get_any(v, "forwarded_result_context"); found { if !dec_ptr_ForwardedResultContext(fv, &out.forwarded_result_context) do return fail("FlipBranchContext.forwarded_result_context") }
+	if fv, found := get_any(v, "parent_target_missing_reason"); found { if !dec_opt_ParentTargetMissingReason(fv, &out.parent_target_missing_reason) do return fail("FlipBranchContext.parent_target_missing_reason") }
+	return true
+}
+
+encode_FlipBranchContext :: proc(b: ^strings.Builder, x: FlipBranchContext) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_FlipBranchContext_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_FlipBranchContext_members :: proc(b: ^strings.Builder, x: FlipBranchContext, first: ^bool) {
+	if !(len(x.chosen_players) == 0) { member(b, first, "chosen_players"); enc_dyn_PlayerId(b, x.chosen_players) }
+	member(b, first, "parent_occurrences"); encode_ParentTargetOccurrences(b, x.parent_occurrences)
+	if !(x.forwarded_result_context == nil) { member(b, first, "forwarded_result_context"); enc_ptr_ForwardedResultContext(b, x.forwarded_result_context) }
+	if !(x.parent_target_missing_reason == nil) { member(b, first, "parent_target_missing_reason"); enc_opt_ParentTargetMissingReason(b, x.parent_target_missing_reason) }
+}
+
+decode_DrawSequenceStack :: proc(v: json.Value, out: ^DrawSequenceStack) -> bool {
+	if v.kind != .Object do return fail("DrawSequenceStack: not an object")
+	if fv, found := get_any(v, "frames"); found { if !dec_dyn_DrawSequenceFrame(fv, &out.frames) do return fail("DrawSequenceStack.frames") } else { return fail("DrawSequenceStack.frames missing") }
+	if fv, found := get_any(v, "next_frame_id"); found { if !decode_u64(fv, &out.next_frame_id) do return fail("DrawSequenceStack.next_frame_id") } else { return fail("DrawSequenceStack.next_frame_id missing") }
+	return true
+}
+
+encode_DrawSequenceStack :: proc(b: ^strings.Builder, x: DrawSequenceStack) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_DrawSequenceStack_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_DrawSequenceStack_members :: proc(b: ^strings.Builder, x: DrawSequenceStack, first: ^bool) {
+	member(b, first, "frames"); enc_dyn_DrawSequenceFrame(b, x.frames)
+	member(b, first, "next_frame_id"); encode_u64(b, x.next_frame_id)
+}
+
+decode_CipherEncodeStage :: proc(v: json.Value, out: ^CipherEncodeStage) -> bool {
+	if v.kind != .String do return fail("CipherEncodeStage: not a string")
+	str := v.text
+	switch str {
+	case "Parked": out^ = .Parked
+	case "Armed": out^ = .Armed
+	case: return fail("CipherEncodeStage: unknown variant")
+	}
+	return true
+}
+
+encode_CipherEncodeStage :: proc(b: ^strings.Builder, x: CipherEncodeStage) {
+	@(static, rodata) NAMES := [CipherEncodeStage]string{
+		.Parked = "Parked",
+		.Armed = "Armed",
 	}
 	json.write_string(b, NAMES[x])
 }
@@ -55958,715 +57421,6 @@ encode_DeckSection :: proc(b: ^strings.Builder, x: DeckSection) {
 	json.write_string(b, NAMES[x])
 }
 
-decode_AbilityContinuationFrame :: proc(v: json.Value, out: ^AbilityContinuationFrame) -> bool {
-	if v.kind != .Object do return fail("AbilityContinuationFrame: not an object")
-	if fv, found := get_any(v, "pending"); found { if !decode_PendingContinuation(fv, &out.pending) do return fail("AbilityContinuationFrame.pending") } else { return fail("AbilityContinuationFrame.pending missing") }
-	if fv, found := get_any(v, "choose_zone_trigger_context"); found { if !dec_opt_ResolvingTriggerContext(fv, &out.choose_zone_trigger_context) do return fail("AbilityContinuationFrame.choose_zone_trigger_context") }
-	return true
-}
-
-encode_AbilityContinuationFrame :: proc(b: ^strings.Builder, x: AbilityContinuationFrame) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_AbilityContinuationFrame_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_AbilityContinuationFrame_members :: proc(b: ^strings.Builder, x: AbilityContinuationFrame, first: ^bool) {
-	member(b, first, "pending"); encode_PendingContinuation(b, x.pending)
-	if !(x.choose_zone_trigger_context == nil) { member(b, first, "choose_zone_trigger_context"); enc_opt_ResolvingTriggerContext(b, x.choose_zone_trigger_context) }
-}
-
-decode_PendingRepeatIteration :: proc(v: json.Value, out: ^PendingRepeatIteration) -> bool {
-	if v.kind != .Object do return fail("PendingRepeatIteration: not an object")
-	if fv, found := get_any(v, "ability"); found { if !dec_ptr_ResolvedAbility(fv, &out.ability) do return fail("PendingRepeatIteration.ability") } else { return fail("PendingRepeatIteration.ability missing") }
-	if fv, found := get_any(v, "tracked_members"); found { if !dec_dyn_ObjectId(fv, &out.tracked_members) do return fail("PendingRepeatIteration.tracked_members") }
-	if fv, found := get_any(v, "iterated_counter_kinds"); found { if !dec_dyn_CounterType(fv, &out.iterated_counter_kinds) do return fail("PendingRepeatIteration.iterated_counter_kinds") }
-	if fv, found := get_any(v, "next_iteration"); found { if !decode_int(fv, &out.next_iteration) do return fail("PendingRepeatIteration.next_iteration") } else { return fail("PendingRepeatIteration.next_iteration missing") }
-	if fv, found := get_any(v, "total_iterations"); found { if !decode_int(fv, &out.total_iterations) do return fail("PendingRepeatIteration.total_iterations") } else { return fail("PendingRepeatIteration.total_iterations missing") }
-	if fv, found := get_any(v, "order_fixed", "copy_order_fixed"); found { if !dec_opt_int(fv, &out.order_fixed) do return fail("PendingRepeatIteration.order_fixed") }
-	return true
-}
-
-encode_PendingRepeatIteration :: proc(b: ^strings.Builder, x: PendingRepeatIteration) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingRepeatIteration_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingRepeatIteration_members :: proc(b: ^strings.Builder, x: PendingRepeatIteration, first: ^bool) {
-	member(b, first, "ability"); enc_ptr_ResolvedAbility(b, x.ability)
-	if !(len(x.tracked_members) == 0) { member(b, first, "tracked_members"); enc_dyn_ObjectId(b, x.tracked_members) }
-	if !(len(x.iterated_counter_kinds) == 0) { member(b, first, "iterated_counter_kinds"); enc_dyn_CounterType(b, x.iterated_counter_kinds) }
-	member(b, first, "next_iteration"); encode_int(b, x.next_iteration)
-	member(b, first, "total_iterations"); encode_int(b, x.total_iterations)
-	if !(x.order_fixed == nil) { member(b, first, "order_fixed"); enc_opt_int(b, x.order_fixed) }
-}
-
-decode_PendingRepeatUntil :: proc(v: json.Value, out: ^PendingRepeatUntil) -> bool {
-	if v.kind != .Object do return fail("PendingRepeatUntil: not an object")
-	if fv, found := get_any(v, "ability"); found { if !dec_ptr_ResolvedAbility(fv, &out.ability) do return fail("PendingRepeatUntil.ability") } else { return fail("PendingRepeatUntil.ability missing") }
-	if fv, found := get_any(v, "stop_progress"); found { if !dec_opt_RepeatUntilStopWitness(fv, &out.stop_progress) do return fail("PendingRepeatUntil.stop_progress") }
-	if fv, found := get_any(v, "iteration_progress"); found { if !dec_opt_RepeatUntilIterationWitness(fv, &out.iteration_progress) do return fail("PendingRepeatUntil.iteration_progress") }
-	return true
-}
-
-encode_PendingRepeatUntil :: proc(b: ^strings.Builder, x: PendingRepeatUntil) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingRepeatUntil_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingRepeatUntil_members :: proc(b: ^strings.Builder, x: PendingRepeatUntil, first: ^bool) {
-	member(b, first, "ability"); enc_ptr_ResolvedAbility(b, x.ability)
-	if !(x.stop_progress == nil) { member(b, first, "stop_progress"); enc_opt_RepeatUntilStopWitness(b, x.stop_progress) }
-	if !(x.iteration_progress == nil) { member(b, first, "iteration_progress"); enc_opt_RepeatUntilIterationWitness(b, x.iteration_progress) }
-}
-
-decode_RepeatedOptionalPaymentFrame :: proc(v: json.Value, out: ^RepeatedOptionalPaymentFrame) -> bool {
-	if v.kind != .Object do return fail("RepeatedOptionalPaymentFrame: not an object")
-	if fv, found := get_any(v, "pending"); found { if !dec_ptr_PendingRepeatedOptionalPayment(fv, &out.pending) do return fail("RepeatedOptionalPaymentFrame.pending") }
-	if fv, found := get_any(v, "optional_cost_payments_this_resolution"); found { if !decode_u32(fv, &out.optional_cost_payments_this_resolution) do return fail("RepeatedOptionalPaymentFrame.optional_cost_payments_this_resolution") } else { return fail("RepeatedOptionalPaymentFrame.optional_cost_payments_this_resolution missing") }
-	return true
-}
-
-encode_RepeatedOptionalPaymentFrame :: proc(b: ^strings.Builder, x: RepeatedOptionalPaymentFrame) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_RepeatedOptionalPaymentFrame_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_RepeatedOptionalPaymentFrame_members :: proc(b: ^strings.Builder, x: RepeatedOptionalPaymentFrame, first: ^bool) {
-	if !(x.pending == nil) { member(b, first, "pending"); enc_ptr_PendingRepeatedOptionalPayment(b, x.pending) }
-	member(b, first, "optional_cost_payments_this_resolution"); encode_u32(b, x.optional_cost_payments_this_resolution)
-}
-
-decode_ChangeZoneFrame :: proc(v: json.Value, out: ^ChangeZoneFrame) -> bool {
-	if v.kind != .Object do return fail("ChangeZoneFrame: not an object")
-	if fv, found := get_any(v, "pending"); found { if !dec_opt_PendingChangeZoneIteration(fv, &out.pending) do return fail("ChangeZoneFrame.pending") }
-	if fv, found := get_any(v, "devour_eligible_snapshot"); found { if !dec_opt_dyn_ObjectId(fv, &out.devour_eligible_snapshot) do return fail("ChangeZoneFrame.devour_eligible_snapshot") }
-	if fv, found := get_any(v, "awaiting_batch"); found { if !dec_opt_ChangeZoneBatchMarker(fv, &out.awaiting_batch) do return fail("ChangeZoneFrame.awaiting_batch") }
-	return true
-}
-
-encode_ChangeZoneFrame :: proc(b: ^strings.Builder, x: ChangeZoneFrame) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_ChangeZoneFrame_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_ChangeZoneFrame_members :: proc(b: ^strings.Builder, x: ChangeZoneFrame, first: ^bool) {
-	if !(x.pending == nil) { member(b, first, "pending"); enc_opt_PendingChangeZoneIteration(b, x.pending) }
-	if !(x.devour_eligible_snapshot == nil) { member(b, first, "devour_eligible_snapshot"); enc_opt_dyn_ObjectId(b, x.devour_eligible_snapshot) }
-	if !(x.awaiting_batch == nil) { member(b, first, "awaiting_batch"); enc_opt_ChangeZoneBatchMarker(b, x.awaiting_batch) }
-}
-
-decode_PendingBatchDeliveries :: proc(v: json.Value, out: ^PendingBatchDeliveries) -> bool {
-	if v.kind != .Object do return fail("PendingBatchDeliveries: not an object")
-	if fv, found := get_any(v, "component_delivery_parent"); found { if !dec_opt_PendingComponentDeliveryParent(fv, &out.component_delivery_parent) do return fail("PendingBatchDeliveries.component_delivery_parent") }
-	if fv, found := get_any(v, "logical_zone_change_group"); found { if !decode_LogicalZoneChangeGroup(fv, &out.logical_zone_change_group) do return fail("PendingBatchDeliveries.logical_zone_change_group") } else { return fail("PendingBatchDeliveries.logical_zone_change_group missing") }
-	if fv, found := get_any(v, "paused_current"); found { if !dec_opt_PendingZoneChangeDelivery(fv, &out.paused_current) do return fail("PendingBatchDeliveries.paused_current") }
-	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_ObjectId(fv, &out.remaining) do return fail("PendingBatchDeliveries.remaining") } else { return fail("PendingBatchDeliveries.remaining missing") }
-	if fv, found := get_any(v, "destination"); found { if !decode_Zone(fv, &out.destination) do return fail("PendingBatchDeliveries.destination") } else { return fail("PendingBatchDeliveries.destination missing") }
-	if fv, found := get_any(v, "source_id"); found { if !dec_opt_ObjectId(fv, &out.source_id) do return fail("PendingBatchDeliveries.source_id") }
-	if fv, found := get_any(v, "library_reorder"); found { if !dec_opt_LibraryReorderOperation(fv, &out.library_reorder) do return fail("PendingBatchDeliveries.library_reorder") }
-	if fv, found := get_any(v, "enter_tapped"); found { if !decode_EtbTapState(fv, &out.enter_tapped) do return fail("PendingBatchDeliveries.enter_tapped") }
-	if fv, found := get_any(v, "exile_tracking"); found { if !decode_ZoneDeliveryExileTracking(fv, &out.exile_tracking) do return fail("PendingBatchDeliveries.exile_tracking") }
-	if fv, found := get_any(v, "library_placement"); found { if !dec_opt_LibraryPosition(fv, &out.library_placement) do return fail("PendingBatchDeliveries.library_placement") }
-	if fv, found := get_any(v, "completion"); found { if !dec_opt_BatchCompletion(fv, &out.completion) do return fail("PendingBatchDeliveries.completion") }
-	if fv, found := get_any(v, "replacement_applied"); found { if !dec_dyn_AppliedReplacementKey(fv, &out.replacement_applied) do return fail("PendingBatchDeliveries.replacement_applied") }
-	if fv, found := get_any(v, "requests"); found { if !dec_dyn_PendingBatchZoneMoveRequest(fv, &out.requests) do return fail("PendingBatchDeliveries.requests") }
-	if fv, found := get_any(v, "attempted"); found { if !dec_dyn_ObjectId(fv, &out.attempted) do return fail("PendingBatchDeliveries.attempted") }
-	if fv, found := get_any(v, "zone_change_record_start"); found { if !decode_int(fv, &out.zone_change_record_start) do return fail("PendingBatchDeliveries.zone_change_record_start") }
-	if fv, found := get_any(v, "deferred_events"); found { if !dec_dyn_GameEvent(fv, &out.deferred_events) do return fail("PendingBatchDeliveries.deferred_events") }
-	if fv, found := get_any(v, "staged"); found { if !dec_opt_StagedBatchDelivery(fv, &out.staged) do return fail("PendingBatchDeliveries.staged") }
-	if fv, found := get_any(v, "pre_entry_battlefield"); found { if !dec_opt_dyn_ObjectId(fv, &out.pre_entry_battlefield) do return fail("PendingBatchDeliveries.pre_entry_battlefield") }
-	return true
-}
-
-encode_PendingBatchDeliveries :: proc(b: ^strings.Builder, x: PendingBatchDeliveries) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingBatchDeliveries_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingBatchDeliveries_members :: proc(b: ^strings.Builder, x: PendingBatchDeliveries, first: ^bool) {
-	if !(x.component_delivery_parent == nil) { member(b, first, "component_delivery_parent"); enc_opt_PendingComponentDeliveryParent(b, x.component_delivery_parent) }
-	member(b, first, "logical_zone_change_group"); encode_LogicalZoneChangeGroup(b, x.logical_zone_change_group)
-	member(b, first, "paused_current"); enc_opt_PendingZoneChangeDelivery(b, x.paused_current)
-	member(b, first, "remaining"); enc_dyn_ObjectId(b, x.remaining)
-	member(b, first, "destination"); encode_Zone(b, x.destination)
-	if !(x.source_id == nil) { member(b, first, "source_id"); enc_opt_ObjectId(b, x.source_id) }
-	if !(x.library_reorder == nil) { member(b, first, "library_reorder"); enc_opt_LibraryReorderOperation(b, x.library_reorder) }
-	if !(skip_PendingBatchDeliveries_EtbTapState_is_unspecified_EtbTapState(x.enter_tapped)) { member(b, first, "enter_tapped"); encode_EtbTapState(b, x.enter_tapped) }
-	member(b, first, "exile_tracking"); encode_ZoneDeliveryExileTracking(b, x.exile_tracking)
-	if !(x.library_placement == nil) { member(b, first, "library_placement"); enc_opt_LibraryPosition(b, x.library_placement) }
-	if !(x.completion == nil) { member(b, first, "completion"); enc_opt_BatchCompletion(b, x.completion) }
-	if !(len(x.replacement_applied) == 0) { member(b, first, "replacement_applied"); enc_dyn_AppliedReplacementKey(b, x.replacement_applied) }
-	if !(len(x.requests) == 0) { member(b, first, "requests"); enc_dyn_PendingBatchZoneMoveRequest(b, x.requests) }
-	if !(len(x.attempted) == 0) { member(b, first, "attempted"); enc_dyn_ObjectId(b, x.attempted) }
-	member(b, first, "zone_change_record_start"); encode_int(b, x.zone_change_record_start)
-	if !(len(x.deferred_events) == 0) { member(b, first, "deferred_events"); enc_dyn_GameEvent(b, x.deferred_events) }
-	if !(x.staged == nil) { member(b, first, "staged"); enc_opt_StagedBatchDelivery(b, x.staged) }
-	if !(x.pre_entry_battlefield == nil) { member(b, first, "pre_entry_battlefield"); enc_opt_dyn_ObjectId(b, x.pre_entry_battlefield) }
-}
-
-decode_PendingCounterMoveQueue :: proc(v: json.Value, out: ^PendingCounterMoveQueue) -> bool {
-	if v.kind != .Object do return fail("PendingCounterMoveQueue: not an object")
-	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_PendingCounterMove(fv, &out.remaining) do return fail("PendingCounterMoveQueue.remaining") } else { return fail("PendingCounterMoveQueue.remaining missing") }
-	if fv, found := get_any(v, "effect_kind"); found { if !decode_EffectKind(fv, &out.effect_kind) do return fail("PendingCounterMoveQueue.effect_kind") } else { return fail("PendingCounterMoveQueue.effect_kind missing") }
-	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingCounterMoveQueue.source_id") } else { return fail("PendingCounterMoveQueue.source_id missing") }
-	return true
-}
-
-encode_PendingCounterMoveQueue :: proc(b: ^strings.Builder, x: PendingCounterMoveQueue) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingCounterMoveQueue_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingCounterMoveQueue_members :: proc(b: ^strings.Builder, x: PendingCounterMoveQueue, first: ^bool) {
-	member(b, first, "remaining"); enc_dyn_PendingCounterMove(b, x.remaining)
-	member(b, first, "effect_kind"); encode_EffectKind(b, x.effect_kind)
-	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
-}
-
-decode_PendingCounterRemovalQueue :: proc(v: json.Value, out: ^PendingCounterRemovalQueue) -> bool {
-	if v.kind != .Object do return fail("PendingCounterRemovalQueue: not an object")
-	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_PendingCounterRemoval(fv, &out.remaining) do return fail("PendingCounterRemovalQueue.remaining") } else { return fail("PendingCounterRemovalQueue.remaining missing") }
-	if fv, found := get_any(v, "effect_kind"); found { if !decode_EffectKind(fv, &out.effect_kind) do return fail("PendingCounterRemovalQueue.effect_kind") } else { return fail("PendingCounterRemovalQueue.effect_kind missing") }
-	if fv, found := get_any(v, "source_ability_id"); found { if !decode_ObjectId(fv, &out.source_ability_id) do return fail("PendingCounterRemovalQueue.source_ability_id") } else { return fail("PendingCounterRemovalQueue.source_ability_id missing") }
-	if fv, found := get_any(v, "total"); found { if !decode_u32(fv, &out.total) do return fail("PendingCounterRemovalQueue.total") } else { return fail("PendingCounterRemovalQueue.total missing") }
-	if fv, found := get_any(v, "applied_total"); found { if !decode_u32(fv, &out.applied_total) do return fail("PendingCounterRemovalQueue.applied_total") }
-	if fv, found := get_any(v, "in_flight"); found { if !dec_opt_PendingCounterRemovalInFlight(fv, &out.in_flight) do return fail("PendingCounterRemovalQueue.in_flight") }
-	return true
-}
-
-encode_PendingCounterRemovalQueue :: proc(b: ^strings.Builder, x: PendingCounterRemovalQueue) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingCounterRemovalQueue_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingCounterRemovalQueue_members :: proc(b: ^strings.Builder, x: PendingCounterRemovalQueue, first: ^bool) {
-	member(b, first, "remaining"); enc_dyn_PendingCounterRemoval(b, x.remaining)
-	member(b, first, "effect_kind"); encode_EffectKind(b, x.effect_kind)
-	member(b, first, "source_ability_id"); encode_ObjectId(b, x.source_ability_id)
-	member(b, first, "total"); encode_u32(b, x.total)
-	if !(x.applied_total == 0) { member(b, first, "applied_total"); encode_u32(b, x.applied_total) }
-	if !(x.in_flight == nil) { member(b, first, "in_flight"); enc_opt_PendingCounterRemovalInFlight(b, x.in_flight) }
-}
-
-decode_PendingCounterAdditionQueue :: proc(v: json.Value, out: ^PendingCounterAdditionQueue) -> bool {
-	if v.kind != .Object do return fail("PendingCounterAdditionQueue: not an object")
-	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_PendingCounterAddition(fv, &out.remaining) do return fail("PendingCounterAdditionQueue.remaining") } else { return fail("PendingCounterAdditionQueue.remaining missing") }
-	if fv, found := get_any(v, "completion"); found { if !dec_opt_PendingEffectResolved(fv, &out.completion) do return fail("PendingCounterAdditionQueue.completion") }
-	return true
-}
-
-encode_PendingCounterAdditionQueue :: proc(b: ^strings.Builder, x: PendingCounterAdditionQueue) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingCounterAdditionQueue_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingCounterAdditionQueue_members :: proc(b: ^strings.Builder, x: PendingCounterAdditionQueue, first: ^bool) {
-	member(b, first, "remaining"); enc_dyn_PendingCounterAddition(b, x.remaining)
-	if !(x.completion == nil) { member(b, first, "completion"); enc_opt_PendingEffectResolved(b, x.completion) }
-}
-
-decode_PendingCopyTokenResolution :: proc(v: json.Value, out: ^PendingCopyTokenResolution) -> bool {
-	if v.kind != .Object do return fail("PendingCopyTokenResolution: not an object")
-	if fv, found := get_any(v, "created_ids"); found { if !dec_dyn_ObjectId(fv, &out.created_ids) do return fail("PendingCopyTokenResolution.created_ids") }
-	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_PendingCopyTokenBatch(fv, &out.remaining) do return fail("PendingCopyTokenResolution.remaining") }
-	if fv, found := get_any(v, "effect_kind"); found { if !decode_EffectKind(fv, &out.effect_kind) do return fail("PendingCopyTokenResolution.effect_kind") } else { return fail("PendingCopyTokenResolution.effect_kind missing") }
-	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingCopyTokenResolution.source_id") } else { return fail("PendingCopyTokenResolution.source_id missing") }
-	if fv, found := get_any(v, "referent_set"); found { if !dec_opt_TrackedSetId(fv, &out.referent_set) do return fail("PendingCopyTokenResolution.referent_set") }
-	if fv, found := get_any(v, "offered_batch"); found { if !decode_OfferedBatchCustody(fv, &out.offered_batch) do return fail("PendingCopyTokenResolution.offered_batch") }
-	return true
-}
-
-encode_PendingCopyTokenResolution :: proc(b: ^strings.Builder, x: PendingCopyTokenResolution) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingCopyTokenResolution_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingCopyTokenResolution_members :: proc(b: ^strings.Builder, x: PendingCopyTokenResolution, first: ^bool) {
-	if !(len(x.created_ids) == 0) { member(b, first, "created_ids"); enc_dyn_ObjectId(b, x.created_ids) }
-	if !(len(x.remaining) == 0) { member(b, first, "remaining"); enc_dyn_PendingCopyTokenBatch(b, x.remaining) }
-	member(b, first, "effect_kind"); encode_EffectKind(b, x.effect_kind)
-	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
-	if !(x.referent_set == nil) { member(b, first, "referent_set"); enc_opt_TrackedSetId(b, x.referent_set) }
-	if !(skip_PendingCopyTokenResolution_OfferedBatchCustody_is_settled_OfferedBatchCustody(x.offered_batch)) { member(b, first, "offered_batch"); encode_OfferedBatchCustody(b, x.offered_batch) }
-}
-
-decode_PendingDebugCardEntries :: proc(v: json.Value, out: ^PendingDebugCardEntries) -> bool {
-	if v.kind != .Object do return fail("PendingDebugCardEntries: not an object")
-	if fv, found := get_any(v, "source"); found { if !decode_DebugCardEntrySource(fv, &out.source) do return fail("PendingDebugCardEntries.source") } else { return fail("PendingDebugCardEntries.source missing") }
-	if fv, found := get_any(v, "owner"); found { if !decode_PlayerId(fv, &out.owner) do return fail("PendingDebugCardEntries.owner") } else { return fail("PendingDebugCardEntries.owner missing") }
-	if fv, found := get_any(v, "attach_to"); found { if !dec_opt_AttachTarget(fv, &out.attach_to) do return fail("PendingDebugCardEntries.attach_to") }
-	if fv, found := get_any(v, "nonlegendary"); found { if !decode_bool(fv, &out.nonlegendary) do return fail("PendingDebugCardEntries.nonlegendary") } else { return fail("PendingDebugCardEntries.nonlegendary missing") }
-	if fv, found := get_any(v, "creation_kind"); found { if !decode_DebugCardCreationKind(fv, &out.creation_kind) do return fail("PendingDebugCardEntries.creation_kind") }
-	if fv, found := get_any(v, "remaining"); found { if !decode_u32(fv, &out.remaining) do return fail("PendingDebugCardEntries.remaining") } else { return fail("PendingDebugCardEntries.remaining missing") }
-	return true
-}
-
-encode_PendingDebugCardEntries :: proc(b: ^strings.Builder, x: PendingDebugCardEntries) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingDebugCardEntries_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingDebugCardEntries_members :: proc(b: ^strings.Builder, x: PendingDebugCardEntries, first: ^bool) {
-	member(b, first, "source"); encode_DebugCardEntrySource(b, x.source)
-	member(b, first, "owner"); encode_PlayerId(b, x.owner)
-	if !(x.attach_to == nil) { member(b, first, "attach_to"); enc_opt_AttachTarget(b, x.attach_to) }
-	member(b, first, "nonlegendary"); encode_bool(b, x.nonlegendary)
-	member(b, first, "creation_kind"); encode_DebugCardCreationKind(b, x.creation_kind)
-	member(b, first, "remaining"); encode_u32(b, x.remaining)
-}
-
-decode_PendingEachPlayerCopyChosen :: proc(v: json.Value, out: ^PendingEachPlayerCopyChosen) -> bool {
-	if v.kind != .Object do return fail("PendingEachPlayerCopyChosen: not an object")
-	if fv, found := get_any(v, "stage"); found { if !decode_CopyChosenStage(fv, &out.stage) do return fail("PendingEachPlayerCopyChosen.stage") } else { return fail("PendingEachPlayerCopyChosen.stage missing") }
-	if fv, found := get_any(v, "player"); found { if !decode_PlayerId(fv, &out.player) do return fail("PendingEachPlayerCopyChosen.player") } else { return fail("PendingEachPlayerCopyChosen.player missing") }
-	if fv, found := get_any(v, "chosen"); found { if !dec_dyn_ObjectId(fv, &out.chosen) do return fail("PendingEachPlayerCopyChosen.chosen") } else { return fail("PendingEachPlayerCopyChosen.chosen missing") }
-	if fv, found := get_any(v, "remaining_choices"); found { if !dec_dyn_CopyChosenSelection(fv, &out.remaining_choices) do return fail("PendingEachPlayerCopyChosen.remaining_choices") }
-	if fv, found := get_any(v, "choose_filter"); found { if !decode_TargetFilter(fv, &out.choose_filter) do return fail("PendingEachPlayerCopyChosen.choose_filter") } else { return fail("PendingEachPlayerCopyChosen.choose_filter missing") }
-	if fv, found := get_any(v, "min"); found { if !decode_u32(fv, &out.min) do return fail("PendingEachPlayerCopyChosen.min") } else { return fail("PendingEachPlayerCopyChosen.min missing") }
-	if fv, found := get_any(v, "max"); found { if !decode_u32(fv, &out.max) do return fail("PendingEachPlayerCopyChosen.max") } else { return fail("PendingEachPlayerCopyChosen.max missing") }
-	if fv, found := get_any(v, "copy_modifications"); found { if !dec_dyn_ContinuousModification(fv, &out.copy_modifications) do return fail("PendingEachPlayerCopyChosen.copy_modifications") }
-	if fv, found := get_any(v, "scale"); found { if !dec_opt_CopyScale(fv, &out.scale) do return fail("PendingEachPlayerCopyChosen.scale") }
-	if fv, found := get_any(v, "choose_scope"); found { if !decode_CopyChooseScope(fv, &out.choose_scope) do return fail("PendingEachPlayerCopyChosen.choose_scope") } else { out.choose_scope = CopyChooseScope(CopyChooseScope_Chooser{}) }
-	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingEachPlayerCopyChosen.source_id") } else { return fail("PendingEachPlayerCopyChosen.source_id missing") }
-	if fv, found := get_any(v, "source_controller"); found { if !decode_PlayerId(fv, &out.source_controller) do return fail("PendingEachPlayerCopyChosen.source_controller") } else { return fail("PendingEachPlayerCopyChosen.source_controller missing") }
-	if fv, found := get_any(v, "scoped_players"); found { if !dec_dyn_PlayerId(fv, &out.scoped_players) do return fail("PendingEachPlayerCopyChosen.scoped_players") }
-	if fv, found := get_any(v, "trigger_event"); found { if !dec_opt_GameEvent(fv, &out.trigger_event) do return fail("PendingEachPlayerCopyChosen.trigger_event") }
-	return true
-}
-
-encode_PendingEachPlayerCopyChosen :: proc(b: ^strings.Builder, x: PendingEachPlayerCopyChosen) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingEachPlayerCopyChosen_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingEachPlayerCopyChosen_members :: proc(b: ^strings.Builder, x: PendingEachPlayerCopyChosen, first: ^bool) {
-	member(b, first, "stage"); encode_CopyChosenStage(b, x.stage)
-	member(b, first, "player"); encode_PlayerId(b, x.player)
-	member(b, first, "chosen"); enc_dyn_ObjectId(b, x.chosen)
-	if !(len(x.remaining_choices) == 0) { member(b, first, "remaining_choices"); enc_dyn_CopyChosenSelection(b, x.remaining_choices) }
-	member(b, first, "choose_filter"); encode_TargetFilter(b, x.choose_filter)
-	member(b, first, "min"); encode_u32(b, x.min)
-	member(b, first, "max"); encode_u32(b, x.max)
-	if !(len(x.copy_modifications) == 0) { member(b, first, "copy_modifications"); enc_dyn_ContinuousModification(b, x.copy_modifications) }
-	if !(x.scale == nil) { member(b, first, "scale"); enc_opt_CopyScale(b, x.scale) }
-	member(b, first, "choose_scope"); encode_CopyChooseScope(b, x.choose_scope)
-	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
-	member(b, first, "source_controller"); encode_PlayerId(b, x.source_controller)
-	member(b, first, "scoped_players"); enc_dyn_PlayerId(b, x.scoped_players)
-	if !(x.trigger_event == nil) { member(b, first, "trigger_event"); enc_opt_GameEvent(b, x.trigger_event) }
-}
-
-decode_PendingChooseOneOf :: proc(v: json.Value, out: ^PendingChooseOneOf) -> bool {
-	if v.kind != .Object do return fail("PendingChooseOneOf: not an object")
-	if fv, found := get_any(v, "controller"); found { if !decode_PlayerId(fv, &out.controller) do return fail("PendingChooseOneOf.controller") } else { return fail("PendingChooseOneOf.controller missing") }
-	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingChooseOneOf.source_id") } else { return fail("PendingChooseOneOf.source_id missing") }
-	if fv, found := get_any(v, "branches"); found { if !dec_dyn_AbilityDefinition(fv, &out.branches) do return fail("PendingChooseOneOf.branches") } else { return fail("PendingChooseOneOf.branches missing") }
-	if !decode_ParentTargetOccurrences(v, &out.parent_occurrences) do return fail("PendingChooseOneOf.parent_occurrences (flattened)")
-	if fv, found := get_any(v, "context"); found { if !dec_ptr_SpellContext(fv, &out.context_) do return fail("PendingChooseOneOf.context") }
-	if fv, found := get_any(v, "continuation"); found { if !dec_ptr_ResolvedAbility(fv, &out.continuation) do return fail("PendingChooseOneOf.continuation") }
-	if fv, found := get_any(v, "replacement_applied"); found { if !dec_dyn_AppliedReplacementKey(fv, &out.replacement_applied) do return fail("PendingChooseOneOf.replacement_applied") }
-	if fv, found := get_any(v, "remaining_players"); found { if !dec_dyn_PlayerId(fv, &out.remaining_players) do return fail("PendingChooseOneOf.remaining_players") } else { return fail("PendingChooseOneOf.remaining_players missing") }
-	if fv, found := get_any(v, "trigger_context"); found { if !dec_opt_ResolvingTriggerContext(fv, &out.trigger_context) do return fail("PendingChooseOneOf.trigger_context") }
-	return true
-}
-
-encode_PendingChooseOneOf :: proc(b: ^strings.Builder, x: PendingChooseOneOf) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingChooseOneOf_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingChooseOneOf_members :: proc(b: ^strings.Builder, x: PendingChooseOneOf, first: ^bool) {
-	member(b, first, "controller"); encode_PlayerId(b, x.controller)
-	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
-	member(b, first, "branches"); enc_dyn_AbilityDefinition(b, x.branches)
-	encode_ParentTargetOccurrences_members(b, x.parent_occurrences, first)
-	member(b, first, "context"); enc_ptr_SpellContext(b, x.context_)
-	if !(x.continuation == nil) { member(b, first, "continuation"); enc_ptr_ResolvedAbility(b, x.continuation) }
-	if !(len(x.replacement_applied) == 0) { member(b, first, "replacement_applied"); enc_dyn_AppliedReplacementKey(b, x.replacement_applied) }
-	member(b, first, "remaining_players"); enc_dyn_PlayerId(b, x.remaining_players)
-	if !(x.trigger_context == nil) { member(b, first, "trigger_context"); enc_opt_ResolvingTriggerContext(b, x.trigger_context) }
-}
-
-decode_PendingVoteBallotIteration :: proc(v: json.Value, out: ^PendingVoteBallotIteration) -> bool {
-	if v.kind != .Object do return fail("PendingVoteBallotIteration: not an object")
-	if fv, found := get_any(v, "ability_template"); found { if !dec_ptr_AbilityDefinition(fv, &out.ability_template) do return fail("PendingVoteBallotIteration.ability_template") } else { return fail("PendingVoteBallotIteration.ability_template missing") }
-	if fv, found := get_any(v, "remaining_voters"); found { if !dec_dyn_PlayerId(fv, &out.remaining_voters) do return fail("PendingVoteBallotIteration.remaining_voters") } else { return fail("PendingVoteBallotIteration.remaining_voters missing") }
-	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingVoteBallotIteration.source_id") } else { return fail("PendingVoteBallotIteration.source_id missing") }
-	if fv, found := get_any(v, "controller"); found { if !decode_PlayerId(fv, &out.controller) do return fail("PendingVoteBallotIteration.controller") } else { return fail("PendingVoteBallotIteration.controller missing") }
-	if fv, found := get_any(v, "chain_root_targets"); found { if !dec_dyn_TargetRef(fv, &out.chain_root_targets) do return fail("PendingVoteBallotIteration.chain_root_targets") }
-	return true
-}
-
-encode_PendingVoteBallotIteration :: proc(b: ^strings.Builder, x: PendingVoteBallotIteration) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingVoteBallotIteration_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingVoteBallotIteration_members :: proc(b: ^strings.Builder, x: PendingVoteBallotIteration, first: ^bool) {
-	member(b, first, "ability_template"); enc_ptr_AbilityDefinition(b, x.ability_template)
-	member(b, first, "remaining_voters"); enc_dyn_PlayerId(b, x.remaining_voters)
-	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
-	member(b, first, "controller"); encode_PlayerId(b, x.controller)
-	member(b, first, "chain_root_targets"); enc_dyn_TargetRef(b, x.chain_root_targets)
-}
-
-decode_PendingPerPlayerZoneChoice :: proc(v: json.Value, out: ^PendingPerPlayerZoneChoice) -> bool {
-	if v.kind != .Object do return fail("PendingPerPlayerZoneChoice: not an object")
-	if fv, found := get_any(v, "ability"); found { if !dec_ptr_ResolvedAbility(fv, &out.ability) do return fail("PendingPerPlayerZoneChoice.ability") } else { return fail("PendingPerPlayerZoneChoice.ability missing") }
-	if fv, found := get_any(v, "remaining_players"); found { if !dec_dyn_PlayerId(fv, &out.remaining_players) do return fail("PendingPerPlayerZoneChoice.remaining_players") } else { return fail("PendingPerPlayerZoneChoice.remaining_players missing") }
-	if fv, found := get_any(v, "accumulated"); found { if !decode_bool(fv, &out.accumulated) do return fail("PendingPerPlayerZoneChoice.accumulated") }
-	if fv, found := get_any(v, "current"); found { if !dec_opt_PlayerId(fv, &out.current) do return fail("PendingPerPlayerZoneChoice.current") }
-	if fv, found := get_any(v, "nominee"); found { if !dec_opt_PlayerId(fv, &out.nominee) do return fail("PendingPerPlayerZoneChoice.nominee") }
-	if fv, found := get_any(v, "tracked_pool"); found { if !dec_opt_TrackedSetId(fv, &out.tracked_pool) do return fail("PendingPerPlayerZoneChoice.tracked_pool") }
-	return true
-}
-
-encode_PendingPerPlayerZoneChoice :: proc(b: ^strings.Builder, x: PendingPerPlayerZoneChoice) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingPerPlayerZoneChoice_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingPerPlayerZoneChoice_members :: proc(b: ^strings.Builder, x: PendingPerPlayerZoneChoice, first: ^bool) {
-	member(b, first, "ability"); enc_ptr_ResolvedAbility(b, x.ability)
-	member(b, first, "remaining_players"); enc_dyn_PlayerId(b, x.remaining_players)
-	member(b, first, "accumulated"); encode_bool(b, x.accumulated)
-	if !(x.current == nil) { member(b, first, "current"); enc_opt_PlayerId(b, x.current) }
-	if !(x.nominee == nil) { member(b, first, "nominee"); enc_opt_PlayerId(b, x.nominee) }
-	if !(x.tracked_pool == nil) { member(b, first, "tracked_pool"); enc_opt_TrackedSetId(b, x.tracked_pool) }
-}
-
-decode_PerCategoryZoneChoiceFrame :: proc(v: json.Value, out: ^PerCategoryZoneChoiceFrame) -> bool {
-	if v.kind != .Object do return fail("PerCategoryZoneChoiceFrame: not an object")
-	if fv, found := get_any(v, "pending"); found { if !decode_PendingPerCategoryZoneChoice(fv, &out.pending) do return fail("PerCategoryZoneChoiceFrame.pending") } else { return fail("PerCategoryZoneChoiceFrame.pending missing") }
-	return true
-}
-
-encode_PerCategoryZoneChoiceFrame :: proc(b: ^strings.Builder, x: PerCategoryZoneChoiceFrame) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PerCategoryZoneChoiceFrame_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PerCategoryZoneChoiceFrame_members :: proc(b: ^strings.Builder, x: PerCategoryZoneChoiceFrame, first: ^bool) {
-	member(b, first, "pending"); encode_PendingPerCategoryZoneChoice(b, x.pending)
-}
-
-decode_PendingDieRoll :: proc(v: json.Value, out: ^PendingDieRoll) -> bool {
-	if v.kind != .Object do return fail("PendingDieRoll: not an object")
-	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingDieRoll.source_id") } else { return fail("PendingDieRoll.source_id missing") }
-	if fv, found := get_any(v, "controller"); found { if !decode_PlayerId(fv, &out.controller) do return fail("PendingDieRoll.controller") } else { return fail("PendingDieRoll.controller missing") }
-	if fv, found := get_any(v, "roller"); found { if !decode_PlayerId(fv, &out.roller) do return fail("PendingDieRoll.roller") } else { return fail("PendingDieRoll.roller missing") }
-	if fv, found := get_any(v, "quantity_controller"); found { if !dec_opt_PlayerId(fv, &out.quantity_controller) do return fail("PendingDieRoll.quantity_controller") }
-	if fv, found := get_any(v, "scoped_player"); found { if !dec_opt_PlayerId(fv, &out.scoped_player) do return fail("PendingDieRoll.scoped_player") }
-	if fv, found := get_any(v, "targets"); found { if !dec_dyn_TargetRef(fv, &out.targets) do return fail("PendingDieRoll.targets") } else { return fail("PendingDieRoll.targets missing") }
-	if fv, found := get_any(v, "sides"); found { if !decode_u8(fv, &out.sides) do return fail("PendingDieRoll.sides") } else { return fail("PendingDieRoll.sides missing") }
-	if fv, found := get_any(v, "results"); found { if !dec_dyn_u8(fv, &out.results) do return fail("PendingDieRoll.results") } else { return fail("PendingDieRoll.results missing") }
-	if fv, found := get_any(v, "ignore_rules"); found { if !dec_dyn_DieRollIgnoreRule(fv, &out.ignore_rules) do return fail("PendingDieRoll.ignore_rules") }
-	if fv, found := get_any(v, "results_table"); found { if !dec_dyn_DieResultBranch(fv, &out.results_table) do return fail("PendingDieRoll.results_table") } else { return fail("PendingDieRoll.results_table missing") }
-	if fv, found := get_any(v, "modifier"); found { if !dec_opt_DieRollModifier(fv, &out.modifier) do return fail("PendingDieRoll.modifier") }
-	if fv, found := get_any(v, "die_result"); found { if !dec_opt_i32(fv, &out.die_result) do return fail("PendingDieRoll.die_result") }
-	if fv, found := get_any(v, "next_index"); found { if !decode_int(fv, &out.next_index) do return fail("PendingDieRoll.next_index") }
-	if fv, found := get_any(v, "running_total"); found { if !decode_i32(fv, &out.running_total) do return fail("PendingDieRoll.running_total") }
-	if fv, found := get_any(v, "rolled_any"); found { if !decode_bool(fv, &out.rolled_any) do return fail("PendingDieRoll.rolled_any") }
-	if fv, found := get_any(v, "forced_ignored"); found { if !dec_dyn_int(fv, &out.forced_ignored) do return fail("PendingDieRoll.forced_ignored") }
-	if fv, found := get_any(v, "chain_root_targets"); found { if !dec_dyn_TargetRef(fv, &out.chain_root_targets) do return fail("PendingDieRoll.chain_root_targets") }
-	if fv, found := get_any(v, "trigger_context"); found { if !dec_opt_ResolvingTriggerContext(fv, &out.trigger_context) do return fail("PendingDieRoll.trigger_context") }
-	if fv, found := get_any(v, "illegal_target_slots"); found { if !dec_dyn_int(fv, &out.illegal_target_slots) do return fail("PendingDieRoll.illegal_target_slots") }
-	if fv, found := get_any(v, "chain_root_target_pins"); found { if !dec_dyn_opt_ObjectIncarnationRef(fv, &out.chain_root_target_pins) do return fail("PendingDieRoll.chain_root_target_pins") }
-	if fv, found := get_any(v, "declared_capture"); found { if !dec_opt_CapturedDeclarationPayload(fv, &out.declared_capture) do return fail("PendingDieRoll.declared_capture") }
-	if fv, found := get_any(v, "local_target_pins"); found { if !dec_dyn_opt_ObjectIncarnationRef(fv, &out.local_target_pins) do return fail("PendingDieRoll.local_target_pins") }
-	if fv, found := get_any(v, "keyed_target_incarnations"); found { if !dec_dyn_ObjectIncarnationRef(fv, &out.keyed_target_incarnations) do return fail("PendingDieRoll.keyed_target_incarnations") }
-	if fv, found := get_any(v, "declared_player"); found { if !dec_opt_DeclaredPlayerTarget(fv, &out.declared_player) do return fail("PendingDieRoll.declared_player") }
-	return true
-}
-
-encode_PendingDieRoll :: proc(b: ^strings.Builder, x: PendingDieRoll) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingDieRoll_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingDieRoll_members :: proc(b: ^strings.Builder, x: PendingDieRoll, first: ^bool) {
-	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
-	member(b, first, "controller"); encode_PlayerId(b, x.controller)
-	member(b, first, "roller"); encode_PlayerId(b, x.roller)
-	if !(x.quantity_controller == nil) { member(b, first, "quantity_controller"); enc_opt_PlayerId(b, x.quantity_controller) }
-	if !(x.scoped_player == nil) { member(b, first, "scoped_player"); enc_opt_PlayerId(b, x.scoped_player) }
-	member(b, first, "targets"); enc_dyn_TargetRef(b, x.targets)
-	member(b, first, "sides"); encode_u8(b, x.sides)
-	member(b, first, "results"); enc_dyn_u8(b, x.results)
-	member(b, first, "ignore_rules"); enc_dyn_DieRollIgnoreRule(b, x.ignore_rules)
-	member(b, first, "results_table"); enc_dyn_DieResultBranch(b, x.results_table)
-	if !(x.modifier == nil) { member(b, first, "modifier"); enc_opt_DieRollModifier(b, x.modifier) }
-	if !(x.die_result == nil) { member(b, first, "die_result"); enc_opt_i32(b, x.die_result) }
-	member(b, first, "next_index"); encode_int(b, x.next_index)
-	member(b, first, "running_total"); encode_i32(b, x.running_total)
-	member(b, first, "rolled_any"); encode_bool(b, x.rolled_any)
-	member(b, first, "forced_ignored"); enc_dyn_int(b, x.forced_ignored)
-	member(b, first, "chain_root_targets"); enc_dyn_TargetRef(b, x.chain_root_targets)
-	if !(x.trigger_context == nil) { member(b, first, "trigger_context"); enc_opt_ResolvingTriggerContext(b, x.trigger_context) }
-	member(b, first, "illegal_target_slots"); enc_dyn_int(b, x.illegal_target_slots)
-	member(b, first, "chain_root_target_pins"); enc_dyn_opt_ObjectIncarnationRef(b, x.chain_root_target_pins)
-	if !(x.declared_capture == nil) { member(b, first, "declared_capture"); enc_opt_CapturedDeclarationPayload(b, x.declared_capture) }
-	member(b, first, "local_target_pins"); enc_dyn_opt_ObjectIncarnationRef(b, x.local_target_pins)
-	member(b, first, "keyed_target_incarnations"); enc_dyn_ObjectIncarnationRef(b, x.keyed_target_incarnations)
-	member(b, first, "declared_player"); enc_opt_DeclaredPlayerTarget(b, x.declared_player)
-}
-
-decode_PendingProliferateActions :: proc(v: json.Value, out: ^PendingProliferateActions) -> bool {
-	if v.kind != .Object do return fail("PendingProliferateActions: not an object")
-	if fv, found := get_any(v, "actor"); found { if !decode_PlayerId(fv, &out.actor) do return fail("PendingProliferateActions.actor") } else { return fail("PendingProliferateActions.actor missing") }
-	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingProliferateActions.source_id") } else { return fail("PendingProliferateActions.source_id missing") }
-	if fv, found := get_any(v, "remaining"); found { if !decode_u32(fv, &out.remaining) do return fail("PendingProliferateActions.remaining") } else { return fail("PendingProliferateActions.remaining missing") }
-	return true
-}
-
-encode_PendingProliferateActions :: proc(b: ^strings.Builder, x: PendingProliferateActions) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingProliferateActions_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingProliferateActions_members :: proc(b: ^strings.Builder, x: PendingProliferateActions, first: ^bool) {
-	member(b, first, "actor"); encode_PlayerId(b, x.actor)
-	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
-	member(b, first, "remaining"); encode_u32(b, x.remaining)
-}
-
-decode_MultiDrawFrame :: proc(v: json.Value, out: ^MultiDrawFrame) -> bool {
-	if v.kind != .Object do return fail("MultiDrawFrame: not an object")
-	if fv, found := get_any(v, "draw_sequences"); found { if !decode_DrawSequenceStack(fv, &out.draw_sequences) do return fail("MultiDrawFrame.draw_sequences") } else { return fail("MultiDrawFrame.draw_sequences missing") }
-	if fv, found := get_any(v, "connive_reentry"); found { if !dec_opt_PendingConniveReentry(fv, &out.connive_reentry) do return fail("MultiDrawFrame.connive_reentry") }
-	return true
-}
-
-encode_MultiDrawFrame :: proc(b: ^strings.Builder, x: MultiDrawFrame) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_MultiDrawFrame_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_MultiDrawFrame_members :: proc(b: ^strings.Builder, x: MultiDrawFrame, first: ^bool) {
-	member(b, first, "draw_sequences"); encode_DrawSequenceStack(b, x.draw_sequences)
-	if !(x.connive_reentry == nil) { member(b, first, "connive_reentry"); enc_opt_PendingConniveReentry(b, x.connive_reentry) }
-}
-
-decode_DiscardFrame :: proc(v: json.Value, out: ^DiscardFrame) -> bool {
-	if v.kind != .Object do return fail("DiscardFrame: not an object")
-	if fv, found := get_any(v, "id"); found { if !decode_DiscardFrameId(fv, &out.id) do return fail("DiscardFrame.id") } else { return fail("DiscardFrame.id missing") }
-	if fv, found := get_any(v, "source_id"); found { if !dec_opt_ObjectId(fv, &out.source_id) do return fail("DiscardFrame.source_id") }
-	if fv, found := get_any(v, "results"); found { if !dec_dyn_DiscardedCardResult(fv, &out.results) do return fail("DiscardFrame.results") }
-	return true
-}
-
-encode_DiscardFrame :: proc(b: ^strings.Builder, x: DiscardFrame) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_DiscardFrame_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_DiscardFrame_members :: proc(b: ^strings.Builder, x: DiscardFrame, first: ^bool) {
-	member(b, first, "id"); encode_DiscardFrameId(b, x.id)
-	if !(x.source_id == nil) { member(b, first, "source_id"); enc_opt_ObjectId(b, x.source_id) }
-	if !(len(x.results) == 0) { member(b, first, "results"); enc_dyn_DiscardedCardResult(b, x.results) }
-}
-
-decode_PendingConniveReentry :: proc(v: json.Value, out: ^PendingConniveReentry) -> bool {
-	if v.kind != .Object do return fail("PendingConniveReentry: not an object")
-	if fv, found := get_any(v, "conniver"); found { if !decode_ConniveSubject(fv, &out.conniver) do return fail("PendingConniveReentry.conniver") } else { return fail("PendingConniveReentry.conniver missing") }
-	if fv, found := get_any(v, "count"); found { if !decode_u32(fv, &out.count) do return fail("PendingConniveReentry.count") } else { return fail("PendingConniveReentry.count missing") }
-	if fv, found := get_any(v, "applied"); found { if !dec_dyn_AppliedReplacementKey(fv, &out.applied) do return fail("PendingConniveReentry.applied") } else { return fail("PendingConniveReentry.applied missing") }
-	return true
-}
-
-encode_PendingConniveReentry :: proc(b: ^strings.Builder, x: PendingConniveReentry) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingConniveReentry_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingConniveReentry_members :: proc(b: ^strings.Builder, x: PendingConniveReentry, first: ^bool) {
-	member(b, first, "conniver"); encode_ConniveSubject(b, x.conniver)
-	member(b, first, "count"); encode_u32(b, x.count)
-	member(b, first, "applied"); enc_dyn_AppliedReplacementKey(b, x.applied)
-}
-
-decode_PendingLifeTotalAssignment :: proc(v: json.Value, out: ^PendingLifeTotalAssignment) -> bool {
-	if v.kind != .Object do return fail("PendingLifeTotalAssignment: not an object")
-	if fv, found := get_any(v, "completion_player"); found { if !decode_PlayerId(fv, &out.completion_player) do return fail("PendingLifeTotalAssignment.completion_player") } else { return fail("PendingLifeTotalAssignment.completion_player missing") }
-	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_t2_PlayerId_i32(fv, &out.remaining) do return fail("PendingLifeTotalAssignment.remaining") } else { return fail("PendingLifeTotalAssignment.remaining missing") }
-	if fv, found := get_any(v, "completion"); found { if !dec_opt_PendingEffectResolved(fv, &out.completion) do return fail("PendingLifeTotalAssignment.completion") }
-	return true
-}
-
-encode_PendingLifeTotalAssignment :: proc(b: ^strings.Builder, x: PendingLifeTotalAssignment) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingLifeTotalAssignment_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingLifeTotalAssignment_members :: proc(b: ^strings.Builder, x: PendingLifeTotalAssignment, first: ^bool) {
-	member(b, first, "completion_player"); encode_PlayerId(b, x.completion_player)
-	member(b, first, "remaining"); enc_dyn_t2_PlayerId_i32(b, x.remaining)
-	if !(x.completion == nil) { member(b, first, "completion"); enc_opt_PendingEffectResolved(b, x.completion) }
-}
-
-decode_PendingSpellResolution :: proc(v: json.Value, out: ^PendingSpellResolution) -> bool {
-	if v.kind != .Object do return fail("PendingSpellResolution: not an object")
-	if fv, found := get_any(v, "object_id"); found { if !decode_ObjectId(fv, &out.object_id) do return fail("PendingSpellResolution.object_id") } else { return fail("PendingSpellResolution.object_id missing") }
-	if fv, found := get_any(v, "controller"); found { if !decode_PlayerId(fv, &out.controller) do return fail("PendingSpellResolution.controller") } else { return fail("PendingSpellResolution.controller missing") }
-	if fv, found := get_any(v, "casting_variant"); found { if !decode_CastingVariant(fv, &out.casting_variant) do return fail("PendingSpellResolution.casting_variant") } else { return fail("PendingSpellResolution.casting_variant missing") }
-	if fv, found := get_any(v, "cast_from_zone"); found { if !dec_opt_Zone(fv, &out.cast_from_zone) do return fail("PendingSpellResolution.cast_from_zone") }
-	if fv, found := get_any(v, "cast_controller"); found { if !dec_opt_PlayerId(fv, &out.cast_controller) do return fail("PendingSpellResolution.cast_controller") }
-	if fv, found := get_any(v, "cast_timing_permission"); found { if !dec_opt_CastTimingPermission(fv, &out.cast_timing_permission) do return fail("PendingSpellResolution.cast_timing_permission") }
-	if fv, found := get_any(v, "spell_targets"); found { if !dec_dyn_TargetRef(fv, &out.spell_targets) do return fail("PendingSpellResolution.spell_targets") } else { return fail("PendingSpellResolution.spell_targets missing") }
-	if fv, found := get_any(v, "actual_mana_spent"); found { if !decode_u32(fv, &out.actual_mana_spent) do return fail("PendingSpellResolution.actual_mana_spent") }
-	if fv, found := get_any(v, "kickers_paid"); found { if !dec_dyn_KickerVariant(fv, &out.kickers_paid) do return fail("PendingSpellResolution.kickers_paid") }
-	if fv, found := get_any(v, "additional_cost_payment_count"); found { if !decode_u32(fv, &out.additional_cost_payment_count) do return fail("PendingSpellResolution.additional_cost_payment_count") }
-	if fv, found := get_any(v, "additional_cost_payments"); found { if !dec_dyn_AdditionalCostInstancePayment(fv, &out.additional_cost_payments) do return fail("PendingSpellResolution.additional_cost_payments") }
-	if fv, found := get_any(v, "convoked_creatures"); found { if !dec_dyn_ObjectId(fv, &out.convoked_creatures) do return fail("PendingSpellResolution.convoked_creatures") }
-	return true
-}
-
-encode_PendingSpellResolution :: proc(b: ^strings.Builder, x: PendingSpellResolution) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingSpellResolution_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingSpellResolution_members :: proc(b: ^strings.Builder, x: PendingSpellResolution, first: ^bool) {
-	member(b, first, "object_id"); encode_ObjectId(b, x.object_id)
-	member(b, first, "controller"); encode_PlayerId(b, x.controller)
-	member(b, first, "casting_variant"); encode_CastingVariant(b, x.casting_variant)
-	member(b, first, "cast_from_zone"); enc_opt_Zone(b, x.cast_from_zone)
-	if !(x.cast_controller == nil) { member(b, first, "cast_controller"); enc_opt_PlayerId(b, x.cast_controller) }
-	if !(x.cast_timing_permission == nil) { member(b, first, "cast_timing_permission"); enc_opt_CastTimingPermission(b, x.cast_timing_permission) }
-	member(b, first, "spell_targets"); enc_dyn_TargetRef(b, x.spell_targets)
-	member(b, first, "actual_mana_spent"); encode_u32(b, x.actual_mana_spent)
-	if !(len(x.kickers_paid) == 0) { member(b, first, "kickers_paid"); enc_dyn_KickerVariant(b, x.kickers_paid) }
-	if !(x.additional_cost_payment_count == 0) { member(b, first, "additional_cost_payment_count"); encode_u32(b, x.additional_cost_payment_count) }
-	if !(len(x.additional_cost_payments) == 0) { member(b, first, "additional_cost_payments"); enc_dyn_AdditionalCostInstancePayment(b, x.additional_cost_payments) }
-	if !(len(x.convoked_creatures) == 0) { member(b, first, "convoked_creatures"); enc_dyn_ObjectId(b, x.convoked_creatures) }
-}
-
-decode_PendingMutateMerge :: proc(v: json.Value, out: ^PendingMutateMerge) -> bool {
-	if v.kind != .Object do return fail("PendingMutateMerge: not an object")
-	if fv, found := get_any(v, "merging_id"); found { if !decode_ObjectId(fv, &out.merging_id) do return fail("PendingMutateMerge.merging_id") } else { return fail("PendingMutateMerge.merging_id missing") }
-	if fv, found := get_any(v, "target_id"); found { if !decode_ObjectId(fv, &out.target_id) do return fail("PendingMutateMerge.target_id") } else { return fail("PendingMutateMerge.target_id missing") }
-	if fv, found := get_any(v, "controller"); found { if !decode_PlayerId(fv, &out.controller) do return fail("PendingMutateMerge.controller") } else { return fail("PendingMutateMerge.controller missing") }
-	return true
-}
-
-encode_PendingMutateMerge :: proc(b: ^strings.Builder, x: PendingMutateMerge) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingMutateMerge_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingMutateMerge_members :: proc(b: ^strings.Builder, x: PendingMutateMerge, first: ^bool) {
-	member(b, first, "merging_id"); encode_ObjectId(b, x.merging_id)
-	member(b, first, "target_id"); encode_ObjectId(b, x.target_id)
-	member(b, first, "controller"); encode_PlayerId(b, x.controller)
-}
-
-decode_PendingCipherEncode :: proc(v: json.Value, out: ^PendingCipherEncode) -> bool {
-	if v.kind != .Object do return fail("PendingCipherEncode: not an object")
-	if fv, found := get_any(v, "stage"); found { if !decode_CipherEncodeStage(fv, &out.stage) do return fail("PendingCipherEncode.stage") } else { return fail("PendingCipherEncode.stage missing") }
-	if fv, found := get_any(v, "card_id"); found { if !decode_ObjectId(fv, &out.card_id) do return fail("PendingCipherEncode.card_id") } else { return fail("PendingCipherEncode.card_id missing") }
-	if fv, found := get_any(v, "controller"); found { if !decode_PlayerId(fv, &out.controller) do return fail("PendingCipherEncode.controller") } else { return fail("PendingCipherEncode.controller missing") }
-	if fv, found := get_any(v, "creatures"); found { if !dec_dyn_ObjectId(fv, &out.creatures) do return fail("PendingCipherEncode.creatures") } else { return fail("PendingCipherEncode.creatures missing") }
-	return true
-}
-
-encode_PendingCipherEncode :: proc(b: ^strings.Builder, x: PendingCipherEncode) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingCipherEncode_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingCipherEncode_members :: proc(b: ^strings.Builder, x: PendingCipherEncode, first: ^bool) {
-	member(b, first, "stage"); encode_CipherEncodeStage(b, x.stage)
-	member(b, first, "card_id"); encode_ObjectId(b, x.card_id)
-	member(b, first, "controller"); encode_PlayerId(b, x.controller)
-	member(b, first, "creatures"); enc_dyn_ObjectId(b, x.creatures)
-}
-
-decode_PendingEntryAttackSeat :: proc(v: json.Value, out: ^PendingEntryAttackSeat) -> bool {
-	if v.kind != .Object do return fail("PendingEntryAttackSeat: not an object")
-	if fv, found := get_any(v, "entrant"); found { if !decode_ObjectIncarnationRef(fv, &out.entrant) do return fail("PendingEntryAttackSeat.entrant") } else { return fail("PendingEntryAttackSeat.entrant missing") }
-	return true
-}
-
-encode_PendingEntryAttackSeat :: proc(b: ^strings.Builder, x: PendingEntryAttackSeat) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingEntryAttackSeat_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingEntryAttackSeat_members :: proc(b: ^strings.Builder, x: PendingEntryAttackSeat, first: ^bool) {
-	member(b, first, "entrant"); encode_ObjectIncarnationRef(b, x.entrant)
-}
-
-decode_PostReplacementDrainStack :: proc(v: json.Value, out: ^PostReplacementDrainStack) -> bool {
-	if v.kind != .Object do return fail("PostReplacementDrainStack: not an object")
-	if fv, found := get_any(v, "drains"); found { if !dec_dyn_PostReplacementDrain(fv, &out.drains) do return fail("PostReplacementDrainStack.drains") } else { return fail("PostReplacementDrainStack.drains missing") }
-	if fv, found := get_any(v, "id"); found { if !dec_opt_PostReplacementFrameId(fv, &out.id) do return fail("PostReplacementDrainStack.id") }
-	return true
-}
-
-encode_PostReplacementDrainStack :: proc(b: ^strings.Builder, x: PostReplacementDrainStack) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PostReplacementDrainStack_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PostReplacementDrainStack_members :: proc(b: ^strings.Builder, x: PostReplacementDrainStack, first: ^bool) {
-	member(b, first, "drains"); enc_dyn_PostReplacementDrain(b, x.drains)
-	if !(x.id == nil) { member(b, first, "id"); enc_opt_PostReplacementFrameId(b, x.id) }
-}
-
 decode_LogCategory :: proc(v: json.Value, out: ^LogCategory) -> bool {
 	if v.kind != .String do return fail("LogCategory: not a string")
 	str := v.text
@@ -57133,48 +57887,6 @@ encode_ConjureSource_members :: proc(b: ^strings.Builder, x: ConjureSource, firs
 	member(b, first, "duplicate_of"); encode_TargetFilter(b, y.duplicate_of)
 
 	}
-}
-
-decode_ReplacementActionScope :: proc(v: json.Value, out: ^ReplacementActionScope) -> bool {
-	if v.kind != .Object do return fail("ReplacementActionScope: not an object")
-	if fv, found := get_any(v, "amount"); found { if !decode_i32(fv, &out.amount) do return fail("ReplacementActionScope.amount") } else { return fail("ReplacementActionScope.amount missing") }
-	return true
-}
-
-encode_ReplacementActionScope :: proc(b: ^strings.Builder, x: ReplacementActionScope) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_ReplacementActionScope_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_ReplacementActionScope_members :: proc(b: ^strings.Builder, x: ReplacementActionScope, first: ^bool) {
-	member(b, first, "amount"); encode_i32(b, x.amount)
-}
-
-decode_ParkedOpponentMayPoll :: proc(v: json.Value, out: ^ParkedOpponentMayPoll) -> bool {
-	if v.kind != .Object do return fail("ParkedOpponentMayPoll: not an object")
-	if fv, found := get_any(v, "next"); found { if !decode_PlayerId(fv, &out.next) do return fail("ParkedOpponentMayPoll.next") } else { return fail("ParkedOpponentMayPoll.next missing") }
-	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_PlayerId(fv, &out.remaining) do return fail("ParkedOpponentMayPoll.remaining") } else { return fail("ParkedOpponentMayPoll.remaining missing") }
-	if fv, found := get_any(v, "decision_subject_id"); found { if !dec_opt_ObjectId(fv, &out.decision_subject_id) do return fail("ParkedOpponentMayPoll.decision_subject_id") }
-	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("ParkedOpponentMayPoll.source_id") } else { return fail("ParkedOpponentMayPoll.source_id missing") }
-	if fv, found := get_any(v, "description"); found { if !dec_opt_string(fv, &out.description) do return fail("ParkedOpponentMayPoll.description") }
-	return true
-}
-
-encode_ParkedOpponentMayPoll :: proc(b: ^strings.Builder, x: ParkedOpponentMayPoll) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_ParkedOpponentMayPoll_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_ParkedOpponentMayPoll_members :: proc(b: ^strings.Builder, x: ParkedOpponentMayPoll, first: ^bool) {
-	member(b, first, "next"); encode_PlayerId(b, x.next)
-	member(b, first, "remaining"); enc_dyn_PlayerId(b, x.remaining)
-	if !(x.decision_subject_id == nil) { member(b, first, "decision_subject_id"); enc_opt_ObjectId(b, x.decision_subject_id) }
-	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
-	if !(x.description == nil) { member(b, first, "description"); enc_opt_string(b, x.description) }
 }
 
 decode_ManaAbilityCostParentLifecycle :: proc(v: json.Value, out: ^ManaAbilityCostParentLifecycle) -> bool {
@@ -57932,1707 +58644,6 @@ encode_ResolvedStackPushOrigin :: proc(b: ^strings.Builder, x: ResolvedStackPush
 	@(static, rodata) NAMES := [ResolvedStackPushOrigin]string{
 		.Put = "Put",
 		.Copy = "Copy",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_ZoneSpendPolarity :: proc(v: json.Value, out: ^ZoneSpendPolarity) -> bool {
-	if v.kind != .String do return fail("ZoneSpendPolarity: not a string")
-	str := v.text
-	switch str {
-	case "From": out^ = .From
-	case "NotFrom": out^ = .NotFrom
-	case: return fail("ZoneSpendPolarity: unknown variant")
-	}
-	return true
-}
-
-encode_ZoneSpendPolarity :: proc(b: ^strings.Builder, x: ZoneSpendPolarity) {
-	@(static, rodata) NAMES := [ZoneSpendPolarity]string{
-		.From = "From",
-		.NotFrom = "NotFrom",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_ChangeZoneArrangementPlan :: proc(v: json.Value, out: ^ChangeZoneArrangementPlan) -> bool {
-	if v.kind != .String do return fail("ChangeZoneArrangementPlan: not a string")
-	str := v.text
-	switch str {
-	case "OrdinaryDelivery": out^ = .OrdinaryDelivery
-	case "ArrangePhysicalLibraryArrivals": out^ = .ArrangePhysicalLibraryArrivals
-	case: return fail("ChangeZoneArrangementPlan: unknown variant")
-	}
-	return true
-}
-
-encode_ChangeZoneArrangementPlan :: proc(b: ^strings.Builder, x: ChangeZoneArrangementPlan) {
-	@(static, rodata) NAMES := [ChangeZoneArrangementPlan]string{
-		.OrdinaryDelivery = "OrdinaryDelivery",
-		.ArrangePhysicalLibraryArrivals = "ArrangePhysicalLibraryArrivals",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_ChangeZoneCountPolicy :: proc(v: json.Value, out: ^ChangeZoneCountPolicy) -> bool {
-	variant: string
-	body: json.Value
-	#partial switch v.kind {
-	case .String: variant = v.text
-	case .Object:
-		if len(v.members) != 1 do return fail("ChangeZoneCountPolicy: externally tagged object needs one key")
-		variant, body = v.members[0].key, v.members[0].value
-	case: return fail("ChangeZoneCountPolicy: not a string or object")
-	}
-	switch variant {
-	case "TargetedArrivals":
-		tmp: ChangeZoneCountPolicy_TargetedArrivals
-		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ChangeZoneCountPolicy_TargetedArrivals) -> bool {
-	if fv, found := get_any(v, "selected"); found { if !dec_dyn_ObjectId(fv, &out.selected) do return fail("ChangeZoneCountPolicy::TargetedArrivals.selected") } else { return fail("ChangeZoneCountPolicy::TargetedArrivals.selected missing") }
-	return true
-		}) { return fail("ChangeZoneCountPolicy::TargetedArrivals") }
-		out^ = tmp
-	case "MassAllMembers": out^ = ChangeZoneCountPolicy_MassAllMembers{}
-	case "ChoiceSelected":
-		tmp: ChangeZoneCountPolicy_ChoiceSelected
-		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ChangeZoneCountPolicy_ChoiceSelected) -> bool {
-	if fv, found := get_any(v, "chosen"); found { if !dec_dyn_ObjectId(fv, &out.chosen) do return fail("ChangeZoneCountPolicy::ChoiceSelected.chosen") } else { return fail("ChangeZoneCountPolicy::ChoiceSelected.chosen missing") }
-	return true
-		}) { return fail("ChangeZoneCountPolicy::ChoiceSelected") }
-		out^ = tmp
-	case: return fail("ChangeZoneCountPolicy: unknown variant")
-	}
-	return true
-}
-
-encode_ChangeZoneCountPolicy :: proc(b: ^strings.Builder, x: ChangeZoneCountPolicy) {
-	#partial switch y in x {
-	case ChangeZoneCountPolicy_TargetedArrivals: strings.write_byte(b, '{'); json.write_string(b, "TargetedArrivals"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "selected"); enc_dyn_ObjectId(b, y.selected)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	case ChangeZoneCountPolicy_MassAllMembers: _ = y; json.write_string(b, "MassAllMembers")
-	case ChangeZoneCountPolicy_ChoiceSelected: strings.write_byte(b, '{'); json.write_string(b, "ChoiceSelected"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "chosen"); enc_dyn_ObjectId(b, y.chosen)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	}
-}
-
-decode_OwnExileLinkSettlement :: proc(v: json.Value, out: ^OwnExileLinkSettlement) -> bool {
-	if v.kind != .String do return fail("OwnExileLinkSettlement: not a string")
-	str := v.text
-	switch str {
-	case "Retain": out^ = .Retain
-	case "Consume": out^ = .Consume
-	case: return fail("OwnExileLinkSettlement: unknown variant")
-	}
-	return true
-}
-
-encode_OwnExileLinkSettlement :: proc(b: ^strings.Builder, x: OwnExileLinkSettlement) {
-	@(static, rodata) NAMES := [OwnExileLinkSettlement]string{
-		.Retain = "Retain",
-		.Consume = "Consume",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_EntryOccurrenceCollector :: proc(v: json.Value, out: ^EntryOccurrenceCollector) -> bool {
-	if v.kind != .String do return fail("EntryOccurrenceCollector: not a string")
-	str := v.text
-	switch str {
-	case "Owner": out^ = .Owner
-	case "AfterSimultaneousEntryEffects": out^ = .AfterSimultaneousEntryEffects
-	case: return fail("EntryOccurrenceCollector: unknown variant")
-	}
-	return true
-}
-
-encode_EntryOccurrenceCollector :: proc(b: ^strings.Builder, x: EntryOccurrenceCollector) {
-	@(static, rodata) NAMES := [EntryOccurrenceCollector]string{
-		.Owner = "Owner",
-		.AfterSimultaneousEntryEffects = "AfterSimultaneousEntryEffects",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_SacrificeAggregateStat :: proc(v: json.Value, out: ^SacrificeAggregateStat) -> bool {
-	if v.kind != .String do return fail("SacrificeAggregateStat: not a string")
-	str := v.text
-	switch str {
-	case "TotalPower": out^ = .TotalPower
-	case: return fail("SacrificeAggregateStat: unknown variant")
-	}
-	return true
-}
-
-encode_SacrificeAggregateStat :: proc(b: ^strings.Builder, x: SacrificeAggregateStat) {
-	@(static, rodata) NAMES := [SacrificeAggregateStat]string{
-		.TotalPower = "TotalPower",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_ResourceVector :: proc(v: json.Value, out: ^ResourceVector) -> bool {
-	if v.kind != .Object do return fail("ResourceVector: not an object")
-	if fv, found := get_any(v, "mana"); found { if !dec__6_i64(fv, &out.mana) do return fail("ResourceVector.mana") } else { return fail("ResourceVector.mana missing") }
-	if fv, found := get_any(v, "life"); found { if !dec_pairs_map_PlayerId_i64(fv, &out.life) do return fail("ResourceVector.life") } else { return fail("ResourceVector.life missing") }
-	if fv, found := get_any(v, "damage_dealt"); found { if !dec_pairs_map_PlayerId_i64(fv, &out.damage_dealt) do return fail("ResourceVector.damage_dealt") } else { return fail("ResourceVector.damage_dealt missing") }
-	if fv, found := get_any(v, "library_delta"); found { if !dec_pairs_map_PlayerId_i64(fv, &out.library_delta) do return fail("ResourceVector.library_delta") } else { return fail("ResourceVector.library_delta missing") }
-	if fv, found := get_any(v, "poison"); found { if !dec_pairs_map_PlayerId_i64(fv, &out.poison) do return fail("ResourceVector.poison") } else { return fail("ResourceVector.poison missing") }
-	if fv, found := get_any(v, "energy"); found { if !dec_pairs_map_PlayerId_i64(fv, &out.energy) do return fail("ResourceVector.energy") }
-	if fv, found := get_any(v, "tokens_created"); found { if !decode_i64(fv, &out.tokens_created) do return fail("ResourceVector.tokens_created") } else { return fail("ResourceVector.tokens_created missing") }
-	if fv, found := get_any(v, "cards_drawn"); found { if !decode_i64(fv, &out.cards_drawn) do return fail("ResourceVector.cards_drawn") } else { return fail("ResourceVector.cards_drawn missing") }
-	if fv, found := get_any(v, "casts_this_step"); found { if !decode_i64(fv, &out.casts_this_step) do return fail("ResourceVector.casts_this_step") } else { return fail("ResourceVector.casts_this_step missing") }
-	if fv, found := get_any(v, "landfall_triggers"); found { if !decode_i64(fv, &out.landfall_triggers) do return fail("ResourceVector.landfall_triggers") } else { return fail("ResourceVector.landfall_triggers missing") }
-	if fv, found := get_any(v, "combat_phases"); found { if !decode_i64(fv, &out.combat_phases) do return fail("ResourceVector.combat_phases") } else { return fail("ResourceVector.combat_phases missing") }
-	if fv, found := get_any(v, "extra_turns"); found { if !decode_i64(fv, &out.extra_turns) do return fail("ResourceVector.extra_turns") } else { return fail("ResourceVector.extra_turns missing") }
-	if fv, found := get_any(v, "death_triggers"); found { if !decode_i64(fv, &out.death_triggers) do return fail("ResourceVector.death_triggers") } else { return fail("ResourceVector.death_triggers missing") }
-	if fv, found := get_any(v, "etb_triggers"); found { if !decode_i64(fv, &out.etb_triggers) do return fail("ResourceVector.etb_triggers") } else { return fail("ResourceVector.etb_triggers missing") }
-	if fv, found := get_any(v, "ltb_triggers"); found { if !decode_i64(fv, &out.ltb_triggers) do return fail("ResourceVector.ltb_triggers") } else { return fail("ResourceVector.ltb_triggers missing") }
-	if fv, found := get_any(v, "sac_triggers"); found { if !decode_i64(fv, &out.sac_triggers) do return fail("ResourceVector.sac_triggers") } else { return fail("ResourceVector.sac_triggers missing") }
-	if fv, found := get_any(v, "counters"); found { if !dec_dyn_t2_t2_CounterClass_ObjectClass_i64(fv, &out.counters) do return fail("ResourceVector.counters") } else { return fail("ResourceVector.counters missing") }
-	if fv, found := get_any(v, "generic_triggers"); found { if !dec_map_TriggerKind_i64(fv, &out.generic_triggers) do return fail("ResourceVector.generic_triggers") } else { return fail("ResourceVector.generic_triggers missing") }
-	return true
-}
-
-encode_ResourceVector :: proc(b: ^strings.Builder, x: ResourceVector) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_ResourceVector_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_ResourceVector_members :: proc(b: ^strings.Builder, x: ResourceVector, first: ^bool) {
-	member(b, first, "mana"); enc__6_i64(b, x.mana)
-	member(b, first, "life"); enc_pairs_map_PlayerId_i64(b, x.life)
-	member(b, first, "damage_dealt"); enc_pairs_map_PlayerId_i64(b, x.damage_dealt)
-	member(b, first, "library_delta"); enc_pairs_map_PlayerId_i64(b, x.library_delta)
-	member(b, first, "poison"); enc_pairs_map_PlayerId_i64(b, x.poison)
-	member(b, first, "energy"); enc_pairs_map_PlayerId_i64(b, x.energy)
-	member(b, first, "tokens_created"); encode_i64(b, x.tokens_created)
-	member(b, first, "cards_drawn"); encode_i64(b, x.cards_drawn)
-	member(b, first, "casts_this_step"); encode_i64(b, x.casts_this_step)
-	member(b, first, "landfall_triggers"); encode_i64(b, x.landfall_triggers)
-	member(b, first, "combat_phases"); encode_i64(b, x.combat_phases)
-	member(b, first, "extra_turns"); encode_i64(b, x.extra_turns)
-	member(b, first, "death_triggers"); encode_i64(b, x.death_triggers)
-	member(b, first, "etb_triggers"); encode_i64(b, x.etb_triggers)
-	member(b, first, "ltb_triggers"); encode_i64(b, x.ltb_triggers)
-	member(b, first, "sac_triggers"); encode_i64(b, x.sac_triggers)
-	member(b, first, "counters"); enc_dyn_t2_t2_CounterClass_ObjectClass_i64(b, x.counters)
-	member(b, first, "generic_triggers"); enc_map_TriggerKind_i64(b, x.generic_triggers)
-}
-
-decode_CleanupPair :: proc(v: json.Value, out: ^CleanupPair) -> bool {
-	if v.kind != .Object do return fail("CleanupPair: not an object")
-	if fv, found := get_any(v, "to_cleanup"); found { if !decode_i64(fv, &out.to_cleanup) do return fail("CleanupPair.to_cleanup") } else { return fail("CleanupPair.to_cleanup missing") }
-	if fv, found := get_any(v, "growth"); found { if !decode_i64(fv, &out.growth) do return fail("CleanupPair.growth") } else { return fail("CleanupPair.growth missing") }
-	return true
-}
-
-encode_CleanupPair :: proc(b: ^strings.Builder, x: CleanupPair) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_CleanupPair_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_CleanupPair_members :: proc(b: ^strings.Builder, x: CleanupPair, first: ^bool) {
-	member(b, first, "to_cleanup"); encode_i64(b, x.to_cleanup)
-	member(b, first, "growth"); encode_i64(b, x.growth)
-}
-
-decode_InstructedMill :: proc(v: json.Value, out: ^InstructedMill) -> bool {
-	if v.kind != .Object do return fail("InstructedMill: not an object")
-	if fv, found := get_any(v, "per_repetition"); found { if !decode_i64(fv, &out.per_repetition) do return fail("InstructedMill.per_repetition") } else { return fail("InstructedMill.per_repetition missing") }
-	if fv, found := get_any(v, "library"); found { if !decode_i64(fv, &out.library) do return fail("InstructedMill.library") } else { return fail("InstructedMill.library missing") }
-	return true
-}
-
-encode_InstructedMill :: proc(b: ^strings.Builder, x: InstructedMill) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_InstructedMill_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_InstructedMill_members :: proc(b: ^strings.Builder, x: InstructedMill, first: ^bool) {
-	member(b, first, "per_repetition"); encode_i64(b, x.per_repetition)
-	member(b, first, "library"); encode_i64(b, x.library)
-}
-
-decode_Ranking :: proc(v: json.Value, out: ^Ranking) -> bool {
-	return dec_dyn_AnnouncementSubject(v, cast(^[dynamic]AnnouncementSubject)out)
-}
-
-encode_Ranking :: proc(b: ^strings.Builder, x: Ranking) {
-	enc_dyn_AnnouncementSubject(b, cast([dynamic]AnnouncementSubject)x)
-}
-
-decode_ComboDeclaration :: proc(v: json.Value, out: ^ComboDeclaration) -> bool {
-	if v.kind != .Object do return fail("ComboDeclaration: not an object")
-	tv, found := json.get(v, "kind")
-	if !found || tv.kind != .String do return fail("ComboDeclaration: no tag")
-	switch tv.text {
-	case "undeclared": out^ = ComboDeclaration_Undeclared{}
-	case "none_intended": out^ = ComboDeclaration_NoneIntended{}
-	case "intended":
-		tmp: ComboDeclaration_Intended
-		if !decode_variant(v, &tmp, proc(v: json.Value, out: ^ComboDeclaration_Intended) -> bool {
-	if fv, found := get_any(v, "window"); found { if !dec_opt_ComboWindow(fv, &out.window) do return fail("ComboDeclaration::Intended.window") }
-	return true
-		}) { return fail("ComboDeclaration::Intended") }
-		out^ = tmp
-	case: return fail("ComboDeclaration: unknown variant")
-	}
-	return true
-}
-
-encode_ComboDeclaration :: proc(b: ^strings.Builder, x: ComboDeclaration) {
-	#partial switch y in x {
-	case ComboDeclaration_Undeclared: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "kind"); json.write_string(b, "undeclared"); strings.write_byte(b, '}')
-	case ComboDeclaration_NoneIntended: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "kind"); json.write_string(b, "none_intended"); strings.write_byte(b, '}')
-	case ComboDeclaration_Intended: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "kind"); json.write_string(b, "intended")
-	member(b, first, "window"); enc_opt_ComboWindow(b, y.window)
-	}; strings.write_byte(b, '}')
-	}
-}
-
-encode_ComboDeclaration_members :: proc(b: ^strings.Builder, x: ComboDeclaration, first: ^bool) {
-	#partial switch y in x {
-	case ComboDeclaration_Undeclared: _ = y; member(b, first, "kind"); json.write_string(b, "undeclared")
-	case ComboDeclaration_NoneIntended: _ = y; member(b, first, "kind"); json.write_string(b, "none_intended")
-	case ComboDeclaration_Intended: member(b, first, "kind"); json.write_string(b, "intended")
-	member(b, first, "window"); enc_opt_ComboWindow(b, y.window)
-
-	}
-}
-
-decode_TriggerProducerOrigin :: proc(v: json.Value, out: ^TriggerProducerOrigin) -> bool {
-	if v.kind != .Object do return fail("TriggerProducerOrigin: not an object")
-	tv, found := json.get(v, "type")
-	if !found || tv.kind != .String do return fail("TriggerProducerOrigin: no tag")
-	switch tv.text {
-	case "Static":
-		tmp: TriggerProducerOrigin_Static
-		if !decode_variant(json.get_or_null(v, "data"), &tmp, proc(v: json.Value, out: ^TriggerProducerOrigin_Static) -> bool {
-	if fv, found := get_any(v, "source"); found { if !decode_ObjectIncarnationRef(fv, &out.source) do return fail("TriggerProducerOrigin::Static.source") } else { return fail("TriggerProducerOrigin::Static.source missing") }
-	if fv, found := get_any(v, "definition_index"); found { if !decode_int(fv, &out.definition_index) do return fail("TriggerProducerOrigin::Static.definition_index") } else { return fail("TriggerProducerOrigin::Static.definition_index missing") }
-	if fv, found := get_any(v, "modification_index"); found { if !decode_int(fv, &out.modification_index) do return fail("TriggerProducerOrigin::Static.modification_index") } else { return fail("TriggerProducerOrigin::Static.modification_index missing") }
-	return true
-		}) { return fail("TriggerProducerOrigin::Static") }
-		out^ = tmp
-	case "Transient":
-		tmp: TriggerProducerOrigin_Transient
-		if !decode_variant(json.get_or_null(v, "data"), &tmp, proc(v: json.Value, out: ^TriggerProducerOrigin_Transient) -> bool {
-	if fv, found := get_any(v, "continuous_effect_id"); found { if !decode_u64(fv, &out.continuous_effect_id) do return fail("TriggerProducerOrigin::Transient.continuous_effect_id") } else { return fail("TriggerProducerOrigin::Transient.continuous_effect_id missing") }
-	if fv, found := get_any(v, "modification_index"); found { if !decode_int(fv, &out.modification_index) do return fail("TriggerProducerOrigin::Transient.modification_index") } else { return fail("TriggerProducerOrigin::Transient.modification_index missing") }
-	return true
-		}) { return fail("TriggerProducerOrigin::Transient") }
-		out^ = tmp
-	case: return fail("TriggerProducerOrigin: unknown variant")
-	}
-	return true
-}
-
-encode_TriggerProducerOrigin :: proc(b: ^strings.Builder, x: TriggerProducerOrigin) {
-	#partial switch y in x {
-	case TriggerProducerOrigin_Static: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Static"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "source"); encode_ObjectIncarnationRef(b, y.source)
-	member(b, first, "definition_index"); encode_int(b, y.definition_index)
-	member(b, first, "modification_index"); encode_int(b, y.modification_index)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	case TriggerProducerOrigin_Transient: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Transient"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "continuous_effect_id"); encode_u64(b, y.continuous_effect_id)
-	member(b, first, "modification_index"); encode_int(b, y.modification_index)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	}
-}
-
-decode_TriggerGrantProducerKey :: proc(v: json.Value, out: ^TriggerGrantProducerKey) -> bool {
-	if v.kind != .Object do return fail("TriggerGrantProducerKey: not an object")
-	tv, found := json.get(v, "type")
-	if !found || tv.kind != .String do return fail("TriggerGrantProducerKey: no tag")
-	switch tv.text {
-	case "KeywordCompanion":
-		tmp: TriggerGrantProducerKey_KeywordCompanion
-		if !decode_variant(json.get_or_null(v, "data"), &tmp, proc(v: json.Value, out: ^TriggerGrantProducerKey_KeywordCompanion) -> bool {
-	if fv, found := get_any(v, "origin"); found { if !decode_TriggerProducerOrigin(fv, &out.origin) do return fail("TriggerGrantProducerKey::KeywordCompanion.origin") } else { return fail("TriggerGrantProducerKey::KeywordCompanion.origin missing") }
-	if fv, found := get_any(v, "keyword_output_index"); found { if !decode_int(fv, &out.keyword_output_index) do return fail("TriggerGrantProducerKey::KeywordCompanion.keyword_output_index") }
-	if fv, found := get_any(v, "companion_index"); found { if !decode_int(fv, &out.companion_index) do return fail("TriggerGrantProducerKey::KeywordCompanion.companion_index") } else { return fail("TriggerGrantProducerKey::KeywordCompanion.companion_index missing") }
-	return true
-		}) { return fail("TriggerGrantProducerKey::KeywordCompanion") }
-		out^ = tmp
-	case "CopyRetained":
-		tmp: TriggerGrantProducerKey_CopyRetained
-		if !decode_variant(json.get_or_null(v, "data"), &tmp, proc(v: json.Value, out: ^TriggerGrantProducerKey_CopyRetained) -> bool {
-	if fv, found := get_any(v, "origin"); found { if !decode_TriggerProducerOrigin(fv, &out.origin) do return fail("TriggerGrantProducerKey::CopyRetained.origin") } else { return fail("TriggerGrantProducerKey::CopyRetained.origin missing") }
-	if fv, found := get_any(v, "source_base_set"); found { if !decode_TriggerBaseSetInstanceRef(fv, &out.source_base_set) do return fail("TriggerGrantProducerKey::CopyRetained.source_base_set") } else { return fail("TriggerGrantProducerKey::CopyRetained.source_base_set missing") }
-	if fv, found := get_any(v, "source_printed_index"); found { if !decode_int(fv, &out.source_printed_index) do return fail("TriggerGrantProducerKey::CopyRetained.source_printed_index") } else { return fail("TriggerGrantProducerKey::CopyRetained.source_printed_index missing") }
-	return true
-		}) { return fail("TriggerGrantProducerKey::CopyRetained") }
-		out^ = tmp
-	case "Granted":
-		tmp: TriggerGrantProducerKey_Granted
-		if !decode_variant(json.get_or_null(v, "data"), &tmp, proc(v: json.Value, out: ^TriggerGrantProducerKey_Granted) -> bool {
-	if fv, found := get_any(v, "origin"); found { if !decode_TriggerProducerOrigin(fv, &out.origin) do return fail("TriggerGrantProducerKey::Granted.origin") } else { return fail("TriggerGrantProducerKey::Granted.origin missing") }
-	if fv, found := get_any(v, "output_index"); found { if !decode_int(fv, &out.output_index) do return fail("TriggerGrantProducerKey::Granted.output_index") } else { return fail("TriggerGrantProducerKey::Granted.output_index missing") }
-	return true
-		}) { return fail("TriggerGrantProducerKey::Granted") }
-		out^ = tmp
-	case "ExpandedGrant":
-		tmp: TriggerGrantProducerKey_ExpandedGrant
-		if !decode_variant(json.get_or_null(v, "data"), &tmp, proc(v: json.Value, out: ^TriggerGrantProducerKey_ExpandedGrant) -> bool {
-	if fv, found := get_any(v, "origin"); found { if !decode_TriggerProducerOrigin(fv, &out.origin) do return fail("TriggerGrantProducerKey::ExpandedGrant.origin") } else { return fail("TriggerGrantProducerKey::ExpandedGrant.origin missing") }
-	if fv, found := get_any(v, "provider"); found { if !dec_ptr_TriggerDefinitionRef(fv, &out.provider) do return fail("TriggerGrantProducerKey::ExpandedGrant.provider") } else { return fail("TriggerGrantProducerKey::ExpandedGrant.provider missing") }
-	if fv, found := get_any(v, "provider_output_index"); found { if !decode_int(fv, &out.provider_output_index) do return fail("TriggerGrantProducerKey::ExpandedGrant.provider_output_index") } else { return fail("TriggerGrantProducerKey::ExpandedGrant.provider_output_index missing") }
-	return true
-		}) { return fail("TriggerGrantProducerKey::ExpandedGrant") }
-		out^ = tmp
-	case: return fail("TriggerGrantProducerKey: unknown variant")
-	}
-	return true
-}
-
-encode_TriggerGrantProducerKey :: proc(b: ^strings.Builder, x: TriggerGrantProducerKey) {
-	#partial switch y in x {
-	case TriggerGrantProducerKey_KeywordCompanion: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "KeywordCompanion"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "origin"); encode_TriggerProducerOrigin(b, y.origin)
-	member(b, first, "keyword_output_index"); encode_int(b, y.keyword_output_index)
-	member(b, first, "companion_index"); encode_int(b, y.companion_index)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	case TriggerGrantProducerKey_CopyRetained: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CopyRetained"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "origin"); encode_TriggerProducerOrigin(b, y.origin)
-	member(b, first, "source_base_set"); encode_TriggerBaseSetInstanceRef(b, y.source_base_set)
-	member(b, first, "source_printed_index"); encode_int(b, y.source_printed_index)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	case TriggerGrantProducerKey_Granted: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Granted"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "origin"); encode_TriggerProducerOrigin(b, y.origin)
-	member(b, first, "output_index"); encode_int(b, y.output_index)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	case TriggerGrantProducerKey_ExpandedGrant: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ExpandedGrant"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "origin"); encode_TriggerProducerOrigin(b, y.origin)
-	member(b, first, "provider"); enc_ptr_TriggerDefinitionRef(b, y.provider)
-	member(b, first, "provider_output_index"); encode_int(b, y.provider_output_index)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	}
-}
-
-decode_AbilityBlockKind :: proc(v: json.Value, out: ^AbilityBlockKind) -> bool {
-	if v.kind != .Object do return fail("AbilityBlockKind: not an object")
-	tv, found := json.get(v, "type")
-	if !found || tv.kind != .String do return fail("AbilityBlockKind: no tag")
-	str := tv.text
-	switch str {
-	case "CantBeActivated": out^ = .CantBeActivated
-	case "CantActivateDuring": out^ = .CantActivateDuring
-	case "Prohibited": out^ = .Prohibited
-	case "CostNotPayableNow": out^ = .CostNotPayableNow
-	case: return fail("AbilityBlockKind: unknown variant")
-	}
-	return true
-}
-
-encode_AbilityBlockKind :: proc(b: ^strings.Builder, x: AbilityBlockKind) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_AbilityBlockKind_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_AbilityBlockKind_members :: proc(b: ^strings.Builder, x: AbilityBlockKind, first: ^bool) {
-	_ = x
-	@(static, rodata) NAMES := [AbilityBlockKind]string{
-		.CantBeActivated = "CantBeActivated",
-		.CantActivateDuring = "CantActivateDuring",
-		.Prohibited = "Prohibited",
-		.CostNotPayableNow = "CostNotPayableNow",
-	}
-	member(b, first, "type"); json.write_string(b, NAMES[x])
-}
-
-decode_BlockPairDirection :: proc(v: json.Value, out: ^BlockPairDirection) -> bool {
-	if v.kind != .String do return fail("BlockPairDirection: not a string")
-	str := v.text
-	switch str {
-	case "SubjectIsBlocker": out^ = .SubjectIsBlocker
-	case "CandidateIsBlocker": out^ = .CandidateIsBlocker
-	case "Either": out^ = .Either
-	case: return fail("BlockPairDirection: unknown variant")
-	}
-	return true
-}
-
-encode_BlockPairDirection :: proc(b: ^strings.Builder, x: BlockPairDirection) {
-	@(static, rodata) NAMES := [BlockPairDirection]string{
-		.SubjectIsBlocker = "SubjectIsBlocker",
-		.CandidateIsBlocker = "CandidateIsBlocker",
-		.Either = "Either",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_CommanderEligibilityRule :: proc(v: json.Value, out: ^CommanderEligibilityRule) -> bool {
-	if v.kind != .String do return fail("CommanderEligibilityRule: not a string")
-	str := v.text
-	switch str {
-	case "Standard": out^ = .Standard
-	case "TinyLeaders": out^ = .TinyLeaders
-	case "OathbreakerSignatureSpell": out^ = .OathbreakerSignatureSpell
-	case "BrawlColorIdentity": out^ = .BrawlColorIdentity
-	case "FreeformAnyCastableCard": out^ = .FreeformAnyCastableCard
-	case: return fail("CommanderEligibilityRule: unknown variant")
-	}
-	return true
-}
-
-encode_CommanderEligibilityRule :: proc(b: ^strings.Builder, x: CommanderEligibilityRule) {
-	@(static, rodata) NAMES := [CommanderEligibilityRule]string{
-		.Standard = "Standard",
-		.TinyLeaders = "TinyLeaders",
-		.OathbreakerSignatureSpell = "OathbreakerSignatureSpell",
-		.BrawlColorIdentity = "BrawlColorIdentity",
-		.FreeformAnyCastableCard = "FreeformAnyCastableCard",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_ManaBurnPolicy :: proc(v: json.Value, out: ^ManaBurnPolicy) -> bool {
-	if v.kind != .String do return fail("ManaBurnPolicy: not a string")
-	str := v.text
-	switch str {
-	case "Modern": out^ = .Modern
-	case "Obsolete": out^ = .Obsolete
-	case: return fail("ManaBurnPolicy: unknown variant")
-	}
-	return true
-}
-
-encode_ManaBurnPolicy :: proc(b: ^strings.Builder, x: ManaBurnPolicy) {
-	@(static, rodata) NAMES := [ManaBurnPolicy]string{
-		.Modern = "Modern",
-		.Obsolete = "Obsolete",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_CombatDamageTiming :: proc(v: json.Value, out: ^CombatDamageTiming) -> bool {
-	if v.kind != .String do return fail("CombatDamageTiming: not a string")
-	str := v.text
-	switch str {
-	case "Modern": out^ = .Modern
-	case "OnStack": out^ = .OnStack
-	case: return fail("CombatDamageTiming: unknown variant")
-	}
-	return true
-}
-
-encode_CombatDamageTiming :: proc(b: ^strings.Builder, x: CombatDamageTiming) {
-	@(static, rodata) NAMES := [CombatDamageTiming]string{
-		.Modern = "Modern",
-		.OnStack = "OnStack",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_WishOutsideGameScope :: proc(v: json.Value, out: ^WishOutsideGameScope) -> bool {
-	if v.kind != .String do return fail("WishOutsideGameScope: not a string")
-	str := v.text
-	switch str {
-	case "PostM10SideboardOnly": out^ = .PostM10SideboardOnly
-	case "PreM10ReachesExile": out^ = .PreM10ReachesExile
-	case: return fail("WishOutsideGameScope: unknown variant")
-	}
-	return true
-}
-
-encode_WishOutsideGameScope :: proc(b: ^strings.Builder, x: WishOutsideGameScope) {
-	@(static, rodata) NAMES := [WishOutsideGameScope]string{
-		.PostM10SideboardOnly = "PostM10SideboardOnly",
-		.PreM10ReachesExile = "PreM10ReachesExile",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_LegendRuleScope :: proc(v: json.Value, out: ^LegendRuleScope) -> bool {
-	if v.kind != .String do return fail("LegendRuleScope: not a string")
-	str := v.text
-	switch str {
-	case "Modern": out^ = .Modern
-	case "PreM14AnyController": out^ = .PreM14AnyController
-	case: return fail("LegendRuleScope: unknown variant")
-	}
-	return true
-}
-
-encode_LegendRuleScope :: proc(b: ^strings.Builder, x: LegendRuleScope) {
-	@(static, rodata) NAMES := [LegendRuleScope]string{
-		.Modern = "Modern",
-		.PreM14AnyController = "PreM14AnyController",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_AntePolicy :: proc(v: json.Value, out: ^AntePolicy) -> bool {
-	if v.kind != .String do return fail("AntePolicy: not a string")
-	str := v.text
-	switch str {
-	case "Excluded": out^ = .Excluded
-	case "Enabled": out^ = .Enabled
-	case: return fail("AntePolicy: unknown variant")
-	}
-	return true
-}
-
-encode_AntePolicy :: proc(b: ^strings.Builder, x: AntePolicy) {
-	@(static, rodata) NAMES := [AntePolicy]string{
-		.Excluded = "Excluded",
-		.Enabled = "Enabled",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_PendingContinuation :: proc(v: json.Value, out: ^PendingContinuation) -> bool {
-	if v.kind != .Object do return fail("PendingContinuation: not an object")
-	if fv, found := get_any(v, "chain"); found { if !dec_ptr_ResolvedAbility(fv, &out.chain) do return fail("PendingContinuation.chain") } else { return fail("PendingContinuation.chain missing") }
-	if fv, found := get_any(v, "return_result_occurrence"); found { if !dec_opt_ReturnResultOccurrenceId(fv, &out.return_result_occurrence) do return fail("PendingContinuation.return_result_occurrence") }
-	if fv, found := get_any(v, "pending_return_result_producer"); found { if !dec_opt_t2_ReturnResultOccurrenceId_ReturnResultId(fv, &out.pending_return_result_producer) do return fail("PendingContinuation.pending_return_result_producer") }
-	if fv, found := get_any(v, "parent_kind"); found { if !dec_opt_EffectKind(fv, &out.parent_kind) do return fail("PendingContinuation.parent_kind") }
-	if fv, found := get_any(v, "search_attach_host"); found { if !dec_opt_AttachTarget(fv, &out.search_attach_host) do return fail("PendingContinuation.search_attach_host") }
-	if fv, found := get_any(v, "trigger_context"); found { if !dec_opt_ResolvingTriggerContext(fv, &out.trigger_context) do return fail("PendingContinuation.trigger_context") }
-	if fv, found := get_any(v, "trigger_firing"); found { if !dec_opt_TriggerFiring(fv, &out.trigger_firing) do return fail("PendingContinuation.trigger_firing") }
-	if fv, found := get_any(v, "attachment_choice"); found { if !dec_opt_PendingAttachmentChoice(fv, &out.attachment_choice) do return fail("PendingContinuation.attachment_choice") }
-	if fv, found := get_any(v, "attachment_remainder"); found { if !dec_opt_PendingAttachmentRemainder(fv, &out.attachment_remainder) do return fail("PendingContinuation.attachment_remainder") }
-	if fv, found := get_any(v, "player_scope_linked_exile"); found { if !dec_opt_PendingPlayerScopeTail(fv, &out.player_scope_tail) do return fail("PendingContinuation.player_scope_tail") }
-	if fv, found := get_any(v, "player_scope_queue_end"); found { if !decode_bool(fv, &out.player_scope_queue_end) do return fail("PendingContinuation.player_scope_queue_end") }
-	if fv, found := get_any(v, "x_announcement"); found { if !dec_opt_ContinuationXAnnouncement(fv, &out.x_announcement) do return fail("PendingContinuation.x_announcement") }
-	if fv, found := get_any(v, "replacement_action"); found { if !dec_opt_ReplacementActionScope(fv, &out.replacement_action) do return fail("PendingContinuation.replacement_action") }
-	if fv, found := get_any(v, "head_payment_origin"); found { if !decode_ResolutionPaymentOrigin(fv, &out.head_payment_origin) do return fail("PendingContinuation.head_payment_origin") }
-	return true
-}
-
-encode_PendingContinuation :: proc(b: ^strings.Builder, x: PendingContinuation) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingContinuation_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingContinuation_members :: proc(b: ^strings.Builder, x: PendingContinuation, first: ^bool) {
-	member(b, first, "chain"); enc_ptr_ResolvedAbility(b, x.chain)
-	if !(x.return_result_occurrence == nil) { member(b, first, "return_result_occurrence"); enc_opt_ReturnResultOccurrenceId(b, x.return_result_occurrence) }
-	if !(x.pending_return_result_producer == nil) { member(b, first, "pending_return_result_producer"); enc_opt_t2_ReturnResultOccurrenceId_ReturnResultId(b, x.pending_return_result_producer) }
-	if !(x.parent_kind == nil) { member(b, first, "parent_kind"); enc_opt_EffectKind(b, x.parent_kind) }
-	if !(x.search_attach_host == nil) { member(b, first, "search_attach_host"); enc_opt_AttachTarget(b, x.search_attach_host) }
-	if !(x.trigger_context == nil) { member(b, first, "trigger_context"); enc_opt_ResolvingTriggerContext(b, x.trigger_context) }
-	if !(x.trigger_firing == nil) { member(b, first, "trigger_firing"); enc_opt_TriggerFiring(b, x.trigger_firing) }
-	if !(x.attachment_choice == nil) { member(b, first, "attachment_choice"); enc_opt_PendingAttachmentChoice(b, x.attachment_choice) }
-	if !(x.attachment_remainder == nil) { member(b, first, "attachment_remainder"); enc_opt_PendingAttachmentRemainder(b, x.attachment_remainder) }
-	if !(x.player_scope_tail == nil) { member(b, first, "player_scope_linked_exile"); enc_opt_PendingPlayerScopeTail(b, x.player_scope_tail) }
-	if !(!x.player_scope_queue_end) { member(b, first, "player_scope_queue_end"); encode_bool(b, x.player_scope_queue_end) }
-	if !(x.x_announcement == nil) { member(b, first, "x_announcement"); enc_opt_ContinuationXAnnouncement(b, x.x_announcement) }
-	if !(x.replacement_action == nil) { member(b, first, "replacement_action"); enc_opt_ReplacementActionScope(b, x.replacement_action) }
-	if !(skip_PendingContinuation_ResolutionPaymentOrigin_is_fresh_choice_ResolutionPaymentOrigin(x.head_payment_origin)) { member(b, first, "head_payment_origin"); encode_ResolutionPaymentOrigin(b, x.head_payment_origin) }
-}
-
-decode_RepeatUntilStopWitness :: proc(v: json.Value, out: ^RepeatUntilStopWitness) -> bool {
-	if v.kind != .Object do return fail("RepeatUntilStopWitness: not an object")
-	if fv, found := get_any(v, "exiled_this_turn"); found { if !dec_dyn_ExiledStopInput(fv, &out.exiled_this_turn) do return fail("RepeatUntilStopWitness.exiled_this_turn") }
-	if fv, found := get_any(v, "linked"); found { if !dec_dyn_ExiledStopInput(fv, &out.linked) do return fail("RepeatUntilStopWitness.linked") }
-	return true
-}
-
-encode_RepeatUntilStopWitness :: proc(b: ^strings.Builder, x: RepeatUntilStopWitness) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_RepeatUntilStopWitness_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_RepeatUntilStopWitness_members :: proc(b: ^strings.Builder, x: RepeatUntilStopWitness, first: ^bool) {
-	if !(len(x.exiled_this_turn) == 0) { member(b, first, "exiled_this_turn"); enc_dyn_ExiledStopInput(b, x.exiled_this_turn) }
-	if !(len(x.linked) == 0) { member(b, first, "linked"); enc_dyn_ExiledStopInput(b, x.linked) }
-}
-
-decode_RepeatUntilIterationWitness :: proc(v: json.Value, out: ^RepeatUntilIterationWitness) -> bool {
-	if v.kind != .Object do return fail("RepeatUntilIterationWitness: not an object")
-	if fv, found := get_any(v, "choice"); found { if !decode_RepeatIterationChoice(fv, &out.choice) do return fail("RepeatUntilIterationWitness.choice") } else { return fail("RepeatUntilIterationWitness.choice missing") }
-	if fv, found := get_any(v, "zone_changes_before"); found { if !decode_int(fv, &out.zone_changes_before) do return fail("RepeatUntilIterationWitness.zone_changes_before") } else { return fail("RepeatUntilIterationWitness.zone_changes_before missing") }
-	return true
-}
-
-encode_RepeatUntilIterationWitness :: proc(b: ^strings.Builder, x: RepeatUntilIterationWitness) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_RepeatUntilIterationWitness_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_RepeatUntilIterationWitness_members :: proc(b: ^strings.Builder, x: RepeatUntilIterationWitness, first: ^bool) {
-	member(b, first, "choice"); encode_RepeatIterationChoice(b, x.choice)
-	member(b, first, "zone_changes_before"); encode_int(b, x.zone_changes_before)
-}
-
-decode_PendingRepeatedOptionalPayment :: proc(v: json.Value, out: ^PendingRepeatedOptionalPayment) -> bool {
-	if v.kind != .Object do return fail("PendingRepeatedOptionalPayment: not an object")
-	if fv, found := get_any(v, "payment_unit"); found { if !dec_ptr_ResolvedAbility(fv, &out.payment_unit) do return fail("PendingRepeatedOptionalPayment.payment_unit") } else { return fail("PendingRepeatedOptionalPayment.payment_unit missing") }
-	if fv, found := get_any(v, "reflexive"); found { if !dec_ptr_ResolvedAbility(fv, &out.reflexive) do return fail("PendingRepeatedOptionalPayment.reflexive") } else { return fail("PendingRepeatedOptionalPayment.reflexive missing") }
-	if fv, found := get_any(v, "remaining"); found { if !decode_u32(fv, &out.remaining) do return fail("PendingRepeatedOptionalPayment.remaining") } else { return fail("PendingRepeatedOptionalPayment.remaining missing") }
-	return true
-}
-
-encode_PendingRepeatedOptionalPayment :: proc(b: ^strings.Builder, x: PendingRepeatedOptionalPayment) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingRepeatedOptionalPayment_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingRepeatedOptionalPayment_members :: proc(b: ^strings.Builder, x: PendingRepeatedOptionalPayment, first: ^bool) {
-	member(b, first, "payment_unit"); enc_ptr_ResolvedAbility(b, x.payment_unit)
-	member(b, first, "reflexive"); enc_ptr_ResolvedAbility(b, x.reflexive)
-	member(b, first, "remaining"); encode_u32(b, x.remaining)
-}
-
-decode_PendingChangeZoneIteration :: proc(v: json.Value, out: ^PendingChangeZoneIteration) -> bool {
-	if v.kind != .Object do return fail("PendingChangeZoneIteration: not an object")
-	if fv, found := get_any(v, "logical_zone_change_group"); found { if !decode_LogicalZoneChangeGroup(fv, &out.logical_zone_change_group) do return fail("PendingChangeZoneIteration.logical_zone_change_group") } else { return fail("PendingChangeZoneIteration.logical_zone_change_group missing") }
-	if fv, found := get_any(v, "pending_return_result_producer"); found { if !dec_opt_t2_ReturnResultOccurrenceId_ReturnResultId(fv, &out.pending_return_result_producer) do return fail("PendingChangeZoneIteration.pending_return_result_producer") }
-	if fv, found := get_any(v, "paused_current"); found { if !dec_opt_PendingZoneChangeDelivery(fv, &out.paused_current) do return fail("PendingChangeZoneIteration.paused_current") }
-	if fv, found := get_any(v, "remaining"); found { if !dec_dyn_ChangeZoneMemberEntry(fv, &out.remaining) do return fail("PendingChangeZoneIteration.remaining") } else { return fail("PendingChangeZoneIteration.remaining missing") }
-	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingChangeZoneIteration.source_id") } else { return fail("PendingChangeZoneIteration.source_id missing") }
-	if fv, found := get_any(v, "controller"); found { if !decode_PlayerId(fv, &out.controller) do return fail("PendingChangeZoneIteration.controller") } else { return fail("PendingChangeZoneIteration.controller missing") }
-	if fv, found := get_any(v, "performed_by"); found { if !decode_PlayerId(fv, &out.performed_by) do return fail("PendingChangeZoneIteration.performed_by") } else { return fail("PendingChangeZoneIteration.performed_by missing") }
-	if fv, found := get_any(v, "origin"); found { if !dec_opt_Zone(fv, &out.origin) do return fail("PendingChangeZoneIteration.origin") }
-	if fv, found := get_any(v, "destination"); found { if !decode_Zone(fv, &out.destination) do return fail("PendingChangeZoneIteration.destination") } else { return fail("PendingChangeZoneIteration.destination missing") }
-	if fv, found := get_any(v, "enter_transformed"); found { if !decode_bool(fv, &out.enter_transformed) do return fail("PendingChangeZoneIteration.enter_transformed") } else { return fail("PendingChangeZoneIteration.enter_transformed missing") }
-	if fv, found := get_any(v, "enters_under_player"); found { if !dec_opt_PlayerId(fv, &out.enters_under_player) do return fail("PendingChangeZoneIteration.enters_under_player") }
-	if fv, found := get_any(v, "duration"); found { if !dec_opt_Duration(fv, &out.duration) do return fail("PendingChangeZoneIteration.duration") }
-	if fv, found := get_any(v, "track_exiled_by_source"); found { if !decode_bool(fv, &out.track_exiled_by_source) do return fail("PendingChangeZoneIteration.track_exiled_by_source") } else { return fail("PendingChangeZoneIteration.track_exiled_by_source missing") }
-	if fv, found := get_any(v, "face_down_in_exile"); found { if !decode_ExileConcealment(fv, &out.face_down_in_exile) do return fail("PendingChangeZoneIteration.face_down_in_exile") }
-	if fv, found := get_any(v, "moved_count"); found { if !dec_opt_i32(fv, &out.moved_count) do return fail("PendingChangeZoneIteration.moved_count") }
-	if fv, found := get_any(v, "face_down_profile"); found { if !dec_opt_FaceDownProfile(fv, &out.face_down_profile) do return fail("PendingChangeZoneIteration.face_down_profile") }
-	if fv, found := get_any(v, "with_entry_effect"); found { if !dec_ptr_WithEntryEffect(fv, &out.with_entry_effect) do return fail("PendingChangeZoneIteration.with_entry_effect") }
-	if fv, found := get_any(v, "library_placement"); found { if !dec_opt_LibraryPosition(fv, &out.library_placement) do return fail("PendingChangeZoneIteration.library_placement") }
-	if fv, found := get_any(v, "library_reorder"); found { if !dec_opt_LibraryReorderOperation(fv, &out.library_reorder) do return fail("PendingChangeZoneIteration.library_reorder") }
-	if fv, found := get_any(v, "library_shuffle"); found { if !decode_LibraryShuffleMode(fv, &out.library_shuffle) do return fail("PendingChangeZoneIteration.library_shuffle") }
-	if fv, found := get_any(v, "enter_attached_to"); found { if !dec_opt_AttachTarget(fv, &out.enter_attached_to) do return fail("PendingChangeZoneIteration.enter_attached_to") }
-	if fv, found := get_any(v, "effect_kind"); found { if !decode_EffectKind(fv, &out.effect_kind) do return fail("PendingChangeZoneIteration.effect_kind") } else { return fail("PendingChangeZoneIteration.effect_kind missing") }
-	return true
-}
-
-encode_PendingChangeZoneIteration :: proc(b: ^strings.Builder, x: PendingChangeZoneIteration) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingChangeZoneIteration_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingChangeZoneIteration_members :: proc(b: ^strings.Builder, x: PendingChangeZoneIteration, first: ^bool) {
-	member(b, first, "logical_zone_change_group"); encode_LogicalZoneChangeGroup(b, x.logical_zone_change_group)
-	if !(x.pending_return_result_producer == nil) { member(b, first, "pending_return_result_producer"); enc_opt_t2_ReturnResultOccurrenceId_ReturnResultId(b, x.pending_return_result_producer) }
-	member(b, first, "paused_current"); enc_opt_PendingZoneChangeDelivery(b, x.paused_current)
-	member(b, first, "remaining"); enc_dyn_ChangeZoneMemberEntry(b, x.remaining)
-	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
-	member(b, first, "controller"); encode_PlayerId(b, x.controller)
-	member(b, first, "performed_by"); encode_PlayerId(b, x.performed_by)
-	member(b, first, "origin"); enc_opt_Zone(b, x.origin)
-	member(b, first, "destination"); encode_Zone(b, x.destination)
-	member(b, first, "enter_transformed"); encode_bool(b, x.enter_transformed)
-	if !(x.enters_under_player == nil) { member(b, first, "enters_under_player"); enc_opt_PlayerId(b, x.enters_under_player) }
-	if !(x.duration == nil) { member(b, first, "duration"); enc_opt_Duration(b, x.duration) }
-	member(b, first, "track_exiled_by_source"); encode_bool(b, x.track_exiled_by_source)
-	if !(skip_PendingChangeZoneIteration_ExileConcealment_is_public_ExileConcealment(x.face_down_in_exile)) { member(b, first, "face_down_in_exile"); encode_ExileConcealment(b, x.face_down_in_exile) }
-	if !(x.moved_count == nil) { member(b, first, "moved_count"); enc_opt_i32(b, x.moved_count) }
-	if !(x.face_down_profile == nil) { member(b, first, "face_down_profile"); enc_opt_FaceDownProfile(b, x.face_down_profile) }
-	if !(x.with_entry_effect == nil) { member(b, first, "with_entry_effect"); enc_ptr_WithEntryEffect(b, x.with_entry_effect) }
-	if !(x.library_placement == nil) { member(b, first, "library_placement"); enc_opt_LibraryPosition(b, x.library_placement) }
-	if !(x.library_reorder == nil) { member(b, first, "library_reorder"); enc_opt_LibraryReorderOperation(b, x.library_reorder) }
-	if !(skip_PendingChangeZoneIteration_LibraryShuffleMode_is_per_object_LibraryShuffleMode(x.library_shuffle)) { member(b, first, "library_shuffle"); encode_LibraryShuffleMode(b, x.library_shuffle) }
-	if !(x.enter_attached_to == nil) { member(b, first, "enter_attached_to"); enc_opt_AttachTarget(b, x.enter_attached_to) }
-	member(b, first, "effect_kind"); encode_EffectKind(b, x.effect_kind)
-}
-
-decode_ChangeZoneBatchMarker :: proc(v: json.Value, out: ^ChangeZoneBatchMarker) -> bool {
-	if v.kind != .Object do return fail("ChangeZoneBatchMarker: not an object")
-	if fv, found := get_any(v, "group_id"); found { if !decode_LogicalZoneChangeGroupId(fv, &out.group_id) do return fail("ChangeZoneBatchMarker.group_id") } else { return fail("ChangeZoneBatchMarker.group_id missing") }
-	if fv, found := get_any(v, "residency"); found { if !decode_BatchMarkerResidency(fv, &out.residency) do return fail("ChangeZoneBatchMarker.residency") }
-	return true
-}
-
-encode_ChangeZoneBatchMarker :: proc(b: ^strings.Builder, x: ChangeZoneBatchMarker) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_ChangeZoneBatchMarker_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_ChangeZoneBatchMarker_members :: proc(b: ^strings.Builder, x: ChangeZoneBatchMarker, first: ^bool) {
-	member(b, first, "group_id"); encode_LogicalZoneChangeGroupId(b, x.group_id)
-	if !(skip_ChangeZoneBatchMarker_BatchMarkerResidency_is_parked_BatchMarkerResidency(x.residency)) { member(b, first, "residency"); encode_BatchMarkerResidency(b, x.residency) }
-}
-
-decode_PendingComponentDeliveryParent :: proc(v: json.Value, out: ^PendingComponentDeliveryParent) -> bool {
-	if v.kind != .Object do return fail("PendingComponentDeliveryParent: not an object")
-	if fv, found := get_any(v, "parent_group_id"); found { if !decode_LogicalZoneChangeGroupId(fv, &out.parent_group_id) do return fail("PendingComponentDeliveryParent.parent_group_id") } else { return fail("PendingComponentDeliveryParent.parent_group_id missing") }
-	if fv, found := get_any(v, "member"); found { if !decode_ObjectIncarnationRef(fv, &out.member) do return fail("PendingComponentDeliveryParent.member") } else { return fail("PendingComponentDeliveryParent.member missing") }
-	if fv, found := get_any(v, "expected_event"); found { if !decode_ProposedEvent(fv, &out.expected_event) do return fail("PendingComponentDeliveryParent.expected_event") } else { return fail("PendingComponentDeliveryParent.expected_event missing") }
-	if fv, found := get_any(v, "inherited_arrangements"); found { if !dec_dyn_StagedLibraryArrangement(fv, &out.inherited_arrangements) do return fail("PendingComponentDeliveryParent.inherited_arrangements") }
-	return true
-}
-
-encode_PendingComponentDeliveryParent :: proc(b: ^strings.Builder, x: PendingComponentDeliveryParent) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingComponentDeliveryParent_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingComponentDeliveryParent_members :: proc(b: ^strings.Builder, x: PendingComponentDeliveryParent, first: ^bool) {
-	member(b, first, "parent_group_id"); encode_LogicalZoneChangeGroupId(b, x.parent_group_id)
-	member(b, first, "member"); encode_ObjectIncarnationRef(b, x.member)
-	member(b, first, "expected_event"); encode_ProposedEvent(b, x.expected_event)
-	if !(len(x.inherited_arrangements) == 0) { member(b, first, "inherited_arrangements"); enc_dyn_StagedLibraryArrangement(b, x.inherited_arrangements) }
-}
-
-decode_LogicalZoneChangeGroup :: proc(v: json.Value, out: ^LogicalZoneChangeGroup) -> bool {
-	if v.kind != .Object do return fail("LogicalZoneChangeGroup: not an object")
-	if fv, found := get_any(v, "logical_group_id"); found { if !decode_LogicalZoneChangeGroupId(fv, &out.logical_group_id) do return fail("LogicalZoneChangeGroup.logical_group_id") } else { return fail("LogicalZoneChangeGroup.logical_group_id missing") }
-	if fv, found := get_any(v, "prospective_battlefield_members"); found { if !dec_dyn_LogicalZoneChangeProspectiveMember(fv, &out.prospective_battlefield_members) do return fail("LogicalZoneChangeGroup.prospective_battlefield_members") } else { return fail("LogicalZoneChangeGroup.prospective_battlefield_members missing") }
-	if fv, found := get_any(v, "prospective_entrants"); found { if !dec_dyn_LogicalZoneChangeProspectiveMember(fv, &out.prospective_entrants) do return fail("LogicalZoneChangeGroup.prospective_entrants") } else { return fail("LogicalZoneChangeGroup.prospective_entrants missing") }
-	if fv, found := get_any(v, "terminal_outcomes"); found { if !dec_dyn_LogicalZoneChangeTerminalOutcome(fv, &out.terminal_outcomes) do return fail("LogicalZoneChangeGroup.terminal_outcomes") } else { return fail("LogicalZoneChangeGroup.terminal_outcomes missing") }
-	if fv, found := get_any(v, "post_event_member_contexts"); found { if !dec_dyn_opt_TriggerSourceContext(fv, &out.post_event_member_contexts) do return fail("LogicalZoneChangeGroup.post_event_member_contexts") } else { return fail("LogicalZoneChangeGroup.post_event_member_contexts missing") }
-	if fv, found := get_any(v, "all_origin_occurrences"); found { if !dec_dyn_LogicalZoneChangeOccurrence(fv, &out.all_origin_occurrences) do return fail("LogicalZoneChangeGroup.all_origin_occurrences") } else { return fail("LogicalZoneChangeGroup.all_origin_occurrences missing") }
-	if fv, found := get_any(v, "immediately_before_latched"); found { if !decode_bool(fv, &out.immediately_before_latched) do return fail("LogicalZoneChangeGroup.immediately_before_latched") } else { return fail("LogicalZoneChangeGroup.immediately_before_latched missing") }
-	if fv, found := get_any(v, "immediately_before_batched_triggers"); found { if !dec_dyn_LatchedBatchedTrigger(fv, &out.immediately_before_batched_triggers) do return fail("LogicalZoneChangeGroup.immediately_before_batched_triggers") } else { return fail("LogicalZoneChangeGroup.immediately_before_batched_triggers missing") }
-	if fv, found := get_any(v, "immediately_before_suppress_triggers"); found { if !dec_dyn_LatchedSuppressTrigger(fv, &out.immediately_before_suppress_triggers) do return fail("LogicalZoneChangeGroup.immediately_before_suppress_triggers") } else { return fail("LogicalZoneChangeGroup.immediately_before_suppress_triggers missing") }
-	if fv, found := get_any(v, "collected_before_departure"); found { if !dec_dyn_CollectedZoneChange(fv, &out.collected_before_departure) do return fail("LogicalZoneChangeGroup.collected_before_departure") }
-	if fv, found := get_any(v, "immediately_after_latched"); found { if !decode_bool(fv, &out.immediately_after_latched) do return fail("LogicalZoneChangeGroup.immediately_after_latched") } else { return fail("LogicalZoneChangeGroup.immediately_after_latched missing") }
-	if fv, found := get_any(v, "immediately_after_batched_triggers"); found { if !dec_dyn_LatchedBatchedTrigger(fv, &out.immediately_after_batched_triggers) do return fail("LogicalZoneChangeGroup.immediately_after_batched_triggers") } else { return fail("LogicalZoneChangeGroup.immediately_after_batched_triggers missing") }
-	if fv, found := get_any(v, "immediately_after_suppress_triggers"); found { if !dec_dyn_LatchedSuppressTrigger(fv, &out.immediately_after_suppress_triggers) do return fail("LogicalZoneChangeGroup.immediately_after_suppress_triggers") } else { return fail("LogicalZoneChangeGroup.immediately_after_suppress_triggers missing") }
-	if fv, found := get_any(v, "announced_members"); found { if !dec_dyn_ObjectIncarnationRef(fv, &out.announced_members) do return fail("LogicalZoneChangeGroup.announced_members") }
-	if fv, found := get_any(v, "departed_owner_after_batched_triggers"); found { if !dec_dyn_LatchedBatchedTrigger(fv, &out.departed_owner_after_batched_triggers) do return fail("LogicalZoneChangeGroup.departed_owner_after_batched_triggers") }
-	if fv, found := get_any(v, "departed_owner_after_suppress_triggers"); found { if !dec_dyn_LatchedSuppressTrigger(fv, &out.departed_owner_after_suppress_triggers) do return fail("LogicalZoneChangeGroup.departed_owner_after_suppress_triggers") }
-	return true
-}
-
-encode_LogicalZoneChangeGroup :: proc(b: ^strings.Builder, x: LogicalZoneChangeGroup) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_LogicalZoneChangeGroup_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_LogicalZoneChangeGroup_members :: proc(b: ^strings.Builder, x: LogicalZoneChangeGroup, first: ^bool) {
-	member(b, first, "logical_group_id"); encode_LogicalZoneChangeGroupId(b, x.logical_group_id)
-	member(b, first, "prospective_battlefield_members"); enc_dyn_LogicalZoneChangeProspectiveMember(b, x.prospective_battlefield_members)
-	member(b, first, "prospective_entrants"); enc_dyn_LogicalZoneChangeProspectiveMember(b, x.prospective_entrants)
-	member(b, first, "terminal_outcomes"); enc_dyn_LogicalZoneChangeTerminalOutcome(b, x.terminal_outcomes)
-	member(b, first, "post_event_member_contexts"); enc_dyn_opt_TriggerSourceContext(b, x.post_event_member_contexts)
-	member(b, first, "all_origin_occurrences"); enc_dyn_LogicalZoneChangeOccurrence(b, x.all_origin_occurrences)
-	member(b, first, "immediately_before_latched"); encode_bool(b, x.immediately_before_latched)
-	member(b, first, "immediately_before_batched_triggers"); enc_dyn_LatchedBatchedTrigger(b, x.immediately_before_batched_triggers)
-	member(b, first, "immediately_before_suppress_triggers"); enc_dyn_LatchedSuppressTrigger(b, x.immediately_before_suppress_triggers)
-	member(b, first, "collected_before_departure"); enc_dyn_CollectedZoneChange(b, x.collected_before_departure)
-	member(b, first, "immediately_after_latched"); encode_bool(b, x.immediately_after_latched)
-	member(b, first, "immediately_after_batched_triggers"); enc_dyn_LatchedBatchedTrigger(b, x.immediately_after_batched_triggers)
-	member(b, first, "immediately_after_suppress_triggers"); enc_dyn_LatchedSuppressTrigger(b, x.immediately_after_suppress_triggers)
-	if !(len(x.announced_members) == 0) { member(b, first, "announced_members"); enc_dyn_ObjectIncarnationRef(b, x.announced_members) }
-	member(b, first, "departed_owner_after_batched_triggers"); enc_dyn_LatchedBatchedTrigger(b, x.departed_owner_after_batched_triggers)
-	member(b, first, "departed_owner_after_suppress_triggers"); enc_dyn_LatchedSuppressTrigger(b, x.departed_owner_after_suppress_triggers)
-}
-
-decode_PendingZoneChangeDelivery :: proc(v: json.Value, out: ^PendingZoneChangeDelivery) -> bool {
-	if v.kind != .Object do return fail("PendingZoneChangeDelivery: not an object")
-	if fv, found := get_any(v, "member"); found { if !decode_ObjectIncarnationRef(fv, &out.member) do return fail("PendingZoneChangeDelivery.member") } else { return fail("PendingZoneChangeDelivery.member missing") }
-	if fv, found := get_any(v, "expected_event"); found { if !decode_ProposedEvent(fv, &out.expected_event) do return fail("PendingZoneChangeDelivery.expected_event") } else { return fail("PendingZoneChangeDelivery.expected_event missing") }
-	if fv, found := get_any(v, "delivery_events"); found { if !dec_dyn_GameEvent(fv, &out.delivery_events) do return fail("PendingZoneChangeDelivery.delivery_events") } else { return fail("PendingZoneChangeDelivery.delivery_events missing") }
-	if fv, found := get_any(v, "terminal_completion"); found { if !dec_opt_ZoneMoveCompletion(fv, &out.terminal_completion) do return fail("PendingZoneChangeDelivery.terminal_completion") }
-	if fv, found := get_any(v, "count"); found { if !decode_PausedZoneChangeDeliveryCount(fv, &out.count) do return fail("PendingZoneChangeDelivery.count") } else { return fail("PendingZoneChangeDelivery.count missing") }
-	if fv, found := get_any(v, "face_down_in_exile"); found { if !decode_ExileConcealment(fv, &out.face_down_in_exile) do return fail("PendingZoneChangeDelivery.face_down_in_exile") }
-	return true
-}
-
-encode_PendingZoneChangeDelivery :: proc(b: ^strings.Builder, x: PendingZoneChangeDelivery) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingZoneChangeDelivery_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingZoneChangeDelivery_members :: proc(b: ^strings.Builder, x: PendingZoneChangeDelivery, first: ^bool) {
-	member(b, first, "member"); encode_ObjectIncarnationRef(b, x.member)
-	member(b, first, "expected_event"); encode_ProposedEvent(b, x.expected_event)
-	member(b, first, "delivery_events"); enc_dyn_GameEvent(b, x.delivery_events)
-	member(b, first, "terminal_completion"); enc_opt_ZoneMoveCompletion(b, x.terminal_completion)
-	member(b, first, "count"); encode_PausedZoneChangeDeliveryCount(b, x.count)
-	if !(skip_PendingZoneChangeDelivery_ExileConcealment_is_public_ExileConcealment(x.face_down_in_exile)) { member(b, first, "face_down_in_exile"); encode_ExileConcealment(b, x.face_down_in_exile) }
-}
-
-decode_LibraryReorderOperation :: proc(v: json.Value, out: ^LibraryReorderOperation) -> bool {
-	if v.kind != .Object do return fail("LibraryReorderOperation: not an object")
-	if fv, found := get_any(v, "members"); found { if !dec_dyn_ObjectId(fv, &out.members) do return fail("LibraryReorderOperation.members") } else { return fail("LibraryReorderOperation.members missing") }
-	if fv, found := get_any(v, "libraries"); found { if !dec_dyn_t2_PlayerId_dyn_ObjectId(fv, &out.libraries) do return fail("LibraryReorderOperation.libraries") } else { return fail("LibraryReorderOperation.libraries missing") }
-	return true
-}
-
-encode_LibraryReorderOperation :: proc(b: ^strings.Builder, x: LibraryReorderOperation) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_LibraryReorderOperation_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_LibraryReorderOperation_members :: proc(b: ^strings.Builder, x: LibraryReorderOperation, first: ^bool) {
-	member(b, first, "members"); enc_dyn_ObjectId(b, x.members)
-	member(b, first, "libraries"); enc_dyn_t2_PlayerId_dyn_ObjectId(b, x.libraries)
-}
-
-decode_PendingBatchZoneMoveRequest :: proc(v: json.Value, out: ^PendingBatchZoneMoveRequest) -> bool {
-	if v.kind != .Object do return fail("PendingBatchZoneMoveRequest: not an object")
-	if fv, found := get_any(v, "object_id"); found { if !decode_ObjectId(fv, &out.object_id) do return fail("PendingBatchZoneMoveRequest.object_id") } else { return fail("PendingBatchZoneMoveRequest.object_id missing") }
-	if fv, found := get_any(v, "destination"); found { if !decode_Zone(fv, &out.destination) do return fail("PendingBatchZoneMoveRequest.destination") } else { return fail("PendingBatchZoneMoveRequest.destination missing") }
-	if fv, found := get_any(v, "cause"); found { if !decode_PendingBatchZoneChangeCause(fv, &out.cause) do return fail("PendingBatchZoneMoveRequest.cause") } else { return fail("PendingBatchZoneMoveRequest.cause missing") }
-	if fv, found := get_any(v, "enter_tapped"); found { if !decode_EtbTapState(fv, &out.enter_tapped) do return fail("PendingBatchZoneMoveRequest.enter_tapped") }
-	if fv, found := get_any(v, "enters_attacking"); found { if !decode_bool(fv, &out.enters_attacking) do return fail("PendingBatchZoneMoveRequest.enters_attacking") }
-	if fv, found := get_any(v, "enter_transformed"); found { if !decode_bool(fv, &out.enter_transformed) do return fail("PendingBatchZoneMoveRequest.enter_transformed") }
-	if fv, found := get_any(v, "controller_override"); found { if !dec_opt_PlayerId(fv, &out.controller_override) do return fail("PendingBatchZoneMoveRequest.controller_override") }
-	if fv, found := get_any(v, "enter_with_counters"); found { if !dec_dyn_t2_CounterType_u32(fv, &out.enter_with_counters) do return fail("PendingBatchZoneMoveRequest.enter_with_counters") }
-	if fv, found := get_any(v, "face_down_profile"); found { if !dec_opt_FaceDownProfile(fv, &out.face_down_profile) do return fail("PendingBatchZoneMoveRequest.face_down_profile") }
-	if fv, found := get_any(v, "chain_referent"); found { if !decode_ChainReferentIntent(fv, &out.chain_referent) do return fail("PendingBatchZoneMoveRequest.chain_referent") }
-	if fv, found := get_any(v, "attach_to"); found { if !dec_opt_AttachTarget(fv, &out.attach_to) do return fail("PendingBatchZoneMoveRequest.attach_to") }
-	if fv, found := get_any(v, "performed_by"); found { if !dec_opt_PlayerId(fv, &out.performed_by) do return fail("PendingBatchZoneMoveRequest.performed_by") }
-	if fv, found := get_any(v, "ownership_actor"); found { if !decode_EntryOwnershipActor(fv, &out.ownership_actor) do return fail("PendingBatchZoneMoveRequest.ownership_actor") } else { out.ownership_actor = EntryOwnershipActor(EntryOwnershipActor_Unrecorded{}) }
-	if fv, found := get_any(v, "with_entry_effect"); found { if !dec_ptr_WithEntryEffect(fv, &out.with_entry_effect) do return fail("PendingBatchZoneMoveRequest.with_entry_effect") }
-	if fv, found := get_any(v, "library_placement"); found { if !dec_opt_LibraryPosition(fv, &out.library_placement) do return fail("PendingBatchZoneMoveRequest.library_placement") }
-	if fv, found := get_any(v, "library_shuffle"); found { if !decode_LibraryShuffleMode(fv, &out.library_shuffle) do return fail("PendingBatchZoneMoveRequest.library_shuffle") }
-	if fv, found := get_any(v, "exile_duration"); found { if !dec_opt_Duration(fv, &out.exile_duration) do return fail("PendingBatchZoneMoveRequest.exile_duration") }
-	if fv, found := get_any(v, "exile_controller"); found { if !dec_opt_PlayerId(fv, &out.exile_controller) do return fail("PendingBatchZoneMoveRequest.exile_controller") }
-	if fv, found := get_any(v, "exile_tracking"); found { if !decode_ZoneDeliveryExileTracking(fv, &out.exile_tracking) do return fail("PendingBatchZoneMoveRequest.exile_tracking") }
-	if fv, found := get_any(v, "replacement_applied"); found { if !dec_dyn_AppliedReplacementKey(fv, &out.replacement_applied) do return fail("PendingBatchZoneMoveRequest.replacement_applied") }
-	if fv, found := get_any(v, "face_down_in_exile"); found { if !decode_ExileConcealment(fv, &out.face_down_in_exile) do return fail("PendingBatchZoneMoveRequest.face_down_in_exile") }
-	return true
-}
-
-encode_PendingBatchZoneMoveRequest :: proc(b: ^strings.Builder, x: PendingBatchZoneMoveRequest) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingBatchZoneMoveRequest_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingBatchZoneMoveRequest_members :: proc(b: ^strings.Builder, x: PendingBatchZoneMoveRequest, first: ^bool) {
-	member(b, first, "object_id"); encode_ObjectId(b, x.object_id)
-	member(b, first, "destination"); encode_Zone(b, x.destination)
-	member(b, first, "cause"); encode_PendingBatchZoneChangeCause(b, x.cause)
-	if !(skip_PendingBatchZoneMoveRequest_EtbTapState_is_unspecified_EtbTapState(x.enter_tapped)) { member(b, first, "enter_tapped"); encode_EtbTapState(b, x.enter_tapped) }
-	if !(!x.enters_attacking) { member(b, first, "enters_attacking"); encode_bool(b, x.enters_attacking) }
-	member(b, first, "enter_transformed"); encode_bool(b, x.enter_transformed)
-	if !(x.controller_override == nil) { member(b, first, "controller_override"); enc_opt_PlayerId(b, x.controller_override) }
-	if !(len(x.enter_with_counters) == 0) { member(b, first, "enter_with_counters"); enc_dyn_t2_CounterType_u32(b, x.enter_with_counters) }
-	if !(x.face_down_profile == nil) { member(b, first, "face_down_profile"); enc_opt_FaceDownProfile(b, x.face_down_profile) }
-	if !(skip_PendingBatchZoneMoveRequest_ChainReferentIntent_is_silent_ChainReferentIntent(x.chain_referent)) { member(b, first, "chain_referent"); encode_ChainReferentIntent(b, x.chain_referent) }
-	if !(x.attach_to == nil) { member(b, first, "attach_to"); enc_opt_AttachTarget(b, x.attach_to) }
-	if !(x.performed_by == nil) { member(b, first, "performed_by"); enc_opt_PlayerId(b, x.performed_by) }
-	if !(skip_PendingBatchZoneMoveRequest_EntryOwnershipActor_is_unrecorded_EntryOwnershipActor(x.ownership_actor)) { member(b, first, "ownership_actor"); encode_EntryOwnershipActor(b, x.ownership_actor) }
-	if !(x.with_entry_effect == nil) { member(b, first, "with_entry_effect"); enc_ptr_WithEntryEffect(b, x.with_entry_effect) }
-	if !(x.library_placement == nil) { member(b, first, "library_placement"); enc_opt_LibraryPosition(b, x.library_placement) }
-	if !(skip_PendingBatchZoneMoveRequest_LibraryShuffleMode_is_per_object_LibraryShuffleMode(x.library_shuffle)) { member(b, first, "library_shuffle"); encode_LibraryShuffleMode(b, x.library_shuffle) }
-	if !(x.exile_duration == nil) { member(b, first, "exile_duration"); enc_opt_Duration(b, x.exile_duration) }
-	if !(x.exile_controller == nil) { member(b, first, "exile_controller"); enc_opt_PlayerId(b, x.exile_controller) }
-	member(b, first, "exile_tracking"); encode_ZoneDeliveryExileTracking(b, x.exile_tracking)
-	if !(len(x.replacement_applied) == 0) { member(b, first, "replacement_applied"); enc_dyn_AppliedReplacementKey(b, x.replacement_applied) }
-	if !(skip_PendingBatchZoneMoveRequest_ExileConcealment_is_public_ExileConcealment(x.face_down_in_exile)) { member(b, first, "face_down_in_exile"); encode_ExileConcealment(b, x.face_down_in_exile) }
-}
-
-decode_StagedBatchDelivery :: proc(v: json.Value, out: ^StagedBatchDelivery) -> bool {
-	if v.kind != .Object do return fail("StagedBatchDelivery: not an object")
-	if fv, found := get_any(v, "stage"); found { if !decode_BatchDeliveryStage(fv, &out.stage) do return fail("StagedBatchDelivery.stage") } else { return fail("StagedBatchDelivery.stage missing") }
-	if fv, found := get_any(v, "members"); found { if !dec_dyn_StagedBatchMember(fv, &out.members) do return fail("StagedBatchDelivery.members") } else { return fail("StagedBatchDelivery.members missing") }
-	if fv, found := get_any(v, "cursor"); found { if !decode_int(fv, &out.cursor) do return fail("StagedBatchDelivery.cursor") } else { return fail("StagedBatchDelivery.cursor missing") }
-	if fv, found := get_any(v, "asking"); found { if !dec_opt_ObjectIncarnationRef(fv, &out.asking) do return fail("StagedBatchDelivery.asking") }
-	if fv, found := get_any(v, "arrangements"); found { if !dec_dyn_StagedLibraryArrangement(fv, &out.arrangements) do return fail("StagedBatchDelivery.arrangements") } else { return fail("StagedBatchDelivery.arrangements missing") }
-	if fv, found := get_any(v, "arrangement_cursor"); found { if !decode_int(fv, &out.arrangement_cursor) do return fail("StagedBatchDelivery.arrangement_cursor") } else { return fail("StagedBatchDelivery.arrangement_cursor missing") }
-	if fv, found := get_any(v, "population_devour_snapshot"); found { if !dec_opt_dyn_ObjectId(fv, &out.population_devour_snapshot) do return fail("StagedBatchDelivery.population_devour_snapshot") }
-	return true
-}
-
-encode_StagedBatchDelivery :: proc(b: ^strings.Builder, x: StagedBatchDelivery) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_StagedBatchDelivery_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_StagedBatchDelivery_members :: proc(b: ^strings.Builder, x: StagedBatchDelivery, first: ^bool) {
-	member(b, first, "stage"); encode_BatchDeliveryStage(b, x.stage)
-	member(b, first, "members"); enc_dyn_StagedBatchMember(b, x.members)
-	member(b, first, "cursor"); encode_int(b, x.cursor)
-	if !(x.asking == nil) { member(b, first, "asking"); enc_opt_ObjectIncarnationRef(b, x.asking) }
-	member(b, first, "arrangements"); enc_dyn_StagedLibraryArrangement(b, x.arrangements)
-	member(b, first, "arrangement_cursor"); encode_int(b, x.arrangement_cursor)
-	if !(x.population_devour_snapshot == nil) { member(b, first, "population_devour_snapshot"); enc_opt_dyn_ObjectId(b, x.population_devour_snapshot) }
-}
-
-decode_PendingCounterMove :: proc(v: json.Value, out: ^PendingCounterMove) -> bool {
-	if v.kind != .Object do return fail("PendingCounterMove: not an object")
-	if fv, found := get_any(v, "actor"); found { if !decode_PlayerId(fv, &out.actor) do return fail("PendingCounterMove.actor") } else { return fail("PendingCounterMove.actor missing") }
-	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingCounterMove.source_id") } else { return fail("PendingCounterMove.source_id missing") }
-	if fv, found := get_any(v, "destination_id"); found { if !decode_ObjectId(fv, &out.destination_id) do return fail("PendingCounterMove.destination_id") } else { return fail("PendingCounterMove.destination_id missing") }
-	if fv, found := get_any(v, "counter_type"); found { if !decode_CounterType(fv, &out.counter_type) do return fail("PendingCounterMove.counter_type") } else { return fail("PendingCounterMove.counter_type missing") }
-	if fv, found := get_any(v, "remove_count"); found { if !decode_u32(fv, &out.remove_count) do return fail("PendingCounterMove.remove_count") } else { return fail("PendingCounterMove.remove_count missing") }
-	if fv, found := get_any(v, "add_count"); found { if !decode_u32(fv, &out.add_count) do return fail("PendingCounterMove.add_count") } else { return fail("PendingCounterMove.add_count missing") }
-	if fv, found := get_any(v, "cause"); found { if !decode_CounterCause(fv, &out.cause) do return fail("PendingCounterMove.cause") } else { out.cause = CounterCause.Other }
-	return true
-}
-
-encode_PendingCounterMove :: proc(b: ^strings.Builder, x: PendingCounterMove) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingCounterMove_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingCounterMove_members :: proc(b: ^strings.Builder, x: PendingCounterMove, first: ^bool) {
-	member(b, first, "actor"); encode_PlayerId(b, x.actor)
-	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
-	member(b, first, "destination_id"); encode_ObjectId(b, x.destination_id)
-	member(b, first, "counter_type"); encode_CounterType(b, x.counter_type)
-	member(b, first, "remove_count"); encode_u32(b, x.remove_count)
-	member(b, first, "add_count"); encode_u32(b, x.add_count)
-	member(b, first, "cause"); encode_CounterCause(b, x.cause)
-}
-
-decode_PendingCounterAddition :: proc(v: json.Value, out: ^PendingCounterAddition) -> bool {
-	variant: string
-	body: json.Value
-	#partial switch v.kind {
-	case .String: variant = v.text
-	case .Object:
-		if len(v.members) != 1 do return fail("PendingCounterAddition: externally tagged object needs one key")
-		variant, body = v.members[0].key, v.members[0].value
-	case: return fail("PendingCounterAddition: not a string or object")
-	}
-	switch variant {
-	case "Object":
-		tmp: PendingCounterAddition_Object
-		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^PendingCounterAddition_Object) -> bool {
-	if fv, found := get_any(v, "actor"); found { if !decode_PlayerId(fv, &out.actor) do return fail("PendingCounterAddition::Object.actor") } else { return fail("PendingCounterAddition::Object.actor missing") }
-	if fv, found := get_any(v, "object_id"); found { if !decode_ObjectId(fv, &out.object_id) do return fail("PendingCounterAddition::Object.object_id") } else { return fail("PendingCounterAddition::Object.object_id missing") }
-	if fv, found := get_any(v, "counter_type"); found { if !decode_CounterType(fv, &out.counter_type) do return fail("PendingCounterAddition::Object.counter_type") } else { return fail("PendingCounterAddition::Object.counter_type missing") }
-	if fv, found := get_any(v, "count"); found { if !decode_u32(fv, &out.count) do return fail("PendingCounterAddition::Object.count") } else { return fail("PendingCounterAddition::Object.count missing") }
-	if fv, found := get_any(v, "cause"); found { if !decode_CounterCause(fv, &out.cause) do return fail("PendingCounterAddition::Object.cause") } else { out.cause = CounterCause.Other }
-	return true
-		}) { return fail("PendingCounterAddition::Object") }
-		out^ = tmp
-	case "Player":
-		tmp: PendingCounterAddition_Player
-		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^PendingCounterAddition_Player) -> bool {
-	if fv, found := get_any(v, "actor"); found { if !decode_PlayerId(fv, &out.actor) do return fail("PendingCounterAddition::Player.actor") } else { return fail("PendingCounterAddition::Player.actor missing") }
-	if fv, found := get_any(v, "player_id"); found { if !decode_PlayerId(fv, &out.player_id) do return fail("PendingCounterAddition::Player.player_id") } else { return fail("PendingCounterAddition::Player.player_id missing") }
-	if fv, found := get_any(v, "counter_kind"); found { if !decode_PlayerCounterKind(fv, &out.counter_kind) do return fail("PendingCounterAddition::Player.counter_kind") } else { return fail("PendingCounterAddition::Player.counter_kind missing") }
-	if fv, found := get_any(v, "count"); found { if !decode_u32(fv, &out.count) do return fail("PendingCounterAddition::Player.count") } else { return fail("PendingCounterAddition::Player.count missing") }
-	if fv, found := get_any(v, "cause"); found { if !decode_CounterCause(fv, &out.cause) do return fail("PendingCounterAddition::Player.cause") } else { out.cause = CounterCause.Other }
-	return true
-		}) { return fail("PendingCounterAddition::Player") }
-		out^ = tmp
-	case "Energy":
-		tmp: PendingCounterAddition_Energy
-		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^PendingCounterAddition_Energy) -> bool {
-	if fv, found := get_any(v, "actor"); found { if !decode_PlayerId(fv, &out.actor) do return fail("PendingCounterAddition::Energy.actor") } else { return fail("PendingCounterAddition::Energy.actor missing") }
-	if fv, found := get_any(v, "player_id"); found { if !decode_PlayerId(fv, &out.player_id) do return fail("PendingCounterAddition::Energy.player_id") } else { return fail("PendingCounterAddition::Energy.player_id missing") }
-	if fv, found := get_any(v, "count"); found { if !decode_u32(fv, &out.count) do return fail("PendingCounterAddition::Energy.count") } else { return fail("PendingCounterAddition::Energy.count missing") }
-	if fv, found := get_any(v, "cause"); found { if !decode_CounterCause(fv, &out.cause) do return fail("PendingCounterAddition::Energy.cause") } else { out.cause = CounterCause.Other }
-	return true
-		}) { return fail("PendingCounterAddition::Energy") }
-		out^ = tmp
-	case: return fail("PendingCounterAddition: unknown variant")
-	}
-	return true
-}
-
-encode_PendingCounterAddition :: proc(b: ^strings.Builder, x: PendingCounterAddition) {
-	#partial switch y in x {
-	case PendingCounterAddition_Object: strings.write_byte(b, '{'); json.write_string(b, "Object"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "actor"); encode_PlayerId(b, y.actor)
-	member(b, first, "object_id"); encode_ObjectId(b, y.object_id)
-	member(b, first, "counter_type"); encode_CounterType(b, y.counter_type)
-	member(b, first, "count"); encode_u32(b, y.count)
-	member(b, first, "cause"); encode_CounterCause(b, y.cause)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	case PendingCounterAddition_Player: strings.write_byte(b, '{'); json.write_string(b, "Player"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "actor"); encode_PlayerId(b, y.actor)
-	member(b, first, "player_id"); encode_PlayerId(b, y.player_id)
-	member(b, first, "counter_kind"); encode_PlayerCounterKind(b, y.counter_kind)
-	member(b, first, "count"); encode_u32(b, y.count)
-	member(b, first, "cause"); encode_CounterCause(b, y.cause)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	case PendingCounterAddition_Energy: strings.write_byte(b, '{'); json.write_string(b, "Energy"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "actor"); encode_PlayerId(b, y.actor)
-	member(b, first, "player_id"); encode_PlayerId(b, y.player_id)
-	member(b, first, "count"); encode_u32(b, y.count)
-	member(b, first, "cause"); encode_CounterCause(b, y.cause)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	}
-}
-
-decode_PendingEffectResolved :: proc(v: json.Value, out: ^PendingEffectResolved) -> bool {
-	if v.kind != .Object do return fail("PendingEffectResolved: not an object")
-	if fv, found := get_any(v, "kind"); found { if !decode_EffectKind(fv, &out.kind) do return fail("PendingEffectResolved.kind") } else { return fail("PendingEffectResolved.kind missing") }
-	if fv, found := get_any(v, "source_id"); found { if !decode_ObjectId(fv, &out.source_id) do return fail("PendingEffectResolved.source_id") } else { return fail("PendingEffectResolved.source_id missing") }
-	if fv, found := get_any(v, "resolution_event"); found { if !decode_PendingEffectResolutionEvent(fv, &out.resolution_event) do return fail("PendingEffectResolved.resolution_event") }
-	if fv, found := get_any(v, "post_actions"); found { if !dec_dyn_PendingCounterPostAction(fv, &out.post_actions) do return fail("PendingEffectResolved.post_actions") }
-	if fv, found := get_any(v, "player_action"); found { if !dec_opt_PendingPlayerAction(fv, &out.player_action) do return fail("PendingEffectResolved.player_action") }
-	return true
-}
-
-encode_PendingEffectResolved :: proc(b: ^strings.Builder, x: PendingEffectResolved) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingEffectResolved_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingEffectResolved_members :: proc(b: ^strings.Builder, x: PendingEffectResolved, first: ^bool) {
-	member(b, first, "kind"); encode_EffectKind(b, x.kind)
-	member(b, first, "source_id"); encode_ObjectId(b, x.source_id)
-	member(b, first, "resolution_event"); encode_PendingEffectResolutionEvent(b, x.resolution_event)
-	if !(len(x.post_actions) == 0) { member(b, first, "post_actions"); enc_dyn_PendingCounterPostAction(b, x.post_actions) }
-	if !(x.player_action == nil) { member(b, first, "player_action"); enc_opt_PendingPlayerAction(b, x.player_action) }
-}
-
-decode_PendingCopyTokenBatch :: proc(v: json.Value, out: ^PendingCopyTokenBatch) -> bool {
-	if v.kind != .Object do return fail("PendingCopyTokenBatch: not an object")
-	if fv, found := get_any(v, "owner"); found { if !decode_PlayerId(fv, &out.owner) do return fail("PendingCopyTokenBatch.owner") } else { return fail("PendingCopyTokenBatch.owner missing") }
-	if fv, found := get_any(v, "copy"); found { if !dec_ptr_CopyTokenSpec(fv, &out.copy) do return fail("PendingCopyTokenBatch.copy") } else { return fail("PendingCopyTokenBatch.copy missing") }
-	if fv, found := get_any(v, "count"); found { if !decode_u32(fv, &out.count) do return fail("PendingCopyTokenBatch.count") } else { return fail("PendingCopyTokenBatch.count missing") }
-	return true
-}
-
-encode_PendingCopyTokenBatch :: proc(b: ^strings.Builder, x: PendingCopyTokenBatch) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingCopyTokenBatch_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingCopyTokenBatch_members :: proc(b: ^strings.Builder, x: PendingCopyTokenBatch, first: ^bool) {
-	member(b, first, "owner"); encode_PlayerId(b, x.owner)
-	member(b, first, "copy"); enc_ptr_CopyTokenSpec(b, x.copy)
-	member(b, first, "count"); encode_u32(b, x.count)
-}
-
-decode_OfferedBatchCustody :: proc(v: json.Value, out: ^OfferedBatchCustody) -> bool {
-	if v.kind != .String do return fail("OfferedBatchCustody: not a string")
-	str := v.text
-	switch str {
-	case "Settled": out^ = .Settled
-	case "AtReplacementPrompt": out^ = .AtReplacementPrompt
-	case: return fail("OfferedBatchCustody: unknown variant")
-	}
-	return true
-}
-
-encode_OfferedBatchCustody :: proc(b: ^strings.Builder, x: OfferedBatchCustody) {
-	@(static, rodata) NAMES := [OfferedBatchCustody]string{
-		.Settled = "Settled",
-		.AtReplacementPrompt = "AtReplacementPrompt",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_DebugCardEntrySource :: proc(v: json.Value, out: ^DebugCardEntrySource) -> bool {
-	if v.kind != .Object do return fail("DebugCardEntrySource: not an object")
-	if fv, found := get_any(v, "face"); found { if !decode_CardFace(fv, &out.face) do return fail("DebugCardEntrySource.face") } else { return fail("DebugCardEntrySource.face missing") }
-	if fv, found := get_any(v, "back_face"); found { if !dec_opt_BackFaceData(fv, &out.back_face) do return fail("DebugCardEntrySource.back_face") }
-	if fv, found := get_any(v, "outside_game_faces"); found { if !decode_OutsideGameFaces(fv, &out.outside_game_faces) do return fail("DebugCardEntrySource.outside_game_faces") }
-	return true
-}
-
-encode_DebugCardEntrySource :: proc(b: ^strings.Builder, x: DebugCardEntrySource) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_DebugCardEntrySource_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_DebugCardEntrySource_members :: proc(b: ^strings.Builder, x: DebugCardEntrySource, first: ^bool) {
-	member(b, first, "face"); encode_CardFace(b, x.face)
-	if !(x.back_face == nil) { member(b, first, "back_face"); enc_opt_BackFaceData(b, x.back_face) }
-	if !(skip_DebugCardEntrySource_OutsideGameFaces_is_empty_OutsideGameFaces(x.outside_game_faces)) { member(b, first, "outside_game_faces"); encode_OutsideGameFaces(b, x.outside_game_faces) }
-}
-
-decode_CopyChosenStage :: proc(v: json.Value, out: ^CopyChosenStage) -> bool {
-	if v.kind != .String do return fail("CopyChosenStage: not a string")
-	str := v.text
-	switch str {
-	case "AwaitingCopy": out^ = .AwaitingCopy
-	case "AwaitingCounters": out^ = .AwaitingCounters
-	case: return fail("CopyChosenStage: unknown variant")
-	}
-	return true
-}
-
-encode_CopyChosenStage :: proc(b: ^strings.Builder, x: CopyChosenStage) {
-	@(static, rodata) NAMES := [CopyChosenStage]string{
-		.AwaitingCopy = "AwaitingCopy",
-		.AwaitingCounters = "AwaitingCounters",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_PendingPerCategoryZoneChoice :: proc(v: json.Value, out: ^PendingPerCategoryZoneChoice) -> bool {
-	if v.kind != .Object do return fail("PendingPerCategoryZoneChoice: not an object")
-	if fv, found := get_any(v, "ability"); found { if !dec_ptr_ResolvedAbility(fv, &out.ability) do return fail("PendingPerCategoryZoneChoice.ability") } else { return fail("PendingPerCategoryZoneChoice.ability missing") }
-	if fv, found := get_any(v, "pool"); found { if !dec_dyn_ObjectId(fv, &out.pool) do return fail("PendingPerCategoryZoneChoice.pool") } else { return fail("PendingPerCategoryZoneChoice.pool missing") }
-	if fv, found := get_any(v, "remaining_member_filters"); found { if !dec_dyn_TargetFilter(fv, &out.remaining_member_filters) do return fail("PendingPerCategoryZoneChoice.remaining_member_filters") } else { return fail("PendingPerCategoryZoneChoice.remaining_member_filters missing") }
-	return true
-}
-
-encode_PendingPerCategoryZoneChoice :: proc(b: ^strings.Builder, x: PendingPerCategoryZoneChoice) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_PendingPerCategoryZoneChoice_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_PendingPerCategoryZoneChoice_members :: proc(b: ^strings.Builder, x: PendingPerCategoryZoneChoice, first: ^bool) {
-	member(b, first, "ability"); enc_ptr_ResolvedAbility(b, x.ability)
-	member(b, first, "pool"); enc_dyn_ObjectId(b, x.pool)
-	member(b, first, "remaining_member_filters"); enc_dyn_TargetFilter(b, x.remaining_member_filters)
-}
-
-decode_PendingCoinFlipKind :: proc(v: json.Value, out: ^PendingCoinFlipKind) -> bool {
-	variant: string
-	body: json.Value
-	#partial switch v.kind {
-	case .String: variant = v.text
-	case .Object:
-		if len(v.members) != 1 do return fail("PendingCoinFlipKind: externally tagged object needs one key")
-		variant, body = v.members[0].key, v.members[0].value
-	case: return fail("PendingCoinFlipKind: not a string or object")
-	}
-	switch variant {
-	case "Exactly":
-		tmp: PendingCoinFlipKind_Exactly
-		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^PendingCoinFlipKind_Exactly) -> bool {
-	if fv, found := get_any(v, "remaining"); found { if !decode_u32(fv, &out.remaining) do return fail("PendingCoinFlipKind::Exactly.remaining") } else { return fail("PendingCoinFlipKind::Exactly.remaining missing") }
-	return true
-		}) { return fail("PendingCoinFlipKind::Exactly") }
-		out^ = tmp
-	case "UntilLoss":
-		tmp: PendingCoinFlipKind_UntilLoss
-		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^PendingCoinFlipKind_UntilLoss) -> bool {
-	if fv, found := get_any(v, "wins_so_far"); found { if !decode_u32(fv, &out.wins_so_far) do return fail("PendingCoinFlipKind::UntilLoss.wins_so_far") } else { return fail("PendingCoinFlipKind::UntilLoss.wins_so_far missing") }
-	return true
-		}) { return fail("PendingCoinFlipKind::UntilLoss") }
-		out^ = tmp
-	case: return fail("PendingCoinFlipKind: unknown variant")
-	}
-	return true
-}
-
-encode_PendingCoinFlipKind :: proc(b: ^strings.Builder, x: PendingCoinFlipKind) {
-	#partial switch y in x {
-	case PendingCoinFlipKind_Exactly: strings.write_byte(b, '{'); json.write_string(b, "Exactly"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "remaining"); encode_u32(b, y.remaining)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	case PendingCoinFlipKind_UntilLoss: strings.write_byte(b, '{'); json.write_string(b, "UntilLoss"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "wins_so_far"); encode_u32(b, y.wins_so_far)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	}
-}
-
-decode_FlipBranchContext :: proc(v: json.Value, out: ^FlipBranchContext) -> bool {
-	if v.kind != .Object do return fail("FlipBranchContext: not an object")
-	if fv, found := get_any(v, "chosen_players"); found { if !dec_dyn_PlayerId(fv, &out.chosen_players) do return fail("FlipBranchContext.chosen_players") }
-	if fv, found := get_any(v, "parent_occurrences"); found { if !decode_ParentTargetOccurrences(fv, &out.parent_occurrences) do return fail("FlipBranchContext.parent_occurrences") }
-	if fv, found := get_any(v, "forwarded_result_context"); found { if !dec_ptr_ForwardedResultContext(fv, &out.forwarded_result_context) do return fail("FlipBranchContext.forwarded_result_context") }
-	if fv, found := get_any(v, "parent_target_missing_reason"); found { if !dec_opt_ParentTargetMissingReason(fv, &out.parent_target_missing_reason) do return fail("FlipBranchContext.parent_target_missing_reason") }
-	return true
-}
-
-encode_FlipBranchContext :: proc(b: ^strings.Builder, x: FlipBranchContext) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_FlipBranchContext_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_FlipBranchContext_members :: proc(b: ^strings.Builder, x: FlipBranchContext, first: ^bool) {
-	if !(len(x.chosen_players) == 0) { member(b, first, "chosen_players"); enc_dyn_PlayerId(b, x.chosen_players) }
-	member(b, first, "parent_occurrences"); encode_ParentTargetOccurrences(b, x.parent_occurrences)
-	if !(x.forwarded_result_context == nil) { member(b, first, "forwarded_result_context"); enc_ptr_ForwardedResultContext(b, x.forwarded_result_context) }
-	if !(x.parent_target_missing_reason == nil) { member(b, first, "parent_target_missing_reason"); enc_opt_ParentTargetMissingReason(b, x.parent_target_missing_reason) }
-}
-
-decode_DrawSequenceStack :: proc(v: json.Value, out: ^DrawSequenceStack) -> bool {
-	if v.kind != .Object do return fail("DrawSequenceStack: not an object")
-	if fv, found := get_any(v, "frames"); found { if !dec_dyn_DrawSequenceFrame(fv, &out.frames) do return fail("DrawSequenceStack.frames") } else { return fail("DrawSequenceStack.frames missing") }
-	if fv, found := get_any(v, "next_frame_id"); found { if !decode_u64(fv, &out.next_frame_id) do return fail("DrawSequenceStack.next_frame_id") } else { return fail("DrawSequenceStack.next_frame_id missing") }
-	return true
-}
-
-encode_DrawSequenceStack :: proc(b: ^strings.Builder, x: DrawSequenceStack) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_DrawSequenceStack_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_DrawSequenceStack_members :: proc(b: ^strings.Builder, x: DrawSequenceStack, first: ^bool) {
-	member(b, first, "frames"); enc_dyn_DrawSequenceFrame(b, x.frames)
-	member(b, first, "next_frame_id"); encode_u64(b, x.next_frame_id)
-}
-
-decode_CipherEncodeStage :: proc(v: json.Value, out: ^CipherEncodeStage) -> bool {
-	if v.kind != .String do return fail("CipherEncodeStage: not a string")
-	str := v.text
-	switch str {
-	case "Parked": out^ = .Parked
-	case "Armed": out^ = .Armed
-	case: return fail("CipherEncodeStage: unknown variant")
-	}
-	return true
-}
-
-encode_CipherEncodeStage :: proc(b: ^strings.Builder, x: CipherEncodeStage) {
-	@(static, rodata) NAMES := [CipherEncodeStage]string{
-		.Parked = "Parked",
-		.Armed = "Armed",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_LogImportance :: proc(v: json.Value, out: ^LogImportance) -> bool {
-	if v.kind != .String do return fail("LogImportance: not a string")
-	str := v.text
-	switch str {
-	case "Essential": out^ = .Essential
-	case "Context": out^ = .Context
-	case "Detail": out^ = .Detail
-	case "Diagnostic": out^ = .Diagnostic
-	case: return fail("LogImportance: unknown variant")
-	}
-	return true
-}
-
-encode_LogImportance :: proc(b: ^strings.Builder, x: LogImportance) {
-	@(static, rodata) NAMES := [LogImportance]string{
-		.Essential = "Essential",
-		.Context = "Context",
-		.Detail = "Detail",
-		.Diagnostic = "Diagnostic",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_LogTone :: proc(v: json.Value, out: ^LogTone) -> bool {
-	if v.kind != .String do return fail("LogTone: not a string")
-	str := v.text
-	switch str {
-	case "Neutral": out^ = .Neutral
-	case "Positive": out^ = .Positive
-	case "Negative": out^ = .Negative
-	case "Informational": out^ = .Informational
-	case "Diagnostic": out^ = .Diagnostic
-	case: return fail("LogTone: unknown variant")
-	}
-	return true
-}
-
-encode_LogTone :: proc(b: ^strings.Builder, x: LogTone) {
-	@(static, rodata) NAMES := [LogTone]string{
-		.Neutral = "Neutral",
-		.Positive = "Positive",
-		.Negative = "Negative",
-		.Informational = "Informational",
-		.Diagnostic = "Diagnostic",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_LogBoundary :: proc(v: json.Value, out: ^LogBoundary) -> bool {
-	if v.kind != .String do return fail("LogBoundary: not a string")
-	str := v.text
-	switch str {
-	case "None": out^ = .None
-	case "Turn": out^ = .Turn
-	case "Phase": out^ = .Phase
-	case: return fail("LogBoundary: unknown variant")
-	}
-	return true
-}
-
-encode_LogBoundary :: proc(b: ^strings.Builder, x: LogBoundary) {
-	@(static, rodata) NAMES := [LogBoundary]string{
-		.None = "None",
-		.Turn = "Turn",
-		.Phase = "Phase",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_LogVisibility :: proc(v: json.Value, out: ^LogVisibility) -> bool {
-	if v.kind != .String do return fail("LogVisibility: not a string")
-	str := v.text
-	switch str {
-	case "Public": out^ = .Public
-	case "HiddenInformation": out^ = .HiddenInformation
-	case: return fail("LogVisibility: unknown variant")
-	}
-	return true
-}
-
-encode_LogVisibility :: proc(b: ^strings.Builder, x: LogVisibility) {
-	@(static, rodata) NAMES := [LogVisibility]string{
-		.Public = "Public",
-		.HiddenInformation = "HiddenInformation",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_PostReplacementContinuation :: proc(v: json.Value, out: ^PostReplacementContinuation) -> bool {
-	if v.kind != .Object do return fail("PostReplacementContinuation: not an object")
-	tv, found := json.get(v, "kind")
-	if !found || tv.kind != .String do return fail("PostReplacementContinuation: no tag")
-	switch tv.text {
-	case "Template": tmp: PostReplacementContinuation_Template; if !dec_ptr_AbilityDefinition(json.get_or_null(v, "ability"), &tmp._0) do return fail("PostReplacementContinuation::Template"); out^ = tmp
-	case "Resolved": tmp: PostReplacementContinuation_Resolved; if !dec_ptr_ResolvedAbility(json.get_or_null(v, "ability"), &tmp._0) do return fail("PostReplacementContinuation::Resolved"); out^ = tmp
-	case: return fail("PostReplacementContinuation: unknown variant")
-	}
-	return true
-}
-
-encode_PostReplacementContinuation :: proc(b: ^strings.Builder, x: PostReplacementContinuation) {
-	#partial switch y in x {
-	case PostReplacementContinuation_Template: strings.write_byte(b, '{'); f := true; member(b, &f, "kind"); json.write_string(b, "Template"); member(b, &f, "ability"); enc_ptr_AbilityDefinition(b, y._0); strings.write_byte(b, '}')
-	case PostReplacementContinuation_Resolved: strings.write_byte(b, '{'); f := true; member(b, &f, "kind"); json.write_string(b, "Resolved"); member(b, &f, "ability"); enc_ptr_ResolvedAbility(b, y._0); strings.write_byte(b, '}')
-	}
-}
-
-decode_SimultaneousUnlessAnswer :: proc(v: json.Value, out: ^SimultaneousUnlessAnswer) -> bool {
-	if v.kind != .Object do return fail("SimultaneousUnlessAnswer: not an object")
-	tv, found := json.get(v, "type")
-	if !found || tv.kind != .String do return fail("SimultaneousUnlessAnswer: no tag")
-	switch tv.text {
-	case "Declined": out^ = SimultaneousUnlessAnswer_Declined{}
-	case "Sacrifice":
-		tmp: SimultaneousUnlessAnswer_Sacrifice
-		if !decode_variant(v, &tmp, proc(v: json.Value, out: ^SimultaneousUnlessAnswer_Sacrifice) -> bool {
-	if fv, found := get_any(v, "permanent"); found { if !decode_ObjectIncarnationRef(fv, &out.permanent) do return fail("SimultaneousUnlessAnswer::Sacrifice.permanent") } else { return fail("SimultaneousUnlessAnswer::Sacrifice.permanent missing") }
-	return true
-		}) { return fail("SimultaneousUnlessAnswer::Sacrifice") }
-		out^ = tmp
-	case "Discard": out^ = SimultaneousUnlessAnswer_Discard{}
-	case: return fail("SimultaneousUnlessAnswer: unknown variant")
-	}
-	return true
-}
-
-encode_SimultaneousUnlessAnswer :: proc(b: ^strings.Builder, x: SimultaneousUnlessAnswer) {
-	#partial switch y in x {
-	case SimultaneousUnlessAnswer_Declined: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Declined"); strings.write_byte(b, '}')
-	case SimultaneousUnlessAnswer_Sacrifice: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Sacrifice")
-	member(b, first, "permanent"); encode_ObjectIncarnationRef(b, y.permanent)
-	}; strings.write_byte(b, '}')
-	case SimultaneousUnlessAnswer_Discard: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Discard"); strings.write_byte(b, '}')
-	}
-}
-
-encode_SimultaneousUnlessAnswer_members :: proc(b: ^strings.Builder, x: SimultaneousUnlessAnswer, first: ^bool) {
-	#partial switch y in x {
-	case SimultaneousUnlessAnswer_Declined: _ = y; member(b, first, "type"); json.write_string(b, "Declined")
-	case SimultaneousUnlessAnswer_Sacrifice: member(b, first, "type"); json.write_string(b, "Sacrifice")
-	member(b, first, "permanent"); encode_ObjectIncarnationRef(b, y.permanent)
-
-	case SimultaneousUnlessAnswer_Discard: _ = y; member(b, first, "type"); json.write_string(b, "Discard")
-	}
-}
-
-decode_CombatParticipation :: proc(v: json.Value, out: ^CombatParticipation) -> bool {
-	if v.kind != .Object do return fail("CombatParticipation: not an object")
-	if fv, found := get_any(v, "attacking"); found { if !dec_opt_AttackerInfo(fv, &out.attacking) do return fail("CombatParticipation.attacking") }
-	if fv, found := get_any(v, "blocking"); found { if !decode_with_blocking_wire(fv, &out.blocking) do return fail("CombatParticipation.blocking") }
-	if fv, found := get_any(v, "blocked_by"); found { if !dec_dyn_ObjectId(fv, &out.blocked_by) do return fail("CombatParticipation.blocked_by") } else { return fail("CombatParticipation.blocked_by missing") }
-	if fv, found := get_any(v, "damage_assignments"); found { if !dec_dyn_DamageAssignment(fv, &out.damage_assignments) do return fail("CombatParticipation.damage_assignments") } else { return fail("CombatParticipation.damage_assignments missing") }
-	if fv, found := get_any(v, "attacked_by"); found { if !dec_dyn_ObjectId(fv, &out.attacked_by) do return fail("CombatParticipation.attacked_by") }
-	if fv, found := get_any(v, "outgoing_attack_target_identity"); found { if !decode_with_outgoing_attack_wire(fv, &out.outgoing_attack_target_identity) do return fail("CombatParticipation.outgoing_attack_target_identity") }
-	return true
-}
-
-encode_CombatParticipation :: proc(b: ^strings.Builder, x: CombatParticipation) {
-	strings.write_byte(b, '{')
-	f := true
-	encode_CombatParticipation_members(b, x, &f)
-	strings.write_byte(b, '}')
-}
-
-encode_CombatParticipation_members :: proc(b: ^strings.Builder, x: CombatParticipation, first: ^bool) {
-	member(b, first, "attacking"); enc_opt_AttackerInfo(b, x.attacking)
-	member(b, first, "blocking"); encode_with_blocking_wire(b, x.blocking)
-	member(b, first, "blocked_by"); enc_dyn_ObjectId(b, x.blocked_by)
-	member(b, first, "damage_assignments"); enc_dyn_DamageAssignment(b, x.damage_assignments)
-	member(b, first, "attacked_by"); enc_dyn_ObjectId(b, x.attacked_by)
-	if !(x.outgoing_attack_target_identity == nil) { member(b, first, "outgoing_attack_target_identity"); encode_with_outgoing_attack_wire(b, x.outgoing_attack_target_identity) }
-}
-
-decode_ResolvedCopyBodyModifications :: proc(v: json.Value, out: ^ResolvedCopyBodyModifications) -> bool {
-	variant: string
-	body: json.Value
-	#partial switch v.kind {
-	case .String: variant = v.text
-	case .Object:
-		if len(v.members) != 1 do return fail("ResolvedCopyBodyModifications: externally tagged object needs one key")
-		variant, body = v.members[0].key, v.members[0].value
-	case: return fail("ResolvedCopyBodyModifications: not a string or object")
-	}
-	switch variant {
-	case "NoExceptions": out^ = ResolvedCopyBodyModifications_NoExceptions{}
-	case "Folded":
-		tmp: ResolvedCopyBodyModifications_Folded
-		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ResolvedCopyBodyModifications_Folded) -> bool {
-	if fv, found := get_any(v, "modifications"); found { if !dec_dyn_ContinuousModification(fv, &out.modifications) do return fail("ResolvedCopyBodyModifications::Folded.modifications") } else { return fail("ResolvedCopyBodyModifications::Folded.modifications missing") }
-	if fv, found := get_any(v, "all_creature_types"); found { if !dec_dyn_string(fv, &out.all_creature_types) do return fail("ResolvedCopyBodyModifications::Folded.all_creature_types") } else { return fail("ResolvedCopyBodyModifications::Folded.all_creature_types missing") }
-	return true
-		}) { return fail("ResolvedCopyBodyModifications::Folded") }
-		out^ = tmp
-	case "DeferredToUnjournaledSeam":
-		tmp: ResolvedCopyBodyModifications_DeferredToUnjournaledSeam
-		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ResolvedCopyBodyModifications_DeferredToUnjournaledSeam) -> bool {
-	if fv, found := get_any(v, "modifications"); found { if !dec_dyn_ContinuousModification(fv, &out.modifications) do return fail("ResolvedCopyBodyModifications::DeferredToUnjournaledSeam.modifications") } else { return fail("ResolvedCopyBodyModifications::DeferredToUnjournaledSeam.modifications missing") }
-	return true
-		}) { return fail("ResolvedCopyBodyModifications::DeferredToUnjournaledSeam") }
-		out^ = tmp
-	case: return fail("ResolvedCopyBodyModifications: unknown variant")
-	}
-	return true
-}
-
-encode_ResolvedCopyBodyModifications :: proc(b: ^strings.Builder, x: ResolvedCopyBodyModifications) {
-	#partial switch y in x {
-	case ResolvedCopyBodyModifications_NoExceptions: _ = y; json.write_string(b, "NoExceptions")
-	case ResolvedCopyBodyModifications_Folded: strings.write_byte(b, '{'); json.write_string(b, "Folded"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "modifications"); enc_dyn_ContinuousModification(b, y.modifications)
-	member(b, first, "all_creature_types"); enc_dyn_string(b, y.all_creature_types)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	case ResolvedCopyBodyModifications_DeferredToUnjournaledSeam: strings.write_byte(b, '{'); json.write_string(b, "DeferredToUnjournaledSeam"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "modifications"); enc_dyn_ContinuousModification(b, y.modifications)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	}
-}
-
-decode_ResolvedTriggerLedgerEdit :: proc(v: json.Value, out: ^ResolvedTriggerLedgerEdit) -> bool {
-	variant: string
-	body: json.Value
-	#partial switch v.kind {
-	case .String: variant = v.text
-	case .Object:
-		if len(v.members) != 1 do return fail("ResolvedTriggerLedgerEdit: externally tagged object needs one key")
-		variant, body = v.members[0].key, v.members[0].value
-	case: return fail("ResolvedTriggerLedgerEdit: not a string or object")
-	}
-	switch variant {
-	case "OncePerTurn": out^ = ResolvedTriggerLedgerEdit_OncePerTurn{}
-	case "OncePerGame": out^ = ResolvedTriggerLedgerEdit_OncePerGame{}
-	case "OncePerOpponentPerTurn":
-		tmp: ResolvedTriggerLedgerEdit_OncePerOpponentPerTurn
-		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ResolvedTriggerLedgerEdit_OncePerOpponentPerTurn) -> bool {
-	if fv, found := get_any(v, "opponent"); found { if !decode_PlayerId(fv, &out.opponent) do return fail("ResolvedTriggerLedgerEdit::OncePerOpponentPerTurn.opponent") } else { return fail("ResolvedTriggerLedgerEdit::OncePerOpponentPerTurn.opponent missing") }
-	return true
-		}) { return fail("ResolvedTriggerLedgerEdit::OncePerOpponentPerTurn") }
-		out^ = tmp
-	case "MaxTimesPerTurn":
-		tmp: ResolvedTriggerLedgerEdit_MaxTimesPerTurn
-		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ResolvedTriggerLedgerEdit_MaxTimesPerTurn) -> bool {
-	if fv, found := get_any(v, "expected_old"); found { if !decode_u32(fv, &out.expected_old) do return fail("ResolvedTriggerLedgerEdit::MaxTimesPerTurn.expected_old") } else { return fail("ResolvedTriggerLedgerEdit::MaxTimesPerTurn.expected_old missing") }
-	return true
-		}) { return fail("ResolvedTriggerLedgerEdit::MaxTimesPerTurn") }
-		out^ = tmp
-	case "IndicatedActionTaken":
-		tmp: ResolvedTriggerLedgerEdit_IndicatedActionTaken
-		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ResolvedTriggerLedgerEdit_IndicatedActionTaken) -> bool {
-	if fv, found := get_any(v, "player"); found { if !decode_PlayerId(fv, &out.player) do return fail("ResolvedTriggerLedgerEdit::IndicatedActionTaken.player") } else { return fail("ResolvedTriggerLedgerEdit::IndicatedActionTaken.player missing") }
-	return true
-		}) { return fail("ResolvedTriggerLedgerEdit::IndicatedActionTaken") }
-		out^ = tmp
-	case: return fail("ResolvedTriggerLedgerEdit: unknown variant")
-	}
-	return true
-}
-
-encode_ResolvedTriggerLedgerEdit :: proc(b: ^strings.Builder, x: ResolvedTriggerLedgerEdit) {
-	#partial switch y in x {
-	case ResolvedTriggerLedgerEdit_OncePerTurn: _ = y; json.write_string(b, "OncePerTurn")
-	case ResolvedTriggerLedgerEdit_OncePerGame: _ = y; json.write_string(b, "OncePerGame")
-	case ResolvedTriggerLedgerEdit_OncePerOpponentPerTurn: strings.write_byte(b, '{'); json.write_string(b, "OncePerOpponentPerTurn"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "opponent"); encode_PlayerId(b, y.opponent)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	case ResolvedTriggerLedgerEdit_MaxTimesPerTurn: strings.write_byte(b, '{'); json.write_string(b, "MaxTimesPerTurn"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "expected_old"); encode_u32(b, y.expected_old)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	case ResolvedTriggerLedgerEdit_IndicatedActionTaken: strings.write_byte(b, '{'); json.write_string(b, "IndicatedActionTaken"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "player"); encode_PlayerId(b, y.player)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	}
-}
-
-decode_ResolvedOncePerTurnPermission :: proc(v: json.Value, out: ^ResolvedOncePerTurnPermission) -> bool {
-	variant: string
-	body: json.Value
-	#partial switch v.kind {
-	case .String: variant = v.text
-	case .Object:
-		if len(v.members) != 1 do return fail("ResolvedOncePerTurnPermission: externally tagged object needs one key")
-		variant, body = v.members[0].key, v.members[0].value
-	case: return fail("ResolvedOncePerTurnPermission: not a string or object")
-	}
-	switch variant {
-	case "GraveyardCast": out^ = ResolvedOncePerTurnPermission_GraveyardCast{}
-	case "GraveyardCastPermanentType":
-		tmp: ResolvedOncePerTurnPermission_GraveyardCastPermanentType
-		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ResolvedOncePerTurnPermission_GraveyardCastPermanentType) -> bool {
-	if fv, found := get_any(v, "permanent_type"); found { if !decode_CoreType(fv, &out.permanent_type) do return fail("ResolvedOncePerTurnPermission::GraveyardCastPermanentType.permanent_type") } else { return fail("ResolvedOncePerTurnPermission::GraveyardCastPermanentType.permanent_type missing") }
-	return true
-		}) { return fail("ResolvedOncePerTurnPermission::GraveyardCastPermanentType") }
-		out^ = tmp
-	case "HandCastFree": out^ = ResolvedOncePerTurnPermission_HandCastFree{}
-	case "AlternativeCostGrant": out^ = ResolvedOncePerTurnPermission_AlternativeCostGrant{}
-	case "ExilePlay": out^ = ResolvedOncePerTurnPermission_ExilePlay{}
-	case "ExileCast": out^ = ResolvedOncePerTurnPermission_ExileCast{}
-	case "TopOfLibraryCast": out^ = ResolvedOncePerTurnPermission_TopOfLibraryCast{}
-	case: return fail("ResolvedOncePerTurnPermission: unknown variant")
-	}
-	return true
-}
-
-encode_ResolvedOncePerTurnPermission :: proc(b: ^strings.Builder, x: ResolvedOncePerTurnPermission) {
-	#partial switch y in x {
-	case ResolvedOncePerTurnPermission_GraveyardCast: _ = y; json.write_string(b, "GraveyardCast")
-	case ResolvedOncePerTurnPermission_GraveyardCastPermanentType: strings.write_byte(b, '{'); json.write_string(b, "GraveyardCastPermanentType"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
-	member(b, first, "permanent_type"); encode_CoreType(b, y.permanent_type)
-	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
-	case ResolvedOncePerTurnPermission_HandCastFree: _ = y; json.write_string(b, "HandCastFree")
-	case ResolvedOncePerTurnPermission_AlternativeCostGrant: _ = y; json.write_string(b, "AlternativeCostGrant")
-	case ResolvedOncePerTurnPermission_ExilePlay: _ = y; json.write_string(b, "ExilePlay")
-	case ResolvedOncePerTurnPermission_ExileCast: _ = y; json.write_string(b, "ExileCast")
-	case ResolvedOncePerTurnPermission_TopOfLibraryCast: _ = y; json.write_string(b, "TopOfLibraryCast")
-	}
-}
-
-decode_FrameKind :: proc(v: json.Value, out: ^FrameKind) -> bool {
-	if v.kind != .String do return fail("FrameKind: not a string")
-	str := v.text
-	switch str {
-	case "AbilityContinuation": out^ = .AbilityContinuation
-	case "RepeatFor": out^ = .RepeatFor
-	case "RepeatUntil": out^ = .RepeatUntil
-	case "RepeatedOptionalPayment": out^ = .RepeatedOptionalPayment
-	case "ChangeZone": out^ = .ChangeZone
-	case "BatchDelivery": out^ = .BatchDelivery
-	case "CounterMoves": out^ = .CounterMoves
-	case "CounterRemovals": out^ = .CounterRemovals
-	case "CounterAdditions": out^ = .CounterAdditions
-	case "CopyToken": out^ = .CopyToken
-	case "DebugCardEntries": out^ = .DebugCardEntries
-	case "EachPlayerCopyChosen": out^ = .EachPlayerCopyChosen
-	case "ChooseOneOf": out^ = .ChooseOneOf
-	case "VoteBallot": out^ = .VoteBallot
-	case "PerPlayerZoneChoice": out^ = .PerPlayerZoneChoice
-	case "PerCategoryZoneChoice": out^ = .PerCategoryZoneChoice
-	case "OptionalEffect": out^ = .OptionalEffect
-	case "CoinFlip": out^ = .CoinFlip
-	case "DieRoll": out^ = .DieRoll
-	case "Proliferate": out^ = .Proliferate
-	case "MultiDraw": out^ = .MultiDraw
-	case "Discard": out^ = .Discard
-	case "ConniveReentry": out^ = .ConniveReentry
-	case "LifeTotalAssignment": out^ = .LifeTotalAssignment
-	case "SpellResolution": out^ = .SpellResolution
-	case "MutateMerge": out^ = .MutateMerge
-	case "CipherEncode": out^ = .CipherEncode
-	case "EntryAttackSeat": out^ = .EntryAttackSeat
-	case "PostReplacement": out^ = .PostReplacement
-	case: return fail("FrameKind: unknown variant")
-	}
-	return true
-}
-
-encode_FrameKind :: proc(b: ^strings.Builder, x: FrameKind) {
-	@(static, rodata) NAMES := [FrameKind]string{
-		.AbilityContinuation = "AbilityContinuation",
-		.RepeatFor = "RepeatFor",
-		.RepeatUntil = "RepeatUntil",
-		.RepeatedOptionalPayment = "RepeatedOptionalPayment",
-		.ChangeZone = "ChangeZone",
-		.BatchDelivery = "BatchDelivery",
-		.CounterMoves = "CounterMoves",
-		.CounterRemovals = "CounterRemovals",
-		.CounterAdditions = "CounterAdditions",
-		.CopyToken = "CopyToken",
-		.DebugCardEntries = "DebugCardEntries",
-		.EachPlayerCopyChosen = "EachPlayerCopyChosen",
-		.ChooseOneOf = "ChooseOneOf",
-		.VoteBallot = "VoteBallot",
-		.PerPlayerZoneChoice = "PerPlayerZoneChoice",
-		.PerCategoryZoneChoice = "PerCategoryZoneChoice",
-		.OptionalEffect = "OptionalEffect",
-		.CoinFlip = "CoinFlip",
-		.DieRoll = "DieRoll",
-		.Proliferate = "Proliferate",
-		.MultiDraw = "MultiDraw",
-		.Discard = "Discard",
-		.ConniveReentry = "ConniveReentry",
-		.LifeTotalAssignment = "LifeTotalAssignment",
-		.SpellResolution = "SpellResolution",
-		.MutateMerge = "MutateMerge",
-		.CipherEncode = "CipherEncode",
-		.EntryAttackSeat = "EntryAttackSeat",
-		.PostReplacement = "PostReplacement",
-	}
-	json.write_string(b, NAMES[x])
-}
-
-decode_AnnouncementSubject :: proc(v: json.Value, out: ^AnnouncementSubject) -> bool {
-	variant: string
-	body: json.Value
-	#partial switch v.kind {
-	case .String: variant = v.text
-	case .Object:
-		if len(v.members) != 1 do return fail("AnnouncementSubject: externally tagged object needs one key")
-		variant, body = v.members[0].key, v.members[0].value
-	case: return fail("AnnouncementSubject: not a string or object")
-	}
-	switch variant {
-	case "Object": tmp: AnnouncementSubject_Object; if !decode_YieldTarget(body, &tmp._0) do return fail("AnnouncementSubject::Object"); out^ = tmp
-	case "Seat": tmp: AnnouncementSubject_Seat; if !decode_PlayerId(body, &tmp._0) do return fail("AnnouncementSubject::Seat"); out^ = tmp
-	case: return fail("AnnouncementSubject: unknown variant")
-	}
-	return true
-}
-
-encode_AnnouncementSubject :: proc(b: ^strings.Builder, x: AnnouncementSubject) {
-	#partial switch y in x {
-	case AnnouncementSubject_Object: strings.write_byte(b, '{'); json.write_string(b, "Object"); strings.write_byte(b, ':'); encode_YieldTarget(b, y._0); strings.write_byte(b, '}')
-	case AnnouncementSubject_Seat: strings.write_byte(b, '{'); json.write_string(b, "Seat"); strings.write_byte(b, ':'); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
-	}
-}
-
-decode_ComboWindow :: proc(v: json.Value, out: ^ComboWindow) -> bool {
-	if v.kind != .String do return fail("ComboWindow: not a string")
-	str := v.text
-	switch str {
-	case "early_game": out^ = .EarlyGame
-	case "late_game": out^ = .LateGame
-	case: return fail("ComboWindow: unknown variant")
-	}
-	return true
-}
-
-encode_ComboWindow :: proc(b: ^strings.Builder, x: ComboWindow) {
-	@(static, rodata) NAMES := [ComboWindow]string{
-		.EarlyGame = "early_game",
-		.LateGame = "late_game",
 	}
 	json.write_string(b, NAMES[x])
 }
@@ -60653,6 +59664,951 @@ encode_DrawSequenceFrame_members :: proc(b: ^strings.Builder, x: DrawSequenceFra
 	if !(x.dealer == nil) { member(b, first, "dealer"); enc_opt_DrawDealer(b, x.dealer) }
 }
 
+decode_ZoneSpendPolarity :: proc(v: json.Value, out: ^ZoneSpendPolarity) -> bool {
+	if v.kind != .String do return fail("ZoneSpendPolarity: not a string")
+	str := v.text
+	switch str {
+	case "From": out^ = .From
+	case "NotFrom": out^ = .NotFrom
+	case: return fail("ZoneSpendPolarity: unknown variant")
+	}
+	return true
+}
+
+encode_ZoneSpendPolarity :: proc(b: ^strings.Builder, x: ZoneSpendPolarity) {
+	@(static, rodata) NAMES := [ZoneSpendPolarity]string{
+		.From = "From",
+		.NotFrom = "NotFrom",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_ChangeZoneArrangementPlan :: proc(v: json.Value, out: ^ChangeZoneArrangementPlan) -> bool {
+	if v.kind != .String do return fail("ChangeZoneArrangementPlan: not a string")
+	str := v.text
+	switch str {
+	case "OrdinaryDelivery": out^ = .OrdinaryDelivery
+	case "ArrangePhysicalLibraryArrivals": out^ = .ArrangePhysicalLibraryArrivals
+	case: return fail("ChangeZoneArrangementPlan: unknown variant")
+	}
+	return true
+}
+
+encode_ChangeZoneArrangementPlan :: proc(b: ^strings.Builder, x: ChangeZoneArrangementPlan) {
+	@(static, rodata) NAMES := [ChangeZoneArrangementPlan]string{
+		.OrdinaryDelivery = "OrdinaryDelivery",
+		.ArrangePhysicalLibraryArrivals = "ArrangePhysicalLibraryArrivals",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_ChangeZoneCountPolicy :: proc(v: json.Value, out: ^ChangeZoneCountPolicy) -> bool {
+	variant: string
+	body: json.Value
+	#partial switch v.kind {
+	case .String: variant = v.text
+	case .Object:
+		if len(v.members) != 1 do return fail("ChangeZoneCountPolicy: externally tagged object needs one key")
+		variant, body = v.members[0].key, v.members[0].value
+	case: return fail("ChangeZoneCountPolicy: not a string or object")
+	}
+	switch variant {
+	case "TargetedArrivals":
+		tmp: ChangeZoneCountPolicy_TargetedArrivals
+		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ChangeZoneCountPolicy_TargetedArrivals) -> bool {
+	if fv, found := get_any(v, "selected"); found { if !dec_dyn_ObjectId(fv, &out.selected) do return fail("ChangeZoneCountPolicy::TargetedArrivals.selected") } else { return fail("ChangeZoneCountPolicy::TargetedArrivals.selected missing") }
+	return true
+		}) { return fail("ChangeZoneCountPolicy::TargetedArrivals") }
+		out^ = tmp
+	case "MassAllMembers": out^ = ChangeZoneCountPolicy_MassAllMembers{}
+	case "ChoiceSelected":
+		tmp: ChangeZoneCountPolicy_ChoiceSelected
+		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ChangeZoneCountPolicy_ChoiceSelected) -> bool {
+	if fv, found := get_any(v, "chosen"); found { if !dec_dyn_ObjectId(fv, &out.chosen) do return fail("ChangeZoneCountPolicy::ChoiceSelected.chosen") } else { return fail("ChangeZoneCountPolicy::ChoiceSelected.chosen missing") }
+	return true
+		}) { return fail("ChangeZoneCountPolicy::ChoiceSelected") }
+		out^ = tmp
+	case: return fail("ChangeZoneCountPolicy: unknown variant")
+	}
+	return true
+}
+
+encode_ChangeZoneCountPolicy :: proc(b: ^strings.Builder, x: ChangeZoneCountPolicy) {
+	#partial switch y in x {
+	case ChangeZoneCountPolicy_TargetedArrivals: strings.write_byte(b, '{'); json.write_string(b, "TargetedArrivals"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "selected"); enc_dyn_ObjectId(b, y.selected)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	case ChangeZoneCountPolicy_MassAllMembers: _ = y; json.write_string(b, "MassAllMembers")
+	case ChangeZoneCountPolicy_ChoiceSelected: strings.write_byte(b, '{'); json.write_string(b, "ChoiceSelected"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "chosen"); enc_dyn_ObjectId(b, y.chosen)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	}
+}
+
+decode_OwnExileLinkSettlement :: proc(v: json.Value, out: ^OwnExileLinkSettlement) -> bool {
+	if v.kind != .String do return fail("OwnExileLinkSettlement: not a string")
+	str := v.text
+	switch str {
+	case "Retain": out^ = .Retain
+	case "Consume": out^ = .Consume
+	case: return fail("OwnExileLinkSettlement: unknown variant")
+	}
+	return true
+}
+
+encode_OwnExileLinkSettlement :: proc(b: ^strings.Builder, x: OwnExileLinkSettlement) {
+	@(static, rodata) NAMES := [OwnExileLinkSettlement]string{
+		.Retain = "Retain",
+		.Consume = "Consume",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_EntryOccurrenceCollector :: proc(v: json.Value, out: ^EntryOccurrenceCollector) -> bool {
+	if v.kind != .String do return fail("EntryOccurrenceCollector: not a string")
+	str := v.text
+	switch str {
+	case "Owner": out^ = .Owner
+	case "AfterSimultaneousEntryEffects": out^ = .AfterSimultaneousEntryEffects
+	case: return fail("EntryOccurrenceCollector: unknown variant")
+	}
+	return true
+}
+
+encode_EntryOccurrenceCollector :: proc(b: ^strings.Builder, x: EntryOccurrenceCollector) {
+	@(static, rodata) NAMES := [EntryOccurrenceCollector]string{
+		.Owner = "Owner",
+		.AfterSimultaneousEntryEffects = "AfterSimultaneousEntryEffects",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_SacrificeAggregateStat :: proc(v: json.Value, out: ^SacrificeAggregateStat) -> bool {
+	if v.kind != .String do return fail("SacrificeAggregateStat: not a string")
+	str := v.text
+	switch str {
+	case "TotalPower": out^ = .TotalPower
+	case: return fail("SacrificeAggregateStat: unknown variant")
+	}
+	return true
+}
+
+encode_SacrificeAggregateStat :: proc(b: ^strings.Builder, x: SacrificeAggregateStat) {
+	@(static, rodata) NAMES := [SacrificeAggregateStat]string{
+		.TotalPower = "TotalPower",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_ResourceVector :: proc(v: json.Value, out: ^ResourceVector) -> bool {
+	if v.kind != .Object do return fail("ResourceVector: not an object")
+	if fv, found := get_any(v, "mana"); found { if !dec__6_i64(fv, &out.mana) do return fail("ResourceVector.mana") } else { return fail("ResourceVector.mana missing") }
+	if fv, found := get_any(v, "life"); found { if !dec_pairs_map_PlayerId_i64(fv, &out.life) do return fail("ResourceVector.life") } else { return fail("ResourceVector.life missing") }
+	if fv, found := get_any(v, "damage_dealt"); found { if !dec_pairs_map_PlayerId_i64(fv, &out.damage_dealt) do return fail("ResourceVector.damage_dealt") } else { return fail("ResourceVector.damage_dealt missing") }
+	if fv, found := get_any(v, "library_delta"); found { if !dec_pairs_map_PlayerId_i64(fv, &out.library_delta) do return fail("ResourceVector.library_delta") } else { return fail("ResourceVector.library_delta missing") }
+	if fv, found := get_any(v, "poison"); found { if !dec_pairs_map_PlayerId_i64(fv, &out.poison) do return fail("ResourceVector.poison") } else { return fail("ResourceVector.poison missing") }
+	if fv, found := get_any(v, "energy"); found { if !dec_pairs_map_PlayerId_i64(fv, &out.energy) do return fail("ResourceVector.energy") }
+	if fv, found := get_any(v, "tokens_created"); found { if !decode_i64(fv, &out.tokens_created) do return fail("ResourceVector.tokens_created") } else { return fail("ResourceVector.tokens_created missing") }
+	if fv, found := get_any(v, "cards_drawn"); found { if !decode_i64(fv, &out.cards_drawn) do return fail("ResourceVector.cards_drawn") } else { return fail("ResourceVector.cards_drawn missing") }
+	if fv, found := get_any(v, "casts_this_step"); found { if !decode_i64(fv, &out.casts_this_step) do return fail("ResourceVector.casts_this_step") } else { return fail("ResourceVector.casts_this_step missing") }
+	if fv, found := get_any(v, "landfall_triggers"); found { if !decode_i64(fv, &out.landfall_triggers) do return fail("ResourceVector.landfall_triggers") } else { return fail("ResourceVector.landfall_triggers missing") }
+	if fv, found := get_any(v, "combat_phases"); found { if !decode_i64(fv, &out.combat_phases) do return fail("ResourceVector.combat_phases") } else { return fail("ResourceVector.combat_phases missing") }
+	if fv, found := get_any(v, "extra_turns"); found { if !decode_i64(fv, &out.extra_turns) do return fail("ResourceVector.extra_turns") } else { return fail("ResourceVector.extra_turns missing") }
+	if fv, found := get_any(v, "death_triggers"); found { if !decode_i64(fv, &out.death_triggers) do return fail("ResourceVector.death_triggers") } else { return fail("ResourceVector.death_triggers missing") }
+	if fv, found := get_any(v, "etb_triggers"); found { if !decode_i64(fv, &out.etb_triggers) do return fail("ResourceVector.etb_triggers") } else { return fail("ResourceVector.etb_triggers missing") }
+	if fv, found := get_any(v, "ltb_triggers"); found { if !decode_i64(fv, &out.ltb_triggers) do return fail("ResourceVector.ltb_triggers") } else { return fail("ResourceVector.ltb_triggers missing") }
+	if fv, found := get_any(v, "sac_triggers"); found { if !decode_i64(fv, &out.sac_triggers) do return fail("ResourceVector.sac_triggers") } else { return fail("ResourceVector.sac_triggers missing") }
+	if fv, found := get_any(v, "counters"); found { if !dec_dyn_t2_t2_CounterClass_ObjectClass_i64(fv, &out.counters) do return fail("ResourceVector.counters") } else { return fail("ResourceVector.counters missing") }
+	if fv, found := get_any(v, "generic_triggers"); found { if !dec_map_TriggerKind_i64(fv, &out.generic_triggers) do return fail("ResourceVector.generic_triggers") } else { return fail("ResourceVector.generic_triggers missing") }
+	return true
+}
+
+encode_ResourceVector :: proc(b: ^strings.Builder, x: ResourceVector) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_ResourceVector_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_ResourceVector_members :: proc(b: ^strings.Builder, x: ResourceVector, first: ^bool) {
+	member(b, first, "mana"); enc__6_i64(b, x.mana)
+	member(b, first, "life"); enc_pairs_map_PlayerId_i64(b, x.life)
+	member(b, first, "damage_dealt"); enc_pairs_map_PlayerId_i64(b, x.damage_dealt)
+	member(b, first, "library_delta"); enc_pairs_map_PlayerId_i64(b, x.library_delta)
+	member(b, first, "poison"); enc_pairs_map_PlayerId_i64(b, x.poison)
+	member(b, first, "energy"); enc_pairs_map_PlayerId_i64(b, x.energy)
+	member(b, first, "tokens_created"); encode_i64(b, x.tokens_created)
+	member(b, first, "cards_drawn"); encode_i64(b, x.cards_drawn)
+	member(b, first, "casts_this_step"); encode_i64(b, x.casts_this_step)
+	member(b, first, "landfall_triggers"); encode_i64(b, x.landfall_triggers)
+	member(b, first, "combat_phases"); encode_i64(b, x.combat_phases)
+	member(b, first, "extra_turns"); encode_i64(b, x.extra_turns)
+	member(b, first, "death_triggers"); encode_i64(b, x.death_triggers)
+	member(b, first, "etb_triggers"); encode_i64(b, x.etb_triggers)
+	member(b, first, "ltb_triggers"); encode_i64(b, x.ltb_triggers)
+	member(b, first, "sac_triggers"); encode_i64(b, x.sac_triggers)
+	member(b, first, "counters"); enc_dyn_t2_t2_CounterClass_ObjectClass_i64(b, x.counters)
+	member(b, first, "generic_triggers"); enc_map_TriggerKind_i64(b, x.generic_triggers)
+}
+
+decode_CleanupPair :: proc(v: json.Value, out: ^CleanupPair) -> bool {
+	if v.kind != .Object do return fail("CleanupPair: not an object")
+	if fv, found := get_any(v, "to_cleanup"); found { if !decode_i64(fv, &out.to_cleanup) do return fail("CleanupPair.to_cleanup") } else { return fail("CleanupPair.to_cleanup missing") }
+	if fv, found := get_any(v, "growth"); found { if !decode_i64(fv, &out.growth) do return fail("CleanupPair.growth") } else { return fail("CleanupPair.growth missing") }
+	return true
+}
+
+encode_CleanupPair :: proc(b: ^strings.Builder, x: CleanupPair) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_CleanupPair_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_CleanupPair_members :: proc(b: ^strings.Builder, x: CleanupPair, first: ^bool) {
+	member(b, first, "to_cleanup"); encode_i64(b, x.to_cleanup)
+	member(b, first, "growth"); encode_i64(b, x.growth)
+}
+
+decode_InstructedMill :: proc(v: json.Value, out: ^InstructedMill) -> bool {
+	if v.kind != .Object do return fail("InstructedMill: not an object")
+	if fv, found := get_any(v, "per_repetition"); found { if !decode_i64(fv, &out.per_repetition) do return fail("InstructedMill.per_repetition") } else { return fail("InstructedMill.per_repetition missing") }
+	if fv, found := get_any(v, "library"); found { if !decode_i64(fv, &out.library) do return fail("InstructedMill.library") } else { return fail("InstructedMill.library missing") }
+	return true
+}
+
+encode_InstructedMill :: proc(b: ^strings.Builder, x: InstructedMill) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_InstructedMill_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_InstructedMill_members :: proc(b: ^strings.Builder, x: InstructedMill, first: ^bool) {
+	member(b, first, "per_repetition"); encode_i64(b, x.per_repetition)
+	member(b, first, "library"); encode_i64(b, x.library)
+}
+
+decode_Ranking :: proc(v: json.Value, out: ^Ranking) -> bool {
+	return dec_dyn_AnnouncementSubject(v, cast(^[dynamic]AnnouncementSubject)out)
+}
+
+encode_Ranking :: proc(b: ^strings.Builder, x: Ranking) {
+	enc_dyn_AnnouncementSubject(b, cast([dynamic]AnnouncementSubject)x)
+}
+
+decode_ComboDeclaration :: proc(v: json.Value, out: ^ComboDeclaration) -> bool {
+	if v.kind != .Object do return fail("ComboDeclaration: not an object")
+	tv, found := json.get(v, "kind")
+	if !found || tv.kind != .String do return fail("ComboDeclaration: no tag")
+	switch tv.text {
+	case "undeclared": out^ = ComboDeclaration_Undeclared{}
+	case "none_intended": out^ = ComboDeclaration_NoneIntended{}
+	case "intended":
+		tmp: ComboDeclaration_Intended
+		if !decode_variant(v, &tmp, proc(v: json.Value, out: ^ComboDeclaration_Intended) -> bool {
+	if fv, found := get_any(v, "window"); found { if !dec_opt_ComboWindow(fv, &out.window) do return fail("ComboDeclaration::Intended.window") }
+	return true
+		}) { return fail("ComboDeclaration::Intended") }
+		out^ = tmp
+	case: return fail("ComboDeclaration: unknown variant")
+	}
+	return true
+}
+
+encode_ComboDeclaration :: proc(b: ^strings.Builder, x: ComboDeclaration) {
+	#partial switch y in x {
+	case ComboDeclaration_Undeclared: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "kind"); json.write_string(b, "undeclared"); strings.write_byte(b, '}')
+	case ComboDeclaration_NoneIntended: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "kind"); json.write_string(b, "none_intended"); strings.write_byte(b, '}')
+	case ComboDeclaration_Intended: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "kind"); json.write_string(b, "intended")
+	member(b, first, "window"); enc_opt_ComboWindow(b, y.window)
+	}; strings.write_byte(b, '}')
+	}
+}
+
+encode_ComboDeclaration_members :: proc(b: ^strings.Builder, x: ComboDeclaration, first: ^bool) {
+	#partial switch y in x {
+	case ComboDeclaration_Undeclared: _ = y; member(b, first, "kind"); json.write_string(b, "undeclared")
+	case ComboDeclaration_NoneIntended: _ = y; member(b, first, "kind"); json.write_string(b, "none_intended")
+	case ComboDeclaration_Intended: member(b, first, "kind"); json.write_string(b, "intended")
+	member(b, first, "window"); enc_opt_ComboWindow(b, y.window)
+
+	}
+}
+
+decode_TriggerProducerOrigin :: proc(v: json.Value, out: ^TriggerProducerOrigin) -> bool {
+	if v.kind != .Object do return fail("TriggerProducerOrigin: not an object")
+	tv, found := json.get(v, "type")
+	if !found || tv.kind != .String do return fail("TriggerProducerOrigin: no tag")
+	switch tv.text {
+	case "Static":
+		tmp: TriggerProducerOrigin_Static
+		if !decode_variant(json.get_or_null(v, "data"), &tmp, proc(v: json.Value, out: ^TriggerProducerOrigin_Static) -> bool {
+	if fv, found := get_any(v, "source"); found { if !decode_ObjectIncarnationRef(fv, &out.source) do return fail("TriggerProducerOrigin::Static.source") } else { return fail("TriggerProducerOrigin::Static.source missing") }
+	if fv, found := get_any(v, "definition_index"); found { if !decode_int(fv, &out.definition_index) do return fail("TriggerProducerOrigin::Static.definition_index") } else { return fail("TriggerProducerOrigin::Static.definition_index missing") }
+	if fv, found := get_any(v, "modification_index"); found { if !decode_int(fv, &out.modification_index) do return fail("TriggerProducerOrigin::Static.modification_index") } else { return fail("TriggerProducerOrigin::Static.modification_index missing") }
+	return true
+		}) { return fail("TriggerProducerOrigin::Static") }
+		out^ = tmp
+	case "Transient":
+		tmp: TriggerProducerOrigin_Transient
+		if !decode_variant(json.get_or_null(v, "data"), &tmp, proc(v: json.Value, out: ^TriggerProducerOrigin_Transient) -> bool {
+	if fv, found := get_any(v, "continuous_effect_id"); found { if !decode_u64(fv, &out.continuous_effect_id) do return fail("TriggerProducerOrigin::Transient.continuous_effect_id") } else { return fail("TriggerProducerOrigin::Transient.continuous_effect_id missing") }
+	if fv, found := get_any(v, "modification_index"); found { if !decode_int(fv, &out.modification_index) do return fail("TriggerProducerOrigin::Transient.modification_index") } else { return fail("TriggerProducerOrigin::Transient.modification_index missing") }
+	return true
+		}) { return fail("TriggerProducerOrigin::Transient") }
+		out^ = tmp
+	case: return fail("TriggerProducerOrigin: unknown variant")
+	}
+	return true
+}
+
+encode_TriggerProducerOrigin :: proc(b: ^strings.Builder, x: TriggerProducerOrigin) {
+	#partial switch y in x {
+	case TriggerProducerOrigin_Static: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Static"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "source"); encode_ObjectIncarnationRef(b, y.source)
+	member(b, first, "definition_index"); encode_int(b, y.definition_index)
+	member(b, first, "modification_index"); encode_int(b, y.modification_index)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	case TriggerProducerOrigin_Transient: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Transient"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "continuous_effect_id"); encode_u64(b, y.continuous_effect_id)
+	member(b, first, "modification_index"); encode_int(b, y.modification_index)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	}
+}
+
+decode_TriggerGrantProducerKey :: proc(v: json.Value, out: ^TriggerGrantProducerKey) -> bool {
+	if v.kind != .Object do return fail("TriggerGrantProducerKey: not an object")
+	tv, found := json.get(v, "type")
+	if !found || tv.kind != .String do return fail("TriggerGrantProducerKey: no tag")
+	switch tv.text {
+	case "KeywordCompanion":
+		tmp: TriggerGrantProducerKey_KeywordCompanion
+		if !decode_variant(json.get_or_null(v, "data"), &tmp, proc(v: json.Value, out: ^TriggerGrantProducerKey_KeywordCompanion) -> bool {
+	if fv, found := get_any(v, "origin"); found { if !decode_TriggerProducerOrigin(fv, &out.origin) do return fail("TriggerGrantProducerKey::KeywordCompanion.origin") } else { return fail("TriggerGrantProducerKey::KeywordCompanion.origin missing") }
+	if fv, found := get_any(v, "keyword_output_index"); found { if !decode_int(fv, &out.keyword_output_index) do return fail("TriggerGrantProducerKey::KeywordCompanion.keyword_output_index") }
+	if fv, found := get_any(v, "companion_index"); found { if !decode_int(fv, &out.companion_index) do return fail("TriggerGrantProducerKey::KeywordCompanion.companion_index") } else { return fail("TriggerGrantProducerKey::KeywordCompanion.companion_index missing") }
+	return true
+		}) { return fail("TriggerGrantProducerKey::KeywordCompanion") }
+		out^ = tmp
+	case "CopyRetained":
+		tmp: TriggerGrantProducerKey_CopyRetained
+		if !decode_variant(json.get_or_null(v, "data"), &tmp, proc(v: json.Value, out: ^TriggerGrantProducerKey_CopyRetained) -> bool {
+	if fv, found := get_any(v, "origin"); found { if !decode_TriggerProducerOrigin(fv, &out.origin) do return fail("TriggerGrantProducerKey::CopyRetained.origin") } else { return fail("TriggerGrantProducerKey::CopyRetained.origin missing") }
+	if fv, found := get_any(v, "source_base_set"); found { if !decode_TriggerBaseSetInstanceRef(fv, &out.source_base_set) do return fail("TriggerGrantProducerKey::CopyRetained.source_base_set") } else { return fail("TriggerGrantProducerKey::CopyRetained.source_base_set missing") }
+	if fv, found := get_any(v, "source_printed_index"); found { if !decode_int(fv, &out.source_printed_index) do return fail("TriggerGrantProducerKey::CopyRetained.source_printed_index") } else { return fail("TriggerGrantProducerKey::CopyRetained.source_printed_index missing") }
+	return true
+		}) { return fail("TriggerGrantProducerKey::CopyRetained") }
+		out^ = tmp
+	case "Granted":
+		tmp: TriggerGrantProducerKey_Granted
+		if !decode_variant(json.get_or_null(v, "data"), &tmp, proc(v: json.Value, out: ^TriggerGrantProducerKey_Granted) -> bool {
+	if fv, found := get_any(v, "origin"); found { if !decode_TriggerProducerOrigin(fv, &out.origin) do return fail("TriggerGrantProducerKey::Granted.origin") } else { return fail("TriggerGrantProducerKey::Granted.origin missing") }
+	if fv, found := get_any(v, "output_index"); found { if !decode_int(fv, &out.output_index) do return fail("TriggerGrantProducerKey::Granted.output_index") } else { return fail("TriggerGrantProducerKey::Granted.output_index missing") }
+	return true
+		}) { return fail("TriggerGrantProducerKey::Granted") }
+		out^ = tmp
+	case "ExpandedGrant":
+		tmp: TriggerGrantProducerKey_ExpandedGrant
+		if !decode_variant(json.get_or_null(v, "data"), &tmp, proc(v: json.Value, out: ^TriggerGrantProducerKey_ExpandedGrant) -> bool {
+	if fv, found := get_any(v, "origin"); found { if !decode_TriggerProducerOrigin(fv, &out.origin) do return fail("TriggerGrantProducerKey::ExpandedGrant.origin") } else { return fail("TriggerGrantProducerKey::ExpandedGrant.origin missing") }
+	if fv, found := get_any(v, "provider"); found { if !dec_ptr_TriggerDefinitionRef(fv, &out.provider) do return fail("TriggerGrantProducerKey::ExpandedGrant.provider") } else { return fail("TriggerGrantProducerKey::ExpandedGrant.provider missing") }
+	if fv, found := get_any(v, "provider_output_index"); found { if !decode_int(fv, &out.provider_output_index) do return fail("TriggerGrantProducerKey::ExpandedGrant.provider_output_index") } else { return fail("TriggerGrantProducerKey::ExpandedGrant.provider_output_index missing") }
+	return true
+		}) { return fail("TriggerGrantProducerKey::ExpandedGrant") }
+		out^ = tmp
+	case: return fail("TriggerGrantProducerKey: unknown variant")
+	}
+	return true
+}
+
+encode_TriggerGrantProducerKey :: proc(b: ^strings.Builder, x: TriggerGrantProducerKey) {
+	#partial switch y in x {
+	case TriggerGrantProducerKey_KeywordCompanion: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "KeywordCompanion"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "origin"); encode_TriggerProducerOrigin(b, y.origin)
+	member(b, first, "keyword_output_index"); encode_int(b, y.keyword_output_index)
+	member(b, first, "companion_index"); encode_int(b, y.companion_index)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	case TriggerGrantProducerKey_CopyRetained: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "CopyRetained"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "origin"); encode_TriggerProducerOrigin(b, y.origin)
+	member(b, first, "source_base_set"); encode_TriggerBaseSetInstanceRef(b, y.source_base_set)
+	member(b, first, "source_printed_index"); encode_int(b, y.source_printed_index)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	case TriggerGrantProducerKey_Granted: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Granted"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "origin"); encode_TriggerProducerOrigin(b, y.origin)
+	member(b, first, "output_index"); encode_int(b, y.output_index)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	case TriggerGrantProducerKey_ExpandedGrant: strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "ExpandedGrant"); member(b, &f, "data"); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "origin"); encode_TriggerProducerOrigin(b, y.origin)
+	member(b, first, "provider"); enc_ptr_TriggerDefinitionRef(b, y.provider)
+	member(b, first, "provider_output_index"); encode_int(b, y.provider_output_index)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	}
+}
+
+decode_AbilityBlockKind :: proc(v: json.Value, out: ^AbilityBlockKind) -> bool {
+	if v.kind != .Object do return fail("AbilityBlockKind: not an object")
+	tv, found := json.get(v, "type")
+	if !found || tv.kind != .String do return fail("AbilityBlockKind: no tag")
+	str := tv.text
+	switch str {
+	case "CantBeActivated": out^ = .CantBeActivated
+	case "CantActivateDuring": out^ = .CantActivateDuring
+	case "Prohibited": out^ = .Prohibited
+	case "CostNotPayableNow": out^ = .CostNotPayableNow
+	case: return fail("AbilityBlockKind: unknown variant")
+	}
+	return true
+}
+
+encode_AbilityBlockKind :: proc(b: ^strings.Builder, x: AbilityBlockKind) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_AbilityBlockKind_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_AbilityBlockKind_members :: proc(b: ^strings.Builder, x: AbilityBlockKind, first: ^bool) {
+	_ = x
+	@(static, rodata) NAMES := [AbilityBlockKind]string{
+		.CantBeActivated = "CantBeActivated",
+		.CantActivateDuring = "CantActivateDuring",
+		.Prohibited = "Prohibited",
+		.CostNotPayableNow = "CostNotPayableNow",
+	}
+	member(b, first, "type"); json.write_string(b, NAMES[x])
+}
+
+decode_BlockPairDirection :: proc(v: json.Value, out: ^BlockPairDirection) -> bool {
+	if v.kind != .String do return fail("BlockPairDirection: not a string")
+	str := v.text
+	switch str {
+	case "SubjectIsBlocker": out^ = .SubjectIsBlocker
+	case "CandidateIsBlocker": out^ = .CandidateIsBlocker
+	case "Either": out^ = .Either
+	case: return fail("BlockPairDirection: unknown variant")
+	}
+	return true
+}
+
+encode_BlockPairDirection :: proc(b: ^strings.Builder, x: BlockPairDirection) {
+	@(static, rodata) NAMES := [BlockPairDirection]string{
+		.SubjectIsBlocker = "SubjectIsBlocker",
+		.CandidateIsBlocker = "CandidateIsBlocker",
+		.Either = "Either",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_CommanderEligibilityRule :: proc(v: json.Value, out: ^CommanderEligibilityRule) -> bool {
+	if v.kind != .String do return fail("CommanderEligibilityRule: not a string")
+	str := v.text
+	switch str {
+	case "Standard": out^ = .Standard
+	case "TinyLeaders": out^ = .TinyLeaders
+	case "OathbreakerSignatureSpell": out^ = .OathbreakerSignatureSpell
+	case "BrawlColorIdentity": out^ = .BrawlColorIdentity
+	case "FreeformAnyCastableCard": out^ = .FreeformAnyCastableCard
+	case: return fail("CommanderEligibilityRule: unknown variant")
+	}
+	return true
+}
+
+encode_CommanderEligibilityRule :: proc(b: ^strings.Builder, x: CommanderEligibilityRule) {
+	@(static, rodata) NAMES := [CommanderEligibilityRule]string{
+		.Standard = "Standard",
+		.TinyLeaders = "TinyLeaders",
+		.OathbreakerSignatureSpell = "OathbreakerSignatureSpell",
+		.BrawlColorIdentity = "BrawlColorIdentity",
+		.FreeformAnyCastableCard = "FreeformAnyCastableCard",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_ManaBurnPolicy :: proc(v: json.Value, out: ^ManaBurnPolicy) -> bool {
+	if v.kind != .String do return fail("ManaBurnPolicy: not a string")
+	str := v.text
+	switch str {
+	case "Modern": out^ = .Modern
+	case "Obsolete": out^ = .Obsolete
+	case: return fail("ManaBurnPolicy: unknown variant")
+	}
+	return true
+}
+
+encode_ManaBurnPolicy :: proc(b: ^strings.Builder, x: ManaBurnPolicy) {
+	@(static, rodata) NAMES := [ManaBurnPolicy]string{
+		.Modern = "Modern",
+		.Obsolete = "Obsolete",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_CombatDamageTiming :: proc(v: json.Value, out: ^CombatDamageTiming) -> bool {
+	if v.kind != .String do return fail("CombatDamageTiming: not a string")
+	str := v.text
+	switch str {
+	case "Modern": out^ = .Modern
+	case "OnStack": out^ = .OnStack
+	case: return fail("CombatDamageTiming: unknown variant")
+	}
+	return true
+}
+
+encode_CombatDamageTiming :: proc(b: ^strings.Builder, x: CombatDamageTiming) {
+	@(static, rodata) NAMES := [CombatDamageTiming]string{
+		.Modern = "Modern",
+		.OnStack = "OnStack",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_WishOutsideGameScope :: proc(v: json.Value, out: ^WishOutsideGameScope) -> bool {
+	if v.kind != .String do return fail("WishOutsideGameScope: not a string")
+	str := v.text
+	switch str {
+	case "PostM10SideboardOnly": out^ = .PostM10SideboardOnly
+	case "PreM10ReachesExile": out^ = .PreM10ReachesExile
+	case: return fail("WishOutsideGameScope: unknown variant")
+	}
+	return true
+}
+
+encode_WishOutsideGameScope :: proc(b: ^strings.Builder, x: WishOutsideGameScope) {
+	@(static, rodata) NAMES := [WishOutsideGameScope]string{
+		.PostM10SideboardOnly = "PostM10SideboardOnly",
+		.PreM10ReachesExile = "PreM10ReachesExile",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_LegendRuleScope :: proc(v: json.Value, out: ^LegendRuleScope) -> bool {
+	if v.kind != .String do return fail("LegendRuleScope: not a string")
+	str := v.text
+	switch str {
+	case "Modern": out^ = .Modern
+	case "PreM14AnyController": out^ = .PreM14AnyController
+	case: return fail("LegendRuleScope: unknown variant")
+	}
+	return true
+}
+
+encode_LegendRuleScope :: proc(b: ^strings.Builder, x: LegendRuleScope) {
+	@(static, rodata) NAMES := [LegendRuleScope]string{
+		.Modern = "Modern",
+		.PreM14AnyController = "PreM14AnyController",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_AntePolicy :: proc(v: json.Value, out: ^AntePolicy) -> bool {
+	if v.kind != .String do return fail("AntePolicy: not a string")
+	str := v.text
+	switch str {
+	case "Excluded": out^ = .Excluded
+	case "Enabled": out^ = .Enabled
+	case: return fail("AntePolicy: unknown variant")
+	}
+	return true
+}
+
+encode_AntePolicy :: proc(b: ^strings.Builder, x: AntePolicy) {
+	@(static, rodata) NAMES := [AntePolicy]string{
+		.Excluded = "Excluded",
+		.Enabled = "Enabled",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_LogImportance :: proc(v: json.Value, out: ^LogImportance) -> bool {
+	if v.kind != .String do return fail("LogImportance: not a string")
+	str := v.text
+	switch str {
+	case "Essential": out^ = .Essential
+	case "Context": out^ = .Context
+	case "Detail": out^ = .Detail
+	case "Diagnostic": out^ = .Diagnostic
+	case: return fail("LogImportance: unknown variant")
+	}
+	return true
+}
+
+encode_LogImportance :: proc(b: ^strings.Builder, x: LogImportance) {
+	@(static, rodata) NAMES := [LogImportance]string{
+		.Essential = "Essential",
+		.Context = "Context",
+		.Detail = "Detail",
+		.Diagnostic = "Diagnostic",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_LogTone :: proc(v: json.Value, out: ^LogTone) -> bool {
+	if v.kind != .String do return fail("LogTone: not a string")
+	str := v.text
+	switch str {
+	case "Neutral": out^ = .Neutral
+	case "Positive": out^ = .Positive
+	case "Negative": out^ = .Negative
+	case "Informational": out^ = .Informational
+	case "Diagnostic": out^ = .Diagnostic
+	case: return fail("LogTone: unknown variant")
+	}
+	return true
+}
+
+encode_LogTone :: proc(b: ^strings.Builder, x: LogTone) {
+	@(static, rodata) NAMES := [LogTone]string{
+		.Neutral = "Neutral",
+		.Positive = "Positive",
+		.Negative = "Negative",
+		.Informational = "Informational",
+		.Diagnostic = "Diagnostic",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_LogBoundary :: proc(v: json.Value, out: ^LogBoundary) -> bool {
+	if v.kind != .String do return fail("LogBoundary: not a string")
+	str := v.text
+	switch str {
+	case "None": out^ = .None
+	case "Turn": out^ = .Turn
+	case "Phase": out^ = .Phase
+	case: return fail("LogBoundary: unknown variant")
+	}
+	return true
+}
+
+encode_LogBoundary :: proc(b: ^strings.Builder, x: LogBoundary) {
+	@(static, rodata) NAMES := [LogBoundary]string{
+		.None = "None",
+		.Turn = "Turn",
+		.Phase = "Phase",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_LogVisibility :: proc(v: json.Value, out: ^LogVisibility) -> bool {
+	if v.kind != .String do return fail("LogVisibility: not a string")
+	str := v.text
+	switch str {
+	case "Public": out^ = .Public
+	case "HiddenInformation": out^ = .HiddenInformation
+	case: return fail("LogVisibility: unknown variant")
+	}
+	return true
+}
+
+encode_LogVisibility :: proc(b: ^strings.Builder, x: LogVisibility) {
+	@(static, rodata) NAMES := [LogVisibility]string{
+		.Public = "Public",
+		.HiddenInformation = "HiddenInformation",
+	}
+	json.write_string(b, NAMES[x])
+}
+
+decode_PostReplacementContinuation :: proc(v: json.Value, out: ^PostReplacementContinuation) -> bool {
+	if v.kind != .Object do return fail("PostReplacementContinuation: not an object")
+	tv, found := json.get(v, "kind")
+	if !found || tv.kind != .String do return fail("PostReplacementContinuation: no tag")
+	switch tv.text {
+	case "Template": tmp: PostReplacementContinuation_Template; if !dec_ptr_AbilityDefinition(json.get_or_null(v, "ability"), &tmp._0) do return fail("PostReplacementContinuation::Template"); out^ = tmp
+	case "Resolved": tmp: PostReplacementContinuation_Resolved; if !dec_ptr_ResolvedAbility(json.get_or_null(v, "ability"), &tmp._0) do return fail("PostReplacementContinuation::Resolved"); out^ = tmp
+	case: return fail("PostReplacementContinuation: unknown variant")
+	}
+	return true
+}
+
+encode_PostReplacementContinuation :: proc(b: ^strings.Builder, x: PostReplacementContinuation) {
+	#partial switch y in x {
+	case PostReplacementContinuation_Template: strings.write_byte(b, '{'); f := true; member(b, &f, "kind"); json.write_string(b, "Template"); member(b, &f, "ability"); enc_ptr_AbilityDefinition(b, y._0); strings.write_byte(b, '}')
+	case PostReplacementContinuation_Resolved: strings.write_byte(b, '{'); f := true; member(b, &f, "kind"); json.write_string(b, "Resolved"); member(b, &f, "ability"); enc_ptr_ResolvedAbility(b, y._0); strings.write_byte(b, '}')
+	}
+}
+
+decode_SimultaneousUnlessAnswer :: proc(v: json.Value, out: ^SimultaneousUnlessAnswer) -> bool {
+	if v.kind != .Object do return fail("SimultaneousUnlessAnswer: not an object")
+	tv, found := json.get(v, "type")
+	if !found || tv.kind != .String do return fail("SimultaneousUnlessAnswer: no tag")
+	switch tv.text {
+	case "Declined": out^ = SimultaneousUnlessAnswer_Declined{}
+	case "Sacrifice":
+		tmp: SimultaneousUnlessAnswer_Sacrifice
+		if !decode_variant(v, &tmp, proc(v: json.Value, out: ^SimultaneousUnlessAnswer_Sacrifice) -> bool {
+	if fv, found := get_any(v, "permanent"); found { if !decode_ObjectIncarnationRef(fv, &out.permanent) do return fail("SimultaneousUnlessAnswer::Sacrifice.permanent") } else { return fail("SimultaneousUnlessAnswer::Sacrifice.permanent missing") }
+	return true
+		}) { return fail("SimultaneousUnlessAnswer::Sacrifice") }
+		out^ = tmp
+	case "Discard": out^ = SimultaneousUnlessAnswer_Discard{}
+	case: return fail("SimultaneousUnlessAnswer: unknown variant")
+	}
+	return true
+}
+
+encode_SimultaneousUnlessAnswer :: proc(b: ^strings.Builder, x: SimultaneousUnlessAnswer) {
+	#partial switch y in x {
+	case SimultaneousUnlessAnswer_Declined: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Declined"); strings.write_byte(b, '}')
+	case SimultaneousUnlessAnswer_Sacrifice: strings.write_byte(b, '{'); { fst := true; first := &fst; member(b, first, "type"); json.write_string(b, "Sacrifice")
+	member(b, first, "permanent"); encode_ObjectIncarnationRef(b, y.permanent)
+	}; strings.write_byte(b, '}')
+	case SimultaneousUnlessAnswer_Discard: _ = y; strings.write_byte(b, '{'); f := true; member(b, &f, "type"); json.write_string(b, "Discard"); strings.write_byte(b, '}')
+	}
+}
+
+encode_SimultaneousUnlessAnswer_members :: proc(b: ^strings.Builder, x: SimultaneousUnlessAnswer, first: ^bool) {
+	#partial switch y in x {
+	case SimultaneousUnlessAnswer_Declined: _ = y; member(b, first, "type"); json.write_string(b, "Declined")
+	case SimultaneousUnlessAnswer_Sacrifice: member(b, first, "type"); json.write_string(b, "Sacrifice")
+	member(b, first, "permanent"); encode_ObjectIncarnationRef(b, y.permanent)
+
+	case SimultaneousUnlessAnswer_Discard: _ = y; member(b, first, "type"); json.write_string(b, "Discard")
+	}
+}
+
+decode_CombatParticipation :: proc(v: json.Value, out: ^CombatParticipation) -> bool {
+	if v.kind != .Object do return fail("CombatParticipation: not an object")
+	if fv, found := get_any(v, "attacking"); found { if !dec_opt_AttackerInfo(fv, &out.attacking) do return fail("CombatParticipation.attacking") }
+	if fv, found := get_any(v, "blocking"); found { if !decode_with_blocking_wire(fv, &out.blocking) do return fail("CombatParticipation.blocking") }
+	if fv, found := get_any(v, "blocked_by"); found { if !dec_dyn_ObjectId(fv, &out.blocked_by) do return fail("CombatParticipation.blocked_by") } else { return fail("CombatParticipation.blocked_by missing") }
+	if fv, found := get_any(v, "damage_assignments"); found { if !dec_dyn_DamageAssignment(fv, &out.damage_assignments) do return fail("CombatParticipation.damage_assignments") } else { return fail("CombatParticipation.damage_assignments missing") }
+	if fv, found := get_any(v, "attacked_by"); found { if !dec_dyn_ObjectId(fv, &out.attacked_by) do return fail("CombatParticipation.attacked_by") }
+	if fv, found := get_any(v, "outgoing_attack_target_identity"); found { if !decode_with_outgoing_attack_wire(fv, &out.outgoing_attack_target_identity) do return fail("CombatParticipation.outgoing_attack_target_identity") }
+	return true
+}
+
+encode_CombatParticipation :: proc(b: ^strings.Builder, x: CombatParticipation) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_CombatParticipation_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_CombatParticipation_members :: proc(b: ^strings.Builder, x: CombatParticipation, first: ^bool) {
+	member(b, first, "attacking"); enc_opt_AttackerInfo(b, x.attacking)
+	member(b, first, "blocking"); encode_with_blocking_wire(b, x.blocking)
+	member(b, first, "blocked_by"); enc_dyn_ObjectId(b, x.blocked_by)
+	member(b, first, "damage_assignments"); enc_dyn_DamageAssignment(b, x.damage_assignments)
+	member(b, first, "attacked_by"); enc_dyn_ObjectId(b, x.attacked_by)
+	if !(x.outgoing_attack_target_identity == nil) { member(b, first, "outgoing_attack_target_identity"); encode_with_outgoing_attack_wire(b, x.outgoing_attack_target_identity) }
+}
+
+decode_ResolvedCopyBodyModifications :: proc(v: json.Value, out: ^ResolvedCopyBodyModifications) -> bool {
+	variant: string
+	body: json.Value
+	#partial switch v.kind {
+	case .String: variant = v.text
+	case .Object:
+		if len(v.members) != 1 do return fail("ResolvedCopyBodyModifications: externally tagged object needs one key")
+		variant, body = v.members[0].key, v.members[0].value
+	case: return fail("ResolvedCopyBodyModifications: not a string or object")
+	}
+	switch variant {
+	case "NoExceptions": out^ = ResolvedCopyBodyModifications_NoExceptions{}
+	case "Folded":
+		tmp: ResolvedCopyBodyModifications_Folded
+		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ResolvedCopyBodyModifications_Folded) -> bool {
+	if fv, found := get_any(v, "modifications"); found { if !dec_dyn_ContinuousModification(fv, &out.modifications) do return fail("ResolvedCopyBodyModifications::Folded.modifications") } else { return fail("ResolvedCopyBodyModifications::Folded.modifications missing") }
+	if fv, found := get_any(v, "all_creature_types"); found { if !dec_dyn_string(fv, &out.all_creature_types) do return fail("ResolvedCopyBodyModifications::Folded.all_creature_types") } else { return fail("ResolvedCopyBodyModifications::Folded.all_creature_types missing") }
+	return true
+		}) { return fail("ResolvedCopyBodyModifications::Folded") }
+		out^ = tmp
+	case "DeferredToUnjournaledSeam":
+		tmp: ResolvedCopyBodyModifications_DeferredToUnjournaledSeam
+		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ResolvedCopyBodyModifications_DeferredToUnjournaledSeam) -> bool {
+	if fv, found := get_any(v, "modifications"); found { if !dec_dyn_ContinuousModification(fv, &out.modifications) do return fail("ResolvedCopyBodyModifications::DeferredToUnjournaledSeam.modifications") } else { return fail("ResolvedCopyBodyModifications::DeferredToUnjournaledSeam.modifications missing") }
+	return true
+		}) { return fail("ResolvedCopyBodyModifications::DeferredToUnjournaledSeam") }
+		out^ = tmp
+	case: return fail("ResolvedCopyBodyModifications: unknown variant")
+	}
+	return true
+}
+
+encode_ResolvedCopyBodyModifications :: proc(b: ^strings.Builder, x: ResolvedCopyBodyModifications) {
+	#partial switch y in x {
+	case ResolvedCopyBodyModifications_NoExceptions: _ = y; json.write_string(b, "NoExceptions")
+	case ResolvedCopyBodyModifications_Folded: strings.write_byte(b, '{'); json.write_string(b, "Folded"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "modifications"); enc_dyn_ContinuousModification(b, y.modifications)
+	member(b, first, "all_creature_types"); enc_dyn_string(b, y.all_creature_types)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	case ResolvedCopyBodyModifications_DeferredToUnjournaledSeam: strings.write_byte(b, '{'); json.write_string(b, "DeferredToUnjournaledSeam"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "modifications"); enc_dyn_ContinuousModification(b, y.modifications)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	}
+}
+
+decode_ResolvedTriggerLedgerEdit :: proc(v: json.Value, out: ^ResolvedTriggerLedgerEdit) -> bool {
+	variant: string
+	body: json.Value
+	#partial switch v.kind {
+	case .String: variant = v.text
+	case .Object:
+		if len(v.members) != 1 do return fail("ResolvedTriggerLedgerEdit: externally tagged object needs one key")
+		variant, body = v.members[0].key, v.members[0].value
+	case: return fail("ResolvedTriggerLedgerEdit: not a string or object")
+	}
+	switch variant {
+	case "OncePerTurn": out^ = ResolvedTriggerLedgerEdit_OncePerTurn{}
+	case "OncePerGame": out^ = ResolvedTriggerLedgerEdit_OncePerGame{}
+	case "OncePerOpponentPerTurn":
+		tmp: ResolvedTriggerLedgerEdit_OncePerOpponentPerTurn
+		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ResolvedTriggerLedgerEdit_OncePerOpponentPerTurn) -> bool {
+	if fv, found := get_any(v, "opponent"); found { if !decode_PlayerId(fv, &out.opponent) do return fail("ResolvedTriggerLedgerEdit::OncePerOpponentPerTurn.opponent") } else { return fail("ResolvedTriggerLedgerEdit::OncePerOpponentPerTurn.opponent missing") }
+	return true
+		}) { return fail("ResolvedTriggerLedgerEdit::OncePerOpponentPerTurn") }
+		out^ = tmp
+	case "MaxTimesPerTurn":
+		tmp: ResolvedTriggerLedgerEdit_MaxTimesPerTurn
+		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ResolvedTriggerLedgerEdit_MaxTimesPerTurn) -> bool {
+	if fv, found := get_any(v, "expected_old"); found { if !decode_u32(fv, &out.expected_old) do return fail("ResolvedTriggerLedgerEdit::MaxTimesPerTurn.expected_old") } else { return fail("ResolvedTriggerLedgerEdit::MaxTimesPerTurn.expected_old missing") }
+	return true
+		}) { return fail("ResolvedTriggerLedgerEdit::MaxTimesPerTurn") }
+		out^ = tmp
+	case "IndicatedActionTaken":
+		tmp: ResolvedTriggerLedgerEdit_IndicatedActionTaken
+		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ResolvedTriggerLedgerEdit_IndicatedActionTaken) -> bool {
+	if fv, found := get_any(v, "player"); found { if !decode_PlayerId(fv, &out.player) do return fail("ResolvedTriggerLedgerEdit::IndicatedActionTaken.player") } else { return fail("ResolvedTriggerLedgerEdit::IndicatedActionTaken.player missing") }
+	return true
+		}) { return fail("ResolvedTriggerLedgerEdit::IndicatedActionTaken") }
+		out^ = tmp
+	case: return fail("ResolvedTriggerLedgerEdit: unknown variant")
+	}
+	return true
+}
+
+encode_ResolvedTriggerLedgerEdit :: proc(b: ^strings.Builder, x: ResolvedTriggerLedgerEdit) {
+	#partial switch y in x {
+	case ResolvedTriggerLedgerEdit_OncePerTurn: _ = y; json.write_string(b, "OncePerTurn")
+	case ResolvedTriggerLedgerEdit_OncePerGame: _ = y; json.write_string(b, "OncePerGame")
+	case ResolvedTriggerLedgerEdit_OncePerOpponentPerTurn: strings.write_byte(b, '{'); json.write_string(b, "OncePerOpponentPerTurn"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "opponent"); encode_PlayerId(b, y.opponent)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	case ResolvedTriggerLedgerEdit_MaxTimesPerTurn: strings.write_byte(b, '{'); json.write_string(b, "MaxTimesPerTurn"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "expected_old"); encode_u32(b, y.expected_old)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	case ResolvedTriggerLedgerEdit_IndicatedActionTaken: strings.write_byte(b, '{'); json.write_string(b, "IndicatedActionTaken"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "player"); encode_PlayerId(b, y.player)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	}
+}
+
+decode_ResolvedOncePerTurnPermission :: proc(v: json.Value, out: ^ResolvedOncePerTurnPermission) -> bool {
+	variant: string
+	body: json.Value
+	#partial switch v.kind {
+	case .String: variant = v.text
+	case .Object:
+		if len(v.members) != 1 do return fail("ResolvedOncePerTurnPermission: externally tagged object needs one key")
+		variant, body = v.members[0].key, v.members[0].value
+	case: return fail("ResolvedOncePerTurnPermission: not a string or object")
+	}
+	switch variant {
+	case "GraveyardCast": out^ = ResolvedOncePerTurnPermission_GraveyardCast{}
+	case "GraveyardCastPermanentType":
+		tmp: ResolvedOncePerTurnPermission_GraveyardCastPermanentType
+		if !decode_variant(body, &tmp, proc(v: json.Value, out: ^ResolvedOncePerTurnPermission_GraveyardCastPermanentType) -> bool {
+	if fv, found := get_any(v, "permanent_type"); found { if !decode_CoreType(fv, &out.permanent_type) do return fail("ResolvedOncePerTurnPermission::GraveyardCastPermanentType.permanent_type") } else { return fail("ResolvedOncePerTurnPermission::GraveyardCastPermanentType.permanent_type missing") }
+	return true
+		}) { return fail("ResolvedOncePerTurnPermission::GraveyardCastPermanentType") }
+		out^ = tmp
+	case "HandCastFree": out^ = ResolvedOncePerTurnPermission_HandCastFree{}
+	case "AlternativeCostGrant": out^ = ResolvedOncePerTurnPermission_AlternativeCostGrant{}
+	case "ExilePlay": out^ = ResolvedOncePerTurnPermission_ExilePlay{}
+	case "ExileCast": out^ = ResolvedOncePerTurnPermission_ExileCast{}
+	case "TopOfLibraryCast": out^ = ResolvedOncePerTurnPermission_TopOfLibraryCast{}
+	case: return fail("ResolvedOncePerTurnPermission: unknown variant")
+	}
+	return true
+}
+
+encode_ResolvedOncePerTurnPermission :: proc(b: ^strings.Builder, x: ResolvedOncePerTurnPermission) {
+	#partial switch y in x {
+	case ResolvedOncePerTurnPermission_GraveyardCast: _ = y; json.write_string(b, "GraveyardCast")
+	case ResolvedOncePerTurnPermission_GraveyardCastPermanentType: strings.write_byte(b, '{'); json.write_string(b, "GraveyardCastPermanentType"); strings.write_byte(b, ':'); strings.write_byte(b, '{'); { fst := true; first := &fst
+	member(b, first, "permanent_type"); encode_CoreType(b, y.permanent_type)
+	}; strings.write_byte(b, '}'); strings.write_byte(b, '}')
+	case ResolvedOncePerTurnPermission_HandCastFree: _ = y; json.write_string(b, "HandCastFree")
+	case ResolvedOncePerTurnPermission_AlternativeCostGrant: _ = y; json.write_string(b, "AlternativeCostGrant")
+	case ResolvedOncePerTurnPermission_ExilePlay: _ = y; json.write_string(b, "ExilePlay")
+	case ResolvedOncePerTurnPermission_ExileCast: _ = y; json.write_string(b, "ExileCast")
+	case ResolvedOncePerTurnPermission_TopOfLibraryCast: _ = y; json.write_string(b, "TopOfLibraryCast")
+	}
+}
+
+decode_FrameKind :: proc(v: json.Value, out: ^FrameKind) -> bool {
+	if v.kind != .String do return fail("FrameKind: not a string")
+	str := v.text
+	switch str {
+	case "AbilityContinuation": out^ = .AbilityContinuation
+	case "RepeatFor": out^ = .RepeatFor
+	case "RepeatUntil": out^ = .RepeatUntil
+	case "RepeatedOptionalPayment": out^ = .RepeatedOptionalPayment
+	case "ChangeZone": out^ = .ChangeZone
+	case "BatchDelivery": out^ = .BatchDelivery
+	case "CounterMoves": out^ = .CounterMoves
+	case "CounterRemovals": out^ = .CounterRemovals
+	case "CounterAdditions": out^ = .CounterAdditions
+	case "CopyToken": out^ = .CopyToken
+	case "DebugCardEntries": out^ = .DebugCardEntries
+	case "EachPlayerCopyChosen": out^ = .EachPlayerCopyChosen
+	case "ChooseOneOf": out^ = .ChooseOneOf
+	case "VoteBallot": out^ = .VoteBallot
+	case "PerPlayerZoneChoice": out^ = .PerPlayerZoneChoice
+	case "PerCategoryZoneChoice": out^ = .PerCategoryZoneChoice
+	case "OptionalEffect": out^ = .OptionalEffect
+	case "CoinFlip": out^ = .CoinFlip
+	case "DieRoll": out^ = .DieRoll
+	case "Proliferate": out^ = .Proliferate
+	case "MultiDraw": out^ = .MultiDraw
+	case "Discard": out^ = .Discard
+	case "ConniveReentry": out^ = .ConniveReentry
+	case "LifeTotalAssignment": out^ = .LifeTotalAssignment
+	case "SpellResolution": out^ = .SpellResolution
+	case "MutateMerge": out^ = .MutateMerge
+	case "CipherEncode": out^ = .CipherEncode
+	case "EntryAttackSeat": out^ = .EntryAttackSeat
+	case "PostReplacement": out^ = .PostReplacement
+	case: return fail("FrameKind: unknown variant")
+	}
+	return true
+}
+
+encode_FrameKind :: proc(b: ^strings.Builder, x: FrameKind) {
+	@(static, rodata) NAMES := [FrameKind]string{
+		.AbilityContinuation = "AbilityContinuation",
+		.RepeatFor = "RepeatFor",
+		.RepeatUntil = "RepeatUntil",
+		.RepeatedOptionalPayment = "RepeatedOptionalPayment",
+		.ChangeZone = "ChangeZone",
+		.BatchDelivery = "BatchDelivery",
+		.CounterMoves = "CounterMoves",
+		.CounterRemovals = "CounterRemovals",
+		.CounterAdditions = "CounterAdditions",
+		.CopyToken = "CopyToken",
+		.DebugCardEntries = "DebugCardEntries",
+		.EachPlayerCopyChosen = "EachPlayerCopyChosen",
+		.ChooseOneOf = "ChooseOneOf",
+		.VoteBallot = "VoteBallot",
+		.PerPlayerZoneChoice = "PerPlayerZoneChoice",
+		.PerCategoryZoneChoice = "PerCategoryZoneChoice",
+		.OptionalEffect = "OptionalEffect",
+		.CoinFlip = "CoinFlip",
+		.DieRoll = "DieRoll",
+		.Proliferate = "Proliferate",
+		.MultiDraw = "MultiDraw",
+		.Discard = "Discard",
+		.ConniveReentry = "ConniveReentry",
+		.LifeTotalAssignment = "LifeTotalAssignment",
+		.SpellResolution = "SpellResolution",
+		.MutateMerge = "MutateMerge",
+		.CipherEncode = "CipherEncode",
+		.EntryAttackSeat = "EntryAttackSeat",
+		.PostReplacement = "PostReplacement",
+	}
+	json.write_string(b, NAMES[x])
+}
+
 decode_RepeatIterationMovement :: proc(v: json.Value, out: ^RepeatIterationMovement) -> bool {
 	if v.kind != .String do return fail("RepeatIterationMovement: not a string")
 	str := v.text
@@ -61055,6 +61011,50 @@ encode_DrawDealer :: proc(b: ^strings.Builder, x: DrawDealer) {
 encode_DrawDealer_members :: proc(b: ^strings.Builder, x: DrawDealer, first: ^bool) {
 	member(b, first, "stage"); encode_DrawDealerStage(b, x.stage)
 	member(b, first, "seats"); enc_dyn_DrawDealerSeat(b, x.seats)
+}
+
+decode_AnnouncementSubject :: proc(v: json.Value, out: ^AnnouncementSubject) -> bool {
+	variant: string
+	body: json.Value
+	#partial switch v.kind {
+	case .String: variant = v.text
+	case .Object:
+		if len(v.members) != 1 do return fail("AnnouncementSubject: externally tagged object needs one key")
+		variant, body = v.members[0].key, v.members[0].value
+	case: return fail("AnnouncementSubject: not a string or object")
+	}
+	switch variant {
+	case "Object": tmp: AnnouncementSubject_Object; if !decode_YieldTarget(body, &tmp._0) do return fail("AnnouncementSubject::Object"); out^ = tmp
+	case "Seat": tmp: AnnouncementSubject_Seat; if !decode_PlayerId(body, &tmp._0) do return fail("AnnouncementSubject::Seat"); out^ = tmp
+	case: return fail("AnnouncementSubject: unknown variant")
+	}
+	return true
+}
+
+encode_AnnouncementSubject :: proc(b: ^strings.Builder, x: AnnouncementSubject) {
+	#partial switch y in x {
+	case AnnouncementSubject_Object: strings.write_byte(b, '{'); json.write_string(b, "Object"); strings.write_byte(b, ':'); encode_YieldTarget(b, y._0); strings.write_byte(b, '}')
+	case AnnouncementSubject_Seat: strings.write_byte(b, '{'); json.write_string(b, "Seat"); strings.write_byte(b, ':'); encode_PlayerId(b, y._0); strings.write_byte(b, '}')
+	}
+}
+
+decode_ComboWindow :: proc(v: json.Value, out: ^ComboWindow) -> bool {
+	if v.kind != .String do return fail("ComboWindow: not a string")
+	str := v.text
+	switch str {
+	case "early_game": out^ = .EarlyGame
+	case "late_game": out^ = .LateGame
+	case: return fail("ComboWindow: unknown variant")
+	}
+	return true
+}
+
+encode_ComboWindow :: proc(b: ^strings.Builder, x: ComboWindow) {
+	@(static, rodata) NAMES := [ComboWindow]string{
+		.EarlyGame = "early_game",
+		.LateGame = "late_game",
+	}
+	json.write_string(b, NAMES[x])
 }
 
 decode_TriggerObservationTime :: proc(v: json.Value, out: ^TriggerObservationTime) -> bool {
@@ -64030,7 +64030,7 @@ enc_dyn_t2_TriggerDefinitionRef_PlayerId :: proc(b: ^strings.Builder, x: [dynami
 }
 
 enc_ptr_dyn_t2_TriggerDefinitionRef_PlayerId :: proc(b: ^strings.Builder, x: ^[dynamic]Tuple2(TriggerDefinitionRef, PlayerId)) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: [dynamic]Tuple2(TriggerDefinitionRef, PlayerId); enc_dyn_t2_TriggerDefinitionRef_PlayerId(b, zero) }
 	else do enc_dyn_t2_TriggerDefinitionRef_PlayerId(b, x^)
 }
 
@@ -64097,7 +64097,7 @@ enc_map_PlayerId_dyn_AbilityActivationRecord :: proc(b: ^strings.Builder, x: map
 }
 
 enc_ptr_map_PlayerId_dyn_AbilityActivationRecord :: proc(b: ^strings.Builder, x: ^map[PlayerId][dynamic]AbilityActivationRecord) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: map[PlayerId][dynamic]AbilityActivationRecord; enc_map_PlayerId_dyn_AbilityActivationRecord(b, zero) }
 	else do enc_map_PlayerId_dyn_AbilityActivationRecord(b, x^)
 }
 
@@ -64247,7 +64247,7 @@ enc_map_PlayerId_dyn_PlayerId :: proc(b: ^strings.Builder, x: map[PlayerId][dyna
 }
 
 enc_ptr_map_PlayerId_dyn_PlayerId :: proc(b: ^strings.Builder, x: ^map[PlayerId][dynamic]PlayerId) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: map[PlayerId][dynamic]PlayerId; enc_map_PlayerId_dyn_PlayerId(b, zero) }
 	else do enc_map_PlayerId_dyn_PlayerId(b, x^)
 }
 
@@ -64418,7 +64418,7 @@ enc_dyn_t2_ObjectIncarnationRef_int :: proc(b: ^strings.Builder, x: [dynamic]Tup
 }
 
 enc_ptr_dyn_ObjectId :: proc(b: ^strings.Builder, x: ^[dynamic]ObjectId) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: [dynamic]ObjectId; enc_dyn_ObjectId(b, zero) }
 	else do enc_dyn_ObjectId(b, x^)
 }
 
@@ -64436,7 +64436,7 @@ enc_map_ObjectId_dyn_ObjectIncarnationRef :: proc(b: ^strings.Builder, x: map[Ob
 }
 
 enc_ptr_map_ObjectId_dyn_ObjectIncarnationRef :: proc(b: ^strings.Builder, x: ^map[ObjectId][dynamic]ObjectIncarnationRef) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: map[ObjectId][dynamic]ObjectIncarnationRef; enc_map_ObjectId_dyn_ObjectIncarnationRef(b, zero) }
 	else do enc_map_ObjectId_dyn_ObjectIncarnationRef(b, x^)
 }
 
@@ -64711,7 +64711,7 @@ enc_opt_ClauseMinimumSnapshot :: proc(b: ^strings.Builder, x: Maybe(ClauseMinimu
 }
 
 enc_ptr_dyn_PlayerId :: proc(b: ^strings.Builder, x: ^[dynamic]PlayerId) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: [dynamic]PlayerId; enc_dyn_PlayerId(b, zero) }
 	else do enc_dyn_PlayerId(b, x^)
 }
 
@@ -64734,7 +64734,7 @@ enc_dyn_ResolvedAbility :: proc(b: ^strings.Builder, x: [dynamic]ResolvedAbility
 }
 
 enc_ptr_dyn_ResolvedAbility :: proc(b: ^strings.Builder, x: ^[dynamic]ResolvedAbility) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: [dynamic]ResolvedAbility; enc_dyn_ResolvedAbility(b, zero) }
 	else do enc_dyn_ResolvedAbility(b, x^)
 }
 
@@ -68492,7 +68492,7 @@ enc_dyn_DeckEntry :: proc(b: ^strings.Builder, x: [dynamic]DeckEntry) {
 }
 
 enc_ptr_dyn_DeckEntry :: proc(b: ^strings.Builder, x: ^[dynamic]DeckEntry) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: [dynamic]DeckEntry; enc_dyn_DeckEntry(b, zero) }
 	else do enc_dyn_DeckEntry(b, x^)
 }
 
@@ -69097,7 +69097,7 @@ enc_dyn_TriggerSourceContext :: proc(b: ^strings.Builder, x: [dynamic]TriggerSou
 }
 
 enc_ptr_dyn_TriggerSourceContext :: proc(b: ^strings.Builder, x: ^[dynamic]TriggerSourceContext) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: [dynamic]TriggerSourceContext; enc_dyn_TriggerSourceContext(b, zero) }
 	else do enc_dyn_TriggerSourceContext(b, x^)
 }
 
@@ -69111,7 +69111,7 @@ enc_dyn_LatchedTriggerDoubler :: proc(b: ^strings.Builder, x: [dynamic]LatchedTr
 }
 
 enc_ptr_dyn_LatchedTriggerDoubler :: proc(b: ^strings.Builder, x: ^[dynamic]LatchedTriggerDoubler) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: [dynamic]LatchedTriggerDoubler; enc_dyn_LatchedTriggerDoubler(b, zero) }
 	else do enc_dyn_LatchedTriggerDoubler(b, x^)
 }
 
@@ -69869,12 +69869,12 @@ enc_opt_PrintedLoyalty :: proc(b: ^strings.Builder, x: Maybe(PrintedLoyalty)) {
 }
 
 enc_ptr_dyn_AbilityDefinition :: proc(b: ^strings.Builder, x: ^[dynamic]AbilityDefinition) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: [dynamic]AbilityDefinition; enc_dyn_AbilityDefinition(b, zero) }
 	else do enc_dyn_AbilityDefinition(b, x^)
 }
 
 enc_ptr_dyn_TriggerDefinition :: proc(b: ^strings.Builder, x: ^[dynamic]TriggerDefinition) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: [dynamic]TriggerDefinition; enc_dyn_TriggerDefinition(b, zero) }
 	else do enc_dyn_TriggerDefinition(b, x^)
 }
 
@@ -69893,17 +69893,17 @@ enc_dyn_opt_TriggerPrintedOrigin :: proc(b: ^strings.Builder, x: [dynamic]Maybe(
 }
 
 enc_ptr_dyn_opt_TriggerPrintedOrigin :: proc(b: ^strings.Builder, x: ^[dynamic]Maybe(TriggerPrintedOrigin)) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: [dynamic]Maybe(TriggerPrintedOrigin); enc_dyn_opt_TriggerPrintedOrigin(b, zero) }
 	else do enc_dyn_opt_TriggerPrintedOrigin(b, x^)
 }
 
 enc_ptr_dyn_ReplacementDefinition :: proc(b: ^strings.Builder, x: ^[dynamic]ReplacementDefinition) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: [dynamic]ReplacementDefinition; enc_dyn_ReplacementDefinition(b, zero) }
 	else do enc_dyn_ReplacementDefinition(b, x^)
 }
 
 enc_ptr_dyn_StaticDefinition :: proc(b: ^strings.Builder, x: ^[dynamic]StaticDefinition) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: [dynamic]StaticDefinition; enc_dyn_StaticDefinition(b, zero) }
 	else do enc_dyn_StaticDefinition(b, x^)
 }
 
@@ -70480,6 +70480,87 @@ enc_dyn_ManaSpentSourceSnapshot :: proc(b: ^strings.Builder, x: [dynamic]ManaSpe
 		encode_ManaSpentSourceSnapshot(b, item)
 	}
 	strings.write_byte(b, ']')
+}
+
+dec_dyn_ResolutionFrame :: proc(v: json.Value, out: ^[dynamic]ResolutionFrame) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]ResolutionFrame, len(v.items))
+	for item, i in v.items do if !decode_ResolutionFrame(item, &out[i]) do return false
+	return true
+}
+
+enc_dyn_ResolutionFrame :: proc(b: ^strings.Builder, x: [dynamic]ResolutionFrame) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		encode_ResolutionFrame(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+dec_ptr_ChangeZoneFrame :: proc(v: json.Value, out: ^^ChangeZoneFrame) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	p := new(ChangeZoneFrame)
+	if !decode_ChangeZoneFrame(v, p) do return false
+	out^ = p
+	return true
+}
+
+enc_ptr_ChangeZoneFrame :: proc(b: ^strings.Builder, x: ^ChangeZoneFrame) {
+	if x == nil do strings.write_string(b, "null")
+	else do encode_ChangeZoneFrame(b, x^)
+}
+
+dec_ptr_PendingBatchDeliveries :: proc(v: json.Value, out: ^^PendingBatchDeliveries) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	p := new(PendingBatchDeliveries)
+	if !decode_PendingBatchDeliveries(v, p) do return false
+	out^ = p
+	return true
+}
+
+enc_ptr_PendingBatchDeliveries :: proc(b: ^strings.Builder, x: ^PendingBatchDeliveries) {
+	if x == nil do strings.write_string(b, "null")
+	else do encode_PendingBatchDeliveries(b, x^)
+}
+
+dec_ptr_PendingDebugCardEntries :: proc(v: json.Value, out: ^^PendingDebugCardEntries) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	p := new(PendingDebugCardEntries)
+	if !decode_PendingDebugCardEntries(v, p) do return false
+	out^ = p
+	return true
+}
+
+enc_ptr_PendingDebugCardEntries :: proc(b: ^strings.Builder, x: ^PendingDebugCardEntries) {
+	if x == nil do strings.write_string(b, "null")
+	else do encode_PendingDebugCardEntries(b, x^)
+}
+
+dec_ptr_PendingDieRoll :: proc(v: json.Value, out: ^^PendingDieRoll) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	p := new(PendingDieRoll)
+	if !decode_PendingDieRoll(v, p) do return false
+	out^ = p
+	return true
+}
+
+enc_ptr_PendingDieRoll :: proc(b: ^strings.Builder, x: ^PendingDieRoll) {
+	if x == nil do strings.write_string(b, "null")
+	else do encode_PendingDieRoll(b, x^)
+}
+
+dec_ptr_DiscardFrame :: proc(v: json.Value, out: ^^DiscardFrame) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	p := new(DiscardFrame)
+	if !decode_DiscardFrame(v, p) do return false
+	out^ = p
+	return true
+}
+
+enc_ptr_DiscardFrame :: proc(b: ^strings.Builder, x: ^DiscardFrame) {
+	if x == nil do strings.write_string(b, "null")
+	else do encode_DiscardFrame(b, x^)
 }
 
 dec_opt_dyn_ManaType :: proc(v: json.Value, out: ^Maybe([dynamic]ManaType)) -> bool {
@@ -73029,22 +73110,6 @@ enc_opt_LibraryKnowledgeStamp :: proc(b: ^strings.Builder, x: Maybe(LibraryKnowl
 	else do strings.write_string(b, "null")
 }
 
-dec_dyn_ResolutionFrame :: proc(v: json.Value, out: ^[dynamic]ResolutionFrame) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]ResolutionFrame, len(v.items))
-	for item, i in v.items do if !decode_ResolutionFrame(item, &out[i]) do return false
-	return true
-}
-
-enc_dyn_ResolutionFrame :: proc(b: ^strings.Builder, x: [dynamic]ResolutionFrame) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		encode_ResolutionFrame(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
 dec_dyn_GameLogEntry :: proc(v: json.Value, out: ^[dynamic]GameLogEntry) -> bool {
 	if v.kind != .Array do return fail("expected an array")
 	out^ = make([dynamic]GameLogEntry, len(v.items))
@@ -74168,6 +74233,336 @@ enc_ptr_CardPrinting :: proc(b: ^strings.Builder, x: ^CardPrinting) {
 	else do encode_CardPrinting(b, x^)
 }
 
+dec_opt_RepeatUntilStopWitness :: proc(v: json.Value, out: ^Maybe(RepeatUntilStopWitness)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: RepeatUntilStopWitness
+	if !decode_RepeatUntilStopWitness(v, &x) do return false
+	out^ = x
+	return true
+}
+
+dec_opt_RepeatUntilIterationWitness :: proc(v: json.Value, out: ^Maybe(RepeatUntilIterationWitness)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: RepeatUntilIterationWitness
+	if !decode_RepeatUntilIterationWitness(v, &x) do return false
+	out^ = x
+	return true
+}
+
+enc_opt_RepeatUntilStopWitness :: proc(b: ^strings.Builder, x: Maybe(RepeatUntilStopWitness)) {
+	if y, ok := x.?; ok do encode_RepeatUntilStopWitness(b, y)
+	else do strings.write_string(b, "null")
+}
+
+enc_opt_RepeatUntilIterationWitness :: proc(b: ^strings.Builder, x: Maybe(RepeatUntilIterationWitness)) {
+	if y, ok := x.?; ok do encode_RepeatUntilIterationWitness(b, y)
+	else do strings.write_string(b, "null")
+}
+
+dec_ptr_PendingRepeatedOptionalPayment :: proc(v: json.Value, out: ^^PendingRepeatedOptionalPayment) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	p := new(PendingRepeatedOptionalPayment)
+	if !decode_PendingRepeatedOptionalPayment(v, p) do return false
+	out^ = p
+	return true
+}
+
+enc_ptr_PendingRepeatedOptionalPayment :: proc(b: ^strings.Builder, x: ^PendingRepeatedOptionalPayment) {
+	if x == nil do strings.write_string(b, "null")
+	else do encode_PendingRepeatedOptionalPayment(b, x^)
+}
+
+dec_opt_PendingChangeZoneIteration :: proc(v: json.Value, out: ^Maybe(PendingChangeZoneIteration)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: PendingChangeZoneIteration
+	if !decode_PendingChangeZoneIteration(v, &x) do return false
+	out^ = x
+	return true
+}
+
+dec_opt_ChangeZoneBatchMarker :: proc(v: json.Value, out: ^Maybe(ChangeZoneBatchMarker)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: ChangeZoneBatchMarker
+	if !decode_ChangeZoneBatchMarker(v, &x) do return false
+	out^ = x
+	return true
+}
+
+enc_opt_PendingChangeZoneIteration :: proc(b: ^strings.Builder, x: Maybe(PendingChangeZoneIteration)) {
+	if y, ok := x.?; ok do encode_PendingChangeZoneIteration(b, y)
+	else do strings.write_string(b, "null")
+}
+
+enc_opt_ChangeZoneBatchMarker :: proc(b: ^strings.Builder, x: Maybe(ChangeZoneBatchMarker)) {
+	if y, ok := x.?; ok do encode_ChangeZoneBatchMarker(b, y)
+	else do strings.write_string(b, "null")
+}
+
+dec_opt_PendingComponentDeliveryParent :: proc(v: json.Value, out: ^Maybe(PendingComponentDeliveryParent)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: PendingComponentDeliveryParent
+	if !decode_PendingComponentDeliveryParent(v, &x) do return false
+	out^ = x
+	return true
+}
+
+dec_opt_PendingZoneChangeDelivery :: proc(v: json.Value, out: ^Maybe(PendingZoneChangeDelivery)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: PendingZoneChangeDelivery
+	if !decode_PendingZoneChangeDelivery(v, &x) do return false
+	out^ = x
+	return true
+}
+
+dec_opt_LibraryReorderOperation :: proc(v: json.Value, out: ^Maybe(LibraryReorderOperation)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: LibraryReorderOperation
+	if !decode_LibraryReorderOperation(v, &x) do return false
+	out^ = x
+	return true
+}
+
+dec_opt_BatchCompletion :: proc(v: json.Value, out: ^Maybe(BatchCompletion)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: BatchCompletion
+	if !decode_BatchCompletion(v, &x) do return false
+	out^ = x
+	return true
+}
+
+dec_dyn_PendingBatchZoneMoveRequest :: proc(v: json.Value, out: ^[dynamic]PendingBatchZoneMoveRequest) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]PendingBatchZoneMoveRequest, len(v.items))
+	for item, i in v.items do if !decode_PendingBatchZoneMoveRequest(item, &out[i]) do return false
+	return true
+}
+
+dec_opt_StagedBatchDelivery :: proc(v: json.Value, out: ^Maybe(StagedBatchDelivery)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: StagedBatchDelivery
+	if !decode_StagedBatchDelivery(v, &x) do return false
+	out^ = x
+	return true
+}
+
+enc_opt_PendingComponentDeliveryParent :: proc(b: ^strings.Builder, x: Maybe(PendingComponentDeliveryParent)) {
+	if y, ok := x.?; ok do encode_PendingComponentDeliveryParent(b, y)
+	else do strings.write_string(b, "null")
+}
+
+enc_opt_PendingZoneChangeDelivery :: proc(b: ^strings.Builder, x: Maybe(PendingZoneChangeDelivery)) {
+	if y, ok := x.?; ok do encode_PendingZoneChangeDelivery(b, y)
+	else do strings.write_string(b, "null")
+}
+
+enc_opt_LibraryReorderOperation :: proc(b: ^strings.Builder, x: Maybe(LibraryReorderOperation)) {
+	if y, ok := x.?; ok do encode_LibraryReorderOperation(b, y)
+	else do strings.write_string(b, "null")
+}
+
+enc_opt_BatchCompletion :: proc(b: ^strings.Builder, x: Maybe(BatchCompletion)) {
+	if y, ok := x.?; ok do encode_BatchCompletion(b, y)
+	else do strings.write_string(b, "null")
+}
+
+enc_dyn_PendingBatchZoneMoveRequest :: proc(b: ^strings.Builder, x: [dynamic]PendingBatchZoneMoveRequest) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		encode_PendingBatchZoneMoveRequest(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+enc_opt_StagedBatchDelivery :: proc(b: ^strings.Builder, x: Maybe(StagedBatchDelivery)) {
+	if y, ok := x.?; ok do encode_StagedBatchDelivery(b, y)
+	else do strings.write_string(b, "null")
+}
+
+dec_dyn_PendingCounterMove :: proc(v: json.Value, out: ^[dynamic]PendingCounterMove) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]PendingCounterMove, len(v.items))
+	for item, i in v.items do if !decode_PendingCounterMove(item, &out[i]) do return false
+	return true
+}
+
+enc_dyn_PendingCounterMove :: proc(b: ^strings.Builder, x: [dynamic]PendingCounterMove) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		encode_PendingCounterMove(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+dec_opt_PendingCounterRemovalInFlight :: proc(v: json.Value, out: ^Maybe(PendingCounterRemovalInFlight)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: PendingCounterRemovalInFlight
+	if !decode_PendingCounterRemovalInFlight(v, &x) do return false
+	out^ = x
+	return true
+}
+
+enc_opt_PendingCounterRemovalInFlight :: proc(b: ^strings.Builder, x: Maybe(PendingCounterRemovalInFlight)) {
+	if y, ok := x.?; ok do encode_PendingCounterRemovalInFlight(b, y)
+	else do strings.write_string(b, "null")
+}
+
+dec_dyn_PendingCounterAddition :: proc(v: json.Value, out: ^[dynamic]PendingCounterAddition) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]PendingCounterAddition, len(v.items))
+	for item, i in v.items do if !decode_PendingCounterAddition(item, &out[i]) do return false
+	return true
+}
+
+dec_opt_PendingEffectResolved :: proc(v: json.Value, out: ^Maybe(PendingEffectResolved)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: PendingEffectResolved
+	if !decode_PendingEffectResolved(v, &x) do return false
+	out^ = x
+	return true
+}
+
+enc_dyn_PendingCounterAddition :: proc(b: ^strings.Builder, x: [dynamic]PendingCounterAddition) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		encode_PendingCounterAddition(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+enc_opt_PendingEffectResolved :: proc(b: ^strings.Builder, x: Maybe(PendingEffectResolved)) {
+	if y, ok := x.?; ok do encode_PendingEffectResolved(b, y)
+	else do strings.write_string(b, "null")
+}
+
+dec_dyn_PendingCopyTokenBatch :: proc(v: json.Value, out: ^[dynamic]PendingCopyTokenBatch) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]PendingCopyTokenBatch, len(v.items))
+	for item, i in v.items do if !decode_PendingCopyTokenBatch(item, &out[i]) do return false
+	return true
+}
+
+enc_dyn_PendingCopyTokenBatch :: proc(b: ^strings.Builder, x: [dynamic]PendingCopyTokenBatch) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		encode_PendingCopyTokenBatch(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+dec_ptr_SpellContext :: proc(v: json.Value, out: ^^SpellContext) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	p := new(SpellContext)
+	if !decode_SpellContext(v, p) do return false
+	out^ = p
+	return true
+}
+
+enc_ptr_SpellContext :: proc(b: ^strings.Builder, x: ^SpellContext) {
+	if x == nil do strings.write_string(b, "null")
+	else do encode_SpellContext(b, x^)
+}
+
+dec_opt_ReplacementActionScope :: proc(v: json.Value, out: ^Maybe(ReplacementActionScope)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: ReplacementActionScope
+	if !decode_ReplacementActionScope(v, &x) do return false
+	out^ = x
+	return true
+}
+
+dec_ptr_ParkedOpponentMayPoll :: proc(v: json.Value, out: ^^ParkedOpponentMayPoll) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	p := new(ParkedOpponentMayPoll)
+	if !decode_ParkedOpponentMayPoll(v, p) do return false
+	out^ = p
+	return true
+}
+
+enc_opt_ReplacementActionScope :: proc(b: ^strings.Builder, x: Maybe(ReplacementActionScope)) {
+	if y, ok := x.?; ok do encode_ReplacementActionScope(b, y)
+	else do strings.write_string(b, "null")
+}
+
+enc_ptr_ParkedOpponentMayPoll :: proc(b: ^strings.Builder, x: ^ParkedOpponentMayPoll) {
+	if x == nil do strings.write_string(b, "null")
+	else do encode_ParkedOpponentMayPoll(b, x^)
+}
+
+dec_opt_PendingConniveReentry :: proc(v: json.Value, out: ^Maybe(PendingConniveReentry)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: PendingConniveReentry
+	if !decode_PendingConniveReentry(v, &x) do return false
+	out^ = x
+	return true
+}
+
+enc_opt_PendingConniveReentry :: proc(b: ^strings.Builder, x: Maybe(PendingConniveReentry)) {
+	if y, ok := x.?; ok do encode_PendingConniveReentry(b, y)
+	else do strings.write_string(b, "null")
+}
+
+dec_dyn_DiscardedCardResult :: proc(v: json.Value, out: ^[dynamic]DiscardedCardResult) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]DiscardedCardResult, len(v.items))
+	for item, i in v.items do if !decode_DiscardedCardResult(item, &out[i]) do return false
+	return true
+}
+
+enc_dyn_DiscardedCardResult :: proc(b: ^strings.Builder, x: [dynamic]DiscardedCardResult) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		encode_DiscardedCardResult(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+dec_opt_CastTimingPermission :: proc(v: json.Value, out: ^Maybe(CastTimingPermission)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: CastTimingPermission
+	if !decode_CastTimingPermission(v, &x) do return false
+	out^ = x
+	return true
+}
+
+enc_opt_CastTimingPermission :: proc(b: ^strings.Builder, x: Maybe(CastTimingPermission)) {
+	if y, ok := x.?; ok do encode_CastTimingPermission(b, y)
+	else do strings.write_string(b, "null")
+}
+
+dec_dyn_PostReplacementDrain :: proc(v: json.Value, out: ^[dynamic]PostReplacementDrain) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]PostReplacementDrain, len(v.items))
+	for item, i in v.items do if !decode_PostReplacementDrain(item, &out[i]) do return false
+	return true
+}
+
+dec_opt_PostReplacementFrameId :: proc(v: json.Value, out: ^Maybe(PostReplacementFrameId)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: PostReplacementFrameId
+	if !decode_PostReplacementFrameId(v, &x) do return false
+	out^ = x
+	return true
+}
+
+enc_dyn_PostReplacementDrain :: proc(b: ^strings.Builder, x: [dynamic]PostReplacementDrain) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		encode_PostReplacementDrain(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+enc_opt_PostReplacementFrameId :: proc(b: ^strings.Builder, x: Maybe(PostReplacementFrameId)) {
+	if y, ok := x.?; ok do encode_PostReplacementFrameId(b, y)
+	else do strings.write_string(b, "null")
+}
+
 dec_dyn_SpellCostCriterion :: proc(v: json.Value, out: ^[dynamic]SpellCostCriterion) -> bool {
 	if v.kind != .Array do return fail("expected an array")
 	out^ = make([dynamic]SpellCostCriterion, len(v.items))
@@ -74473,19 +74868,6 @@ enc_dyn_CostCategory :: proc(b: ^strings.Builder, x: [dynamic]CostCategory) {
 	strings.write_byte(b, ']')
 }
 
-dec_opt_CastTimingPermission :: proc(v: json.Value, out: ^Maybe(CastTimingPermission)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: CastTimingPermission
-	if !decode_CastTimingPermission(v, &x) do return false
-	out^ = x
-	return true
-}
-
-enc_opt_CastTimingPermission :: proc(b: ^strings.Builder, x: Maybe(CastTimingPermission)) {
-	if y, ok := x.?; ok do encode_CastTimingPermission(b, y)
-	else do strings.write_string(b, "null")
-}
-
 dec_opt_CastFrequency :: proc(v: json.Value, out: ^Maybe(CastFrequency)) -> bool {
 	if v.kind == .Null { out^ = nil; return true }
 	x: CastFrequency
@@ -74669,7 +75051,7 @@ dec_ptr_dyn_TriggerEntry :: proc(v: json.Value, out: ^^[dynamic]TriggerEntry) ->
 }
 
 enc_ptr_dyn_TriggerEntry :: proc(b: ^strings.Builder, x: ^[dynamic]TriggerEntry) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: [dynamic]TriggerEntry; enc_dyn_TriggerEntry(b, zero) }
 	else do enc_dyn_TriggerEntry(b, x^)
 }
 
@@ -74753,7 +75135,7 @@ dec_ptr_dyn_ObjectIncarnationRef :: proc(v: json.Value, out: ^^[dynamic]ObjectIn
 }
 
 enc_ptr_dyn_ObjectIncarnationRef :: proc(b: ^strings.Builder, x: ^[dynamic]ObjectIncarnationRef) {
-	if x == nil do strings.write_string(b, "null")
+	if x == nil { zero: [dynamic]ObjectIncarnationRef; enc_dyn_ObjectIncarnationRef(b, zero) }
 	else do enc_dyn_ObjectIncarnationRef(b, x^)
 }
 
@@ -74839,71 +75221,6 @@ enc_dyn_SetCode :: proc(b: ^strings.Builder, x: [dynamic]SetCode) {
 enc_opt_dyn_SetCode :: proc(b: ^strings.Builder, x: Maybe([dynamic]SetCode)) {
 	if y, ok := x.?; ok do enc_dyn_SetCode(b, y)
 	else do strings.write_string(b, "null")
-}
-
-dec_ptr_ChangeZoneFrame :: proc(v: json.Value, out: ^^ChangeZoneFrame) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	p := new(ChangeZoneFrame)
-	if !decode_ChangeZoneFrame(v, p) do return false
-	out^ = p
-	return true
-}
-
-enc_ptr_ChangeZoneFrame :: proc(b: ^strings.Builder, x: ^ChangeZoneFrame) {
-	if x == nil do strings.write_string(b, "null")
-	else do encode_ChangeZoneFrame(b, x^)
-}
-
-dec_ptr_PendingBatchDeliveries :: proc(v: json.Value, out: ^^PendingBatchDeliveries) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	p := new(PendingBatchDeliveries)
-	if !decode_PendingBatchDeliveries(v, p) do return false
-	out^ = p
-	return true
-}
-
-enc_ptr_PendingBatchDeliveries :: proc(b: ^strings.Builder, x: ^PendingBatchDeliveries) {
-	if x == nil do strings.write_string(b, "null")
-	else do encode_PendingBatchDeliveries(b, x^)
-}
-
-dec_ptr_PendingDebugCardEntries :: proc(v: json.Value, out: ^^PendingDebugCardEntries) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	p := new(PendingDebugCardEntries)
-	if !decode_PendingDebugCardEntries(v, p) do return false
-	out^ = p
-	return true
-}
-
-enc_ptr_PendingDebugCardEntries :: proc(b: ^strings.Builder, x: ^PendingDebugCardEntries) {
-	if x == nil do strings.write_string(b, "null")
-	else do encode_PendingDebugCardEntries(b, x^)
-}
-
-dec_ptr_PendingDieRoll :: proc(v: json.Value, out: ^^PendingDieRoll) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	p := new(PendingDieRoll)
-	if !decode_PendingDieRoll(v, p) do return false
-	out^ = p
-	return true
-}
-
-enc_ptr_PendingDieRoll :: proc(b: ^strings.Builder, x: ^PendingDieRoll) {
-	if x == nil do strings.write_string(b, "null")
-	else do encode_PendingDieRoll(b, x^)
-}
-
-dec_ptr_DiscardFrame :: proc(v: json.Value, out: ^^DiscardFrame) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	p := new(DiscardFrame)
-	if !decode_DiscardFrame(v, p) do return false
-	out^ = p
-	return true
-}
-
-enc_ptr_DiscardFrame :: proc(b: ^strings.Builder, x: ^DiscardFrame) {
-	if x == nil do strings.write_string(b, "null")
-	else do encode_DiscardFrame(b, x^)
 }
 
 dec_dyn_LogSegment :: proc(v: json.Value, out: ^[dynamic]LogSegment) -> bool {
@@ -75051,32 +75368,6 @@ dec_opt_WaitingFor :: proc(v: json.Value, out: ^Maybe(WaitingFor)) -> bool {
 enc_opt_WaitingFor :: proc(b: ^strings.Builder, x: Maybe(WaitingFor)) {
 	if y, ok := x.?; ok do encode_WaitingFor(b, y)
 	else do strings.write_string(b, "null")
-}
-
-dec_opt_ReplacementActionScope :: proc(v: json.Value, out: ^Maybe(ReplacementActionScope)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: ReplacementActionScope
-	if !decode_ReplacementActionScope(v, &x) do return false
-	out^ = x
-	return true
-}
-
-dec_ptr_ParkedOpponentMayPoll :: proc(v: json.Value, out: ^^ParkedOpponentMayPoll) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	p := new(ParkedOpponentMayPoll)
-	if !decode_ParkedOpponentMayPoll(v, p) do return false
-	out^ = p
-	return true
-}
-
-enc_opt_ReplacementActionScope :: proc(b: ^strings.Builder, x: Maybe(ReplacementActionScope)) {
-	if y, ok := x.?; ok do encode_ReplacementActionScope(b, y)
-	else do strings.write_string(b, "null")
-}
-
-enc_ptr_ParkedOpponentMayPoll :: proc(b: ^strings.Builder, x: ^ParkedOpponentMayPoll) {
-	if x == nil do strings.write_string(b, "null")
-	else do encode_ParkedOpponentMayPoll(b, x^)
 }
 
 dec_ptr_ManaAbilityCostCursor :: proc(v: json.Value, out: ^^ManaAbilityCostCursor) -> bool {
@@ -75277,690 +75568,6 @@ dec_opt_t2_ReturnResultOccurrenceId_ReturnResultId :: proc(v: json.Value, out: ^
 	return true
 }
 
-enc_t2_ReturnResultOccurrenceId_ReturnResultId :: proc(b: ^strings.Builder, x: Tuple2(ReturnResultOccurrenceId, ReturnResultId)) {
-	strings.write_byte(b, '[')
-	encode_ReturnResultOccurrenceId(b, x._0)
-	strings.write_byte(b, ',')
-	encode_ReturnResultId(b, x._1)
-	strings.write_byte(b, ']')
-}
-
-enc_opt_t2_ReturnResultOccurrenceId_ReturnResultId :: proc(b: ^strings.Builder, x: Maybe(Tuple2(ReturnResultOccurrenceId, ReturnResultId))) {
-	if y, ok := x.?; ok do enc_t2_ReturnResultOccurrenceId_ReturnResultId(b, y)
-	else do strings.write_string(b, "null")
-}
-
-dec_ptr_ResolutionCastFacePolicy :: proc(v: json.Value, out: ^^ResolutionCastFacePolicy) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	p := new(ResolutionCastFacePolicy)
-	if !decode_ResolutionCastFacePolicy(v, p) do return false
-	out^ = p
-	return true
-}
-
-enc_ptr_ResolutionCastFacePolicy :: proc(b: ^strings.Builder, x: ^ResolutionCastFacePolicy) {
-	if x == nil do strings.write_string(b, "null")
-	else do encode_ResolutionCastFacePolicy(b, x^)
-}
-
-dec_t2_DecisionSlot_i64 :: proc(v: json.Value, out: ^Tuple2(DecisionSlot, i64)) -> bool {
-	if v.kind != .Array || len(v.items) != 2 do return fail("expected a tuple")
-	if !decode_DecisionSlot(v.items[0], &out._0) do return false
-	if !decode_i64(v.items[1], &out._1) do return false
-	return true
-}
-
-dec_dyn_t2_DecisionSlot_i64 :: proc(v: json.Value, out: ^[dynamic]Tuple2(DecisionSlot, i64)) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]Tuple2(DecisionSlot, i64), len(v.items))
-	for item, i in v.items do if !dec_t2_DecisionSlot_i64(item, &out[i]) do return false
-	return true
-}
-
-dec_t2_PlayerId_i64 :: proc(v: json.Value, out: ^Tuple2(PlayerId, i64)) -> bool {
-	if v.kind != .Array || len(v.items) != 2 do return fail("expected a tuple")
-	if !decode_PlayerId(v.items[0], &out._0) do return false
-	if !decode_i64(v.items[1], &out._1) do return false
-	return true
-}
-
-dec_dyn_t2_PlayerId_i64 :: proc(v: json.Value, out: ^[dynamic]Tuple2(PlayerId, i64)) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]Tuple2(PlayerId, i64), len(v.items))
-	for item, i in v.items do if !dec_t2_PlayerId_i64(item, &out[i]) do return false
-	return true
-}
-
-dec_opt_CleanupPair :: proc(v: json.Value, out: ^Maybe(CleanupPair)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: CleanupPair
-	if !decode_CleanupPair(v, &x) do return false
-	out^ = x
-	return true
-}
-
-dec_pairs_opt_map_PlayerId_InstructedMill :: proc(v: json.Value, out: ^Maybe(map[PlayerId]InstructedMill)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	m: map[PlayerId]InstructedMill
-	if v.kind != .Array do return fail("expected [key, value] pairs")
-	m = make(map[PlayerId]InstructedMill, len(v.items))
-	for p in v.items {
-		if p.kind != .Array || len(p.items) != 2 do return fail("expected a [key, value] pair")
-		key: PlayerId
-		val: InstructedMill
-		if !decode_PlayerId(p.items[0], &key) || !decode_InstructedMill(p.items[1], &val) do return false
-		m[key] = val
-	}
-	out^ = m
-	return true
-}
-
-dec_t4_dyn_PlayerId_DecisionSlot_PlayerId_i64 :: proc(v: json.Value, out: ^Tuple4([dynamic]PlayerId, DecisionSlot, PlayerId, i64)) -> bool {
-	if v.kind != .Array || len(v.items) != 4 do return fail("expected a tuple")
-	if !dec_dyn_PlayerId(v.items[0], &out._0) do return false
-	if !decode_DecisionSlot(v.items[1], &out._1) do return false
-	if !decode_PlayerId(v.items[2], &out._2) do return false
-	if !decode_i64(v.items[3], &out._3) do return false
-	return true
-}
-
-dec_dyn_t4_dyn_PlayerId_DecisionSlot_PlayerId_i64 :: proc(v: json.Value, out: ^[dynamic]Tuple4([dynamic]PlayerId, DecisionSlot, PlayerId, i64)) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]Tuple4([dynamic]PlayerId, DecisionSlot, PlayerId, i64), len(v.items))
-	for item, i in v.items do if !dec_t4_dyn_PlayerId_DecisionSlot_PlayerId_i64(item, &out[i]) do return false
-	return true
-}
-
-enc_t2_DecisionSlot_i64 :: proc(b: ^strings.Builder, x: Tuple2(DecisionSlot, i64)) {
-	strings.write_byte(b, '[')
-	encode_DecisionSlot(b, x._0)
-	strings.write_byte(b, ',')
-	encode_i64(b, x._1)
-	strings.write_byte(b, ']')
-}
-
-enc_dyn_t2_DecisionSlot_i64 :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(DecisionSlot, i64)) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		enc_t2_DecisionSlot_i64(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-enc_t2_PlayerId_i64 :: proc(b: ^strings.Builder, x: Tuple2(PlayerId, i64)) {
-	strings.write_byte(b, '[')
-	encode_PlayerId(b, x._0)
-	strings.write_byte(b, ',')
-	encode_i64(b, x._1)
-	strings.write_byte(b, ']')
-}
-
-enc_dyn_t2_PlayerId_i64 :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(PlayerId, i64)) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		enc_t2_PlayerId_i64(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-enc_opt_CleanupPair :: proc(b: ^strings.Builder, x: Maybe(CleanupPair)) {
-	if y, ok := x.?; ok do encode_CleanupPair(b, y)
-	else do strings.write_string(b, "null")
-}
-
-enc_pairs_opt_map_PlayerId_InstructedMill :: proc(b: ^strings.Builder, x: Maybe(map[PlayerId]InstructedMill)) {
-	m, ok := x.?
-	if !ok { strings.write_string(b, "null"); return }
-	keys := make([dynamic]PlayerId, 0, len(m), context.temp_allocator)
-	for k in m do append(&keys, k)
-	slice.sort(keys[:])
-	strings.write_byte(b, '[')
-	for k, i in keys {
-		if i > 0 do strings.write_byte(b, ',')
-		strings.write_byte(b, '[')
-		encode_PlayerId(b, k)
-		strings.write_byte(b, ',')
-		encode_InstructedMill(b, m[k])
-		strings.write_byte(b, ']')
-	}
-	strings.write_byte(b, ']')
-}
-
-enc_t4_dyn_PlayerId_DecisionSlot_PlayerId_i64 :: proc(b: ^strings.Builder, x: Tuple4([dynamic]PlayerId, DecisionSlot, PlayerId, i64)) {
-	strings.write_byte(b, '[')
-	enc_dyn_PlayerId(b, x._0)
-	strings.write_byte(b, ',')
-	encode_DecisionSlot(b, x._1)
-	strings.write_byte(b, ',')
-	encode_PlayerId(b, x._2)
-	strings.write_byte(b, ',')
-	encode_i64(b, x._3)
-	strings.write_byte(b, ']')
-}
-
-enc_dyn_t4_dyn_PlayerId_DecisionSlot_PlayerId_i64 :: proc(b: ^strings.Builder, x: [dynamic]Tuple4([dynamic]PlayerId, DecisionSlot, PlayerId, i64)) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		enc_t4_dyn_PlayerId_DecisionSlot_PlayerId_i64(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-dec_dyn_Ranking :: proc(v: json.Value, out: ^[dynamic]Ranking) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]Ranking, len(v.items))
-	for item, i in v.items do if !decode_Ranking(item, &out[i]) do return false
-	return true
-}
-
-enc_dyn_Ranking :: proc(b: ^strings.Builder, x: [dynamic]Ranking) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		encode_Ranking(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-dec_t2_u32_Ranking :: proc(v: json.Value, out: ^Tuple2(u32, Ranking)) -> bool {
-	if v.kind != .Array || len(v.items) != 2 do return fail("expected a tuple")
-	if !decode_u32(v.items[0], &out._0) do return false
-	if !decode_Ranking(v.items[1], &out._1) do return false
-	return true
-}
-
-dec_dyn_t2_u32_Ranking :: proc(v: json.Value, out: ^[dynamic]Tuple2(u32, Ranking)) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]Tuple2(u32, Ranking), len(v.items))
-	for item, i in v.items do if !dec_t2_u32_Ranking(item, &out[i]) do return false
-	return true
-}
-
-enc_t2_u32_Ranking :: proc(b: ^strings.Builder, x: Tuple2(u32, Ranking)) {
-	strings.write_byte(b, '[')
-	encode_u32(b, x._0)
-	strings.write_byte(b, ',')
-	encode_Ranking(b, x._1)
-	strings.write_byte(b, ']')
-}
-
-enc_dyn_t2_u32_Ranking :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(u32, Ranking)) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		enc_t2_u32_Ranking(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-dec_opt_CombatHistoryScope :: proc(v: json.Value, out: ^Maybe(CombatHistoryScope)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: CombatHistoryScope
-	if !decode_CombatHistoryScope(v, &x) do return false
-	out^ = x
-	return true
-}
-
-enc_opt_CombatHistoryScope :: proc(b: ^strings.Builder, x: Maybe(CombatHistoryScope)) {
-	if y, ok := x.?; ok do encode_CombatHistoryScope(b, y)
-	else do strings.write_string(b, "null")
-}
-
-dec_opt_RepeatUntilStopWitness :: proc(v: json.Value, out: ^Maybe(RepeatUntilStopWitness)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: RepeatUntilStopWitness
-	if !decode_RepeatUntilStopWitness(v, &x) do return false
-	out^ = x
-	return true
-}
-
-dec_opt_RepeatUntilIterationWitness :: proc(v: json.Value, out: ^Maybe(RepeatUntilIterationWitness)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: RepeatUntilIterationWitness
-	if !decode_RepeatUntilIterationWitness(v, &x) do return false
-	out^ = x
-	return true
-}
-
-enc_opt_RepeatUntilStopWitness :: proc(b: ^strings.Builder, x: Maybe(RepeatUntilStopWitness)) {
-	if y, ok := x.?; ok do encode_RepeatUntilStopWitness(b, y)
-	else do strings.write_string(b, "null")
-}
-
-enc_opt_RepeatUntilIterationWitness :: proc(b: ^strings.Builder, x: Maybe(RepeatUntilIterationWitness)) {
-	if y, ok := x.?; ok do encode_RepeatUntilIterationWitness(b, y)
-	else do strings.write_string(b, "null")
-}
-
-dec_ptr_PendingRepeatedOptionalPayment :: proc(v: json.Value, out: ^^PendingRepeatedOptionalPayment) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	p := new(PendingRepeatedOptionalPayment)
-	if !decode_PendingRepeatedOptionalPayment(v, p) do return false
-	out^ = p
-	return true
-}
-
-enc_ptr_PendingRepeatedOptionalPayment :: proc(b: ^strings.Builder, x: ^PendingRepeatedOptionalPayment) {
-	if x == nil do strings.write_string(b, "null")
-	else do encode_PendingRepeatedOptionalPayment(b, x^)
-}
-
-dec_opt_PendingChangeZoneIteration :: proc(v: json.Value, out: ^Maybe(PendingChangeZoneIteration)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: PendingChangeZoneIteration
-	if !decode_PendingChangeZoneIteration(v, &x) do return false
-	out^ = x
-	return true
-}
-
-dec_opt_ChangeZoneBatchMarker :: proc(v: json.Value, out: ^Maybe(ChangeZoneBatchMarker)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: ChangeZoneBatchMarker
-	if !decode_ChangeZoneBatchMarker(v, &x) do return false
-	out^ = x
-	return true
-}
-
-enc_opt_PendingChangeZoneIteration :: proc(b: ^strings.Builder, x: Maybe(PendingChangeZoneIteration)) {
-	if y, ok := x.?; ok do encode_PendingChangeZoneIteration(b, y)
-	else do strings.write_string(b, "null")
-}
-
-enc_opt_ChangeZoneBatchMarker :: proc(b: ^strings.Builder, x: Maybe(ChangeZoneBatchMarker)) {
-	if y, ok := x.?; ok do encode_ChangeZoneBatchMarker(b, y)
-	else do strings.write_string(b, "null")
-}
-
-dec_opt_PendingComponentDeliveryParent :: proc(v: json.Value, out: ^Maybe(PendingComponentDeliveryParent)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: PendingComponentDeliveryParent
-	if !decode_PendingComponentDeliveryParent(v, &x) do return false
-	out^ = x
-	return true
-}
-
-dec_opt_PendingZoneChangeDelivery :: proc(v: json.Value, out: ^Maybe(PendingZoneChangeDelivery)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: PendingZoneChangeDelivery
-	if !decode_PendingZoneChangeDelivery(v, &x) do return false
-	out^ = x
-	return true
-}
-
-dec_opt_LibraryReorderOperation :: proc(v: json.Value, out: ^Maybe(LibraryReorderOperation)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: LibraryReorderOperation
-	if !decode_LibraryReorderOperation(v, &x) do return false
-	out^ = x
-	return true
-}
-
-dec_opt_BatchCompletion :: proc(v: json.Value, out: ^Maybe(BatchCompletion)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: BatchCompletion
-	if !decode_BatchCompletion(v, &x) do return false
-	out^ = x
-	return true
-}
-
-dec_dyn_PendingBatchZoneMoveRequest :: proc(v: json.Value, out: ^[dynamic]PendingBatchZoneMoveRequest) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]PendingBatchZoneMoveRequest, len(v.items))
-	for item, i in v.items do if !decode_PendingBatchZoneMoveRequest(item, &out[i]) do return false
-	return true
-}
-
-dec_opt_StagedBatchDelivery :: proc(v: json.Value, out: ^Maybe(StagedBatchDelivery)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: StagedBatchDelivery
-	if !decode_StagedBatchDelivery(v, &x) do return false
-	out^ = x
-	return true
-}
-
-enc_opt_PendingComponentDeliveryParent :: proc(b: ^strings.Builder, x: Maybe(PendingComponentDeliveryParent)) {
-	if y, ok := x.?; ok do encode_PendingComponentDeliveryParent(b, y)
-	else do strings.write_string(b, "null")
-}
-
-enc_opt_PendingZoneChangeDelivery :: proc(b: ^strings.Builder, x: Maybe(PendingZoneChangeDelivery)) {
-	if y, ok := x.?; ok do encode_PendingZoneChangeDelivery(b, y)
-	else do strings.write_string(b, "null")
-}
-
-enc_opt_LibraryReorderOperation :: proc(b: ^strings.Builder, x: Maybe(LibraryReorderOperation)) {
-	if y, ok := x.?; ok do encode_LibraryReorderOperation(b, y)
-	else do strings.write_string(b, "null")
-}
-
-enc_opt_BatchCompletion :: proc(b: ^strings.Builder, x: Maybe(BatchCompletion)) {
-	if y, ok := x.?; ok do encode_BatchCompletion(b, y)
-	else do strings.write_string(b, "null")
-}
-
-enc_dyn_PendingBatchZoneMoveRequest :: proc(b: ^strings.Builder, x: [dynamic]PendingBatchZoneMoveRequest) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		encode_PendingBatchZoneMoveRequest(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-enc_opt_StagedBatchDelivery :: proc(b: ^strings.Builder, x: Maybe(StagedBatchDelivery)) {
-	if y, ok := x.?; ok do encode_StagedBatchDelivery(b, y)
-	else do strings.write_string(b, "null")
-}
-
-dec_dyn_PendingCounterMove :: proc(v: json.Value, out: ^[dynamic]PendingCounterMove) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]PendingCounterMove, len(v.items))
-	for item, i in v.items do if !decode_PendingCounterMove(item, &out[i]) do return false
-	return true
-}
-
-enc_dyn_PendingCounterMove :: proc(b: ^strings.Builder, x: [dynamic]PendingCounterMove) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		encode_PendingCounterMove(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-dec_opt_PendingCounterRemovalInFlight :: proc(v: json.Value, out: ^Maybe(PendingCounterRemovalInFlight)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: PendingCounterRemovalInFlight
-	if !decode_PendingCounterRemovalInFlight(v, &x) do return false
-	out^ = x
-	return true
-}
-
-enc_opt_PendingCounterRemovalInFlight :: proc(b: ^strings.Builder, x: Maybe(PendingCounterRemovalInFlight)) {
-	if y, ok := x.?; ok do encode_PendingCounterRemovalInFlight(b, y)
-	else do strings.write_string(b, "null")
-}
-
-dec_dyn_PendingCounterAddition :: proc(v: json.Value, out: ^[dynamic]PendingCounterAddition) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]PendingCounterAddition, len(v.items))
-	for item, i in v.items do if !decode_PendingCounterAddition(item, &out[i]) do return false
-	return true
-}
-
-dec_opt_PendingEffectResolved :: proc(v: json.Value, out: ^Maybe(PendingEffectResolved)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: PendingEffectResolved
-	if !decode_PendingEffectResolved(v, &x) do return false
-	out^ = x
-	return true
-}
-
-enc_dyn_PendingCounterAddition :: proc(b: ^strings.Builder, x: [dynamic]PendingCounterAddition) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		encode_PendingCounterAddition(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-enc_opt_PendingEffectResolved :: proc(b: ^strings.Builder, x: Maybe(PendingEffectResolved)) {
-	if y, ok := x.?; ok do encode_PendingEffectResolved(b, y)
-	else do strings.write_string(b, "null")
-}
-
-dec_dyn_PendingCopyTokenBatch :: proc(v: json.Value, out: ^[dynamic]PendingCopyTokenBatch) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]PendingCopyTokenBatch, len(v.items))
-	for item, i in v.items do if !decode_PendingCopyTokenBatch(item, &out[i]) do return false
-	return true
-}
-
-enc_dyn_PendingCopyTokenBatch :: proc(b: ^strings.Builder, x: [dynamic]PendingCopyTokenBatch) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		encode_PendingCopyTokenBatch(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-dec_ptr_SpellContext :: proc(v: json.Value, out: ^^SpellContext) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	p := new(SpellContext)
-	if !decode_SpellContext(v, p) do return false
-	out^ = p
-	return true
-}
-
-enc_ptr_SpellContext :: proc(b: ^strings.Builder, x: ^SpellContext) {
-	if x == nil do strings.write_string(b, "null")
-	else do encode_SpellContext(b, x^)
-}
-
-dec_opt_PendingConniveReentry :: proc(v: json.Value, out: ^Maybe(PendingConniveReentry)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: PendingConniveReentry
-	if !decode_PendingConniveReentry(v, &x) do return false
-	out^ = x
-	return true
-}
-
-enc_opt_PendingConniveReentry :: proc(b: ^strings.Builder, x: Maybe(PendingConniveReentry)) {
-	if y, ok := x.?; ok do encode_PendingConniveReentry(b, y)
-	else do strings.write_string(b, "null")
-}
-
-dec_dyn_DiscardedCardResult :: proc(v: json.Value, out: ^[dynamic]DiscardedCardResult) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]DiscardedCardResult, len(v.items))
-	for item, i in v.items do if !decode_DiscardedCardResult(item, &out[i]) do return false
-	return true
-}
-
-enc_dyn_DiscardedCardResult :: proc(b: ^strings.Builder, x: [dynamic]DiscardedCardResult) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		encode_DiscardedCardResult(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-dec_dyn_PostReplacementDrain :: proc(v: json.Value, out: ^[dynamic]PostReplacementDrain) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]PostReplacementDrain, len(v.items))
-	for item, i in v.items do if !decode_PostReplacementDrain(item, &out[i]) do return false
-	return true
-}
-
-dec_opt_PostReplacementFrameId :: proc(v: json.Value, out: ^Maybe(PostReplacementFrameId)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: PostReplacementFrameId
-	if !decode_PostReplacementFrameId(v, &x) do return false
-	out^ = x
-	return true
-}
-
-enc_dyn_PostReplacementDrain :: proc(b: ^strings.Builder, x: [dynamic]PostReplacementDrain) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		encode_PostReplacementDrain(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-enc_opt_PostReplacementFrameId :: proc(b: ^strings.Builder, x: Maybe(PostReplacementFrameId)) {
-	if y, ok := x.?; ok do encode_PostReplacementFrameId(b, y)
-	else do strings.write_string(b, "null")
-}
-
-dec_dyn_CardTypeSetSource :: proc(v: json.Value, out: ^[dynamic]CardTypeSetSource) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]CardTypeSetSource, len(v.items))
-	for item, i in v.items do if !decode_CardTypeSetSource(item, &out[i]) do return false
-	return true
-}
-
-enc_dyn_CardTypeSetSource :: proc(b: ^strings.Builder, x: [dynamic]CardTypeSetSource) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		encode_CardTypeSetSource(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-dec__6_i64 :: proc(v: json.Value, out: ^[6]i64) -> bool {
-	if v.kind != .Array || len(v.items) != 6 do return fail("expected a fixed-size array")
-	for item, i in v.items do if !decode_i64(item, &out[i]) do return false
-	return true
-}
-
-dec_pairs_map_PlayerId_i64 :: proc(v: json.Value, out: ^map[PlayerId]i64) -> bool {
-	if v.kind != .Array do return fail("expected [key, value] pairs")
-	out^ = make(map[PlayerId]i64, len(v.items))
-	for p in v.items {
-		if p.kind != .Array || len(p.items) != 2 do return fail("expected a [key, value] pair")
-		key: PlayerId
-		val: i64
-		if !decode_PlayerId(p.items[0], &key) || !decode_i64(p.items[1], &val) do return false
-		out^[key] = val
-	}
-	return true
-}
-
-dec_t2_CounterClass_ObjectClass :: proc(v: json.Value, out: ^Tuple2(CounterClass, ObjectClass)) -> bool {
-	if v.kind != .Array || len(v.items) != 2 do return fail("expected a tuple")
-	if !decode_CounterClass(v.items[0], &out._0) do return false
-	if !decode_ObjectClass(v.items[1], &out._1) do return false
-	return true
-}
-
-dec_t2_t2_CounterClass_ObjectClass_i64 :: proc(v: json.Value, out: ^Tuple2(Tuple2(CounterClass, ObjectClass), i64)) -> bool {
-	if v.kind != .Array || len(v.items) != 2 do return fail("expected a tuple")
-	if !dec_t2_CounterClass_ObjectClass(v.items[0], &out._0) do return false
-	if !decode_i64(v.items[1], &out._1) do return false
-	return true
-}
-
-dec_dyn_t2_t2_CounterClass_ObjectClass_i64 :: proc(v: json.Value, out: ^[dynamic]Tuple2(Tuple2(CounterClass, ObjectClass), i64)) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]Tuple2(Tuple2(CounterClass, ObjectClass), i64), len(v.items))
-	for item, i in v.items do if !dec_t2_t2_CounterClass_ObjectClass_i64(item, &out[i]) do return false
-	return true
-}
-
-dec_map_TriggerKind_i64 :: proc(v: json.Value, out: ^map[TriggerKind]i64) -> bool {
-	if v.kind != .Object do return fail("expected an object (map)")
-	out^ = make(map[TriggerKind]i64, len(v.members))
-	for m in v.members {
-		key: TriggerKind
-		val: i64
-		ok_k := decode_TriggerKind(json.Value{kind = .String, text = m.key}, &key)
-		if !ok_k || !decode_i64(m.value, &val) do return false
-		out[key] = val
-	}
-	return true
-}
-
-enc__6_i64 :: proc(b: ^strings.Builder, x: [6]i64) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		encode_i64(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-enc_pairs_map_PlayerId_i64 :: proc(b: ^strings.Builder, x: map[PlayerId]i64) {
-	keys := make([dynamic]PlayerId, 0, len(x), context.temp_allocator)
-	for k in x do append(&keys, k)
-	slice.sort(keys[:])
-	strings.write_byte(b, '[')
-	for k, i in keys {
-		if i > 0 do strings.write_byte(b, ',')
-		strings.write_byte(b, '[')
-		encode_PlayerId(b, k)
-		strings.write_byte(b, ',')
-		encode_i64(b, x[k])
-		strings.write_byte(b, ']')
-	}
-	strings.write_byte(b, ']')
-}
-
-enc_t2_CounterClass_ObjectClass :: proc(b: ^strings.Builder, x: Tuple2(CounterClass, ObjectClass)) {
-	strings.write_byte(b, '[')
-	encode_CounterClass(b, x._0)
-	strings.write_byte(b, ',')
-	encode_ObjectClass(b, x._1)
-	strings.write_byte(b, ']')
-}
-
-enc_t2_t2_CounterClass_ObjectClass_i64 :: proc(b: ^strings.Builder, x: Tuple2(Tuple2(CounterClass, ObjectClass), i64)) {
-	strings.write_byte(b, '[')
-	enc_t2_CounterClass_ObjectClass(b, x._0)
-	strings.write_byte(b, ',')
-	encode_i64(b, x._1)
-	strings.write_byte(b, ']')
-}
-
-enc_dyn_t2_t2_CounterClass_ObjectClass_i64 :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(Tuple2(CounterClass, ObjectClass), i64)) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		enc_t2_t2_CounterClass_ObjectClass_i64(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-enc_map_TriggerKind_i64 :: proc(b: ^strings.Builder, x: map[TriggerKind]i64) {
-	strings.write_byte(b, '{')
-	first := true
-	for k, val in x {
-		if !first do strings.write_byte(b, ',')
-		first = false
-		encode_TriggerKind(b, k)
-		strings.write_byte(b, ':')
-		encode_i64(b, val)
-	}
-	strings.write_byte(b, '}')
-}
-
-dec_dyn_AnnouncementSubject :: proc(v: json.Value, out: ^[dynamic]AnnouncementSubject) -> bool {
-	if v.kind != .Array do return fail("expected an array")
-	out^ = make([dynamic]AnnouncementSubject, len(v.items))
-	for item, i in v.items do if !decode_AnnouncementSubject(item, &out[i]) do return false
-	return true
-}
-
-enc_dyn_AnnouncementSubject :: proc(b: ^strings.Builder, x: [dynamic]AnnouncementSubject) {
-	strings.write_byte(b, '[')
-	for item, i in x {
-		if i > 0 do strings.write_byte(b, ',')
-		encode_AnnouncementSubject(b, item)
-	}
-	strings.write_byte(b, ']')
-}
-
-dec_opt_ComboWindow :: proc(v: json.Value, out: ^Maybe(ComboWindow)) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	x: ComboWindow
-	if !decode_ComboWindow(v, &x) do return false
-	out^ = x
-	return true
-}
-
-enc_opt_ComboWindow :: proc(b: ^strings.Builder, x: Maybe(ComboWindow)) {
-	if y, ok := x.?; ok do encode_ComboWindow(b, y)
-	else do strings.write_string(b, "null")
-}
-
 dec_opt_PendingAttachmentChoice :: proc(v: json.Value, out: ^Maybe(PendingAttachmentChoice)) -> bool {
 	if v.kind == .Null { out^ = nil; return true }
 	x: PendingAttachmentChoice
@@ -75991,6 +75598,19 @@ dec_opt_ContinuationXAnnouncement :: proc(v: json.Value, out: ^Maybe(Continuatio
 	if !decode_ContinuationXAnnouncement(v, &x) do return false
 	out^ = x
 	return true
+}
+
+enc_t2_ReturnResultOccurrenceId_ReturnResultId :: proc(b: ^strings.Builder, x: Tuple2(ReturnResultOccurrenceId, ReturnResultId)) {
+	strings.write_byte(b, '[')
+	encode_ReturnResultOccurrenceId(b, x._0)
+	strings.write_byte(b, ',')
+	encode_ReturnResultId(b, x._1)
+	strings.write_byte(b, ']')
+}
+
+enc_opt_t2_ReturnResultOccurrenceId_ReturnResultId :: proc(b: ^strings.Builder, x: Maybe(Tuple2(ReturnResultOccurrenceId, ReturnResultId))) {
+	if y, ok := x.?; ok do enc_t2_ReturnResultOccurrenceId_ReturnResultId(b, y)
+	else do strings.write_string(b, "null")
 }
 
 enc_opt_PendingAttachmentChoice :: proc(b: ^strings.Builder, x: Maybe(PendingAttachmentChoice)) {
@@ -76247,17 +75867,239 @@ enc_dyn_DrawSequenceFrame :: proc(b: ^strings.Builder, x: [dynamic]DrawSequenceF
 	strings.write_byte(b, ']')
 }
 
-dec_opt_AttackerInfo :: proc(v: json.Value, out: ^Maybe(AttackerInfo)) -> bool {
+dec_ptr_ResolutionCastFacePolicy :: proc(v: json.Value, out: ^^ResolutionCastFacePolicy) -> bool {
 	if v.kind == .Null { out^ = nil; return true }
-	x: AttackerInfo
-	if !decode_AttackerInfo(v, &x) do return false
+	p := new(ResolutionCastFacePolicy)
+	if !decode_ResolutionCastFacePolicy(v, p) do return false
+	out^ = p
+	return true
+}
+
+enc_ptr_ResolutionCastFacePolicy :: proc(b: ^strings.Builder, x: ^ResolutionCastFacePolicy) {
+	if x == nil do strings.write_string(b, "null")
+	else do encode_ResolutionCastFacePolicy(b, x^)
+}
+
+dec_t2_DecisionSlot_i64 :: proc(v: json.Value, out: ^Tuple2(DecisionSlot, i64)) -> bool {
+	if v.kind != .Array || len(v.items) != 2 do return fail("expected a tuple")
+	if !decode_DecisionSlot(v.items[0], &out._0) do return false
+	if !decode_i64(v.items[1], &out._1) do return false
+	return true
+}
+
+dec_dyn_t2_DecisionSlot_i64 :: proc(v: json.Value, out: ^[dynamic]Tuple2(DecisionSlot, i64)) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]Tuple2(DecisionSlot, i64), len(v.items))
+	for item, i in v.items do if !dec_t2_DecisionSlot_i64(item, &out[i]) do return false
+	return true
+}
+
+dec_t2_PlayerId_i64 :: proc(v: json.Value, out: ^Tuple2(PlayerId, i64)) -> bool {
+	if v.kind != .Array || len(v.items) != 2 do return fail("expected a tuple")
+	if !decode_PlayerId(v.items[0], &out._0) do return false
+	if !decode_i64(v.items[1], &out._1) do return false
+	return true
+}
+
+dec_dyn_t2_PlayerId_i64 :: proc(v: json.Value, out: ^[dynamic]Tuple2(PlayerId, i64)) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]Tuple2(PlayerId, i64), len(v.items))
+	for item, i in v.items do if !dec_t2_PlayerId_i64(item, &out[i]) do return false
+	return true
+}
+
+dec_opt_CleanupPair :: proc(v: json.Value, out: ^Maybe(CleanupPair)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: CleanupPair
+	if !decode_CleanupPair(v, &x) do return false
 	out^ = x
 	return true
 }
 
-enc_opt_AttackerInfo :: proc(b: ^strings.Builder, x: Maybe(AttackerInfo)) {
-	if y, ok := x.?; ok do encode_AttackerInfo(b, y)
+dec_pairs_opt_map_PlayerId_InstructedMill :: proc(v: json.Value, out: ^Maybe(map[PlayerId]InstructedMill)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	m: map[PlayerId]InstructedMill
+	if v.kind != .Array do return fail("expected [key, value] pairs")
+	m = make(map[PlayerId]InstructedMill, len(v.items))
+	for p in v.items {
+		if p.kind != .Array || len(p.items) != 2 do return fail("expected a [key, value] pair")
+		key: PlayerId
+		val: InstructedMill
+		if !decode_PlayerId(p.items[0], &key) || !decode_InstructedMill(p.items[1], &val) do return false
+		m[key] = val
+	}
+	out^ = m
+	return true
+}
+
+dec_t4_dyn_PlayerId_DecisionSlot_PlayerId_i64 :: proc(v: json.Value, out: ^Tuple4([dynamic]PlayerId, DecisionSlot, PlayerId, i64)) -> bool {
+	if v.kind != .Array || len(v.items) != 4 do return fail("expected a tuple")
+	if !dec_dyn_PlayerId(v.items[0], &out._0) do return false
+	if !decode_DecisionSlot(v.items[1], &out._1) do return false
+	if !decode_PlayerId(v.items[2], &out._2) do return false
+	if !decode_i64(v.items[3], &out._3) do return false
+	return true
+}
+
+dec_dyn_t4_dyn_PlayerId_DecisionSlot_PlayerId_i64 :: proc(v: json.Value, out: ^[dynamic]Tuple4([dynamic]PlayerId, DecisionSlot, PlayerId, i64)) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]Tuple4([dynamic]PlayerId, DecisionSlot, PlayerId, i64), len(v.items))
+	for item, i in v.items do if !dec_t4_dyn_PlayerId_DecisionSlot_PlayerId_i64(item, &out[i]) do return false
+	return true
+}
+
+enc_t2_DecisionSlot_i64 :: proc(b: ^strings.Builder, x: Tuple2(DecisionSlot, i64)) {
+	strings.write_byte(b, '[')
+	encode_DecisionSlot(b, x._0)
+	strings.write_byte(b, ',')
+	encode_i64(b, x._1)
+	strings.write_byte(b, ']')
+}
+
+enc_dyn_t2_DecisionSlot_i64 :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(DecisionSlot, i64)) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		enc_t2_DecisionSlot_i64(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+enc_t2_PlayerId_i64 :: proc(b: ^strings.Builder, x: Tuple2(PlayerId, i64)) {
+	strings.write_byte(b, '[')
+	encode_PlayerId(b, x._0)
+	strings.write_byte(b, ',')
+	encode_i64(b, x._1)
+	strings.write_byte(b, ']')
+}
+
+enc_dyn_t2_PlayerId_i64 :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(PlayerId, i64)) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		enc_t2_PlayerId_i64(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+enc_opt_CleanupPair :: proc(b: ^strings.Builder, x: Maybe(CleanupPair)) {
+	if y, ok := x.?; ok do encode_CleanupPair(b, y)
 	else do strings.write_string(b, "null")
+}
+
+enc_pairs_opt_map_PlayerId_InstructedMill :: proc(b: ^strings.Builder, x: Maybe(map[PlayerId]InstructedMill)) {
+	m, ok := x.?
+	if !ok { strings.write_string(b, "null"); return }
+	keys := make([dynamic]PlayerId, 0, len(m), context.temp_allocator)
+	for k in m do append(&keys, k)
+	slice.sort(keys[:])
+	strings.write_byte(b, '[')
+	for k, i in keys {
+		if i > 0 do strings.write_byte(b, ',')
+		strings.write_byte(b, '[')
+		encode_PlayerId(b, k)
+		strings.write_byte(b, ',')
+		encode_InstructedMill(b, m[k])
+		strings.write_byte(b, ']')
+	}
+	strings.write_byte(b, ']')
+}
+
+enc_t4_dyn_PlayerId_DecisionSlot_PlayerId_i64 :: proc(b: ^strings.Builder, x: Tuple4([dynamic]PlayerId, DecisionSlot, PlayerId, i64)) {
+	strings.write_byte(b, '[')
+	enc_dyn_PlayerId(b, x._0)
+	strings.write_byte(b, ',')
+	encode_DecisionSlot(b, x._1)
+	strings.write_byte(b, ',')
+	encode_PlayerId(b, x._2)
+	strings.write_byte(b, ',')
+	encode_i64(b, x._3)
+	strings.write_byte(b, ']')
+}
+
+enc_dyn_t4_dyn_PlayerId_DecisionSlot_PlayerId_i64 :: proc(b: ^strings.Builder, x: [dynamic]Tuple4([dynamic]PlayerId, DecisionSlot, PlayerId, i64)) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		enc_t4_dyn_PlayerId_DecisionSlot_PlayerId_i64(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+dec_dyn_Ranking :: proc(v: json.Value, out: ^[dynamic]Ranking) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]Ranking, len(v.items))
+	for item, i in v.items do if !decode_Ranking(item, &out[i]) do return false
+	return true
+}
+
+enc_dyn_Ranking :: proc(b: ^strings.Builder, x: [dynamic]Ranking) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		encode_Ranking(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+dec_t2_u32_Ranking :: proc(v: json.Value, out: ^Tuple2(u32, Ranking)) -> bool {
+	if v.kind != .Array || len(v.items) != 2 do return fail("expected a tuple")
+	if !decode_u32(v.items[0], &out._0) do return false
+	if !decode_Ranking(v.items[1], &out._1) do return false
+	return true
+}
+
+dec_dyn_t2_u32_Ranking :: proc(v: json.Value, out: ^[dynamic]Tuple2(u32, Ranking)) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]Tuple2(u32, Ranking), len(v.items))
+	for item, i in v.items do if !dec_t2_u32_Ranking(item, &out[i]) do return false
+	return true
+}
+
+enc_t2_u32_Ranking :: proc(b: ^strings.Builder, x: Tuple2(u32, Ranking)) {
+	strings.write_byte(b, '[')
+	encode_u32(b, x._0)
+	strings.write_byte(b, ',')
+	encode_Ranking(b, x._1)
+	strings.write_byte(b, ']')
+}
+
+enc_dyn_t2_u32_Ranking :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(u32, Ranking)) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		enc_t2_u32_Ranking(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+dec_opt_CombatHistoryScope :: proc(v: json.Value, out: ^Maybe(CombatHistoryScope)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: CombatHistoryScope
+	if !decode_CombatHistoryScope(v, &x) do return false
+	out^ = x
+	return true
+}
+
+enc_opt_CombatHistoryScope :: proc(b: ^strings.Builder, x: Maybe(CombatHistoryScope)) {
+	if y, ok := x.?; ok do encode_CombatHistoryScope(b, y)
+	else do strings.write_string(b, "null")
+}
+
+dec_dyn_CardTypeSetSource :: proc(v: json.Value, out: ^[dynamic]CardTypeSetSource) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]CardTypeSetSource, len(v.items))
+	for item, i in v.items do if !decode_CardTypeSetSource(item, &out[i]) do return false
+	return true
+}
+
+enc_dyn_CardTypeSetSource :: proc(b: ^strings.Builder, x: [dynamic]CardTypeSetSource) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		encode_CardTypeSetSource(b, item)
+	}
+	strings.write_byte(b, ']')
 }
 
 dec_dyn_LatchedTriggerObservation :: proc(v: json.Value, out: ^[dynamic]LatchedTriggerObservation) -> bool {
@@ -76406,6 +76248,164 @@ enc_opt_DrawSequenceFrameId :: proc(b: ^strings.Builder, x: Maybe(DrawSequenceFr
 
 enc_opt_DrawDealer :: proc(b: ^strings.Builder, x: Maybe(DrawDealer)) {
 	if y, ok := x.?; ok do encode_DrawDealer(b, y)
+	else do strings.write_string(b, "null")
+}
+
+dec__6_i64 :: proc(v: json.Value, out: ^[6]i64) -> bool {
+	if v.kind != .Array || len(v.items) != 6 do return fail("expected a fixed-size array")
+	for item, i in v.items do if !decode_i64(item, &out[i]) do return false
+	return true
+}
+
+dec_pairs_map_PlayerId_i64 :: proc(v: json.Value, out: ^map[PlayerId]i64) -> bool {
+	if v.kind != .Array do return fail("expected [key, value] pairs")
+	out^ = make(map[PlayerId]i64, len(v.items))
+	for p in v.items {
+		if p.kind != .Array || len(p.items) != 2 do return fail("expected a [key, value] pair")
+		key: PlayerId
+		val: i64
+		if !decode_PlayerId(p.items[0], &key) || !decode_i64(p.items[1], &val) do return false
+		out^[key] = val
+	}
+	return true
+}
+
+dec_t2_CounterClass_ObjectClass :: proc(v: json.Value, out: ^Tuple2(CounterClass, ObjectClass)) -> bool {
+	if v.kind != .Array || len(v.items) != 2 do return fail("expected a tuple")
+	if !decode_CounterClass(v.items[0], &out._0) do return false
+	if !decode_ObjectClass(v.items[1], &out._1) do return false
+	return true
+}
+
+dec_t2_t2_CounterClass_ObjectClass_i64 :: proc(v: json.Value, out: ^Tuple2(Tuple2(CounterClass, ObjectClass), i64)) -> bool {
+	if v.kind != .Array || len(v.items) != 2 do return fail("expected a tuple")
+	if !dec_t2_CounterClass_ObjectClass(v.items[0], &out._0) do return false
+	if !decode_i64(v.items[1], &out._1) do return false
+	return true
+}
+
+dec_dyn_t2_t2_CounterClass_ObjectClass_i64 :: proc(v: json.Value, out: ^[dynamic]Tuple2(Tuple2(CounterClass, ObjectClass), i64)) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]Tuple2(Tuple2(CounterClass, ObjectClass), i64), len(v.items))
+	for item, i in v.items do if !dec_t2_t2_CounterClass_ObjectClass_i64(item, &out[i]) do return false
+	return true
+}
+
+dec_map_TriggerKind_i64 :: proc(v: json.Value, out: ^map[TriggerKind]i64) -> bool {
+	if v.kind != .Object do return fail("expected an object (map)")
+	out^ = make(map[TriggerKind]i64, len(v.members))
+	for m in v.members {
+		key: TriggerKind
+		val: i64
+		ok_k := decode_TriggerKind(json.Value{kind = .String, text = m.key}, &key)
+		if !ok_k || !decode_i64(m.value, &val) do return false
+		out[key] = val
+	}
+	return true
+}
+
+enc__6_i64 :: proc(b: ^strings.Builder, x: [6]i64) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		encode_i64(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+enc_pairs_map_PlayerId_i64 :: proc(b: ^strings.Builder, x: map[PlayerId]i64) {
+	keys := make([dynamic]PlayerId, 0, len(x), context.temp_allocator)
+	for k in x do append(&keys, k)
+	slice.sort(keys[:])
+	strings.write_byte(b, '[')
+	for k, i in keys {
+		if i > 0 do strings.write_byte(b, ',')
+		strings.write_byte(b, '[')
+		encode_PlayerId(b, k)
+		strings.write_byte(b, ',')
+		encode_i64(b, x[k])
+		strings.write_byte(b, ']')
+	}
+	strings.write_byte(b, ']')
+}
+
+enc_t2_CounterClass_ObjectClass :: proc(b: ^strings.Builder, x: Tuple2(CounterClass, ObjectClass)) {
+	strings.write_byte(b, '[')
+	encode_CounterClass(b, x._0)
+	strings.write_byte(b, ',')
+	encode_ObjectClass(b, x._1)
+	strings.write_byte(b, ']')
+}
+
+enc_t2_t2_CounterClass_ObjectClass_i64 :: proc(b: ^strings.Builder, x: Tuple2(Tuple2(CounterClass, ObjectClass), i64)) {
+	strings.write_byte(b, '[')
+	enc_t2_CounterClass_ObjectClass(b, x._0)
+	strings.write_byte(b, ',')
+	encode_i64(b, x._1)
+	strings.write_byte(b, ']')
+}
+
+enc_dyn_t2_t2_CounterClass_ObjectClass_i64 :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(Tuple2(CounterClass, ObjectClass), i64)) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		enc_t2_t2_CounterClass_ObjectClass_i64(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+enc_map_TriggerKind_i64 :: proc(b: ^strings.Builder, x: map[TriggerKind]i64) {
+	strings.write_byte(b, '{')
+	first := true
+	for k, val in x {
+		if !first do strings.write_byte(b, ',')
+		first = false
+		encode_TriggerKind(b, k)
+		strings.write_byte(b, ':')
+		encode_i64(b, val)
+	}
+	strings.write_byte(b, '}')
+}
+
+dec_dyn_AnnouncementSubject :: proc(v: json.Value, out: ^[dynamic]AnnouncementSubject) -> bool {
+	if v.kind != .Array do return fail("expected an array")
+	out^ = make([dynamic]AnnouncementSubject, len(v.items))
+	for item, i in v.items do if !decode_AnnouncementSubject(item, &out[i]) do return false
+	return true
+}
+
+enc_dyn_AnnouncementSubject :: proc(b: ^strings.Builder, x: [dynamic]AnnouncementSubject) {
+	strings.write_byte(b, '[')
+	for item, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		encode_AnnouncementSubject(b, item)
+	}
+	strings.write_byte(b, ']')
+}
+
+dec_opt_ComboWindow :: proc(v: json.Value, out: ^Maybe(ComboWindow)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: ComboWindow
+	if !decode_ComboWindow(v, &x) do return false
+	out^ = x
+	return true
+}
+
+enc_opt_ComboWindow :: proc(b: ^strings.Builder, x: Maybe(ComboWindow)) {
+	if y, ok := x.?; ok do encode_ComboWindow(b, y)
+	else do strings.write_string(b, "null")
+}
+
+dec_opt_AttackerInfo :: proc(v: json.Value, out: ^Maybe(AttackerInfo)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: AttackerInfo
+	if !decode_AttackerInfo(v, &x) do return false
+	out^ = x
+	return true
+}
+
+enc_opt_AttackerInfo :: proc(b: ^strings.Builder, x: Maybe(AttackerInfo)) {
+	if y, ok := x.?; ok do encode_AttackerInfo(b, y)
 	else do strings.write_string(b, "null")
 }
 

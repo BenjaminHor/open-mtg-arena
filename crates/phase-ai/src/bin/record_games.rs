@@ -26,6 +26,25 @@ use phase_ai::duel_suite::find_matchup;
 use phase_ai::duel_suite::run::resolve_matchup;
 use rand::rngs::StdRng;
 use rand::SeedableRng;
+use serde::Serialize;
+
+// Lines are written straight from the typed values, never through serde_json::Value: a Value's map keeps one
+// member per key, and serde writes some keys twice (an internally tagged enum holding another with the same tag,
+// TargetEffectDetail::Modification(PtDirection) is {"type": "Modification", "type": "Increase"}).
+#[derive(Serialize)]
+struct Header<'a> {
+    matchup: &'a str,
+    seed: u64,
+    initial_state: &'a GameState,
+}
+
+#[derive(Serialize)]
+struct Step<'a, A: Serialize> {
+    step: usize,
+    actor: Option<u8>,
+    action: &'a A,
+    state: &'a GameState,
+}
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -53,8 +72,8 @@ fn main() {
         let mut state = GameState::new_two_player(seed);
         load_and_hydrate_decks(&mut state, &payload, Some(&db));
         engine::game::engine::start_game(&mut state);
-        let header = serde_json::json!({ "matchup": matchup, "seed": seed, "initial_state": &state });
-        writeln!(out, "{header}").unwrap();
+        serde_json::to_writer(&mut out, &Header { matchup, seed, initial_state: &state }).unwrap();
+        writeln!(out).unwrap();
 
         let ai_players: HashSet<PlayerId> = [PlayerId(0), PlayerId(1)].into_iter().collect();
         let config = create_config_for_players(AiDifficulty::Medium, Platform::Native, 2).into_measurement(seed);
@@ -74,13 +93,9 @@ fn main() {
             let mut prev = before;
             for result in &run.results {
                 let actor = eligible_ai_decision(&prev, &ai_players).map(|(submitter, _)| submitter.0);
-                let line = serde_json::json!({
-                    "step": step,
-                    "actor": actor,
-                    "action": &result.action,
-                    "state": &result.state,
-                });
-                writeln!(out, "{line}").unwrap();
+                let line = Step { step, actor, action: &result.action, state: &result.state };
+                serde_json::to_writer(&mut out, &line).unwrap();
+                writeln!(out).unwrap();
                 prev = result.state.clone();
                 step += 1;
             }

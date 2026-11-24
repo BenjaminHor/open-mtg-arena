@@ -31,7 +31,13 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     (ManaPool, ObjectMap, ResolvedRulesJournal, GameFormat, PendingCoinFlip, ...), 44 default/skip functions, and ~10
     types defined by macros or outside the model (InteractionId family, ActiveLibrarySearches, the ChaCha20 RNG).
     GameState's own reading goes through GameStateDecode (migrations), so its codec is checked against today's saves.
-  - Next: those hand pieces, then a saved-game round trip, then the recorder (O-1 second half).
+  - **Game states round-trip (2026-11-24).** The full game-state model compiles (1,414 types) and every state and
+    action of six recorded AI-vs-AI games (`crates/phase-ai/src/bin/record_games.rs`, 2,134 steps over six matchups)
+    decodes and encodes back equal (`odin/tools/gamestate_roundtrip`): 0 failures, 0 mismatches. Rules and the one
+    gap left (payment recovery checkpoints) in docs/odin-port.md, "Game-state model". Recordings are 150-200 MB a game
+    (full state per step), kept out of the repo for now.
+  - Next: the replay harness (O-2): an Odin runner that loads a recording and, as logic is ported, applies each
+    action and compares the state; a compact checkpoint form and a committed small corpus; then O-3, the core slice.
 - **D-177 import merged** (PR #116, squash bdd74cf, 2026-11-24, CI green). Pages deploys it from main (run 21,
   queued behind a now-redundant branch check build, run 20, that this session wasn't allowed to cancel). Next: once
   live, play it at https://benjaminhor.github.io/open-mtg-arena/ (phone sizes), ask the owner to try it on the
@@ -2576,6 +2582,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- (2026-11-24, found by the Odin port) A game state whose WaitingFor holds a target slot with
+  `TargetEffectDetail::Modification(..)` can't round-trip through `serde_json::Value`: serde writes `"type"` twice
+  (`{"type":"Modification","type":"Increase"}`, an internally tagged enum inside another with the same tag) and a
+  Value's map keeps only the last. Direct to/from strings is fine. Matters only to code that goes through Value
+  (`json!`, `to_value`); the Odin port's recorder writes strings.
 - (2026-11-23, UX review of M3-05, in both layouts, not yet fixed) The zone browser crops its card at the right; the
   main button disabled ("No Attacks / Not yet: 1 must attack") reads as bare text, without a button's shape.
 - Fixed (2026-11-23, found while planning the pacing slice): the whole-game e2e (`playWholeGame`, M3's acceptance,

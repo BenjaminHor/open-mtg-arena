@@ -230,9 +230,27 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
         println!("  hand: {n}");
     }
     let (fns, failed) = translate::defaults_and_skips(&mut e);
+    // Fields written but never read (`skip_deserializing`): values the Rust engine derives (available_mana_pips,
+    // allows_cancel_cast). The model reads none of them; the round-trip tests leave them out of the comparison
+    // until the logic that derives them is ported.
+    let mut write_only = BTreeSet::new();
+    for n in e.wire.iter().filter(|n| e.emitted.contains(*n)) {
+        for d in reg.types.get(n).into_iter().flatten().filter(|d| d.derives_serialize()) {
+            if let model::Kind::Struct(model::Fields::Named(fs)) = &d.kind {
+                for f in fs.iter().filter(|f| f.serde.skip_deserializing && !f.serde.skip_serializing && !f.serde.skip) {
+                    write_only.insert(f.serde.rename.clone().unwrap_or_else(|| f.name.clone().unwrap()));
+                }
+            }
+        }
+    }
+    let write_only_list: Vec<String> = write_only.iter().map(|n| format!("\t\"{n}\",")).collect();
     std::fs::write(
         out_dir.join("generated_defaults.odin"),
-        format!("{HEADER}import \"../json\"\n\n_ :: json\n\n{fns}\n{}", e.defaults_out),
+        format!(
+            "{HEADER}import \"../json\"\n\n_ :: json\n\n// Serialized fields the Rust engine writes but never reads (`skip_deserializing`).\nWRITE_ONLY_FIELDS := []string{{\n{}\n}}\n\n{fns}\n{}",
+            write_only_list.join("\n"),
+            e.defaults_out
+        ),
     )
     .unwrap();
     println!("defaults and skip predicates: {} translated, {} to write by hand", e.default_reqs.len() + e.skip_reqs.len() - failed.len(), failed.len());

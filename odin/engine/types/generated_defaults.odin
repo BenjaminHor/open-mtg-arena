@@ -6,6 +6,23 @@ import "../json"
 
 _ :: json
 
+// Serialized fields the Rust engine writes but never reads (`skip_deserializing`).
+WRITE_ONLY_FIELDS := []string{
+	"allows_cancel_cast",
+	"available_mana_pips",
+	"blocked_abilities",
+	"can_look_at_top_of_library",
+	"commander_color_identity",
+	"commander_tax",
+	"devotion",
+	"has_mana_ability",
+	"has_pending_cast",
+	"has_summoning_sickness",
+	"loyalty_activations_this_turn",
+	"mana_ability_index",
+	"unimplemented_mechanics",
+}
+
 default_AbilityActivationRecord_battlefield_zone :: proc() -> Zone {
 	return Zone.Battlefield
 }

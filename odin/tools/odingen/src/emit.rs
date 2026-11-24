@@ -503,9 +503,23 @@ impl<'a> Emitter<'a> {
 	return true
 ")
             }
-            (1, Shape::Ptr(i) | Shape::OptPtr(i)) => {
+            (1, Shape::OptPtr(i)) => {
                 let e = self.enc(i);
                 format!("	if x == nil do strings.write_string(b, \"null\")
+	else do {e}(b, x^)
+")
+            }
+            (1, Shape::Ptr(i)) if !matches!(**i, Shape::Vec(_) | Shape::Map(..) | Shape::Str) => {
+                let e = self.enc(i);
+                format!("	if x == nil do strings.write_string(b, \"null\")
+	else do {e}(b, x^)
+")
+            }
+            (1, Shape::Ptr(i)) => {
+                // A shared collection (Arc<Vec<T>>) is never null in Rust; nil here is a field read as absent,
+                // standing for the empty collection.
+                let (it, e) = (self.odin(i), self.enc(i));
+                format!("	if x == nil {{ zero: {it}; {e}(b, zero) }}
 	else do {e}(b, x^)
 ")
             }
@@ -726,6 +740,15 @@ impl<'a> Emitter<'a> {
 
     /// An Odin expression for `Default::default()` of this shape, or None when Odin's zero value is it.
     pub fn default_expr(&mut self, s: &Shape) -> Option<String> {
+        // Box<T>/Arc<T>: a fresh allocation of T's default (Box::default()). Shared collections stay nil, which
+        // the codecs and skip tests read as empty.
+        if let Shape::Ptr(i) = s {
+            if matches!(**i, Shape::Vec(_) | Shape::Map(..) | Shape::Str) {
+                return None;
+            }
+            let inner = self.default_expr(i).unwrap_or_else(|| format!("{}{{}}", self.odin(i)));
+            return Some(format!("new_clone({inner})"));
+        }
         let Shape::Named(n, a) = s else { return None };
         if !a.is_empty() {
             return None;
@@ -1052,7 +1075,11 @@ impl<'a> Emitter<'a> {
             (_, "is_empty") if pred.starts_with("std::collections::") || pred.starts_with("Vec") || pred.starts_with("HashMap") || pred.starts_with("HashSet")
                 || pred.starts_with("BTreeMap") || pred.starts_with("BTreeSet") || pred.starts_with("im::")
                 || pred.starts_with("String") || pred.starts_with("IndexMap") || pred.starts_with("SmallVec")
-                || pred.starts_with("VecDeque") => format!("len({expr}) == 0"),
+                || pred.starts_with("VecDeque") => match shape {
+                    // A shared collection (Arc<Vec<T>>): nil stands for the empty one.
+                    Shape::Ptr(_) | Shape::OptPtr(_) => format!("({expr} == nil || len({expr}^) == 0)"),
+                    _ => format!("len({expr}) == 0"),
+                },
             ("std::ops::Not::not" | "Not::not", _) | (_, "is_false") => format!("!{expr}"),
             (_, "is_zero_u32" | "is_zero_usize" | "is_zero_u64" | "is_zero" | "is_zero_u32_field" | "is_zero_u8"
                 | "is_zero_i32") if matches!(shape, Shape::Int(_)) => format!("{expr} == 0"),
@@ -1432,9 +1459,21 @@ impl<'a> Emitter<'a> {
                     let sh = self.shape(&fs[0].ty, params);
                     let (d, e) = (self.dec(&sh), self.enc(&sh));
                     let _ = writeln!(dec, "\tcase {}: tmp: {vt}; if !{d}({data_expr}, &tmp._0) do return fail(\"{ctx}\"); out^ = tmp", lits.join(", "));
-                    let unit_payload = matches!(&sh, Shape::Named(n, a) if a.is_empty()
-                        && matches!(self.def(n).map(|d| &d.kind), Some(Kind::Enum(pv)) if pv.iter().all(|x| matches!(x.fields, Fields::Unit))));
-                    if internally && unit_payload {
+                    // The payload's own serde container attributes (an enum written as a string, or tagged).
+                    let inner_def = match &sh { Shape::Named(n, a) if a.is_empty() => self.def(n), _ => None };
+                    let inner_tag = inner_def.and_then(|d| d.serde.tag.clone());
+                    let unit_payload = inner_def.is_some_and(|d| d.serde.tag.is_none() && !d.serde.untagged
+                        && matches!(&d.kind, Kind::Enum(pv) if pv.iter().all(|x| matches!(x.fields, Fields::Unit))));
+                    if internally && inner_tag.is_some() && inner_tag == s.tag {
+                        // An internally tagged payload with the same tag key: serde writes the key twice
+                        // ({"type": "Modification", "type": "Increase"}); the payload reads the second.
+                        let tag = s.tag.clone().unwrap();
+                        dec = dec.replace(&format!("\tcase {}: tmp: {vt}; if !{d}({data_expr}, &tmp._0) do return fail(\"{ctx}\"); out^ = tmp\n", lits.join(", ")),
+                            &format!("\tcase {}: tmp: {vt}; if !{d}(json.without_first(v, \"{tag}\"), &tmp._0) do return fail(\"{ctx}\"); out^ = tmp\n", lits.join(", ")));
+                        let m = self.mem(&sh);
+                        let _ = writeln!(enc, "\tcase {vt}: strings.write_byte(b, '{{'); f := true; member(b, &f, \"{tag}\"); json.write_string(b, \"{vname}\"); {m}(b, y._0, &f); strings.write_byte(b, '}}')");
+                        let _ = writeln!(mem, "\tcase {vt}: member(b, first, \"{tag}\"); json.write_string(b, \"{vname}\"); {m}(b, y._0, first)");
+                    } else if internally && unit_payload {
                         // serde's tagged serializer writes a unit-enum payload as one more member, `"Inner": null`
                         // ({"type": "Destination", "Hand": null}); reading takes the member that isn't the tag.
                         let tag = s.tag.clone().unwrap();

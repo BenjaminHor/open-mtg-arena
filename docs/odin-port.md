@@ -130,7 +130,32 @@ procedure; the 62 hand-written ones get hand-written Odin codecs that the genera
   predicates in use). Sets and maps written sorted (`deterministic_serde`) are sorted by a generated comparison that
   mirrors Rust's derived `Ord` (declaration order).
 - **Test**: decode then encode every card of `card-data.json` and compare with the original as JSON values (object key
-  order ignored, array order kept); the same for saved game states once the recorder exists.
+  order ignored, array order kept); the same for recorded game states (`odin/tools/gamestate_roundtrip`).
+- **Game-state model (2026-11-24)**: roots GameState, GameAction, WaitingFor, GameEvent, ReplayLog and the card data:
+  1,414 types, 1,304 serialized, 13 with hand-written codecs (hand_codecs.odin, each citing the Rust impl it mirrors).
+  Rules the generator follows, each checked against its Rust:
+  - A hand-written codec declares the generated codecs it calls (`hand_deps` in odingen's main.rs); a hand type's
+    other fields are runtime state and get no codecs (ManaPool's slot index, the journal's index).
+  - `from`/`into` wire types: ManaPool is modeled as its wire form (the units in pool order); ResolvedRulesJournal
+    encodes through ResolvedRulesJournalWire (the runtime `index` is rebuilt by logic, later). Types with only `from`
+    write the derived form, so the generated decoder reads that (the legacy forms their `From` also accepts aren't
+    read). Types with `into` get hand codecs.
+  - `Box<T>` read as absent holds `T`'s default (Box::default()); a shared collection (`Arc<Vec<T>>`) read as absent
+    stays nil, which codecs and skip tests treat as empty.
+  - An internally tagged enum holding another with the same tag key writes the key twice
+    (`{"type": "Modification", "type": "Increase"}`); the payload reads the second. Our JSON reader keeps repeated
+    keys and `json.equal` pairs them by occurrence. (serde_json::Value keeps only the last, so the recorder writes
+    lines straight from the typed values.)
+  - Fields written but never read (`skip_deserializing`: available_mana_pips, allows_cancel_cast, ... 13 names, listed
+    in `WRITE_ONLY_FIELDS`) are values the engine derives. The model doesn't read them, and the round trips leave them
+    out of the comparison, like `is_mana_ability`, until the logic that derives them is ported.
+  - Not ported yet, failing loudly when met: a payment recovery checkpoint's nested state (`persisted_checkpoint_state`,
+    written through the versioned ResolutionStateWire).
+  - Map adapters write entries in model order where Rust sorts them; value comparison ignores member order. Byte-
+    identical output would sort there.
+- **Result (2026-11-24)**: six recorded AI-vs-AI games (2,134 steps, six matchups; `record-games`, seeds 1-6) round-trip
+  every state (2,140) and action (2,134) with 0 failures and 0 mismatches; decode 7.7 ms and encode+compare 6.5 ms per
+  state (debug build, ~440 KB of JSON each). The card data still round-trips (36,406 cards).
 - **Known performance question for later**: the Rust engine clones `GameState` cheaply (persistent `im` collections),
   which the AI's search relies on. Plain Odin arrays and maps make a clone a deep copy, so the engine's state layout
   (arenas, copy-on-write, or undo logs instead of clones) is decided when the AI is ported, measured against Rust.

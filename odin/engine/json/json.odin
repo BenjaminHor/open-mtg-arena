@@ -259,6 +259,30 @@ get :: proc(v: Value, key: string) -> (Value, bool) {
 	return {}, false
 }
 
+// The nth (from 0) member named key.
+get_nth :: proc(v: Value, key: string, nth: int) -> (Value, bool) {
+	n := nth
+	for m in v.members do if m.key == key {
+		if n == 0 do return m.value, true
+		n -= 1
+	}
+	return {}, false
+}
+
+// v without its first member named key (reading the inner of a nested internally tagged enum, whose tag is the
+// second occurrence).
+without_first :: proc(v: Value, key: string) -> Value {
+	for m, i in v.members do if m.key == key {
+		out := v
+		ms := make([]Member, len(v.members) - 1)
+		copy(ms, v.members[:i])
+		copy(ms[i:], v.members[i + 1:])
+		out.members = ms
+		return out
+	}
+	return v
+}
+
 to_u64 :: proc(v: Value) -> (u64, bool) {
 	if v.kind != .Number do return 0, false
 	return strconv.parse_u64_of_base(v.text, 10)
@@ -371,8 +395,12 @@ equal :: proc(a, b: Value, path: ^strings.Builder = nil) -> bool {
 			}
 			return false
 		}
-		for m in a.members {
-			other, ok := get(b, m.key)
+		for m, i in a.members {
+			// A repeated key (serde writes one when an internally tagged enum holds another with the same tag)
+			// pairs with the same occurrence on the other side.
+			nth := 0
+			for prev in a.members[:i] do if prev.key == m.key do nth += 1
+			other, ok := get_nth(b, m.key, nth)
 			mark := path != nil ? strings.builder_len(path^) : 0
 			if path != nil { strings.write_byte(path, '.'); strings.write_string(path, m.key) }
 			if !ok { note(path, " (missing on the right)"); return false }

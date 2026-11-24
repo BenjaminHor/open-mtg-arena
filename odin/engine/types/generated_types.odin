@@ -5586,6 +5586,149 @@ TriggerSourceContext :: struct {
 	subject_scope: SubjectIncarnationScope,
 }
 
+FrameVec :: struct {
+	frames: [dynamic]ResolutionFrame,
+}
+
+ResolutionFrame_AbilityContinuation :: struct {
+	_0: AbilityContinuationFrame,
+}
+ResolutionFrame_RepeatFor :: struct {
+	_0: PendingRepeatIteration,
+}
+ResolutionFrame_RepeatUntil :: struct {
+	_0: PendingRepeatUntil,
+}
+ResolutionFrame_RepeatedOptionalPayment :: struct {
+	_0: RepeatedOptionalPaymentFrame,
+}
+ResolutionFrame_ChangeZone :: struct {
+	_0: ^ChangeZoneFrame,
+}
+ResolutionFrame_BatchDelivery :: struct {
+	_0: ^PendingBatchDeliveries,
+}
+ResolutionFrame_CounterMoves :: struct {
+	_0: PendingCounterMoveQueue,
+}
+ResolutionFrame_CounterRemovals :: struct {
+	_0: PendingCounterRemovalQueue,
+}
+ResolutionFrame_CounterAdditions :: struct {
+	_0: PendingCounterAdditionQueue,
+}
+ResolutionFrame_CopyToken :: struct {
+	_0: PendingCopyTokenResolution,
+}
+ResolutionFrame_DebugCardEntries :: struct {
+	_0: ^PendingDebugCardEntries,
+}
+ResolutionFrame_EachPlayerCopyChosen :: struct {
+	_0: PendingEachPlayerCopyChosen,
+}
+ResolutionFrame_ChooseOneOf :: struct {
+	_0: PendingChooseOneOf,
+}
+ResolutionFrame_VoteBallot :: struct {
+	_0: PendingVoteBallotIteration,
+}
+ResolutionFrame_PerPlayerZoneChoice :: struct {
+	_0: PendingPerPlayerZoneChoice,
+}
+ResolutionFrame_PerCategoryZoneChoice :: struct {
+	_0: PerCategoryZoneChoiceFrame,
+}
+ResolutionFrame_OptionalEffect :: struct {
+	_0: OptionalEffectFrame,
+}
+ResolutionFrame_CoinFlip :: struct {
+	_0: PendingCoinFlip,
+}
+ResolutionFrame_DieRoll :: struct {
+	_0: ^PendingDieRoll,
+}
+ResolutionFrame_Proliferate :: struct {
+	_0: PendingProliferateActions,
+}
+ResolutionFrame_MultiDraw :: struct {
+	_0: MultiDrawFrame,
+}
+ResolutionFrame_Discard :: struct {
+	_0: ^DiscardFrame,
+}
+ResolutionFrame_ConniveReentry :: struct {
+	_0: PendingConniveReentry,
+}
+ResolutionFrame_LifeTotalAssignment :: struct {
+	_0: PendingLifeTotalAssignment,
+}
+ResolutionFrame_SpellResolution :: struct {
+	_0: PendingSpellResolution,
+}
+ResolutionFrame_MutateMerge :: struct {
+	_0: PendingMutateMerge,
+}
+ResolutionFrame_CipherEncode :: struct {
+	_0: PendingCipherEncode,
+}
+ResolutionFrame_EntryAttackSeat :: struct {
+	_0: PendingEntryAttackSeat,
+}
+ResolutionFrame_PostReplacement :: struct {
+	_0: PostReplacementDrainStack,
+}
+ResolutionFrame :: union {
+	ResolutionFrame_AbilityContinuation,
+	ResolutionFrame_RepeatFor,
+	ResolutionFrame_RepeatUntil,
+	ResolutionFrame_RepeatedOptionalPayment,
+	ResolutionFrame_ChangeZone,
+	ResolutionFrame_BatchDelivery,
+	ResolutionFrame_CounterMoves,
+	ResolutionFrame_CounterRemovals,
+	ResolutionFrame_CounterAdditions,
+	ResolutionFrame_CopyToken,
+	ResolutionFrame_DebugCardEntries,
+	ResolutionFrame_EachPlayerCopyChosen,
+	ResolutionFrame_ChooseOneOf,
+	ResolutionFrame_VoteBallot,
+	ResolutionFrame_PerPlayerZoneChoice,
+	ResolutionFrame_PerCategoryZoneChoice,
+	ResolutionFrame_OptionalEffect,
+	ResolutionFrame_CoinFlip,
+	ResolutionFrame_DieRoll,
+	ResolutionFrame_Proliferate,
+	ResolutionFrame_MultiDraw,
+	ResolutionFrame_Discard,
+	ResolutionFrame_ConniveReentry,
+	ResolutionFrame_LifeTotalAssignment,
+	ResolutionFrame_SpellResolution,
+	ResolutionFrame_MutateMerge,
+	ResolutionFrame_CipherEncode,
+	ResolutionFrame_EntryAttackSeat,
+	ResolutionFrame_PostReplacement,
+}
+
+UnTellKind_Physical :: struct {
+	_0: PhysicalTell,
+}
+UnTellKind_SaysWord :: struct {
+}
+UnTellKind_SaysNumber :: struct {
+}
+UnTellKind :: union {
+	UnTellKind_Physical,
+	UnTellKind_SaysWord,
+	UnTellKind_SaysNumber,
+}
+
+GotchaOffer :: struct {
+	id: u64,
+	player: PlayerId,
+	source: ObjectIdentityBinding,
+	returns: ObjectIdentityBinding,
+}
+
 AttackTarget_Player :: struct {
 	_0: PlayerId,
 }
@@ -12671,10 +12814,6 @@ ZoneChangeLibraryKnowledgeStamp :: struct {
 	destination: Maybe(LibraryKnowledgeStamp),
 }
 
-FrameVec :: struct {
-	frames: [dynamic]ResolutionFrame,
-}
-
 ResolutionPaymentTranscriptEntry :: struct {
 	authenticated_actor: PlayerId,
 	semantic_owner: PlayerId,
@@ -13010,26 +13149,6 @@ MayTriggerAutoChoiceSelector_SameCard :: struct {
 MayTriggerAutoChoiceSelector :: union {
 	MayTriggerAutoChoiceSelector_ExactInstance,
 	MayTriggerAutoChoiceSelector_SameCard,
-}
-
-UnTellKind_Physical :: struct {
-	_0: PhysicalTell,
-}
-UnTellKind_SaysWord :: struct {
-}
-UnTellKind_SaysNumber :: struct {
-}
-UnTellKind :: union {
-	UnTellKind_Physical,
-	UnTellKind_SaysWord,
-	UnTellKind_SaysNumber,
-}
-
-GotchaOffer :: struct {
-	id: u64,
-	player: PlayerId,
-	source: ObjectIdentityBinding,
-	returns: ObjectIdentityBinding,
 }
 
 ReplacementAutoChoiceIdentity_Definition :: struct {
@@ -16441,6 +16560,268 @@ SubjectIncarnationScope :: enum u16 {
 	DepartureWindow,
 }
 
+AbilityContinuationFrame :: struct {
+	pending: PendingContinuation,
+	choose_zone_trigger_context: Maybe(ResolvingTriggerContext),
+}
+
+PendingRepeatIteration :: struct {
+	ability: ^ResolvedAbility,
+	tracked_members: [dynamic]ObjectId,
+	iterated_counter_kinds: [dynamic]CounterType,
+	next_iteration: int,
+	total_iterations: int,
+	order_fixed: Maybe(int),
+}
+
+PendingRepeatUntil :: struct {
+	ability: ^ResolvedAbility,
+	stop_progress: Maybe(RepeatUntilStopWitness),
+	iteration_progress: Maybe(RepeatUntilIterationWitness),
+}
+
+RepeatedOptionalPaymentFrame :: struct {
+	pending: ^PendingRepeatedOptionalPayment,
+	optional_cost_payments_this_resolution: u32,
+}
+
+ChangeZoneFrame :: struct {
+	pending: Maybe(PendingChangeZoneIteration),
+	devour_eligible_snapshot: Maybe([dynamic]ObjectId),
+	awaiting_batch: Maybe(ChangeZoneBatchMarker),
+}
+
+PendingBatchDeliveries :: struct {
+	component_delivery_parent: Maybe(PendingComponentDeliveryParent),
+	logical_zone_change_group: LogicalZoneChangeGroup,
+	paused_current: Maybe(PendingZoneChangeDelivery),
+	remaining: [dynamic]ObjectId,
+	destination: Zone,
+	source_id: Maybe(ObjectId),
+	library_reorder: Maybe(LibraryReorderOperation),
+	enter_tapped: EtbTapState,
+	exile_tracking: ZoneDeliveryExileTracking,
+	library_placement: Maybe(LibraryPosition),
+	completion: Maybe(BatchCompletion),
+	replacement_applied: [dynamic]AppliedReplacementKey,
+	requests: [dynamic]PendingBatchZoneMoveRequest,
+	attempted: [dynamic]ObjectId,
+	zone_change_record_start: int,
+	deferred_events: [dynamic]GameEvent,
+	staged: Maybe(StagedBatchDelivery),
+	pre_entry_battlefield: Maybe([dynamic]ObjectId),
+}
+
+PendingCounterMoveQueue :: struct {
+	remaining: [dynamic]PendingCounterMove,
+	effect_kind: EffectKind,
+	source_id: ObjectId,
+}
+
+PendingCounterRemovalQueue :: struct {
+	remaining: [dynamic]PendingCounterRemoval,
+	effect_kind: EffectKind,
+	source_ability_id: ObjectId,
+	total: u32,
+	applied_total: u32,
+	in_flight: Maybe(PendingCounterRemovalInFlight),
+}
+
+PendingCounterAdditionQueue :: struct {
+	remaining: [dynamic]PendingCounterAddition,
+	completion: Maybe(PendingEffectResolved),
+}
+
+PendingCopyTokenResolution :: struct {
+	created_ids: [dynamic]ObjectId,
+	remaining: [dynamic]PendingCopyTokenBatch,
+	effect_kind: EffectKind,
+	source_id: ObjectId,
+	referent_set: Maybe(TrackedSetId),
+	offered_batch: OfferedBatchCustody,
+}
+
+PendingDebugCardEntries :: struct {
+	source: DebugCardEntrySource,
+	owner: PlayerId,
+	attach_to: Maybe(AttachTarget),
+	nonlegendary: bool,
+	creation_kind: DebugCardCreationKind,
+	remaining: u32,
+}
+
+PendingEachPlayerCopyChosen :: struct {
+	stage: CopyChosenStage,
+	player: PlayerId,
+	chosen: [dynamic]ObjectId,
+	remaining_choices: [dynamic]CopyChosenSelection,
+	choose_filter: TargetFilter,
+	min: u32,
+	max: u32,
+	copy_modifications: [dynamic]ContinuousModification,
+	scale: Maybe(CopyScale),
+	choose_scope: CopyChooseScope,
+	source_id: ObjectId,
+	source_controller: PlayerId,
+	scoped_players: [dynamic]PlayerId,
+	trigger_event: Maybe(GameEvent),
+}
+
+PendingChooseOneOf :: struct {
+	controller: PlayerId,
+	source_id: ObjectId,
+	branches: [dynamic]AbilityDefinition,
+	parent_occurrences: ParentTargetOccurrences,
+	context_: ^SpellContext,
+	continuation: ^ResolvedAbility,
+	replacement_applied: [dynamic]AppliedReplacementKey,
+	remaining_players: [dynamic]PlayerId,
+	trigger_context: Maybe(ResolvingTriggerContext),
+}
+
+PendingVoteBallotIteration :: struct {
+	ability_template: ^AbilityDefinition,
+	remaining_voters: [dynamic]PlayerId,
+	source_id: ObjectId,
+	controller: PlayerId,
+	chain_root_targets: [dynamic]TargetRef,
+}
+
+PendingPerPlayerZoneChoice :: struct {
+	ability: ^ResolvedAbility,
+	remaining_players: [dynamic]PlayerId,
+	accumulated: bool,
+	current: Maybe(PlayerId),
+	nominee: Maybe(PlayerId),
+	tracked_pool: Maybe(TrackedSetId),
+}
+
+PerCategoryZoneChoiceFrame :: struct {
+	pending: PendingPerCategoryZoneChoice,
+}
+
+OptionalEffectFrame :: struct {
+	ability: ^ResolvedAbility,
+	trigger_event: Maybe(GameEvent),
+	trigger_events: [dynamic]GameEvent,
+	trigger_match_count: Maybe(u32),
+	return_result_occurrence: Maybe(ReturnResultOccurrenceId),
+	replacement_action: Maybe(ReplacementActionScope),
+	parked_poll: ^ParkedOpponentMayPoll,
+}
+
+PendingCoinFlip :: struct {
+	source_id: ObjectId,
+	controller: PlayerId,
+	flipper: PlayerId,
+	win_effect: ^ResolvedAbility,
+	lose_effect: ^ResolvedAbility,
+	kind: PendingCoinFlipKind,
+	chain_root_targets: [dynamic]TargetRef,
+	branch_context: FlipBranchContext,
+	trigger_context: Maybe(ResolvingTriggerContext),
+}
+
+PendingDieRoll :: struct {
+	source_id: ObjectId,
+	controller: PlayerId,
+	roller: PlayerId,
+	quantity_controller: Maybe(PlayerId),
+	scoped_player: Maybe(PlayerId),
+	targets: [dynamic]TargetRef,
+	sides: u8,
+	results: [dynamic]u8,
+	ignore_rules: [dynamic]DieRollIgnoreRule,
+	results_table: [dynamic]DieResultBranch,
+	modifier: Maybe(DieRollModifier),
+	die_result: Maybe(i32),
+	next_index: int,
+	running_total: i32,
+	rolled_any: bool,
+	forced_ignored: [dynamic]int,
+	chain_root_targets: [dynamic]TargetRef,
+	trigger_context: Maybe(ResolvingTriggerContext),
+	illegal_target_slots: [dynamic]int,
+	chain_root_target_pins: [dynamic]Maybe(ObjectIncarnationRef),
+	declared_capture: Maybe(CapturedDeclarationPayload),
+	local_target_pins: [dynamic]Maybe(ObjectIncarnationRef),
+	keyed_target_incarnations: [dynamic]ObjectIncarnationRef,
+	declared_player: Maybe(DeclaredPlayerTarget),
+}
+
+PendingProliferateActions :: struct {
+	actor: PlayerId,
+	source_id: ObjectId,
+	remaining: u32,
+}
+
+MultiDrawFrame :: struct {
+	draw_sequences: DrawSequenceStack,
+	connive_reentry: Maybe(PendingConniveReentry),
+}
+
+DiscardFrame :: struct {
+	id: DiscardFrameId,
+	source_id: Maybe(ObjectId),
+	results: [dynamic]DiscardedCardResult,
+}
+
+PendingConniveReentry :: struct {
+	conniver: ConniveSubject,
+	count: u32,
+	applied: [dynamic]AppliedReplacementKey,
+}
+
+PendingLifeTotalAssignment :: struct {
+	completion_player: PlayerId,
+	remaining: [dynamic]Tuple2(PlayerId, i32),
+	completion: Maybe(PendingEffectResolved),
+}
+
+PendingSpellResolution :: struct {
+	object_id: ObjectId,
+	controller: PlayerId,
+	casting_variant: CastingVariant,
+	cast_from_zone: Maybe(Zone),
+	cast_controller: Maybe(PlayerId),
+	cast_timing_permission: Maybe(CastTimingPermission),
+	spell_targets: [dynamic]TargetRef,
+	actual_mana_spent: u32,
+	kickers_paid: [dynamic]KickerVariant,
+	additional_cost_payment_count: u32,
+	additional_cost_payments: [dynamic]AdditionalCostInstancePayment,
+	convoked_creatures: [dynamic]ObjectId,
+}
+
+PendingMutateMerge :: struct {
+	merging_id: ObjectId,
+	target_id: ObjectId,
+	controller: PlayerId,
+}
+
+PendingCipherEncode :: struct {
+	stage: CipherEncodeStage,
+	card_id: ObjectId,
+	controller: PlayerId,
+	creatures: [dynamic]ObjectId,
+}
+
+PendingEntryAttackSeat :: struct {
+	entrant: ObjectIncarnationRef,
+}
+
+PostReplacementDrainStack :: struct {
+	drains: [dynamic]PostReplacementDrain,
+	id: Maybe(PostReplacementFrameId),
+}
+
+PhysicalTell :: enum u16 {
+	TouchFace,
+	TouchTable,
+	Laugh,
+	FlickCards,
+}
+
 ManaSourceOutput_Concrete :: struct {
 	_0: ManaType,
 }
@@ -18261,13 +18642,6 @@ LibrarySearchCardFaceView :: struct {
 ActivationObservers :: enum u16 {
 	Unbound,
 	Bound,
-}
-
-PhysicalTell :: enum u16 {
-	TouchFace,
-	TouchTable,
-	Laugh,
-	FlickCards,
 }
 
 SpellAnnouncement :: distinct u64
@@ -21037,125 +21411,6 @@ LibraryKnowledgeStamp :: struct {
 	boundary_generation: u64,
 }
 
-ResolutionFrame_AbilityContinuation :: struct {
-	_0: AbilityContinuationFrame,
-}
-ResolutionFrame_RepeatFor :: struct {
-	_0: PendingRepeatIteration,
-}
-ResolutionFrame_RepeatUntil :: struct {
-	_0: PendingRepeatUntil,
-}
-ResolutionFrame_RepeatedOptionalPayment :: struct {
-	_0: RepeatedOptionalPaymentFrame,
-}
-ResolutionFrame_ChangeZone :: struct {
-	_0: ^ChangeZoneFrame,
-}
-ResolutionFrame_BatchDelivery :: struct {
-	_0: ^PendingBatchDeliveries,
-}
-ResolutionFrame_CounterMoves :: struct {
-	_0: PendingCounterMoveQueue,
-}
-ResolutionFrame_CounterRemovals :: struct {
-	_0: PendingCounterRemovalQueue,
-}
-ResolutionFrame_CounterAdditions :: struct {
-	_0: PendingCounterAdditionQueue,
-}
-ResolutionFrame_CopyToken :: struct {
-	_0: PendingCopyTokenResolution,
-}
-ResolutionFrame_DebugCardEntries :: struct {
-	_0: ^PendingDebugCardEntries,
-}
-ResolutionFrame_EachPlayerCopyChosen :: struct {
-	_0: PendingEachPlayerCopyChosen,
-}
-ResolutionFrame_ChooseOneOf :: struct {
-	_0: PendingChooseOneOf,
-}
-ResolutionFrame_VoteBallot :: struct {
-	_0: PendingVoteBallotIteration,
-}
-ResolutionFrame_PerPlayerZoneChoice :: struct {
-	_0: PendingPerPlayerZoneChoice,
-}
-ResolutionFrame_PerCategoryZoneChoice :: struct {
-	_0: PerCategoryZoneChoiceFrame,
-}
-ResolutionFrame_OptionalEffect :: struct {
-	_0: OptionalEffectFrame,
-}
-ResolutionFrame_CoinFlip :: struct {
-	_0: PendingCoinFlip,
-}
-ResolutionFrame_DieRoll :: struct {
-	_0: ^PendingDieRoll,
-}
-ResolutionFrame_Proliferate :: struct {
-	_0: PendingProliferateActions,
-}
-ResolutionFrame_MultiDraw :: struct {
-	_0: MultiDrawFrame,
-}
-ResolutionFrame_Discard :: struct {
-	_0: ^DiscardFrame,
-}
-ResolutionFrame_ConniveReentry :: struct {
-	_0: PendingConniveReentry,
-}
-ResolutionFrame_LifeTotalAssignment :: struct {
-	_0: PendingLifeTotalAssignment,
-}
-ResolutionFrame_SpellResolution :: struct {
-	_0: PendingSpellResolution,
-}
-ResolutionFrame_MutateMerge :: struct {
-	_0: PendingMutateMerge,
-}
-ResolutionFrame_CipherEncode :: struct {
-	_0: PendingCipherEncode,
-}
-ResolutionFrame_EntryAttackSeat :: struct {
-	_0: PendingEntryAttackSeat,
-}
-ResolutionFrame_PostReplacement :: struct {
-	_0: PostReplacementDrainStack,
-}
-ResolutionFrame :: union {
-	ResolutionFrame_AbilityContinuation,
-	ResolutionFrame_RepeatFor,
-	ResolutionFrame_RepeatUntil,
-	ResolutionFrame_RepeatedOptionalPayment,
-	ResolutionFrame_ChangeZone,
-	ResolutionFrame_BatchDelivery,
-	ResolutionFrame_CounterMoves,
-	ResolutionFrame_CounterRemovals,
-	ResolutionFrame_CounterAdditions,
-	ResolutionFrame_CopyToken,
-	ResolutionFrame_DebugCardEntries,
-	ResolutionFrame_EachPlayerCopyChosen,
-	ResolutionFrame_ChooseOneOf,
-	ResolutionFrame_VoteBallot,
-	ResolutionFrame_PerPlayerZoneChoice,
-	ResolutionFrame_PerCategoryZoneChoice,
-	ResolutionFrame_OptionalEffect,
-	ResolutionFrame_CoinFlip,
-	ResolutionFrame_DieRoll,
-	ResolutionFrame_Proliferate,
-	ResolutionFrame_MultiDraw,
-	ResolutionFrame_Discard,
-	ResolutionFrame_ConniveReentry,
-	ResolutionFrame_LifeTotalAssignment,
-	ResolutionFrame_SpellResolution,
-	ResolutionFrame_MutateMerge,
-	ResolutionFrame_CipherEncode,
-	ResolutionFrame_EntryAttackSeat,
-	ResolutionFrame_PostReplacement,
-}
-
 GameLogEntry :: struct {
 	seq: u32,
 	game_number: u8,
@@ -22332,16 +22587,6 @@ FinalizePrePaymentChecks :: struct {
 	cast_this_way_enters_mods: PendingEntersModifications,
 }
 
-OptionalEffectFrame :: struct {
-	ability: ^ResolvedAbility,
-	trigger_event: Maybe(GameEvent),
-	trigger_events: [dynamic]GameEvent,
-	trigger_match_count: Maybe(u32),
-	return_result_occurrence: Maybe(ReturnResultOccurrenceId),
-	replacement_action: Maybe(ReplacementActionScope),
-	parked_poll: ^ParkedOpponentMayPoll,
-}
-
 ManaAbilityActivationStage :: enum u16 {
 	Unpublished,
 	Published,
@@ -22661,6 +22906,255 @@ ManaSupertype :: enum u16 {
 PhaseOutCause :: enum u16 {
 	Directly,
 	Indirectly,
+}
+
+PendingContinuation :: struct {
+	chain: ^ResolvedAbility,
+	return_result_occurrence: Maybe(ReturnResultOccurrenceId),
+	pending_return_result_producer: Maybe(Tuple2(ReturnResultOccurrenceId, ReturnResultId)),
+	parent_kind: Maybe(EffectKind),
+	search_attach_host: Maybe(AttachTarget),
+	trigger_context: Maybe(ResolvingTriggerContext),
+	trigger_firing: Maybe(TriggerFiring),
+	attachment_choice: Maybe(PendingAttachmentChoice),
+	attachment_remainder: Maybe(PendingAttachmentRemainder),
+	player_scope_tail: Maybe(PendingPlayerScopeTail),
+	player_scope_queue_end: bool,
+	x_announcement: Maybe(ContinuationXAnnouncement),
+	replacement_action: Maybe(ReplacementActionScope),
+	head_payment_origin: ResolutionPaymentOrigin,
+}
+
+RepeatUntilStopWitness :: struct {
+	exiled_this_turn: [dynamic]ExiledStopInput,
+	linked: [dynamic]ExiledStopInput,
+}
+
+RepeatUntilIterationWitness :: struct {
+	choice: RepeatIterationChoice,
+	zone_changes_before: int,
+}
+
+PendingRepeatedOptionalPayment :: struct {
+	payment_unit: ^ResolvedAbility,
+	reflexive: ^ResolvedAbility,
+	remaining: u32,
+}
+
+PendingChangeZoneIteration :: struct {
+	logical_zone_change_group: LogicalZoneChangeGroup,
+	pending_return_result_producer: Maybe(Tuple2(ReturnResultOccurrenceId, ReturnResultId)),
+	paused_current: Maybe(PendingZoneChangeDelivery),
+	remaining: [dynamic]ChangeZoneMemberEntry,
+	source_id: ObjectId,
+	controller: PlayerId,
+	performed_by: PlayerId,
+	origin: Maybe(Zone),
+	destination: Zone,
+	enter_transformed: bool,
+	enters_under_player: Maybe(PlayerId),
+	duration: Maybe(Duration),
+	track_exiled_by_source: bool,
+	face_down_in_exile: ExileConcealment,
+	moved_count: Maybe(i32),
+	face_down_profile: Maybe(FaceDownProfile),
+	with_entry_effect: ^WithEntryEffect,
+	library_placement: Maybe(LibraryPosition),
+	library_reorder: Maybe(LibraryReorderOperation),
+	library_shuffle: LibraryShuffleMode,
+	enter_attached_to: Maybe(AttachTarget),
+	effect_kind: EffectKind,
+}
+
+ChangeZoneBatchMarker :: struct {
+	group_id: LogicalZoneChangeGroupId,
+	residency: BatchMarkerResidency,
+}
+
+PendingComponentDeliveryParent :: struct {
+	parent_group_id: LogicalZoneChangeGroupId,
+	member: ObjectIncarnationRef,
+	expected_event: ProposedEvent,
+	inherited_arrangements: [dynamic]StagedLibraryArrangement,
+}
+
+LogicalZoneChangeGroup :: struct {
+	logical_group_id: LogicalZoneChangeGroupId,
+	prospective_battlefield_members: [dynamic]LogicalZoneChangeProspectiveMember,
+	prospective_entrants: [dynamic]LogicalZoneChangeProspectiveMember,
+	terminal_outcomes: [dynamic]LogicalZoneChangeTerminalOutcome,
+	post_event_member_contexts: [dynamic]Maybe(TriggerSourceContext),
+	all_origin_occurrences: [dynamic]LogicalZoneChangeOccurrence,
+	immediately_before_latched: bool,
+	immediately_before_batched_triggers: [dynamic]LatchedBatchedTrigger,
+	immediately_before_suppress_triggers: [dynamic]LatchedSuppressTrigger,
+	collected_before_departure: [dynamic]CollectedZoneChange,
+	immediately_after_latched: bool,
+	immediately_after_batched_triggers: [dynamic]LatchedBatchedTrigger,
+	immediately_after_suppress_triggers: [dynamic]LatchedSuppressTrigger,
+	announced_members: [dynamic]ObjectIncarnationRef,
+	departed_owner_after_batched_triggers: [dynamic]LatchedBatchedTrigger,
+	departed_owner_after_suppress_triggers: [dynamic]LatchedSuppressTrigger,
+}
+
+PendingZoneChangeDelivery :: struct {
+	member: ObjectIncarnationRef,
+	expected_event: ProposedEvent,
+	delivery_events: [dynamic]GameEvent,
+	terminal_completion: Maybe(ZoneMoveCompletion),
+	count: PausedZoneChangeDeliveryCount,
+	face_down_in_exile: ExileConcealment,
+}
+
+LibraryReorderOperation :: struct {
+	members: [dynamic]ObjectId,
+	libraries: [dynamic]Tuple2(PlayerId, [dynamic]ObjectId),
+}
+
+PendingBatchZoneMoveRequest :: struct {
+	object_id: ObjectId,
+	destination: Zone,
+	cause: PendingBatchZoneChangeCause,
+	enter_tapped: EtbTapState,
+	enters_attacking: bool,
+	enter_transformed: bool,
+	controller_override: Maybe(PlayerId),
+	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
+	face_down_profile: Maybe(FaceDownProfile),
+	chain_referent: ChainReferentIntent,
+	attach_to: Maybe(AttachTarget),
+	performed_by: Maybe(PlayerId),
+	ownership_actor: EntryOwnershipActor,
+	with_entry_effect: ^WithEntryEffect,
+	library_placement: Maybe(LibraryPosition),
+	library_shuffle: LibraryShuffleMode,
+	exile_duration: Maybe(Duration),
+	exile_controller: Maybe(PlayerId),
+	exile_tracking: ZoneDeliveryExileTracking,
+	replacement_applied: [dynamic]AppliedReplacementKey,
+	face_down_in_exile: ExileConcealment,
+}
+
+StagedBatchDelivery :: struct {
+	stage: BatchDeliveryStage,
+	members: [dynamic]StagedBatchMember,
+	cursor: int,
+	asking: Maybe(ObjectIncarnationRef),
+	arrangements: [dynamic]StagedLibraryArrangement,
+	arrangement_cursor: int,
+	population_devour_snapshot: Maybe([dynamic]ObjectId),
+}
+
+PendingCounterMove :: struct {
+	actor: PlayerId,
+	source_id: ObjectId,
+	destination_id: ObjectId,
+	counter_type: CounterType,
+	remove_count: u32,
+	add_count: u32,
+	cause: CounterCause,
+}
+
+PendingCounterAddition_Object :: struct {
+	actor: PlayerId,
+	object_id: ObjectId,
+	counter_type: CounterType,
+	count: u32,
+	cause: CounterCause,
+}
+PendingCounterAddition_Player :: struct {
+	actor: PlayerId,
+	player_id: PlayerId,
+	counter_kind: PlayerCounterKind,
+	count: u32,
+	cause: CounterCause,
+}
+PendingCounterAddition_Energy :: struct {
+	actor: PlayerId,
+	player_id: PlayerId,
+	count: u32,
+	cause: CounterCause,
+}
+PendingCounterAddition :: union {
+	PendingCounterAddition_Object,
+	PendingCounterAddition_Player,
+	PendingCounterAddition_Energy,
+}
+
+PendingEffectResolved :: struct {
+	kind: EffectKind,
+	source_id: ObjectId,
+	resolution_event: PendingEffectResolutionEvent,
+	post_actions: [dynamic]PendingCounterPostAction,
+	player_action: Maybe(PendingPlayerAction),
+}
+
+PendingCopyTokenBatch :: struct {
+	owner: PlayerId,
+	copy: ^CopyTokenSpec,
+	count: u32,
+}
+
+OfferedBatchCustody :: enum u16 {
+	Settled,
+	AtReplacementPrompt,
+}
+
+DebugCardEntrySource :: struct {
+	face: CardFace,
+	back_face: Maybe(BackFaceData),
+	outside_game_faces: OutsideGameFaces,
+}
+
+CopyChosenStage :: enum u16 {
+	AwaitingCopy,
+	AwaitingCounters,
+}
+
+PendingPerCategoryZoneChoice :: struct {
+	ability: ^ResolvedAbility,
+	pool: [dynamic]ObjectId,
+	remaining_member_filters: [dynamic]TargetFilter,
+}
+
+ReplacementActionScope :: struct {
+	amount: i32,
+}
+
+ParkedOpponentMayPoll :: struct {
+	next: PlayerId,
+	remaining: [dynamic]PlayerId,
+	decision_subject_id: Maybe(ObjectId),
+	source_id: ObjectId,
+	description: Maybe(string),
+}
+
+PendingCoinFlipKind_Exactly :: struct {
+	remaining: u32,
+}
+PendingCoinFlipKind_UntilLoss :: struct {
+	wins_so_far: u32,
+}
+PendingCoinFlipKind :: union {
+	PendingCoinFlipKind_Exactly,
+	PendingCoinFlipKind_UntilLoss,
+}
+
+FlipBranchContext :: struct {
+	chosen_players: [dynamic]PlayerId,
+	parent_occurrences: ParentTargetOccurrences,
+	forwarded_result_context: ^ForwardedResultContext,
+	parent_target_missing_reason: Maybe(ParentTargetMissingReason),
+}
+
+DrawSequenceStack :: struct {
+	frames: [dynamic]DrawSequenceFrame,
+	next_frame_id: u64,
+}
+
+CipherEncodeStage :: enum u16 {
+	Parked,
+	Armed,
 }
 
 ManaSourceQuantity_Fixed :: struct {
@@ -23451,251 +23945,6 @@ DeckSection :: enum u16 {
 	Unknown,
 }
 
-AbilityContinuationFrame :: struct {
-	pending: PendingContinuation,
-	choose_zone_trigger_context: Maybe(ResolvingTriggerContext),
-}
-
-PendingRepeatIteration :: struct {
-	ability: ^ResolvedAbility,
-	tracked_members: [dynamic]ObjectId,
-	iterated_counter_kinds: [dynamic]CounterType,
-	next_iteration: int,
-	total_iterations: int,
-	order_fixed: Maybe(int),
-}
-
-PendingRepeatUntil :: struct {
-	ability: ^ResolvedAbility,
-	stop_progress: Maybe(RepeatUntilStopWitness),
-	iteration_progress: Maybe(RepeatUntilIterationWitness),
-}
-
-RepeatedOptionalPaymentFrame :: struct {
-	pending: ^PendingRepeatedOptionalPayment,
-	optional_cost_payments_this_resolution: u32,
-}
-
-ChangeZoneFrame :: struct {
-	pending: Maybe(PendingChangeZoneIteration),
-	devour_eligible_snapshot: Maybe([dynamic]ObjectId),
-	awaiting_batch: Maybe(ChangeZoneBatchMarker),
-}
-
-PendingBatchDeliveries :: struct {
-	component_delivery_parent: Maybe(PendingComponentDeliveryParent),
-	logical_zone_change_group: LogicalZoneChangeGroup,
-	paused_current: Maybe(PendingZoneChangeDelivery),
-	remaining: [dynamic]ObjectId,
-	destination: Zone,
-	source_id: Maybe(ObjectId),
-	library_reorder: Maybe(LibraryReorderOperation),
-	enter_tapped: EtbTapState,
-	exile_tracking: ZoneDeliveryExileTracking,
-	library_placement: Maybe(LibraryPosition),
-	completion: Maybe(BatchCompletion),
-	replacement_applied: [dynamic]AppliedReplacementKey,
-	requests: [dynamic]PendingBatchZoneMoveRequest,
-	attempted: [dynamic]ObjectId,
-	zone_change_record_start: int,
-	deferred_events: [dynamic]GameEvent,
-	staged: Maybe(StagedBatchDelivery),
-	pre_entry_battlefield: Maybe([dynamic]ObjectId),
-}
-
-PendingCounterMoveQueue :: struct {
-	remaining: [dynamic]PendingCounterMove,
-	effect_kind: EffectKind,
-	source_id: ObjectId,
-}
-
-PendingCounterRemovalQueue :: struct {
-	remaining: [dynamic]PendingCounterRemoval,
-	effect_kind: EffectKind,
-	source_ability_id: ObjectId,
-	total: u32,
-	applied_total: u32,
-	in_flight: Maybe(PendingCounterRemovalInFlight),
-}
-
-PendingCounterAdditionQueue :: struct {
-	remaining: [dynamic]PendingCounterAddition,
-	completion: Maybe(PendingEffectResolved),
-}
-
-PendingCopyTokenResolution :: struct {
-	created_ids: [dynamic]ObjectId,
-	remaining: [dynamic]PendingCopyTokenBatch,
-	effect_kind: EffectKind,
-	source_id: ObjectId,
-	referent_set: Maybe(TrackedSetId),
-	offered_batch: OfferedBatchCustody,
-}
-
-PendingDebugCardEntries :: struct {
-	source: DebugCardEntrySource,
-	owner: PlayerId,
-	attach_to: Maybe(AttachTarget),
-	nonlegendary: bool,
-	creation_kind: DebugCardCreationKind,
-	remaining: u32,
-}
-
-PendingEachPlayerCopyChosen :: struct {
-	stage: CopyChosenStage,
-	player: PlayerId,
-	chosen: [dynamic]ObjectId,
-	remaining_choices: [dynamic]CopyChosenSelection,
-	choose_filter: TargetFilter,
-	min: u32,
-	max: u32,
-	copy_modifications: [dynamic]ContinuousModification,
-	scale: Maybe(CopyScale),
-	choose_scope: CopyChooseScope,
-	source_id: ObjectId,
-	source_controller: PlayerId,
-	scoped_players: [dynamic]PlayerId,
-	trigger_event: Maybe(GameEvent),
-}
-
-PendingChooseOneOf :: struct {
-	controller: PlayerId,
-	source_id: ObjectId,
-	branches: [dynamic]AbilityDefinition,
-	parent_occurrences: ParentTargetOccurrences,
-	context_: ^SpellContext,
-	continuation: ^ResolvedAbility,
-	replacement_applied: [dynamic]AppliedReplacementKey,
-	remaining_players: [dynamic]PlayerId,
-	trigger_context: Maybe(ResolvingTriggerContext),
-}
-
-PendingVoteBallotIteration :: struct {
-	ability_template: ^AbilityDefinition,
-	remaining_voters: [dynamic]PlayerId,
-	source_id: ObjectId,
-	controller: PlayerId,
-	chain_root_targets: [dynamic]TargetRef,
-}
-
-PendingPerPlayerZoneChoice :: struct {
-	ability: ^ResolvedAbility,
-	remaining_players: [dynamic]PlayerId,
-	accumulated: bool,
-	current: Maybe(PlayerId),
-	nominee: Maybe(PlayerId),
-	tracked_pool: Maybe(TrackedSetId),
-}
-
-PerCategoryZoneChoiceFrame :: struct {
-	pending: PendingPerCategoryZoneChoice,
-}
-
-PendingCoinFlip :: struct {
-	source_id: ObjectId,
-	controller: PlayerId,
-	flipper: PlayerId,
-	win_effect: ^ResolvedAbility,
-	lose_effect: ^ResolvedAbility,
-	kind: PendingCoinFlipKind,
-	chain_root_targets: [dynamic]TargetRef,
-	branch_context: FlipBranchContext,
-	trigger_context: Maybe(ResolvingTriggerContext),
-}
-
-PendingDieRoll :: struct {
-	source_id: ObjectId,
-	controller: PlayerId,
-	roller: PlayerId,
-	quantity_controller: Maybe(PlayerId),
-	scoped_player: Maybe(PlayerId),
-	targets: [dynamic]TargetRef,
-	sides: u8,
-	results: [dynamic]u8,
-	ignore_rules: [dynamic]DieRollIgnoreRule,
-	results_table: [dynamic]DieResultBranch,
-	modifier: Maybe(DieRollModifier),
-	die_result: Maybe(i32),
-	next_index: int,
-	running_total: i32,
-	rolled_any: bool,
-	forced_ignored: [dynamic]int,
-	chain_root_targets: [dynamic]TargetRef,
-	trigger_context: Maybe(ResolvingTriggerContext),
-	illegal_target_slots: [dynamic]int,
-	chain_root_target_pins: [dynamic]Maybe(ObjectIncarnationRef),
-	declared_capture: Maybe(CapturedDeclarationPayload),
-	local_target_pins: [dynamic]Maybe(ObjectIncarnationRef),
-	keyed_target_incarnations: [dynamic]ObjectIncarnationRef,
-	declared_player: Maybe(DeclaredPlayerTarget),
-}
-
-PendingProliferateActions :: struct {
-	actor: PlayerId,
-	source_id: ObjectId,
-	remaining: u32,
-}
-
-MultiDrawFrame :: struct {
-	draw_sequences: DrawSequenceStack,
-	connive_reentry: Maybe(PendingConniveReentry),
-}
-
-DiscardFrame :: struct {
-	id: DiscardFrameId,
-	source_id: Maybe(ObjectId),
-	results: [dynamic]DiscardedCardResult,
-}
-
-PendingConniveReentry :: struct {
-	conniver: ConniveSubject,
-	count: u32,
-	applied: [dynamic]AppliedReplacementKey,
-}
-
-PendingLifeTotalAssignment :: struct {
-	completion_player: PlayerId,
-	remaining: [dynamic]Tuple2(PlayerId, i32),
-	completion: Maybe(PendingEffectResolved),
-}
-
-PendingSpellResolution :: struct {
-	object_id: ObjectId,
-	controller: PlayerId,
-	casting_variant: CastingVariant,
-	cast_from_zone: Maybe(Zone),
-	cast_controller: Maybe(PlayerId),
-	cast_timing_permission: Maybe(CastTimingPermission),
-	spell_targets: [dynamic]TargetRef,
-	actual_mana_spent: u32,
-	kickers_paid: [dynamic]KickerVariant,
-	additional_cost_payment_count: u32,
-	additional_cost_payments: [dynamic]AdditionalCostInstancePayment,
-	convoked_creatures: [dynamic]ObjectId,
-}
-
-PendingMutateMerge :: struct {
-	merging_id: ObjectId,
-	target_id: ObjectId,
-	controller: PlayerId,
-}
-
-PendingCipherEncode :: struct {
-	stage: CipherEncodeStage,
-	card_id: ObjectId,
-	controller: PlayerId,
-	creatures: [dynamic]ObjectId,
-}
-
-PendingEntryAttackSeat :: struct {
-	entrant: ObjectIncarnationRef,
-}
-
-PostReplacementDrainStack :: struct {
-	drains: [dynamic]PostReplacementDrain,
-	id: Maybe(PostReplacementFrameId),
-}
-
 LogCategory :: enum u16 {
 	Game,
 	Turn,
@@ -23938,18 +24187,6 @@ ConjureSource_Duplicate :: struct {
 ConjureSource :: union {
 	ConjureSource_Named,
 	ConjureSource_Duplicate,
-}
-
-ReplacementActionScope :: struct {
-	amount: i32,
-}
-
-ParkedOpponentMayPoll :: struct {
-	next: PlayerId,
-	remaining: [dynamic]PlayerId,
-	decision_subject_id: Maybe(ObjectId),
-	source_id: ObjectId,
-	description: Maybe(string),
 }
 
 ManaAbilityCostParentLifecycle :: enum u16 {
@@ -24196,608 +24433,6 @@ ResolvedTriggerCollection :: union {
 ResolvedStackPushOrigin :: enum u16 {
 	Put,
 	Copy,
-}
-
-ZoneSpendPolarity :: enum u16 {
-	From,
-	NotFrom,
-}
-
-ChangeZoneArrangementPlan :: enum u16 {
-	OrdinaryDelivery,
-	ArrangePhysicalLibraryArrivals,
-}
-
-ChangeZoneCountPolicy_TargetedArrivals :: struct {
-	selected: [dynamic]ObjectId,
-}
-ChangeZoneCountPolicy_MassAllMembers :: struct {
-}
-ChangeZoneCountPolicy_ChoiceSelected :: struct {
-	chosen: [dynamic]ObjectId,
-}
-ChangeZoneCountPolicy :: union {
-	ChangeZoneCountPolicy_TargetedArrivals,
-	ChangeZoneCountPolicy_MassAllMembers,
-	ChangeZoneCountPolicy_ChoiceSelected,
-}
-
-OwnExileLinkSettlement :: enum u16 {
-	Retain,
-	Consume,
-}
-
-EntryOccurrenceCollector :: enum u16 {
-	Owner,
-	AfterSimultaneousEntryEffects,
-}
-
-SacrificeAggregateStat :: enum u16 {
-	TotalPower,
-}
-
-ResourceVector :: struct {
-	mana: [6]i64,
-	life: map[PlayerId]i64,
-	damage_dealt: map[PlayerId]i64,
-	library_delta: map[PlayerId]i64,
-	poison: map[PlayerId]i64,
-	energy: map[PlayerId]i64,
-	tokens_created: i64,
-	cards_drawn: i64,
-	casts_this_step: i64,
-	landfall_triggers: i64,
-	combat_phases: i64,
-	extra_turns: i64,
-	death_triggers: i64,
-	etb_triggers: i64,
-	ltb_triggers: i64,
-	sac_triggers: i64,
-	counters: [dynamic]Tuple2(Tuple2(CounterClass, ObjectClass), i64),
-	generic_triggers: map[TriggerKind]i64,
-}
-
-CleanupPair :: struct {
-	to_cleanup: i64,
-	growth: i64,
-}
-
-InstructedMill :: struct {
-	per_repetition: i64,
-	library: i64,
-}
-
-Ranking :: distinct [dynamic]AnnouncementSubject
-
-ComboDeclaration_Undeclared :: struct {
-}
-ComboDeclaration_NoneIntended :: struct {
-}
-ComboDeclaration_Intended :: struct {
-	window: Maybe(ComboWindow),
-}
-ComboDeclaration :: union {
-	ComboDeclaration_Undeclared,
-	ComboDeclaration_NoneIntended,
-	ComboDeclaration_Intended,
-}
-
-TriggerProducerOrigin_Static :: struct {
-	source: ObjectIncarnationRef,
-	definition_index: int,
-	modification_index: int,
-}
-TriggerProducerOrigin_Transient :: struct {
-	continuous_effect_id: u64,
-	modification_index: int,
-}
-TriggerProducerOrigin :: union {
-	TriggerProducerOrigin_Static,
-	TriggerProducerOrigin_Transient,
-}
-
-TriggerGrantProducerKey_KeywordCompanion :: struct {
-	origin: TriggerProducerOrigin,
-	keyword_output_index: int,
-	companion_index: int,
-}
-TriggerGrantProducerKey_CopyRetained :: struct {
-	origin: TriggerProducerOrigin,
-	source_base_set: TriggerBaseSetInstanceRef,
-	source_printed_index: int,
-}
-TriggerGrantProducerKey_Granted :: struct {
-	origin: TriggerProducerOrigin,
-	output_index: int,
-}
-TriggerGrantProducerKey_ExpandedGrant :: struct {
-	origin: TriggerProducerOrigin,
-	provider: ^TriggerDefinitionRef,
-	provider_output_index: int,
-}
-TriggerGrantProducerKey :: union {
-	TriggerGrantProducerKey_KeywordCompanion,
-	TriggerGrantProducerKey_CopyRetained,
-	TriggerGrantProducerKey_Granted,
-	TriggerGrantProducerKey_ExpandedGrant,
-}
-
-AbilityBlockKind :: enum u16 {
-	CantBeActivated,
-	CantActivateDuring,
-	Prohibited,
-	CostNotPayableNow,
-}
-
-ActionMetadata :: struct {
-	semantic_owner: Maybe(PlayerId),
-	actor: Maybe(PlayerId),
-	tactical_class: TacticalClass,
-}
-
-BlockPairDirection :: enum u16 {
-	SubjectIsBlocker,
-	CandidateIsBlocker,
-	Either,
-}
-
-CommanderEligibilityRule :: enum u16 {
-	Standard,
-	TinyLeaders,
-	OathbreakerSignatureSpell,
-	BrawlColorIdentity,
-	FreeformAnyCastableCard,
-}
-
-ManaBurnPolicy :: enum u16 {
-	Modern,
-	Obsolete,
-}
-
-CombatDamageTiming :: enum u16 {
-	Modern,
-	OnStack,
-}
-
-WishOutsideGameScope :: enum u16 {
-	PostM10SideboardOnly,
-	PreM10ReachesExile,
-}
-
-LegendRuleScope :: enum u16 {
-	Modern,
-	PreM14AnyController,
-}
-
-AntePolicy :: enum u16 {
-	Excluded,
-	Enabled,
-}
-
-PendingContinuation :: struct {
-	chain: ^ResolvedAbility,
-	return_result_occurrence: Maybe(ReturnResultOccurrenceId),
-	pending_return_result_producer: Maybe(Tuple2(ReturnResultOccurrenceId, ReturnResultId)),
-	parent_kind: Maybe(EffectKind),
-	search_attach_host: Maybe(AttachTarget),
-	trigger_context: Maybe(ResolvingTriggerContext),
-	trigger_firing: Maybe(TriggerFiring),
-	attachment_choice: Maybe(PendingAttachmentChoice),
-	attachment_remainder: Maybe(PendingAttachmentRemainder),
-	player_scope_tail: Maybe(PendingPlayerScopeTail),
-	player_scope_queue_end: bool,
-	x_announcement: Maybe(ContinuationXAnnouncement),
-	replacement_action: Maybe(ReplacementActionScope),
-	head_payment_origin: ResolutionPaymentOrigin,
-}
-
-RepeatUntilStopWitness :: struct {
-	exiled_this_turn: [dynamic]ExiledStopInput,
-	linked: [dynamic]ExiledStopInput,
-}
-
-RepeatUntilIterationWitness :: struct {
-	choice: RepeatIterationChoice,
-	zone_changes_before: int,
-}
-
-PendingRepeatedOptionalPayment :: struct {
-	payment_unit: ^ResolvedAbility,
-	reflexive: ^ResolvedAbility,
-	remaining: u32,
-}
-
-PendingChangeZoneIteration :: struct {
-	logical_zone_change_group: LogicalZoneChangeGroup,
-	pending_return_result_producer: Maybe(Tuple2(ReturnResultOccurrenceId, ReturnResultId)),
-	paused_current: Maybe(PendingZoneChangeDelivery),
-	remaining: [dynamic]ChangeZoneMemberEntry,
-	source_id: ObjectId,
-	controller: PlayerId,
-	performed_by: PlayerId,
-	origin: Maybe(Zone),
-	destination: Zone,
-	enter_transformed: bool,
-	enters_under_player: Maybe(PlayerId),
-	duration: Maybe(Duration),
-	track_exiled_by_source: bool,
-	face_down_in_exile: ExileConcealment,
-	moved_count: Maybe(i32),
-	face_down_profile: Maybe(FaceDownProfile),
-	with_entry_effect: ^WithEntryEffect,
-	library_placement: Maybe(LibraryPosition),
-	library_reorder: Maybe(LibraryReorderOperation),
-	library_shuffle: LibraryShuffleMode,
-	enter_attached_to: Maybe(AttachTarget),
-	effect_kind: EffectKind,
-}
-
-ChangeZoneBatchMarker :: struct {
-	group_id: LogicalZoneChangeGroupId,
-	residency: BatchMarkerResidency,
-}
-
-PendingComponentDeliveryParent :: struct {
-	parent_group_id: LogicalZoneChangeGroupId,
-	member: ObjectIncarnationRef,
-	expected_event: ProposedEvent,
-	inherited_arrangements: [dynamic]StagedLibraryArrangement,
-}
-
-LogicalZoneChangeGroup :: struct {
-	logical_group_id: LogicalZoneChangeGroupId,
-	prospective_battlefield_members: [dynamic]LogicalZoneChangeProspectiveMember,
-	prospective_entrants: [dynamic]LogicalZoneChangeProspectiveMember,
-	terminal_outcomes: [dynamic]LogicalZoneChangeTerminalOutcome,
-	post_event_member_contexts: [dynamic]Maybe(TriggerSourceContext),
-	all_origin_occurrences: [dynamic]LogicalZoneChangeOccurrence,
-	immediately_before_latched: bool,
-	immediately_before_batched_triggers: [dynamic]LatchedBatchedTrigger,
-	immediately_before_suppress_triggers: [dynamic]LatchedSuppressTrigger,
-	collected_before_departure: [dynamic]CollectedZoneChange,
-	immediately_after_latched: bool,
-	immediately_after_batched_triggers: [dynamic]LatchedBatchedTrigger,
-	immediately_after_suppress_triggers: [dynamic]LatchedSuppressTrigger,
-	announced_members: [dynamic]ObjectIncarnationRef,
-	departed_owner_after_batched_triggers: [dynamic]LatchedBatchedTrigger,
-	departed_owner_after_suppress_triggers: [dynamic]LatchedSuppressTrigger,
-}
-
-PendingZoneChangeDelivery :: struct {
-	member: ObjectIncarnationRef,
-	expected_event: ProposedEvent,
-	delivery_events: [dynamic]GameEvent,
-	terminal_completion: Maybe(ZoneMoveCompletion),
-	count: PausedZoneChangeDeliveryCount,
-	face_down_in_exile: ExileConcealment,
-}
-
-LibraryReorderOperation :: struct {
-	members: [dynamic]ObjectId,
-	libraries: [dynamic]Tuple2(PlayerId, [dynamic]ObjectId),
-}
-
-PendingBatchZoneMoveRequest :: struct {
-	object_id: ObjectId,
-	destination: Zone,
-	cause: PendingBatchZoneChangeCause,
-	enter_tapped: EtbTapState,
-	enters_attacking: bool,
-	enter_transformed: bool,
-	controller_override: Maybe(PlayerId),
-	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
-	face_down_profile: Maybe(FaceDownProfile),
-	chain_referent: ChainReferentIntent,
-	attach_to: Maybe(AttachTarget),
-	performed_by: Maybe(PlayerId),
-	ownership_actor: EntryOwnershipActor,
-	with_entry_effect: ^WithEntryEffect,
-	library_placement: Maybe(LibraryPosition),
-	library_shuffle: LibraryShuffleMode,
-	exile_duration: Maybe(Duration),
-	exile_controller: Maybe(PlayerId),
-	exile_tracking: ZoneDeliveryExileTracking,
-	replacement_applied: [dynamic]AppliedReplacementKey,
-	face_down_in_exile: ExileConcealment,
-}
-
-StagedBatchDelivery :: struct {
-	stage: BatchDeliveryStage,
-	members: [dynamic]StagedBatchMember,
-	cursor: int,
-	asking: Maybe(ObjectIncarnationRef),
-	arrangements: [dynamic]StagedLibraryArrangement,
-	arrangement_cursor: int,
-	population_devour_snapshot: Maybe([dynamic]ObjectId),
-}
-
-PendingCounterMove :: struct {
-	actor: PlayerId,
-	source_id: ObjectId,
-	destination_id: ObjectId,
-	counter_type: CounterType,
-	remove_count: u32,
-	add_count: u32,
-	cause: CounterCause,
-}
-
-PendingCounterAddition_Object :: struct {
-	actor: PlayerId,
-	object_id: ObjectId,
-	counter_type: CounterType,
-	count: u32,
-	cause: CounterCause,
-}
-PendingCounterAddition_Player :: struct {
-	actor: PlayerId,
-	player_id: PlayerId,
-	counter_kind: PlayerCounterKind,
-	count: u32,
-	cause: CounterCause,
-}
-PendingCounterAddition_Energy :: struct {
-	actor: PlayerId,
-	player_id: PlayerId,
-	count: u32,
-	cause: CounterCause,
-}
-PendingCounterAddition :: union {
-	PendingCounterAddition_Object,
-	PendingCounterAddition_Player,
-	PendingCounterAddition_Energy,
-}
-
-PendingEffectResolved :: struct {
-	kind: EffectKind,
-	source_id: ObjectId,
-	resolution_event: PendingEffectResolutionEvent,
-	post_actions: [dynamic]PendingCounterPostAction,
-	player_action: Maybe(PendingPlayerAction),
-}
-
-PendingCopyTokenBatch :: struct {
-	owner: PlayerId,
-	copy: ^CopyTokenSpec,
-	count: u32,
-}
-
-OfferedBatchCustody :: enum u16 {
-	Settled,
-	AtReplacementPrompt,
-}
-
-DebugCardEntrySource :: struct {
-	face: CardFace,
-	back_face: Maybe(BackFaceData),
-	outside_game_faces: OutsideGameFaces,
-}
-
-CopyChosenStage :: enum u16 {
-	AwaitingCopy,
-	AwaitingCounters,
-}
-
-PendingPerCategoryZoneChoice :: struct {
-	ability: ^ResolvedAbility,
-	pool: [dynamic]ObjectId,
-	remaining_member_filters: [dynamic]TargetFilter,
-}
-
-PendingCoinFlipKind_Exactly :: struct {
-	remaining: u32,
-}
-PendingCoinFlipKind_UntilLoss :: struct {
-	wins_so_far: u32,
-}
-PendingCoinFlipKind :: union {
-	PendingCoinFlipKind_Exactly,
-	PendingCoinFlipKind_UntilLoss,
-}
-
-FlipBranchContext :: struct {
-	chosen_players: [dynamic]PlayerId,
-	parent_occurrences: ParentTargetOccurrences,
-	forwarded_result_context: ^ForwardedResultContext,
-	parent_target_missing_reason: Maybe(ParentTargetMissingReason),
-}
-
-DrawSequenceStack :: struct {
-	frames: [dynamic]DrawSequenceFrame,
-	next_frame_id: u64,
-}
-
-CipherEncodeStage :: enum u16 {
-	Parked,
-	Armed,
-}
-
-LogImportance :: enum u16 {
-	Essential,
-	Context,
-	Detail,
-	Diagnostic,
-}
-
-LogTone :: enum u16 {
-	Neutral,
-	Positive,
-	Negative,
-	Informational,
-	Diagnostic,
-}
-
-LogBoundary :: enum u16 {
-	None,
-	Turn,
-	Phase,
-}
-
-LogVisibility :: enum u16 {
-	Public,
-	HiddenInformation,
-}
-
-PostReplacementContinuation_Template :: struct {
-	_0: ^AbilityDefinition,
-}
-PostReplacementContinuation_Resolved :: struct {
-	_0: ^ResolvedAbility,
-}
-PostReplacementContinuation :: union {
-	PostReplacementContinuation_Template,
-	PostReplacementContinuation_Resolved,
-}
-
-SimultaneousUnlessAnswer_Declined :: struct {
-}
-SimultaneousUnlessAnswer_Sacrifice :: struct {
-	permanent: ObjectIncarnationRef,
-}
-SimultaneousUnlessAnswer_Discard :: struct {
-}
-SimultaneousUnlessAnswer :: union {
-	SimultaneousUnlessAnswer_Declined,
-	SimultaneousUnlessAnswer_Sacrifice,
-	SimultaneousUnlessAnswer_Discard,
-}
-
-PolicySource :: struct {
-	url: string,
-	published: string,
-	retrieved: string,
-	local_copy: Maybe(string),
-}
-
-CombatParticipation :: struct {
-	attacking: Maybe(AttackerInfo),
-	blocking: Maybe([dynamic]ObjectId),
-	blocked_by: [dynamic]ObjectId,
-	damage_assignments: [dynamic]DamageAssignment,
-	attacked_by: [dynamic]ObjectId,
-	outgoing_attack_target_identity: Maybe(Maybe(ObjectIncarnationRef)),
-}
-
-ResolvedCopyBodyModifications_NoExceptions :: struct {
-}
-ResolvedCopyBodyModifications_Folded :: struct {
-	modifications: [dynamic]ContinuousModification,
-	all_creature_types: [dynamic]string,
-}
-ResolvedCopyBodyModifications_DeferredToUnjournaledSeam :: struct {
-	modifications: [dynamic]ContinuousModification,
-}
-ResolvedCopyBodyModifications :: union {
-	ResolvedCopyBodyModifications_NoExceptions,
-	ResolvedCopyBodyModifications_Folded,
-	ResolvedCopyBodyModifications_DeferredToUnjournaledSeam,
-}
-
-ResolvedTriggerLedgerEdit_OncePerTurn :: struct {
-}
-ResolvedTriggerLedgerEdit_OncePerGame :: struct {
-}
-ResolvedTriggerLedgerEdit_OncePerOpponentPerTurn :: struct {
-	opponent: PlayerId,
-}
-ResolvedTriggerLedgerEdit_MaxTimesPerTurn :: struct {
-	expected_old: u32,
-}
-ResolvedTriggerLedgerEdit_IndicatedActionTaken :: struct {
-	player: PlayerId,
-}
-ResolvedTriggerLedgerEdit :: union {
-	ResolvedTriggerLedgerEdit_OncePerTurn,
-	ResolvedTriggerLedgerEdit_OncePerGame,
-	ResolvedTriggerLedgerEdit_OncePerOpponentPerTurn,
-	ResolvedTriggerLedgerEdit_MaxTimesPerTurn,
-	ResolvedTriggerLedgerEdit_IndicatedActionTaken,
-}
-
-ResolvedOncePerTurnPermission_GraveyardCast :: struct {
-}
-ResolvedOncePerTurnPermission_GraveyardCastPermanentType :: struct {
-	permanent_type: CoreType,
-}
-ResolvedOncePerTurnPermission_HandCastFree :: struct {
-}
-ResolvedOncePerTurnPermission_AlternativeCostGrant :: struct {
-}
-ResolvedOncePerTurnPermission_ExilePlay :: struct {
-}
-ResolvedOncePerTurnPermission_ExileCast :: struct {
-}
-ResolvedOncePerTurnPermission_TopOfLibraryCast :: struct {
-}
-ResolvedOncePerTurnPermission :: union {
-	ResolvedOncePerTurnPermission_GraveyardCast,
-	ResolvedOncePerTurnPermission_GraveyardCastPermanentType,
-	ResolvedOncePerTurnPermission_HandCastFree,
-	ResolvedOncePerTurnPermission_AlternativeCostGrant,
-	ResolvedOncePerTurnPermission_ExilePlay,
-	ResolvedOncePerTurnPermission_ExileCast,
-	ResolvedOncePerTurnPermission_TopOfLibraryCast,
-}
-
-FrameKind :: enum u16 {
-	AbilityContinuation,
-	RepeatFor,
-	RepeatUntil,
-	RepeatedOptionalPayment,
-	ChangeZone,
-	BatchDelivery,
-	CounterMoves,
-	CounterRemovals,
-	CounterAdditions,
-	CopyToken,
-	DebugCardEntries,
-	EachPlayerCopyChosen,
-	ChooseOneOf,
-	VoteBallot,
-	PerPlayerZoneChoice,
-	PerCategoryZoneChoice,
-	OptionalEffect,
-	CoinFlip,
-	DieRoll,
-	Proliferate,
-	MultiDraw,
-	Discard,
-	ConniveReentry,
-	LifeTotalAssignment,
-	SpellResolution,
-	MutateMerge,
-	CipherEncode,
-	EntryAttackSeat,
-	PostReplacement,
-}
-
-AnnouncementSubject_Object :: struct {
-	_0: YieldTarget,
-}
-AnnouncementSubject_Seat :: struct {
-	_0: PlayerId,
-}
-AnnouncementSubject :: union {
-	AnnouncementSubject_Object,
-	AnnouncementSubject_Seat,
-}
-
-ComboWindow :: enum u16 {
-	EarlyGame,
-	LateGame,
-}
-
-TacticalClass :: enum u16 {
-	Pass,
-	Land,
-	Spell,
-	Ability,
-	Attack,
-	Block,
-	Target,
-	Selection,
-	Replacement,
-	Mana,
-	Utility,
 }
 
 PendingAttachmentChoice :: struct {
@@ -25179,6 +24814,341 @@ DrawSequenceFrame :: struct {
 	dealer: Maybe(DrawDealer),
 }
 
+ZoneSpendPolarity :: enum u16 {
+	From,
+	NotFrom,
+}
+
+ChangeZoneArrangementPlan :: enum u16 {
+	OrdinaryDelivery,
+	ArrangePhysicalLibraryArrivals,
+}
+
+ChangeZoneCountPolicy_TargetedArrivals :: struct {
+	selected: [dynamic]ObjectId,
+}
+ChangeZoneCountPolicy_MassAllMembers :: struct {
+}
+ChangeZoneCountPolicy_ChoiceSelected :: struct {
+	chosen: [dynamic]ObjectId,
+}
+ChangeZoneCountPolicy :: union {
+	ChangeZoneCountPolicy_TargetedArrivals,
+	ChangeZoneCountPolicy_MassAllMembers,
+	ChangeZoneCountPolicy_ChoiceSelected,
+}
+
+OwnExileLinkSettlement :: enum u16 {
+	Retain,
+	Consume,
+}
+
+EntryOccurrenceCollector :: enum u16 {
+	Owner,
+	AfterSimultaneousEntryEffects,
+}
+
+SacrificeAggregateStat :: enum u16 {
+	TotalPower,
+}
+
+ResourceVector :: struct {
+	mana: [6]i64,
+	life: map[PlayerId]i64,
+	damage_dealt: map[PlayerId]i64,
+	library_delta: map[PlayerId]i64,
+	poison: map[PlayerId]i64,
+	energy: map[PlayerId]i64,
+	tokens_created: i64,
+	cards_drawn: i64,
+	casts_this_step: i64,
+	landfall_triggers: i64,
+	combat_phases: i64,
+	extra_turns: i64,
+	death_triggers: i64,
+	etb_triggers: i64,
+	ltb_triggers: i64,
+	sac_triggers: i64,
+	counters: [dynamic]Tuple2(Tuple2(CounterClass, ObjectClass), i64),
+	generic_triggers: map[TriggerKind]i64,
+}
+
+CleanupPair :: struct {
+	to_cleanup: i64,
+	growth: i64,
+}
+
+InstructedMill :: struct {
+	per_repetition: i64,
+	library: i64,
+}
+
+Ranking :: distinct [dynamic]AnnouncementSubject
+
+ComboDeclaration_Undeclared :: struct {
+}
+ComboDeclaration_NoneIntended :: struct {
+}
+ComboDeclaration_Intended :: struct {
+	window: Maybe(ComboWindow),
+}
+ComboDeclaration :: union {
+	ComboDeclaration_Undeclared,
+	ComboDeclaration_NoneIntended,
+	ComboDeclaration_Intended,
+}
+
+TriggerProducerOrigin_Static :: struct {
+	source: ObjectIncarnationRef,
+	definition_index: int,
+	modification_index: int,
+}
+TriggerProducerOrigin_Transient :: struct {
+	continuous_effect_id: u64,
+	modification_index: int,
+}
+TriggerProducerOrigin :: union {
+	TriggerProducerOrigin_Static,
+	TriggerProducerOrigin_Transient,
+}
+
+TriggerGrantProducerKey_KeywordCompanion :: struct {
+	origin: TriggerProducerOrigin,
+	keyword_output_index: int,
+	companion_index: int,
+}
+TriggerGrantProducerKey_CopyRetained :: struct {
+	origin: TriggerProducerOrigin,
+	source_base_set: TriggerBaseSetInstanceRef,
+	source_printed_index: int,
+}
+TriggerGrantProducerKey_Granted :: struct {
+	origin: TriggerProducerOrigin,
+	output_index: int,
+}
+TriggerGrantProducerKey_ExpandedGrant :: struct {
+	origin: TriggerProducerOrigin,
+	provider: ^TriggerDefinitionRef,
+	provider_output_index: int,
+}
+TriggerGrantProducerKey :: union {
+	TriggerGrantProducerKey_KeywordCompanion,
+	TriggerGrantProducerKey_CopyRetained,
+	TriggerGrantProducerKey_Granted,
+	TriggerGrantProducerKey_ExpandedGrant,
+}
+
+AbilityBlockKind :: enum u16 {
+	CantBeActivated,
+	CantActivateDuring,
+	Prohibited,
+	CostNotPayableNow,
+}
+
+ActionMetadata :: struct {
+	semantic_owner: Maybe(PlayerId),
+	actor: Maybe(PlayerId),
+	tactical_class: TacticalClass,
+}
+
+BlockPairDirection :: enum u16 {
+	SubjectIsBlocker,
+	CandidateIsBlocker,
+	Either,
+}
+
+CommanderEligibilityRule :: enum u16 {
+	Standard,
+	TinyLeaders,
+	OathbreakerSignatureSpell,
+	BrawlColorIdentity,
+	FreeformAnyCastableCard,
+}
+
+ManaBurnPolicy :: enum u16 {
+	Modern,
+	Obsolete,
+}
+
+CombatDamageTiming :: enum u16 {
+	Modern,
+	OnStack,
+}
+
+WishOutsideGameScope :: enum u16 {
+	PostM10SideboardOnly,
+	PreM10ReachesExile,
+}
+
+LegendRuleScope :: enum u16 {
+	Modern,
+	PreM14AnyController,
+}
+
+AntePolicy :: enum u16 {
+	Excluded,
+	Enabled,
+}
+
+LogImportance :: enum u16 {
+	Essential,
+	Context,
+	Detail,
+	Diagnostic,
+}
+
+LogTone :: enum u16 {
+	Neutral,
+	Positive,
+	Negative,
+	Informational,
+	Diagnostic,
+}
+
+LogBoundary :: enum u16 {
+	None,
+	Turn,
+	Phase,
+}
+
+LogVisibility :: enum u16 {
+	Public,
+	HiddenInformation,
+}
+
+PostReplacementContinuation_Template :: struct {
+	_0: ^AbilityDefinition,
+}
+PostReplacementContinuation_Resolved :: struct {
+	_0: ^ResolvedAbility,
+}
+PostReplacementContinuation :: union {
+	PostReplacementContinuation_Template,
+	PostReplacementContinuation_Resolved,
+}
+
+SimultaneousUnlessAnswer_Declined :: struct {
+}
+SimultaneousUnlessAnswer_Sacrifice :: struct {
+	permanent: ObjectIncarnationRef,
+}
+SimultaneousUnlessAnswer_Discard :: struct {
+}
+SimultaneousUnlessAnswer :: union {
+	SimultaneousUnlessAnswer_Declined,
+	SimultaneousUnlessAnswer_Sacrifice,
+	SimultaneousUnlessAnswer_Discard,
+}
+
+PolicySource :: struct {
+	url: string,
+	published: string,
+	retrieved: string,
+	local_copy: Maybe(string),
+}
+
+CombatParticipation :: struct {
+	attacking: Maybe(AttackerInfo),
+	blocking: Maybe([dynamic]ObjectId),
+	blocked_by: [dynamic]ObjectId,
+	damage_assignments: [dynamic]DamageAssignment,
+	attacked_by: [dynamic]ObjectId,
+	outgoing_attack_target_identity: Maybe(Maybe(ObjectIncarnationRef)),
+}
+
+ResolvedCopyBodyModifications_NoExceptions :: struct {
+}
+ResolvedCopyBodyModifications_Folded :: struct {
+	modifications: [dynamic]ContinuousModification,
+	all_creature_types: [dynamic]string,
+}
+ResolvedCopyBodyModifications_DeferredToUnjournaledSeam :: struct {
+	modifications: [dynamic]ContinuousModification,
+}
+ResolvedCopyBodyModifications :: union {
+	ResolvedCopyBodyModifications_NoExceptions,
+	ResolvedCopyBodyModifications_Folded,
+	ResolvedCopyBodyModifications_DeferredToUnjournaledSeam,
+}
+
+ResolvedTriggerLedgerEdit_OncePerTurn :: struct {
+}
+ResolvedTriggerLedgerEdit_OncePerGame :: struct {
+}
+ResolvedTriggerLedgerEdit_OncePerOpponentPerTurn :: struct {
+	opponent: PlayerId,
+}
+ResolvedTriggerLedgerEdit_MaxTimesPerTurn :: struct {
+	expected_old: u32,
+}
+ResolvedTriggerLedgerEdit_IndicatedActionTaken :: struct {
+	player: PlayerId,
+}
+ResolvedTriggerLedgerEdit :: union {
+	ResolvedTriggerLedgerEdit_OncePerTurn,
+	ResolvedTriggerLedgerEdit_OncePerGame,
+	ResolvedTriggerLedgerEdit_OncePerOpponentPerTurn,
+	ResolvedTriggerLedgerEdit_MaxTimesPerTurn,
+	ResolvedTriggerLedgerEdit_IndicatedActionTaken,
+}
+
+ResolvedOncePerTurnPermission_GraveyardCast :: struct {
+}
+ResolvedOncePerTurnPermission_GraveyardCastPermanentType :: struct {
+	permanent_type: CoreType,
+}
+ResolvedOncePerTurnPermission_HandCastFree :: struct {
+}
+ResolvedOncePerTurnPermission_AlternativeCostGrant :: struct {
+}
+ResolvedOncePerTurnPermission_ExilePlay :: struct {
+}
+ResolvedOncePerTurnPermission_ExileCast :: struct {
+}
+ResolvedOncePerTurnPermission_TopOfLibraryCast :: struct {
+}
+ResolvedOncePerTurnPermission :: union {
+	ResolvedOncePerTurnPermission_GraveyardCast,
+	ResolvedOncePerTurnPermission_GraveyardCastPermanentType,
+	ResolvedOncePerTurnPermission_HandCastFree,
+	ResolvedOncePerTurnPermission_AlternativeCostGrant,
+	ResolvedOncePerTurnPermission_ExilePlay,
+	ResolvedOncePerTurnPermission_ExileCast,
+	ResolvedOncePerTurnPermission_TopOfLibraryCast,
+}
+
+FrameKind :: enum u16 {
+	AbilityContinuation,
+	RepeatFor,
+	RepeatUntil,
+	RepeatedOptionalPayment,
+	ChangeZone,
+	BatchDelivery,
+	CounterMoves,
+	CounterRemovals,
+	CounterAdditions,
+	CopyToken,
+	DebugCardEntries,
+	EachPlayerCopyChosen,
+	ChooseOneOf,
+	VoteBallot,
+	PerPlayerZoneChoice,
+	PerCategoryZoneChoice,
+	OptionalEffect,
+	CoinFlip,
+	DieRoll,
+	Proliferate,
+	MultiDraw,
+	Discard,
+	ConniveReentry,
+	LifeTotalAssignment,
+	SpellResolution,
+	MutateMerge,
+	CipherEncode,
+	EntryAttackSeat,
+	PostReplacement,
+}
+
 RepeatIterationMovement :: enum u16 {
 	Stationary,
 	ObjectsMoved,
@@ -25312,6 +25282,36 @@ PendingDrawDelivery :: struct {
 DrawDealer :: struct {
 	stage: DrawDealerStage,
 	seats: [dynamic]DrawDealerSeat,
+}
+
+AnnouncementSubject_Object :: struct {
+	_0: YieldTarget,
+}
+AnnouncementSubject_Seat :: struct {
+	_0: PlayerId,
+}
+AnnouncementSubject :: union {
+	AnnouncementSubject_Object,
+	AnnouncementSubject_Seat,
+}
+
+ComboWindow :: enum u16 {
+	EarlyGame,
+	LateGame,
+}
+
+TacticalClass :: enum u16 {
+	Pass,
+	Land,
+	Spell,
+	Ability,
+	Attack,
+	Block,
+	Target,
+	Selection,
+	Replacement,
+	Mana,
+	Utility,
 }
 
 TriggerObservationTime :: enum u16 {
