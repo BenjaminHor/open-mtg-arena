@@ -2607,6 +2607,15 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions
+
+- (2026-11-24, after the Odin port was paused) The owner on why the port started: the frontend client would have
+  taken longer than they liked, so they adopted phase.rs to borrow its frontend and strip what they don't want; Rust
+  is "really meh to work with" and they like Odin, so an AI-agent port seemed easy. **The real end goal: "a clean and
+  modern mtg client that I can customize via Claude code whenever I want."** Recommendation given: stop the Odin port
+  (a translation keeps the engine's size and convolution, takes weeks, and gains players nothing), keep the Rust
+  engine as a black box the client talks to, and make the codebase quick for Claude Code to customize (prebuilt engine
+  wasm so client work needs no Rust build, faster engine dev builds, a map of the engine). Keep D-184's fix. Waiting
+  on the owner's answer.
 - Settled (2026-11-24, D-183): runtime card-text parses are precomputed into the card data; the Odin engine
   never parses. Settled (2026-11-24, D-184): fix the saved-game `"type"` clash, changing that wire form.
 
