@@ -53,10 +53,7 @@ declare_attackers :: proc(g: ^Game, attacks: []types.Tuple2(types.ObjectId, type
 		append(&g.events, Event{kind = .Attack, object = a._0, controller = o.controller}) // CR 508.3a
 	}
 	s.combat = combat
-	if len(attacks) == 0 {
-		begin_step(g, .EndCombat) // CR 508.8
-		return true
-	}
+	// CR 508.2: the active player gets priority, attackers or not (508.8 skips the later combat steps).
 	give_priority(g, s.active_player)
 	return true
 }
@@ -91,7 +88,7 @@ declare_blockers :: proc(g: ^Game, assignments: []types.Tuple2(types.ObjectId, t
 	count := make(map[types.ObjectId]int, context.temp_allocator)
 	for a in assignments {
 		blocker, attacker := object(s, a._0), object(s, a._1)
-		if blocker == nil || attacker == nil || blocker.controller != defender || used[a._0] do return false
+		if blocker == nil || attacker == nil || blocker.zone != .Battlefield || blocker.controller != defender || used[a._0] do return false
 		if !is_attacking(combat, a._1) || !can_block(blocker, attacker) do return false
 		used[a._0] = true
 		count[a._1] += 1
@@ -202,7 +199,7 @@ damage_pass :: proc(g: ^Game, combat: ^types.CombatState, pass: Damage_Pass) {
 	// CR 510.1d: each blocker deals its damage to the attacker it blocks.
 	for blocker_id, attackers in combat.blocker_to_attacker {
 		blocker := object(s, blocker_id)
-		if !deals_damage_in(blocker, pass) || len(attackers) == 0 do continue
+		if !deals_damage_in(blocker, pass) || len(attackers) == 0 || object(s, attackers[0]).zone != .Battlefield do continue
 		if n := power_of(blocker); n > 0 do append(&hits, Hit{blocker_id, types.TargetRef_Object{attackers[0]}, n})
 	}
 	for h in hits do deal_damage(g, h.source, h.target, h.n)

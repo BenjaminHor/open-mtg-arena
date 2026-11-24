@@ -39,10 +39,7 @@ affected_supported :: proc(f: types.TargetFilter) -> bool {
 	case types.TargetFilter_SelfRef:
 		return true
 	case types.TargetFilter_Typed:
-		for p in x._0.properties do if _, another := p.(types.FilterProp_Another); !another do return false
-		plain := x
-		plain._0.properties = nil
-		return filter_supported(plain)
+		return typed_supported(x._0)
 	}
 	return false
 }
@@ -156,17 +153,7 @@ affects :: proc(s: ^types.GameState, source: ^types.GameObject, st: ^types.Stati
 	case types.TargetFilter_SelfRef:
 		return o.id == source.id
 	case types.TargetFilter_Typed:
-		for p in x._0.properties do if _, another := p.(types.FilterProp_Another); another && o.id == source.id do return false
-		for t in x._0.type_filters do if !matches_type(o, t) do return false
-		if c, has := x._0.controller.?; has {
-			#partial switch _ in c {
-			case types.ControllerRef_You:
-				return o.controller == source.controller
-			case types.ControllerRef_Opponent:
-				return o.controller != source.controller
-			}
-		}
-		return true
+		return object_matches(s, o, x._0, source.controller, source.id)
 	}
 	return false
 }

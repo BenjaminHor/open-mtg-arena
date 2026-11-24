@@ -22,9 +22,10 @@ graveyard_filter :: proc(f: types.TargetFilter) -> (types.TypedFilter, bool) {
 				return {}, false
 			}
 		case:
-			return {}, false
+			if !property_supported(p) do return {}, false
 		}
 	}
+	for tf in t._0.type_filters do if !type_filter_supported(tf) do return {}, false
 	return t._0, in_graveyard
 }
 
@@ -71,10 +72,11 @@ graveyard_targets :: proc(s: ^types.GameState, f: types.TypedFilter, chooser: ty
 			}
 		}
 		if !owned_ok do continue
-		outer: for id in ids_of(p.graveyard) {
+		for id in ids_of(p.graveyard) {
 			o := object(s, id)
-			for t in f.type_filters do if !card_matches_type(o, t) do continue outer
-			append(out, types.TargetRef_Object{id})
+			plain := f
+			plain.controller = nil // a card's owner was checked above; in a graveyard it has no controller as such
+			if object_matches(s, o, plain, chooser, 0) do append(out, types.TargetRef_Object{id})
 		}
 	}
 }

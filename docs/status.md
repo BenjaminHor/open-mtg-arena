@@ -2806,6 +2806,9 @@ a216a17. Next when resuming: tuple field access (`f(..).0` on a returned tuple: 
 but reverted untested; then the executed-blocker list (`translate-report` with ODINGEN_EXECUTED).
 
 ## Working with the owner
+- Owner (2026-11-24): "something I wanted to call out that I think is great is the fact that CR rules are cited
+  heavily throughout the code - continue to do so because the CR is the source of truth on how MTG works". Keep
+  citing the rule (looked up in rules/, never from memory) in every rules comment and test of the Odin engine.
 - Owner (2026-11-24) asked whether the Rust integration tests validate card coverage. Not yet: coverage is a static
   check (every part of the card's parsed text is implemented). Plan: once the capture finishes, replay it on Rust
   (keep the clean recordings), then on Odin (pass rate), and map tests to the cards they use, so a card counts as
@@ -2819,6 +2822,18 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   change the plan. Keep translator internals, percentages and per-fix detail in this file and the commits.
 
 ## Known issues
+- (2026-11-24, Odin engine, rules-judge review of odin/engine/game at f7800b5) Being fixed now: (1) only a permanent's
+  first mana ability was used (dual lands made one color; CR 605.3a); (2) mana-ability riders (damage, "activate only
+  if", spending restrictions, extra mana) ignored while the card counted as supported; (4) creatures that left the
+  battlefield stayed in combat (CR 506.4, 510.1d); (5) the engine tapped creatures for mana before lands; (6) greedy
+  color assignment called payable costs unpayable (CR 601.2h); (7) Phyrexian and {2/C} symbols had no alternate
+  payment (CR 107.4e-f): such cards now unsupported; (8) the support gate let through player scopes, chosen groups,
+  mass pumps parsed as single-target "any", typed filters without types; (9) duplicate ids in discard/bottom
+  choices, blocking with a card in hand, conceding for the other player; (10) no mana cost treated as free
+  (CR 118.6); (11) no priority in the declare attackers step when nobody attacks (CR 508.2); AI cast -N/-N on its own
+  creature. Open: (3) the attacker doesn't choose how to divide damage among several blockers or trample excess
+  (CR 510.1c, 702.19b): the engine assigns lethal in block order; targets and combat entries keyed by object id
+  without its incarnation (CR 400.7, 608.2b), reachable with bounce-and-recast.
 - (2026-11-24, Odin port, translator) The model holds sets as Vecs, so set operations were translated as Vec ones:
   `set.remove(&id)` became `Vec::remove(index)` (the vector check caught a crash; a small id would have removed the
   wrong element silently), and collects into a `BTreeSet` would have kept neither its order nor its uniqueness. Fixed:

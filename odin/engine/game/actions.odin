@@ -62,7 +62,8 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	     types.GameAction_UnAction:
 		return true
 	case types.GameAction_Concede:
-		// CR 104.3a: a player may concede at any time; they leave the game and lose.
+		// CR 104.3a: a player may concede at any time; they leave the game and lose. Only for themselves.
+		if a.player_id != p do return false
 		player(s, a.player_id).is_eliminated = true
 		other := opponent(s, a.player_id)
 		s.waiting_for = types.WaitingFor_GameOver{winner = other}
@@ -121,7 +122,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		return ok && declare_blockers(g, a.assignments[:])
 	case types.WaitingFor_DiscardToHandSize:
 		a, ok := action.(types.GameAction_SelectCards)
-		if !ok || len(a.cards) != w.count do return false
+		if !ok || len(a.cards) != w.count || has_duplicates(a.cards[:]) do return false
 		for id in a.cards do if !slice.contains(w.cards[:], id) do return false
 		for id in a.cards do move_object(g, id, .Graveyard)
 		cleanup(g)
@@ -173,7 +174,7 @@ bottom_cards :: proc(g: ^Game, p: types.PlayerId, cards: []types.ObjectId) -> bo
 	w := &s.waiting_for.(types.WaitingFor_OpeningHandBottomCards)
 	index := -1
 	for e, i in w.pending do if e.player == p do index = i
-	if index < 0 || len(cards) != int(w.pending[index].count) do return false
+	if index < 0 || len(cards) != int(w.pending[index].count) || has_duplicates(cards) do return false
 	pl := player(s, p)
 	hand := ids_of(pl.hand)
 	for id in cards do if !slice.contains(hand, id) do return false
@@ -259,4 +260,9 @@ is_deciding :: proc(s: ^types.GameState, p: types.PlayerId) -> bool {
 	}
 	who, ok := acting_player(s)
 	return ok && who == p
+}
+
+has_duplicates :: proc(ids: []types.ObjectId) -> bool {
+	for a, i in ids do for b in ids[i + 1:] do if a == b do return true
+	return false
 }

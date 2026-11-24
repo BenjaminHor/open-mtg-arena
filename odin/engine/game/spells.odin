@@ -23,6 +23,12 @@ card_supported :: proc(face: ^types.CardFace) -> bool {
 	for st in face.static_abilities do if !static_supported(st) do return false
 	for t in face.triggers do if !trigger_supported(t) do return false
 	if face.additional_cost != nil || face.modal != nil || len(face.casting_options) > 0 do return false
+	// A spell needs a mana cost it can pay (CR 118.6, 107.4e-f); lands aren't cast.
+	if !is_land_face(face) {
+		c, is_cost := face.mana_cost.(types.ManaCost_Cost)
+		if !is_cost do return false
+		for shard in c.shards do if _, _, ok := shard_payers(shard); !ok do return false
+	}
 	for a in face.abilities {
 		switch a.kind {
 		case .Spell:
@@ -55,6 +61,9 @@ spell_ability_supported :: proc(a: types.AbilityDefinition) -> bool {
 // targets and (for triggered abilities, CR 603.5) whether to do it at all.
 ability_supported :: proc(a: types.AbilityDefinition) -> bool {
 	if a.effect == nil || a.condition != nil || a.optional_targeting || a.modal != nil do return false
+	// "Each player draws", "an opponent draws", "for each creature chosen": scopes and groups not carried out yet.
+	if a.player_scope != nil || a.declares_chosen_group != nil || a.reads_chosen_group != nil || a.starting_with != nil do return false
+	if a.target_chooser != nil || a.optional_player != nil || a.optional_for != nil do return false
 	if a.multi_target != nil || a.distribute != nil || a.repeat_for != nil || a.unless_pay != nil do return false
 	if a.else_ability != nil do return false
 	if !effect_supported(a.effect^, a.duration) do return false
@@ -72,7 +81,8 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		_, tf := x.toughness.(types.PtValue_Fixed)
 		d, has := duration.?
 		_, eot := d.(types.Duration_UntilEndOfTurn)
-		return pf && tf && has && eot && (is_self(x.target) || filter_supported(x.target))
+		// A pump aimed at "any target" is a misparsed mass pump: a player can't get +N/+N.
+		return pf && tf && has && eot && (is_self(x.target) || (filter_supported(x.target) && !is_any(x.target)))
 	case types.Effect_LoseLife:
 		_, fixed := fixed_quantity(x.amount)
 		t, has := x.target.?
@@ -99,7 +109,7 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		_, you := x.player.(types.TargetFilter_Controller)
 		return fixed && (you || x.player == nil)
 	case types.Effect_Destroy:
-		return !x.cant_regenerate && filter_supported(x.target)
+		return !x.cant_regenerate && filter_supported(x.target) && !is_any(x.target)
 	}
 	return false
 }
@@ -110,23 +120,7 @@ filter_supported :: proc(f: types.TargetFilter) -> bool {
 	case types.TargetFilter_Any, types.TargetFilter_Player, types.TargetFilter_Opponent:
 		return true
 	case types.TargetFilter_Typed:
-		if len(x._0.properties) > 0 do return false
-		if c, has := x._0.controller.?; has {
-			#partial switch _ in c {
-			case types.ControllerRef_You, types.ControllerRef_Opponent:
-			case:
-				return false
-			}
-		}
-		for t in x._0.type_filters {
-			#partial switch _ in t {
-			case types.TypeFilter_Creature, types.TypeFilter_Land, types.TypeFilter_Artifact, types.TypeFilter_Enchantment,
-			     types.TypeFilter_Planeswalker, types.TypeFilter_Permanent:
-			case:
-				return false
-			}
-		}
-		return true
+		return typed_supported(x._0)
 	}
 	return false
 }
@@ -160,6 +154,11 @@ effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
 	return nil, false
 }
 
+is_any :: proc(f: types.TargetFilter) -> bool {
+	_, ok := f.(types.TargetFilter_Any)
+	return ok
+}
+
 is_self :: proc(f: types.TargetFilter) -> bool {
 	_, ok := f.(types.TargetFilter_SelfRef)
 	return ok
@@ -175,27 +174,11 @@ target_slots :: proc(a: ^types.AbilityDefinition) -> [dynamic]types.TargetFilter
 	return out
 }
 
-matches_type :: proc(o: ^types.GameObject, t: types.TypeFilter) -> bool {
-	#partial switch _ in t {
-	case types.TypeFilter_Creature:
-		return is_type(o, .Creature)
-	case types.TypeFilter_Land:
-		return is_type(o, .Land)
-	case types.TypeFilter_Artifact:
-		return is_type(o, .Artifact)
-	case types.TypeFilter_Enchantment:
-		return is_type(o, .Enchantment)
-	case types.TypeFilter_Planeswalker:
-		return is_type(o, .Planeswalker)
-	case types.TypeFilter_Permanent:
-		return true
-	}
-	return false
-}
+matches_type :: proc(o: ^types.GameObject, t: types.TypeFilter) -> bool {return type_matches(o, t)}
 
 // CR 115.4: "any target" is a creature, player, planeswalker or battle. A typed filter is a permanent of each listed
 // type (and controller), on the battlefield.
-legal_targets :: proc(s: ^types.GameState, f: types.TargetFilter, controller: types.PlayerId) -> [dynamic]types.TargetRef {
+legal_targets :: proc(s: ^types.GameState, f: types.TargetFilter, controller: types.PlayerId, source: types.ObjectId = 0) -> [dynamic]types.TargetRef {
 	out := make([dynamic]types.TargetRef)
 	#partial switch x in f {
 	case types.TargetFilter_Any:
@@ -215,17 +198,9 @@ legal_targets :: proc(s: ^types.GameState, f: types.TargetFilter, controller: ty
 			graveyard_targets(s, gf, controller, &out)
 			return out
 		}
-		outer: for id in ids_of(s.battlefield) {
+		for id in ids_of(s.battlefield) {
 			o := object(s, id)
-			for t in x._0.type_filters do if !matches_type(o, t) do continue outer
-			if c, has := x._0.controller.?; has {
-				#partial switch _ in c {
-				case types.ControllerRef_You:
-					if o.controller != controller do continue
-				case types.ControllerRef_Opponent:
-					if o.controller == controller do continue
-				}
-			}
+			if !object_matches(s, o, x._0, controller, source) do continue
 			if targetable_by(o, controller) do append(&out, types.TargetRef_Object{id})
 		}
 	}
@@ -239,8 +214,8 @@ targetable_by :: proc(o: ^types.GameObject, controller: types.PlayerId) -> bool 
 	return true
 }
 
-target_still_legal :: proc(s: ^types.GameState, t: types.TargetRef, f: types.TargetFilter, controller: types.PlayerId) -> bool {
-	for l in legal_targets(s, f, controller) do if l == t do return true
+target_still_legal :: proc(s: ^types.GameState, t: types.TargetRef, f: types.TargetFilter, controller: types.PlayerId, source: types.ObjectId = 0) -> bool {
+	for l in legal_targets(s, f, controller, source) do if l == t do return true
 	return false
 }
 
@@ -269,7 +244,7 @@ castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c
 	if o.zone != .Hand || o.owner != p do return false
 	if !object_supported(o, card_db) || !can_cast_now(s, p, o) do return false
 	if a := spell_ability(o); a != nil {
-		for f in target_slots(a) do if len(legal_targets(s, f, p)) == 0 do return false
+		for f in target_slots(a) do if len(legal_targets(s, f, p, o.id)) == 0 do return false
 	}
 	_, payable := plan_payment(s, p, o.mana_cost)
 	return payable
@@ -303,7 +278,7 @@ cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []t
 	slots := target_slots(a) if a != nil else nil
 	chosen: [dynamic]types.TargetRef
 	for t, i in targets {
-		if i >= len(slots) || !target_still_legal(s, t, slots[i], p) do return false
+		if i >= len(slots) || !target_still_legal(s, t, slots[i], p, id) do return false
 		append(&chosen, t)
 	}
 	if len(chosen) < len(slots) {
@@ -334,7 +309,7 @@ ask_target :: proc(g: ^Game, p: types.PlayerId) {
 	o := object(s, g.pending.object)
 	slots := target_slots(pending_ability(g))
 	slot := len(g.pending.targets)
-	legal := legal_targets(s, slots[slot], p)
+	legal := legal_targets(s, slots[slot], p, o.id)
 	pending := new(types.PendingCast)
 	pending.object_id = o.id
 	pending.card_id = o.card_id
@@ -342,7 +317,7 @@ ask_target :: proc(g: ^Game, p: types.PlayerId) {
 	pending.origin_zone = .Hand if g.pending.ability_index < 0 else .Battlefield
 	if g.pending.ability_index >= 0 do pending.activation_ability_index = g.pending.ability_index
 	target_slot_list: [dynamic]types.TargetSelectionSlot
-	for f in slots do append(&target_slot_list, types.TargetSelectionSlot{legal_targets = legal_targets(s, f, p)})
+	for f in slots do append(&target_slot_list, types.TargetSelectionSlot{legal_targets = legal_targets(s, f, p, o.id)})
 	selected: [dynamic]Maybe(types.TargetRef)
 	for t in g.pending.targets do append(&selected, t)
 	s.waiting_for = types.WaitingFor_TargetSelection {
@@ -357,7 +332,7 @@ choose_target :: proc(g: ^Game, p: types.PlayerId, t: types.TargetRef) -> bool {
 	s := &g.state
 	slots := target_slots(pending_ability(g))
 	slot := len(g.pending.targets)
-	if !target_still_legal(s, t, slots[slot], p) do return false
+	if !target_still_legal(s, t, slots[slot], p, g.pending.object) do return false
 	append(&g.pending.targets, t)
 	if len(g.pending.targets) < len(slots) {
 		ask_target(g, p)
@@ -577,4 +552,9 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 		append(out, strings.concatenate({"effect:", full}, context.temp_allocator))
 	}
 	if a.sub_ability != nil do ability_gaps(out, a.sub_ability^, prefix)
+}
+
+is_land_face :: proc(face: ^types.CardFace) -> bool {
+	for t in face.card_type.core_types do if t == .Land do return true
+	return false
 }

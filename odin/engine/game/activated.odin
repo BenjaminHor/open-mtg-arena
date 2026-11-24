@@ -81,7 +81,7 @@ can_activate :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: i
 			mana = x.cost
 		}
 	}
-	for f in target_slots(a) do if len(legal_targets(s, f, p)) == 0 do return false
+	for f in target_slots(a) do if len(legal_targets(s, f, p, o.id)) == 0 do return false
 	_, payable := plan_payment(s, p, mana, o.id if taps_self else 0)
 	return payable
 }

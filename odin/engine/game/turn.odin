@@ -61,12 +61,18 @@ begin_step :: proc(g: ^Game, step: types.Phase) {
 	case .DeclareAttackers:
 		// CR 508.1: the active player declares attackers, if they have creatures that can attack.
 		if ask_attackers(g) do return
-		// CR 508.8: with no attackers, the declare blockers and combat damage steps are skipped.
-		begin_step(g, .EndCombat)
-		return
 	case .DeclareBlockers:
+		// CR 508.8: with no attackers, the declare blockers and combat damage steps are skipped.
+		if !has_attackers(s) {
+			begin_step(g, .EndCombat)
+			return
+		}
 		if ask_blockers(g) do return
 	case .CombatDamage:
+		if !has_attackers(s) {
+			begin_step(g, .EndCombat)
+			return
+		}
 		combat_damage(g)
 		if game_over(s) do return
 	case .EndCombat:
@@ -157,4 +163,9 @@ ask_discard_to_hand_size :: proc(g: ^Game) -> bool {
 // CR 117.3b: after a spell or ability resolves, the active player receives priority.
 after_resolution :: proc(g: ^Game) {
 	give_priority(g, g.state.active_player)
+}
+
+has_attackers :: proc(s: ^types.GameState) -> bool {
+	c, ok := s.combat.?
+	return ok && len(c.attackers) > 0
 }

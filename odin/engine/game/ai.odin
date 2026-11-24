@@ -102,7 +102,13 @@ chosen_target :: proc(g: ^Game, p: types.PlayerId, legal: []types.TargetRef, a: 
 	damage := 0
 	if a != nil && a.effect != nil {
 		#partial switch e in a.effect^ {
-		case types.Effect_Pump, types.Effect_GenericEffect:
+		case types.Effect_Pump:
+			// +N/+N helps its target; -N/-N is removal.
+			pw, _ := e.power.(types.PtValue_Fixed)
+			tg, _ := e.toughness.(types.PtValue_Fixed)
+			helps = pw._0 + tg._0 >= 0
+			if !helps do damage = int(-tg._0)
+		case types.Effect_GenericEffect:
 			helps = true
 		case types.Effect_ChangeZone:
 			// Getting a card back is good for its owner; exiling or bouncing a permanent is aimed at an opponent's.

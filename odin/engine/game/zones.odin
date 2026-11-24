@@ -67,6 +67,7 @@ move_object :: proc(g: ^Game, id: types.ObjectId, to: types.Zone) {
 		if list := zone_list(s, o.zone, o.owner); list != nil do remove_id(list, id)
 	}
 	from := o.zone
+	if from == .Battlefield do remove_from_combat(s, id) // CR 506.4
 	last_controller := o.controller // CR 603.10: a leaves-the-battlefield trigger looks back at the object as it was
 	o.zone = to
 	o.incarnation += 1
@@ -115,4 +116,30 @@ permanents_of :: proc(s: ^types.GameState, p: types.PlayerId) -> [dynamic]^types
 		if o.controller == p do append(&out, o)
 	}
 	return out
+}
+
+// CR 506.4: a permanent that leaves the battlefield is removed from combat; an attacker it blocked stays blocked
+// (CR 509.1h), and a blocker whose attacker is gone deals no combat damage (CR 510.1d).
+remove_from_combat :: proc(s: ^types.GameState, id: types.ObjectId) {
+	c, in_combat := &s.combat.?
+	if !in_combat do return
+	for a, i in c.attackers do if a.object_id == id {
+		ordered_remove(&c.attackers, i)
+		break
+	}
+	delete_key(&c.blocker_assignments, id)
+	for attacker, &blockers in c.blocker_assignments {
+		for b, i in blockers do if b == id {
+			ordered_remove(&blockers, i)
+			break
+		}
+		_ = attacker
+	}
+	delete_key(&c.blocker_to_attacker, id)
+	for _, &attackers in c.blocker_to_attacker {
+		for a, i in attackers do if a == id {
+			ordered_remove(&attackers, i)
+			break
+		}
+	}
 }

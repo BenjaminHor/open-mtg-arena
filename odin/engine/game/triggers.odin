@@ -134,15 +134,10 @@ zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.Trigg
 	case types.TargetFilter_Typed:
 		if is_self || source.zone != .Battlefield do return
 		moved := object(s, e.object)
-		for tf in f._0.type_filters do if !matches_type(moved, tf) do return
-		if c, has := f._0.controller.?; has {
-			#partial switch _ in c {
-			case types.ControllerRef_You:
-				if e.controller != source.controller do return
-			case types.ControllerRef_Opponent:
-				if e.controller == source.controller do return
-			}
-		}
+		// The moved object as it was for the event: its controller then (CR 603.10).
+		as_was := moved^
+		as_was.controller = e.controller
+		if !object_matches(s, &as_was, f._0, source.controller, source.id) do return
 	case:
 		return
 	}
@@ -184,7 +179,7 @@ place_triggers :: proc(g: ^Game) -> bool {
 			append(&targets, ..g.trigger_targets.targets[:])
 		}
 		for len(targets) < len(slots) {
-			legal := legal_targets(s, slots[len(targets)], pt.controller)
+			legal := legal_targets(s, slots[len(targets)], pt.controller, pt.source)
 			if len(legal) == 0 do break
 			if len(legal) == 1 {
 				append(&targets, legal[0])
@@ -321,7 +316,7 @@ run_ability :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Pla
 	slots := target_slots(a)
 	legal := make([]bool, len(targets), context.temp_allocator)
 	any_legal := len(slots) == 0
-	for t, i in targets do if i < len(slots) && target_still_legal(s, t, slots[i], controller) {
+	for t, i in targets do if i < len(slots) && target_still_legal(s, t, slots[i], controller, source) {
 		legal[i] = true
 		any_legal = true
 	}
