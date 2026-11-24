@@ -680,3 +680,31 @@ lands_that_enter_tapped_unless :: proc(t: ^testing.T) {
 	game.move_object(g, castle2.id, .Battlefield)
 	testing.expect(t, !castle2.tapped, "a Plains: untapped")
 }
+
+@(test)
+damage_to_that_creatures_controller :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 608.2c: Chandra's Outrage deals 4 damage to target creature and 2 to "its controller", the controller of
+	// that target; CR 608.2h: worked out as the instruction is carried out.
+	g := new_game()
+	for _ in 0 ..< 4 do add(t, g, "Mountain", 0, .Battlefield)
+	outrage := add(t, g, "Chandra's Outrage", 0, .Hand)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = outrage.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, bears.zone == .Graveyard, "the creature is destroyed by lethal damage")
+	testing.expect(t, game.player(&g.state, 1).life == 18 && game.player(&g.state, 0).life == 20, "its controller took 2")
+}
+
+@(test)
+target_opponent_written_as_a_player_filter :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 115.1: "target opponent" can name only an opponent.
+	g := new_game()
+	f: types.TypedFilter
+	f.controller = types.ControllerRef_Opponent{}
+	legal := game.legal_targets(&g.state, types.TargetFilter_Typed{f}, 0)
+	testing.expect(t, len(legal) == 1 && legal[0] == types.TargetRef(types.TargetRef_Player{1}), "only the opponent")
+}

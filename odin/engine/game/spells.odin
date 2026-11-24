@@ -5,6 +5,7 @@ package game
 
 import "core:fmt"
 import "core:reflect"
+import "core:slice"
 import "core:strings"
 import types "../types"
 
@@ -89,7 +90,9 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 	#partial switch x in e {
 	case types.Effect_DealDamage:
 		fixed := quantity_supported(x.amount)
-		return fixed && x.damage_source == nil && x.excess == nil && filter_supported(x.target)
+		// To a target, to "you", or to "that creature's controller".
+		_, parent_controller := x.target.(types.TargetFilter_ParentTargetController)
+		return fixed && x.damage_source == nil && x.excess == nil && (filter_supported(x.target) || is_controller(x.target) || parent_controller)
 	case types.Effect_Pump:
 		_, pf := x.power.(types.PtValue_Fixed)
 		_, tf := x.toughness.(types.PtValue_Fixed)
@@ -155,9 +158,32 @@ filter_supported :: proc(f: types.TargetFilter) -> bool {
 	case types.TargetFilter_ParentTarget:
 		return true // only after an instruction that chose a target (ability_supported)
 	case types.TargetFilter_Typed:
+		if _, is_player := player_typed(x._0); is_player do return true
 		return typed_supported(x._0)
+	case types.TargetFilter_Or:
+		// "Target creature or planeswalker an opponent controls", "target opponent or planeswalker".
+		for y in x.filters {
+			#partial switch _ in y {
+			case types.TargetFilter_Typed, types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_Any:
+				if !filter_supported(y) do return false
+			case:
+				return false
+			}
+		}
+		return len(x.filters) > 0
 	}
 	return false
+}
+
+// A typed filter naming no types or properties, only a controller: a player ("target opponent").
+player_typed :: proc(f: types.TypedFilter) -> (types.ControllerRef, bool) {
+	c, has := f.controller.?
+	if !has || len(f.type_filters) > 0 || len(f.properties) > 0 do return nil, false
+	#partial switch _ in c {
+	case types.ControllerRef_You, types.ControllerRef_Opponent:
+		return c, true
+	}
+	return nil, false
 }
 
 // ---- Targets (CR 115) ----------------------------------------------------------------------------------------
@@ -167,7 +193,7 @@ filter_supported :: proc(f: types.TargetFilter) -> bool {
 effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
 	f := effect_target_filter(e)
 	#partial switch _ in f {
-	case types.TargetFilter_Any, types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_Typed:
+	case types.TargetFilter_Any, types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_Typed, types.TargetFilter_Or:
 		return f, true
 	}
 	return nil, false
@@ -175,7 +201,10 @@ effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
 
 // Whether an instruction acts on "it" or "that creature": the target an earlier instruction chose (CR 608.2c).
 refers_to_parent_target :: proc(e: types.Effect) -> bool {
-	if _, parent := effect_target_filter(e).(types.TargetFilter_ParentTarget); parent do return true
+	#partial switch _ in effect_target_filter(e) {
+	case types.TargetFilter_ParentTarget, types.TargetFilter_ParentTargetController:
+		return true
+	}
 	if x, generic := e.(types.Effect_GenericEffect); generic && x.target == nil {
 		for st in x.static_abilities {
 			aff, _ := st.affected.?
@@ -271,7 +300,16 @@ legal_targets :: proc(s: ^types.GameState, f: types.TargetFilter, controller: ty
 		for p in s.players do append(&out, types.TargetRef_Player{p.id})
 	case types.TargetFilter_Opponent:
 		for p in s.players do if p.id != controller do append(&out, types.TargetRef_Player{p.id})
+	case types.TargetFilter_Or:
+		for y in x.filters do for t in legal_targets(s, y, controller, source) {
+			if !slice.contains(out[:], t) do append(&out, t)
+		}
 	case types.TargetFilter_Typed:
+		if c, is_player := player_typed(x._0); is_player {
+			_, you := c.(types.ControllerRef_You)
+			for p in s.players do if (p.id == controller) == you do append(&out, types.TargetRef_Player{p.id})
+			return out
+		}
 		if gf, in_graveyard := graveyard_filter(f); in_graveyard {
 			graveyard_targets(s, gf, controller, &out)
 			return out
@@ -540,7 +578,8 @@ do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Playe
 		return ask_scry(g, controller, n, true)
 	case types.Effect_DealDamage:
 		n := amount(g, x.amount, controller, source, target)
-		deal_damage(g, source, target.?, n)
+		if is_controller(x.target) do deal_damage(g, source, types.TargetRef_Player{controller}, n) // "to you"
+		else if t, has := target.?; has do deal_damage(g, source, t, n)
 	case types.Effect_Pump:
 		pumped: ^types.GameObject
 		if id, ok := target_object(target); ok do pumped = object(s, id)

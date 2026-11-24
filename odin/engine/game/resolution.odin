@@ -54,6 +54,12 @@ continue_resolution :: proc(g: ^Game) -> bool {
 			// one is unaffected by the rest too (CR 608.2b).
 			target = r.last_target
 			if target == nil do continue
+			if _, of_controller := effect_target_filter(x.effect^).(types.TargetFilter_ParentTargetController); of_controller {
+				// "That creature's controller" (its last known controller if it has left, CR 608.2h).
+				id, is_object := target_object(target)
+				if !is_object do continue
+				target = types.TargetRef_Player{object(&g.state, id).controller}
+			}
 		}
 		if do_effect(g, x, r.controller, r.source, target) do return false // waiting for a choice
 	}
