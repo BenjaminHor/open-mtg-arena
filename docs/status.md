@@ -110,9 +110,15 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     pointer: `get_mut`, `last_mut`, functions returning `&mut T` / `Option<&mut T>`), with a hand-written
     `ObjectMap_get_mut` that copies on write like `Arc::make_mut` (tested in `hand_logic_test`), generic functions
     monomorphized per call site, a plain binding of a Box field binding the box (as Rust does), and Box values read
-    where their contents are wanted: 7,241 of 15,918 functions (45.5%), executed 45.9%. Next blockers (executed): type
+    where their contents are wanted: 7,241 of 15,918 functions (45.5%), executed 45.9%. **PR #118 merged**
+    (2026-11-24, squash efc4865). **PR #119** (open): sets kept as sets (sorted/deduplicated by their Rust type), `?`
+    inside inlined closures, derived equality for `==` on structs/enums/collections, a call returning `impl Iterator`
+    starting a chain, `enumerate`/`flat_map` stages (terminals break the chain's labelled outer loop),
+    `Definitions<T>` iteration, `unwrap_or_else`, Vec reads through nil-able pointers: 7,459 of 15,918 (46.9%),
+    executed 47.4%. Method refusals now name the receiver's shape. Next blockers (executed): type
     parameters whose callers aren't translated yet (88), closure-parameter callees (87, translated as instances
-    through their callers), the type-check tail (80), closures/combinators of untyped values (~107). Next blockers
+    through their callers), the type-check tail (83), closures/combinators of untyped values (~130), lets of
+    untyped values (~200 across kinds). Older next blockers
     (executed): generic functions (196), iterating non-Vec collections (maps, sets, PVec, ranges: ~260), `get` on
     maps (78), `matches!` with field conditions (70), statement macros (66). Translator now: value
     `if`/`match`/block initializers (each branch assigns), empty collections typed by their later use, Option/Result
