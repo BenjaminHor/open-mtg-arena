@@ -2747,8 +2747,12 @@ Plan (keep current):
    (comparing a game-relevant projection, not Rust's bookkeeping) and pool cards fully supported.
 4. **Switch** the app to Odin at 14,013+ pool cards; Rust stays only as the test reference.
 
-Also in flight: the dev bundle (scripts/fetch-dev-bundle.sh; the Pages deploy publishes it) and the Rust build-time
-measurements (cold wasm-dev build running), which give the baseline the Odin loop is judged against.
+Also in flight: the dev bundle (scripts/fetch-dev-bundle.sh; the Pages deploy publishes it).
+
+Rust baseline (measured 2026-11-24, this cloud container: 4 cores, 15 GB): `./scripts/build-wasm.sh wasm-dev` from
+cold compiled for 18 min 15 s, then wasm-bindgen was killed for lack of memory on the 260 MB debug-info module, so
+the dev engine build doesn't complete here without stripping `.debug_*` first. That is the loop the Odin engine
+replaces.
 
 ## Paused (2026-11-24, ~17:25 UTC, owner's request)
 
