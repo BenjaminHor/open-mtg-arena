@@ -10,7 +10,9 @@ activated_supported :: proc(a: types.AbilityDefinition) -> bool {
 	if a.kind != .Activated || !ability_supported(a) do return false
 	cost, has := a.cost.?
 	if !has || !cost_supported(cost) do return false
-	if a.activation_zone != nil || a.activator_filter != nil || a.activation_mana_payment_restriction != nil do return false
+	if a.activator_filter != nil || a.activation_mana_payment_restriction != nil do return false
+	// From the hand: abilities that discard the card itself as their cost (cycling, CR 702.29a).
+	if zone, has := a.activation_zone.?; has && (zone != .Hand || !discards_itself(a)) do return false
 	for r in a.activation_restrictions do if !restriction_supported(r) do return false
 	return true
 }
@@ -94,9 +96,10 @@ cost_supported :: proc(c: types.AbilityCost) -> bool {
 		typed, ok := x._0.target.(types.TargetFilter_Typed)
 		return ok && typed_supported(typed._0) && count.count >= 1 && count.count <= 10 && own_or_unrestricted(typed._0)
 	case types.AbilityCost_Discard:
-		// "Discard a card" or "discard two cards" from the hand, chosen by the player (not the card itself, which
-		// is activated from the hand, and not at random).
+		// "Discard this card" (cycling), or "discard a card" / "discard two cards" from the hand, chosen by the
+		// player (not at random).
 		n, fixed := fixed_quantity(x.count)
+		if x.self_scope == .SourceCard do return fixed && n == 1
 		if !fixed || n < 1 || x.selection != .Chosen || x.self_scope != .FromHand do return false
 		f, has := x.filter.?
 		if !has do return true
@@ -114,7 +117,7 @@ cost_supported :: proc(c: types.AbilityCost) -> bool {
 			case types.AbilityCost_Sacrifice:
 				if !is_self(y._0.target) do chosen += 1
 			case types.AbilityCost_Discard:
-				chosen += 1
+				if y.self_scope != .SourceCard do chosen += 1
 			}
 		}
 		return chosen <= 1
@@ -154,6 +157,7 @@ object_cost :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, a: ^types
 			for perm in permanents_of(s, p) do if object_matches(s, perm, typed._0, p, o.id) do append(&c.choices, perm.id)
 			return c, true
 		case types.AbilityCost_Discard:
+			if x.self_scope == .SourceCard do continue // the card itself: no choice
 			n, _ := fixed_quantity(x.count)
 			c := Object_Cost{kind = .Discard, count = n}
 			c.choices = make([dynamic]types.ObjectId, context.temp_allocator)
@@ -188,7 +192,12 @@ activated_ability :: proc(o: ^types.GameObject, index: int) -> ^types.AbilityDef
 can_activate :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: int) -> bool {
 	s := &g.state
 	a := activated_ability(o, index)
-	if a == nil || o.zone != .Battlefield || o.controller != p || !object_supported(o, g.card_db) do return false
+	if a == nil || !object_supported(o, g.card_db) do return false
+	// CR 602.2: a permanent's ability, by its controller; a hand ability (cycling), by the card's owner from their
+	// hand (CR 702.29a).
+	if zone, from_hand := a.activation_zone.?; from_hand {
+		if zone != .Hand || o.zone != .Hand || o.owner != p do return false
+	} else if o.zone != .Battlefield || o.controller != p do return false
 	if _, _, mana := tap_mana_ability(a^); mana || !activated_supported(a^) do return false
 	for r in a.activation_restrictions do if !restriction_met(g, p, o, index, r) do return false
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
@@ -285,7 +294,24 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 	record_activation(&s.activated_abilities_this_turn, o, index)
 	record_activation(&s.activated_abilities_this_game, o, index)
 	// Sacrificing it last: the ability on the stack is independent of its source (CR 113.7a).
-	for part in parts do if sac, ok := part.(types.AbilityCost_Sacrifice); ok && is_self(sac._0.target) do move_object(g, source, .Graveyard)
+	for part in parts {
+		#partial switch x in part {
+		case types.AbilityCost_Sacrifice:
+			if is_self(x._0.target) do move_object(g, source, .Graveyard)
+		case types.AbilityCost_Discard:
+			if x.self_scope == .SourceCard do move_object(g, source, .Graveyard) // "discard this card" (CR 702.29a)
+		}
+	}
 	s.priority_passes = nil
 	give_priority(g, p)
+}
+
+// Whether the ability's cost includes discarding the card it's on.
+discards_itself :: proc(a: types.AbilityDefinition) -> bool {
+	cost, has := a.cost.?
+	if !has do return false
+	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
+	cost_parts(cost, &parts)
+	for part in parts do if d, ok := part.(types.AbilityCost_Discard); ok && d.self_scope == .SourceCard do return true
+	return false
 }

@@ -1323,3 +1323,31 @@ each_player_and_each_opponent :: proc(t: ^testing.T) {
 	testing.expect(t, types.pvec_len(game.player(&g2.state, 1).hand) == theirs_hand - 1, "one card from the opponent")
 	testing.expect(t, types.pvec_len(game.player(&g2.state, 0).hand) == mine_hand - 1, "the caster only cast the Rat")
 }
+
+@(test)
+cycling_from_the_hand :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.29a: "Cycling {B}" means "{B}, Discard this card: Draw a card", only while the card is in hand.
+	g := new_game()
+	add(t, g, "Swamp", 0, .Battlefield)
+	tusker := add(t, g, "Barren Moor", 0, .Hand)
+	pl := game.player(&g.state, 0)
+	hand := types.pvec_len(pl.hand)
+	cycling := -1
+	for &a, i in tusker.abilities^ do if a.activation_zone != nil do cycling = i
+	testing.expect(t, game.can_activate(g, 0, tusker, cycling), "cycling from the hand")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = tusker.id, ability_index = cycling}))
+	testing.expect(t, tusker.zone == .Graveyard, "discarded as the cost is paid")
+	for i := 0; i < 6 && types.pvec_len(g.state.stack) > 0; i += 1 {
+		#partial switch w in g.state.waiting_for {
+		case types.WaitingFor_OptionalEffectChoice:
+			game.apply(g, 0, types.GameAction_DecideOptionalEffect{accept = false})
+		case:
+			game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+		}
+	}
+	testing.expect(t, types.pvec_len(pl.hand) == hand, "one card out, one drawn")
+	on_battlefield := add(t, g, "Barren Moor", 0, .Battlefield)
+	add(t, g, "Swamp", 0, .Battlefield)
+	for &a, i in on_battlefield.abilities^ do if a.activation_zone != nil do testing.expect(t, !game.can_activate(g, 0, on_battlefield, i), "not from the battlefield")
+}

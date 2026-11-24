@@ -66,6 +66,11 @@ keyword_supported :: proc(k: types.Keyword) -> bool {
 	case types.Keyword_Equip:
 		_, ok := k._0.(types.ManaCost_Cost)
 		return ok
+	case types.Keyword_Cycling:
+		// CR 702.29a: the card data spells it out as an activated ability from the hand ("[cost], Discard this
+		// card: Draw a card"), checked like any other.
+		_, mana := k._0.(types.CyclingCost_Mana)
+		return mana
 	}
 	return false
 }
