@@ -127,7 +127,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     session_012gEsKZntQHoXvuPbowys7j (claude/odin-state-perf), O-2 session_012gEsKakESMXjUS4u6b67dY
     (claude/odin-o2-replay). Vector check on that translation (5,812 calls over 1,079 procedures): 684 pass, 26 pass
     touching unlogged state, 0 unexplained failures, 0 crashes, 367 reach only untranslated code
-    (`controls_exact_fetchland` reads the skipped `layers_dirty`, explained). D-184 is done (Known issues). Next
+    (`controls_exact_fetchland` reads the skipped `layers_dirty`, explained). Later the same day: engine trait
+    methods registered, constants and unit variants typed, pair-held maps (non-hashable keys), `mem::take`/`replace`,
+    `next()` on fresh iterators, Box `&mut` bindings, `Option<Box<T>>` read as `Option<T>`; one name set per
+    procedure; brace-holding loop heads parenthesized; translate-loop now fails on a crashed check (a killed check
+    had read as clean). 8,109 of 16,030 functions (50.6%), executed 51.8% (3,052 of 5,889). Vector check: 728 pass,
+    27 touching unlogged state, 0 unexplained failures, 0 crashes, 386 reach only untranslated code. D-184 is done (Known issues). Next
     blockers (executed): type
     parameters whose callers aren't translated yet (88), closure-parameter callees (87, translated as instances
     through their callers), the type-check tail (83), closures/combinators of untyped values (~130), lets of
