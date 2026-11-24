@@ -1902,6 +1902,8 @@ impl<'a, 'b> Tx<'a, 'b> {
             Expr::MethodCall(m) => match m.method.to_string().as_str() {
                 "iter" | "into_iter" | "copied" | "cloned" if m.args.is_empty() => match self.shape_of(&m.receiver) {
                     Some(Shape::Vec(i) | Shape::PVec(i) | Shape::Array(i, _)) => Some(*i),
+                    // An Option iterates its value, if any.
+                    Some(Shape::Option(i)) if m.method != "copied" && m.method != "cloned" => Some(*i),
                     Some(Shape::Ptr(p, _)) => match *p {
                         Shape::Vec(i) => Some(*i),
                         _ => None,
@@ -2135,6 +2137,12 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let src = self.expr(e, &src_shape)?;
                 (format!("for i{n}_ in 0 ..< {src}.len {{ {item} := pvec_get({src}, i{n}_);"), (**i).clone())
             }
+            // An Option: its value, if any, as the one item.
+            Shape::Option(i) => {
+                let src = self.expr(e, &src_shape)?;
+                self.pre.push(format!("os{n}_ := {src}"));
+                (format!("for _ in 0 ..< (1 if os{n}_ != nil else 0) {{ {item} := os{n}_.?;"), (**i).clone())
+            }
             // A Vec behind a pointer (a Box, or a shared Vec); nil holds nothing.
             Shape::Ptr(p, _) if matches!(**p, Shape::Vec(_)) => {
                 let Shape::Vec(i) = &**p else { unreachable!() };
@@ -2145,7 +2153,8 @@ impl<'a, 'b> Tx<'a, 'b> {
             }
             other => return Err(format!("iterator over a non-Vec: {}", crate::body::shape_kind(other))),
         };
-        let pvec = matches!(src_shape, Shape::PVec(_));
+        // Heads that bind the item inside the loop open one more block, closed after the step.
+        let pvec = matches!(src_shape, Shape::PVec(_) | Shape::Option(_));
         // What the last stage must give, when the terminal fixes it: a collect's item, a find_map's Option. A map or
         // filter_map closure whose own result can't be inferred takes it from here.
         let last_hint: Option<Shape> = match (mc.method.to_string().as_str(), want) {
