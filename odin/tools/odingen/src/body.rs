@@ -978,7 +978,7 @@ impl Body<'_, '_, '_> {
             if pi.by_ref.is_some() || self.mut_ref_source(&l.expr) {
                 return Err("binding to a mutable reference".into());
             }
-            let sh = self.shape_of(&l.expr).ok_or("if let on an untyped value")?;
+            let sh = self.shape_of(&l.expr).ok_or_else(|| format!("if let on an untyped value: {}", source_kind(&l.expr)))?;
             let inner = match &sh {
                 Shape::Option(i) => (**i).clone(),
                 Shape::OptPtr(i, s) => Shape::Ptr(i.clone(), *s),

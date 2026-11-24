@@ -1525,10 +1525,15 @@ impl<'a, 'b> Tx<'a, 'b> {
 
     /// What a Vec-shaped value is in Rust: a Vec, a sorted set, or a hash set (None when the translator can't tell).
     pub fn set_kind(&mut self, e: &Expr) -> Option<SetKind> {
+        Some(set_kind_of(&self.rust_type_text(e)?))
+    }
+
+    /// The Rust type of a variable or field, as written (None when the translator can't see it).
+    fn rust_type_text(&mut self, e: &Expr) -> Option<String> {
         let ty = match e {
-            Expr::Paren(p) => return self.set_kind(&p.expr),
-            Expr::Reference(r) => return self.set_kind(&r.expr),
-            Expr::Unary(u) => return self.set_kind(&u.expr),
+            Expr::Paren(p) => return self.rust_type_text(&p.expr),
+            Expr::Reference(r) => return self.rust_type_text(&r.expr),
+            Expr::Unary(u) => return self.rust_type_text(&u.expr),
             Expr::Path(p) if p.path.segments.len() == 1 => RUST_TYPES.with(|t| t.borrow().get(&p.path.segments[0].ident.to_string()).cloned())?,
             Expr::Field(fe) => {
                 let base = match self.shape_of(&fe.base)? {
@@ -1544,7 +1549,15 @@ impl<'a, 'b> Tx<'a, 'b> {
             }
             _ => return None,
         };
-        Some(set_kind_of(&ty))
+        Some(ty)
+    }
+
+    /// Key equality for a map held as pairs: Rust's derived PartialEq.
+    fn key_eq(&mut self, k: &Shape, a: &str, b: &str) -> R<String> {
+        Ok(match self.e.equaler(k)? {
+            None => format!("({a} == {b})"),
+            Some(p) => format!("{p}({a}, {b})"),
+        })
     }
 
     /// Whether Odin's `<` orders values of this shape as Rust's Ord does (numbers, strings, plain enums, newtypes).
@@ -2638,6 +2651,53 @@ impl<'a, 'b> Tx<'a, 'b> {
                     self.pre.push(format!("gm{n}_: Maybe(^{})", self.e.odin(i)));
                     self.pre.push(format!("if len({v}) > 0 do gm{n}_ = &{v}[{at}]"));
                     format!("gm{n}_")
+                }
+                // A map whose keys Odin can't hash (`HashMap<CounterType, u32>`) is a list of pairs in the model:
+                // lookups search it with Rust's key equality. A HashMap's order is Rust's hashing, never observed
+                // as such, so a new key is appended; a BTreeMap would need its order kept, which isn't done yet.
+                // Read through a pointer too (a shared map; nil holds nothing).
+                ("get" | "contains_key", Shape::Map(k, v), 1) if !self.e.simple_key(k) => {
+                    let (k, v) = ((**k).clone(), (**v).clone());
+                    let key = self.expr(args[0], &k)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("pk{n}_ := {key}"));
+                    let eq = self.key_eq(&k, &format!("p{n}_._0"), &format!("pk{n}_"))?;
+                    let src = crate::body::header_safe(&format!("{recv}{deref}"));
+                    let (decl, hit) = if m == "get" {
+                        (format!("g{n}_: Maybe({})", self.e.odin(&v)), format!("g{n}_ = p{n}_._1"))
+                    } else {
+                        (format!("g{n}_ := false"), format!("g{n}_ = true"))
+                    };
+                    self.pre.push(decl);
+                    let lookup = format!("for p{n}_ in {src} {{ if {eq} {{ {hit}; break }} }}");
+                    self.pre.push(if deref.is_empty() { lookup } else { format!("if {recv} != nil {{ {lookup} }}") });
+                    format!("g{n}_")
+                }
+                ("insert", Shape::Map(k, v), 2) if deref.is_empty() && !self.e.simple_key(k) => {
+                    if self.rust_type_text(&mc.receiver).is_none_or(|t| t.contains("BTreeMap") || t.contains("OrdMap")) {
+                        return Err("insert into a pair-held map of a kind whose order matters (or unseen)".into());
+                    }
+                    let (k, v) = ((**k).clone(), (**v).clone());
+                    let (key, val) = (self.expr(args[0], &k)?, self.expr(args[1], &v)?);
+                    let n = self.next_temp();
+                    self.pre.push(format!("pk{n}_, pv{n}_ := {key}, {val}"));
+                    let eq = self.key_eq(&k, &format!("p{n}_._0"), &format!("pk{n}_"))?;
+                    self.pre.push(format!("old{n}_: Maybe({})", self.e.odin(&v)));
+                    self.pre.push(format!("found{n}_ := false"));
+                    self.pre.push(format!("for &p{n}_ in {recv} {{ if {eq} {{ old{n}_ = p{n}_._1; p{n}_._1 = pv{n}_; found{n}_ = true; break }} }}"));
+                    self.pre.push(format!("if !found{n}_ do append(&{recv}, Tuple2({}, {}){{pk{n}_, pv{n}_}})", self.e.odin(&k), self.e.odin(&v)));
+                    format!("old{n}_")
+                }
+                ("remove", Shape::Map(k, v), 1) if deref.is_empty() && !self.e.simple_key(k) => {
+                    let (k, v) = ((**k).clone(), (**v).clone());
+                    let key = self.expr(args[0], &k)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("pk{n}_ := {key}"));
+                    let eq = self.key_eq(&k, &format!("p{n}_._0"), &format!("pk{n}_"))?;
+                    self.pre.push(format!("old{n}_: Maybe({})", self.e.odin(&v)));
+                    // Order kept: the rest stay as they were.
+                    self.pre.push(format!("for p{n}_, i{n}_ in {recv} {{ if {eq} {{ old{n}_ = p{n}_._1; ordered_remove(&{recv}, i{n}_); break }} }}"));
+                    format!("old{n}_")
                 }
                 // A map's insert returns the value it replaced.
                 ("insert", Shape::Map(k, v), 2) if deref.is_empty() => {

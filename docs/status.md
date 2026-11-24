@@ -2712,6 +2712,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `players::is_opponent`, which delegates to `topology::is_opponent`, called itself (now resolved by module path or
   the caller's file, ambiguous calls and shared procedure names refused); (4) `Some(Vec::new())`, `Some(None)` and
   `Err(Default::default())` became untyped `{}`/`nil`, which Odin reads as None/no error (now typed explicitly).
+- (2026-11-24, Odin port, to handle in O-2's state comparison) A HashMap whose keys Odin can't hash
+  (`HashMap<CounterType, u32>`, `im::HashMap<StaticGateKey, bool>`) is a list of pairs in the Odin model, and the
+  translation appends a new key, while Rust serializes such a map in its hashing order. Two pair lists with the same
+  entries in different orders are equal maps, so comparisons of these fields (the replay harness, the vector check)
+  must ignore order. BTreeMap inserts into pair lists are refused until sorted insertion is written.
 - Fixed (2026-11-24, D-184): PtDirection's tag is now `direction`, so a pump's slot detail reads
   `{"type":"Modification","direction":"Increase"}`; TargetEffectDetail reads through a wire enum (`serde(from)`) that
   also takes the form saved games already hold (`{"type":"Increase"}`, after the client's `JSON.parse`) as a
