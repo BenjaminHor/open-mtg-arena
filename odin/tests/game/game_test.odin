@@ -1606,3 +1606,48 @@ its_controller_creates_a_token :: proc(t: ^testing.T) {
 	}
 	testing.expect(t, theirs.zone == .Graveyard && beasts == 1)
 }
+
+@(test)
+amounts_this_turn_and_phase_conditions :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Amounts tracked through the turn: spells cast (CR 601.2i), life gained (CR 119.3), life lost from damage,
+	// effects or payment (CR 119.2-119.4), cards drawn (CR 121.1). All reset as a turn begins.
+	g := new_game()
+	s := &g.state
+	shock := add(t, g, "Shock", 0, .Graveyard)
+	game.record_spell_cast(s, 0, shock, .Hand)
+	game.record_spell_cast(s, 1, shock, .Hand)
+	game.record_spell_cast(s, 1, shock, .Hand)
+	spells :: proc(scope: types.CountScope) -> types.QuantityExpr {
+		return types.QuantityExpr_Ref{types.QuantityRef_SpellsCast{scope = scope, window = .ThisTurn}}
+	}
+	testing.expect(t, game.quantity_supported(spells(.Controller)))
+	testing.expect(t, game.quantity_value(s, spells(.Controller), 0, 0, 0) == 1, "you cast one")
+	testing.expect(t, game.quantity_value(s, spells(.Opponents), 0, 0, 0) == 2, "your opponent cast two")
+	testing.expect(t, game.quantity_value(s, spells(.All), 0, 0, 0) == 3, "three in all")
+	last_turn := types.QuantityExpr(types.QuantityExpr_Ref{types.QuantityRef_SpellsCast{scope = .Controller, window = .LastTurn}})
+	testing.expect(t, !game.quantity_supported(last_turn), "last turn's spells aren't tracked yet")
+
+	game.gain_life(s, 0, 3)
+	game.lose_life(s, 0, 2)
+	gained := types.QuantityExpr(types.QuantityExpr_Ref{types.QuantityRef_LifeGainedThisTurn{player = types.PlayerScope_Controller{}}})
+	lost := types.QuantityExpr(types.QuantityExpr_Ref{types.QuantityRef_LifeLost{player = types.PlayerScope_Controller{}, window = .ThisTurn}})
+	testing.expect(t, game.quantity_value(s, gained, 0, 0, 0) == 3, "a later loss doesn't offset the gain")
+	testing.expect(t, game.quantity_value(s, lost, 0, 0, 0) == 2)
+	testing.expect(t, game.quantity_value(s, lost, 1, 0, 0) == 0, "the opponent lost none")
+
+	// CR 603.4: "if you control an artifact", "if you control no creatures", "if this is tapped".
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	creature := types.TypedFilter{controller = types.ControllerRef_You{}}
+	append(&creature.type_filters, types.TypeFilter(types.TypeFilter_Creature{}))
+	controls := types.TriggerCondition(types.TriggerCondition_ControlsType{filter = types.TargetFilter_Typed{creature}})
+	none := types.TriggerCondition(types.TriggerCondition_ControlsNone{filter = types.TargetFilter_Typed{creature}})
+	testing.expect(t, game.trigger_condition_supported(controls) && game.trigger_condition_supported(none))
+	testing.expect(t, game.trigger_condition_holds(s, bears.id, 0, controls), "you control a creature")
+	testing.expect(t, !game.trigger_condition_holds(s, bears.id, 1, controls), "your opponent controls none")
+	testing.expect(t, game.trigger_condition_holds(s, bears.id, 1, none))
+	tapped := types.TriggerCondition(types.TriggerCondition_SourceIsTapped{})
+	testing.expect(t, !game.trigger_condition_holds(s, bears.id, 0, tapped))
+	bears.tapped = true
+	testing.expect(t, game.trigger_condition_holds(s, bears.id, 0, tapped))
+}

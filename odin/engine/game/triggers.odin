@@ -394,8 +394,12 @@ trigger_condition_supported :: proc(c: types.TriggerCondition) -> bool {
 		case types.CounterMatch_OfType:
 			return counter_kind_supported(m._0)
 		}
-	case types.TriggerCondition_SourceInZone:
+	case types.TriggerCondition_SourceInZone, types.TriggerCondition_SourceIsTapped:
 		return true
+	case types.TriggerCondition_ControlsType:
+		return mass_filter_supported(x.filter)
+	case types.TriggerCondition_ControlsNone:
+		return mass_filter_supported(x.filter)
 	case types.TriggerCondition_AdditionalCostPaid:
 		// "When this enters, if it was kicked" (CR 702.33d).
 		return x.source != .NonKicker && x.origin == nil && x.variant == nil && x.kicker_cost == nil && x.min_count <= 1
@@ -430,6 +434,14 @@ trigger_condition_holds :: proc(s: ^types.GameState, source: types.ObjectId, con
 		return n >= x.minimum
 	case types.TriggerCondition_SourceInZone:
 		return src != nil && src.zone == x.zone
+	case types.TriggerCondition_SourceIsTapped:
+		// "If this is tapped" (CR 603.4: checked as it triggers and again as it resolves).
+		return src != nil && src.zone == .Battlefield && src.tapped
+	case types.TriggerCondition_ControlsType:
+		// "If you control an artifact": the filter names the controller (CR 603.4).
+		return len(affected_permanents(s, x.filter, controller, source)) > 0
+	case types.TriggerCondition_ControlsNone:
+		return len(affected_permanents(s, x.filter, controller, source)) == 0
 	case types.TriggerCondition_AdditionalCostPaid:
 		return kicked(src)
 	case types.TriggerCondition_And:

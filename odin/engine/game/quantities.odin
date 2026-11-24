@@ -43,6 +43,15 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return player_scope_supported(r.player)
 		case types.QuantityRef_ObjectManaValue:
 			return scope_supported(r.scope)
+		case types.QuantityRef_SpellsCast:
+			// "The number of spells you've cast this turn": any spell, this turn only.
+			return r.filter == nil && r.window == .ThisTurn && (r.scope == .Controller || r.scope == .All || r.scope == .Opponents)
+		case types.QuantityRef_LifeGainedThisTurn:
+			return player_scope_supported(r.player)
+		case types.QuantityRef_LifeLost:
+			return r.window == .ThisTurn && player_scope_supported(r.player)
+		case types.QuantityRef_CardsDrawnThisTurn:
+			return player_scope_supported(r.player)
 		case types.QuantityRef_ZoneCardCount:
 			if r.filter != nil do return false
 			#partial switch r.scope {
@@ -106,6 +115,26 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 		case types.QuantityRef_ObjectManaValue:
 			// CR 202.3: the mana value of the object.
 			if o := scope_object(s, r.scope, source, target); o != nil do return object_mana_value(o)
+		case types.QuantityRef_SpellsCast:
+			// CR 601.2i: a spell becomes cast once its costs are paid; the count is of those cast this turn.
+			n := 0
+			for p in s.players {
+				switch {
+				case r.scope == .Controller && p.id != controller, r.scope == .Opponents && p.id == controller:
+					continue
+				}
+				n += spells_cast_this_turn_by(s, p.id)
+			}
+			return n
+		case types.QuantityRef_LifeGainedThisTurn:
+			// CR 119.3: the life a player gained this turn, all of it (losses don't offset it).
+			return int(player(s, scope_player(s, r.player, controller)).life_gained_this_turn)
+		case types.QuantityRef_LifeLost:
+			// Life lost this turn: from damage (CR 119.2), effects (119.3) and paying life (119.4).
+			return int(player(s, scope_player(s, r.player, controller)).life_lost_this_turn)
+		case types.QuantityRef_CardsDrawnThisTurn:
+			// CR 121.1: the cards a player drew this turn.
+			return int(player(s, scope_player(s, r.player, controller)).cards_drawn_this_turn)
 		case types.QuantityRef_ZoneCardCount:
 			// "The number of creature cards in your graveyard": cards of any of the listed types.
 			n := 0
