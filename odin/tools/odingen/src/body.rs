@@ -69,7 +69,7 @@ pub fn stub_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, why:
     if !f.sig.generics.params.is_empty() || owner.and_then(|o| e.def(o)).is_some_and(|d| !d.generics.is_empty()) {
         return Err("generic function".into());
     }
-    let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: owner.map(str::to_string), depth: 0, calls: true };
+    let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: owner.map(str::to_string), depth: 0, calls: true, pre: Vec::new(), fn_ret: Shape::Unit, temps: 0 };
     let (sig, _, _) = signature(&mut tx, owner, f)?;
     let pname = proc_name(owner, name);
     let msg = crate::translate::odin_string(&format!("not translated yet: {pname} ({why})"));
@@ -95,8 +95,9 @@ pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef)
     if f.sig.asyncness.is_some() || f.sig.unsafety.is_some() {
         return Err("async or unsafe function".into());
     }
-    let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: owner.map(str::to_string), depth: 0, calls: true };
+    let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: owner.map(str::to_string), depth: 0, calls: true, pre: Vec::new(), fn_ret: Shape::Unit, temps: 0 };
     let (sig, ret, mut_params) = signature(&mut tx, owner, f)?;
+    tx.fn_ret = ret.clone();
     let pname = proc_name(owner, name);
     let mut b = Body { tx: &mut tx, out: String::new(), indent: 1, ret, declared: Default::default() };
     for (_, (odin, _)) in b.tx.vars.clone() {
@@ -143,6 +144,10 @@ fn local_ident(n: &str) -> String {
 
 impl Body<'_, '_, '_> {
     fn line(&mut self, s: &str) {
+        // Statements an expression on this line needed first (`?`).
+        for p in std::mem::take(&mut self.tx.pre) {
+            let _ = writeln!(self.out, "{}{p}", "\t".repeat(self.indent));
+        }
         let _ = writeln!(self.out, "{}{s}", "\t".repeat(self.indent));
     }
 

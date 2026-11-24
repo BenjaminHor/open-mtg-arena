@@ -28,6 +28,8 @@ pub enum Shape {
     Vec(Box<Shape>),
     /// `im::Vector<T>`: a persistent chunked vector (`PVec(T)`, pvec.odin).
     PVec(Box<Shape>),
+    /// `Result<T, E>` in translated logic: `Result(T, E)` (codec_runtime.odin), a value and a maybe-error.
+    Result(Box<Shape>, Box<Shape>),
     Map(Box<Shape>, Box<Shape>),
     Tuple(Vec<Shape>),
     Array(Box<Shape>, String),
@@ -335,6 +337,7 @@ impl<'a> Emitter<'a> {
                 s => Shape::Option(Box::new(s)),
             },
             "Box" => Shape::Ptr(Box::new(arg(self, 0)), false),
+            "Result" if args.len() == 2 => Shape::Result(Box::new(arg(self, 0)), Box::new(arg(self, 1))),
             "Arc" | "Rc" => Shape::Ptr(Box::new(arg(self, 0)), true),
             "Vec" | "VecDeque" | "SmallVec" | "Vector" | "HashSet" | "BTreeSet" | "IndexSet" | "OrdSet"
             | "FxHashSet" => {
@@ -398,6 +401,7 @@ impl<'a> Emitter<'a> {
             Shape::Unit => "Unit".into(),
             Shape::Json => "json.Value".into(),
             Shape::Option(i) => format!("Maybe({})", self.odin(i)),
+            Shape::Result(t, e) => format!("Result({}, {})", self.odin(t), self.odin(e)),
             Shape::OptPtr(i, _) | Shape::Ptr(i, _) => format!("^{}", self.odin(i)),
             Shape::PVec(i) => format!("PVec({})", self.odin(i)),
             Shape::Vec(i) => format!("[dynamic]{}", self.odin(i)),
@@ -1689,6 +1693,10 @@ impl<'a> Emitter<'a> {
 fn shape_names(s: &Shape, out: &mut Vec<String>) {
     match s {
         Shape::Option(i) | Shape::OptPtr(i, _) | Shape::Ptr(i, _) | Shape::Vec(i) | Shape::PVec(i) | Shape::Array(i, _) => shape_names(i, out),
+        Shape::Result(t, e) => {
+            shape_names(t, out);
+            shape_names(e, out);
+        }
         Shape::Map(k, v) => {
             shape_names(k, out);
             shape_names(v, out);
@@ -1715,6 +1723,10 @@ impl<'a> Emitter<'a> {
             Shape::Option(i) | Shape::Array(i, _) => self.plain(i),
             Shape::Tuple(es) => es.clone().iter().all(|e| self.plain(e)),
             Shape::Vec(_) | Shape::PVec(_) | Shape::Map(..) | Shape::Ptr(..) | Shape::OptPtr(..) => false,
+            Shape::Result(t, e) => {
+                let (t, e) = (t.clone(), e.clone());
+                self.plain(&t) && self.plain(&e)
+            }
             Shape::Named(..) => {
                 let ty = self.odin(s);
                 if let Some(p) = self.plain_memo.get(&ty) {
@@ -1819,6 +1831,18 @@ impl<'a> Emitter<'a> {
                         None => format!("\tout := make({ty}, len(x))\n\tcopy(out[:], x[:])\n\treturn out\n"),
                     }
                 }
+            }
+            Shape::Result(t, er) => {
+                let (t, er) = (t.clone(), er.clone());
+                let mut b = "\tout := x\n".to_string();
+                if let Some(c) = self.cloner(&t) {
+                    b.push_str(&format!("\tout.ok = {c}(x.ok)\n"));
+                }
+                if let Some(c) = self.cloner(&er) {
+                    b.push_str(&format!("\tif e, failed := x.err.?; failed do out.err = {c}(e)\n"));
+                }
+                b.push_str("\treturn out\n");
+                b
             }
             Shape::Tuple(es) => {
                 let mut b = "\tout := x\n".to_string();

@@ -24,6 +24,12 @@ pub struct Tx<'a, 'b> {
     /// Whole-function translation (body.rs): calls to engine functions stay calls to their translated procedures
     /// (`Owner_method`), and `.clone()` clones. Off for the serde defaults and skip predicates, which inline.
     pub calls: bool,
+    /// Statements an expression needs before the line it's on (`?` becomes a temporary and an early return);
+    /// body.rs writes them out ahead of the statement.
+    pub pre: Vec<String>,
+    /// The enclosing function's result shape (what an early return from `?` must produce).
+    pub fn_ret: Shape,
+    pub temps: u32,
 }
 
 /// The Odin procedure a translated engine function becomes: `Owner_method` for methods and associated
@@ -250,6 +256,27 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
             }
             Expr::Paren(p) => self.expr(&p.expr, want),
+            // `x?`: a temporary, an early return of the error (or None), and the value.
+            Expr::Try(t) if self.calls => {
+                let sh = self.shape_of(&t.expr).ok_or("? on an untyped value")?;
+                let v = self.expr(&t.expr, &sh)?;
+                self.temps += 1;
+                let tmp = format!("t{}_", self.temps);
+                match (&sh, self.fn_ret.clone()) {
+                    (Shape::Result(_, _), Shape::Result(..)) => {
+                        let ret_ty = self.e.odin(&self.fn_ret.clone());
+                        self.pre.push(format!("{tmp} := {v}"));
+                        self.pre.push(format!("if e_, failed := {tmp}.err.?; failed do return {ret_ty}{{err = e_}}"));
+                        Ok(format!("{tmp}.ok"))
+                    }
+                    (Shape::Option(_), Shape::Option(_)) => {
+                        self.pre.push(format!("{tmp} := {v}"));
+                        self.pre.push(format!("if {tmp} == nil do return nil"));
+                        Ok(format!("{tmp}.?"))
+                    }
+                    _ => Err("? between different kinds".into()),
+                }
+            }
             Expr::Group(g) => self.expr(&g.expr, want),
             Expr::Reference(r) => self.expr(&r.expr, want),
             Expr::Block(b) if b.block.stmts.len() == 1 => match &b.block.stmts[0] {
@@ -305,6 +332,17 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let last = segs.last().cloned().unwrap_or_default();
                 let args: Vec<&Expr> = c.args.iter().collect();
                 match (segs.as_slice(), last.as_str()) {
+                    (_, "Ok" | "Err") if args.len() == 1 && self.calls => {
+                        let Shape::Result(t, er) = want else { return Err("Ok/Err without a Result type".into()) };
+                        let ty = self.e.odin(want);
+                        return Ok(if last == "Ok" {
+                            let v = self.expr(args[0], t)?;
+                            format!("{ty}{{ok = {v}}}")
+                        } else {
+                            let v = self.expr(args[0], er)?;
+                            format!("{ty}{{err = {v}}}")
+                        });
+                    }
                     (_, "Some") if args.len() == 1 => {
                         let inner = match want {
                             Shape::Option(i) => (**i).clone(),
@@ -580,6 +618,19 @@ impl<'a, 'b> Tx<'a, 'b> {
                     Shape::Ptr(inner, _) => *inner,
                     s => s,
                 };
+                // Library methods whose result shape follows from the receiver's.
+                let m = mc.method.to_string();
+                match (m.as_str(), &recv) {
+                    ("len", _) | ("count", _) => return Some(Shape::Int("int")),
+                    ("is_empty" | "is_some" | "is_none" | "contains" | "contains_key" | "starts_with" | "ends_with"
+                        | "is_some_and" | "is_none_or" | "any" | "all" | "eq_ignore_ascii_case", _) => return Some(Shape::Bool),
+                    ("clone" | "to_owned", _) => return Some(recv.clone()),
+                    ("to_string" | "to_lowercase" | "to_uppercase" | "trim" | "as_str", _) => return Some(Shape::Str),
+                    ("first" | "last" | "get", Shape::Vec(i) | Shape::PVec(i)) => return Some(Shape::Option(i.clone())),
+                    ("unwrap" | "expect" | "unwrap_or_default" | "unwrap_or" | "unwrap_or_else", Shape::Option(i)) => return Some((**i).clone()),
+                    ("copied" | "cloned" | "as_ref" | "as_deref", Shape::Option(_)) => return Some(recv.clone()),
+                    _ => {}
+                }
                 let Shape::Named(o, _) = recv else { return None };
                 let f = self.e.reg.fns.get(&(Some(o.clone()), mc.method.to_string())).and_then(|v| v.first()).cloned()?;
                 self.return_shape(&f, Some(&o))
@@ -587,16 +638,87 @@ impl<'a, 'b> Tx<'a, 'b> {
             Expr::Call(c) if self.calls => {
                 let Expr::Path(fp) = &*c.func else { return None };
                 let segs = path_segs(&fp.path);
+                let last = segs.last()?.clone();
+                if last == "Some" && c.args.len() == 1 {
+                    return Some(Shape::Option(Box::new(self.shape_of(&c.args[0])?)));
+                }
+                // A tuple variant `Enum::V(..)` or a newtype `T(..)`.
+                if segs.len() >= 2 {
+                    let en = &segs[segs.len() - 2];
+                    let en = if en == "Self" { self.self_ty.clone()? } else { en.clone() };
+                    if self.enum_variants(&en).is_some_and(|(_, vs)| vs.iter().any(|v| v.name == last)) {
+                        return Some(Shape::Named(en, vec![]));
+                    }
+                } else if self.named_fields(&last, None).is_some_and(|f| matches!(f, Fields::Tuple(_))) {
+                    return Some(Shape::Named(last, vec![]));
+                }
                 let owner = self.owner_of(&segs);
-                let f = self.e.reg.fns.get(&(owner.clone(), segs.last()?.clone())).and_then(|v| v.first()).cloned()?;
+                let f = self.e.reg.fns.get(&(owner.clone(), last)).and_then(|v| v.first()).cloned()?;
                 self.return_shape(&f, owner.as_deref())
             }
             Expr::Lit(l) => match &l.lit {
                 Lit::Bool(_) => Some(Shape::Bool),
                 Lit::Str(_) => Some(Shape::Str),
-                Lit::Int(_) => Some(Shape::Int("int")),
+                Lit::Int(i) => Some(Shape::Int(match i.suffix() {
+                    "u8" => "u8",
+                    "u16" => "u16",
+                    "u32" => "u32",
+                    "u64" => "u64",
+                    "i32" => "i32",
+                    "i64" => "i64",
+                    _ => "int",
+                })),
                 _ => None,
             },
+            // Struct literals: `T { .. }`, `Enum::Variant { .. }`.
+            Expr::Struct(st) if self.calls => {
+                let segs = path_segs(&st.path);
+                if segs.len() == 1 && segs[0] == "Self" {
+                    return self.self_ty.clone().map(|t| Shape::Named(t, vec![]));
+                }
+                if segs.len() == 1 && self.e.reg.types.contains_key(&segs[0]) {
+                    return Some(Shape::Named(segs[0].clone(), vec![]));
+                }
+                let enum_name = if segs.len() >= 2 { Some(segs[segs.len() - 2].clone()) } else { None }?;
+                let enum_name = if enum_name == "Self" { self.self_ty.clone()? } else { enum_name };
+                self.e.reg.types.contains_key(&enum_name).then(|| Shape::Named(enum_name, vec![]))
+            }
+            Expr::Binary(b) if self.calls => match b.op {
+                BinOp::Eq(_) | BinOp::Ne(_) | BinOp::Lt(_) | BinOp::Le(_) | BinOp::Gt(_) | BinOp::Ge(_) | BinOp::And(_)
+                | BinOp::Or(_) => Some(Shape::Bool),
+                _ => self.shape_of(&b.left).or_else(|| self.shape_of(&b.right)),
+            },
+            Expr::Cast(c) if self.calls => Some(self.e.shape(&c.ty, &[])),
+            Expr::Try(t) if self.calls => match self.shape_of(&t.expr)? {
+                Shape::Result(v, _) => Some(*v),
+                Shape::Option(v) => Some(*v),
+                _ => None,
+            },
+            Expr::Index(ix) if self.calls => match self.shape_of(&ix.expr)? {
+                Shape::Vec(i) | Shape::Array(i, _) | Shape::PVec(i) => Some(*i),
+                _ => None,
+            },
+            Expr::Tuple(t) if self.calls && !t.elems.is_empty() => {
+                let mut es = Vec::new();
+                for e in &t.elems {
+                    es.push(self.shape_of(e)?);
+                }
+                Some(Shape::Tuple(es))
+            }
+            Expr::Macro(m) if self.calls => {
+                let name = m.mac.path.segments.last()?.ident.to_string();
+                match name.as_str() {
+                    "format" => Some(Shape::Str),
+                    "matches" => Some(Shape::Bool),
+                    "vec" => {
+                        // The first element's shape.
+                        let elems = m.mac.parse_body_with(syn::punctuated::Punctuated::<Expr, syn::Token![,]>::parse_terminated).ok()?;
+                        let first = elems.first()?.clone();
+                        Some(Shape::Vec(Box::new(self.shape_of(&first)?)))
+                    }
+                    _ => None,
+                }
+            }
             _ => None,
         }
     }
@@ -794,7 +916,7 @@ pub fn defaults_and_skips(e: &mut Emitter) -> (String, Vec<String>) {
             let odin_ty = e.odin(&shape);
             let result = (|| -> R<String> {
                 let body = single_expr(&f.block).ok_or("not a single expression")?;
-                let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: f.self_ty.clone(), depth: 0, calls: false };
+                let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: f.self_ty.clone(), depth: 0, calls: false, pre: Vec::new(), fn_ret: Shape::Unit, temps: 0 };
                 if is_default {
                     let v = tx.expr(body, &shape)?;
                     Ok(format!("{proc_name} :: proc() -> {odin_ty} {{\n\treturn {v}\n}}\n"))
@@ -847,7 +969,7 @@ pub fn defaults_and_skips(e: &mut Emitter) -> (String, Vec<String>) {
         let shape = Shape::Named(ty.clone(), vec![]);
         let res = (|| -> R<String> {
             let body = single_expr(&f.block).ok_or("not a single expression")?;
-            let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: Some(ty.clone()), depth: 0, calls: false };
+            let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: Some(ty.clone()), depth: 0, calls: false, pre: Vec::new(), fn_ret: Shape::Unit, temps: 0 };
             tx.expr(body, &shape)
         })();
         match res {

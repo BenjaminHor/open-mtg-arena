@@ -306,3 +306,18 @@ Tuple5 :: struct($A, $B, $C, $D, $E: typeid) {
 	_3: D,
 	_4: E,
 }
+
+Tuple6 :: struct($A, $B, $C, $D, $E, $F: typeid) {
+	_0: A,
+	_1: B,
+	_2: C,
+	_3: D,
+	_4: E,
+	_5: F,
+}
+
+// Rust's `Result<T, E>` in translated logic: `err` set is Err(err), otherwise Ok(ok).
+Result :: struct($T, $E: typeid) {
+	ok:  T,
+	err: Maybe(E),
+}
