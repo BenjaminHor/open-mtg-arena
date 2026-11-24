@@ -2699,6 +2699,14 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   quieter run: no other work running, after PR #78's reviews; alternating base and head runs stay for close calls.
   Done: the median of five idle runs.)
 
+## Paused (2026-11-24, ~17:25 UTC, owner's request)
+
+The owner asked to pause all work. The three parallel sessions (D-185) were told to commit, push and stop;
+the scheduled check-in was deleted. PR #119 stays open, unmerged. Where the translator stood: 52.5% of engine
+functions translated, 54.2% of executed ones; vector check clean (728 pass, 0 unexplained failures) as of
+a216a17. Next when resuming: tuple field access (`f(..).0` on a returned tuple: `._0` in the model) was written
+but reverted untested; then the executed-blocker list (`translate-report` with ODINGEN_EXECUTED).
+
 ## Working with the owner
 
 - Owner (2026-11-24): the running progress messages had no value to them ("probably a lot of value to you, but
