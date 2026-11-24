@@ -105,7 +105,7 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     combinators, labelled loops. Next blockers: generic calls/functions (~1,280), nested items (527), patterns (let
     457, let-else 423, for 236, or-with-bindings 221, if-let 173, nested 147), match on non-enums (432), mutable
     reference bindings (320, refused on purpose until patterns bind pointers). docs/odin-port.md has the plan.
-    **O-0/O-1 in review: PR #117** (2026-11-24), with the Odin CI workflow; merge on green (D-027). A code review
+    **O-0/O-1 merged: PR #117** (2026-11-24, squash, Odin CI green), with the Odin CI workflow. A code review
     of odingen, the recorder and the workflow (2026-11-24) led to: the recorder steps one AI action per line and
     records contest settlements, the submitter and semantic owner, and the RNG position; skipped fields get their
     defaults when read; integers compare exactly; the state-dump hook is removed (test dumps belong in the test
@@ -2569,11 +2569,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions
-- (2026-11-24, Odin port) The Rust engine parses card text during play (tokens' rules text, and parser helpers
-  used by triggers, layers and combat), so "the parser stays Rust as a build tool" (D-179) doesn't hold as is.
-  Options: (a) precompute every runtime parse into the card data at build time (oracle-gen), so the Odin engine
-  never parses; (b) port the parser to Odin too (≈174k lines); (c) keep a small Rust parser beside the Odin engine
-  (contradicts D-180's "no Rust in the engine"). Recommended: (a), checked by a census of the runtime parse calls.
+- Settled (2026-11-24, D-183): runtime card-text parses are precomputed into the card data; the Odin engine
+  never parses. Settled (2026-11-24, D-184): fix the saved-game `"type"` clash, changing that wire form.
 
 - Settled (2026-11-23, D-178): after the import is playable, the Rust to Odin port comes next, planned first; the
   LLM opponent and the RPG are on hold.
