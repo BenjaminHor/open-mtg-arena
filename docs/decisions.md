@@ -2956,3 +2956,19 @@ owner's answer to the D-089 open question, option (a))
      untranslated or differing step.
 - Each opens its own pull request and merges on green CI (D-027), merging main first. The main session reviews
   their reports and keeps docs/status.md current.
+
+**D-187: A new Odin engine from the rules, behind the client's existing interface; Rust kept only as a test
+reference (owner, 2026-11-24)** · 2026-11-24 · accepted
+- Replaces the Rust-to-Odin translation of D-180 (paused 2026-11-24; its translator stays on the branch, unused).
+  (D-186 is taken on the D-183 session's branch, so this is D-187.)
+- Why: the owner's end goal is "a clean and modern mtg client that I can customize via Claude code whenever I
+  want" with "blazing fast iteration". A translation keeps the Rust engine's size and convolution; a new engine
+  written from the CR can be small, clean, and rebuild in seconds.
+- Shape: the Odin engine compiles to WebAssembly and exports the same functions the client calls today (94 engine,
+  39 draft; JSON in and out), so the client doesn't change. It reuses the Odin data model and codecs (states and
+  actions in the Rust wire form), the bit-exact RNG, and the parsed card data the Rust parser produces.
+- No dual engine (owner): the app switches from Rust to Odin once; until then it runs on Rust.
+- The Rust engine's value is its tests (owner): its integration tests and recorded AI games are captured as
+  language-neutral test files (starting state, actions, the game-relevant result), and the Odin engine must pass
+  them. Comparisons look at what matters in the game, not Rust's internal bookkeeping.
+- The card pool that matters: Scryfall `game:arena in:paper` (15,772 cards; the Rust engine plays 14,013).
