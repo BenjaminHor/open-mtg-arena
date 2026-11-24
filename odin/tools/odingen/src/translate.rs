@@ -1941,7 +1941,12 @@ enum Stage {
 
 impl<'a, 'b> Tx<'a, 'b> {
     fn chain_terminal(&self, mc: &syn::ExprMethodCall) -> bool {
-        matches!(mc.method.to_string().as_str(), "collect" | "any" | "all" | "find" | "position" | "count" | "sum" | "find_map")
+        let m = mc.method.to_string();
+        // `.next()` ends a chain only on a fresh iterator: a variable may be one advanced by several `next` calls.
+        if m == "next" && (!mc.args.is_empty() || matches!(&*mc.receiver, Expr::Path(_))) {
+            return false;
+        }
+        matches!(m.as_str(), "collect" | "any" | "all" | "find" | "position" | "count" | "sum" | "find_map" | "next")
             && self.chain_source(&mc.receiver).is_some()
     }
 
@@ -2340,6 +2345,11 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let ty = self.e.odin(&cur_shape);
                 (format!("{res}: Maybe({ty})"), format!("if {cond} {{ {res} = {cur}; break {outer} }}"), res.clone())
             }
+            // The first item that comes through the stages.
+            "next" if args.is_empty() => {
+                let ty = self.e.odin(&cur_shape);
+                (format!("{res}: Maybe({ty})"), format!("{res} = {cur}; break {outer}"), res.clone())
+            }
             "find_map" => {
                 let c = Self::closure_of(args.first().ok_or("find_map")?)?;
                 let out_shape = self
@@ -2460,6 +2470,9 @@ impl<'a, 'b> Tx<'a, 'b> {
                     format!("({recv} != nil && vec_contains({recv}^[:], {v}))")
                 }
                 ("first", Shape::Vec(_), 0) if deref.is_empty() => format!("vec_first({recv}[:])"),
+                // `.next()` on a fresh iterator (a call's or adapter's result, materialized as a Vec): its first item.
+                // A variable is refused: it may be an iterator advanced by several `next` calls.
+                ("next", Shape::Vec(_), 0) if deref.is_empty() && !matches!(&*mc.receiver, Expr::Path(_)) => format!("vec_first({recv}[:])"),
                 ("last", Shape::Vec(_), 0) if deref.is_empty() => format!("vec_last({recv}[:])"),
                 ("unwrap" | "expect", Shape::Option(_), _) => format!("{recv}.?"),
                 ("unwrap_or", Shape::Option(i), 1) => {
