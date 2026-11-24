@@ -121,9 +121,10 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     `return` inside inlined closures (leaves the closure's block, like `?`): 7,607 of 15,918 (47.8%), executed
     48.6% (2,844 of 5,849). **Parallel streams (D-185, 2026-11-24):** sibling cloud sessions on D-183 (parse
     precompute), Odin performance (state layout and copies) and O-2 (the replay harness), each on its own branch and
-    PR; this session keeps the translator. Sessions (started 15:58 UTC from claude/eloquent-mayer-qcx0e1):
-    D-183 session_012gEsKdst9ATJedca1x7kmJ (branch claude/odin-d183-parse-precompute), performance
-    session_012gEsKa3LZYBuEcAxpWKP6n (claude/odin-state-perf), O-2 session_012gEsKaqddR4aLQTcckBkEW
+    PR; this session keeps the translator. Sessions (started 16:02 UTC from claude/eloquent-mayer-qcx0e1; the
+    first three failed in setup because the environment's script ran pnpm at the repo root, now fixed to client/):
+    D-183 session_012gEsKbWYSyCrqCT1cYB66w (branch claude/odin-d183-parse-precompute), performance
+    session_012gEsKZntQHoXvuPbowys7j (claude/odin-state-perf), O-2 session_012gEsKakESMXjUS4u6b67dY
     (claude/odin-o2-replay). Vector check on that translation (5,812 calls over 1,079 procedures): 684 pass, 26 pass
     touching unlogged state, 0 unexplained failures, 0 crashes, 367 reach only untranslated code
     (`controls_exact_fetchland` reads the skipped `layers_dirty`, explained). D-184 is done (Known issues). Next
