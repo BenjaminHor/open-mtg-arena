@@ -10,7 +10,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
 ## In progress
 - **Odin port, the session goal (D-180):** remove all Rust from the engine, replace it with Odin, near-zero
   regressions in functionality and performance. Plan: docs/odin-port.md. O-0 done (go). Now O-1: generate the Odin
-  data model and JSON codecs from the Rust types.
+  data model and JSON codecs from the Rust types. odingen pass 1 (collect + report) done; design in odin-port.md
+  ("O-1 data model design"). Next: collect all structs/enums reachable from the roots, then emit types and codecs.
 - **D-177 import merged** (PR #116, squash bdd74cf, 2026-11-24, CI green). Pages deploys it from main (run 21,
   queued behind a now-redundant branch check build, run 20, that this session wasn't allowed to cancel). Next: once
   live, play it at https://benjaminhor.github.io/open-mtg-arena/ (phone sizes), ask the owner to try it on the

@@ -1,0 +1,15 @@
+# Generates the Odin engine's data model and JSON codecs from the Rust engine's serde types (O-1, docs/odin-port.md).
+# Temporary tooling: it reads the Rust sources, so it goes when the Rust engine does (D-180). Standalone crate.
+[package]
+name = "odingen"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+syn = { version = "2", features = ["full", "extra-traits"] }
+proc-macro2 = "1"
+quote = "1"
+walkdir = "2"

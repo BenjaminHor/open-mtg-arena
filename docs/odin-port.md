@@ -101,6 +101,40 @@ action types (with `syn`, already a dev-dependency, or serde reflection) and emi
 decode/encode. That becomes part of O-1, and a generated round trip (Rust JSON → Odin → JSON, byte-equal over the whole
 card file) is its test.
 
+## O-1 data model design (2026-11-24)
+
+`odin/tools/odingen` (Rust, `syn`; temporary, removed with the Rust engine) reads `crates/phase-ast/src` and
+`crates/engine/src`. First report: 1,714 serde types (824 structs, 890 enums with 5,989 variants), 74 aliases, 62 types
+with hand-written serde impls (among them `GameState`, `AbilityDefinition`, `Keyword`, `TriggerMode`, `QuantityExpr`,
+`CounterType`), 2 generic types, 5 float fields. The generator emits, per type, an Odin type plus a decode and an encode
+procedure; the 62 hand-written ones get hand-written Odin codecs that the generated code calls.
+
+| Rust | Odin |
+| --- | --- |
+| struct with named fields | struct, same field names (Odin keywords get a trailing `_`, JSON name kept) |
+| newtype struct (`ObjectId(u64)`) | `distinct` of the inner type |
+| enum with only unit variants | `enum` |
+| enum with data | `union` of one struct per variant, `<Enum>_<Variant>` (unit variants are empty structs) |
+| `Box<T>`, `Arc<T>` | `^T` (`Option<Box<T>>` is a nil-able `^T`) |
+| `Option<T>` | `Maybe(T)` |
+| `Vec`, `im::Vector`, `SmallVec`, `VecDeque`, sets | `[dynamic]T` (sets keep the sorted order serde writes) |
+| maps with simple keys | `map[K]V`; other keys, and `IndexMap` (insertion order), `[dynamic]` of key/value pairs |
+| tuples | small generic pair/triple structs |
+
+- **JSON**: our own small reader (`odin/engine/json`), not `core:encoding/json`. It keeps numbers as their source text,
+  because u64 values (seeds, hashes) don't fit the i64 that `core:encoding/json` parses into, and keeps strings as
+  slices of the input unless they contain escapes (fewer copies when loading the 98 MB card file).
+- **serde shapes** handled by the generator: externally, internally (`tag`) and adjacently (`tag` + `content`) tagged
+  enums, `untagged` (variants tried in order), `transparent`, `flatten`, `rename`/`rename_all`/`alias`, `default`
+  (with the ~30 named default functions translated in a table), `skip`, and `skip_serializing_if` (a table of the ~30
+  predicates in use). Sets and maps written sorted (`deterministic_serde`) are sorted by a generated comparison that
+  mirrors Rust's derived `Ord` (declaration order).
+- **Test**: decode then encode every card of `card-data.json` and compare with the original as JSON values (object key
+  order ignored, array order kept); the same for saved game states once the recorder exists.
+- **Known performance question for later**: the Rust engine clones `GameState` cheaply (persistent `im` collections),
+  which the AI's search relies on. Plain Odin arrays and maps make a clone a deep copy, so the engine's state layout
+  (arenas, copy-on-write, or undo logs instead of clones) is decided when the AI is ported, measured against Rust.
+
 ## Decided (D-179)
 
 1. The Rust card-text parser stays as an offline build tool; only the engine is ported.
