@@ -192,13 +192,30 @@ impl<'a, 'b> Tx<'a, 'b> {
         let name = segs.last()?.clone();
         let owner = self.owner_of(segs);
         let c = self.e.reg.consts.get(&(owner.clone(), name.clone())).and_then(|v| v.first()).cloned()?;
-        let shape = self.e.shape(&c.ty, &[]);
+        let shape = self.const_shape(&c.ty, owner.as_deref());
         let shape = if matches!(shape, Shape::Named(ref n, _) if n == "Self") { want.clone() } else { shape };
         let next_self = owner.or(self.self_ty.clone());
         let saved = std::mem::replace(&mut self.self_ty, next_self);
         let r = self.expr(&c.expr, &shape);
         self.self_ty = saved;
         Some(r)
+    }
+
+    /// A constant's type, `Self` in it being the constant's own impl type (`[Self; 15]` in `LegalityFormat::ALL`),
+    /// not the type of the function reading it.
+    fn const_shape(&mut self, ty: &syn::Type, owner: Option<&str>) -> Shape {
+        let saved = self.e.subst.clone();
+        match owner {
+            Some(o) => {
+                self.e.subst.insert("Self".into(), Shape::Named(o.to_string(), vec![]));
+            }
+            None => {
+                self.e.subst.remove("Self");
+            }
+        }
+        let sh = self.e.shape(ty, &[]);
+        self.e.subst = saved;
+        sh
     }
 
     /// A call to a function whose body is one expression: its parameters bound to the (translated) arguments.
@@ -942,7 +959,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let name = segs.last()?.clone();
                 let owner = self.owner_of(&segs);
                 if let Some(c) = self.e.reg.consts.get(&(owner.clone(), name.clone())).and_then(|v| v.first()).cloned() {
-                    let sh = self.e.shape(&c.ty, &[]);
+                    let sh = self.const_shape(&c.ty, owner.as_deref());
                     return match sh {
                         Shape::Named(n, _) if n == "Self" => owner.map(|o| Shape::Named(o, vec![])),
                         sh if shape_mentions_param(&sh) || matches!(sh, Shape::Unknown(_)) => None,
