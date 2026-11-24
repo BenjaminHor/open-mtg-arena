@@ -119,7 +119,8 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     later use (a placeholder type filled in when the function is done), chain terminals typed over untyped receivers,
     `for` over im::Vector (by index) and over a Vec behind a nil-able pointer, an Option as a chain's source, and
     `return` inside inlined closures (leaves the closure's block, like `?`): 7,607 of 15,918 (47.8%), executed
-    48.6% (2,844 of 5,849). Vector check (after the chain work): 654 pass, 0 unexplained failures, 0 crashes
+    48.6% (2,844 of 5,849). Vector check on that translation (5,812 calls over 1,079 procedures): 684 pass, 26 pass
+    touching unlogged state, 0 unexplained failures, 0 crashes, 367 reach only untranslated code
     (`controls_exact_fetchland` reads the skipped `layers_dirty`, explained). D-184 is done (Known issues). Next
     blockers (executed): type
     parameters whose callers aren't translated yet (88), closure-parameter callees (87, translated as instances
