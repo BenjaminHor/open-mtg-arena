@@ -118,7 +118,7 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		_, you := x.owner.(types.TargetFilter_Controller)
 		for st in x.static_abilities do if !static_supported(st) && !static_mode_supported(st) do return false
 		for k in x.keywords do if !keyword_supported(k) do return false
-		return quantity_supported(x.count) && pt_supported(x.power) && pt_supported(x.toughness) && you && x.attach_to == nil &&
+		return quantity_supported(x.count) && pt_supported(x.power) && pt_supported(x.toughness) && you && x.attach_to == nil && predefined_token_supported(x) &&
 			!x.enters_attacking && len(x.enter_with_counters) == 0
 	case types.Effect_Draw:
 		fixed := quantity_supported(x.count)
@@ -434,6 +434,8 @@ card_entry_of :: proc(o: ^types.GameObject) -> (^types.CardExportEntry, bool) {
 }
 
 object_supported :: proc(o: ^types.GameObject, card_db: Card_Lookup) -> bool {
+	// A token is what a supported effect made: its abilities are ones the engine carries out (CR 111.10 included).
+	if o.is_token do return true
 	if card_db == nil do return false
 	entry := card_db(o.base_name)
 	return entry != nil && card_supported(&entry.face)

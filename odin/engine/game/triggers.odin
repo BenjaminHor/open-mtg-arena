@@ -591,6 +591,7 @@ create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId
 	o.layer_base_power, o.layer_base_toughness = o.power, o.toughness
 	o.tapped = e.tapped
 	abilities := new([dynamic]types.AbilityDefinition)
+	abilities^ = predefined_abilities(predefined_kind(o.card_types.subtypes[:])) // CR 111.10
 	o.abilities = abilities
 	o.base_name, o.base_card_types, o.base_keywords, o.base_color = o.name, o.card_types, o.keywords, o.color
 	o.base_power, o.base_toughness, o.base_abilities = o.power, o.toughness, o.abilities

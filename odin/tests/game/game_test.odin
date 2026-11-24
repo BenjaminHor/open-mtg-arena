@@ -1056,3 +1056,33 @@ activate_only_once_each_turn :: proc(t: ^testing.T) {
 	g.state.waiting_for = types.WaitingFor_Priority{player = 0}
 	testing.expect(t, game.can_activate(g, 0, drake, 0), "again on a new turn")
 }
+
+@(test)
+treasure_and_food_tokens :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 111.10a: a Treasure has "{T}, Sacrifice this token: Add one mana of any color"; CR 111.10b: a Food has
+	// "{2}, {T}, Sacrifice this token: You gain 3 life".
+	token :: proc(g: ^game.Game, kind: string) -> ^types.GameObject {
+		e: types.Effect_Token
+		e.name = kind
+		append(&e.types, "Artifact", kind)
+		e.power = types.PtValue_Fixed{0}
+		e.toughness = types.PtValue_Fixed{0}
+		game.create_token(g, e, 0)
+		ids := game.ids_of(g.state.battlefield)
+		return game.object(&g.state, ids[len(ids) - 1])
+	}
+	g := new_game()
+	treasure := token(g, "Treasure")
+	opt := add(t, g, "Opt", 0, .Hand) // {U}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = opt.id}), "the Treasure pays {U}")
+	testing.expect(t, treasure.zone != .Battlefield, "and is sacrificed")
+
+	g2 := new_game()
+	for _ in 0 ..< 2 do add(t, g2, "Forest", 0, .Battlefield)
+	food := token(g2, "Food")
+	testing.expect(t, game.apply(g2, 0, types.GameAction_ActivateAbility{source_id = food.id, ability_index = 0}))
+	game.apply(g2, 0, types.GameAction_PassPriority{})
+	game.apply(g2, 1, types.GameAction_PassPriority{})
+	testing.expect(t, game.player(&g2.state, 0).life == 23 && food.zone != .Battlefield, "3 life, Food sacrificed")
+}
