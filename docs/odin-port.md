@@ -238,6 +238,14 @@ round: each append to the journal copies the whole journal deeply, where Rust's 
 64-entry chunk it writes. So step 2: the `im` collections get a chunked persistent representation (a write copies
 one chunk), and scope-end release for the clones the translator can see die; then the same benchmark again.
 
+**Step 2, first half done (2026-11-24): `im::Vector` is a PVec** (`odin/engine/types/pvec.odin`): values in
+shared 64-entry chunks, so a clone copies the chunk list and a write copies one chunk, as `im::Vector` does. All
+round trips pass. Clone 5.7 µs (plain arena) / 11–16 µs (virtual arena) against Rust's 19–20 µs; the stale-count
+pattern (discard a clone, append to the parent's journal, write one object) 33 µs a round, down from 345 µs. Left:
+`im::HashMap`/`HashSet`/`OrdMap` are still whole-collection copy-on-write (the same stale-count cost on writes,
+smaller collections); ObjectMap as an id-indexed array; scope-end release; then the advisor's oracle (a mode where
+every write copies, recordings must not change) once logic exists to run it on.
+
 ## Review follow-ups (2026-11-24, not yet done)
 
 From the review of odingen, the recorder and the workflow (the fixes made are in PR #117's history):

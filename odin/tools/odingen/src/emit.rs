@@ -26,6 +26,8 @@ pub enum Shape {
     OptPtr(Box<Shape>, bool),
     Ptr(Box<Shape>, bool),
     Vec(Box<Shape>),
+    /// `im::Vector<T>`: a persistent chunked vector (`PVec(T)`, pvec.odin).
+    PVec(Box<Shape>),
     Map(Box<Shape>, Box<Shape>),
     Tuple(Vec<Shape>),
     Array(Box<Shape>, String),
@@ -280,6 +282,10 @@ impl<'a> Emitter<'a> {
         // An `im` collection clones in O(1) in Rust (persistent). The Odin model holds it as a shared collection,
         // like `Arc<Vec<T>>`: clones share it, the first write after a clone copies it (make_mut). Its JSON is the
         // plain collection's. docs/odin-port.md, "State layout".
+        if is_im_collection(ty) && name == "Vector" {
+            let elem = args.first().map(|t| self.shape(t, params)).unwrap_or(Shape::Unknown("im::Vector arg".into()));
+            return Shape::PVec(Box::new(elem));
+        }
         if is_im_collection(ty) {
             if let Type::Path(p) = ty {
                 let mut plain = p.clone();
@@ -393,6 +399,7 @@ impl<'a> Emitter<'a> {
             Shape::Json => "json.Value".into(),
             Shape::Option(i) => format!("Maybe({})", self.odin(i)),
             Shape::OptPtr(i, _) | Shape::Ptr(i, _) => format!("^{}", self.odin(i)),
+            Shape::PVec(i) => format!("PVec({})", self.odin(i)),
             Shape::Vec(i) => format!("[dynamic]{}", self.odin(i)),
             Shape::Map(k, v) => {
                 if self.simple_key(k) {
@@ -569,6 +576,28 @@ impl<'a> Emitter<'a> {
                 let (it, e) = (self.odin(i), self.enc(i));
                 format!("	if x == nil {{ zero: {it}; {e}(b, zero) }}
 	else do {e}(b, x^)
+")
+            }
+            (0, Shape::PVec(i)) => {
+                let (it, d) = (self.odin(i), self.dec(i));
+                format!("	if v.kind != .Array do return fail(\"expected an array\")
+	out^ = {{}}
+	for item in v.items {{
+		x: {it}
+		if !{d}(item, &x) do return false
+		pvec_push_new(out, x)
+	}}
+	return true
+")
+            }
+            (1, Shape::PVec(i)) => {
+                let e = self.enc(i);
+                format!("	strings.write_byte(b, '[')
+	for i in 0 ..< x.len {{
+		if i > 0 do strings.write_byte(b, ',')
+		{e}(b, pvec_get(x, i))
+	}}
+	strings.write_byte(b, ']')
 ")
             }
             (0, Shape::Vec(i)) => {
@@ -1155,7 +1184,7 @@ impl<'a> Emitter<'a> {
                     e = format!("{e}^");
                     sh = i;
                 }
-                cond.push(format!("len({e}) == 0"));
+                cond.push(if matches!(sh, Shape::PVec(_)) { format!("{e}.len == 0") } else { format!("len({e}) == 0") });
                 format!("({})", cond.join(" || "))
             }
             ("std::ops::Not::not" | "Not::not", _) | (_, "is_false") => format!("!{expr}"),
@@ -1646,7 +1675,7 @@ impl<'a> Emitter<'a> {
 /// The model type names a shape mentions.
 fn shape_names(s: &Shape, out: &mut Vec<String>) {
     match s {
-        Shape::Option(i) | Shape::OptPtr(i, _) | Shape::Ptr(i, _) | Shape::Vec(i) | Shape::Array(i, _) => shape_names(i, out),
+        Shape::Option(i) | Shape::OptPtr(i, _) | Shape::Ptr(i, _) | Shape::Vec(i) | Shape::PVec(i) | Shape::Array(i, _) => shape_names(i, out),
         Shape::Map(k, v) => {
             shape_names(k, out);
             shape_names(v, out);
@@ -1672,7 +1701,7 @@ impl<'a> Emitter<'a> {
             | Shape::Extern(_) | Shape::Unknown(_) | Shape::Param(_) => true,
             Shape::Option(i) | Shape::Array(i, _) => self.plain(i),
             Shape::Tuple(es) => es.clone().iter().all(|e| self.plain(e)),
-            Shape::Vec(_) | Shape::Map(..) | Shape::Ptr(..) | Shape::OptPtr(..) => false,
+            Shape::Vec(_) | Shape::PVec(_) | Shape::Map(..) | Shape::Ptr(..) | Shape::OptPtr(..) => false,
             Shape::Named(..) => {
                 let ty = self.odin(s);
                 if let Some(p) = self.plain_memo.get(&ty) {
@@ -1718,6 +1747,11 @@ impl<'a> Emitter<'a> {
     pub fn cloner(&mut self, s: &Shape) -> Option<String> {
         if self.plain(s) {
             return None;
+        }
+        if let Shape::PVec(i) = s {
+            // Shares every chunk; elements are cloned only when a chunk is written (pvec_mut, pvec_push).
+            let _ = self.cloner(i);
+            return Some("pvec_clone".into());
         }
         let ty = self.odin(s);
         let shared = matches!(s, Shape::Ptr(_, true) | Shape::OptPtr(_, true));
