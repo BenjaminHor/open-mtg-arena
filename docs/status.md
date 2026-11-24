@@ -437,6 +437,7 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       `scripts/gen-scryfall-*.sh` that their setup.sh runs after the card data; I hadn't run them and pages.yml
       didn't either. Both fixed: they ran here in about a minute, and pages.yml now runs them. (The per-language art
       maps, gen-scryfall-locale-images.sh, aren't generated: a missing one falls back to English art.)
+      Checked after a rebuild: the same match shows card art and portraits, no failed request, no page error.
     - Also found: starting a game threw "reading 'startsWith'" (from the import, not the strip): activeGameChange.ts
       dispatches a plain `Event("storage")` with no key, and the AI deck catalog's listener assumed a StorageEvent.
       Fixed to ignore non-StorageEvents; test in aiDeckCatalog.test.ts.
