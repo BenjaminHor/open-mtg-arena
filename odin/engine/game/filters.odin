@@ -46,11 +46,9 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 	case types.FilterProp_WithoutKeyword:
 		return keyword_supported(x.value)
 	case types.FilterProp_Cmc:
-		_, fixed := fixed_quantity(x.value)
-		return fixed
+		return quantity_supported(x.value)
 	case types.FilterProp_PtComparison:
-		_, fixed := fixed_quantity(x.value)
-		return fixed && x.stat != .TotalPowerToughness
+		return quantity_supported(x.value) && x.stat != .TotalPowerToughness
 	}
 	return false
 }
@@ -179,10 +177,10 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 		case types.FilterProp_WithoutKeyword:
 			if keyword_in(o, x.value) do return false
 		case types.FilterProp_Cmc:
-			n, _ := fixed_quantity(x.value)
+			n := quantity_value(s, x.value, chooser, source, 0) // "mana value less than your life total" too
 			if !compare(object_mana_value(o), x.comparator, n) do return false
 		case types.FilterProp_PtComparison:
-			n, _ := fixed_quantity(x.value)
+			n := quantity_value(s, x.value, chooser, source, 0)
 			v: Maybe(i32)
 			switch x.stat {
 			case .Power:

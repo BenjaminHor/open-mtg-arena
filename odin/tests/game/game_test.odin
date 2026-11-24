@@ -1239,3 +1239,41 @@ counter_target_spell :: proc(t: ^testing.T) {
 	testing.expect(t, shock.zone == .Graveyard && counterspell.zone == .Graveyard, "both in graveyards")
 	testing.expect(t, game.player(&g.state, 1).life == 20, "Shock didn't resolve")
 }
+
+@(test)
+graveyard_either_or_and_blink :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 115.1, 608.2c: Archaeomancer returns target instant or sorcery card from your graveyard to your hand;
+	// Cloudshift exiles target creature you control, then returns that card under your control (a new object,
+	// CR 400.7).
+	g := new_game()
+	for _ in 0 ..< 4 do add(t, g, "Island", 0, .Battlefield)
+	shock := add(t, g, "Shock", 0, .Graveyard)
+	bears_card := add(t, g, "Grizzly Bears", 0, .Graveyard)
+	arch := add(t, g, "Archaeomancer", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = arch.id}))
+	for i := 0; i < 8 && shock.zone == .Graveyard; i += 1 {
+		#partial switch w in g.state.waiting_for {
+		case types.WaitingFor_TriggerTargetSelection:
+			for t2 in w.selection.current_legal_targets do testing.expect(t, t2 != types.TargetRef(types.TargetRef_Object{bears_card.id}), "not a creature card")
+			game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{shock.id}})
+		case:
+			game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+		}
+	}
+	testing.expect(t, shock.zone == .Hand && bears_card.zone == .Graveyard, "the instant came back")
+
+	g2 := new_game()
+	add(t, g2, "Plains", 0, .Battlefield)
+	shift := add(t, g2, "Cloudshift", 0, .Hand)
+	bears := add(t, g2, "Grizzly Bears", 0, .Battlefield)
+	bears.tapped = true
+	before := bears.incarnation
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = shift.id}))
+	if _, asked := g2.state.waiting_for.(types.WaitingFor_TargetSelection); asked {
+		game.apply(g2, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}})
+	}
+	game.apply(g2, 0, types.GameAction_PassPriority{})
+	game.apply(g2, 1, types.GameAction_PassPriority{})
+	testing.expect(t, bears.zone == .Battlefield && !bears.tapped && bears.incarnation > before, "back as a new, untapped object")
+}

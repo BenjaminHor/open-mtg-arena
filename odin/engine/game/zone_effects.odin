@@ -31,7 +31,11 @@ graveyard_filter :: proc(f: types.TargetFilter) -> (types.TypedFilter, bool) {
 
 change_zone_supported :: proc(x: types.Effect_ChangeZone) -> bool {
 	if _, controller := x.actor.(types.LibraryInstructionActor_Controller); x.actor != nil && !controller do return false
-	if x.owner_library || x.enter_transformed || x.enters_under != nil || x.enter_tapped == .Untapped do return false
+	if x.owner_library || x.enter_transformed || x.enter_tapped == .Untapped do return false
+	if under, has := x.enters_under.?; has {
+		// "Under your control": the controller of the ability, as the engine already puts it (CR 110.2).
+		if _, you := under.(types.ControllerRef_You); !you do return false
+	}
 	if x.enters_attacking || x.up_to || len(x.enter_with_counters) > 0 || len(x.conditional_enter_with_counters) > 0 do return false
 	if x.face_down_profile != nil || x.enters_modified_if != nil do return false
 	#partial switch x.destination {
@@ -42,7 +46,14 @@ change_zone_supported :: proc(x: types.Effect_ChangeZone) -> bool {
 	origin, has_origin := x.origin.?
 	if is_self(x.target) do return true
 	if has_origin && origin == .Library && is_any(x.target) do return x.destination != .Library // the found cards
+	// "Return it to the battlefield": the earlier instruction's target, wherever that put it (CR 608.2c).
+	if _, parent := x.target.(types.TargetFilter_ParentTarget); parent do return true
 	if _, from_graveyard := graveyard_filter(x.target); from_graveyard do return has_origin && origin == .Graveyard
+	if either, is_or := x.target.(types.TargetFilter_Or); is_or && has_origin && origin == .Graveyard {
+		// "Target instant or sorcery card from your graveyard".
+		for f in either.filters do if _, ok := graveyard_filter(f); !ok do return false
+		return len(either.filters) > 0
+	}
 	// A permanent on the battlefield.
 	return (!has_origin || origin == .Battlefield) && x.destination != .Battlefield && filter_supported(x.target) && !may_name_player(x.target)
 }
