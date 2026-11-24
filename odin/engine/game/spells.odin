@@ -129,10 +129,20 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return fixed && (!has || you)
 	case types.Effect_Token:
 		_, you := x.owner.(types.TargetFilter_Controller)
+		_, parent_controller := x.owner.(types.TargetFilter_ParentTargetController)
+		you = you || parent_controller // "its controller creates ...": the earlier target's controller
+		if x.enters_attacking {
+			// CR 508.4: attacking the defending player (planeswalker and battle choices aren't offered yet).
+			#partial switch _ in x.attack_destination {
+			case types.TokenAttackDestination_ControllerChooses, types.TokenAttackDestination_Player:
+			case:
+				return false
+			}
+		}
 		for st in x.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !own_grant_supported(st) do return false
 		for k in x.keywords do if !keyword_supported(k) do return false
 		return quantity_supported(x.count) && pt_supported(x.power) && pt_supported(x.toughness) && you && x.attach_to == nil && predefined_token_supported(x) &&
-			!x.enters_attacking && len(x.enter_with_counters) == 0
+			len(x.enter_with_counters) == 0
 	case types.Effect_Draw:
 		fixed := quantity_supported(x.count)
 		_, you := x.target.(types.TargetFilter_Controller)
@@ -237,6 +247,10 @@ refers_to_parent_target :: proc(e: types.Effect) -> bool {
 	#partial switch _ in effect_target_filter(e) {
 	case types.TargetFilter_ParentTarget, types.TargetFilter_ParentTargetController:
 		return true
+	}
+	if tok, is_token := e.(types.Effect_Token); is_token {
+		_, parent_controller := tok.owner.(types.TargetFilter_ParentTargetController)
+		return parent_controller
 	}
 	if x, generic := e.(types.Effect_GenericEffect); generic && x.target == nil {
 		for st in x.static_abilities {
@@ -778,7 +792,14 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		add_temp_effect(g, x, controller, source, targeted)
 	case types.Effect_Token:
 		n := amount(g, x.count, controller, source, target)
-		for _ in 0 ..< n do create_token(g, x, controller, source)
+		maker := controller
+		if _, parent := x.owner.(types.TargetFilter_ParentTargetController); parent {
+			// "Its controller creates ...": the controller of the earlier target (CR 608.2c, 608.2h).
+			id, is_object := target_object(target)
+			if !is_object do return
+			maker = object(s, id).controller
+		}
+		for _ in 0 ..< n do create_token(g, x, maker, source)
 	case types.Effect_Draw:
 		n := amount(g, x.count, controller, source, target)
 		for _ in 0 ..< n do draw_card(s, player(s, controller))

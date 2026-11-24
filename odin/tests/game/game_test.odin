@@ -1585,3 +1585,24 @@ review_two_regressions :: proc(t: ^testing.T) {
 	testing.expect(t, !game.card_supported(&card(t, "Fell the Mighty").face), "Fell the Mighty: target's power")
 	testing.expect(t, !game.card_supported(&card(t, "Eiganjo, Seat of the Empire").face), "channel cost reduction")
 }
+
+@(test)
+its_controller_creates_a_token :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 608.2c: Beast Within: "Destroy target permanent. Its controller creates a 3/3 green Beast creature token."
+	g := new_game()
+	for _ in 0 ..< 3 do add(t, g, "Forest", 0, .Battlefield)
+	within := add(t, g, "Beast Within", 0, .Hand)
+	theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, game.card_supported(&card(t, "Beast Within").face))
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = within.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{theirs.id}}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	beasts := 0
+	for id in game.ids_of(g.state.battlefield) do if o := game.object(&g.state, id); o.is_token {
+		testing.expect(t, o.controller == 1, "the opponent's Beast")
+		beasts += 1
+	}
+	testing.expect(t, theirs.zone == .Graveyard && beasts == 1)
+}
