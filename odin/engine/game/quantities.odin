@@ -28,6 +28,10 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return from_source && (!has || counter_kind_supported(kind))
 		case types.QuantityRef_HandSize:
 			return player_scope_supported(r.player)
+		case types.QuantityRef_Variable:
+			return r.name == "X"
+		case types.QuantityRef_CostXPaid:
+			return true
 		case types.QuantityRef_GraveyardSize:
 			return player_scope_supported(r.player)
 		case types.QuantityRef_LifeTotal:
@@ -86,6 +90,10 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 		case types.QuantityRef_HandSize:
 			// "The number of cards in your hand" (or an opponent's, in a two-player game).
 			return types.pvec_len(player(s, scope_player(s, r.player, controller)).hand)
+		case types.QuantityRef_Variable, types.QuantityRef_CostXPaid:
+			// CR 107.3a, 107.3m: X is the value announced for the spell (an enters ability of the permanent it became
+			// uses that too).
+			if o := object(s, source); o != nil do return int(o.cost_x_paid.? or_else 0)
 		case types.QuantityRef_GraveyardSize:
 			return types.pvec_len(player(s, scope_player(s, r.player, controller)).graveyard)
 		case types.QuantityRef_LifeTotal:

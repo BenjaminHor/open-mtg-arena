@@ -373,6 +373,16 @@ spell_cost :: proc(s: ^types.GameState, o: ^types.GameObject, p: types.PlayerId)
 	c, is_cost := o.mana_cost.(types.ManaCost_Cost)
 	if !is_cost do return o.mana_cost
 	generic := int(c.generic) + cost_change(s, p, o)
+	if has_x(o.mana_cost) {
+		// CR 107.3a: each {X} is the announced value (0 before it's announced).
+		x := int(o.cost_x_paid.? or_else 0)
+		shards := make([dynamic]types.ManaCostShard, context.temp_allocator)
+		for shard in c.shards {
+			if shard == .X do generic += x
+			else do append(&shards, shard)
+		}
+		c.shards = shards
+	}
 	if o.zone == .Command do generic += 2 * int(s.commander_cast_count[o.id])
 	c.generic = u32(max(generic, 0))
 	return c
@@ -408,6 +418,16 @@ cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []t
 		if i >= len(slots) || !target_still_legal(s, t, slots[i], p, id) do return false
 		append(&chosen, t)
 	}
+	if has_x(o.mana_cost) {
+		// CR 601.2b, 107.3a: the value of X is announced first.
+		g.pending = Pending_Cast{object = id, targets = chosen, ability_index = -1}
+		pending := new(types.PendingCast)
+		pending.object_id = id
+		pending.card_id = o.card_id
+		pending.cost = o.mana_cost
+		s.waiting_for = types.WaitingFor_ChooseXValue{player = p, min = 0, max = max_x(s, p, o), pending_cast = pending}
+		return true
+	}
 	if len(chosen) < len(slots) {
 		// CR 601.2c: ask for the next target.
 		g.pending = Pending_Cast{object = id, targets = chosen, ability_index = -1}
@@ -415,6 +435,41 @@ cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []t
 		return true
 	}
 	finish_cast(g, p, id, chosen[:])
+	return true
+}
+
+has_x :: proc(cost: types.ManaCost) -> bool {
+	c, ok := cost.(types.ManaCost_Cost)
+	if !ok do return false
+	for shard in c.shards do if shard == .X do return true
+	return false
+}
+
+// The largest X the player can pay for, with the mana they have.
+max_x :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject) -> u32 {
+	saved := o.cost_x_paid
+	defer o.cost_x_paid = saved
+	x: u32 = 0
+	for x < 40 {
+		o.cost_x_paid = x + 1
+		if _, payable := plan_payment(s, p, spell_cost(s, o, p)); !payable do break
+		x += 1
+	}
+	return x
+}
+
+// CR 107.3a: the player announces X, then chooses the targets and pays.
+choose_x :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_ChooseXValue, value: u32) -> bool {
+	if g.pending.object == 0 || value < w.min || value > w.max do return false
+	s := &g.state
+	o := object(s, g.pending.object)
+	o.cost_x_paid = value
+	if len(g.pending.targets) < len(spell_target_slots(o)) {
+		ask_target(g, p)
+		return true
+	}
+	finish_cast(g, p, g.pending.object, g.pending.targets[:])
+	g.pending = {}
 	return true
 }
 

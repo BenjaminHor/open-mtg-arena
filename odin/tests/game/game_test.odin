@@ -776,3 +776,25 @@ amounts_from_zones_and_players :: proc(t: ^testing.T) {
 	mv := types.QuantityExpr(types.QuantityExpr_Ref{types.QuantityRef_ObjectManaValue{scope = types.ObjectScope_Source{}}})
 	testing.expect(t, game.quantity_value(s, mv, 0, giant.id, 0) == 4, "Hill Giant's mana value")
 }
+
+@(test)
+x_is_announced_then_paid :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 601.2b, 107.3a: X is announced as the spell is cast and its cost includes it; the effect uses it.
+	g := new_game()
+	for _ in 0 ..< 4 do add(t, g, "Mountain", 0, .Battlefield)
+	blaze := add(t, g, "Blaze", 0, .Hand) // {X}{R}: X damage to any target
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = blaze.id}))
+	w, asked := g.state.waiting_for.(types.WaitingFor_ChooseXValue)
+	testing.expect(t, asked && w.max == 3, "X up to 3 with four Mountains")
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ChooseX{value = 4}), "can't announce more than it can pay")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseX{value = 3}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	untapped := 0
+	for id in game.ids_of(g.state.battlefield) do if !game.object(&g.state, id).tapped do untapped += 1
+	testing.expect(t, untapped == 0, "all four Mountains paid {3}{R}")
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, game.player(&g.state, 1).life == 17, "3 damage")
+	testing.expect(t, blaze.zone == .Graveyard && blaze.cost_x_paid == nil, "X is gone once it leaves the stack")
+}

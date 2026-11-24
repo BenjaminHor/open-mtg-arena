@@ -24,6 +24,8 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		for e in w.pending do if e.player == p do return types.GameAction_SelectCards{cards = worst_cards(g, p, int(e.count))}, true
 	case types.WaitingFor_DiscardToHandSize:
 		return types.GameAction_SelectCards{cards = worst_cards(g, p, w.count)}, true
+	case types.WaitingFor_ChooseXValue:
+		return types.GameAction_ChooseX{value = w.max}, true // as much as it can pay
 	case types.WaitingFor_PayCost:
 		// The least valuable: tokens first, then the lowest mana value.
 		Ranked :: struct {
@@ -122,6 +124,7 @@ worth_casting :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool
 		}
 		return false
 	}
+	if has_x(o.mana_cost) && max_x(s, p, o) == 0 do return false // an X spell for X = 0 does little
 	if is_permanent_card(o) do return sorcery_timing(s, p)
 	a := spell_ability(o)
 	if a == nil do return false
