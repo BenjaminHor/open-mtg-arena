@@ -2729,6 +2729,27 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   quieter run: no other work running, after PR #78's reviews; alternating base and head runs stay for close calls.
   Done: the median of five idle runs.)
 
+## Current goal: the new Odin engine (D-187, owner's /goal, 2026-11-24)
+
+Done when: the app runs on the Odin engine, it fully supports at least the 14,013 `game:arena in:paper` cards the
+Rust engine plays today, and an engine change rebuilds and shows in the app in seconds. Report to the owner only at
+milestones, decisions and problems.
+
+Plan (keep current):
+1. **Capture the Rust tests** as language-neutral files. `crates/engine/src/game/scenario_capture.rs`: with
+   `ENGINE_CAPTURE_DIR` set, every action a scenario test applies is appended to `<dir>/<test>.jsonl` (pre state or
+   null when unchanged, action, result, post state). Run the integration suite with it on; then recorded AI games
+   (`record-games`, decks from the pool). Corpus is generated, never committed; a script regenerates it.
+2. **Odin WASM shell**: every function in `client/src/wasm/engine_wasm.d.ts` (94) and `draft_wasm.d.ts` (39),
+   same names and JSON, behind a JS glue module matching wasm-bindgen's; data lookups real, game functions minimal;
+   the client loads against it (a build switch, not a dual engine).
+3. **Grow the engine** from the CR, mechanic by mechanic, with a simple AI; track the captured-test pass rate
+   (comparing a game-relevant projection, not Rust's bookkeeping) and pool cards fully supported.
+4. **Switch** the app to Odin at 14,013+ pool cards; Rust stays only as the test reference.
+
+Also in flight: the dev bundle (scripts/fetch-dev-bundle.sh; the Pages deploy publishes it) and the Rust build-time
+measurements (cold wasm-dev build running), which give the baseline the Odin loop is judged against.
+
 ## Paused (2026-11-24, ~17:25 UTC, owner's request)
 
 The owner asked to pause all work. The three parallel sessions (D-185) were told to commit, push and stop;
