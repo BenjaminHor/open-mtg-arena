@@ -2616,6 +2616,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   engine as a black box the client talks to, and make the codebase quick for Claude Code to customize (prebuilt engine
   wasm so client work needs no Rust build, faster engine dev builds, a map of the engine). Keep D-184's fix. Waiting
   on the owner's answer.
+- Owner (2026-11-24), asked about Rust's build times: **"I just want blazing fast iteration."** That is the
+  requirement the engine-language question gets judged by: a change, client or engine, visible in the running app in
+  seconds. Next step: measure today's loops (a client-only change; a small engine change) and what cheap build
+  settings buy, before choosing between keeping Rust and porting.
 - Settled (2026-11-24, D-183): runtime card-text parses are precomputed into the card data; the Odin engine
   never parses. Settled (2026-11-24, D-184): fix the saved-game `"type"` clash, changing that wire form.
 
