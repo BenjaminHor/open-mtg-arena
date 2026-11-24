@@ -11,7 +11,22 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
 - **Odin port, the session goal (D-180):** remove all Rust from the engine, replace it with Odin, near-zero
   regressions in functionality and performance. Plan: docs/odin-port.md. O-0 done (go). Now O-1: generate the Odin
   data model and JSON codecs from the Rust types. odingen pass 1 (collect + report) done; design in odin-port.md
-  ("O-1 data model design"). Next: collect all structs/enums reachable from the roots, then emit types and codecs.
+  ("O-1 data model design").
+  - **Card data round-trips (2026-11-24).** `odin/tools/carddata_roundtrip`: all 36,406 cards of card-data.json decode
+    into the generated model (469 types; odin/engine/types/generated_*.odin, ~45k lines) and encode back to an equal
+    JSON value: 0 failures, 0 mismatches. Decode 1.6 s, encode+compare 3.2 s (debug build). One key skipped on
+    purpose: AbilityDefinition's computed `is_mana_ability` (CR 605.1a), which needs ability-walking logic the
+    translator will port; `consumes_source` is ported. Hand-written: 4 codecs (ChoiceType, CounterType,
+    ExileConcealment, SacrificeCost), 7 field adapters (legacy bools, bare-number minimums, damage pairs), 10
+    default/skip functions; odingen translates the other 186 default/skip functions and the `impl Default`s.
+  - **Build times (2026-11-24).** The generated model first took 58 s to build unoptimized, 43 s of it Odin's type
+    checker: Odin recomputed the size of every by-value nested type along every path (no memoization below the top
+    call), which a tagged-union AST hits hard. Fixed in the compiler: `odin/toolchain/0001-memoize-nested-size-
+    align.patch` against dev-2026-11a (to offer upstream). Now: type check 6.6 s, debug build 9.7 s, `-o:speed`
+    build 44 s (LLVM optimization 37 s). Generated code also calls procedures directly (no overload groups) and
+    generic types are monomorphized.
+  - Next: the game-state root types (GameState and what the client exchanges: actions, WaitingFor, events) and a
+    saved-game round trip; then the recorder (O-1 second half).
 - **D-177 import merged** (PR #116, squash bdd74cf, 2026-11-24, CI green). Pages deploys it from main (run 21,
   queued behind a now-redundant branch check build, run 20, that this session wasn't allowed to cancel). Next: once
   live, play it at https://benjaminhor.github.io/open-mtg-arena/ (phone sizes), ask the owner to try it on the

@@ -57,6 +57,8 @@ pub struct Variant {
     pub name: String,
     pub fields: Fields,
     pub serde: Serde,
+    /// `#[default]`: the variant `derive(Default)` picks.
+    pub is_default: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -92,6 +94,17 @@ pub struct Registry {
     pub aliases: BTreeMap<String, Vec<(Type, PathBuf)>>,
     /// Types with hand-written `impl Serialize`/`impl Deserialize`, by name.
     pub custom_impls: BTreeMap<String, Vec<PathBuf>>,
+    /// Functions by (impl type, name); free functions have no impl type. A name defined in several modules keeps
+    /// every definition.
+    pub fns: BTreeMap<(Option<String>, String), Vec<FnDef>>,
+}
+
+#[derive(Clone, Debug)]
+pub struct FnDef {
+    pub sig: syn::Signature,
+    pub block: syn::Block,
+    pub file: PathBuf,
+    pub self_ty: Option<String>,
 }
 
 pub fn lit(s: &LitStr) -> String {
@@ -253,6 +266,7 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
                                     name: v.ident.to_string(),
                                     fields: fields(&v.fields),
                                     serde: parse_serde(&v.attrs),
+                                    is_default: v.attrs.iter().any(|a| a.path().is_ident("default")),
                                 })
                                 .collect(),
                         ),
@@ -264,8 +278,45 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
             Item::Type(t) if !is_cfg_test(&t.attrs) => {
                 reg.aliases.entry(t.ident.to_string()).or_default().push(((*t.ty).clone(), file.to_path_buf()));
             }
+            Item::Fn(f) if !is_cfg_test(&f.attrs) => {
+                reg.fns.entry((None, f.sig.ident.to_string())).or_default().push(FnDef {
+                    sig: f.sig.clone(),
+                    block: (*f.block).clone(),
+                    file: file.to_path_buf(),
+                    self_ty: None,
+                });
+            }
             Item::Impl(i) => {
+                if i.trait_.is_none() && !is_cfg_test(&i.attrs) {
+                    if let Some(n) = self_type_name(&i.self_ty) {
+                        for it in &i.items {
+                            if let syn::ImplItem::Fn(f) = it {
+                                reg.fns.entry((Some(n.clone()), f.sig.ident.to_string())).or_default().push(FnDef {
+                                    sig: f.sig.clone(),
+                                    block: f.block.clone(),
+                                    file: file.to_path_buf(),
+                                    self_ty: Some(n.clone()),
+                                });
+                            }
+                        }
+                    }
+                }
                 if let Some((_, trait_path, _)) = &i.trait_ {
+                    // `impl Default for T`: kept as the function "__Default" on T.
+                    if trait_path.segments.last().map(|s| s.ident == "Default").unwrap_or(false) && !is_cfg_test(&i.attrs) {
+                        if let Some(n) = self_type_name(&i.self_ty) {
+                            for it in &i.items {
+                                if let syn::ImplItem::Fn(f) = it {
+                                    reg.fns.entry((Some(n.clone()), "__Default".into())).or_default().push(FnDef {
+                                        sig: f.sig.clone(),
+                                        block: f.block.clone(),
+                                        file: file.to_path_buf(),
+                                        self_ty: Some(n.clone()),
+                                    });
+                                }
+                            }
+                        }
+                    }
                     let tname = trait_path.segments.last().map(|s| s.ident.to_string()).unwrap_or_default();
                     if tname == "Serialize" || tname == "Deserialize" {
                         if let Some(n) = self_type_name(&i.self_ty) {
@@ -305,4 +356,14 @@ pub fn scan(roots: &[PathBuf]) -> Registry {
         }
     }
     reg
+}
+
+/// One struct or enum from a single file, by name (for a type outside the scanned roots, such as the card-data
+/// writer in bin/oracle_gen.rs).
+pub fn scan_file_type(path: &Path, name: &str) -> Option<TypeDef> {
+    let src = std::fs::read_to_string(path).ok()?;
+    let f = syn::parse_file(&src).ok()?;
+    let mut reg = Registry::default();
+    visit_items(&f.items, path, &mut reg);
+    reg.types.remove(name)?.into_iter().next()
 }

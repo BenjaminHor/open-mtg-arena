@@ -1203,6 +1203,22 @@ Rarity :: enum u16 {
 	Bonus,
 }
 
+MisparseClass :: enum u16 {
+	DroppedQualifier,
+	WrongPlayer,
+	WrongObject,
+	WrongCount,
+	WrongDuration,
+	WrongZone,
+	MissingEffect,
+	ExtraEffect,
+	CostWrong,
+	ConditionWrong,
+	TriggerWrong,
+	TargetWrong,
+	Other,
+}
+
 ManaCostShard :: enum u16 {
 	White,
 	Blue,
@@ -7146,22 +7162,6 @@ CascadeSlot :: enum u16 {
 	Duration,
 }
 
-MisparseClass :: enum u16 {
-	DroppedQualifier,
-	WrongPlayer,
-	WrongObject,
-	WrongCount,
-	WrongDuration,
-	WrongZone,
-	MissingEffect,
-	ExtraEffect,
-	CostWrong,
-	ConditionWrong,
-	TriggerWrong,
-	TargetWrong,
-	Other,
-}
-
 QuantityRef_HandSize :: struct {
 	player: PlayerScope,
 }
@@ -11465,10 +11465,10 @@ BackFaceData :: struct {
 	mana_cost: ManaCost,
 	keywords: [dynamic]Keyword,
 	abilities: [dynamic]AbilityDefinition,
-	trigger_definitions: Definitions(TriggerDefinition),
+	trigger_definitions: Definitions_TriggerDefinition,
 	trigger_printed_origins: [dynamic]Maybe(TriggerPrintedOrigin),
-	replacement_definitions: Definitions(ReplacementDefinition),
-	static_definitions: Definitions(StaticDefinition),
+	replacement_definitions: Definitions_ReplacementDefinition,
+	static_definitions: Definitions_StaticDefinition,
 	color: [dynamic]ManaColor,
 	printed_ref: Maybe(PrintedCardRef),
 	modal: Maybe(ModalChoice),
@@ -11636,9 +11636,11 @@ RoomHalfIdentity :: struct {
 	mana_cost: ManaCost,
 }
 
-Definitions :: struct($T: typeid) {
-	_0: ^[dynamic]T,
-}
+Definitions_TriggerDefinition :: distinct ^[dynamic]TriggerDefinition
+
+Definitions_ReplacementDefinition :: distinct ^[dynamic]ReplacementDefinition
+
+Definitions_StaticDefinition :: distinct ^[dynamic]StaticDefinition
 
 LayoutKind :: enum u16 {
 	Single,

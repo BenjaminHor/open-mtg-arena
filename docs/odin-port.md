@@ -135,6 +135,13 @@ procedure; the 62 hand-written ones get hand-written Odin codecs that the genera
   which the AI's search relies on. Plain Odin arrays and maps make a clone a deep copy, so the engine's state layout
   (arenas, copy-on-write, or undo logs instead of clones) is decided when the AI is ported, measured against Rust.
 
+## Toolchain note: a compiler patch (2026-11-24)
+
+The pinned Odin (dev-2026-11a) is built with `odin/toolchain/0001-memoize-nested-size-align.patch`, which memoizes
+struct and union sizes/alignments inside the compiler's recursion. Without it the 469-type card model took 31 s just to
+type-check its declarations (exponential re-walking of nested by-value types); with it, 6 s. To offer upstream; until
+then every build of the toolchain (here, CI) applies it.
+
 ## How the engine logic gets ported: a translator (2026-11-24)
 
 The engine is ~723k lines of production Rust (plus the AI's ~84k). Rewriting that by hand with "near zero

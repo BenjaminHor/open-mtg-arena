@@ -384,3 +384,9 @@ equal :: proc(a, b: Value, path: ^strings.Builder = nil) -> bool {
 	return false
 }
 
+
+// The member named key, or null if v doesn't have it (adjacently tagged enums: a unit variant has no content).
+get_or_null :: proc(v: Value, key: string) -> Value {
+	m, _ := get(v, key)
+	return m
+}
