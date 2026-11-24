@@ -8,6 +8,7 @@ import "core:strconv"
 import "core:strings"
 import "core:unicode"
 import "../json"
+import rng "../rng"
 
 // ---------------------------------------------------------------------------------------- ExileConcealment ---
 
@@ -32,8 +33,9 @@ decode_SacrificeCost :: proc(v: json.Value, out: ^SacrificeCost) -> bool {
 	if v.kind != .Object do return fail("SacrificeCost: not an object")
 	t, has_target := json.get(v, "target")
 	if !has_target || !decode_TargetFilter(t, &out.target) do return fail("SacrificeCost.target")
-	// As Rust reads it: only these three keys; `requirement` wins over `count`; neither means a count of 1.
-	for m in v.members do if m.key != "target" && m.key != "count" && m.key != "requirement" do return fail("SacrificeCost: unknown field")
+	// As Rust reads it: `requirement` wins over `count`; neither means a count of 1. (Rust also refuses unknown keys,
+	// but SacrificeCost is flattened into parents, and there serde hands it only the keys the parent didn't take;
+	// this decoder sees the whole object, so it can't check that.)
 	if r, ok := json.get(v, "requirement"); ok {
 		if !decode_SacrificeRequirement(r, &out.requirement) do return fail("SacrificeCost.requirement")
 		return true
@@ -1200,4 +1202,22 @@ usage_key_equal :: proc(a, b: AbilityUsageKey) -> bool {
 	if a.source != b.source || a.provenance != b.provenance || a.description != b.description || a.fingerprint != b.fingerprint || len(a.grant_chain) != len(b.grant_chain) do return false
 	for r, i in a.grant_chain do if r != b.grant_chain[i] do return false
 	return true
+}
+
+// types/game_state.rs `default_rng` = GameRng::seed_from_u64(0): GameState.rng is skipped on the wire, so a decoded
+// state starts here until its RNG is rehydrated from `rng_seed` and `rng_word_pos` (rehydrate_rng).
+hand_default_rng :: proc() -> GameRng {
+	return GameRng{generator = rng.from_u64(0), outcome_draws = 0}
+}
+
+// phase-ast types/statics.rs `StaticModePresence::all_present`: every kind marked present.
+hand_StaticModePresence_all_present :: proc() -> StaticModePresence {
+	out: StaticModePresence
+	for &p in out do p = true
+	return out
+}
+
+// types/game_state.rs `impl Default for ReplacementIndex`: uninitialized and dirty, empty index.
+hand_default_ReplacementIndex :: proc() -> ReplacementIndex {
+	return ReplacementIndex{initialized = false, dirty = true, pipeline_active = false}
 }

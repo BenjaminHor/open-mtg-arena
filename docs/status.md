@@ -78,7 +78,13 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     call into the parser (triggers, layers, combat, effects). An all-Odin engine needs those parses precomputed
     into the card data (a Rust oracle-gen change) or the parser ported; D-179 assumed the engine never parses.
     Question for the owner (Open questions).
-    **O-0/O-1 in review: PR #117** (2026-11-24), with the Odin CI workflow; merge on green (D-027).
+    **O-0/O-1 in review: PR #117** (2026-11-24), with the Odin CI workflow; merge on green (D-027). A code review
+    of odingen, the recorder and the workflow (2026-11-24) led to: the recorder steps one AI action per line and
+    records contest settlements, the submitter and semantic owner, and the RNG position; skipped fields get their
+    defaults when read; integers compare exactly; the state-dump hook is removed (test dumps belong in the test
+    runner); the workflow installs LLVM on cache hits, passes `--locked` and checks a seed replays identically.
+    The rest is listed in docs/odin-port.md, "Review follow-ups". Rust clone baseline: 19–20 µs; Odin's first
+    generated clone: 87–159 µs (4–8x), so the state layout needs another step (docs/odin-port.md).
     Then: per-module verification vectors (a Rust printer over recorded states, an Odin checker), so each
     translated batch is checked before whole games pass; land O-1 through a PR with a CI job (patched Odin build,
     odingen output matches the committed files, one short game recorded, both round trips); the client boundary's

@@ -21,9 +21,10 @@ pub enum Shape {
     Unit,
     Json,
     Option(Box<Shape>),
-    /// `Option<Box<T>>`: a nil-able pointer.
-    OptPtr(Box<Shape>),
-    Ptr(Box<Shape>),
+    /// `Option<Box<T>>`: a nil-able pointer. The flag: shared (`Arc`/`Rc`, cloned by sharing and copied on write)
+    /// rather than owned (`Box`, cloned deeply). Both are `^T` in Odin.
+    OptPtr(Box<Shape>, bool),
+    Ptr(Box<Shape>, bool),
     Vec(Box<Shape>),
     Map(Box<Shape>, Box<Shape>),
     Tuple(Vec<Shape>),
@@ -188,6 +189,10 @@ pub struct Emitter<'a> {
     pub wire: BTreeSet<String>,
     pub types_out: String,
     pub codec_out: String,
+    /// Generated `clone_<T>` procedures and their per-shape helpers (generated_clone.odin).
+    pub clone_out: String,
+    clone_names: BTreeMap<String, String>,
+    plain_memo: BTreeMap<String, bool>,
     pub emitted: BTreeSet<String>,
     queue: VecDeque<String>,
     /// Named skip predicates and default functions the codecs call, by Odin procedure name: the Rust path, the
@@ -221,6 +226,9 @@ impl<'a> Emitter<'a> {
             wire: BTreeSet::new(),
             types_out: String::new(),
             codec_out: String::new(),
+            clone_out: String::new(),
+            clone_names: BTreeMap::new(),
+            plain_memo: BTreeMap::new(),
             emitted: BTreeSet::new(),
             queue: VecDeque::new(),
             skip_reqs: BTreeMap::new(),
@@ -283,10 +291,11 @@ impl<'a> Emitter<'a> {
             "String" | "str" | "Cow" => Shape::Str,
             "Value" | "Map" if !self.reg.types.contains_key(&name) || name == "Map" => Shape::Json,
             "Option" => match arg(self, 0) {
-                Shape::Ptr(inner) => Shape::OptPtr(inner),
+                Shape::Ptr(inner, shared) => Shape::OptPtr(inner, shared),
                 s => Shape::Option(Box::new(s)),
             },
-            "Box" | "Arc" | "Rc" => Shape::Ptr(Box::new(arg(self, 0))),
+            "Box" => Shape::Ptr(Box::new(arg(self, 0)), false),
+            "Arc" | "Rc" => Shape::Ptr(Box::new(arg(self, 0)), true),
             "Vec" | "VecDeque" | "SmallVec" | "Vector" | "HashSet" | "BTreeSet" | "IndexSet" | "OrdSet"
             | "FxHashSet" => {
                 // SmallVec<[T; N]>: the element is inside the array argument.
@@ -349,7 +358,7 @@ impl<'a> Emitter<'a> {
             Shape::Unit => "Unit".into(),
             Shape::Json => "json.Value".into(),
             Shape::Option(i) => format!("Maybe({})", self.odin(i)),
-            Shape::OptPtr(i) | Shape::Ptr(i) => format!("^{}", self.odin(i)),
+            Shape::OptPtr(i, _) | Shape::Ptr(i, _) => format!("^{}", self.odin(i)),
             Shape::Vec(i) => format!("[dynamic]{}", self.odin(i)),
             Shape::Map(k, v) => {
                 if self.simple_key(k) {
@@ -431,7 +440,7 @@ impl<'a> Emitter<'a> {
                 self.flattened.insert(n.clone());
                 format!("encode_{n}_members")
             }
-            Shape::Map(..) | Shape::Option(_) | Shape::Ptr(_) | Shape::OptPtr(_) => self.helper(s, 2),
+            Shape::Map(..) | Shape::Option(_) | Shape::Ptr(_, _) | Shape::OptPtr(_, _) => self.helper(s, 2),
             _ => "encode_members".into(),
         }
     }
@@ -462,11 +471,15 @@ impl<'a> Emitter<'a> {
 
     fn helper(&mut self, s: &Shape, kind: u8) -> String {
         let ty = self.odin(s);
-        if let Some(n) = self.helper_names.get(&(kind, ty.clone())) {
+        // A shared pointer (`Arc`) has the same Odin type as an owned one but is allocated with its count.
+        let shared = matches!(s, Shape::Ptr(_, true) | Shape::OptPtr(_, true));
+        let key = if shared { format!("{ty}#shared") } else { ty.clone() };
+        if let Some(n) = self.helper_names.get(&(kind, key.clone())) {
             return n.clone();
         }
-        let name = format!("{}_{}", ["dec", "enc", "mem"][kind as usize], mangle(&ty));
-        self.helper_names.insert((kind, ty.clone()), name.clone());
+        let mangled = if shared { mangle(&ty).replacen("ptr_", "shared_", 1) } else { mangle(&ty) };
+        let name = format!("{}_{}", ["dec", "enc", "mem"][kind as usize], mangled);
+        self.helper_names.insert((kind, key), name.clone());
         let body = match (kind, s) {
             (0, Shape::Option(i)) => {
                 let (it, d) = (self.odin(i), self.dec(i));
@@ -488,34 +501,35 @@ impl<'a> Emitter<'a> {
                 format!("	if y, ok := x.?; ok do {m}(b, y, first)
 ")
             }
-            (2, Shape::Ptr(i) | Shape::OptPtr(i)) => {
+            (2, Shape::Ptr(i, _) | Shape::OptPtr(i, _)) => {
                 // A flattened box: its members, or none when it's absent.
                 let m = self.mem(i);
                 format!("	if x != nil do {m}(b, x^, first)
 ")
             }
-            (0, Shape::Ptr(i) | Shape::OptPtr(i)) => {
+            (0, Shape::Ptr(i, sh) | Shape::OptPtr(i, sh)) => {
                 let (it, d) = (self.odin(i), self.dec(i));
+                let alloc = if *sh { format!("shared_new({it})") } else { format!("new({it})") };
                 format!("	if v.kind == .Null {{ out^ = nil; return true }}
-	p := new({it})
+	p := {alloc}
 	if !{d}(v, p) do return false
 	out^ = p
 	return true
 ")
             }
-            (1, Shape::OptPtr(i)) => {
+            (1, Shape::OptPtr(i, _)) => {
                 let e = self.enc(i);
                 format!("	if x == nil do strings.write_string(b, \"null\")
 	else do {e}(b, x^)
 ")
             }
-            (1, Shape::Ptr(i)) if !matches!(**i, Shape::Vec(_) | Shape::Map(..) | Shape::Str) => {
+            (1, Shape::Ptr(i, _)) if !matches!(**i, Shape::Vec(_) | Shape::Map(..) | Shape::Str) => {
                 let e = self.enc(i);
                 format!("	if x == nil do strings.write_string(b, \"null\")
 	else do {e}(b, x^)
 ")
             }
-            (1, Shape::Ptr(i)) => {
+            (1, Shape::Ptr(i, _)) => {
                 // A shared collection (Arc<Vec<T>>) is never null in Rust; nil here is a field read as absent,
                 // standing for the empty collection.
                 let (it, e) = (self.odin(i), self.enc(i));
@@ -742,12 +756,12 @@ impl<'a> Emitter<'a> {
     pub fn default_expr(&mut self, s: &Shape) -> Option<String> {
         // Box<T>/Arc<T>: a fresh allocation of T's default (Box::default()). Shared collections stay nil, which
         // the codecs and skip tests read as empty.
-        if let Shape::Ptr(i) = s {
+        if let Shape::Ptr(i, shared) = s {
             if matches!(**i, Shape::Vec(_) | Shape::Map(..) | Shape::Str) {
                 return None;
             }
             let inner = self.default_expr(i).unwrap_or_else(|| format!("{}{{}}", self.odin(i)));
-            return Some(format!("new_clone({inner})"));
+            return Some(if *shared { format!("shared_from({inner})") } else { format!("new_clone({inner})") });
         }
         let Shape::Named(n, a) = s else { return None };
         if !a.is_empty() {
@@ -905,6 +919,7 @@ impl<'a> Emitter<'a> {
             };
             self.current = name.clone();
             self.emit_type(def);
+            self.emit_clone(def);
             let base = inst.as_ref().map(|(b, _)| b.clone()).unwrap_or(name.clone());
             if !self.wire.contains(&base) {
                 continue;
@@ -1077,7 +1092,7 @@ impl<'a> Emitter<'a> {
                 || pred.starts_with("String") || pred.starts_with("IndexMap") || pred.starts_with("SmallVec")
                 || pred.starts_with("VecDeque") => match shape {
                     // A shared collection (Arc<Vec<T>>): nil stands for the empty one.
-                    Shape::Ptr(_) | Shape::OptPtr(_) => format!("({expr} == nil || len({expr}^) == 0)"),
+                    Shape::Ptr(_, _) | Shape::OptPtr(_, _) => format!("({expr} == nil || len({expr}^) == 0)"),
                     _ => format!("len({expr}) == 0"),
                 },
             ("std::ops::Not::not" | "Not::not", _) | (_, "is_false") => format!("!{expr}"),
@@ -1125,6 +1140,19 @@ impl<'a> Emitter<'a> {
             let fname = f.name.as_ref().unwrap();
             let id = field_ident(fname);
             if f.serde.skip || f.serde.skip_deserializing {
+                // serde still sets a skipped field: `default = "path"`, else the container's Default (with a
+                // container `#[serde(default)]`), else the field type's Default.
+                let shape = self.shape(&f.ty, params);
+                let stmt = match self.default_stmt(&format!("out.{id}"), &f.serde, &shape) {
+                    Some(stmt) if !stmt.is_empty() => Some(stmt),
+                    _ => match (container_default, container_manual_default.clone()) {
+                        (true, Some(ty)) => Some(format!("out.{id} = default_{ty}().{id}")),
+                        _ => self.default_expr(&shape).map(|e| format!("out.{id} = {e}")),
+                    },
+                };
+                if let Some(stmt) = stmt {
+                    let _ = writeln!(out, "	{stmt} // skipped when reading: its default");
+                }
                 continue;
             }
             let shape = self.shape(&f.ty, params);
@@ -1159,7 +1187,7 @@ impl<'a> Emitter<'a> {
                         None => String::new(),
                     },
                 }
-            } else if matches!(shape, Shape::Option(_) | Shape::OptPtr(_)) {
+            } else if matches!(shape, Shape::Option(_) | Shape::OptPtr(_, _)) {
                 String::new()
             } else {
                 format!(" else {{ return fail(\"{ctx}.{fname} missing\") }}")
@@ -1555,7 +1583,7 @@ impl<'a> Emitter<'a> {
 /// The model type names a shape mentions.
 fn shape_names(s: &Shape, out: &mut Vec<String>) {
     match s {
-        Shape::Option(i) | Shape::OptPtr(i) | Shape::Ptr(i) | Shape::Vec(i) | Shape::Array(i, _) => shape_names(i, out),
+        Shape::Option(i) | Shape::OptPtr(i, _) | Shape::Ptr(i, _) | Shape::Vec(i) | Shape::Array(i, _) => shape_names(i, out),
         Shape::Map(k, v) => {
             shape_names(k, out);
             shape_names(v, out);
@@ -1566,5 +1594,202 @@ fn shape_names(s: &Shape, out: &mut Vec<String>) {
             a.iter().for_each(|e| shape_names(e, out));
         }
         _ => {}
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------- clones ---
+// Rust's `Clone`, generated for every model type, with Rust's sharing: an `Arc` is shared (its count goes up; a
+// write copies it first, `make_mut`), everything else is copied deeply. Strings and JSON trees are immutable once
+// built, so they are shared too. docs/odin-port.md, "State layout".
+impl<'a> Emitter<'a> {
+    /// Whether copying the value is a full clone (no owned allocations inside).
+    fn plain(&mut self, s: &Shape) -> bool {
+        match s {
+            Shape::Bool | Shape::Int(_) | Shape::Float(_) | Shape::Str | Shape::Char | Shape::Unit | Shape::Json
+            | Shape::Extern(_) | Shape::Unknown(_) | Shape::Param(_) => true,
+            Shape::Option(i) | Shape::Array(i, _) => self.plain(i),
+            Shape::Tuple(es) => es.clone().iter().all(|e| self.plain(e)),
+            Shape::Vec(_) | Shape::Map(..) | Shape::Ptr(..) | Shape::OptPtr(..) => false,
+            Shape::Named(..) => {
+                let ty = self.odin(s);
+                if let Some(p) = self.plain_memo.get(&ty) {
+                    return *p;
+                }
+                // Recursive types hold pointers, so they are never plain; assume not while computing.
+                self.plain_memo.insert(ty.clone(), false);
+                let p = self.named_plain(s);
+                self.plain_memo.insert(ty, p);
+                p
+            }
+        }
+    }
+
+    fn named_plain(&mut self, s: &Shape) -> bool {
+        let Shape::Named(n, args) = s else { return true };
+        let Some(def) = self.def(n).cloned() else { return true };
+        let saved = self.subst.clone();
+        if !args.is_empty() {
+            self.subst = def.generics.iter().cloned().zip(args.iter().cloned()).collect();
+        }
+        let mut shapes = Vec::new();
+        let mut collect = |e: &mut Self, fs: &Fields| {
+            if let Fields::Named(v) | Fields::Tuple(v) = fs {
+                for f in v {
+                    shapes.push(e.shape(&f.ty, &def.generics));
+                }
+            }
+        };
+        match &def.kind {
+            Kind::Struct(fs) => collect(self, fs),
+            Kind::Enum(vs) => {
+                for v in vs {
+                    collect(self, &v.fields);
+                }
+            }
+        }
+        self.subst = saved;
+        shapes.iter().all(|x| self.plain(x))
+    }
+
+    /// The procedure that clones a value of this shape, or None when a copy is the clone.
+    pub fn cloner(&mut self, s: &Shape) -> Option<String> {
+        if self.plain(s) {
+            return None;
+        }
+        let ty = self.odin(s);
+        let shared = matches!(s, Shape::Ptr(_, true) | Shape::OptPtr(_, true));
+        let key = if shared { format!("{ty}#shared") } else { ty.clone() };
+        if let Some(n) = self.clone_names.get(&key) {
+            return Some(n.clone());
+        }
+        let name = match s {
+            Shape::Named(n, a) if a.is_empty() => format!("clone_{n}"),
+            _ => {
+                let m = if shared { mangle(&ty).replacen("ptr_", "shared_", 1) } else { mangle(&ty) };
+                format!("cln_{m}")
+            }
+        };
+        self.clone_names.insert(key, name.clone());
+        if let Shape::Named(..) = s {
+            return Some(name); // emitted with its type (emit_clone)
+        }
+        let body = match s {
+            Shape::Option(i) => {
+                let c = self.cloner(i).unwrap();
+                "\tif y, ok := x.?; ok do return {c}(y)\n\treturn nil\n".replace("{c}", &c)
+            }
+            Shape::Ptr(_, true) | Shape::OptPtr(_, true) => "\tshared_retain(x)\n\treturn x\n".to_string(),
+            Shape::Ptr(i, false) | Shape::OptPtr(i, false) => {
+                let it = self.odin(i);
+                let copy = match self.cloner(i) {
+                    Some(c) => format!("{c}(x^)"),
+                    None => "x^".to_string(),
+                };
+                format!("\tif x == nil do return nil\n\tp := new({it})\n\tp^ = {copy}\n\treturn p\n")
+            }
+            Shape::Vec(i) | Shape::Array(i, _) => {
+                let is_vec = matches!(s, Shape::Vec(_));
+                match (self.cloner(i), is_vec) {
+                    (None, true) => format!("\tout := make({ty}, len(x))\n\tcopy(out[:], x[:])\n\treturn out\n"),
+                    (Some(c), true) => format!("\tout := make({ty}, len(x))\n\tfor item, i in x do out[i] = {c}(item)\n\treturn out\n"),
+                    (Some(c), false) => format!("\tout := x\n\tfor item, i in x do out[i] = {c}(item)\n\treturn out\n"),
+                    (None, false) => "\treturn x\n".to_string(),
+                }
+            }
+            Shape::Map(k, v) => {
+                if ty.starts_with("map[") {
+                    let vc = self.cloner(v).map(|c| format!("{c}(val)")).unwrap_or_else(|| "val".into());
+                    let kc = self.cloner(k).map(|c| format!("{c}(key)")).unwrap_or_else(|| "key".into());
+                    format!("\tout := make({ty}, len(x))\n\tfor key, val in x do out[{kc}] = {vc}\n\treturn out\n")
+                } else {
+                    // Pairs: [dynamic]Tuple2(K, V).
+                    let pair = Shape::Tuple(vec![(**k).clone(), (**v).clone()]);
+                    match self.cloner(&pair) {
+                        Some(c) => format!("\tout := make({ty}, len(x))\n\tfor item, i in x do out[i] = {c}(item)\n\treturn out\n"),
+                        None => format!("\tout := make({ty}, len(x))\n\tcopy(out[:], x[:])\n\treturn out\n"),
+                    }
+                }
+            }
+            Shape::Tuple(es) => {
+                let mut b = "\tout := x\n".to_string();
+                for (i, e) in es.clone().iter().enumerate() {
+                    if let Some(c) = self.cloner(e) {
+                        b.push_str(&format!("\tout._{i} = {c}(x._{i})\n"));
+                    }
+                }
+                b.push_str("\treturn out\n");
+                b
+            }
+            _ => return None,
+        };
+        let _ = writeln!(self.clone_out, "{name} :: proc(x: {ty}) -> {ty} {{\n{body}}}\n");
+        Some(name)
+    }
+
+    /// `clone_<T>` for a model type: copy, then clone each field that owns something.
+    fn emit_clone(&mut self, def: &TypeDef) {
+        if !def.generics.is_empty() {
+            return; // only monomorphized instances are used
+        }
+        let name = def.name.clone();
+        let shape = Shape::Named(name.clone(), vec![]);
+        if self.plain(&shape) {
+            return;
+        }
+        self.clone_names.insert(name.clone(), format!("clone_{name}"));
+        let params = def.generics.clone();
+        let mut body = String::new();
+        let field_lines = |e: &mut Self, fs: &Fields, src: &str, dst: &str| -> String {
+            let mut out = String::new();
+            match fs {
+                Fields::Named(v) => {
+                    for f in v {
+                        let sh = e.shape(&f.ty, &params);
+                        if let Some(c) = e.cloner(&sh) {
+                            let id = field_ident(f.name.as_ref().unwrap());
+                            out.push_str(&format!("\t{dst}.{id} = {c}({src}.{id})\n"));
+                        }
+                    }
+                }
+                Fields::Tuple(v) => {
+                    for (i, f) in v.iter().enumerate() {
+                        let sh = e.shape(&f.ty, &params);
+                        if let Some(c) = e.cloner(&sh) {
+                            out.push_str(&format!("\t{dst}._{i} = {c}({src}._{i})\n"));
+                        }
+                    }
+                }
+                Fields::Unit => {}
+            }
+            out
+        };
+        match &def.kind {
+            Kind::Struct(Fields::Tuple(fs)) if fs.len() == 1 => {
+                // A newtype is a `distinct` of its inner type.
+                let inner = self.shape(&fs[0].ty, &params);
+                let it = self.odin(&inner);
+                let c = self.cloner(&inner).unwrap();
+                body.push_str(&format!("\treturn cast({name}){c}(cast({it})x)\n"));
+            }
+            Kind::Struct(fs) => {
+                body.push_str("\tout := x\n");
+                body.push_str(&field_lines(self, fs, "x", "out"));
+                body.push_str("\treturn out\n");
+            }
+            Kind::Enum(vs) => {
+                if vs.iter().all(|v| matches!(v.fields, Fields::Unit)) {
+                    return;
+                }
+                body.push_str("\t#partial switch y in x {\n");
+                for v in vs {
+                    let lines = field_lines(self, &v.fields, "y", "v");
+                    if !lines.is_empty() {
+                        body.push_str(&format!("\tcase {name}_{}:\n\t\tv := y\n{}\t\treturn v\n", v.name, lines.replace("\n\t", "\n\t\t").replacen('\t', "\t\t", 1)));
+                    }
+                }
+                body.push_str("\t}\n\treturn x\n");
+            }
+        }
+        let _ = writeln!(self.clone_out, "clone_{name} :: proc(x: {name}) -> {name} {{\n{body}}}\n");
     }
 }

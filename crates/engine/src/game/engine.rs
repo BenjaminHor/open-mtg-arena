@@ -865,48 +865,7 @@ pub fn apply(
     actor: PlayerId,
     action: GameAction,
 ) -> Result<ActionResult, EngineError> {
-    #[cfg(feature = "state-dump")]
-    let dumped_action = action.clone();
-    let result = apply_action_boundary(state, actor, action, PublicFinalizeMode::Immediate);
-    #[cfg(feature = "state-dump")]
-    if result.is_ok() {
-        state_dump::record(actor, &dumped_action, state);
-    }
-    result
-}
-
-/// Test-only (feature `state-dump`, never in shipped builds): with `PHASE_STATE_DUMP=<dir>` set, every action applied
-/// through [`apply`] and the state after it go to `<dir>/<process>-<thread>.jsonl`, in record-games' line form. The
-/// Odin port reads these to exercise its data model on the states the engine's own tests reach (docs/odin-port.md).
-#[cfg(feature = "state-dump")]
-mod state_dump {
-    use super::{GameAction, GameState, PlayerId};
-    use std::io::Write;
-
-    /// Each file stops growing past this size; enough states per test thread, without filling the disk.
-    const MAX_BYTES: u64 = 150 * 1024 * 1024;
-
-    #[derive(serde::Serialize)]
-    struct Line<'a> {
-        step: usize,
-        actor: u8,
-        action: &'a GameAction,
-        state: &'a GameState,
-    }
-
-    pub(super) fn record(actor: PlayerId, action: &GameAction, state: &GameState) {
-        let Some(dir) = std::env::var_os("PHASE_STATE_DUMP") else { return };
-        let thread = format!("{:?}", std::thread::current().id()).replace(|c: char| !c.is_ascii_alphanumeric(), "");
-        let path = std::path::Path::new(&dir).join(format!("{}-{thread}.jsonl", std::process::id()));
-        if std::fs::metadata(&path).map(|m| m.len() > MAX_BYTES).unwrap_or(false) {
-            return;
-        }
-        let Ok(mut file) = std::fs::OpenOptions::new().create(true).append(true).open(&path) else { return };
-        // Lines are written from the typed values, never through serde_json::Value (which drops repeated keys).
-        let mut line = serde_json::to_vec(&Line { step: 0, actor: actor.0, action, state }).unwrap_or_default();
-        line.push(b'\n');
-        let _ = file.write_all(&line);
-    }
+    apply_action_boundary(state, actor, action, PublicFinalizeMode::Immediate)
 }
 
 /// Applies an action while returning stable, safe rejection metadata instead

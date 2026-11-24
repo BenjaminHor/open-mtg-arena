@@ -37,26 +37,28 @@ jobs:
             .
             odin/tools/odingen
 
-      # The compiler: the pinned tag plus our patches, cached by both.
+      # The compiler: the pinned tag plus our patches, cached by both and the runner image. It links LLVM 18 and
+      # calls clang at run time, so those are installed even when the build comes from the cache.
+      - name: LLVM 18 and clang
+        run: sudo apt-get update && sudo apt-get install -y llvm-18-dev clang-18
       - uses: actions/cache@v4
         id: odin-cache
         with:
           path: ~/odin
-          key: odin-${{ env.ODIN_TAG }}-${{ hashFiles('odin/toolchain/*.patch') }}
+          key: odin-${{ env.ODIN_TAG }}-${{ hashFiles('odin/toolchain/*.patch') }}-${{ runner.os }}-${{ env.ImageOS }}-${{ env.ImageVersion }}
       - name: Build Odin
         if: steps.odin-cache.outputs.cache-hit != 'true'
         run: |
-          sudo apt-get update && sudo apt-get install -y llvm-18-dev clang-18
           git clone --depth 1 --branch "$ODIN_TAG" https://github.com/odin-lang/Odin.git ~/odin
           cd ~/odin
           for p in "$GITHUB_WORKSPACE"/odin/toolchain/*.patch; do git apply "$p"; done
           LLVM_CONFIG=llvm-config-18 ./build_odin.sh release
       - run: echo "$HOME/odin" >> "$GITHUB_PATH"
+      - run: odin version
 
       - name: The committed model is odingen's output
         run: |
-          cargo run --release --manifest-path odin/tools/odingen/Cargo.toml -- gen crates odin/engine/types \
-            CardExportEntry GameState GameAction WaitingFor GameEvent ReplayLog
+          cargo run --locked --release --manifest-path odin/tools/odingen/Cargo.toml -- gen crates odin/engine/types
           git diff --exit-code -- odin/engine/types
       - name: The model type-checks
         run: odin check odin/engine/types -no-entry-point
@@ -78,10 +80,13 @@ jobs:
         run: |
           odin build odin/tools/carddata_roundtrip -out:carddata_roundtrip
           ./carddata_roundtrip client/public/card-data.json
+      # Twice: the recordings are a reference only if a seed replays the same game (D-182's control).
       - name: Record a game with the Rust engine
         run: |
-          cargo build --profile tool -p phase-ai --bin record-games
+          cargo build --locked --profile tool -p phase-ai --bin record-games
           ./target/tool/record-games client/public/card-data.json recordings red-vs-green 1 1 400
+          ./target/tool/record-games client/public/card-data.json recordings-again red-vs-green 1 1 400
+          cmp recordings/red-vs-green-1.jsonl recordings-again/red-vs-green-1.jsonl
       - name: Game state round trip
         run: |
           odin build odin/tools/gamestate_roundtrip -out:gamestate_roundtrip

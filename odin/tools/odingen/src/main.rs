@@ -124,6 +124,8 @@ fn report(roots: &[PathBuf]) {
     }
 }
 
+const DEFAULT_ROOTS: &[&str] = &["CardExportEntry", "GameState", "GameAction", "WaitingFor", "GameEvent", "ReplayLog"];
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     match args.get(1).map(String::as_str) {
@@ -134,10 +136,15 @@ fn main() {
         Some("gen") => {
             let crates = PathBuf::from(&args[2]);
             let out_dir = PathBuf::from(&args[3]);
-            let roots: Vec<&str> = args[4..].iter().map(String::as_str).collect();
+            // The model's roots: what the engine reads and writes (states, actions, decisions, events, replays) and the
+            // card data. Other roots are for experiments; the committed model and CI use these.
+            let mut roots: Vec<&str> = args[4..].iter().map(String::as_str).collect();
+            if roots.is_empty() {
+                roots = DEFAULT_ROOTS.to_vec();
+            }
             generate(&[crates.join("phase-ast/src"), crates.join("engine/src")], &out_dir, &roots);
         }
-        _ => eprintln!("usage: odingen report <crates-dir> | odingen gen <crates-dir> <out-dir> <root type>..."),
+        _ => eprintln!("usage: odingen report <crates-dir> | odingen gen <crates-dir> <out-dir> [root type...]"),
     }
 }
 
@@ -222,6 +229,7 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
         e.helpers_out,
     );
     std::fs::write(out_dir.join("generated_codecs.odin"), codecs).unwrap();
+    std::fs::write(out_dir.join("generated_clone.odin"), format!("{HEADER}import \"../json\"\n\n_ :: json\n\n{}", e.clone_out)).unwrap();
 
     for (n, path) in &e.with_reqs {
         println!("  with adapter: {n} ({path})");
@@ -246,6 +254,28 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
             }
         }
     }
+    // The round trips strip these keys wherever they appear, so a name some read field also uses would hide that
+    // field from the comparison: such a name is left out (its mismatches show) and reported.
+    let mut read_names = BTreeSet::new();
+    for n in e.wire.iter().filter(|n| e.emitted.contains(*n)) {
+        for d in reg.types.get(n).into_iter().flatten() {
+            let mut add = |fs: &model::Fields| {
+                if let model::Fields::Named(v) = fs {
+                    for f in v.iter().filter(|f| !f.serde.skip && !f.serde.skip_deserializing) {
+                        read_names.insert(f.serde.rename.clone().unwrap_or_else(|| f.name.clone().unwrap()));
+                    }
+                }
+            };
+            match &d.kind {
+                model::Kind::Struct(fs) => add(fs),
+                model::Kind::Enum(vs) => vs.iter().for_each(|v| add(&v.fields)),
+            }
+        }
+    }
+    for clash in write_only.intersection(&read_names) {
+        println!("  write-only name also read elsewhere, not stripped: {clash}");
+    }
+    let write_only: BTreeSet<String> = write_only.difference(&read_names).cloned().collect();
     let write_only_list: Vec<String> = write_only.iter().map(|n| format!("\t\"{n}\",")).collect();
     std::fs::write(
         out_dir.join("generated_defaults.odin"),

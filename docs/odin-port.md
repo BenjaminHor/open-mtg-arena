@@ -191,8 +191,10 @@ Proposal: the Odin model mirrors that exactly, and the translator follows it mec
    write must copy; a state clone the translator can see die at scope end (`let mut sim = state.clone()`, the 55 per
    action) releases its counts there, so counts stay exact on the hot path. Elsewhere a stale count only causes an
    extra copy, never a wrong result.
-5. Checked before the translator depends on it, against numbers taken from Rust first (`state.clone()` and drop
-   on recorded states):
+5. Checked before the translator depends on it, against numbers taken from Rust first. Rust (`clone-bench`, release,
+   49 recorded states of three games, ~120 objects each, 2026-11-24): clone + drop 18.8–20.4 µs; clone, write one
+   object (copy-on-write), drop 21.9–23.6 µs; lookup by id 6–6.5 ns. So ~1.1 ms of cloning per action, and the
+   Odin bar is a clone at or under ~40 µs and lookups near 10 ns:
    - a benchmark shaped like both uses: per action (clone, write, discard, ~55 times) and like search (one parent,
      many clone → write → discard), plus lookups by id (Rust's own profile puts hashing and lookup at 35% of
      resolution CPU, so the map is indexed by id and keeps D-182's order beside it); within 2x of Rust or the
@@ -204,6 +206,31 @@ Proposal: the Odin model mirrors that exactly, and the translator follows it mec
    - the per-action copy into the next generation keeps sharing (each object's ability lists are copied once per
      generation, not once per holder), and states that outlive an action (nested simulations, the AI's search
      tree) get their own generations rather than the per-action rule.
+
+**First Odin measurement (2026-11-24).** odingen now generates `clone_<T>` for every model type
+(`generated_clone.odin`): `Arc` fields share (a count stored before the value, `shared_new`/`shared_retain`/
+`make_mut` in codec_runtime.odin), everything else is copied. A clone of a recorded state encodes to the same JSON
+as its original (`odin/tools/clone_bench`, all states checked). Speed, `-o:speed`, clones in an arena: 87–159 µs
+per clone against Rust's 19–20 µs, so 4–8x slower; lookups 3.4 ns (Rust 6 ns, Odin's map against im's trie). The
+bar is 2x, so the layout isn't settled: next, profile where the clone's time goes (by field type), then decide
+between sharing more (persistent collections for the big `im` fields) and copying cheaper.
+
+## Review follow-ups (2026-11-24, not yet done)
+
+From the review of odingen, the recorder and the workflow (the fixes made are in PR #117's history):
+- Ordered maps (`BTreeMap`, `IndexMap`, `OrdMap`) become plain Odin maps: their JSON is written in hash order
+  where Rust sorts, and ported code iterating them would see hash order (D-182's hazard). Carry `ordered` in the
+  shape; encode sorted; give ported code an ordered type.
+- Serde attributes odingen ignores silently in some positions (variant-level `untagged`/`with`, tuple-field
+  attributes, `rename(serialize, deserialize)` pairs, container `default = "path"`, `cfg(not(test))`, unknown
+  `deserialize_with`, Repr fields dropped by `merge`): none occurs today, but one should fail generation, not pass.
+- Data-enum encoders write nothing for a nil union; they should panic, as serde errors.
+- Translator: `Default::default()` and `..Default::default()` take zero values where a type's Default isn't zero.
+- Determinism hardening: sort the source walk; refuse two serde types with one name reachable from the roots.
+- Coverage hooks are added to generated text by string matching; emit them where the case lines are written.
+- GameState's Deserialize is hand-written (GameStateDecode: migrations, then `rehydrate_rng`); the Odin decoder
+  reads today's form and leaves the RNG at `default_rng` until the replay harness rehydrates it from
+  `rng_seed` and the recorded `rng_word_pos`.
 
 ## Toolchain note: a compiler patch (2026-11-24)
 

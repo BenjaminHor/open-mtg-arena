@@ -373,9 +373,14 @@ equal :: proc(a, b: Value, path: ^strings.Builder = nil) -> bool {
 		return true
 	case .Number:
 		if a.text == b.text do return true
-		x, okx := to_f64(a)
-		y, oky := to_f64(b)
-		if okx && oky && x == y do return true
+		// Integers compare by their text (u64 and u128 values above 2^53 would collide as f64); only a number written
+		// with a fraction or exponent compares by value.
+		is_float :: proc(t: string) -> bool { return strings.contains_any(t, ".eE") }
+		if is_float(a.text) || is_float(b.text) {
+			x, okx := to_f64(a)
+			y, oky := to_f64(b)
+			if okx && oky && x == y do return true
+		}
 		note(path, " (numbers differ)")
 		return false
 	case .Array:

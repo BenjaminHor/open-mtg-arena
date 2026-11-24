@@ -193,7 +193,7 @@ impl<'a, 'b> Tx<'a, 'b> {
             Expr::Field(fe) => {
                 let mut base_shape = self.shape_of(&fe.base).ok_or("field of an unknown value")?;
                 let mut base = self.expr(&fe.base, &base_shape)?;
-                if let Shape::Ptr(inner) = base_shape.clone() {
+                if let Shape::Ptr(inner, _) = base_shape.clone() {
                     base = format!("{base}^");
                     base_shape = *inner;
                 }
@@ -246,14 +246,14 @@ impl<'a, 'b> Tx<'a, 'b> {
                     }
                 }
                 let target = match want {
-                    Shape::Ptr(i) | Shape::OptPtr(i) | Shape::Option(i) => (**i).clone(),
+                    Shape::Ptr(i, _) | Shape::OptPtr(i, _) | Shape::Option(i) => (**i).clone(),
                     s => s.clone(),
                 };
                 if let Some((e, v)) = self.variant_of(&segs, &target) {
                     let (unit, _) = self.enum_variants(&e).unwrap();
                     let val = if unit { format!("{e}.{v}") } else { format!("{e}_{v}{{}}") };
                     return Ok(match want {
-                        Shape::Ptr(_) | Shape::OptPtr(_) => format!("new_clone({e}({val}))"),
+                        Shape::Ptr(_, _) | Shape::OptPtr(_, _) => format!("new_clone({e}({val}))"),
                         _ => val,
                     });
                 }
@@ -278,14 +278,14 @@ impl<'a, 'b> Tx<'a, 'b> {
                     (_, "Some") if args.len() == 1 => {
                         let inner = match want {
                             Shape::Option(i) => (**i).clone(),
-                            Shape::OptPtr(i) => Shape::Ptr(i.clone()),
+                            Shape::OptPtr(i, sh) => Shape::Ptr(i.clone(), *sh),
                             s => s.clone(),
                         };
                         return self.expr(args[0], &inner);
                     }
                     (_, "new") if segs.len() == 2 && matches!(segs[0].as_str(), "Box" | "Arc" | "Rc") => {
                         let inner = match want {
-                            Shape::Ptr(i) | Shape::OptPtr(i) => (**i).clone(),
+                            Shape::Ptr(i, _) | Shape::OptPtr(i, _) => (**i).clone(),
                             s => s.clone(),
                         };
                         let v = self.expr(args[0], &inner)?;
@@ -302,7 +302,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                     _ => {}
                 }
                 let target = match want {
-                    Shape::Ptr(i) | Shape::OptPtr(i) | Shape::Option(i) => (**i).clone(),
+                    Shape::Ptr(i, _) | Shape::OptPtr(i, _) | Shape::Option(i) => (**i).clone(),
                     s => s.clone(),
                 };
                 if let Some((e, v)) = self.variant_of(&segs, &target) {
@@ -315,7 +315,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                     }
                     let val = format!("{e}_{v}{{{}}}", parts.join(", "));
                     return Ok(match want {
-                        Shape::Ptr(_) | Shape::OptPtr(_) => format!("new_clone({e}({val}))"),
+                        Shape::Ptr(_, _) | Shape::OptPtr(_, _) => format!("new_clone({e}({val}))"),
                         _ => val,
                     });
                 }
@@ -358,7 +358,7 @@ impl<'a, 'b> Tx<'a, 'b> {
             Expr::Struct(st) => {
                 let segs = path_segs(&st.path);
                 let target = match want {
-                    Shape::Ptr(i) | Shape::OptPtr(i) | Shape::Option(i) => (**i).clone(),
+                    Shape::Ptr(i, _) | Shape::OptPtr(i, _) | Shape::Option(i) => (**i).clone(),
                     s => s.clone(),
                 };
                 let (odin_ty, fields) = if let Some((e, v)) = self.variant_of(&segs, &target) {
@@ -388,7 +388,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
                 let val = format!("{odin_ty}{{{}}}", parts.join(", "));
                 Ok(match want {
-                    Shape::Ptr(i) | Shape::OptPtr(i) => format!("new_clone({}({val}))", self.e.odin(i)),
+                    Shape::Ptr(i, _) | Shape::OptPtr(i, _) => format!("new_clone({}({val}))", self.e.odin(i)),
                     _ => val,
                 })
             }
@@ -499,7 +499,7 @@ impl<'a, 'b> Tx<'a, 'b> {
             Expr::Paren(p) => self.shape_of(&p.expr),
             Expr::Field(fe) => {
                 let base = match self.shape_of(&fe.base)? {
-                    Shape::Ptr(inner) => *inner,
+                    Shape::Ptr(inner, _) => *inner,
                     s => s,
                 };
                 let Shape::Named(tn, _) = base else { return None };

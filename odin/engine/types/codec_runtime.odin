@@ -257,3 +257,44 @@ cov_hit :: proc(key: string) {
 	if coverage == nil do coverage = make(map[string]int, 8192, runtime.heap_allocator())
 	coverage[key] += 1
 }
+
+// ------------------------------------------------------------------------------------------- shared pointers ---
+// Rust's `Arc<T>`: one allocation holding a count before the value, the pointer pointing at the value (so a shared
+// pointer is a plain `^T` everywhere else). Cloning a holder shares it (`shared_retain`); writing through one copies
+// it first when others hold it (`make_mut`). docs/odin-port.md, "State layout".
+@(private)
+shared_offset :: proc($T: typeid) -> uintptr {
+	return uintptr(max(size_of(int), align_of(T)))
+}
+
+shared_new :: proc($T: typeid) -> ^T {
+	off := shared_offset(T)
+	bytes, _ := runtime.mem_alloc(int(off) + size_of(T), max(align_of(T), align_of(int)))
+	raw := uintptr(raw_data(bytes))
+	(^int)(raw + off - size_of(int))^ = 1
+	return (^T)(raw + off)
+}
+
+// A new shared value holding `value` (Arc::new).
+shared_from :: proc(value: $T) -> ^T {
+	p := shared_new(T)
+	p^ = value
+	return p
+}
+
+shared_count :: proc(p: ^$T) -> ^int {
+	return (^int)(uintptr(p) - size_of(int))
+}
+
+shared_retain :: proc(p: ^$T) {
+	if p != nil do shared_count(p)^ += 1
+}
+
+// Arc::make_mut: a pointer only this holder has, copying the value (with `clone`) when it is shared.
+make_mut :: proc(p: ^^$T, clone: proc(x: T) -> T) -> ^T {
+	if shared_count(p^)^ > 1 {
+		shared_count(p^)^ -= 1
+		p^ = shared_from(clone(p^^))
+	}
+	return p^
+}

@@ -255,6 +255,15 @@ default_GameState_AbilityOnsetRecord_absent_on_wire :: proc() -> AbilityOnsetRec
 }
 
 default_GameState_FormatConfig_standard :: hand_FormatConfig_standard
+default_GameState_LayersDirty_full :: proc() -> LayersDirty {
+	return LayersDirty_Full{}
+}
+
+default_GameState_PublicStateDirty_all_dirty :: proc() -> PublicStateDirty {
+	return PublicStateDirty{all_objects_dirty = true, dirty_objects = {}, all_players_dirty = true, dirty_players = {}, battlefield_display_dirty = true, mana_display_dirty = true}
+}
+
+default_GameState_StaticModePresence_all_present :: hand_StaticModePresence_all_present
 default_GameState_default_game_number :: default_GameLogEntry_game_state_default_game_number
 default_GameState_default_interaction_serial :: proc() -> string {
 	return "1"
@@ -264,6 +273,7 @@ default_GameState_default_next_return_result_occurrence_id :: proc() -> u64 {
 	return 1
 }
 
+default_GameState_default_rng :: hand_default_rng
 default_GameState_initial_delayed_trigger_instance_id :: proc() -> u64 {
 	return 1
 }
@@ -274,6 +284,10 @@ default_GameState_initial_logical_zone_change_group_id :: proc() -> u64 {
 
 default_GameState_initial_resolve_all_consent_epoch :: proc() -> u64 {
 	return 1
+}
+
+default_GameState_layers_read_current_step_unknown :: proc() -> bool {
+	return true
 }
 
 default_HordeRuleset_default_horde_haste_fallback :: proc() -> bool {
@@ -1502,6 +1516,10 @@ skip_ZoneChangeRecord_ZoneDeparture_is_moved_ZoneDeparture :: proc(x: ZoneDepart
 	return (x == ZoneDeparture.Moved)
 }
 
+default_BoosterShelf :: proc() -> BoosterShelf {
+	return BoosterShelf_Products{_0 = {}}
+}
+
 default_ComboDeclaration :: proc() -> ComboDeclaration {
 	return ComboDeclaration_Undeclared{}
 }
@@ -1519,6 +1537,8 @@ default_ManaCost :: proc() -> ManaCost {
 default_PendingMassLibraryOrderBatches :: proc() -> PendingMassLibraryOrderBatches {
 	return PendingMassLibraryOrderBatches_Typed{_0 = {}}
 }
+
+default_ReplacementIndex :: hand_default_ReplacementIndex
 
 default_ShortcutDecisionSchema :: proc() -> ShortcutDecisionSchema {
 	return ShortcutDecisionSchema{iteration_count = IterationCount_Fixed{_0 = 0}, repetition_bound = RepetitionBound.Unmeasured, deliverable_capacity = 1000, points = {}, convoke_tappable_count = 0, suggested_declaration = nil, leading_aims = {}}
