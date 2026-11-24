@@ -739,7 +739,10 @@ impl<'a, 'b> Tx<'a, 'b> {
                                     return self.call_with_sig(&proc_name_for(Some(o), m, &f), &f, Some(recv), &args);
                                 }
                             }
-                            return Err(format!("method .{m}()"));
+                            return Err(match m {
+                                "iter" | "get" | "into_iter" | "extend" | "as_deref" | "or_else" => format!("method .{m}() on {}", crate::body::shape_kind(&recv_shape)),
+                                _ => format!("method .{m}()"),
+                            });
                         }
                         match owner.and_then(|o| self.inline_call(Some(o), m, Some((recv.clone(), recv_shape.clone())), &args, want)) {
                             Some(v) => v,
@@ -836,7 +839,10 @@ impl<'a, 'b> Tx<'a, 'b> {
                     ("unwrap" | "expect", Shape::Result(v, _), _) => return Some((**v).clone()),
                     ("is_ok" | "is_err", Shape::Result(..), 0) => return Some(Shape::Bool),
                     ("min" | "max" | "saturating_sub" | "saturating_add" | "abs" | "clamp", Shape::Int(_), _) => return Some(recv.clone()),
-                    ("to_vec" | "as_slice" | "as_mut_slice", Shape::Vec(_), 0) => return Some(recv.clone()),
+                    ("to_vec" | "as_slice" | "as_mut_slice" | "iter" | "into_iter", Shape::Vec(_), 0) => return Some(recv.clone()),
+                    ("as_deref" | "as_ref", Shape::OptPtr(..), 0) => return Some(recv.clone()),
+                    ("get", Shape::Map(_, v), 1) => return Some(Shape::Option(v.clone())),
+                    ("or_else", Shape::Option(_), 1) => return Some(recv.clone()),
                     ("remove", Shape::Vec(i), 1) => return Some((**i).clone()),
                     ("pop", Shape::Vec(i), 0) => return Some(Shape::Option(i.clone())),
                     _ => {}
@@ -1727,6 +1733,47 @@ impl<'a, 'b> Tx<'a, 'b> {
                     format!("r{n}_")
                 }
                 ("clear", Shape::Vec(_), 0) if deref.is_empty() => format!("clear(&{recv})"),
+                // An iterator over a Vec, taken whole: the Vec (translated logic materializes iterators).
+                ("iter" | "into_iter", Shape::Vec(_), 0) if deref.is_empty() => recv,
+                ("as_deref" | "as_ref", Shape::OptPtr(..), 0) => recv,
+                ("extend", Shape::Vec(i), 1) if deref.is_empty() => {
+                    let items = self.expr(args[0], &Shape::Vec(i.clone()))?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("x{n}_ := {items}"));
+                    format!("append(&{recv}, ..x{n}_[:])")
+                }
+                ("get", Shape::Vec(i), 1) => {
+                    let ix = self.expr(args[0], &Shape::Int("int"))?;
+                    let n = self.next_temp();
+                    let v = format!("{recv}{deref}");
+                    self.pre.push(format!("g{n}_: Maybe({})", self.e.odin(i)));
+                    let nil_check = if deref.is_empty() { String::new() } else { format!("{recv} != nil && ") };
+                    self.pre.push(format!("if i{n}_ := {ix}; {nil_check}i{n}_ >= 0 && i{n}_ < len({v}) do g{n}_ = {v}[i{n}_]"));
+                    format!("g{n}_")
+                }
+                ("get", Shape::Map(k, v), 1) => {
+                    let key = self.expr(args[0], k)?;
+                    let n = self.next_temp();
+                    let m = format!("{recv}{deref}");
+                    self.pre.push(format!("g{n}_: Maybe({})", self.e.odin(v)));
+                    let lookup = format!("if x{n}_, ok{n}_ := {m}[{key}]; ok{n}_ do g{n}_ = x{n}_");
+                    self.pre.push(if deref.is_empty() { lookup } else { format!("if {recv} != nil {{\n{lookup}\n}}") });
+                    format!("g{n}_")
+                }
+                ("or_else", Shape::Option(_), 1) => {
+                    let Expr::Closure(c) = args[0] else { return Err("or_else without a closure".into()) };
+                    if !c.inputs.is_empty() {
+                        return Err("or_else closure with arguments".into());
+                    }
+                    let n = self.next_temp();
+                    let outer = std::mem::take(&mut self.pre);
+                    let d = self.expr(&c.body, &base);
+                    let inner = std::mem::replace(&mut self.pre, outer);
+                    let d = d?;
+                    self.pre.push(format!("r{n}_ := {recv}"));
+                    self.pre.push(format!("if r{n}_ == nil {{\n{}\nr{n}_ = {d}\n}}", inner.join("\n")));
+                    format!("r{n}_")
+                }
                 // A slice of a Vec reads like the Vec itself here (len, indexing, iteration).
                 ("as_slice", Shape::Vec(_), 0) => recv,
                 ("is_some_and", Shape::Option(i), 1) | ("is_none_or", Shape::Option(i), 1) => {
