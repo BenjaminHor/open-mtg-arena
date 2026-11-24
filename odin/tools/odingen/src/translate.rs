@@ -57,6 +57,8 @@ thread_local! {
     /// Inside an inlined closure body: where `?` goes instead of returning (the block's label, the result variable,
     /// the closure's result shape).
     pub static TRY_EXIT: std::cell::RefCell<Option<(String, String, Shape)>> = const { std::cell::RefCell::new(None) };
+    /// The top-level function whose body (or nested helper) is being translated: the scope nested helpers resolve in.
+    pub static CURRENT_FN: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
     /// Inside an inlined closure body: where `return` goes (the same block, result variable and shape as TRY_EXIT).
     /// A closure's `return` gives the closure's value, not the enclosing procedure's.
     pub static RETURN_EXIT: std::cell::RefCell<Option<(String, String, Shape)>> = const { std::cell::RefCell::new(None) };
@@ -100,7 +102,11 @@ pub fn proc_name_for(owner: Option<&str>, name: &str, f: &FnDef) -> String {
             } else {
                 stem
             };
-            format!("{stem}_{name}")
+            match &f.nested_in {
+                // A helper declared inside `outer`: `file_outer__name`, distinct from the file's other functions.
+                Some(outer) => format!("{stem}_{outer}__{name}"),
+                None => format!("{stem}_{name}"),
+            }
         }
     }
 }
@@ -165,6 +171,15 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
                 Some("crate") => defs.iter().filter(|d| file_module(&d.file) == "lib").collect(),
                 Some(m) => defs.iter().filter(|d| file_module(&d.file) == m).collect(),
+            };
+            // Inside a function, its own nested helper of that name comes first (Rust's scoping), then the file's
+            // top-level function; other functions' helpers are out of scope.
+            let cands: Vec<&FnDef> = if cands.len() > 1 {
+                let scope = CURRENT_FN.with(|c| c.borrow().clone());
+                let own: Vec<&FnDef> = cands.iter().copied().filter(|d| d.nested_in.is_some() && d.nested_in == scope).collect();
+                if !own.is_empty() { own } else { cands.into_iter().filter(|d| d.nested_in.is_none()).collect() }
+            } else {
+                cands
             };
             if cands.len() != 1 {
                 return None;

@@ -165,11 +165,13 @@ fn translate_fn_with(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef
     let saved_return = crate::translate::RETURN_EXIT.with(|t| t.replace(None));
     let saved_pending = crate::translate::PENDING.with(|p| std::mem::take(&mut *p.borrow_mut()));
     let saved_names = PROC_NAMES.with(|p| std::mem::take(&mut *p.borrow_mut()));
+    let saved_fn = crate::translate::CURRENT_FN.with(|c| c.borrow().clone());
     let r = translate_fn_inner(e, owner, name, f, pname_override, extra);
     crate::translate::TRY_EXIT.with(|t| t.replace(saved_exit));
     crate::translate::RETURN_EXIT.with(|t| t.replace(saved_return));
     crate::translate::PENDING.with(|p| *p.borrow_mut() = saved_pending);
     PROC_NAMES.with(|p| *p.borrow_mut() = saved_names);
+    crate::translate::CURRENT_FN.with(|c| *c.borrow_mut() = saved_fn);
     r
 }
 
@@ -184,6 +186,8 @@ fn translate_fn_inner(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDe
         return Err("procedure name shared by two functions".into());
     }
     crate::translate::CURRENT_FILE.with(|c| *c.borrow_mut() = Some(f.file.clone()));
+    // The scope nested helpers resolve in: the enclosing function for a helper, the function itself otherwise.
+    crate::translate::CURRENT_FN.with(|c| *c.borrow_mut() = Some(f.nested_in.clone().unwrap_or_else(|| f.sig.ident.to_string())));
     crate::translate::TOUCHES_UNLOGGED.with(|t| t.set(false));
     // Lifetime parameters don't exist in Odin; type and const parameters need monomorphizing (not done yet).
     if let Some(k) = generic_kind(&f.sig) {

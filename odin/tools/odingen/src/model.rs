@@ -114,6 +114,9 @@ pub struct FnDef {
     pub block: syn::Block,
     pub file: PathBuf,
     pub self_ty: Option<String>,
+    /// For a function declared inside another function's body: that function's name (its procedure name says so,
+    /// and a call from inside it resolves to it first).
+    pub nested_in: Option<String>,
 }
 
 pub fn lit(s: &LitStr) -> String {
@@ -364,8 +367,9 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
                     block: (*f.block).clone(),
                     file: file.to_path_buf(),
                     self_ty: None,
+                    nested_in: None,
                 });
-                register_nested_fns(&f.block, file, reg);
+                register_nested_fns(&f.block, &f.sig.ident.to_string(), file, reg);
             }
             Item::Impl(i) => {
                 if i.trait_.is_none() && !is_cfg_test(&i.attrs) {
@@ -384,8 +388,9 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
                                     block: f.block.clone(),
                                     file: file.to_path_buf(),
                                     self_ty: Some(n.clone()),
+                                    nested_in: None,
                                 });
-                                register_nested_fns(&f.block, file, reg);
+                                register_nested_fns(&f.block, &f.sig.ident.to_string(), file, reg);
                             }
                         }
                     }
@@ -401,6 +406,7 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
                                         block: f.block.clone(),
                                         file: file.to_path_buf(),
                                         self_ty: Some(n.clone()),
+                                        nested_in: None,
                                     });
                                 }
                             }
@@ -420,6 +426,7 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
                                         block: f.block.clone(),
                                         file: file.to_path_buf(),
                                         self_ty: Some(n.clone()),
+                                        nested_in: None,
                                     });
                                 }
                             }
@@ -504,7 +511,7 @@ const STD_TRAITS: &[&str] = &[
 /// Functions declared inside a function body (`fn visit(..)` helpers) can't capture anything, so they are registered
 /// as free functions of the file: a bare call resolves to them like to the file's own functions, and two of one name
 /// in a file are ambiguous, which resolution refuses.
-fn register_nested_fns(block: &syn::Block, file: &std::path::Path, reg: &mut Registry) {
+fn register_nested_fns(block: &syn::Block, outer: &str, file: &std::path::Path, reg: &mut Registry) {
     struct V<'r> {
         file: &'r std::path::Path,
         found: Vec<syn::ItemFn>,
@@ -529,6 +536,7 @@ fn register_nested_fns(block: &syn::Block, file: &std::path::Path, reg: &mut Reg
             block: (*f.block).clone(),
             file: v.file.to_path_buf(),
             self_ty: None,
+            nested_in: Some(outer.to_string()),
         });
     }
 }
