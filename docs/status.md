@@ -408,6 +408,19 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       reviewed before commit). Rust: phase-server, server-core, lobby-broker, feed-scraper and lobby-worker/ removed;
       the workspace's cargo-release block (it bumped the desktop app's versions) and two aliases for removed crates
       gone; Cargo.lock updates on the next cargo run.
+    - Client strip, first pass (helper agent; WIP commits up to 41c324c): 429 files deleted, 296 changed; type-check
+      and lint clean; unit tests 574 files, 7,414 tests pass (from 12,949: online-only tests went with their code).
+      Removed: peer-to-peer and WebSocket play, the lobby, tournaments, spectating, pod drafts, Supabase sync, Tauri
+      (src-tauri, updater, deep links, native engine), telemetry and card reports, the eight scraped metagame feeds
+      (starter-decks.json kept), Discord/Ko-fi links, the `tournament` i18n namespace; packages @supabase/supabase-js,
+      @tauri-apps/*, peerjs, wrangler. Behaviour the owner will see: no deck import from a Moxfield/Archidekt link (it
+      went through their server; restorable from 4fb4ed6's parent ed49f34), no Commander/Winston pod drafts, no
+      Multiplayer or Experimental settings tabs, no status banner; the Jev LLM provider needs a relay address
+      entered by hand. The offline takeback against the AI was removed by mistake and is being restored; the human's
+      seat in tests (seat 1 to seat 0) is being checked. Left for the rebrand: links to the upstream project
+      (PreviewBadge, commit links, "report an issue"), Aetherhub links, `multiplayer` names that now hold only seat
+      names and best-of-three sideboarding. The integration suite (`pnpm test:integration`) needs the built engine
+      WASM; not run yet.
     - Subpath: their client assumes the site's root (`BrowserRouter` with no basename; about 90 root-absolute paths
       such as `/audio/...`, `/card-data.json`; the manifest's `start_url` "/"). For GitHub Pages at /open-mtg-arena/:
       Vite `base`, the router's basename, one helper that prefixes `import.meta.env.BASE_URL` to asset paths, a copy
