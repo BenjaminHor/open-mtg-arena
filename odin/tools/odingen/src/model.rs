@@ -32,6 +32,8 @@ pub struct Serde {
     pub into: Option<String>,
     pub other: bool,
     pub remote: Option<String>,
+    /// Enums: `rename_all_fields`, the rename rule for every struct variant's fields.
+    pub rename_all_fields: Option<String>,
     pub unknown: Vec<String>,
 }
 
@@ -72,6 +74,15 @@ pub struct TypeDef {
     pub kind: Kind,
     pub serde: Serde,
     pub derives: Vec<String>,
+}
+
+impl TypeDef {
+    pub fn derives_serialize(&self) -> bool {
+        self.derives.iter().any(|d| d == "Serialize")
+    }
+    pub fn derives_deserialize(&self) -> bool {
+        self.derives.iter().any(|d| d == "Deserialize")
+    }
 }
 
 #[derive(Default, Debug)]
@@ -166,6 +177,8 @@ pub fn parse_serde(attrs: &[Attribute]) -> Serde {
                 "into" => s.into = Some(value()?),
                 "other" => s.other = true,
                 "remote" => s.remote = Some(value()?),
+                "rename_all_fields" => s.rename_all_fields = Some(value()?),
+                "deny_unknown_fields" => {}
                 other => {
                     s.unknown.push(other.to_string());
                     // Consume any `= value` so parsing continues.
@@ -215,7 +228,7 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
         match item {
             Item::Struct(s) => {
                 let d = derives(&s.attrs);
-                if d.iter().any(|x| x == "Serialize" || x == "Deserialize") && !is_cfg_test(&s.attrs) {
+                if !is_cfg_test(&s.attrs) {
                     reg.types.entry(s.ident.to_string()).or_default().push(TypeDef {
                         name: s.ident.to_string(),
                         file: file.to_path_buf(),
@@ -228,7 +241,7 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
             }
             Item::Enum(e) => {
                 let d = derives(&e.attrs);
-                if d.iter().any(|x| x == "Serialize" || x == "Deserialize") && !is_cfg_test(&e.attrs) {
+                if !is_cfg_test(&e.attrs) {
                     reg.types.entry(e.ident.to_string()).or_default().push(TypeDef {
                         name: e.ident.to_string(),
                         file: file.to_path_buf(),
@@ -278,7 +291,9 @@ pub fn scan(roots: &[PathBuf]) -> Registry {
             let p = entry.path();
             if p.extension().map(|e| e == "rs").unwrap_or(false) {
                 let name = p.file_name().unwrap().to_string_lossy();
-                if name.ends_with("_tests.rs") || name == "tests.rs" || p.components().any(|c| c.as_os_str() == "tests") {
+                // Tests and the command-line tools (bin/, whose types repeat the library's names) aren't the model.
+                let skip_dir = p.components().any(|c| c.as_os_str() == "tests" || c.as_os_str() == "bin");
+                if name.ends_with("_tests.rs") || name == "tests.rs" || skip_dir {
                     continue;
                 }
                 let src = std::fs::read_to_string(p).unwrap();

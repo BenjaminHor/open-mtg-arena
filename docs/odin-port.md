@@ -135,6 +135,17 @@ procedure; the 62 hand-written ones get hand-written Odin codecs that the genera
   which the AI's search relies on. Plain Odin arrays and maps make a clone a deep copy, so the engine's state layout
   (arenas, copy-on-write, or undo logs instead of clones) is decided when the AI is ported, measured against Rust.
 
+## How the engine logic gets ported: a translator (2026-11-24)
+
+The engine is ~723k lines of production Rust (plus the AI's ~84k). Rewriting that by hand with "near zero
+regressions" (D-180) isn't realistic, so the port is driven by a **Rust-to-Odin translator** grown inside odingen
+(`syn`), for the subset of Rust this engine actually uses, with hand-written Odin where a construct isn't worth
+automating. The recordings judge the output, so the translator can be extended pattern by pattern with every function
+it translates checked against Rust behaviour. It starts small: the ~150 default functions and skip predicates the
+serde attributes name (bodies like `QuantityExpr::Fixed { value: 1 }`, `vec![...]`, `matches!(x, Enum::Variant)`),
+then pure methods on the types, then the engine's modules in dependency order. Progress is measured as the share of
+functions translated and the share of recordings passing.
+
 ## Decided (D-179)
 
 1. The Rust card-text parser stays as an offline build tool; only the engine is ported.
