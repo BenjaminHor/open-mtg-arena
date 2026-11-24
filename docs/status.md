@@ -2831,9 +2831,10 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   mass pumps parsed as single-target "any", typed filters without types; (9) duplicate ids in discard/bottom
   choices, blocking with a card in hand, conceding for the other player; (10) no mana cost treated as free
   (CR 118.6); (11) no priority in the declare attackers step when nobody attacks (CR 508.2); AI cast -N/-N on its own
-  creature. Open: (3) the attacker doesn't choose how to divide damage among several blockers or trample excess
-  (CR 510.1c, 702.19b): the engine assigns lethal in block order; targets and combat entries keyed by object id
-  without its incarnation (CR 400.7, 608.2b), reachable with bounce-and-recast.
+  creature. All fixed (22908e5, 75a7403), each with a
+  rules test in odin/tests/game: (3) the attacking player now divides damage among blockers and trample excess
+  (CR 510.1c, 702.19b); targets are checked against the incarnation they had when chosen (CR 400.7, 608.2b; landed
+  in 75a7403 with the damage division).
 - (2026-11-24, Odin port, translator) The model holds sets as Vecs, so set operations were translated as Vec ones:
   `set.remove(&id)` became `Vec::remove(index)` (the vector check caught a crash; a small id would have removed the
   wrong element silently), and collects into a `BTreeSet` would have kept neither its order nor its uniqueness. Fixed:
