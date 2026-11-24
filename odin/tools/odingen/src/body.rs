@@ -148,7 +148,15 @@ pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef)
 }
 
 /// A function translated under another procedure name (a closure instance), with extra parameters at the end.
+/// Its own `?` returns from it, even when an instance is made from inside a closure body elsewhere.
 fn translate_fn_with(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, pname_override: Option<&str>, extra: &[String]) -> R<Translated> {
+    let saved_exit = crate::translate::TRY_EXIT.with(|t| t.replace(None));
+    let r = translate_fn_inner(e, owner, name, f, pname_override, extra);
+    crate::translate::TRY_EXIT.with(|t| t.replace(saved_exit));
+    r
+}
+
+fn translate_fn_inner(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, pname_override: Option<&str>, extra: &[String]) -> R<Translated> {
     if pname_override.is_some_and(|p| DENY.with(|d| d.contains(p))) {
         return Err("translation rejected by the Odin type check".into());
     }
@@ -1961,18 +1969,22 @@ pub fn inline_block(tx: &mut Tx, block: &Block, shape: &Shape) -> R<String> {
     let unit = matches!(shape, Shape::Unit);
     tx.temps += 1;
     let res = format!("cr{}_", tx.temps);
+    let label = format!("cb{}_", tx.temps);
     let outer = std::mem::take(&mut tx.pre);
+    // `?` inside leaves this block with None/Err as the value (translate.rs, Expr::Try).
+    let saved_exit = crate::translate::TRY_EXIT.with(|t| t.replace(Some((label.clone(), res.clone(), shape.clone()))));
     let target = if unit { None } else { Some(Target { ident: res.clone(), shape: Some(shape.clone()), weak: false, infer: false }) };
     let mut b = Body { tx, out: String::new(), indent: 1, ret: Shape::Unit, declared: Default::default(), target, loops: Vec::new() };
     let r = b.block(block, !unit);
     let code = std::mem::take(&mut b.out);
     let tx = b.tx;
+    crate::translate::TRY_EXIT.with(|t| t.replace(saved_exit));
     tx.pre = outer;
     r?;
     if !unit {
         tx.pre.push(format!("{res}: {}", tx.e.odin(shape)));
     }
-    tx.pre.push(format!("{{\n{code}}}"));
+    tx.pre.push(format!("{label}: {{\n{code}}}"));
     Ok(if unit { String::new() } else { res })
 }
 
@@ -1980,11 +1992,13 @@ pub fn inline_block(tx: &mut Tx, block: &Block, shape: &Shape) -> R<String> {
 pub fn infer_block_shape(tx: &mut Tx, block: &Block) -> Option<Shape> {
     let (vars, temps) = (tx.vars.clone(), tx.temps);
     let outer = std::mem::take(&mut tx.pre);
+    let saved_exit = crate::translate::TRY_EXIT.with(|t| t.replace(Some((String::new(), String::new(), Shape::Unknown("dry run".into())))));
     let target = Some(Target { ident: String::new(), shape: None, weak: false, infer: true });
     let mut b = Body { tx, out: String::new(), indent: 1, ret: Shape::Unit, declared: Default::default(), target, loops: Vec::new() };
     let _ = b.block(block, true);
     let shape = b.target.take().and_then(|t| t.shape);
     let tx = b.tx;
+    crate::translate::TRY_EXIT.with(|t| t.replace(saved_exit));
     tx.vars = vars;
     tx.temps = temps;
     tx.pre = outer;

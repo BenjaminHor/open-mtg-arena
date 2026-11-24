@@ -54,6 +54,9 @@ thread_local! {
     pub static MENTIONS_SET: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
     /// The collect expression (by address) whose destination the context knows, and what that destination is.
     pub static COLLECT_INTO: std::cell::RefCell<Option<(usize, SetKind)>> = const { std::cell::RefCell::new(None) };
+    /// Inside an inlined closure body: where `?` goes instead of returning (the block's label, the result variable,
+    /// the closure's result shape).
+    pub static TRY_EXIT: std::cell::RefCell<Option<(String, String, Shape)>> = const { std::cell::RefCell::new(None) };
     /// Set when translated code reads or writes a field the Rust engine doesn't serialize (`#[serde(skip)]`).
     pub static TOUCHES_UNLOGGED: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
     /// Procedures written by hand (hand_logic.odin and the runtime): callable even when the Rust one is generic.
@@ -402,6 +405,32 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let v = self.expr(&t.expr, &sh)?;
                 self.temps += 1;
                 let tmp = format!("t{}_", self.temps);
+                // Inside an inlined closure, `?` leaves the closure: its result becomes None/Err and its block ends.
+                if let Some((label, res, rshape)) = TRY_EXIT.with(|t| t.borrow().clone()) {
+                    return match (&sh, &rshape) {
+                        (Shape::Result(_, _), Shape::Result(..)) => {
+                            let rty = self.e.odin(&rshape);
+                            self.pre.push(format!("{tmp} := {v}"));
+                            self.pre.push(format!("if e_, failed := {tmp}.err.?; failed {{ {res} = {rty}{{err = e_}}; break {label} }}"));
+                            Ok(format!("{tmp}.ok"))
+                        }
+                        (Shape::Option(_), Shape::Option(_)) => {
+                            self.pre.push(format!("{tmp} := {v}"));
+                            self.pre.push(format!("if {tmp} == nil {{ {res} = nil; break {label} }}"));
+                            Ok(format!("{tmp}.?"))
+                        }
+                        // A dry run (the closure's result shape still unknown): the value only.
+                        (Shape::Option(_), Shape::Unknown(_)) => {
+                            self.pre.push(format!("{tmp} := {v}"));
+                            Ok(format!("{tmp}.?"))
+                        }
+                        (Shape::Result(_, _), Shape::Unknown(_)) => {
+                            self.pre.push(format!("{tmp} := {v}"));
+                            Ok(format!("{tmp}.ok"))
+                        }
+                        _ => Err("? between different kinds in a closure".into()),
+                    };
+                }
                 match (&sh, self.fn_ret.clone()) {
                     (Shape::Result(_, _), Shape::Result(..)) => {
                         let ret_ty = self.e.odin(&self.fn_ret.clone());
@@ -1084,8 +1113,8 @@ impl<'a, 'b> Tx<'a, 'b> {
         if c.inputs.len() != args.len() {
             return Err("closure called with a different number of arguments".into());
         }
-        if has_try(&c.body) || crate::closures::has_return(&c.body) {
-            return Err("closure with ? or return".into());
+        if crate::closures::has_return(&c.body) {
+            return Err("closure with return".into());
         }
         if !crate::closures::simple_params(c) {
             return Err("closure parameter pattern".into());
@@ -1121,7 +1150,9 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
             }
         }
+        // A body using `?` goes the block way, so `?` can leave it.
         let single = match &*c.body {
+            _ if has_try(&c.body) => None,
             Expr::Block(b) if b.block.stmts.len() == 1 => match &b.block.stmts[0] {
                 Stmt::Expr(e, None) => Some(e.clone()),
                 _ => None,
@@ -1137,7 +1168,10 @@ impl<'a, 'b> Tx<'a, 'b> {
         let r = crate::closures::in_scope(info, || match (&single, &*c.body) {
             (Some(e), _) => self.expr(e, &out),
             (None, Expr::Block(b)) => crate::body::inline_block(self, &b.block, &out),
-            _ => Err("closure body".into()),
+            (None, e) => {
+                let block: syn::Block = syn::parse_quote!({ #e });
+                crate::body::inline_block(self, &block, &out)
+            }
         });
         self.unbind(saved);
         let r = r?;
@@ -1909,10 +1943,21 @@ impl<'a, 'b> Tx<'a, 'b> {
 
     /// A closure body as an expression, with its parameter bound to `value`.
     fn closure_expr(&mut self, c: &syn::ExprClosure, value: &str, shape: &Shape, want: &Shape) -> R<String> {
-        // `?` in a closure leaves the closure, but an inlined body has no closure to leave: it would return from the
-        // enclosing procedure (a filter_map closure's `?` must skip the item). Refused until closures are converted.
-        if has_try(&c.body) {
-            return Err("? inside a closure".into());
+        // `?` in a closure leaves the closure: the body goes the block way (inline_block), where `?` breaks out of it
+        // with None/Err as the closure's value instead of returning from the enclosing procedure.
+        if has_try(&c.body) && !matches!(&*c.body, Expr::Block(b) if b.block.stmts.len() != 1) {
+            if crate::closures::has_return(&c.body) {
+                return Err("closure with return".into());
+            }
+            let body = &*c.body;
+            let block: syn::Block = match body {
+                Expr::Block(b) => b.block.clone(),
+                e => syn::parse_quote!({ #e }),
+            };
+            let saved = self.bind_param(&c.inputs[0], value, shape)?;
+            let r = crate::body::inline_block(self, &block, want);
+            self.unbind(saved);
+            return r;
         }
         let saved = self.bind_param(&c.inputs[0], value, shape)?;
         let body = match &*c.body {
@@ -1942,8 +1987,15 @@ impl<'a, 'b> Tx<'a, 'b> {
 
     fn closure_shape(&mut self, c: &syn::ExprClosure, value: &str, shape: &Shape) -> Option<Shape> {
         let saved = self.bind_param(&c.inputs[0], value, shape).ok()?;
+        if has_try(&c.body) && !matches!(&*c.body, Expr::Block(_)) {
+            let e = &*c.body;
+            let block: syn::Block = syn::parse_quote!({ #e });
+            let r = crate::body::infer_block_shape(self, &block);
+            self.unbind(saved);
+            return r;
+        }
         let body = match &*c.body {
-            Expr::Block(b) if b.block.stmts.len() == 1 => match &b.block.stmts[0] {
+            Expr::Block(b) if b.block.stmts.len() == 1 && !has_try(&c.body) => match &b.block.stmts[0] {
                 Stmt::Expr(e, None) => e.clone(),
                 _ => {
                     self.unbind(saved);
