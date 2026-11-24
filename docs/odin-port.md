@@ -172,11 +172,12 @@ procedure; the 62 hand-written ones get hand-written Odin codecs that the genera
 Measured: ~55 full `GameState` clones per action, 5.5M copy-on-write object writes in nine games. Where Rust's clone
 is cheap and where it isn't, field by field:
 - **Shared** (`Arc<T>`): every object in `objects` (`Arc<GameObject>`), each object's ability, trigger, static and
-  replacement lists (`Arc<Vec<…>>`, the parsed card AST), a few large state parts. A clone bumps a count; a write
-  goes through `Arc::make_mut` (copy only if shared).
-- **Copied** (everything else): plain fields, `Vec`s and maps, `deck_pools` included (≈165 KB of JSON, copied on every
-  clone today), and the `im` collections, which are persistent in Rust (O(1) clone) but small apart from `objects`
-  and the rules journal (up to ~1k entries).
+  replacement lists (`Arc<Vec<…>>`, the parsed card AST), the deck lists inside `deck_pools` (≈165 KB of JSON), a
+  few other large parts. A clone bumps a count; a write goes through `Arc::make_mut` (copy only if shared).
+- **Copied** (everything else): plain fields, `Vec`s and maps, and the `im` collections, which are persistent in Rust
+  (O(1) clone) but small apart from `objects` and the rules journal (up to ~1k entries).
+- No interior mutability inside the state (no `OnceLock`/`RefCell`/`Mutex`/atomics in its types), so the sharing rule
+  is mechanical.
 
 Proposal: the Odin model mirrors that exactly, and the translator follows it mechanically.
 1. `Arc<T>` becomes a reference-counted shared pointer (`Shared(T)`: pointer + count); `Box<T>` stays an owned `^T`.
@@ -190,8 +191,19 @@ Proposal: the Odin model mirrors that exactly, and the translator follows it mec
    write must copy; a state clone the translator can see die at scope end (`let mut sim = state.clone()`, the 55 per
    action) releases its counts there, so counts stay exact on the hot path. Elsewhere a stale count only causes an
    extra copy, never a wrong result.
-5. Checked by a benchmark before the translator depends on it: clone + a typical write pattern on recorded states,
-   Odin vs Rust, within 2x of Rust or the design changes.
+5. Checked before the translator depends on it, against numbers taken from Rust first (`state.clone()` and drop
+   on recorded states):
+   - a benchmark shaped like both uses: per action (clone, write, discard, ~55 times) and like search (one parent,
+     many clone → write → discard), plus lookups by id (Rust's own profile puts hashing and lookup at 35% of
+     resolution CPU, so the map is indexed by id and keeps D-182's order beside it); within 2x of Rust or the
+     design changes;
+   - an oracle mode where `make_mut` always copies: recordings must come out identical with and without it (a
+     count that under-counts would let a write reach shared data, which only this catches);
+   - escaping snapshots traced before scope-end releases are generated (`engine.rs` wraps one in an `Arc` and
+     keeps another for rollback);
+   - the per-action copy into the next generation keeps sharing (each object's ability lists are copied once per
+     generation, not once per holder), and states that outlive an action (nested simulations, the AI's search
+     tree) get their own generations rather than the per-action rule.
 
 ## Toolchain note: a compiler patch (2026-11-24)
 
