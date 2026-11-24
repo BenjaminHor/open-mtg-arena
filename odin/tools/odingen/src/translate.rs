@@ -931,6 +931,17 @@ impl<'a, 'b> Tx<'a, 'b> {
                         return self.closure_shape(&c, "_", &item).filter(|s| matches!(s, Shape::Option(_)));
                     }
                 }
+                if matches!(m.as_str(), "iter_all" | "iter_unchecked" | "as_slice") && args.is_empty() {
+                    let named = match &recv {
+                        Shape::Ptr(i, _) => (**i).clone(),
+                        s => s.clone(),
+                    };
+                    if let Shape::Named(n, _) = &named {
+                        if let Some(item) = self.definitions_item(n) {
+                            return Some(Shape::Vec(Box::new(item)));
+                        }
+                    }
+                }
                 match (m.as_str(), &recv, args.len()) {
                     ("map", Shape::Option(i), 1) => {
                         let c = Self::closure_of(args[0]).ok()?;
@@ -1835,6 +1846,10 @@ enum Stage {
     Filter(syn::ExprClosure),
     Map(syn::ExprClosure),
     FilterMap(syn::ExprClosure),
+    /// The item with its index among the items reaching this stage: `(int, T)`.
+    Enumerate,
+    /// Each item's closure result (a Vec or an Option) in turn: an inner loop.
+    FlatMap(syn::ExprClosure),
     Pass, // copied(), cloned(), iter(), into_iter()
 }
 
@@ -1849,7 +1864,7 @@ impl<'a, 'b> Tx<'a, 'b> {
         loop {
             match e {
                 Expr::MethodCall(m) => match m.method.to_string().as_str() {
-                    "iter" | "into_iter" | "copied" | "cloned" | "filter" | "map" | "filter_map" => e = &m.receiver,
+                    "iter" | "into_iter" | "copied" | "cloned" | "filter" | "map" | "filter_map" | "enumerate" | "flat_map" => e = &m.receiver,
                     // Any other call is the source: an `impl Iterator` result is materialized as a Vec (an iterator
                     // method on a Vec-shaped value can only be one: Vec and slices have no `any` or `map`). `chain`
                     // refuses a source that isn't a Vec.
@@ -1875,6 +1890,15 @@ impl<'a, 'b> Tx<'a, 'b> {
                     _ => self.chain_item_shape(&m.receiver),
                 },
                 "filter" => self.chain_item_shape(&m.receiver),
+                "enumerate" if m.args.is_empty() => Some(Shape::Tuple(vec![Shape::Int("int"), self.chain_item_shape(&m.receiver)?])),
+                "flat_map" => {
+                    let cur = self.chain_item_shape(&m.receiver)?;
+                    let c = Self::closure_of(m.args.first()?).ok()?;
+                    match self.closure_shape(&c, "_", &cur)? {
+                        Shape::Vec(i) | Shape::Option(i) => Some(*i),
+                        _ => None,
+                    }
+                }
                 "map" | "filter_map" => {
                     let cur = self.chain_item_shape(&m.receiver)?;
                     let c = Self::closure_of(m.args.first()?).ok()?;
@@ -1895,6 +1919,14 @@ impl<'a, 'b> Tx<'a, 'b> {
                 },
             },
             Expr::Paren(p) => self.chain_item_shape(&p.expr),
+            _ => None,
+        }
+    }
+
+    /// The item type of a `Definitions<T>` instance (`Definitions_TriggerDefinition`).
+    fn definitions_item(&self, n: &str) -> Option<Shape> {
+        match self.e.instances.get(n) {
+            Some((base, args)) if base == "Definitions" && args.len() == 1 => Some(args[0].clone()),
             _ => None,
         }
     }
@@ -2039,6 +2071,8 @@ impl<'a, 'b> Tx<'a, 'b> {
                         "filter" => stages.push(Stage::Filter(Self::closure_of(m.args.first().ok_or("filter")?)?)),
                         "map" => stages.push(Stage::Map(Self::closure_of(m.args.first().ok_or("map")?)?)),
                         "filter_map" => stages.push(Stage::FilterMap(Self::closure_of(m.args.first().ok_or("filter_map")?)?)),
+                        "enumerate" => stages.push(Stage::Enumerate),
+                        "flat_map" => stages.push(Stage::FlatMap(Self::closure_of(m.args.first().ok_or("flat_map")?)?)),
                         // The source (see `chain_source`).
                         _ => break,
                     }
@@ -2049,7 +2083,12 @@ impl<'a, 'b> Tx<'a, 'b> {
             }
         }
         stages.reverse();
-        let src_shape = self.shape_of(e).ok_or("iterator over an untyped collection")?;
+        let src_shape = self.shape_of(e).ok_or_else(|| match e {
+            Expr::MethodCall(m) => format!("iterator over an untyped collection: method .{}()", m.method),
+            Expr::Call(c) => format!("iterator over an untyped collection: call {}", quote::quote!(#c.func).to_string().replace(' ', "")),
+            Expr::Field(f) => format!("iterator over an untyped collection: field {}", quote::quote!(#f.member)),
+            _ => "iterator over an untyped collection".to_string(),
+        })?;
         self.temps += 1;
         let n = self.temps;
         let item = format!("it{n}_");
@@ -2063,12 +2102,24 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let src = self.expr(e, &src_shape)?;
                 (format!("for i{n}_ in 0 ..< {src}.len {{ {item} := pvec_get({src}, i{n}_);"), (**i).clone())
             }
+            // A Vec behind a pointer (a Box, or a shared Vec); nil holds nothing.
+            Shape::Ptr(p, _) if matches!(**p, Shape::Vec(_)) => {
+                let Shape::Vec(i) = &**p else { unreachable!() };
+                let src = self.expr(e, &src_shape)?;
+                self.pre.push(format!("s{n}_: [dynamic]{}", self.e.odin(i)));
+                self.pre.push(format!("if p{n}_ := {src}; p{n}_ != nil do s{n}_ = p{n}_^"));
+                (format!("for {item} in s{n}_"), (**i).clone())
+            }
             other => return Err(format!("iterator over a non-Vec: {}", crate::body::shape_kind(other))),
         };
         let pvec = matches!(src_shape, Shape::PVec(_));
         // Each stage refines the current value (`cur`) or skips the item.
         let mut body: Vec<String> = Vec::new();
         let mut cur = item.clone();
+        // Inner loops opened by flat_map, closed after the terminal's step; the terminals break out of the outer loop
+        // by its label.
+        let mut inner_loops = 0;
+        let outer = format!("ch{n}_");
         for (k, st) in stages.iter().enumerate() {
             match st {
                 Stage::Pass => {}
@@ -2093,6 +2144,34 @@ impl<'a, 'b> Tx<'a, 'b> {
                     body.push(format!("if !{next}ok do continue"));
                     cur = next;
                     cur_shape = *inner;
+                }
+                Stage::Enumerate => {
+                    let (count, next) = (format!("c{n}_{k}_"), format!("m{n}_{k}_"));
+                    self.pre.push(format!("{count} := 0"));
+                    let ty = self.e.odin(&cur_shape);
+                    body.push(format!("{next} := Tuple2(int, {ty}){{{count}, {cur}}}"));
+                    body.push(format!("{count} += 1"));
+                    cur = next;
+                    cur_shape = Shape::Tuple(vec![Shape::Int("int"), cur_shape]);
+                }
+                Stage::FlatMap(c) => {
+                    let out_shape = self.closure_shape(c, &cur, &cur_shape).ok_or("flat_map closure of an untyped value")?;
+                    let v = self.closure_in(&mut body, c, &cur, &cur_shape, &out_shape)?;
+                    let next = format!("m{n}_{k}_");
+                    match out_shape {
+                        Shape::Vec(i) => {
+                            body.push(format!("fv{n}_{k}_ := {v}"));
+                            body.push(format!("for {next} in fv{n}_{k}_ {{"));
+                            cur_shape = *i;
+                        }
+                        Shape::Option(i) => {
+                            body.push(format!("if {next}, {next}ok := ({v}).?; {next}ok {{"));
+                            cur_shape = *i;
+                        }
+                        _ => return Err("flat_map closure not returning a Vec or an Option".into()),
+                    }
+                    cur = next;
+                    inner_loops += 1;
                 }
             }
         }
@@ -2132,30 +2211,30 @@ impl<'a, 'b> Tx<'a, 'b> {
             "any" => {
                 let c = Self::closure_of(args.first().ok_or("any")?)?;
                 let cond = self.closure_in(&mut body, &c, &cur, &cur_shape, &Shape::Bool)?;
-                (format!("{res} := false"), format!("if {cond} {{ {res} = true; break }}"), res.clone())
+                (format!("{res} := false"), format!("if {cond} {{ {res} = true; break {outer} }}"), res.clone())
             }
             "all" => {
                 let c = Self::closure_of(args.first().ok_or("all")?)?;
                 let cond = self.closure_in(&mut body, &c, &cur, &cur_shape, &Shape::Bool)?;
-                (format!("{res} := true"), format!("if !({cond}) {{ {res} = false; break }}"), res.clone())
+                (format!("{res} := true"), format!("if !({cond}) {{ {res} = false; break {outer} }}"), res.clone())
             }
             "find" => {
                 let c = Self::closure_of(args.first().ok_or("find")?)?;
                 let cond = self.closure_in(&mut body, &c, &cur, &cur_shape, &Shape::Bool)?;
                 let ty = self.e.odin(&cur_shape);
-                (format!("{res}: Maybe({ty})"), format!("if {cond} {{ {res} = {cur}; break }}"), res.clone())
+                (format!("{res}: Maybe({ty})"), format!("if {cond} {{ {res} = {cur}; break {outer} }}"), res.clone())
             }
             "find_map" => {
                 let c = Self::closure_of(args.first().ok_or("find_map")?)?;
                 let out_shape = self.closure_shape(&c, &cur, &cur_shape).ok_or("find_map closure of an untyped value")?;
                 let v = self.closure_in(&mut body, &c, &cur, &cur_shape, &out_shape)?;
                 let ty = self.e.odin(&out_shape);
-                (format!("{res}: {ty}"), format!("if fm_ := {v}; fm_ != nil {{ {res} = fm_; break }}"), res.clone())
+                (format!("{res}: {ty}"), format!("if fm_ := {v}; fm_ != nil {{ {res} = fm_; break {outer} }}"), res.clone())
             }
             "position" => {
                 let c = Self::closure_of(args.first().ok_or("position")?)?;
                 let cond = self.closure_in(&mut body, &c, &cur, &cur_shape, &Shape::Bool)?;
-                (format!("{res}: Maybe(int); p{n}_ := 0"), format!("if {cond} {{ {res} = p{n}_; break }}; p{n}_ += 1"), res.clone())
+                (format!("{res}: Maybe(int); p{n}_ := 0"), format!("if {cond} {{ {res} = p{n}_; break {outer} }}; p{n}_ += 1"), res.clone())
             }
             "count" if args.is_empty() => (format!("{res} := 0"), format!("{res} += 1"), res.clone()),
             "sum" if args.is_empty() => {
@@ -2167,9 +2246,12 @@ impl<'a, 'b> Tx<'a, 'b> {
         self.pre.push(init);
         let close = if pvec { "}}" } else { "}" };
         let _ = close;
-        let mut lines = vec![format!("{head} {{")];
+        let mut lines = vec![format!("{outer}: {head} {{")];
         lines.extend(body);
         lines.push(step);
+        for _ in 0..inner_loops {
+            lines.push("}".into());
+        }
         if pvec {
             lines.push("}}".into());
         } else {
@@ -2205,6 +2287,11 @@ impl<'a, 'b> Tx<'a, 'b> {
                 ("contains", Shape::Vec(i), 1) if deref.is_empty() && self.comparable(&i.clone()) => {
                     let v = self.expr(args[0], i)?;
                     format!("vec_contains({recv}[:], {v})")
+                }
+                // Through a pointer that may be nil (an empty Vec behind a Box): nil holds nothing.
+                ("contains", Shape::Vec(i), 1) if self.comparable(&i.clone()) => {
+                    let v = self.expr(args[0], i)?;
+                    format!("({recv} != nil && vec_contains({recv}^[:], {v}))")
                 }
                 ("first", Shape::Vec(_), 0) if deref.is_empty() => format!("vec_first({recv}[:])"),
                 ("last", Shape::Vec(_), 0) if deref.is_empty() => format!("vec_last({recv}[:])"),
@@ -2453,6 +2540,15 @@ impl<'a, 'b> Tx<'a, 'b> {
                     self.pre.push(format!("for {k} in 0 ..< len({recv}) {{\n{x} := {recv}[{k}]\n{}\nif {keep} {{ {recv}[{w}] = {recv}[{k}]; {w} += 1 }}\n}}", body.join("\n")));
                     format!("resize(&{recv}, {w})")
                 }
+                // `Definitions<T>` (`Arc<Vec<T>>`, a distinct `^[dynamic]T` in the model; nil reads as empty): its
+                // definitions, ungated, for reading.
+                ("iter_all" | "iter_unchecked" | "as_slice", Shape::Named(dn, _), 0) if self.definitions_item(dn).is_some() => {
+                    let item = self.definitions_item(dn).unwrap_or(Shape::Unit);
+                    let n = self.next_temp();
+                    self.pre.push(format!("d{n}_: [dynamic]{}", self.e.odin(&item)));
+                    self.pre.push(format!("if p{n}_ := {recv}{deref}; p{n}_ != nil do d{n}_ = p{n}_^"));
+                    format!("d{n}_")
+                }
                 // An iterator over a Vec, taken whole: the Vec (translated logic materializes iterators).
                 ("iter" | "into_iter", Shape::Vec(_), 0) if deref.is_empty() => recv,
                 ("as_deref" | "as_ref", Shape::OptPtr(..), 0) => recv,
@@ -2479,6 +2575,25 @@ impl<'a, 'b> Tx<'a, 'b> {
                     let lookup = format!("if x{n}_, ok{n}_ := {m}[{key}]; ok{n}_ do g{n}_ = x{n}_");
                     self.pre.push(if deref.is_empty() { lookup } else { format!("if {recv} != nil {{\n{lookup}\n}}") });
                     format!("g{n}_")
+                }
+                // The closure runs only when the value is absent; its statements go inside the `if`.
+                ("unwrap_or_else", Shape::Option(i), 1) => {
+                    let Expr::Closure(c) = args[0] else { return Err("unwrap_or_else without a closure".into()) };
+                    if !c.inputs.is_empty() {
+                        return Err("unwrap_or_else closure with arguments".into());
+                    }
+                    if has_try(&c.body) || crate::closures::has_return(&c.body) {
+                        return Err("? or return inside a closure".into());
+                    }
+                    let n = self.next_temp();
+                    let ty = self.e.odin(i);
+                    let outer = std::mem::take(&mut self.pre);
+                    let d = self.expr(&c.body, i);
+                    let inner = std::mem::replace(&mut self.pre, outer);
+                    let d = d?;
+                    self.pre.push(format!("r{n}_: {ty}"));
+                    self.pre.push(format!("if v{n}_, ok{n}_ := {recv}.?; ok{n}_ {{\nr{n}_ = v{n}_\n}} else {{\n{}\nr{n}_ = {d}\n}}", inner.join("\n")));
+                    format!("r{n}_")
                 }
                 ("or_else", Shape::Option(_), 1) => {
                     let Expr::Closure(c) = args[0] else { return Err("or_else without a closure".into()) };
