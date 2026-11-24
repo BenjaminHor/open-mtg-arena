@@ -928,11 +928,32 @@ impl<'a, 'b> Tx<'a, 'b> {
     /// The shape of a variable reference (parameters and `self`), for comparisons.
     fn shape_of(&mut self, ex: &Expr) -> Option<Shape> {
         match ex {
-            Expr::Path(p) if p.path.segments.len() == 1 => match self.vars.get(&p.path.segments[0].ident.to_string()).map(|v| v.1.clone()) {
-                // A pending local: its shape once a use has fixed it.
-                Some(Shape::Unknown(u)) if u.starts_with(PENDING_TAG) => PENDING.with(|m| m.borrow().get(&u[PENDING_TAG.len()..]).and_then(|e| e.1.clone())),
-                other => other,
-            },
+            Expr::Path(p) if p.path.segments.len() == 1 && self.vars.contains_key(&p.path.segments[0].ident.to_string()) => {
+                match self.vars.get(&p.path.segments[0].ident.to_string()).map(|v| v.1.clone()) {
+                    // A pending local: its shape once a use has fixed it.
+                    Some(Shape::Unknown(u)) if u.starts_with(PENDING_TAG) => PENDING.with(|m| m.borrow().get(&u[PENDING_TAG.len()..]).and_then(|e| e.1.clone())),
+                    other => other,
+                }
+            }
+            // A constant (`Axes::NONE`, `BASE_FLOOR`) has its declared type; a unit variant (`ZoneSpan::None`) its
+            // enum's.
+            Expr::Path(p) if p.qself.is_none() => {
+                let segs: Vec<String> = p.path.segments.iter().map(|s| s.ident.to_string()).collect();
+                let name = segs.last()?.clone();
+                let owner = self.owner_of(&segs);
+                if let Some(c) = self.e.reg.consts.get(&(owner.clone(), name.clone())).and_then(|v| v.first()).cloned() {
+                    let sh = self.e.shape(&c.ty, &[]);
+                    return match sh {
+                        Shape::Named(n, _) if n == "Self" => owner.map(|o| Shape::Named(o, vec![])),
+                        sh if shape_mentions_param(&sh) || matches!(sh, Shape::Unknown(_)) => None,
+                        sh => Some(sh),
+                    };
+                }
+                let o = owner?;
+                let (_, variants) = self.enum_variants(&o)?;
+                let v = variants.iter().find(|v| v.name == name)?;
+                matches!(v.fields, Fields::Unit).then(|| Shape::Named(o, vec![]))
+            }
             Expr::Unary(u) => self.shape_of(&u.expr),
             Expr::Reference(r) => self.shape_of(&r.expr),
             Expr::Paren(p) => self.shape_of(&p.expr),
@@ -2170,7 +2191,7 @@ impl<'a, 'b> Tx<'a, 'b> {
         let (head, mut cur_shape) = match &src_shape {
             Shape::Vec(i) | Shape::Array(i, _) => {
                 let src = self.expr(e, &src_shape)?;
-                (format!("for {item} in {src}"), (**i).clone())
+                (format!("for {item} in {}", crate::body::header_safe(&src)), (**i).clone())
             }
             Shape::PVec(i) => {
                 let src = self.expr(e, &src_shape)?;

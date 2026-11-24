@@ -1092,9 +1092,9 @@ impl Body<'_, '_, '_> {
         let Some((unit, _)) = self.tx.enum_variants_pub(&en) else { return Err("match on a non-enum".into()) };
         let subject = self.tx.expr(&m.expr, &sh)?;
         if unit {
-            self.line(&format!("#partial switch {subject} {{"));
+            self.line(&format!("#partial switch {} {{", header_safe(&subject)));
         } else {
-            self.line(&format!("#partial switch v_ in {subject} {{"));
+            self.line(&format!("#partial switch v_ in {} {{", header_safe(&subject)));
         }
         let mut has_default = false;
         let mut default_emitted = false;
@@ -1371,7 +1371,7 @@ impl Body<'_, '_, '_> {
     fn loop_head(&mut self, label: &str, item: &str, idx: Option<&str>, c: &str, elem: &Shape, src: LoopSource) {
         let ix = idx.map(|i| format!(", {i}")).unwrap_or_default();
         match src {
-            LoopSource::Vec => self.line(&format!("{label}: for {item}{ix} in {c} {{")),
+            LoopSource::Vec => self.line(&format!("{label}: for {item}{ix} in {} {{", header_safe(c))),
             LoopSource::PVec => {
                 let i = idx.unwrap_or("_");
                 self.line(&format!("{label}: for {i} in 0 ..< {c}.len {{"));
@@ -1870,6 +1870,12 @@ enum Ctor {
 }
 
 /// An empty collection constructor, by the kind of shape it makes.
+/// An expression made safe for a control statement's header: a composite literal there (`for x in [2]T{a, b} {`)
+/// would have its `{` read as the body's, so one containing a brace is parenthesized.
+pub fn header_safe(e: &str) -> String {
+    if e.contains('{') { format!("({e})") } else { e.to_string() }
+}
+
 /// Where a `for` loop's items come from.
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum LoopSource {

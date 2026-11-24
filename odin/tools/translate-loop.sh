@@ -11,6 +11,12 @@ for round in $(seq 1 30); do
     echo "odingen failed (see $DIR/report.txt)"; tail -3 "$DIR/report.txt"; exit 1
   fi
   out=$("$ODIN" check "$DIR" -no-entry-point -no-escape-analysis -max-error-count:100000 2>&1)
+  status=$?
+  # 0 is clean and 1 is type errors; anything else (killed for memory, a compiler assertion) checked nothing, and
+  # its silence must not read as clean.
+  if [ "$status" -gt 1 ]; then
+    echo "odin check failed with status $status:"; echo "$out" | tail -5; exit 1
+  fi
   errs=$(echo "$out" | grep -E "^/.*translated\.odin\([0-9]+:" | sed -E 's/.*translated\.odin\(([0-9]+):.*/\1/' | sort -un)
   other=$(echo "$out" | grep -E "Error" | grep -vc "translated\.odin" || true)
   if [ -z "$errs" ]; then
