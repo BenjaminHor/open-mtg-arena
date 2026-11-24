@@ -1182,3 +1182,35 @@ search_library :: proc(t: ^testing.T) {
 	testing.expect(t, game.apply(g2, 0, types.GameAction_SelectCards{cards = pick}))
 	testing.expect(t, game.object(&g2.state, w2.cards[0]).zone == .Hand, "into the hand")
 }
+
+@(test)
+sacrifice_effects :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 701.21a: the controller sacrifices their own permanents; with a choice, they choose (CR 608.2d).
+	g := new_game()
+	ball := add(t, g, "Ball Lightning", 0, .Battlefield) // at the beginning of the end step, sacrifice it
+	game.begin_step(g, .End)
+	for types.pvec_len(g.state.stack) > 0 do game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, ball.zone == .Graveyard, "Ball Lightning sacrificed itself")
+
+	g2 := new_game()
+	add(t, g2, "Swamp", 0, .Battlefield)
+	bears := add(t, g2, "Grizzly Bears", 0, .Battlefield)
+	theirs := add(t, g2, "Grizzly Bears", 1, .Battlefield)
+	centaur := add(t, g2, "Accursed Centaur", 0, .Hand) // when it enters, sacrifice a creature
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = centaur.id}))
+	for i := 0; i < 6; i += 1 {
+		if _, choosing := g2.state.waiting_for.(types.WaitingFor_EffectZoneChoice); choosing do break
+		game.apply(g2, g2.state.priority_player, types.GameAction_PassPriority{})
+	}
+	w, asked := g2.state.waiting_for.(types.WaitingFor_EffectZoneChoice)
+	testing.expect(t, asked && len(w.cards) == 2, "a choice between its controller's two creatures")
+	if !asked do return
+	wrong: [dynamic]types.ObjectId
+	append(&wrong, theirs.id)
+	testing.expect(t, !game.apply(g2, 0, types.GameAction_SelectCards{cards = wrong}), "not the opponent's")
+	pick: [dynamic]types.ObjectId
+	append(&pick, bears.id)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_SelectCards{cards = pick}))
+	testing.expect(t, bears.zone == .Graveyard && centaur.zone == .Battlefield && theirs.zone == .Battlefield)
+}

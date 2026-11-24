@@ -130,6 +130,8 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return generic_effect_supported(x)
 	case types.Effect_SearchLibrary:
 		return search_supported(x)
+	case types.Effect_Sacrifice:
+		return sacrifice_supported(x)
 	case types.Effect_Shuffle:
 		return is_controller(x.target)
 	case types.Effect_Attach:
@@ -709,6 +711,8 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 	case types.Effect_SearchLibrary:
 		start_search(g, x, controller, source)
 		return true
+	case types.Effect_Sacrifice:
+		return do_sacrifice(g, x, controller, source)
 	case types.Effect_Shuffle:
 		shuffle_library(g, controller)
 	case types.Effect_Bounce:

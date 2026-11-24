@@ -44,6 +44,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_SearchChoice:
 		return w.player, true
+	case types.WaitingFor_EffectZoneChoice:
+		return w.player, true
 	}
 	return 0, false
 }
@@ -156,6 +158,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_SurveilChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		return ok && answer_scry(g, p, w.cards[:], a.cards[:], true)
+	case types.WaitingFor_EffectZoneChoice:
+		a, ok := action.(types.GameAction_SelectCards)
+		return ok && answer_sacrifice(g, p, w, a.cards[:])
 	case types.WaitingFor_SearchChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		return ok && answer_search(g, p, w, a.cards[:])

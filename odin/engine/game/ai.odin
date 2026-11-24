@@ -24,6 +24,9 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		for e in w.pending do if e.player == p do return types.GameAction_SelectCards{cards = worst_cards(g, p, int(e.count))}, true
 	case types.WaitingFor_DiscardToHandSize:
 		return types.GameAction_SelectCards{cards = worst_cards(g, p, w.count)}, true
+	case types.WaitingFor_EffectZoneChoice:
+		// What to sacrifice: the least valuable.
+		return types.GameAction_SelectCards{cards = least_valuable(g, w.cards[:], w.count)}, true
 	case types.WaitingFor_SearchChoice:
 		// As many as allowed, the first ones found.
 		cards := slice.clone(w.cards[:], context.temp_allocator)
@@ -481,4 +484,22 @@ ai_modes :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> (modes: [
 	for _, i in fallback do if len(modes) < m.min_choices && !slice.contains(modes[:], fallback[i]) do append(&modes, fallback[i])
 	slice.sort(modes[:])
 	return modes, good
+}
+
+// Tokens first, then the lowest mana value.
+least_valuable :: proc(g: ^Game, cards: []types.ObjectId, n: int) -> [dynamic]types.ObjectId {
+	s := &g.state
+	Ranked :: struct {
+		id:    types.ObjectId,
+		score: int,
+	}
+	ranked := make([dynamic]Ranked, context.temp_allocator)
+	for id in cards {
+		o := object(s, id)
+		append(&ranked, Ranked{id, -1 if o.is_token else object_mana_value(o)})
+	}
+	slice.sort_by(ranked[:], proc(a, b: Ranked) -> bool {return a.score < b.score || (a.score == b.score && a.id < b.id)})
+	out := make([dynamic]types.ObjectId, context.temp_allocator)
+	for r in ranked[:min(n, len(ranked))] do append(&out, r.id)
+	return out
 }
