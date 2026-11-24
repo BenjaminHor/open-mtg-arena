@@ -2846,6 +2846,15 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   change the plan. Keep translator internals, percentages and per-fix detail in this file and the commits.
 
 ## Known issues
+- (2026-11-24, Odin engine, rules-judge review of bdedbc4..cceba79) Being fixed now: (1) a dies trigger's intervening
+  "if" read the card in the graveyard, not the creature as it last existed (CR 603.10a, 608.2h; Deathknell
+  Berserker); (2) mana value ignored X on the stack (CR 202.3e); (3) a mass "creatures can't block this turn" was
+  locked to the creatures present on resolution (CR 611.2c); (4) heroic missed targets of a spell's later
+  instructions; (5) "pay life" mana riders didn't check the life total (CR 119.4); (7) a false instruction
+  condition dropped later independent instructions; (8) the gap report listed supported X spells. Open: (6) "that
+  creature's controller" should use last known information once control-changing effects exist; the intervening
+  "if" is first checked when triggers are collected, not at the event; the player doesn't choose which mana
+  abilities pay (CR 601.2g), so automatic payment may take painland damage or sacrifice a land.
 - (2026-11-24, Odin engine, rules-judge review of odin/engine/game at f7800b5) Being fixed now: (1) only a permanent's
   first mana ability was used (dual lands made one color; CR 605.3a); (2) mana-ability riders (damage, "activate only
   if", spending restrictions, extra mana) ignored while the card counted as supported; (4) creatures that left the
