@@ -383,5 +383,6 @@ castable_zone_ids :: proc(s: ^types.GameState, p: types.PlayerId) -> [dynamic]ty
 	out := make([dynamic]types.ObjectId, context.temp_allocator)
 	append(&out, ..ids_of(player(s, p).hand))
 	for id in ids_of(s.command_zone) do if object(s, id).owner == p do append(&out, id)
+	for id in ids_of(player(s, p).graveyard) do if flashback_castable(object(s, id), p) do append(&out, id) // CR 702.34a
 	return out
 }

@@ -81,5 +81,5 @@ counter_spell :: proc(g: ^Game, id: types.ObjectId) {
 		if e.id != id do types.pvec_push(&kept, e, copy_entry)
 	}
 	s.stack = kept
-	move_object(g, id, .Graveyard)
+	spell_leaves_stack(g, id) // its owner's graveyard, or exile after flashback (CR 702.34a)
 }

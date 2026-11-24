@@ -66,6 +66,9 @@ keyword_supported :: proc(k: types.Keyword) -> bool {
 	case types.Keyword_Equip:
 		_, ok := k._0.(types.ManaCost_Cost)
 		return ok
+	case types.Keyword_Flashback:
+		_, mana := k._0.(types.FlashbackCost_Mana)
+		return mana // the cast from the graveyard and the exile are flashback.odin's
 	case types.Keyword_Kicker:
 		return true // carried out through the card's additional cost (kicker_cost), which card_supported checks
 	case types.Keyword_Cycling:
@@ -417,8 +420,9 @@ sorcery_timing :: proc(s: ^types.GameState, p: types.PlayerId) -> bool {
 
 // Whether the player can cast this card from their hand now: supported, timely, with legal targets and payable.
 castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, card_db: Card_Lookup) -> bool {
-	// From the hand, or a commander from the command zone (CR 903.8).
-	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander)) do return false
+	// From the hand, a commander from the command zone (CR 903.8), or a card with flashback from the graveyard
+	// (CR 702.34a).
+	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander) || flashback_castable(o, p)) do return false
 	if !object_supported(o, card_db) || !can_cast_now(s, p, o) do return false
 	if is_modal(o) {
 		if !modes_castable(s, p, o) do return false
@@ -433,8 +437,12 @@ castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c
 // CR 601.2f: the total cost: the mana cost, plus the commander tax (CR 903.8), plus increases, minus reductions,
 // never below {0}. Reductions here are of generic mana only.
 spell_cost :: proc(s: ^types.GameState, o: ^types.GameObject, p: types.PlayerId) -> types.ManaCost {
-	c, is_cost := o.mana_cost.(types.ManaCost_Cost)
-	if !is_cost do return o.mana_cost
+	base := o.mana_cost
+	if o.zone == .Graveyard {
+		if f, has := flashback_cost(o); has do base = f // CR 702.34a: instead of its mana cost
+	}
+	c, is_cost := base.(types.ManaCost_Cost)
+	if !is_cost do return base
 	add_kicker_cost(o, &c) // CR 702.33a: an additional cost
 	generic := int(c.generic) + cost_change(s, p, o)
 	if has_x(o.mana_cost) {
@@ -650,11 +658,13 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	o := object(s, id)
 	pay_mana(g, p, spell_cost(s, o, p)) // CR 605.3: the mana abilities are activated while paying
 	pay_additional_cost(g, p, o)
+	from := o.zone // where it was cast from: flashback's exile reads it (CR 702.34a)
 	if o.zone == .Command {
 		s.commander_cast_count[o.id] += 1
 		o.commander_tax = 2 * s.commander_cast_count[o.id]
 	}
 	move_object(g, id, .Stack)
+	o.cast_from_zone = from
 	o.controller = p
 	chain := chosen_mode_chain(o, g.pending.modes[:]) if is_modal(o) else spell_ability(o)
 	resolved := resolved_tree(s, chain, targets, g.pending.counts[:], p, id)

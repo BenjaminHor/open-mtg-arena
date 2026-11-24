@@ -1489,3 +1489,23 @@ token_with_its_own_trigger :: proc(t: ^testing.T) {
 	for types.pvec_len(g.state.stack) > 0 do game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
 	testing.expect(t, game.player(&g.state, 0).life == 21, "its dies trigger: 1 life")
 }
+
+@(test)
+flashback_from_the_graveyard :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.34a: Think Twice (draw a card; flashback {2}{U}) is cast from the graveyard for its flashback cost,
+	// then exiled instead of going anywhere else as it leaves the stack.
+	g := new_game()
+	for _ in 0 ..< 3 do add(t, g, "Island", 0, .Battlefield)
+	twice := add(t, g, "Think Twice", 0, .Graveyard)
+	pl := game.player(&g.state, 0)
+	library := types.pvec_len(pl.library)
+	testing.expect(t, game.castable(&g.state, 0, twice, g.card_db), "castable from the graveyard")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = twice.id}))
+	tapped := 0
+	for id in game.ids_of(g.state.battlefield) do if game.object(&g.state, id).tapped do tapped += 1
+	testing.expect(t, tapped == 3, "the flashback cost {2}{U}, not {1}{U}")
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, types.pvec_len(pl.library) == library - 1 && twice.zone == .Exile, "drew, then exiled")
+}
