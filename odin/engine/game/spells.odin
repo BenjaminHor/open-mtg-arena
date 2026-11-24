@@ -358,6 +358,7 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	resolved.controller = p
 	if a := spell_ability(o); a != nil && a.effect != nil do resolved.effect = a.effect^
 	for t in targets do append(&resolved.targets, t)
+	record_target_incarnations(s, resolved)
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = id, controller = p, kind = types.StackEntryKind_Spell{card_id = o.card_id, ability = resolved}}, copy_entry)
 	s.priority_passes = nil
 	give_priority(g, p)
@@ -387,7 +388,7 @@ resolve_top_of_stack :: proc(g: ^Game) {
 		o.controller = entry.controller
 		return
 	}
-	if a := spell_ability(o); a != nil do run_ability(g, a, entry.controller, o.id, spell.ability.targets[:])
+	if a := spell_ability(o); a != nil do run_ability(g, a, entry.controller, o.id, spell.ability)
 	// CR 608.2n: an instant or sorcery spell goes to its owner's graveyard as the final step of resolving.
 	move_object(g, o.id, .Graveyard)
 }
@@ -557,4 +558,23 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 is_land_face :: proc(face: ^types.CardFace) -> bool {
 	for t in face.card_type.core_types do if t == .Land do return true
 	return false
+}
+
+// CR 400.7: an object that changes zones is a new object. Each object target is remembered with the incarnation it
+// had when chosen, so a card that left and came back isn't the same target (CR 608.2b).
+record_target_incarnations :: proc(s: ^types.GameState, resolved: ^types.ResolvedAbility) {
+	clear(&resolved.target_incarnations)
+	for t in resolved.targets {
+		ref: types.ObjectIncarnationRef
+		if o, is_object := t.(types.TargetRef_Object); is_object {
+			ref = types.ObjectIncarnationRef{object_id = o._0, incarnation = object(s, o._0).incarnation}
+		}
+		append(&resolved.target_incarnations, ref)
+	}
+}
+
+same_object_as_chosen :: proc(s: ^types.GameState, resolved: ^types.ResolvedAbility, i: int) -> bool {
+	o, is_object := resolved.targets[i].(types.TargetRef_Object)
+	if !is_object || i >= len(resolved.target_incarnations) do return true
+	return object(s, o._0).incarnation == resolved.target_incarnations[i].incarnation
 }

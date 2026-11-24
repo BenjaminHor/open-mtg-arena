@@ -194,3 +194,70 @@ discard_choice_rejects_repeated_cards :: proc(t: ^testing.T) {
 	append(&twice, extra.id, extra.id)
 	testing.expect(t, !game.apply(g, 0, types.GameAction_SelectCards{cards = twice}))
 }
+
+// Player 0 attacks with `attacker`; player 1 blocks with `blockers`; the game reaches combat damage.
+fight :: proc(t: ^testing.T, attacker: string, blockers: []string) -> (^game.Game, ^types.GameObject, [dynamic]^types.GameObject) {
+	g := new_game()
+	a := add(t, g, attacker, 0, .Battlefield)
+	bs: [dynamic]^types.GameObject
+	for name in blockers do append(&bs, add(t, g, name, 1, .Battlefield))
+	game.begin_step(g, .DeclareAttackers)
+	attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{a.id, types.AttackTarget_Player{1}}}
+	testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	blocks: [dynamic]types.Tuple2(types.ObjectId, types.ObjectId)
+	for b in bs do append(&blocks, types.Tuple2(types.ObjectId, types.ObjectId){b.id, a.id})
+	testing.expect(t, game.apply(g, 1, types.GameAction_DeclareBlockers{assignments = blocks}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	return g, a, bs
+}
+
+@(test)
+attacker_divides_damage_among_blockers :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 510.1c: with two or more blockers, the attacking creature's controller divides its damage as they choose.
+	g, wurm, bs := fight(t, "Spined Wurm", {"Grizzly Bears", "Air Elemental"}) // 5/4 against 2/2 and 4/4
+	w, asked := g.state.waiting_for.(types.WaitingFor_AssignCombatDamage)
+	testing.expect(t, asked && w.player == 0 && w.total_damage == 5, "player 0 is asked to divide 5 damage")
+	division: [dynamic]types.Tuple2(types.ObjectId, u32)
+	append(&division, types.Tuple2(types.ObjectId, u32){bs[1].id, 4}, types.Tuple2(types.ObjectId, u32){bs[0].id, 1})
+	testing.expect(t, game.apply(g, 0, types.GameAction_AssignCombatDamage{mode = .Normal, assignments = division}))
+	testing.expect(t, bs[1].zone == .Graveyard, "the 4/4 got 4 and died")
+	testing.expect(t, bs[0].zone == .Battlefield, "the 2/2 got 1 and lived")
+	_ = wurm
+}
+
+@(test)
+trample_needs_lethal_on_blockers_first :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.19b: excess damage goes to the player only once every blocker is assigned lethal damage.
+	g, _, bs := fight(t, "Colossal Dreadmaw", {"Grizzly Bears"}) // 6/6 trample against a 2/2
+	short: [dynamic]types.Tuple2(types.ObjectId, u32)
+	append(&short, types.Tuple2(types.ObjectId, u32){bs[0].id, 1})
+	testing.expect(t, !game.apply(g, 0, types.GameAction_AssignCombatDamage{mode = .Normal, assignments = short, trample_damage = 5}))
+	lethal: [dynamic]types.Tuple2(types.ObjectId, u32)
+	append(&lethal, types.Tuple2(types.ObjectId, u32){bs[0].id, 2})
+	testing.expect(t, game.apply(g, 0, types.GameAction_AssignCombatDamage{mode = .Normal, assignments = lethal, trample_damage = 4}))
+	testing.expect(t, game.player(&g.state, 1).life == 16, "4 trampled over")
+}
+
+@(test)
+target_that_left_and_returned_is_a_new_object :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 400.7, 608.2b: a creature that leaves the battlefield and comes back is a new object, so a spell that
+	// targeted it has no legal target and doesn't resolve.
+	g := new_game()
+	add(t, g, "Mountain", 0, .Battlefield)
+	shock := add(t, g, "Shock", 0, .Hand)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	game.move_object(g, bears.id, .Hand) // bounced in response...
+	game.move_object(g, bears.id, .Battlefield) // ...and back
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, shock.zone == .Graveyard, "Shock left the stack")
+	testing.expect(t, bears.damage_marked == 0 && bears.zone == .Battlefield, "the new Grizzly Bears took no damage")
+}

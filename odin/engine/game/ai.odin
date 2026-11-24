@@ -34,6 +34,8 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		return types.GameAction_ChooseTarget{target = t}, true
 	case types.WaitingFor_OptionalEffectChoice:
 		return types.GameAction_DecideOptionalEffect{accept = true}, true
+	case types.WaitingFor_AssignCombatDamage:
+		return ai_damage_division(g, w), true
 	case types.WaitingFor_DeclareAttackers:
 		return types.GameAction_DeclareAttackers{attacks = choose_attacks(g, p)}, true
 	case types.WaitingFor_DeclareBlockers:
@@ -263,4 +265,32 @@ ability_worth_using :: proc(g: ^Game, p: types.PlayerId, a: ^types.AbilityDefini
 		if !good do return false
 	}
 	return true
+}
+
+// Kill the most valuable blockers it can, then (trample) hit the player, else pile the rest on the first blocker.
+ai_damage_division :: proc(g: ^Game, w: types.WaitingFor_AssignCombatDamage) -> types.GameAction {
+	s := &g.state
+	slots := make([dynamic]types.DamageSlot, context.temp_allocator)
+	append(&slots, ..w.blockers[:])
+	context.user_ptr = s
+	slice.sort_by(slots[:], proc(a, b: types.DamageSlot) -> bool {
+		s := (^types.GameState)(context.user_ptr)
+		return mana_value(object(s, a.blocker_id).mana_cost) > mana_value(object(s, b.blocker_id).mana_cost)
+	})
+	left := w.total_damage
+	out: [dynamic]types.Tuple2(types.ObjectId, u32)
+	for slot in slots {
+		give := min(left, slot.lethal_minimum)
+		append(&out, types.Tuple2(types.ObjectId, u32){slot.blocker_id, give})
+		left -= give
+	}
+	all_lethal := true
+	for x, i in out do if x._1 < slots[i].lethal_minimum do all_lethal = false
+	trample: u32
+	if w.trample != nil && all_lethal {
+		trample = left
+	} else if len(out) > 0 {
+		out[0]._1 += left
+	}
+	return types.GameAction_AssignCombatDamage{mode = .Normal, assignments = out, trample_damage = trample}
 }

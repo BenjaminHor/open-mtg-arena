@@ -114,23 +114,128 @@ is_attacking :: proc(c: ^types.CombatState, id: types.ObjectId) -> bool {
 }
 
 // CR 510: combat damage. With first or double strike in the fight, those creatures deal damage first (CR 702.7b)
-// and state-based actions are checked before the others deal theirs.
-combat_damage :: proc(g: ^Game) {
+// and state-based actions are checked before the others deal theirs. When an attacker's controller divides its
+// damage (CR 510.1c: two or more blockers; 702.19b: trample), they're asked first; returns false while waiting.
+combat_damage :: proc(g: ^Game) -> bool {
 	s := &g.state
-	apply_continuous_effects(g)
+	progress := &g.damage_progress
 	combat, ok := &s.combat.?
-	if !ok do return
-	any_first := false
+	if !ok do return true
+	if !progress.started {
+		apply_continuous_effects(g)
+		progress.started = true
+		for a in combat.attackers {
+			if strikes_first(object(s, a.object_id)) do progress.any_first = true
+			for b in combat.blocker_assignments[a.object_id] do if strikes_first(object(s, b)) do progress.any_first = true
+		}
+	}
+	pass: Damage_Pass = .Only
+	if progress.any_first do pass = .Regular if progress.first_done else .First
 	for a in combat.attackers {
-		if strikes_first(object(s, a.object_id)) do any_first = true
-		for b in combat.blocker_assignments[a.object_id] do if strikes_first(object(s, b)) do any_first = true
+		if _, chosen := progress.choices[a.object_id]; chosen || !needs_damage_choice(s, combat, a, pass) do continue
+		ask_damage_assignment(g, combat, a)
+		return false
 	}
-	if any_first {
-		damage_pass(g, combat, .First)
+	damage_pass(g, combat, pass)
+	clear(&progress.choices)
+	if pass == .First {
+		progress.first_done = true
 		check_state_based_actions(g)
-		if game_over(s) do return
+		if game_over(s) {
+			progress^ = {}
+			return true
+		}
+		return combat_damage(g)
 	}
-	damage_pass(g, combat, .Regular if any_first else .Only)
+	progress^ = {}
+	return true
+}
+
+// How an attacker's controller divided its damage: to each blocker, and (trample) to the player.
+Damage_Choice :: struct {
+	to_blockers: [dynamic]types.Tuple2(types.ObjectId, u32),
+	to_player:   u32,
+}
+
+Combat_Damage_Progress :: struct {
+	started, any_first, first_done: bool,
+	choices:                        map[types.ObjectId]Damage_Choice,
+}
+
+alive_blockers :: proc(s: ^types.GameState, combat: ^types.CombatState, attacker: types.ObjectId) -> [dynamic]^types.GameObject {
+	out := make([dynamic]^types.GameObject, context.temp_allocator)
+	for b in combat.blocker_assignments[attacker] do if o := object(s, b); o.zone == .Battlefield do append(&out, o)
+	return out
+}
+
+@(private = "file")
+needs_damage_choice :: proc(s: ^types.GameState, combat: ^types.CombatState, a: types.AttackerInfo, pass: Damage_Pass) -> bool {
+	attacker := object(s, a.object_id)
+	if !a.blocked || !deals_damage_in(attacker, pass) || power_of(attacker) <= 0 do return false
+	n := len(alive_blockers(s, combat, a.object_id))
+	return n >= 2 || (n == 1 && has_keyword(attacker, types.Keyword_Trample))
+}
+
+// The damage that counts as lethal to a blocker (CR 702.19b: damage already marked counts; 702.2c: any damage from
+// a deathtouch source).
+lethal_damage :: proc(attacker, blocker: ^types.GameObject) -> u32 {
+	lethal := max(toughness_of(blocker) - int(blocker.damage_marked), 0)
+	if has_keyword(attacker, types.Keyword_Deathtouch) do lethal = min(lethal, 1)
+	return u32(lethal)
+}
+
+@(private = "file")
+ask_damage_assignment :: proc(g: ^Game, combat: ^types.CombatState, a: types.AttackerInfo) {
+	s := &g.state
+	attacker := object(s, a.object_id)
+	slots: [dynamic]types.DamageSlot
+	for b in alive_blockers(s, combat, a.object_id) do append(&slots, types.DamageSlot{blocker_id = b.id, lethal_minimum = lethal_damage(attacker, b)})
+	modes: [dynamic]types.CombatDamageAssignmentMode
+	append(&modes, types.CombatDamageAssignmentMode.Normal)
+	trample: Maybe(types.TrampleKind)
+	if has_keyword(attacker, types.Keyword_Trample) do trample = .Standard
+	s.priority_player = attacker.controller
+	s.waiting_for = types.WaitingFor_AssignCombatDamage {
+		player           = attacker.controller,
+		attacker_id      = a.object_id,
+		total_damage     = u32(power_of(attacker)),
+		blockers         = slots,
+		assignment_modes = modes,
+		trample          = trample,
+		defending_player = a.defending_player,
+		attack_target    = a.attack_target,
+	}
+}
+
+// The attacker's controller's division (CR 510.1c): all of its damage, among its blockers; with trample, to the
+// player only once every blocker has lethal damage (CR 702.19b).
+assign_combat_damage :: proc(g: ^Game, p: types.PlayerId, a: types.GameAction_AssignCombatDamage) -> bool {
+	s := &g.state
+	w := s.waiting_for.(types.WaitingFor_AssignCombatDamage)
+	if a.mode != .Normal || a.controller_damage != 0 do return false
+	total := a.trample_damage
+	given := make(map[types.ObjectId]u32, context.temp_allocator)
+	for x in a.assignments {
+		found := false
+		for slot in w.blockers do if slot.blocker_id == x._0 do found = true
+		if !found || x._0 in given do return false
+		given[x._0] = x._1
+		total += x._1
+	}
+	if total != w.total_damage do return false
+	if a.trample_damage > 0 {
+		if w.trample == nil do return false
+		for slot in w.blockers do if given[slot.blocker_id] < slot.lethal_minimum do return false
+	}
+	choice := Damage_Choice{to_player = a.trample_damage}
+	for x in a.assignments do append(&choice.to_blockers, x)
+	g.damage_progress.choices[w.attacker_id] = choice
+	s.waiting_for = nil
+	if combat_damage(g) {
+		append(&g.events, Event{kind = .Step_Begin, step = .CombatDamage})
+		give_priority(g, s.active_player)
+	}
+	return true
 }
 
 Damage_Pass :: enum {
@@ -175,26 +280,21 @@ damage_pass :: proc(g: ^Game, combat: ^types.CombatState, pass: Damage_Pass) {
 			append(&hits, Hit{a.object_id, types.TargetRef_Player{hits_target._0}, n})
 			continue
 		}
-		// CR 510.1c: lethal damage to each blocker in order before the next; with trample (702.19b) the rest can go
-		// to the player, otherwise the last blocker takes it.
-		blockers := combat.blocker_assignments[a.object_id]
-		alive := make([dynamic]^types.GameObject, context.temp_allocator)
-		for b in blockers do if o := object(s, b); o.zone == .Battlefield do append(&alive, o)
+		// CR 510.1c: the division its controller chose, when there was one to make.
+		if choice, chosen := g.damage_progress.choices[a.object_id]; chosen {
+			for x in choice.to_blockers do if x._1 > 0 do append(&hits, Hit{a.object_id, types.TargetRef_Object{x._0}, int(x._1)})
+			if choice.to_player > 0 do append(&hits, Hit{a.object_id, types.TargetRef_Player{a.defending_player}, int(choice.to_player)})
+			continue
+		}
+		alive := alive_blockers(s, combat, a.object_id)
 		if len(alive) == 0 {
 			if has_keyword(attacker, types.Keyword_Trample) {
 				append(&hits, Hit{a.object_id, types.TargetRef_Player{a.defending_player}, n})
 			}
 			continue // CR 510.1c: a blocked creature with no blockers left deals no damage
 		}
-		for b, i in alive {
-			lethal := max(toughness_of(b) - int(b.damage_marked), 0)
-			if has_keyword(attacker, types.Keyword_Deathtouch) do lethal = min(lethal, 1) // CR 702.2c
-			last := i == len(alive) - 1
-			give := n if last && !has_keyword(attacker, types.Keyword_Trample) else min(n, lethal)
-			if give > 0 do append(&hits, Hit{a.object_id, types.TargetRef_Object{b.id}, give})
-			n -= give
-		}
-		if n > 0 do append(&hits, Hit{a.object_id, types.TargetRef_Player{a.defending_player}, n})
+		// CR 510.1c: exactly one blocker takes it all (no choice to make).
+		append(&hits, Hit{a.object_id, types.TargetRef_Object{alive[0].id}, n})
 	}
 	// CR 510.1d: each blocker deals its damage to the attacker it blocks.
 	for blocker_id, attackers in combat.blocker_to_attacker {

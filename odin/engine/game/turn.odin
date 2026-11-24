@@ -73,7 +73,7 @@ begin_step :: proc(g: ^Game, step: types.Phase) {
 			begin_step(g, .EndCombat)
 			return
 		}
-		combat_damage(g)
+		if !combat_damage(g) do return // the attacking player is dividing damage
 		if game_over(s) do return
 	case .EndCombat:
 		// CR 511.3: at the end of combat, creatures stop being attacking and blocking creatures.

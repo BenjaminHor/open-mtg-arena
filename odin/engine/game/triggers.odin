@@ -256,6 +256,7 @@ push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerI
 	resolved.controller = controller
 	if a.effect != nil do resolved.effect = a.effect^
 	for t in targets do append(&resolved.targets, t)
+	record_target_incarnations(s, resolved)
 	g.stack_abilities[id] = a
 	src := object(s, source)
 	kind: types.StackEntryKind
@@ -281,7 +282,7 @@ resolve_ability :: proc(g: ^Game, entry: types.StackEntry, resolved: ^types.Reso
 		return
 	}
 	g.optional_accepted = false
-	run_ability(g, a, entry.controller, entry.source_id, resolved.targets[:])
+	run_ability(g, a, entry.controller, entry.source_id, resolved)
 	delete_key(&g.stack_abilities, entry.id)
 }
 
@@ -311,12 +312,13 @@ decide_optional :: proc(g: ^Game, p: types.PlayerId, accept: bool) -> bool {
 
 // Carries out an ability's effects in order, each on its target if it has one. CR 608.2b: with every target illegal
 // the ability does nothing; an illegal target alone is left unaffected.
-run_ability :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.PlayerId, source: types.ObjectId, targets: []types.TargetRef) {
+run_ability :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.PlayerId, source: types.ObjectId, resolved: ^types.ResolvedAbility) {
 	s := &g.state
 	slots := target_slots(a)
+	targets := resolved.targets[:]
 	legal := make([]bool, len(targets), context.temp_allocator)
 	any_legal := len(slots) == 0
-	for t, i in targets do if i < len(slots) && target_still_legal(s, t, slots[i], controller, source) {
+	for t, i in targets do if i < len(slots) && same_object_as_chosen(s, resolved, i) && target_still_legal(s, t, slots[i], controller, source) {
 		legal[i] = true
 		any_legal = true
 	}
