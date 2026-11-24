@@ -151,8 +151,10 @@ pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef)
 /// Its own `?` returns from it, even when an instance is made from inside a closure body elsewhere.
 fn translate_fn_with(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, pname_override: Option<&str>, extra: &[String]) -> R<Translated> {
     let saved_exit = crate::translate::TRY_EXIT.with(|t| t.replace(None));
+    let saved_pending = crate::translate::PENDING.with(|p| std::mem::take(&mut *p.borrow_mut()));
     let r = translate_fn_inner(e, owner, name, f, pname_override, extra);
     crate::translate::TRY_EXIT.with(|t| t.replace(saved_exit));
+    crate::translate::PENDING.with(|p| *p.borrow_mut() = saved_pending);
     r
 }
 
@@ -240,6 +242,18 @@ fn translate_fn_inner(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDe
     crate::translate::MENTIONS_SET.with(|m| m.set(saved_mentions));
     RET_TEXT.with(|r| r.replace(saved_ret_text));
     r?;
+    // Pending locals (translate.rs, PENDING) get the type a use gave them; one no use typed is refused.
+    let mut out = out;
+    for (ident, (_, sh)) in crate::translate::PENDING.with(|p| p.borrow().clone()) {
+        let marker = pending_marker(&ident);
+        if !out.contains(&marker) {
+            continue;
+        }
+        match sh {
+            Some(sh) => out = out.replace(&marker, &tx.e.odin(&sh)),
+            None => return Err("let of an empty collection no use types".into()),
+        }
+    }
     let code = format!("{pname} :: proc{sig} {{\n{out}}}\n");
     let touches_unlogged = crate::translate::TOUCHES_UNLOGGED.with(|t| t.get());
     Ok(Translated { name: pname, code, touches_unlogged })
@@ -507,8 +521,25 @@ impl Body<'_, '_, '_> {
                 None if control => self.infer_tail_shape(&init.expr),
                 None => self.forward_shape(&name, &init.expr, rest, tail),
             }
-            .ok_or_else(|| format!("let of an untyped value: {}", expr_kind(&init.expr)))?,
+            .map_or_else(
+                || match empty_ctor(&init.expr) {
+                    // An empty collection typed by a later use: declared with a placeholder (translate.rs, PENDING).
+                    Some(Ctor::Seq | Ctor::Map) => Ok(Shape::Unknown(crate::translate::PENDING_TAG.to_string())),
+                    _ => Err(format!("let of an untyped value: {}", expr_kind(&init.expr))),
+                },
+                Ok,
+            )?,
         };
+        if let Shape::Unknown(u) = &sh {
+            if u.starts_with(crate::translate::PENDING_TAG) {
+                let is_map = matches!(empty_ctor(&init.expr), Some(Ctor::Map));
+                let ident = self.fresh(&local_ident(&name));
+                self.line(&format!("{ident}: {}", pending_marker(&ident)));
+                crate::translate::PENDING.with(|p| p.borrow_mut().insert(ident.clone(), (is_map, None)));
+                self.tx.vars.insert(name, (ident.clone(), Shape::Unknown(format!("{}{ident}", crate::translate::PENDING_TAG))));
+                return Ok(());
+            }
+        }
         let sh = check(self.tx, sh)?;
         // A `&mut` result (`let o = state.objects.get_mut(&id).unwrap()`): a pointer, used through as `o^`, like a
         // `&mut` parameter, so writes land in place and matches through it bind pointers.
@@ -802,8 +833,27 @@ impl Body<'_, '_, '_> {
             }
             Expr::ForLoop(fl) => self.for_loop(fl),
             Expr::While(w) => {
-                if matches!(&*w.cond, Expr::Let(_)) {
-                    return Err("while let".into());
+                // `while let PAT = e { .. }`: each time round, the subject is evaluated and matched; a mismatch
+                // leaves the loop.
+                if let Expr::Let(l) = &*w.cond {
+                    let label = self.open_loop(w.label.as_ref());
+                    self.line(&format!("{label}: for {{"));
+                    self.indent += 1;
+                    let r = (|| -> R<()> {
+                        let (subj, sh, mode) = self.subject(&l.expr)?;
+                        let code = crate::pattern::compile(self.tx, &l.pat, &subj, &sh, mode)?;
+                        for st in &code.stmts {
+                            self.line(&st.replace(crate::pattern::FAIL, &format!("break {label}")));
+                        }
+                        let saved = self.bind_all(&code.binds);
+                        let r = self.block(&w.body, false);
+                        self.unbind_all(saved);
+                        r
+                    })();
+                    self.indent -= 1;
+                    self.line("}");
+                    self.loops.pop();
+                    return r;
                 }
                 // The condition is evaluated each time round, so statements it needs go inside the loop.
                 let label = self.open_loop(w.label.as_ref());
@@ -1727,6 +1777,11 @@ enum Ctor {
 }
 
 /// An empty collection constructor, by the kind of shape it makes.
+/// The placeholder type of a pending local's declaration, replaced when the function is finished.
+fn pending_marker(ident: &str) -> String {
+    format!("«pending:{ident}»")
+}
+
 fn empty_ctor(e: &Expr) -> Option<Ctor> {
     match e {
         Expr::Call(c) => {

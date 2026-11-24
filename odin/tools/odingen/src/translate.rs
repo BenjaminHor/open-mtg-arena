@@ -57,6 +57,10 @@ thread_local! {
     /// Inside an inlined closure body: where `?` goes instead of returning (the block's label, the result variable,
     /// the closure's result shape).
     pub static TRY_EXIT: std::cell::RefCell<Option<(String, String, Shape)>> = const { std::cell::RefCell::new(None) };
+    /// Locals declared empty (`let mut v = Vec::new()`) whose element type only a later use shows (`v.push(id)` with
+    /// `id` bound further on): Odin name → (a map rather than a sequence, the shape once a use fixes it). The
+    /// declaration carries a placeholder type that the finished function's text gets in its place (body.rs).
+    pub static PENDING: std::cell::RefCell<BTreeMap<String, (bool, Option<Shape>)>> = const { std::cell::RefCell::new(BTreeMap::new()) };
     /// Set when translated code reads or writes a field the Rust engine doesn't serialize (`#[serde(skip)]`).
     pub static TOUCHES_UNLOGGED: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
     /// Procedures written by hand (hand_logic.odin and the runtime): callable even when the Rust one is generic.
@@ -877,7 +881,11 @@ impl<'a, 'b> Tx<'a, 'b> {
     /// The shape of a variable reference (parameters and `self`), for comparisons.
     fn shape_of(&mut self, ex: &Expr) -> Option<Shape> {
         match ex {
-            Expr::Path(p) if p.path.segments.len() == 1 => self.vars.get(&p.path.segments[0].ident.to_string()).map(|v| v.1.clone()),
+            Expr::Path(p) if p.path.segments.len() == 1 => match self.vars.get(&p.path.segments[0].ident.to_string()).map(|v| v.1.clone()) {
+                // A pending local: its shape once a use has fixed it.
+                Some(Shape::Unknown(u)) if u.starts_with(PENDING_TAG) => PENDING.with(|m| m.borrow().get(&u[PENDING_TAG.len()..]).and_then(|e| e.1.clone())),
+                other => other,
+            },
             Expr::Unary(u) => self.shape_of(&u.expr),
             Expr::Reference(r) => self.shape_of(&r.expr),
             Expr::Paren(p) => self.shape_of(&p.expr),
@@ -2261,8 +2269,51 @@ impl<'a, 'b> Tx<'a, 'b> {
         Ok(value)
     }
 
+    /// Types a pending local (see PENDING) from a use that fixes its element type: `push`, `insert`, `contains`,
+    /// `extend` on a sequence, a two-argument `insert` on a map.
+    fn resolve_pending(&mut self, mc: &syn::ExprMethodCall) {
+        let mut recv = &*mc.receiver;
+        loop {
+            match recv {
+                Expr::Reference(r) => recv = &r.expr,
+                Expr::Paren(p) => recv = &p.expr,
+                _ => break,
+            }
+        }
+        let Expr::Path(p) = recv else { return };
+        if p.path.segments.len() != 1 {
+            return;
+        }
+        let name = p.path.segments[0].ident.to_string();
+        let Some((odin, Shape::Unknown(u))) = self.vars.get(&name).cloned() else { return };
+        let Some(key) = u.strip_prefix(PENDING_TAG).map(str::to_string) else { return };
+        let Some((is_map, None)) = PENDING.with(|m| m.borrow().get(&key).cloned()) else { return };
+        let args: Vec<&Expr> = mc.args.iter().collect();
+        let m = mc.method.to_string();
+        let found = match (is_map, m.as_str(), args.len()) {
+            (false, "push" | "push_back" | "insert" | "contains", 1) => self.shape_of(args[0]).map(|s| Shape::Vec(Box::new(s))),
+            (false, "insert", 2) => self.shape_of(args[1]).map(|s| Shape::Vec(Box::new(s))),
+            (false, "extend", 1) => self.chain_item_shape(args[0]).or_else(|| match self.shape_of(args[0]) {
+                Some(Shape::Vec(i)) => Some(*i),
+                _ => None,
+            }).map(|s| Shape::Vec(Box::new(s))),
+            (true, "insert", 2) => match (self.shape_of(args[0]), self.shape_of(args[1])) {
+                (Some(k), Some(v)) => Some(Shape::Map(Box::new(k), Box::new(v))),
+                _ => None,
+            },
+            _ => None,
+        };
+        let Some(sh) = found.filter(|s| !shape_has_unknown(s)) else { return };
+        PENDING.with(|m| m.borrow_mut().insert(key, (is_map, Some(sh.clone()))));
+        let _ = odin;
+        if let Some(v) = self.vars.get_mut(&name) {
+            v.1 = sh;
+        }
+    }
+
     /// Library methods on collections and options, by receiver shape. None when the method isn't one of them.
     fn library_method(&mut self, mc: &syn::ExprMethodCall) -> Option<R<String>> {
+        self.resolve_pending(mc);
         let m = mc.method.to_string();
         let recv_shape = self.shape_of(&mc.receiver)?;
         let args: Vec<&Expr> = mc.args.iter().collect();
@@ -2638,6 +2689,19 @@ impl<'a, 'b> Tx<'a, 'b> {
             }
             other => Some(other),
         }
+    }
+}
+
+/// The prefix of a pending local's placeholder shape (`Shape::Unknown("pending:<odin name>")`).
+pub const PENDING_TAG: &str = "pending:";
+
+fn shape_has_unknown(s: &Shape) -> bool {
+    match s {
+        Shape::Unknown(_) | Shape::Param(_) => true,
+        Shape::Option(i) | Shape::OptPtr(i, _) | Shape::Ptr(i, _) | Shape::Vec(i) | Shape::PVec(i) | Shape::Array(i, _) | Shape::MutRef(i) => shape_has_unknown(i),
+        Shape::Result(a, b) | Shape::Map(a, b) => shape_has_unknown(a) || shape_has_unknown(b),
+        Shape::Tuple(v) | Shape::Named(_, v) => v.iter().any(shape_has_unknown),
+        _ => false,
     }
 }
 
