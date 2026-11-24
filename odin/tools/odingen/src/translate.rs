@@ -2529,6 +2529,17 @@ impl<'a, 'b> Tx<'a, 'b> {
                     let v = self.expr(args[0], i)?;
                     format!("vec_contains({recv}[:], {v})")
                 }
+                // Elements Odin's `==` can't compare: Rust's derived PartialEq, item by item.
+                ("contains", Shape::Vec(i), 1) if deref.is_empty() && !self.comparable(&i.clone()) => {
+                    let i = (**i).clone();
+                    let v = self.expr(args[0], &i)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("cv{n}_ := {v}"));
+                    let eq = self.key_eq(&i, &format!("ce{n}_"), &format!("cv{n}_"))?;
+                    self.pre.push(format!("cr{n}_ := false"));
+                    self.pre.push(format!("for ce{n}_ in {} {{ if {eq} {{ cr{n}_ = true; break }} }}", crate::body::header_safe(&recv)));
+                    format!("cr{n}_")
+                }
                 // Through a pointer that may be nil (an empty Vec behind a Box): nil holds nothing.
                 ("contains", Shape::Vec(i), 1) if self.comparable(&i.clone()) => {
                     let v = self.expr(args[0], i)?;
@@ -2751,6 +2762,14 @@ impl<'a, 'b> Tx<'a, 'b> {
                     self.pre.push(format!("for p{n}_, i{n}_ in {recv} {{ if {eq} {{ old{n}_ = p{n}_._1; ordered_remove(&{recv}, i{n}_); break }} }}"));
                     format!("old{n}_")
                 }
+                ("contains_key", Shape::Map(k, _), 1) if self.e.simple_key(k) => {
+                    let key = self.expr(args[0], k)?;
+                    if deref.is_empty() {
+                        format!("(({key}) in {recv})")
+                    } else {
+                        format!("({recv} != nil && ({key}) in {recv}^)")
+                    }
+                }
                 // A map's insert returns the value it replaced.
                 ("insert", Shape::Map(k, v), 2) if deref.is_empty() => {
                     let (key, val) = (self.expr(args[0], k)?, self.expr(args[1], v)?);
@@ -2843,7 +2862,12 @@ impl<'a, 'b> Tx<'a, 'b> {
                 // An iterator over a Vec, taken whole: the Vec (translated logic materializes iterators).
                 ("iter" | "into_iter", Shape::Vec(_), 0) if deref.is_empty() => recv,
                 ("as_deref" | "as_ref", Shape::OptPtr(..), 0) => recv,
-                ("extend", Shape::Vec(i), 1) if deref.is_empty() && self.set_kind(&mc.receiver) == Some(SetKind::NotSet) => {
+                // A Vec's kind unseen in a function that names no set type can't be a set.
+                ("extend", Shape::Vec(i), 1)
+                    if deref.is_empty()
+                        && (self.set_kind(&mc.receiver) == Some(SetKind::NotSet)
+                            || (self.set_kind(&mc.receiver).is_none() && !MENTIONS_SET.with(|m| m.get()))) =>
+                {
                     let items = self.expr(args[0], &Shape::Vec(i.clone()))?;
                     let n = self.next_temp();
                     self.pre.push(format!("x{n}_ := {items}"));

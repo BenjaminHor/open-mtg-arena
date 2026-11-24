@@ -2699,6 +2699,13 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   quieter run: no other work running, after PR #78's reviews; alternating base and head runs stay for close calls.
   Done: the median of five idle runs.)
 
+## Working with the owner
+
+- Owner (2026-11-24): the running progress messages had no value to them ("probably a lot of value to you, but
+  none to me"). Report only what matters to the owner, in plain terms and briefly: milestones reached (a recorded
+  game replaying in Odin, a PR merged, performance numbers), decisions or approvals needed, and problems that
+  change the plan. Keep translator internals, percentages and per-fix detail in this file and the commits.
+
 ## Known issues
 - (2026-11-24, Odin port, translator) The model holds sets as Vecs, so set operations were translated as Vec ones:
   `set.remove(&id)` became `Vec::remove(index)` (the vector check caught a crash; a small id would have removed the
