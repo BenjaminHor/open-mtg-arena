@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { BuildBadge } from "./BuildBadge";
 import { activeNavKey, NAV_ITEMS } from "./navItems";
 import { SparkleIcon } from "./SparkleIcon";
+import { publicUrl } from "../../config/publicUrl";
 
 /**
  * Desktop navigation rail (≥820px). Logo → the five primary destinations, and a
@@ -39,7 +40,7 @@ export function Rail({ onSettings, onWhatsNew, hasUnread }: RailProps) {
         aria-label={t("nav.home")}
       >
         <img
-          src="/logo_only.webp"
+          src={publicUrl("logo_only.webp")}
           alt="phase.rs"
           className="w-10 [@media(max-height:540px)]:w-8"
         />
@@ -94,7 +95,7 @@ export function Rail({ onSettings, onWhatsNew, hasUnread }: RailProps) {
           onClick={(event) => onSettings(event.currentTarget)}
           className="flex w-full flex-col items-center gap-1 rounded-[9px] border border-transparent px-1 py-2 text-fg-meta transition-colors hover:border-white/[0.08] hover:bg-white/[0.035] hover:text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/35 [@media(max-height:540px)]:py-1"
         >
-          <img src="/icons/sections/settings.png" alt="" aria-hidden="true" draggable={false} className="h-6 w-6 opacity-50" />
+          <img src={publicUrl("icons/sections/settings.png")} alt="" aria-hidden="true" draggable={false} className="h-6 w-6 opacity-50" />
           <span className="text-[10.5px] font-semibold tracking-[0.02em]">{t("nav.settings")}</span>
         </button>
 

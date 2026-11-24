@@ -4,6 +4,8 @@
  * so callers carry the active/idle state via opacity (the ember tick + label
  * supply the color cue). For larger, color-tintable contexts prefer an SVG glyph.
  */
+import { publicUrl } from "../../config/publicUrl";
+
 interface NavIconProps {
   className?: string;
 }
@@ -12,7 +14,7 @@ function sectionIcon(file: string, label: string) {
   function SectionIcon({ className }: NavIconProps) {
     return (
       <img
-        src={`/icons/sections/${file}.png`}
+        src={publicUrl(`icons/sections/${file}.png`)}
         alt=""
         aria-hidden="true"
         draggable={false}

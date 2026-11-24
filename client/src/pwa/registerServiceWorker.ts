@@ -12,6 +12,7 @@ import {
   setUpdateError,
   setUpdateStatus,
 } from "./updateStatus";
+import { publicUrl } from "../config/publicUrl";
 
 const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000;
 const ACTIVATION_TIMEOUT_MS = 20 * 1000;
@@ -551,7 +552,7 @@ export async function checkAppShellReadiness(): Promise<AppShellReadiness> {
 
   const { candidate, registration, active } = initial;
   const stale = () => currentReadinessGate(candidate, registration, active);
-  const markerUrl = `/offline-shell-${__BUILD_HASH__}.json?phase-precache-probe=${encodeURIComponent(markerProbeNonce())}`;
+  const markerUrl = `${publicUrl(`offline-shell-${__BUILD_HASH__}.json`)}?phase-precache-probe=${encodeURIComponent(markerProbeNonce())}`;
 
   try {
     const response = await fetch(markerUrl, {

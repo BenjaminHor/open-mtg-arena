@@ -1,4 +1,5 @@
 import type { FeedSource } from "../types/feed";
+import { publicUrl } from "../config/publicUrl";
 
 /** The deck feeds the app ships with. Each is a static file under
  *  `public/feeds/`, so it works offline; the app subscribes to every one at
@@ -11,6 +12,6 @@ export const FEED_REGISTRY: FeedSource[] = [
     icon: "S",
     format: "standard",
     type: "bundled",
-    url: "/feeds/starter-decks.json",
+    url: publicUrl("feeds/starter-decks.json"),
   },
 ];

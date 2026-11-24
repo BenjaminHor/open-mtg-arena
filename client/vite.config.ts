@@ -115,11 +115,18 @@ function workspaceVersion(): string {
 // uploading an additional non-hashed `card-data.json` to R2 would be dead
 // weight since no frontend code fetches it. Local dev falls back to the
 // public/ copy served at `/card-data.json`.
+/**
+ * The site's base path: "/" locally; "/open-mtg-arena/" for GitHub Pages, which serves the app under the repository's
+ * name (BASE_PATH, set by .github/workflows/pages.yml). Public files and data files resolve under it.
+ */
+const appBase = process.env.BASE_PATH || "/";
+
 function dataFileDefines(buildHash: string): Record<string, string> {
   const manifest = JSON.parse(
     readFileSync(path.resolve(__dirname, "../data-files.json"), "utf-8"),
   ) as string[];
-  const base = process.env.DATA_BASE_URL || "";
+  // Data files live with the app, under its base path, unless DATA_BASE_URL points elsewhere.
+  const base = process.env.DATA_BASE_URL || appBase.replace(/\/$/, "");
   const defines: Record<string, string> = {
     __APP_VERSION__: JSON.stringify(workspaceVersion()),
     __BUILD_HASH__: JSON.stringify(buildHash),
@@ -141,7 +148,7 @@ function dataFileDefines(buildHash: string): Record<string, string> {
     // True only for a preview deploy (PREVIEW_BUILD=true). Gates showing the
     // commit hash next to the version in the UI.
     __IS_PREVIEW_BUILD__: JSON.stringify(process.env.PREVIEW_BUILD === "true"),
-    __CARD_DATA_URL__: JSON.stringify(process.env.CARD_DATA_URL || "/card-data.json"),
+    __CARD_DATA_URL__: JSON.stringify(process.env.CARD_DATA_URL || `${appBase}card-data.json`),
     // Per-locale content-i18n sidecar URL template ({lng} replaced at runtime).
     // The sidecars are listed in data-files.json, so on deploy they are uploaded
     // to `${DATA_BASE_URL}/card-data.<lng>.json` and stripped from the Pages
@@ -207,6 +214,7 @@ export default defineConfig(() => {
   const offlineShellMarkerFilename = `offline-shell-${buildHash}.json`;
 
   return {
+  base: appBase,
   resolve: {
     alias: {
       "@wasm/engine": path.resolve(__dirname, "src/wasm/engine_wasm"),
@@ -237,7 +245,7 @@ export default defineConfig(() => {
       manifest: false, // Use public/manifest.json
       includeAssets: ["**/*.mp3", "**/*.m4a"],
       workbox: {
-        additionalManifestEntries: [{ url: `/${offlineShellMarkerFilename}`, revision: buildHash }],
+        additionalManifestEntries: [{ url: `${appBase}${offlineShellMarkerFilename}`, revision: buildHash }],
         ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^phase-precache-probe$/],
         maximumFileSizeToCacheInBytes: 15 * 1024 * 1024,
         // Workbox's default globPatterns (`**/*.{js,wasm,css,html}`) omit fonts,
@@ -424,7 +432,7 @@ export default defineConfig(() => {
             // bucket by the browser backend. The service worker only reads it;
             // installation owns every write and never revalidates an image.
             urlPattern: ({ sameOrigin, url }) =>
-              sameOrigin && /^\/__visual-packs\/sha256\/[0-9a-f]{64}\.(jpg|png|webp|svg)$/.test(url.pathname),
+              sameOrigin && /\/__visual-packs\/sha256\/[0-9a-f]{64}\.(jpg|png|webp|svg)$/.test(url.pathname),
             handler: "CacheOnly",
             options: {
               cacheName: "phase-visual-pack-scryfall-images-v1",
