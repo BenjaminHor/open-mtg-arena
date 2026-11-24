@@ -83,3 +83,16 @@ pvec_clone :: proc(v: PVec($T)) -> PVec(T) {
 	}
 	return out
 }
+
+// Removes and returns the last element (Rust's `pop_back`), copying the last chunk first if it is shared.
+pvec_pop :: proc(v: ^PVec($T), clone: proc(x: T) -> T) -> T {
+	c := pvec_own_chunk(v, len(v.chunks) - 1, clone)
+	c.n -= 1
+	x := c.items[c.n]
+	v.len -= 1
+	if c.n == 0 {
+		shared_count(c)^ -= 1
+		pop(&v.chunks)
+	}
+	return x
+}

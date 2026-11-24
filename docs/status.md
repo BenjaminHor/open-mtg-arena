@@ -2607,6 +2607,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions
+- (2026-11-24, D-187) The card data comes from the Rust card-text parser (`./scripts/gen-card-data.sh`). After the
+  switch Rust stays as a build step for card data, not only as a test reference, unless an Odin parser becomes part
+  of the plan. Tell the owner (pending).
 
 - (2026-11-24, after the Odin port was paused) The owner on why the port started: the frontend client would have
   taken longer than they liked, so they adopted phase.rs to borrow its frontend and strip what they don't want; Rust
@@ -2750,9 +2753,19 @@ Plan (keep current):
 Also in flight: the dev bundle (scripts/fetch-dev-bundle.sh; the Pages deploy publishes it).
 
 Progress:
-- Step 1: the capture hook compiles (`cargo check -p phase-engine --features test-support --lib`, 2026-11-24). Next:
-  a small filtered capture run first (bytes per test, one file per test at the thread setting used, files produced vs
-  tests run), then the full corpus, run on its own.
+- Step 1: `scripts/capture-rust-tests.sh <dir> [filter]` captures the integration tests (one gzip JSONL file per
+  test, each step: starting state, the acting seat, action, accepted or not, result state). A slice of 8 tests: one
+  file per test at the default thread count, ~120 KB per test compressed (~25x). `odin/engine-wasm/run-captured.mjs
+  <rust|odin> <dir>` replays each step through the client's interface (restore, submit for the seat, export) and
+  compares `projection.mjs`'s game-relevant view (cards by name, not id; libraries as counts and contents, not order;
+  no timestamps). Rust against its own capture: 7/8 tests, 71/75 steps; the miss is a state Rust itself refuses to
+  restore ("current-turn ZoneChanged record has no ledger occurrence"), so such tests are fixtures to exclude.
+- Step 2/3 start: `odin/engine/game/setup.odin` starts a game from the CR (103: libraries shuffled with the seeded
+  generator, starting life, seven-card hands, mulligan decisions in turn order); `game_calls.odin` serves
+  `initialize_game` (decks checked against the format first, as Rust does), `get_game_state`,
+  `export_game_state_json` and `restore_game_state`. The card database is now indexed on load and each card decoded
+  on first use: load ~4 s instead of ~15, memory ~0.5 GB instead of 1.5 (the eager decode also overflowed 2 GB under
+  the comparison's 40,000 calls).
 - Step 2 (2026-11-24): `odin/engine-wasm/` serves the match setup page. Start Match enables in the app on the Odin
   engine (`cd client && ENGINE=odin pnpm dev` after `scripts/build-odin-engine.sh dev`, ~5 s). Real: the card
   database, the fixed tables (format registry, LLM catalog, bracket table, Horde decks, per-format deck supply and

@@ -2972,3 +2972,9 @@ reference (owner, 2026-11-24)** · 2026-11-24 · accepted
   language-neutral test files (starting state, actions, the game-relevant result), and the Odin engine must pass
   them. Comparisons look at what matters in the game, not Rust's internal bookkeeping.
 - The card pool that matters: Scryfall `game:arena in:paper` (15,772 cards; the Rust engine plays 14,013).
+- State model (2026-11-24): the Odin engine holds the game in the generated data model (`odin/engine/types`), the
+  client's wire form, so the client, the captured tests' states and the parsed cards need no mapping in or out. The
+  rules logic is new, written from the CR; the types only give it its shape. Checked: the Rust engine's state after
+  `initialize_game` decodes and re-encodes equal (3 ms and 2 ms natively), apart from `wire_projection`, which only
+  the export adds, and the fields the engine derives (`WRITE_ONLY_FIELDS`), which the Odin engine computes as it
+  grows. Game state gets its own allocator, as the card database has, outliving each call's scratch arena.

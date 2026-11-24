@@ -84,10 +84,11 @@ const replacer = (_k, v) => (typeof v === "bigint" ? v.toString() : v);
 function call(fn, args) {
   if (!wasm) throw new Error("engine not initialized");
   const bytes = enc.encode(JSON.stringify({ fn, args }, replacer));
-  const ptr = wasm.alloc_bytes(bytes.length);
+  // Addresses above 2 GB come back negative as i32; read them unsigned.
+  const ptr = wasm.alloc_bytes(bytes.length) >>> 0;
   new Uint8Array(wasm.memory.buffer, ptr, bytes.length).set(bytes);
   const n = wasm.call(ptr, bytes.length);
-  const text = dec.decode(new Uint8Array(wasm.memory.buffer, wasm.result_ptr(), n));
+  const text = dec.decode(new Uint8Array(wasm.memory.buffer, wasm.result_ptr() >>> 0, n >>> 0));
   const reply = JSON.parse(text);
   if (reply.err !== undefined) {
     lastPanic = reply.err;

@@ -6,11 +6,6 @@ package engine_odin
 import "base:runtime"
 import "core:strings"
 import json "../engine/json"
-import types "../engine/types"
-
-// The card database, by lowercase name (as the Rust engine keys it).
-cards: map[string]types.CardExportEntry
-cards_arena: runtime.Arena
 
 result: [dynamic]byte
 
@@ -52,6 +47,8 @@ call :: proc "c" (ptr: [^]byte, n: int) -> int {
 	clear(&result)
 	append(&result, ..transmute([]byte)strings.to_string(b))
 	strings.builder_destroy(&b)
+	// The temporary allocator is per call too.
+	free_all(context.temp_allocator)
 	return len(result)
 }
 
@@ -103,6 +100,14 @@ dispatch :: proc(b: ^strings.Builder, fn: string, args: []json.Value) {
 		reply_ok_value(b, json.get_or_null(arg(args, 0), "sideboard_policy"))
 	case "evaluate_deck_compatibility_js":
 		evaluate_deck_compatibility(b, arg(args, 0))
+	case "initialize_game":
+		initialize_game(b, args)
+	case "get_game_state":
+		get_game_state(b)
+	case "export_game_state_json":
+		export_game_state_json(b)
+	case "restore_game_state":
+		restore_game_state(b, args)
 	case "estimate_bracket_for_deck":
 		// No bracket estimate yet: the Rust engine also answers null when it has none.
 		reply_ok_raw(b, "null")
@@ -128,30 +133,5 @@ load_combo_table :: proc(b: ^strings.Builder, args: []json.Value) {
 	entries := list.items
 	count := strings.builder_make(context.temp_allocator)
 	strings.write_int(&count, len(entries))
-	reply_ok_raw(b, strings.to_string(count))
-}
-
-// load_card_database(json_str): the card data the client fetched, kept for the engine's lifetime.
-load_card_database :: proc(b: ^strings.Builder, args: []json.Value) {
-	if len(args) < 1 || args[0].kind != .String {
-		reply_err(b, "load_card_database: expected the card data as a string")
-		return
-	}
-	// The tree and the decoded cards live in their own arena, replaced on a reload.
-	runtime.arena_destroy(&cards_arena)
-	context.allocator = runtime.arena_allocator(&cards_arena)
-	data := transmute([]byte)strings.clone(args[0].text)
-	root, perr := json.parse(data)
-	if perr != nil || root.kind != .Object {
-		reply_err(b, "Failed to parse card database")
-		return
-	}
-	cards = make(map[string]types.CardExportEntry, len(root.members))
-	for m in root.members {
-		entry: types.CardExportEntry
-		if types.decode_CardExportEntry(m.value, &entry) do cards[m.key] = entry
-	}
-	count := strings.builder_make(context.temp_allocator)
-	strings.write_int(&count, len(cards))
 	reply_ok_raw(b, strings.to_string(count))
 }

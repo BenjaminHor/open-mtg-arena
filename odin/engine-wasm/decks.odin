@@ -57,12 +57,9 @@ Deck_Request :: struct {
 // "Front // Back" spelling names its front face.
 find_card :: proc(name: string) -> (^types.CardExportEntry, bool) {
 	key := strings.to_lower(name, context.temp_allocator)
-	if e, ok := &cards[key]; ok do return e, true
-	if i := strings.index(key, " // "); i >= 0 {
-		if e, ok := &cards[key[:i]]; ok do return e, true
-	}
+	if e, ok := card_by_key(key); ok do return e, true
 	if i := strings.index(key, "//"); i >= 0 {
-		if e, ok := &cards[strings.trim_space(key[:i])]; ok do return e, true
+		if e, ok := card_by_key(strings.trim_space(key[:i])); ok do return e, true
 	}
 	return nil, false
 }
@@ -334,6 +331,16 @@ check_selected :: proc(r: Deck_Request, unknown: []string, bo3_ready: bool) -> (
 	return c, true
 }
 
+// A deck's verdict under a format, for the game-creation check: the deck request as the client sends it (main deck,
+// sideboard, commanders), or no verdict for a format the Odin engine doesn't check yet.
+deck_verdict :: proc(request: json.Value, format: string) -> (Check, bool) {
+	r := decode_request(request)
+	r.selected_format = format
+	unknown_list := make([dynamic]string)
+	for name in deck_cards(r) do if _, ok := find_card(name); !ok do append(&unknown_list, name)
+	return check_selected(r, sorted_set(unknown_list), len(r.sideboard) > 0 && len(r.commander) == 0)
+}
+
 @(private = "file")
 write_check :: proc(b: ^strings.Builder, c: Check) {
 	fmt.sbprintf(b, `{{"compatible":%v,"reasons":`, c.compatible)
@@ -360,7 +367,7 @@ COLOR_LETTERS := [types.ManaColor]string {
 
 // evaluate_deck_compatibility_js(request): the deck's checks, shaped as the Rust engine's DeckCompatibilityResult.
 evaluate_deck_compatibility :: proc(b: ^strings.Builder, request: json.Value) {
-	if len(cards) == 0 {
+	if !card_db_loaded() {
 		reply_err(b, "Card database not loaded. Call load_card_database first.")
 		return
 	}
