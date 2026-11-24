@@ -2874,3 +2874,12 @@ owner's answer to the D-089 open question, option (a))
      stand-in or stay in shadow mode.
 - Not yet answered: how often the owner play-checks a slice. Default until then: whenever a slice changes what a
   player can see or play.
+
+**D-180: The goal: no Rust left in the engine, near-zero regressions (owner, 2026-11-24)** · 2026-11-24 · accepted
+- The owner set the session goal: "continue with the Odin port - the goal is to remove all rust code from the engine
+  and replace it with Odin with near zero regressions in functionality and performance".
+- So the port runs to completion, not just its first milestones: the engine, its AST types and the AI end up in Odin,
+  the Rust crates are removed, and every step is held to the recordings (functionality) and to measured speed against
+  the Rust engine (performance: game actions, AI move time, card-data load, wasm size).
+- D-179's "the parser stays Rust" was about order: the card-text parser is a build tool, not the engine, and stays
+  Rust until the engine is done; whether it is ported too is decided then.
