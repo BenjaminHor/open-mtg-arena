@@ -1077,7 +1077,7 @@ impl<'a, 'b> Tx<'a, 'b> {
     /// A call to a translated engine function: arguments shaped by its parameters, `&mut` ones by pointer.
     pub fn call_with_sig(&mut self, name: &str, f: &FnDef, recv: Option<String>, args: &[&Expr]) -> R<String> {
         // A generic function is callable only written by hand, its parameters typed by the call's arguments.
-        let hand_generic = !f.sig.generics.params.is_empty();
+        let hand_generic = crate::body::generic_kind(&f.sig).is_some();
         if hand_generic && !HAND.with(|h| h.borrow().contains(name)) {
             return Err(format!("call to a generic function: {name}"));
         }

@@ -25,6 +25,10 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     align.patch` against dev-2026-11a (to offer upstream). Now: type check 6.6 s, debug build 9.7 s, `-o:speed`
     build 44 s (LLVM optimization 37 s). Generated code also calls procedures directly (no overload groups) and
     generic types are monomorphized.
+    **Build times with the translated logic (2026-11-24):** the translation (~460k lines with the test harness) had
+    pushed the type check to 96 s; a second compiler fix (memoizing named types too) and `-no-escape-analysis` for
+    development builds bring it to 1.0 s, a debug build to 11 s, `-o:speed` to 225 s (LLVM). docs/odin-port.md,
+    "Toolchain note".
   - Game-state model sized (2026-11-24): roots GameState, GameAction, WaitingFor, GameEvent, ReplayLog (+ card data)
     reach 1,410 types, 1,310 of them serialized (the rest are runtime caches behind `#[serde(skip)]`, type only). odingen
     reads GameState through its `declare_game_state!` macro. Left to write by hand before it compiles: 23 codecs

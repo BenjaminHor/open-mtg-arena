@@ -210,7 +210,7 @@ fn is_test(attrs: &[syn::Attribute]) -> bool {
 /// Splices for one function: the wrapper before the item, and `__orig_` on its name.
 #[allow(clippy::too_many_arguments)]
 fn wrap(owner: Option<&str>, attrs: &[syn::Attribute], vis: &str, sig: &Signature, span: proc_macro2::Span, text: &str, rel: &Path, edits: &mut Vec<(usize, usize, String)>, only: Option<&std::collections::BTreeSet<String>>) {
-    if !sig.generics.params.is_empty()
+    if crate::body::generic_kind(sig).is_some()
         || sig.constness.is_some()
         || sig.asyncness.is_some()
         || sig.unsafety.is_some()
@@ -296,7 +296,7 @@ fn wrap(owner: Option<&str>, attrs: &[syn::Attribute], vis: &str, sig: &Signatur
         format!("__orig_{name}({})", pass.join(", "))
     };
     let wrapper = format!(
-        "{cfgs}#[allow(unused_mut, clippy::all)]\n{vis} fn {name}({params}){ret} {{\n\
+        "{cfgs}#[allow(unused_mut, clippy::all)]\n{vis} fn {name}{lifetimes}({params}){ret} {where_}{{\n\
          \x20   #[allow(unused_imports)] use crate::vector_log::{{ViaNothing as _, ViaSerde as _}};\n\
          \x20   macro_rules! vj {{ ($e:expr) => {{ (&crate::vector_log::W(&$e)).vector_json() }}; }}\n\
          \x20   static __VC: ::std::sync::atomic::AtomicU32 = ::std::sync::atomic::AtomicU32::new(0);\n\
@@ -306,6 +306,8 @@ fn wrap(owner: Option<&str>, attrs: &[syn::Attribute], vis: &str, sig: &Signatur
          \x20   crate::vector_log::end({proc:?}, {file:?}, __va, || (vj!(__vr), vec![{after}]));\n\
          \x20   __vr\n}}\n",
         params = params.join(", "),
+        lifetimes = if sig.generics.params.is_empty() { String::new() } else { sig.generics.to_token_stream().to_string() },
+        where_ = sig.generics.where_clause.as_ref().map(|w| w.to_token_stream().to_string() + " ").unwrap_or_default(),
         before = before.join(", "),
         after = after.join(", "),
     );

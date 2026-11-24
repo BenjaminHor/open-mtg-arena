@@ -28,5 +28,5 @@ mkdir -p "$WORK/rec"
 VECTOR_LOG="$WORK/vec.jsonl" "$WORK/target/tool/record-games" client/public/card-data.json "$WORK/rec" "$MATCHUP" "$SEED" 1 "$STEPS"
 
 # 4. Replay it against the translation.
-"$ODIN" build odin/tools/vector_check -collection:eng="$WORK/tx/engine" -define:VECTOR=true -out:"$WORK/vector_check"
+"$ODIN" build odin/tools/vector_check -collection:eng="$WORK/tx/engine" -define:VECTOR=true -no-escape-analysis -out:"$WORK/vector_check"
 "$WORK/vector_check" "$WORK/vec.jsonl"

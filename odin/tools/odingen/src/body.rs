@@ -70,7 +70,7 @@ fn signature(tx: &mut Tx, owner: Option<&str>, f: &FnDef) -> R<(String, Shape, V
 /// A stand-in for a function not translated yet, with its real signature, so translated callers type-check;
 /// calling it stops the program, naming the function.
 pub fn stub_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, why: &str) -> R<Translated> {
-    if !f.sig.generics.params.is_empty() || owner.and_then(|o| e.def(o)).is_some_and(|d| !d.generics.is_empty()) {
+    if generic_kind(&f.sig).is_some() || owner.and_then(|o| e.def(o)).is_some_and(|d| !d.generics.is_empty()) {
         return Err("generic function".into());
     }
     let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: owner.map(str::to_string), depth: 0, calls: true, pre: Vec::new(), fn_ret: Shape::Unit, temps: 0 };
@@ -127,8 +127,9 @@ pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef)
         return Err("procedure name shared by two functions".into());
     }
     crate::translate::CURRENT_FILE.with(|c| *c.borrow_mut() = Some(f.file.clone()));
-    if !f.sig.generics.params.is_empty() {
-        return Err("generic function".into());
+    // Lifetime parameters don't exist in Odin; type and const parameters need monomorphizing (not done yet).
+    if let Some(k) = generic_kind(&f.sig) {
+        return Err(format!("generic function: {k}"));
     }
     if owner.and_then(|o| e.def(o)).is_some_and(|d| !d.generics.is_empty()) {
         return Err("method of a generic type".into());
@@ -1695,4 +1696,25 @@ pub fn shape_kind(s: &Shape) -> String {
         Shape::Str => "Str".into(),
         other => format!("{other:?}").chars().take(20).collect(),
     }
+}
+
+/// What makes a signature generic beyond lifetimes: None when only lifetimes.
+pub fn generic_kind(sig: &syn::Signature) -> Option<&'static str> {
+    use quote::ToTokens;
+    let mut kind = None;
+    for p in &sig.generics.params {
+        match p {
+            syn::GenericParam::Lifetime(_) => {}
+            syn::GenericParam::Const(_) => kind = Some("const parameter"),
+            syn::GenericParam::Type(t) => {
+                let b = t.bounds.to_token_stream().to_string();
+                let w = sig.generics.where_clause.to_token_stream().to_string();
+                kind = Some(if b.contains("Fn") || w.contains("Fn") { "closure parameter" } else { "type parameter" });
+            }
+        }
+    }
+    if kind.is_none() && sig.inputs.iter().any(|i| matches!(i, FnArg::Typed(t) if t.ty.to_token_stream().to_string().contains("impl "))) {
+        kind = Some("impl Trait argument");
+    }
+    kind
 }
