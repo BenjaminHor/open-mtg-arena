@@ -4,11 +4,12 @@
 // every one of its steps does. Run it against the Rust engine to check the harness itself (it must pass everything),
 // and against the Odin engine to measure it.
 // A recording with a line that isn't JSON (a state the capture couldn't serialize) is counted as unreadable and left
-// out. Options: --pass-list <file> writes the passing tests' file names (run on Rust, these are the usable fixtures);
-// --only <file> runs just the files listed there; --cards <file> writes, per test, the names of the cards in its
-// recorded states (to count a card as validated when its tests pass).
-// Usage: node odin/engine-wasm/run-captured.mjs <rust|odin> <capture dir> [--verbose] [--pass-list f] [--only f] [--cards f]
-import { readFileSync, readdirSync, writeFileSync } from "node:fs";
+// out. Options: --results <file> appends one line per test as it finishes ("<file>\t<pass|fail|unreadable>\t<first
+// difference>\t<card names, separated by |>"), and a rerun with the same file skips the tests already in it, so a
+// long run can be resumed; --only <file> runs just the files listed there. Run on Rust, the passing tests are the
+// usable fixtures; the card names map tests to cards, to count a card as validated when its tests pass.
+// Usage: node odin/engine-wasm/run-captured.mjs <rust|odin> <capture dir> [--verbose] [--results f] [--only f]
+import { appendFileSync, existsSync, readFileSync, readdirSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { project, firstDifference } from "./projection.mjs";
 
@@ -19,7 +20,7 @@ if (!["rust", "odin"].includes(which) || !dir) {
 }
 const verbose = flags.includes("--verbose");
 const option = (name) => (flags.indexOf(name) >= 0 ? flags[flags.indexOf(name) + 1] : null);
-const passListFile = option("--pass-list"), onlyFile = option("--only"), cardsFile = option("--cards");
+const resultsFile = option("--results"), onlyFile = option("--only");
 const root = new URL("../../", import.meta.url).pathname;
 const [glueDir, wasmFile] = which === "rust" ? ["wasm", "engine_wasm_bg.wasm"] : ["wasm-odin", "engine_odin.wasm"];
 const engine = await import(`${root}client/src/${glueDir}/engine_wasm.js`);
@@ -44,10 +45,15 @@ if (onlyFile) {
   const only = new Set(readFileSync(onlyFile, "utf8").split("\n").filter(Boolean));
   files = files.filter((f) => only.has(f));
 }
+if (resultsFile && existsSync(resultsFile)) {
+  const done = new Set(readFileSync(resultsFile, "utf8").split("\n").map((l) => l.split("\t")[0]));
+  files = files.filter((f) => !done.has(f));
+}
+const record = (file, status, why, names) =>
+  resultsFile && appendFileSync(resultsFile, `${file}\t${status}\t${why ?? ""}\t${[...(names ?? [])].join("|")}\n`);
 const read = (f) => (f.endsWith(".gz") ? gunzipSync(readFileSync(f)).toString("utf8") : readFileSync(f, "utf8"));
 let passed = 0, steps = 0, stepsPassed = 0, unreadable = 0, done = 0;
 const failures = new Map(); // first difference path -> count
-const passing = [], cards = {};
 for (const file of files) {
   if (++done % 500 === 0) console.error(`${done}/${files.length}`);
   let prev = null, ok = true, firstFail = null;
@@ -56,13 +62,11 @@ for (const file of files) {
     parsed = read(`${dir}/${file}`).split("\n").filter(Boolean).map((line) => JSON.parse(line));
   } catch {
     unreadable++;
+    record(file, "unreadable");
     continue;
   }
-  if (cardsFile) {
-    const names = new Set();
-    for (const step of parsed) for (const o of Object.values(step.pre?.objects ?? {})) if (o && !o.is_token && o.name) names.add(o.name);
-    cards[file] = [...names];
-  }
+  const names = new Set();
+  for (const step of parsed) for (const o of Object.values(step.pre?.objects ?? {})) if (o && !o.is_token && o.name) names.add(o.name);
   for (const [i, step] of parsed.entries()) {
     const pre = step.pre ?? prev;
     prev = step.post;
@@ -82,9 +86,9 @@ for (const file of files) {
       firstFail ??= { step: i, ...why };
     } else stepsPassed++;
   }
+  record(file, ok ? "pass" : "fail", ok ? "" : `step ${firstFail.step} ${firstFail.path}`, names);
   if (ok) {
     passed++;
-    passing.push(file);
   } else {
     const key = firstFail.path.replace(/\.\d+/g, ".N");
     failures.set(key, (failures.get(key) ?? 0) + 1);
@@ -92,6 +96,5 @@ for (const file of files) {
   }
 }
 console.log(`${which}: ${passed}/${files.length - unreadable} tests pass (${stepsPassed}/${steps} steps); ${unreadable} unreadable recordings left out`);
-if (passListFile) writeFileSync(passListFile, passing.join("\n") + "\n");
-if (cardsFile) writeFileSync(cardsFile, JSON.stringify(cards));
+
 for (const [k, n] of [...failures].sort((a, b) => b[1] - a[1]).slice(0, 15)) console.log(`  ${n}  first difference at ${k}`);
