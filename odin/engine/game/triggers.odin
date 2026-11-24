@@ -526,19 +526,13 @@ resolve_ability :: proc(g: ^Game, entry: types.StackEntry, resolved: ^types.Reso
 		}
 	}
 	if resolved == nil do return
-	if resolved.optional && !g.optional_accepted {
-		g.optional_entry = entry
-		s := &g.state
-		s.priority_player = entry.controller
-		s.waiting_for = types.WaitingFor_OptionalEffectChoice{player = entry.controller, source_id = entry.source_id, description = resolved.description}
-		return
-	}
-	g.optional_accepted = false
+	// A "may" ability asks its controller as that instruction is carried out (CR 603.5, 608.2d).
 	start_resolution(g, resolved, entry.controller, entry.source_id, stack_id = entry.id)
 }
 
 // CR 603.5: the controller decides whether to carry out a "may" ability.
 decide_optional :: proc(g: ^Game, p: types.PlayerId, accept: bool) -> bool {
+	if g.resolution.active && g.resolution.asked != nil do return answer_optional(g, p, accept)
 	s := &g.state
 	entry := g.optional_entry
 	if entry.controller != p do return false

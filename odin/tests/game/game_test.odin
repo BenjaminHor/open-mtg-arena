@@ -1108,3 +1108,37 @@ whenever_you_attack :: proc(t: ^testing.T) {
 	testing.expect(t, bears.power.? == 3 && game.keyword_in(bears, types.Keyword_Menace{}), "+1/+0 and menace")
 	_ = berserker
 }
+
+@(test)
+you_may_then_if_you_do :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 608.2d: "you may" is chosen as the instruction is carried out; CR 608.2c: "if you do" follows the
+	// choice. Common Iguana: "When this enters, you may discard a card. If you do, draw a card."
+	run :: proc(t: ^testing.T, accept: bool) -> (library_drawn: int, discarded: int) {
+		g := new_game()
+		for _ in 0 ..< 2 do add(t, g, "Mountain", 0, .Battlefield)
+		iguana := add(t, g, "Common Iguana", 0, .Hand)
+		spare := add(t, g, "Forest", 0, .Hand)
+		pl := game.player(&g.state, 0)
+		library := types.pvec_len(pl.library)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = iguana.id}))
+		steps: for i := 0; i < 12; i += 1 {
+			#partial switch w in g.state.waiting_for {
+			case types.WaitingFor_OptionalEffectChoice:
+				testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalEffect{accept = accept}))
+			case types.WaitingFor_DiscardChoice:
+				one: [dynamic]types.ObjectId
+				append(&one, spare.id)
+				testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = one}))
+			case:
+				if types.pvec_len(g.state.stack) == 0 && iguana.zone == .Battlefield && i > 0 do break steps
+				game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+			}
+		}
+		return library - types.pvec_len(pl.library), 1 if spare.zone == .Graveyard else 0
+	}
+	drawn, discarded := run(t, true)
+	testing.expect(t, drawn == 1 && discarded == 1, "accepted: discard, then draw")
+	drawn, discarded = run(t, false)
+	testing.expect(t, drawn == 0 && discarded == 0, "declined: neither")
+}

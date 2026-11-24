@@ -15,6 +15,9 @@ Resolution :: struct {
 	stack_id:     types.ObjectId, // an ability's stack object, or 0
 	last_targets: [dynamic]types.TargetRef, // the latest targeting instruction's legal targets: "it", "they" next
 	all_targets:  [dynamic]types.TargetRef, // every target chosen for it, in order
+	asked:        ^types.ResolvedAbility, // a "you may" instruction waiting for its controller's answer
+	answer:       Maybe(bool),
+	performed:    bool, // whether the latest "you may" instruction was done: "if you do" (CR 608.2c)
 }
 
 // The spell or ability as it goes on the stack: one node per instruction, each with the targets chosen for it (CR
@@ -114,11 +117,29 @@ continue_resolution :: proc(g: ^Game) -> bool {
 		} else {
 			append(&affected, nil)
 		}
-		if c, has := x.condition.?; has && !ability_condition_holds(s, c, r.controller, r.source, r.last_targets[:]) {
+		if c, has := x.condition.?; has && !condition_holds_now(r, s, c) {
 			// CR 608.2c: the instruction doesn't happen, nor what depends on it; the next independent instruction
 			// still does.
 			for r.next != nil && r.next.sub_link != .SequentialSibling do r.next = r.next.sub_ability
 			continue
+		}
+		if x.optional {
+			// CR 608.2d: "you may": the controller chooses as the instruction is carried out.
+			if answer, answered := r.answer.?; answered && r.asked == x {
+				r.answer, r.asked = nil, nil
+				r.performed = answer
+				if !answer {
+					// Declined: what continues it is skipped too, up to an independent instruction or an "if you
+					// do / don't" that reads the answer.
+					for r.next != nil && r.next.sub_link != .SequentialSibling && !reads_outcome(r.next) do r.next = r.next.sub_ability
+					continue
+				}
+			} else {
+				r.next, r.asked = x, x // carried out once answered
+				s.priority_player = r.controller
+				s.waiting_for = types.WaitingFor_OptionalEffectChoice{player = r.controller, source_id = r.source, description = x.description}
+				return false
+			}
 		}
 		for t in affected do if do_effect(g, x.effect, x.duration, r.controller, r.source, t) do return false // waiting for a choice
 	}
@@ -308,4 +329,43 @@ answer_dig :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_DigChoice, k
 
 choose_index :: proc(g: ^Game, n: int) -> int {
 	return rng.choose_index(&g.rng, n)
+}
+
+// "If you do" / "if you don't" (CR 608.2c) read the latest "you may" answer; other conditions the game.
+@(private = "file")
+condition_holds_now :: proc(r: ^Resolution, s: ^types.GameState, c: types.AbilityCondition) -> bool {
+	if want, is_outcome := outcome_wanted(c); is_outcome do return r.performed == want
+	return ability_condition_holds(s, c, r.controller, r.source, r.last_targets[:])
+}
+
+// Whether a condition is "if you do" (true) or "if you don't" (false), and whether it's either.
+outcome_wanted :: proc(c: types.AbilityCondition) -> (want: bool, is_outcome: bool) {
+	#partial switch x in c {
+	case types.AbilityCondition_EffectOutcome:
+		_, performed := x.signal.(types.EffectOutcomeSignal_OptionalEffectPerformed)
+		return true, performed
+	case types.AbilityCondition_Not:
+		if x.condition == nil do return false, false
+		inner, ok := outcome_wanted(x.condition^)
+		return !inner, ok
+	}
+	return false, false
+}
+
+@(private = "file")
+reads_outcome :: proc(n: ^types.ResolvedAbility) -> bool {
+	c, has := n.condition.?
+	if !has do return false
+	_, is_outcome := outcome_wanted(c)
+	return is_outcome
+}
+
+// The controller's answer to a "you may" instruction during resolution.
+answer_optional :: proc(g: ^Game, p: types.PlayerId, accept: bool) -> bool {
+	r := &g.resolution
+	if !r.active || r.asked == nil || p != r.controller do return false
+	r.answer = accept
+	g.state.waiting_for = nil
+	if continue_resolution(g) do after_resolution(g)
+	return true
 }

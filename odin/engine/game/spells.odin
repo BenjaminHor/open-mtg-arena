@@ -71,7 +71,7 @@ keyword_supported :: proc(k: types.Keyword) -> bool {
 }
 
 spell_ability_supported :: proc(a: types.AbilityDefinition) -> bool {
-	return !a.optional && ability_supported(a)
+	return ability_supported(a)
 }
 
 // An ability this engine can carry out: each effect in its chain supported, with no conditions or choices beyond
@@ -90,7 +90,7 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false) -> 
 	if !effect_supported(a.effect^, a.duration) do return false
 	if refers_to_parent_target(a.effect^) && !after_target do return false
 	_, targets := effect_target(a.effect^)
-	if a.sub_ability != nil do return a.sub_ability.optional == a.optional && ability_supported(a.sub_ability^, after_target || targets)
+	if a.sub_ability != nil do return ability_supported(a.sub_ability^, after_target || targets)
 	return true
 }
 
@@ -847,7 +847,7 @@ static_gap :: proc(st: types.StaticDefinition) -> string {
 @(private = "file")
 ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: string) {
 	if c, has := a.condition.?; has && !ability_condition_supported(c) do append(out, "spell:condition")
-	if a.optional || a.optional_targeting do append(out, "spell:optional")
+	if a.optional_targeting do append(out, "spell:optional")
 	if a.modal != nil do append(out, "spell:modal")
 	if !multi_target_supported(a) || a.distribute != nil do append(out, "spell:multiple targets")
 	if a.repeat_for != nil || a.unless_pay != nil || a.else_ability != nil do append(out, "spell:other")
@@ -961,6 +961,7 @@ pt_supported :: proc(v: types.PtValue) -> bool {
 // ---- Conditions on instructions ("if ...", CR 608.2c) ---------------------------------------------------------
 
 ability_condition_supported :: proc(c: types.AbilityCondition) -> bool {
+	if _, is_outcome := outcome_wanted(c); is_outcome do return true // "if you do" / "if you don't"
 	#partial switch x in c {
 	case types.AbilityCondition_QuantityCheck:
 		return quantity_supported(x.lhs) && quantity_supported(x.rhs)
