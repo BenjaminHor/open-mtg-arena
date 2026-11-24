@@ -681,6 +681,17 @@ impl<'a, 'b> Tx<'a, 'b> {
                 Ok(format!("({l} {op} {r})"))
             }
             Expr::MethodCall(mc) if self.calls && self.chain_terminal(mc) => self.chain(mc, want),
+            // An iterator where a Vec is wanted (a function returning `impl Iterator`): the chain, collected.
+            Expr::MethodCall(mc)
+                if self.calls
+                    && matches!(want, Shape::Vec(_))
+                    && matches!(mc.method.to_string().as_str(), "filter" | "map" | "filter_map" | "iter" | "into_iter" | "copied" | "cloned")
+                    && self.chain_source(ex).is_some()
+                    && !matches!(self.shape_of(ex), Some(Shape::Vec(_))) =>
+            {
+                let collected: syn::ExprMethodCall = syn::parse_quote!(#ex.collect());
+                self.chain(&collected, want)
+            }
             Expr::MethodCall(mc) => {
                 if self.calls {
                     if let Some(r) = self.library_method(mc) {
@@ -979,6 +990,16 @@ impl<'a, 'b> Tx<'a, 'b> {
 
     /// The shape an engine function returns (`Self` is its owner).
     pub fn return_shape(&mut self, f: &FnDef, owner: Option<&str>) -> Option<Shape> {
+        // ObjectMap's iterators (type aliases over im's) are hand-written as Vecs in Rust's order (D-182).
+        if owner == Some("ObjectMap") {
+            let named = |n: &str| Shape::Named(n.to_string(), vec![]);
+            match f.sig.ident.to_string().as_str() {
+                "values" => return Some(Shape::Vec(Box::new(named("GameObject")))),
+                "keys" => return Some(Shape::Vec(Box::new(named("ObjectId")))),
+                "iter" => return Some(Shape::Vec(Box::new(Shape::Tuple(vec![named("ObjectId"), named("GameObject")])))),
+                _ => {}
+            }
+        }
         match &f.sig.output {
             syn::ReturnType::Default => Some(Shape::Unit),
             syn::ReturnType::Type(_, t) => {
@@ -1454,7 +1475,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let src = self.expr(e, &src_shape)?;
                 (format!("for i{n}_ in 0 ..< {src}.len {{ {item} := pvec_get({src}, i{n}_);"), (**i).clone())
             }
-            _ => return Err("iterator over a non-Vec".into()),
+            other => return Err(format!("iterator over a non-Vec: {}", crate::body::shape_kind(other))),
         };
         let pvec = matches!(src_shape, Shape::PVec(_));
         // Each stage refines the current value (`cur`) or skips the item.

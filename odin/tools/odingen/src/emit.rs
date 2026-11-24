@@ -276,7 +276,28 @@ impl<'a> Emitter<'a> {
                 return Shape::Array(Box::new(self.shape(&a.elem, params)), n);
             }
             Type::Slice(s) => return Shape::Vec(Box::new(self.shape(&s.elem, params))),
+            // `impl Iterator<Item = T>` (and `IntoIterator`, `DoubleEndedIterator`, ...): translated logic
+            // materializes iterators, so one is a Vec of its items (docs/odin-port.md, "The translator's next layer").
+            Type::ImplTrait(it) => {
+                if let Some(item) = iterator_item(it.bounds.iter()) {
+                    return Shape::Vec(Box::new(self.shape(&item, params)));
+                }
+            }
             _ => {}
+        }
+        // `Box<dyn Iterator<Item = T> + '_>`: the same.
+        if let Type::Path(p) = ty {
+            if let Some(seg) = p.path.segments.last() {
+                if seg.ident == "Box" {
+                    if let syn::PathArguments::AngleBracketed(a) = &seg.arguments {
+                        if let Some(syn::GenericArgument::Type(Type::TraitObject(to))) = a.args.first() {
+                            if let Some(item) = iterator_item(to.bounds.iter()) {
+                                return Shape::Vec(Box::new(self.shape(&item, params)));
+                            }
+                        }
+                    }
+                }
+            }
         }
         let Some((name, args)) = last_ident(ty) else {
             return Shape::Unknown(quote::quote!(#ty).to_string());
@@ -1930,4 +1951,25 @@ impl<'a> Emitter<'a> {
 
 pub fn shape_names_pub(s: &Shape, out: &mut Vec<String>) {
     shape_names(s, out)
+}
+
+/// The `Item` of an `Iterator`-like bound (`Iterator<Item = T>`, `IntoIterator<Item = T>`, ...).
+fn iterator_item<'t>(bounds: impl Iterator<Item = &'t syn::TypeParamBound>) -> Option<Type> {
+    for b in bounds {
+        let syn::TypeParamBound::Trait(t) = b else { continue };
+        let seg = t.path.segments.last()?;
+        if !matches!(seg.ident.to_string().as_str(), "Iterator" | "IntoIterator" | "DoubleEndedIterator" | "ExactSizeIterator") {
+            continue;
+        }
+        if let syn::PathArguments::AngleBracketed(a) = &seg.arguments {
+            for arg in &a.args {
+                if let syn::GenericArgument::AssocType(at) = arg {
+                    if at.ident == "Item" {
+                        return Some(at.ty.clone());
+                    }
+                }
+            }
+        }
+    }
+    None
 }

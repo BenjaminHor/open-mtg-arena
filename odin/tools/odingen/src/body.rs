@@ -1019,7 +1019,7 @@ impl Body<'_, '_, '_> {
         let sh = self.shape_of(coll).ok_or("for over an untyped collection")?;
         let elem = match &sh {
             Shape::Vec(i) => (**i).clone(),
-            _ => return Err("for over a non-Vec collection".into()),
+            other => return Err(format!("for over a non-Vec collection: {}", shape_kind(other))),
         };
         if mode == Mode::Mut && !is_place(coll) {
             return Err("mutable iteration over something that isn't a place".into());
@@ -1117,7 +1117,7 @@ impl Body<'_, '_, '_> {
         let sh = self.shape_of(coll).ok_or("for over an untyped collection")?;
         let elem = match &sh {
             Shape::Vec(i) => (**i).clone(),
-            _ => return Err("for over a non-Vec collection".into()),
+            other => return Err(format!("for over a non-Vec collection: {}", shape_kind(other))),
         };
         let c = self.tx.expr(coll, &sh)?;
         let label = self.open_loop(fl.label.as_ref());
@@ -1643,5 +1643,20 @@ fn shape_unknown(s: &Shape) -> bool {
         Shape::Tuple(v) => v.iter().any(shape_unknown),
         Shape::Named(_, a) => a.iter().any(shape_unknown),
         _ => false,
+    }
+}
+
+/// A shape's kind in a few words, for the translate report.
+pub fn shape_kind(s: &Shape) -> String {
+    match s {
+        Shape::Named(n, _) => format!("Named {n}"),
+        Shape::Ptr(i, _) => format!("Ptr<{}>", shape_kind(i)),
+        Shape::Map(..) => "Map".into(),
+        Shape::PVec(_) => "PVec".into(),
+        Shape::Option(_) => "Option".into(),
+        Shape::Vec(_) => "Vec".into(),
+        Shape::Array(..) => "Array".into(),
+        Shape::Str => "Str".into(),
+        other => format!("{other:?}").chars().take(20).collect(),
     }
 }
