@@ -257,7 +257,7 @@ generic_effect_supported :: proc(e: types.Effect_GenericEffect) -> bool {
 	case:
 		return false
 	}
-	if t, targets := e.target.?; targets && !(is_self(t) || filter_supported(t)) do return false
+	if t, targets := e.target.?; targets && !(is_self(t) || (filter_supported(t) && !may_name_player(t))) do return false
 	if len(e.static_abilities) == 0 do return false
 	for st in e.static_abilities {
 		if st.condition != nil do return false

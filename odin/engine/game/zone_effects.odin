@@ -43,12 +43,12 @@ change_zone_supported :: proc(x: types.Effect_ChangeZone) -> bool {
 	if is_self(x.target) do return true
 	if _, from_graveyard := graveyard_filter(x.target); from_graveyard do return has_origin && origin == .Graveyard
 	// A permanent on the battlefield.
-	return (!has_origin || origin == .Battlefield) && x.destination != .Battlefield && filter_supported(x.target)
+	return (!has_origin || origin == .Battlefield) && x.destination != .Battlefield && filter_supported(x.target) && !may_name_player(x.target)
 }
 
 bounce_supported :: proc(x: types.Effect_Bounce) -> bool {
 	if d, has := x.destination.?; has && d != .Hand do return false
-	return x.selection == .Targeted && filter_supported(x.target)
+	return x.selection == .Targeted && filter_supported(x.target) && !may_name_player(x.target)
 }
 
 // Graveyard cards matching a filter, as targets for the player choosing.

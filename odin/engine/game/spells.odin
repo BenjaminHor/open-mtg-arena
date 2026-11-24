@@ -30,10 +30,17 @@ card_supported :: proc(face: ^types.CardFace) -> bool {
 		if !is_cost do return false
 		for shard in c.shards do if _, _, ok := shard_payers(shard); !ok do return false
 	}
+	spells := 0
 	for a in face.abilities {
 		switch a.kind {
 		case .Spell:
-			if !spell_ability_supported(a) do return false
+			// One spell ability is what casting carries out (spell_ability); a second paragraph isn't yet.
+			spells += 1
+			if spells > 1 do return false
+			x_defined = has_x(face.mana_cost)
+			ok := spell_ability_supported(a)
+			x_defined = false
+			if !ok do return false
 		case .Activated:
 			if _, _, ok := tap_mana_ability(a); !ok && !activated_supported(a) do return false
 		case .Database, .BeginGame, .Mulligan:
@@ -100,7 +107,7 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		d, has := duration.?
 		_, eot := d.(types.Duration_UntilEndOfTurn)
 		// A pump aimed at "any target" is a misparsed mass pump: a player can't get +N/+N.
-		return pf && tf && has && eot && (is_self(x.target) || (filter_supported(x.target) && !is_any(x.target)))
+		return pf && tf && has && eot && (is_self(x.target) || (filter_supported(x.target) && !may_name_player(x.target)))
 	case types.Effect_LoseLife:
 		fixed := quantity_supported(x.amount)
 		t, has := x.target.?
@@ -146,7 +153,7 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		_, you := x.player.(types.TargetFilter_Controller)
 		return fixed && (you || x.player == nil)
 	case types.Effect_Destroy:
-		return !x.cant_regenerate && filter_supported(x.target) && !is_any(x.target)
+		return !x.cant_regenerate && filter_supported(x.target) && !may_name_player(x.target)
 	}
 	return false
 }

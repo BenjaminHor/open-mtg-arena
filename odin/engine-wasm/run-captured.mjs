@@ -66,7 +66,7 @@ for (const file of files) {
     continue;
   }
   const names = new Set();
-  for (const step of parsed) for (const o of Object.values(step.pre?.objects ?? {})) if (o && !o.is_token && o.name) names.add(o.name);
+  for (const step of parsed) for (const o of Object.values(step.pre?.objects ?? {})) if (o && !o.is_token && o.name && o.zone !== "Library") names.add(o.name); // cards a test puts in play, not its filler library
   for (const [i, step] of parsed.entries()) {
     const pre = step.pre ?? prev;
     prev = step.post;
@@ -75,7 +75,7 @@ for (const file of files) {
     try {
       engine.restore_game_state(JSON.stringify(pre));
       const r = submit(step.actor ?? 0, step.action);
-      if (r.accepted !== step.ok) why = { path: "accepted", a: step.ok, b: `${r.accepted} ${r.why ?? ""}` };
+      if (r.accepted !== step.ok) why = { path: `accepted ${step.action?.type ?? "?"} (${step.ok ? "rejected here" : "accepted here"})`, a: step.ok, b: `${r.accepted} ${r.why ?? ""}` };
       // The full state (get_game_state hides what the viewer can't see, like the library).
       else if (step.ok) why = firstDifference(project(step.post), project(JSON.parse(engine.export_game_state_json())));
     } catch (e) {

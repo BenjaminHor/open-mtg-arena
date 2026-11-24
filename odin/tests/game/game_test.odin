@@ -848,3 +848,14 @@ painland_and_sacrifice_mana_riders :: proc(t: ^testing.T) {
 	testing.expect(t, game.apply(g3, 0, types.GameAction_CastSpell{object_id = opt.id}))
 	testing.expect(t, outpost.zone == .Graveyard, "sacrificed for {U}")
 }
+
+@(test)
+support_gate_holes :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Cards the engine would play wrongly are reported unsupported rather than guessed at:
+	// - Cinder Elemental: "{X}{R}, {T}, Sacrifice: X damage": an {X} in an activation cost isn't announced yet
+	//   (CR 107.3a), so X would be 0.
+	testing.expect(t, !game.card_supported(&card(t, "Cinder Elemental").face), "X in an activation cost")
+	// - Blaze: the X of the spell's own mana cost is announced (CR 601.2b).
+	testing.expect(t, game.card_supported(&card(t, "Blaze").face), "X in a spell's mana cost")
+}

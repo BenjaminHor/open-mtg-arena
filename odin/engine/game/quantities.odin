@@ -4,6 +4,11 @@ package game
 
 import types "../types"
 
+// Whether the ability being checked has an X it can read: a spell's own, announced as it's cast (CR 107.3a). Set
+// by card_supported around the checks of a spell with {X} in its mana cost.
+@(thread_local)
+x_defined: bool
+
 quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 	#partial switch x in q {
 	case types.QuantityExpr_Fixed:
@@ -29,9 +34,9 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 		case types.QuantityRef_HandSize:
 			return player_scope_supported(r.player)
 		case types.QuantityRef_Variable:
-			return r.name == "X"
+			return r.name == "X" && x_defined
 		case types.QuantityRef_CostXPaid:
-			return true
+			return x_defined
 		case types.QuantityRef_GraveyardSize:
 			return player_scope_supported(r.player)
 		case types.QuantityRef_LifeTotal:

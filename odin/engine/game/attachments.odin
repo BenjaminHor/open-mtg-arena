@@ -21,7 +21,7 @@ is_aura :: proc(o: ^types.GameObject) -> bool {
 
 attach_effect_supported :: proc(x: types.Effect_Attach) -> bool {
 	if x.attachment != nil && !is_self(x.attachment) do return false
-	return filter_supported(x.target) && !is_any(x.target) && !is_player_filter(x.target)
+	return filter_supported(x.target) && !may_name_player(x.target)
 }
 
 // The object something is attached to, if it's attached to a permanent.

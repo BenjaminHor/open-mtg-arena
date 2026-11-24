@@ -6,15 +6,32 @@ import types "../types"
 
 // "Target creature" or "this", where a permanent is meant (not a player).
 permanent_or_self :: proc(f: types.TargetFilter) -> bool {
-	return is_self(f) || (filter_supported(f) && !is_any(f) && !is_player_filter(f))
+	return is_self(f) || (filter_supported(f) && !may_name_player(f))
 }
 
+// A filter naming only players: "target player", "target opponent", "you".
 is_player_filter :: proc(f: types.TargetFilter) -> bool {
-	#partial switch _ in f {
+	#partial switch x in f {
 	case types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_Controller:
 		return true
+	case types.TargetFilter_Typed:
+		_, player := player_typed(x._0)
+		return player
 	}
 	return false
+}
+
+// Whether a filter can name a player at all ("any target", "target opponent or planeswalker"): such a target can't
+// be destroyed, pumped or moved, so effects on objects only don't accept it.
+may_name_player :: proc(f: types.TargetFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Any:
+		return true
+	case types.TargetFilter_Or:
+		for y in x.filters do if may_name_player(y) do return true
+		return false
+	}
+	return is_player_filter(f)
 }
 
 counter_kind_supported :: proc(c: types.CounterType) -> bool {

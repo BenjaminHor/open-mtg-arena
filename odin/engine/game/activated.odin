@@ -24,7 +24,7 @@ cost_supported :: proc(c: types.AbilityCost) -> bool {
 	#partial switch x in c {
 	case types.AbilityCost_Mana:
 		_, ok := x.cost.(types.ManaCost_Cost)
-		return ok
+		return ok && !has_x(x.cost) // an {X} in an activation cost isn't announced yet
 	case types.AbilityCost_Tap:
 		return true
 	case types.AbilityCost_Sacrifice:
@@ -47,8 +47,18 @@ cost_supported :: proc(c: types.AbilityCost) -> bool {
 		_, fixed := fixed_quantity(x.amount)
 		return fixed
 	case types.AbilityCost_Composite:
-		for part in x.costs do if !cost_supported(part) do return false
-		return true
+		// At most one part that has the player choose objects (object_cost asks for one).
+		chosen := 0
+		for part in x.costs {
+			if !cost_supported(part) do return false
+			#partial switch y in part {
+			case types.AbilityCost_Sacrifice:
+				if !is_self(y._0.target) do chosen += 1
+			case types.AbilityCost_Discard:
+				chosen += 1
+			}
+		}
+		return chosen <= 1
 	}
 	return false
 }

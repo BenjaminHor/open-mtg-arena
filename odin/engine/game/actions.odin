@@ -116,6 +116,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			t, ok := a.target.?
 			return ok && choose_target(g, p, t)
 		case types.GameAction_CancelCast:
+			if o := object(s, g.pending.object); o != nil do o.cost_x_paid = nil // CR 601.2: the cast is undone
 			g.pending = {}
 			give_priority(g, p)
 			return true
