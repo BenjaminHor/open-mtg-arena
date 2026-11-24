@@ -2082,6 +2082,13 @@ impl<'a, 'b> Tx<'a, 'b> {
     fn bind_param(&mut self, pat: &Pat, value: &str, shape: &Shape) -> R<Vec<(String, Option<(String, Shape)>)>> {
         let mut saved = Vec::new();
         match pat {
+            // A `&mut` value (an Option<&mut T> combinator's) is a pointer, used through as `x^` with the pointee's
+            // shape, as the pattern compiler binds pointers; a `&mut x` argument then takes it back unchanged.
+            Pat::Ident(pi) if matches!(shape, Shape::MutRef(_)) => {
+                let Shape::MutRef(inner) = shape else { unreachable!() };
+                let n = pi.ident.to_string();
+                saved.push((n.clone(), self.vars.insert(n, (format!("{value}^"), (**inner).clone()))));
+            }
             Pat::Ident(pi) => {
                 let n = pi.ident.to_string();
                 saved.push((n.clone(), self.vars.insert(n, (value.to_string(), shape.clone()))));
