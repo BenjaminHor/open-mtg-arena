@@ -365,6 +365,7 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
                     file: file.to_path_buf(),
                     self_ty: None,
                 });
+                register_nested_fns(&f.block, file, reg);
             }
             Item::Impl(i) => {
                 if i.trait_.is_none() && !is_cfg_test(&i.attrs) {
@@ -384,6 +385,7 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
                                     file: file.to_path_buf(),
                                     self_ty: Some(n.clone()),
                                 });
+                                register_nested_fns(&f.block, file, reg);
                             }
                         }
                     }
@@ -498,3 +500,35 @@ const STD_TRAITS: &[&str] = &[
     "Index", "IndexMut", "Extend", "FromIterator", "Error", "Fn", "FnMut", "FnOnce", "Send", "Sync", "Visitor",
     "Sum", "Product",
 ];
+
+/// Functions declared inside a function body (`fn visit(..)` helpers) can't capture anything, so they are registered
+/// as free functions of the file: a bare call resolves to them like to the file's own functions, and two of one name
+/// in a file are ambiguous, which resolution refuses.
+fn register_nested_fns(block: &syn::Block, file: &std::path::Path, reg: &mut Registry) {
+    struct V<'r> {
+        file: &'r std::path::Path,
+        found: Vec<syn::ItemFn>,
+    }
+    impl<'ast> syn::visit::Visit<'ast> for V<'_> {
+        fn visit_item_fn(&mut self, f: &'ast syn::ItemFn) {
+            self.found.push(f.clone());
+            syn::visit::visit_item_fn(self, f);
+        }
+        // Items of a nested impl or module are not this function's helpers.
+        fn visit_item_impl(&mut self, _: &'ast syn::ItemImpl) {}
+        fn visit_item_mod(&mut self, _: &'ast syn::ItemMod) {}
+    }
+    let mut v = V { file, found: Vec::new() };
+    syn::visit::visit_block(&mut v, block);
+    for f in v.found {
+        if is_cfg_test(&f.attrs) {
+            continue;
+        }
+        reg.fns.entry((None, f.sig.ident.to_string())).or_default().push(FnDef {
+            sig: f.sig.clone(),
+            block: (*f.block).clone(),
+            file: v.file.to_path_buf(),
+            self_ty: None,
+        });
+    }
+}

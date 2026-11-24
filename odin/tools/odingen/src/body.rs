@@ -327,6 +327,8 @@ impl Body<'_, '_, '_> {
                 Stmt::Expr(e, _) => self.stmt_expr(e)?,
                 // A `use` inside a body changes nothing here: calls resolve by module path or file on their own.
                 Stmt::Item(syn::Item::Use(_)) => {}
+                // A nested `fn` is registered as a free function of the file (model.rs) and translated on its own.
+                Stmt::Item(syn::Item::Fn(_)) => {}
                 Stmt::Item(it) => {
                     let kind = match it {
                         syn::Item::Fn(_) => "fn",
