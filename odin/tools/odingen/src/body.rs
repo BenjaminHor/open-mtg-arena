@@ -1420,6 +1420,7 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
     crate::closures::INSTANCES.with(|i| *i.borrow_mut() = Default::default());
     let mut ok = Vec::new();
     let mut done: Vec<(String, Option<String>, String, FnDef, bool)> = Vec::new();
+    let mut why_by_proc: BTreeMap<String, String> = BTreeMap::new();
     let mut stubs = Vec::new();
     let mut reasons: BTreeMap<String, usize> = BTreeMap::new();
     // ODINGEN_EXECUTED: "file:line" of each function a profiled run executed (from an lcov report): the blockers
@@ -1440,7 +1441,11 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
     for ((owner, name), d) in &fns {
         let ex = is_executed(d);
         ex_total += ex as usize;
-        match translate_fn(e, owner.as_deref(), name, d) {
+        let tr = translate_fn(e, owner.as_deref(), name, d);
+        if let Err(r) = &tr {
+            why_by_proc.insert(proc_name_for(owner.as_deref(), name, d), r.clone());
+        }
+        match tr {
             Ok(t) => {
                 ex_ok += ex as usize;
                 done.push((t.name.clone(), owner.clone(), name.clone(), d.clone(), t.touches_unlogged));
@@ -1464,6 +1469,11 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
         }
     }
     println!("functions {}: translated {} ({:.1}%)", fns.len(), ok.len(), 100.0 * ok.len() as f64 / fns.len().max(1) as f64);
+    // ODINGEN_REACH=<procedure>: what that procedure can reach through calls (by name, so an over-approximation),
+    // how much of it translates, and what blocks the rest — the distance to running it in Odin.
+    if let Ok(root) = std::env::var("ODINGEN_REACH") {
+        reach_report(&fns, &root, &done.iter().map(|d| d.0.clone()).collect(), &why_by_proc);
+    }
     let mut rs: Vec<_> = reasons.into_iter().collect();
     rs.sort_by(|a, b| b.1.cmp(&a.1));
     let top: usize = std::env::var("ODINGEN_TOP").ok().and_then(|v| v.parse().ok()).unwrap_or(40);
@@ -2023,4 +2033,67 @@ pub fn translate_generic_instance(e: &mut Emitter, owner: Option<&str>, name: &s
     crate::translate::TOUCHES_UNLOGGED.with(|t| t.set(saved_touch));
     e.subst = saved_subst;
     r.map(|t| t.code)
+}
+
+/// The call graph from a root (calls and method calls matched by name to every function of that name) and, over
+/// what it reaches, how much translates and what blocks the rest.
+fn reach_report(fns: &[((Option<String>, String), FnDef)], root: &str, translated: &BTreeSet<String>, why: &BTreeMap<String, String>) {
+    struct Calls(BTreeSet<String>);
+    impl<'ast> syn::visit::Visit<'ast> for Calls {
+        fn visit_expr_call(&mut self, c: &'ast syn::ExprCall) {
+            if let Expr::Path(p) = &*c.func {
+                if let Some(l) = p.path.segments.last() {
+                    self.0.insert(l.ident.to_string());
+                }
+            }
+            syn::visit::visit_expr_call(self, c);
+        }
+        fn visit_expr_method_call(&mut self, m: &'ast syn::ExprMethodCall) {
+            self.0.insert(m.method.to_string());
+            syn::visit::visit_expr_method_call(self, m);
+        }
+        fn visit_expr_path(&mut self, p: &'ast syn::ExprPath) {
+            // A function passed by name (`.map(helper)`).
+            if let Some(l) = p.path.segments.last() {
+                self.0.insert(l.ident.to_string());
+            }
+        }
+    }
+    let mut by_name: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    let mut calls: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
+    for ((owner, name), d) in fns {
+        let p = proc_name_for(owner.as_deref(), name, d);
+        by_name.entry(name.clone()).or_default().push(p.clone());
+        let mut v = Calls(BTreeSet::new());
+        syn::visit::visit_block(&mut v, &d.block);
+        calls.entry(p).or_default().extend(v.0);
+    }
+    let mut seen = BTreeSet::new();
+    let mut queue = vec![root.to_string()];
+    while let Some(p) = queue.pop() {
+        if !seen.insert(p.clone()) {
+            continue;
+        }
+        for n in calls.get(&p).into_iter().flatten() {
+            for q in by_name.get(n).into_iter().flatten() {
+                if !seen.contains(q) {
+                    queue.push(q.clone());
+                }
+            }
+        }
+    }
+    let reached: Vec<&String> = seen.iter().filter(|p| calls.contains_key(*p)).collect();
+    let ok = reached.iter().filter(|p| translated.contains(**p)).count();
+    println!("reach from {root}: {} functions, translated {ok} ({:.1}%)", reached.len(), 100.0 * ok as f64 / reached.len().max(1) as f64);
+    let mut reasons: BTreeMap<&str, usize> = BTreeMap::new();
+    for p in &reached {
+        if let Some(r) = why.get(*p) {
+            *reasons.entry(r.as_str()).or_default() += 1;
+        }
+    }
+    let mut rs: Vec<_> = reasons.into_iter().collect();
+    rs.sort_by(|a, b| b.1.cmp(&a.1));
+    for (r, n) in rs.iter().take(25) {
+        println!("  {n:>6}  {r}");
+    }
 }

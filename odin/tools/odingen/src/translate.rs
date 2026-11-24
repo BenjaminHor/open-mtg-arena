@@ -778,19 +778,27 @@ impl<'a, 'b> Tx<'a, 'b> {
                             // Comparing a data enum with one of its unit variants: a variant test.
                             let segs = match &*b.right {
                                 Expr::Path(p) => path_segs(&p.path),
-                                _ => return Err("== on a data enum with a non-variant".into()),
+                                _ => vec![],
                             };
-                            let (e, v) = self.variant_of(&segs, &left_shape).ok_or("== variant")?;
+                            // Against a unit variant: a variant test; against another value: equality below.
+                            if let Some((e, v)) = self.variant_of(&segs, &left_shape).filter(|_| !segs.is_empty() && !(segs.len() == 1 && self.vars.contains_key(&segs[0]))) {
                             if !matches!(self.named_fields(&e, Some(&v)), Some(Fields::Unit)) {
                                 return Err("== with a data-carrying variant".into());
                             }
                             let neg = if op == "!=" { "!" } else { "" };
                             return Ok(format!("{neg}is_variant({l}, {e}_{v})"));
+                            }
                         }
                     }
                 }
                 if matches!(op, "==" | "!=") && !self.comparable(&left_shape) {
-                    return Err("== on a type Odin can't compare".into());
+                    // Rust's derived PartialEq, generated (emit.rs, equaler).
+                    if !self.calls {
+                        return Err("== on a type Odin can't compare".into());
+                    }
+                    let p = self.e.equaler(&left_shape)?.ok_or("== on a type Odin can't compare")?;
+                    let neg = if op == "!=" { "!" } else { "" };
+                    return Ok(format!("{neg}{p}({l}, {r})"));
                 }
                 Ok(format!("({l} {op} {r})"))
             }
