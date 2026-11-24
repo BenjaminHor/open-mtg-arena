@@ -15,6 +15,17 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   reference games recorded from the Rust engine, vertical slices behind the client's interface, build times
   measured on the first slice). Plan: docs/odin-port.md, its shape approved (D-179: parser stays Rust, bit-exact
   RNG, AI later). Next after the deploy: O-0, the go/no-go spike.
+- **O-0 spike plan (2026-11-24, written before starting).** Go/no-go questions, each with a measurement:
+  1. Toolchain: Odin `dev-2026-11a` built from source here (GitHub release downloads are blocked in this container;
+     anonymous git clone works; LLVM 18 present). Pin the tag; CI builds or caches the same.
+  2. WASM: an Odin module for `js_wasm32` (or `freestanding_wasm32`) loads in Node and in the engine worker, takes a
+     JSON string in and returns a JSON string out (the boundary every export uses).
+  3. Card data: parse `card-data.json` (98 MB) or a slice of it with `core:encoding/json` into Odin types for a few AST
+     nodes; time and memory in wasm.
+  4. RNG: ChaCha20 seeded from a u64 plus rand 0.9's `shuffle`, `random_range`, `choose`, `random_bool`, matched bit
+     for bit against vectors from a small Rust program using the same crates.
+  5. Build time and wasm size of the spike.
+  Code in `odin/` at the repo root (spike under `odin/spike/`). Result and verdict go here and in docs/odin-port.md.
 - **M3 — First playable**, started 2026-11-22 (owner: "Get started"; Arena is the North Star, expect heavy UI
   refinement). Phase 1: M3-01 match host, M3-02 heuristic AI, M3-03 web scaffold, M3-04 landscape phone board.
   M3-01 plan, one PR per slice:
