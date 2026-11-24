@@ -2633,6 +2633,10 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   MTG Arena that also exist in paper). That pool sizes the engine options in step 3. Measured (2026-11-24): the
   pool is 15,772 unique cards (Scryfall API); the Rust engine fully supports 14,013 of them (88.8%), 1,759 are
   marked unsupported, none are missing from the card data (client/public/coverage-data.json, matched by name).
+- Owner (2026-11-24), on an Odin engine built from the rules behind the same wasm interface: **no running both
+  engines** in the app; "the only value I think we would get from the rust portions are the tests for mechanics and
+  cards". So if an Odin engine is built, the Rust engine serves as a test reference (its tests and recorded games),
+  not as a shipped fallback.
 - Settled (2026-11-24, D-183): runtime card-text parses are precomputed into the card data; the Odin engine
   never parses. Settled (2026-11-24, D-184): fix the saved-game `"type"` clash, changing that wire form.
 
