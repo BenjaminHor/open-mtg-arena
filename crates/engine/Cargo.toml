@@ -23,6 +23,9 @@ test-support = ["phase-ast/test-support", "phase-parser/test-support", "serde_js
 # `combo-verify` gates `analysis::corpus`. Enabled for test builds through the
 # dev-dependency self-reference below.
 bracket-corpus = []
+# Test-only: dumps every applied action and the state after it when PHASE_STATE_DUMP is set (game/engine.rs
+# state_dump), for the Odin port's data-model checks. Never enabled by production consumers.
+state-dump = []
 # Generates only the self-contained interaction DTO contract. Production
 # consumers do not enable this feature and continue to use the existing action
 # transport until the explicit adapter cutover.

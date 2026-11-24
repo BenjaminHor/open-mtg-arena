@@ -40,8 +40,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     action and compares the state; a compact checkpoint form and a committed small corpus; then O-3, the core slice.
 - **D-177 import merged** (PR #116, squash bdd74cf, 2026-11-24, CI green). **Live** (Pages run 21 succeeded 03:37 UTC;
   checked 04:55 UTC with Playwright at 915x412 landscape phone: the home page loads in ~8 s with no errors, Play vs AI
-  → Random Deck → Start Match plays a Commander game through the die roll, play-first choice and opening turns to the
-  cleanup discard, card art loading). Remaining from the plan: ask the owner to try it at
+  → Random Deck → Start Match plays a Commander game: the die roll, play-first choice, mulligan, then about five turns
+  in which the script only passed and discarded (cleanup's discard prompt works) while the AI played lands, cast its
+  commander and attacked (40 → 36 life); card art loads. Not checked: casting spells, combat choices, a game's end). Remaining from the plan: ask the owner to try it at
   https://benjaminhor.github.io/open-mtg-arena/ on the
   MacBook and the unfolded Duo. The port plan is docs/odin-port.md (D-179), now under way (D-180).
 - **O-0 spike plan (2026-11-24, written before starting).** Go/no-go questions, each with a measurement:
