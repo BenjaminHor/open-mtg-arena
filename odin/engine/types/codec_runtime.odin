@@ -321,3 +321,19 @@ Result :: struct($T, $E: typeid) {
 	ok:  T,
 	err: Maybe(E),
 }
+
+// Library helpers translated logic calls (Rust's slice methods).
+vec_contains :: proc(xs: []$T, x: T) -> bool {
+	for y in xs do if y == x do return true
+	return false
+}
+
+vec_first :: proc(xs: []$T) -> Maybe(T) {
+	if len(xs) == 0 do return nil
+	return xs[0]
+}
+
+vec_last :: proc(xs: []$T) -> Maybe(T) {
+	if len(xs) == 0 do return nil
+	return xs[len(xs) - 1]
+}

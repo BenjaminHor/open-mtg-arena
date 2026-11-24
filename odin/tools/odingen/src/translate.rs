@@ -41,6 +41,23 @@ pub fn proc_name(owner: Option<&str>, name: &str) -> String {
     }
 }
 
+/// The procedure name for an engine function: methods `Owner_method`; free functions `<file>_<name>` (free
+/// functions repeat names across modules, and some match Odin builtins such as `append`).
+pub fn proc_name_for(owner: Option<&str>, name: &str, f: &FnDef) -> String {
+    match owner {
+        Some(o) => format!("{o}_{name}"),
+        None => {
+            let stem = f.file.file_stem().map(|s| s.to_string_lossy().to_string()).unwrap_or_default();
+            let stem = if stem == "mod" {
+                f.file.parent().and_then(|p| p.file_name()).map(|s| s.to_string_lossy().to_string()).unwrap_or(stem)
+            } else {
+                stem
+            };
+            format!("{stem}_{name}")
+        }
+    }
+}
+
 fn path_segs(p: &syn::Path) -> Vec<String> {
     p.segments.iter().map(|s| s.ident.to_string()).collect()
 }
@@ -420,7 +437,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let owner = self.owner_of(&segs);
                 if self.calls {
                     if let Some(f) = self.e.reg.fns.get(&(owner.clone(), last.clone())).and_then(|v| v.first()).cloned() {
-                        return self.call_with_sig(&proc_name(owner.as_deref(), &last), &f, None, &args);
+                        return self.call_with_sig(&proc_name_for(owner.as_deref(), &last, &f), &f, None, &args);
                     }
                     return Err(format!("call {}", segs.join("::")));
                 }
@@ -542,7 +559,13 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
                 Ok(format!("({l} {op} {r})"))
             }
+            Expr::MethodCall(mc) if self.calls && self.chain_terminal(mc) => self.chain(mc, want),
             Expr::MethodCall(mc) => {
+                if self.calls {
+                    if let Some(r) = self.library_method(mc) {
+                        return r;
+                    }
+                }
                 let recv_shape = self.shape_of(&mc.receiver).unwrap_or(Shape::Bool);
                 let recv = self.expr(&mc.receiver, &recv_shape)?;
                 match mc.method.to_string().as_str() {
@@ -574,7 +597,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                         if self.calls {
                             if let Some(o) = owner.as_ref() {
                                 if let Some(f) = self.e.reg.fns.get(&(Some(o.clone()), m.to_string())).and_then(|v| v.first()).cloned() {
-                                    return self.call_with_sig(&proc_name(Some(o), m), &f, Some(recv), &args);
+                                    return self.call_with_sig(&proc_name_for(Some(o), m, &f), &f, Some(recv), &args);
                                 }
                             }
                             return Err(format!("method .{m}()"));
@@ -998,5 +1021,318 @@ impl syn::parse::Parse for MatchesArgs {
         // An `if` guard or trailing comma isn't used by these predicates.
         let _ = input.parse::<Option<syn::Token![,]>>();
         Ok(MatchesArgs { subject, pat })
+    }
+}
+
+// ------------------------------------------------------------------------------------------- iterator chains ---
+// `xs.iter().filter(|x| ..).map(|x| ..).collect()` and friends become one loop, written ahead of the line (pre),
+// with each closure's body inlined; the chain's value is a temporary. Only expression-bodied closures and a
+// collection at the chain's start (a `Vec`, an `im::Vector`, a range) for now.
+
+enum Stage<'e> {
+    Filter(&'e syn::ExprClosure),
+    Map(&'e syn::ExprClosure),
+    FilterMap(&'e syn::ExprClosure),
+    Pass, // copied(), cloned(), iter(), into_iter()
+}
+
+impl<'a, 'b> Tx<'a, 'b> {
+    fn chain_terminal(&self, mc: &syn::ExprMethodCall) -> bool {
+        matches!(mc.method.to_string().as_str(), "collect" | "any" | "all" | "find" | "position" | "count" | "sum" | "find_map")
+            && self.chain_source(&mc.receiver).is_some()
+    }
+
+    /// The collection a chain starts from, under its adapters.
+    fn chain_source<'e>(&self, mut e: &'e Expr) -> Option<&'e Expr> {
+        loop {
+            match e {
+                Expr::MethodCall(m) => match m.method.to_string().as_str() {
+                    "iter" | "into_iter" | "copied" | "cloned" | "filter" | "map" | "filter_map" => e = &m.receiver,
+                    _ => return None,
+                },
+                Expr::Paren(p) => e = &p.expr,
+                _ => return Some(e),
+            }
+        }
+    }
+
+    fn closure_of(a: &Expr) -> R<&syn::ExprClosure> {
+        match a {
+            Expr::Closure(c) if c.inputs.len() == 1 => Ok(c),
+            _ => Err("iterator adapter without a one-argument closure".into()),
+        }
+    }
+
+    /// Binds a closure's parameter (`|x|`, `|&x|`, `|(a, b)|`) to an Odin value of a shape; returns the old bindings.
+    fn bind_param(&mut self, pat: &Pat, value: &str, shape: &Shape) -> R<Vec<(String, Option<(String, Shape)>)>> {
+        let mut saved = Vec::new();
+        match pat {
+            Pat::Ident(pi) => {
+                let n = pi.ident.to_string();
+                saved.push((n.clone(), self.vars.insert(n, (value.to_string(), shape.clone()))));
+            }
+            Pat::Reference(r) => return self.bind_param(&r.pat, value, shape),
+            Pat::Type(t) => return self.bind_param(&t.pat, value, shape),
+            Pat::Wild(_) => {}
+            Pat::Tuple(t) => {
+                let Shape::Tuple(es) = shape else { return Err("tuple parameter on a non-tuple".into()) };
+                for (i, (p, s)) in t.elems.iter().zip(es.clone().iter()).enumerate() {
+                    saved.extend(self.bind_param(p, &format!("{value}._{i}"), s)?);
+                }
+            }
+            _ => return Err("closure parameter pattern".into()),
+        }
+        Ok(saved)
+    }
+
+    fn unbind(&mut self, saved: Vec<(String, Option<(String, Shape)>)>) {
+        for (n, old) in saved.into_iter().rev() {
+            match old {
+                Some(o) => {
+                    self.vars.insert(n, o);
+                }
+                None => {
+                    self.vars.remove(&n);
+                }
+            }
+        }
+    }
+
+    /// A closure body inside a loop body: its expression, after any statements it needs (into `body`).
+    fn closure_in(&mut self, body: &mut Vec<String>, c: &syn::ExprClosure, value: &str, shape: &Shape, want: &Shape) -> R<String> {
+        let outer = std::mem::take(&mut self.pre);
+        let r = self.closure_expr(c, value, shape, want);
+        let inner = std::mem::replace(&mut self.pre, outer);
+        body.extend(inner);
+        r
+    }
+
+    /// A closure body as an expression, with its parameter bound to `value`.
+    fn closure_expr(&mut self, c: &syn::ExprClosure, value: &str, shape: &Shape, want: &Shape) -> R<String> {
+        let saved = self.bind_param(&c.inputs[0], value, shape)?;
+        let body = match &*c.body {
+            Expr::Block(b) if b.block.stmts.len() == 1 => match &b.block.stmts[0] {
+                Stmt::Expr(e, None) => e.clone(),
+                _ => {
+                    self.unbind(saved);
+                    return Err("closure with statements".into());
+                }
+            },
+            Expr::Block(_) => {
+                self.unbind(saved);
+                return Err("closure with statements".into());
+            }
+            e => e.clone(),
+        };
+        let r = self.expr(&body, want);
+        self.unbind(saved);
+        r
+    }
+
+    fn closure_shape(&mut self, c: &syn::ExprClosure, value: &str, shape: &Shape) -> Option<Shape> {
+        let saved = self.bind_param(&c.inputs[0], value, shape).ok()?;
+        let body = match &*c.body {
+            Expr::Block(b) if b.block.stmts.len() == 1 => match &b.block.stmts[0] {
+                Stmt::Expr(e, None) => e.clone(),
+                _ => return None,
+            },
+            e => e.clone(),
+        };
+        let r = self.shape_of(&body);
+        self.unbind(saved);
+        r
+    }
+
+    fn chain(&mut self, mc: &syn::ExprMethodCall, want: &Shape) -> R<String> {
+        // Collect the stages from the source outwards.
+        let mut stages: Vec<Stage> = Vec::new();
+        let mut e: &Expr = &mc.receiver;
+        loop {
+            match e {
+                Expr::MethodCall(m) => {
+                    match m.method.to_string().as_str() {
+                        "iter" | "into_iter" | "copied" | "cloned" => stages.push(Stage::Pass),
+                        "filter" => stages.push(Stage::Filter(Self::closure_of(m.args.first().ok_or("filter")?)?)),
+                        "map" => stages.push(Stage::Map(Self::closure_of(m.args.first().ok_or("map")?)?)),
+                        "filter_map" => stages.push(Stage::FilterMap(Self::closure_of(m.args.first().ok_or("filter_map")?)?)),
+                        _ => return Err("iterator adapter".into()),
+                    }
+                    e = &m.receiver;
+                }
+                Expr::Paren(p) => e = &p.expr,
+                _ => break,
+            }
+        }
+        stages.reverse();
+        let src_shape = self.shape_of(e).ok_or("iterator over an untyped collection")?;
+        self.temps += 1;
+        let n = self.temps;
+        let item = format!("it{n}_");
+        // The loop over the source.
+        let (head, mut cur_shape) = match &src_shape {
+            Shape::Vec(i) | Shape::Array(i, _) => {
+                let src = self.expr(e, &src_shape)?;
+                (format!("for {item} in {src}"), (**i).clone())
+            }
+            Shape::PVec(i) => {
+                let src = self.expr(e, &src_shape)?;
+                (format!("for i{n}_ in 0 ..< {src}.len {{ {item} := pvec_get({src}, i{n}_);"), (**i).clone())
+            }
+            _ => return Err("iterator over a non-Vec".into()),
+        };
+        let pvec = matches!(src_shape, Shape::PVec(_));
+        // Each stage refines the current value (`cur`) or skips the item.
+        let mut body: Vec<String> = Vec::new();
+        let mut cur = item.clone();
+        for (k, st) in stages.iter().enumerate() {
+            match st {
+                Stage::Pass => {}
+                Stage::Filter(c) => {
+                    let cond = self.closure_in(&mut body, c, &cur, &cur_shape, &Shape::Bool)?;
+                    body.push(format!("if !({cond}) do continue"));
+                }
+                Stage::Map(c) => {
+                    let out_shape = self.closure_shape(c, &cur, &cur_shape).ok_or("map closure of an untyped value")?;
+                    let v = self.closure_in(&mut body, c, &cur, &cur_shape, &out_shape)?;
+                    let next = format!("m{n}_{k}_");
+                    body.push(format!("{next} := {v}"));
+                    cur = next;
+                    cur_shape = out_shape;
+                }
+                Stage::FilterMap(c) => {
+                    let out_shape = self.closure_shape(c, &cur, &cur_shape).ok_or("filter_map closure of an untyped value")?;
+                    let Shape::Option(inner) = out_shape else { return Err("filter_map closure not returning Option".into()) };
+                    let v = self.closure_in(&mut body, c, &cur, &cur_shape, &Shape::Option(inner.clone()))?;
+                    let next = format!("m{n}_{k}_");
+                    body.push(format!("{next}, {next}ok := ({v}).?"));
+                    body.push(format!("if !{next}ok do continue"));
+                    cur = next;
+                    cur_shape = *inner;
+                }
+            }
+        }
+        let res = format!("r{n}_");
+        let args: Vec<&Expr> = mc.args.iter().collect();
+        let (init, step, value) = match mc.method.to_string().as_str() {
+            "collect" => {
+                let ty = self.e.odin(want);
+                match want {
+                    Shape::Vec(_) => (format!("{res}: {ty}"), format!("append(&{res}, {cur})"), res.clone()),
+                    _ => return Err("collect into something other than a Vec".into()),
+                }
+            }
+            "any" => {
+                let c = Self::closure_of(args.first().ok_or("any")?)?;
+                let cond = self.closure_in(&mut body, c, &cur, &cur_shape, &Shape::Bool)?;
+                (format!("{res} := false"), format!("if {cond} {{ {res} = true; break }}"), res.clone())
+            }
+            "all" => {
+                let c = Self::closure_of(args.first().ok_or("all")?)?;
+                let cond = self.closure_in(&mut body, c, &cur, &cur_shape, &Shape::Bool)?;
+                (format!("{res} := true"), format!("if !({cond}) {{ {res} = false; break }}"), res.clone())
+            }
+            "find" => {
+                let c = Self::closure_of(args.first().ok_or("find")?)?;
+                let cond = self.closure_in(&mut body, c, &cur, &cur_shape, &Shape::Bool)?;
+                let ty = self.e.odin(&cur_shape);
+                (format!("{res}: Maybe({ty})"), format!("if {cond} {{ {res} = {cur}; break }}"), res.clone())
+            }
+            "find_map" => {
+                let c = Self::closure_of(args.first().ok_or("find_map")?)?;
+                let out_shape = self.closure_shape(c, &cur, &cur_shape).ok_or("find_map closure of an untyped value")?;
+                let v = self.closure_in(&mut body, c, &cur, &cur_shape, &out_shape)?;
+                let ty = self.e.odin(&out_shape);
+                (format!("{res}: {ty}"), format!("if fm_ := {v}; fm_ != nil {{ {res} = fm_; break }}"), res.clone())
+            }
+            "position" => {
+                let c = Self::closure_of(args.first().ok_or("position")?)?;
+                let cond = self.closure_in(&mut body, c, &cur, &cur_shape, &Shape::Bool)?;
+                (format!("{res}: Maybe(int); p{n}_ := 0"), format!("if {cond} {{ {res} = p{n}_; break }}; p{n}_ += 1"), res.clone())
+            }
+            "count" if args.is_empty() => (format!("{res} := 0"), format!("{res} += 1"), res.clone()),
+            "sum" if args.is_empty() => {
+                let ty = self.e.odin(&cur_shape);
+                (format!("{res}: {ty}"), format!("{res} += {cur}"), res.clone())
+            }
+            _ => return Err("iterator terminal".into()),
+        };
+        self.pre.push(init);
+        let close = if pvec { "}}" } else { "}" };
+        let _ = close;
+        let mut lines = vec![format!("{head} {{")];
+        lines.extend(body);
+        lines.push(step);
+        if pvec {
+            lines.push("}}".into());
+        } else {
+            lines.push("}".into());
+        }
+        self.pre.push(lines.join("\n"));
+        Ok(value)
+    }
+
+    /// Library methods on collections and options, by receiver shape. None when the method isn't one of them.
+    fn library_method(&mut self, mc: &syn::ExprMethodCall) -> Option<R<String>> {
+        let m = mc.method.to_string();
+        let recv_shape = self.shape_of(&mc.receiver)?;
+        let args: Vec<&Expr> = mc.args.iter().collect();
+        let base = match &recv_shape {
+            Shape::Ptr(i, _) => (**i).clone(),
+            s => s.clone(),
+        };
+        let deref = if matches!(recv_shape, Shape::Ptr(..)) { "^" } else { "" };
+        let (pre_len, temps) = (self.pre.len(), self.temps);
+        let r = (|| -> R<String> {
+            let recv = self.expr(&mc.receiver, &recv_shape)?;
+            Ok(match (m.as_str(), &base, args.len()) {
+                ("len", Shape::Vec(_) | Shape::Str | Shape::Map(..), 0) if deref.is_empty() => format!("len({recv})"),
+                ("len", Shape::Vec(_) | Shape::Map(..), 0) => format!("(0 if {recv} == nil else len({recv}^))"),
+                ("len", Shape::PVec(_), 0) => format!("{recv}.len"),
+                ("is_empty", Shape::PVec(_), 0) => format!("({recv}.len == 0)"),
+                ("is_empty", Shape::Vec(_) | Shape::Map(..), 0) if !deref.is_empty() => format!("({recv} == nil || len({recv}^) == 0)"),
+                ("push", Shape::Vec(i), 1) if deref.is_empty() => {
+                    let v = self.expr(args[0], i)?;
+                    format!("append(&{recv}, {v})")
+                }
+                ("contains", Shape::Vec(i), 1) if deref.is_empty() => {
+                    let v = self.expr(args[0], i)?;
+                    format!("vec_contains({recv}[:], {v})")
+                }
+                ("first", Shape::Vec(_), 0) if deref.is_empty() => format!("vec_first({recv}[:])"),
+                ("last", Shape::Vec(_), 0) if deref.is_empty() => format!("vec_last({recv}[:])"),
+                ("unwrap" | "expect", Shape::Option(_), _) => format!("{recv}.?"),
+                ("unwrap_or", Shape::Option(i), 1) => {
+                    let d = self.expr(args[0], i)?;
+                    format!("({recv}.? or_else {d})")
+                }
+                ("unwrap_or_default", Shape::Option(i), 0) => {
+                    let d = self.e.default_expr(i).unwrap_or_else(|| format!("{}{{}}", self.e.odin(i)));
+                    format!("({recv}.? or_else {d})")
+                }
+                ("as_ref" | "as_deref" | "copied" | "cloned" | "as_mut", Shape::Option(_), 0) => recv,
+                ("is_some_and", Shape::Option(i), 1) | ("is_none_or", Shape::Option(i), 1) => {
+                    let c = Self::closure_of(args[0])?;
+                    self.temps += 1;
+                    let t = format!("o{}_", self.temps);
+                    let cond = self.closure_expr(c, &format!("{t}.?"), i, &Shape::Bool)?;
+                    self.pre.push(format!("{t} := {recv}"));
+                    if m == "is_some_and" {
+                        format!("({t} != nil && ({cond}))")
+                    } else {
+                        format!("({t} == nil || ({cond}))")
+                    }
+                }
+                _ => return Err(String::new()),
+            })
+        })();
+        match r {
+            Err(e) if e.is_empty() => {
+                // Not a library method: undo whatever translating the receiver hoisted.
+                self.pre.truncate(pre_len);
+                self.temps = temps;
+                None
+            }
+            other => Some(other),
+        }
     }
 }

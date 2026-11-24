@@ -324,6 +324,8 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
         let more_types = e.types_out[before..].to_string();
         std::fs::write(out_dir.join("generated_types_logic.odin"), format!("{HEADER}import \"../json\"\nimport \"../rng\"\n\n_ :: json\n_ :: rng\n\n{more_types}")).unwrap();
         body::report(&mut e, filter.as_deref(), Some(&out_dir.join("translated.odin")));
+        // Translation asked for more clone helpers; the clone file is written again with them.
+        std::fs::write(out_dir.join("generated_clone.odin"), format!("{HEADER}import \"../json\"\n\n_ :: json\n\n{}", e.clone_out)).unwrap();
     }
     for (n, users) in &e.unknown_shapes {
         println!("  unknown type {n} (in {})", users.iter().cloned().collect::<Vec<_>>().join(", "));
