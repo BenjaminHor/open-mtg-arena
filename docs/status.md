@@ -25,8 +25,13 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     align.patch` against dev-2026-11a (to offer upstream). Now: type check 6.6 s, debug build 9.7 s, `-o:speed`
     build 44 s (LLVM optimization 37 s). Generated code also calls procedures directly (no overload groups) and
     generic types are monomorphized.
-  - Next: the game-state root types (GameState and what the client exchanges: actions, WaitingFor, events) and a
-    saved-game round trip; then the recorder (O-1 second half).
+  - Game-state model sized (2026-11-24): roots GameState, GameAction, WaitingFor, GameEvent, ReplayLog (+ card data)
+    reach 1,410 types, 1,310 of them serialized (the rest are runtime caches behind `#[serde(skip)]`, type only). odingen
+    reads GameState through its `declare_game_state!` macro. Left to write by hand before it compiles: 23 codecs
+    (ManaPool, ObjectMap, ResolvedRulesJournal, GameFormat, PendingCoinFlip, ...), 44 default/skip functions, and ~10
+    types defined by macros or outside the model (InteractionId family, ActiveLibrarySearches, the ChaCha20 RNG).
+    GameState's own reading goes through GameStateDecode (migrations), so its codec is checked against today's saves.
+  - Next: those hand pieces, then a saved-game round trip, then the recorder (O-1 second half).
 - **D-177 import merged** (PR #116, squash bdd74cf, 2026-11-24, CI green). Pages deploys it from main (run 21,
   queued behind a now-redundant branch check build, run 20, that this session wasn't allowed to cancel). Next: once
   live, play it at https://benjaminhor.github.io/open-mtg-arena/ (phone sizes), ask the owner to try it on the

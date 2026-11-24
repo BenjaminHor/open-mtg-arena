@@ -192,8 +192,9 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
     for (n, path) in &e.with_reqs {
         println!("  with adapter: {n} ({path})");
     }
-    let hand_used: Vec<&String> = e.emitted.iter().filter(|n| e.hand.contains(*n)).collect();
-    println!("emitted {} types ({} need hand-written codecs)", e.emitted.len(), hand_used.len());
+    let hand_used: Vec<&String> = e.emitted.iter().filter(|n| e.hand.contains(*n) && e.wire.contains(*n)).collect();
+    let wire_count = e.emitted.iter().filter(|n| e.wire.contains(*n)).count();
+    println!("emitted {} types ({} serialized, {} of those with hand-written codecs)", e.emitted.len(), wire_count, hand_used.len());
     for n in &hand_used {
         println!("  hand: {n}");
     }

@@ -325,6 +325,22 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
                     }
                 }
             }
+            // types/game_state.rs declares GameState through `declare_game_state! { fields }`, which expands to
+            // `#[derive(Serialize)] pub struct GameState { fields }` (plus a raw mirror with the same fields that
+            // loading reads through), so the body is read as that struct's field list.
+            Item::Macro(m) if m.mac.path.is_ident("declare_game_state") => {
+                let tokens = &m.mac.tokens;
+                if let Ok(syn::Item::Struct(st)) = syn::parse2::<syn::Item>(quote::quote!(pub struct GameState { #tokens })) {
+                    reg.types.entry("GameState".into()).or_default().push(TypeDef {
+                        name: "GameState".into(),
+                        file: file.to_path_buf(),
+                        generics: vec![],
+                        kind: Kind::Struct(fields(&st.fields)),
+                        serde: Serde::default(),
+                        derives: vec!["Serialize".into(), "Deserialize".into()],
+                    });
+                }
+            }
             Item::Mod(m) if !is_cfg_test(&m.attrs) => {
                 if let Some((_, inner)) = &m.content {
                     visit_items(inner, file, reg);

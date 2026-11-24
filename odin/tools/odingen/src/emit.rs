@@ -178,6 +178,9 @@ pub struct Emitter<'a> {
     pub default_kind: BTreeMap<String, Option<String>>,
     pub defaults_out: String,
     pub manual_default_reqs: BTreeSet<String>,
+    /// Types reachable from the roots through serialized fields: only these get codecs. The others are reached
+    /// through `#[serde(skip)]` fields (runtime caches and indexes) and get an Odin type only.
+    pub wire: BTreeSet<String>,
     pub types_out: String,
     pub codec_out: String,
     pub emitted: BTreeSet<String>,
@@ -209,6 +212,7 @@ impl<'a> Emitter<'a> {
             default_kind: BTreeMap::new(),
             defaults_out: String::new(),
             manual_default_reqs: BTreeSet::new(),
+            wire: BTreeSet::new(),
             types_out: String::new(),
             codec_out: String::new(),
             emitted: BTreeSet::new(),
@@ -693,7 +697,67 @@ impl<'a> Emitter<'a> {
         result
     }
 
+    /// Walks serialized fields from the roots (skipped fields and variants left out; hand-coded types followed
+    /// through all their fields, conservatively).
+    fn compute_wire(&mut self, roots: &[&str]) {
+        let mut stack: Vec<String> = roots.iter().map(|r| r.to_string()).collect();
+        while let Some(n) = stack.pop() {
+            if !self.wire.insert(n.clone()) {
+                continue;
+            }
+            let mut defs: Vec<&TypeDef> = self.def(&n).into_iter().collect();
+            for alt in [self.codec_as.get(&n), self.decode_as.get(&n)].into_iter().flatten() {
+                if let Some(d) = self.def(alt) {
+                    defs.push(d);
+                }
+            }
+            let mut tys: Vec<Type> = Vec::new();
+            for d in defs {
+                let custom = !d.derives_serialize();
+                let mut take = |fs: &Fields| {
+                    if let Fields::Named(v) | Fields::Tuple(v) = fs {
+                        for f in v {
+                            if custom || !(f.serde.skip || (f.serde.skip_serializing && f.serde.skip_deserializing)) {
+                                tys.push(f.ty.clone());
+                            }
+                        }
+                    }
+                };
+                match &d.kind {
+                    Kind::Struct(fs) => take(fs),
+                    Kind::Enum(vs) => {
+                        for v in vs {
+                            if custom || !v.serde.skip {
+                                take(&v.fields);
+                            }
+                        }
+                    }
+                }
+            }
+            for t in tys {
+                let mut names = Vec::new();
+                crate::type_names(&t, &mut names);
+                for nm in names {
+                    let resolved = match self.reg.aliases.get(&nm) {
+                        Some(a) if !self.reg.types.contains_key(&nm) => {
+                            let mut inner = Vec::new();
+                            crate::type_names(&a[0].0, &mut inner);
+                            inner
+                        }
+                        _ => vec![nm],
+                    };
+                    for x in resolved {
+                        if self.reg.types.contains_key(&x) && !self.wire.contains(&x) {
+                            stack.push(x);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     pub fn run(&mut self, roots: &[&str]) {
+        self.compute_wire(roots);
         for r in roots {
             self.require(r);
         }
@@ -724,6 +788,10 @@ impl<'a> Emitter<'a> {
             };
             self.current = name.clone();
             self.emit_type(def);
+            let base = inst.as_ref().map(|(b, _)| b.clone()).unwrap_or(name.clone());
+            if !self.wire.contains(&base) {
+                continue;
+            }
             if self.hand.contains(&name) {
                 // Hand-written codecs call the same per-type helpers for their fields, so make sure they exist.
                 let mut field_tys = Vec::new();
