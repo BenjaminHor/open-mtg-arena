@@ -126,7 +126,10 @@ mana_sources :: proc(s: ^types.GameState, p: types.PlayerId, exclude: types.Obje
 		// than `worst`.
 		src := Mana_Source{object = o, options = make([dynamic]Mana_Option, context.temp_allocator)}
 		for a in o.abilities^ {
-			if option, ok := mana_ability_option(a); ok && option.rider <= worst {
+			option, ok := mana_ability_option(a)
+			// CR 119.4: life can be paid only up to the player's life total.
+			if ok && option.rider == .Life && int(player(s, p).life) < option.rider_amount do ok = false
+			if ok && option.rider <= worst {
 				src.colors += option.colors
 				src.amount = option.amount if src.amount == 0 else min(src.amount, option.amount)
 				append(&src.options, option)
@@ -272,6 +275,18 @@ mana_value :: proc(cost: types.ManaCost) -> int {
 			n += 2
 		case:
 			n += 1
+		}
+	}
+	return n
+}
+
+// CR 202.3e: an object's mana value, X counted as the announced value while it's on the stack (0 elsewhere).
+object_mana_value :: proc(o: ^types.GameObject) -> int {
+	n := mana_value(o.mana_cost)
+	if o.zone == .Stack {
+		if c, ok := o.mana_cost.(types.ManaCost_Cost); ok {
+			x := int(o.cost_x_paid.? or_else 0)
+			for shard in c.shards do if shard == .X do n += x
 		}
 	}
 	return n

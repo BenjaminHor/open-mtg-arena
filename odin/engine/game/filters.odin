@@ -180,7 +180,7 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 			if keyword_in(o, x.value) do return false
 		case types.FilterProp_Cmc:
 			n, _ := fixed_quantity(x.value)
-			if !compare(mana_value(o.mana_cost), x.comparator, n) do return false
+			if !compare(object_mana_value(o), x.comparator, n) do return false
 		case types.FilterProp_PtComparison:
 			n, _ := fixed_quantity(x.value)
 			v: Maybe(i32)
@@ -223,7 +223,7 @@ spell_targets_one :: proc(s: ^types.GameState, spell: types.ObjectId, f: types.T
 		if e.id != spell do continue
 		k, is_spell := e.kind.(types.StackEntryKind_Spell)
 		if !is_spell || k.ability == nil do return false
-		for t in k.ability.targets {
+		for node := k.ability; node != nil; node = node.sub_ability do for t in node.targets {
 			id, is_object := t.(types.TargetRef_Object)
 			if !is_object do continue
 			#partial switch x in f {

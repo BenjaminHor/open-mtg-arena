@@ -2846,7 +2846,7 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   change the plan. Keep translator internals, percentages and per-fix detail in this file and the commits.
 
 ## Known issues
-- (2026-11-24, Odin engine, rules-judge review of bdedbc4..cceba79) Being fixed now: (1) a dies trigger's intervening
+- (2026-11-24, Odin engine, rules-judge review of bdedbc4..cceba79) Fixed, with tests (1-5, 7, 8): (1) a dies trigger's intervening
   "if" read the card in the graveyard, not the creature as it last existed (CR 603.10a, 608.2h; Deathknell
   Berserker); (2) mana value ignored X on the stack (CR 202.3e); (3) a mass "creatures can't block this turn" was
   locked to the creatures present on resolution (CR 611.2c); (4) heroic missed targets of a spell's later

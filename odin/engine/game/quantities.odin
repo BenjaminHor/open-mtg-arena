@@ -105,7 +105,7 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			return int(player(s, scope_player(s, r.player, controller)).life)
 		case types.QuantityRef_ObjectManaValue:
 			// CR 202.3: the mana value of the object.
-			if o := scope_object(s, r.scope, source, target); o != nil do return mana_value(o.mana_cost)
+			if o := scope_object(s, r.scope, source, target); o != nil do return object_mana_value(o)
 		case types.QuantityRef_ZoneCardCount:
 			// "The number of creature cards in your graveyard": cards of any of the listed types.
 			n := 0

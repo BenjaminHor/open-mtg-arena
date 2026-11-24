@@ -25,6 +25,7 @@ Event :: struct {
 	target:     types.TargetRef, // Damage: what was dealt damage
 	amount:     int,
 	combat:     bool,
+	lki:        ^types.GameObject, // Zone_Change from the battlefield: the permanent as it last existed (CR 608.2h)
 }
 
 // A triggered ability waiting to be put on the stack (CR 603.3).
@@ -32,6 +33,13 @@ Pending_Trigger :: struct {
 	source:     types.ObjectId,
 	controller: types.PlayerId,
 	definition: ^types.TriggerDefinition,
+	lki:        ^types.GameObject, // a leaves-the-battlefield trigger's source as it last existed (CR 603.10a)
+}
+
+// A triggered ability on the stack whose intervening "if" is checked again as it resolves (CR 603.4).
+Stack_Condition :: struct {
+	definition: ^types.TriggerDefinition,
+	lki:        ^types.GameObject,
 }
 
 // ---- What's supported --------------------------------------------------------------------------------------
@@ -277,7 +285,8 @@ zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.Trigg
 		return
 	}
 	if !turn_constraint_met(s, t^, controller) do return
-	add_trigger(g, source.id, controller, t)
+	// CR 603.10a: a leaves-the-battlefield ability looks back at the permanent as it last existed.
+	add_trigger(g, source.id, controller, t, e.lki if is_self && e.from == .Battlefield else nil)
 }
 
 turn_constraint_met :: proc(s: ^types.GameState, t: types.TriggerDefinition, controller: types.PlayerId) -> bool {
@@ -292,10 +301,21 @@ turn_constraint_met :: proc(s: ^types.GameState, t: types.TriggerDefinition, con
 	return false
 }
 
-add_trigger :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, t: ^types.TriggerDefinition) {
+add_trigger :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, t: ^types.TriggerDefinition, lki: ^types.GameObject = nil) {
 	// CR 603.4: with an intervening "if", the ability triggers only if the condition is true now.
-	if c, has := t.condition.?; has && !trigger_condition_holds(&g.state, source, controller, c) do return
-	append(&g.pending_triggers, Pending_Trigger{source = source, controller = controller, definition = t})
+	if c, has := t.condition.?; has && !condition_holds_as_was(&g.state, source, controller, c, lki) do return
+	append(&g.pending_triggers, Pending_Trigger{source = source, controller = controller, definition = t, lki = lki})
+}
+
+// The condition, read from the source as it last existed when it has left the battlefield (CR 603.10a, 608.2h).
+condition_holds_as_was :: proc(s: ^types.GameState, source: types.ObjectId, controller: types.PlayerId, c: types.TriggerCondition, lki: ^types.GameObject) -> bool {
+	if lki != nil {
+		now := s.objects.inner[source]
+		s.objects.inner[source] = lki
+		defer s.objects.inner[source] = now
+		return trigger_condition_holds(s, source, controller, c)
+	}
+	return trigger_condition_holds(s, source, controller, c)
 }
 
 // ---- Intervening "if" conditions (CR 603.4) -----------------------------------------------------------------
@@ -393,7 +413,7 @@ place_triggers :: proc(g: ^Game) -> bool {
 		// CR 603.3d: an ability that needs a target and has none legal is removed from the stack.
 		if !complete do continue
 		id := push_ability(g, pt.source, pt.controller, pt.definition.execute, targets[:], true, counts[:])
-		if pt.definition.condition != nil do g.stack_conditions[id] = pt.definition
+		if pt.definition.condition != nil do g.stack_conditions[id] = Stack_Condition{pt.definition, pt.lki}
 	}
 	return true
 }
@@ -477,7 +497,7 @@ resolve_ability :: proc(g: ^Game, entry: types.StackEntry, resolved: ^types.Reso
 	// CR 603.4: the intervening "if" is checked again as the ability resolves; if false, it does nothing.
 	if t, has := g.stack_conditions[entry.id]; has {
 		delete_key(&g.stack_conditions, entry.id)
-		if !trigger_condition_holds(&g.state, entry.source_id, entry.controller, t.condition.?) {
+		if !condition_holds_as_was(&g.state, entry.source_id, entry.controller, t.definition.condition.?, t.lki) {
 			delete_key(&g.stack_abilities, entry.id)
 			return
 		}

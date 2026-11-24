@@ -777,7 +777,10 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 	for a in face.abilities {
 		switch a.kind {
 		case .Spell:
-			if !spell_ability_supported(a) do ability_gaps(&out, a, "spell")
+			x_defined = has_x(face.mana_cost)
+			supported := spell_ability_supported(a)
+			x_defined = false
+			if !supported do ability_gaps(&out, a, "spell")
 		case .Activated:
 			if _, _, ok := tap_mana_ability(a); !ok && !activated_supported(a) {
 				if a.effect != nil && !ability_supported(a) do ability_gaps(&out, a, "activated")

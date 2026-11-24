@@ -910,3 +910,71 @@ two_targets_must_be_different :: proc(t: ^testing.T) {
 	add(t, g, "Hill Giant", 1, .Battlefield)
 	testing.expect(t, game.castable(&g.state, 0, ashes, g.card_db), "two are")
 }
+
+@(test)
+dies_trigger_looks_back_at_power :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 603.10a, 603.4, 608.2h: Deathknell Berserker (2/2): "When this creature dies, if its power was 3 or
+	// greater, ..." reads the creature as it last existed on the battlefield, pumps included.
+	dies :: proc(t: ^testing.T, pumped: bool) -> int {
+		g := new_game()
+		b := add(t, g, "Deathknell Berserker", 0, .Battlefield)
+		testing.expect(t, game.card_supported(&card(t, "Deathknell Berserker").face))
+		if pumped do game.pump(g, b, 1, 0)
+		game.destroy(g, b)
+		game.give_priority(g, 0)
+		game.apply(g, 0, types.GameAction_PassPriority{})
+		game.apply(g, 1, types.GameAction_PassPriority{})
+		tokens := 0
+		for id in game.ids_of(g.state.battlefield) do if game.object(&g.state, id).is_token do tokens += 1
+		return tokens
+	}
+	testing.expect(t, dies(t, true) == 1, "3 power as it died: a Zombie")
+	testing.expect(t, dies(t, false) == 0, "2 power: nothing")
+}
+
+@(test)
+creatures_cant_block_this_turn_includes_later_ones :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 611.2c: "Creatures without flying can't block this turn" changes the rules, not the creatures, so a
+	// creature that arrives afterwards can't block either.
+	g := new_game()
+	for _ in 0 ..< 2 do add(t, g, "Mountain", 0, .Battlefield)
+	chasm := add(t, g, "Magmatic Chasm", 0, .Hand)
+	attacker := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	before := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = chasm.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	later := add(t, g, "Hill Giant", 1, .Battlefield)
+	testing.expect(t, !game.can_block(g, before, attacker) && !game.can_block(g, later, attacker), "neither can block")
+	game.end_until_end_of_turn_effects(g)
+	testing.expect(t, game.can_block(g, later, attacker), "next turn it can")
+}
+
+@(test)
+pay_life_mana_needs_the_life :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 119.4: a player can pay life only up to their life total. Abandoned Outpost-style sacrifice aside, a
+	// "{T}, Pay 1 life: Add one mana of any color" source can't pay at 0 life.
+	g := new_game()
+	add(t, g, "Mana Confluence", 0, .Battlefield)
+	lions := add(t, g, "Savannah Lions", 0, .Hand)
+	testing.expect(t, game.castable(&g.state, 0, lions, g.card_db), "1 life paid at 20")
+	game.player(&g.state, 0).life = 0
+	testing.expect(t, !game.castable(&g.state, 0, lions, g.card_db), "no life to pay")
+}
+
+@(test)
+mana_value_counts_x_on_the_stack :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 202.3e: X is the announced value while the spell is on the stack, 0 elsewhere.
+	g := new_game()
+	for _ in 0 ..< 5 do add(t, g, "Mountain", 0, .Battlefield)
+	blaze := add(t, g, "Blaze", 0, .Hand) // {X}{R}
+	testing.expect(t, game.object_mana_value(blaze) == 1, "in hand: 1")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = blaze.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseX{value = 4}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	testing.expect(t, game.object_mana_value(blaze) == 5, "on the stack with X = 4: 5")
+}

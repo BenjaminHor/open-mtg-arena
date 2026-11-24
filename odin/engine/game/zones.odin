@@ -1,6 +1,7 @@
 // Objects and zones (CR 400): finding objects, and moving them between zones.
 package game
 
+import "core:slice"
 import types "../types"
 
 object :: proc(s: ^types.GameState, id: types.ObjectId) -> ^types.GameObject {
@@ -75,6 +76,14 @@ move_object :: proc(g: ^Game, id: types.ObjectId, to: types.Zone) {
 		unattach(s, o)
 	}
 	last_controller := o.controller // CR 603.10: a leaves-the-battlefield trigger looks back at the object as it was
+	lki: ^types.GameObject
+	if from == .Battlefield {
+		// CR 608.2h: its last known information, kept for abilities that look back at it.
+		lki = new(types.GameObject)
+		lki^ = o^
+		lki.counters = slice.clone_to_dynamic(o.counters[:])
+		lki.attachments = slice.clone_to_dynamic(o.attachments[:])
+	}
 	o.zone = to
 	o.incarnation += 1
 	o.tapped = false
@@ -103,7 +112,7 @@ move_object :: proc(g: ^Game, id: types.ObjectId, to: types.Zone) {
 		types.pvec_push(list, id, copy_id)
 	}
 	// CR 603.2, 603.6: a zone change is an event abilities can trigger on.
-	append(&g.events, Event{kind = .Zone_Change, object = id, from = from, to = to, controller = last_controller})
+	append(&g.events, Event{kind = .Zone_Change, object = id, from = from, to = to, controller = last_controller, lki = lki})
 }
 
 // Back to the printed characteristics (CR 613: no continuous effects apply to the new object yet).

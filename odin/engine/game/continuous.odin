@@ -247,6 +247,11 @@ Temp_Effect :: struct {
 	modifications: []types.ContinuousModification,
 	permanent:     bool, // lasts for the game (CR 611.2a) rather than until end of turn
 	modes:         bit_set[Rule_Mode], // a rule it states for the object: "can't block this turn" (CR 611.2)
+	// A rule for every permanent of a kind ("creatures can't block this turn"): object is 0 and this is the
+	// description, read when the rule is checked (CR 611.2c), from the point of view of `controller` and `source`.
+	filter:        Maybe(types.TypedFilter),
+	controller:    types.PlayerId,
+	source:        types.ObjectId,
 }
 
 generic_effect_supported :: proc(e: types.Effect_GenericEffect) -> bool {
@@ -291,12 +296,17 @@ add_temp_effect :: proc(g: ^Game, e: types.Effect_GenericEffect, controller: typ
 		append(&mods, ..st.modifications[:])
 		affected, _ := st.affected.?
 		objects := make([dynamic]^types.GameObject, context.temp_allocator)
-		#partial switch _ in affected {
+		#partial switch x in affected {
 		case types.TargetFilter_ParentTarget:
 			if target != nil do append(&objects, target)
 		case types.TargetFilter_SelfRef:
 			if o := object(s, source); o != nil && o.zone == .Battlefield do append(&objects, o)
 		case types.TargetFilter_Typed:
+			if rules_only(st) {
+				// CR 611.2c: changing only the rules, it applies to whatever fits, including later arrivals.
+				append(&g.temp_effects, Temp_Effect{modifications = mods[:], permanent = permanent, modes = rule_modes(st.mode), filter = x._0, controller = controller, source = source})
+				continue
+			}
 			append(&objects, ..affected_permanents(s, affected, controller, source)[:])
 		}
 		for o in objects do if o.zone == .Battlefield {
@@ -356,4 +366,11 @@ condition_holds :: proc(s: ^types.GameState, source: ^types.GameObject, c: Maybe
 		return n >= x.minimum
 	}
 	return false
+}
+
+// A granted ability that only states a rule ("can't block"), changing no characteristics (CR 611.2c).
+rules_only :: proc(st: types.StaticDefinition) -> bool {
+	if _, continuous := st.mode.(types.StaticMode_Continuous); continuous && len(st.modifications) == 0 do return false
+	for m in st.modifications do if _, mode := m.(types.ContinuousModification_AddStaticMode); !mode do return false
+	return true
 }
