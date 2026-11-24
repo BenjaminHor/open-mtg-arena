@@ -635,13 +635,30 @@ create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId
 	o.power = pt(s, e.power, controller, source)
 	o.toughness = pt(s, e.toughness, controller, source)
 	statics := new([dynamic]types.StaticDefinition)
-	append(statics, ..e.static_abilities[:])
+	own_abilities: [dynamic]types.AbilityDefinition
+	own_triggers := new([dynamic]types.TriggerEntry)
+	for st in e.static_abilities {
+		if !own_grant(st) {
+			append(statics, st)
+			continue
+		}
+		for m in st.modifications {
+			#partial switch x in m {
+			case types.ContinuousModification_GrantAbility:
+				append(&own_abilities, x.definition^)
+			case types.ContinuousModification_GrantTrigger:
+				append(own_triggers, types.TriggerEntry{definition = x.trigger^})
+			}
+		}
+	}
 	o.static_definitions = types.Definitions_StaticDefinition(statics)
 	o.base_static_definitions = statics
+	o.trigger_definitions = types.Definitions_TriggerEntry(own_triggers)
 	o.layer_base_power, o.layer_base_toughness = o.power, o.toughness
 	o.tapped = e.tapped
 	abilities := new([dynamic]types.AbilityDefinition)
 	abilities^ = predefined_abilities(predefined_kind(o.card_types.subtypes[:])) // CR 111.10
+	append(abilities, ..own_abilities[:])
 	o.abilities = abilities
 	o.base_name, o.base_card_types, o.base_keywords, o.base_color = o.name, o.card_types, o.keywords, o.color
 	o.base_power, o.base_toughness, o.base_abilities = o.power, o.toughness, o.abilities
@@ -732,4 +749,35 @@ is_an_opponent :: proc(f: types.TargetFilter) -> bool {
 		return has && opp && len(x._0.type_filters) == 0 && len(x._0.properties) == 0
 	}
 	return false
+}
+
+// A token "with '[ability]'" (CR 111.4: the effect sets the token's characteristics): a static on itself that only
+// grants it an activated ability or a trigger is simply that ability of the token.
+own_grant :: proc(st: types.StaticDefinition) -> bool {
+	if _, continuous := st.mode.(types.StaticMode_Continuous); !continuous || st.condition != nil || len(st.modifications) == 0 do return false
+	aff, has := st.affected.?
+	if !has || !is_self(aff) do return false
+	for m in st.modifications {
+		#partial switch _ in m {
+		case types.ContinuousModification_GrantAbility, types.ContinuousModification_GrantTrigger:
+		case:
+			return false
+		}
+	}
+	return true
+}
+
+own_grant_supported :: proc(st: types.StaticDefinition) -> bool {
+	if !own_grant(st) do return false
+	for m in st.modifications {
+		#partial switch x in m {
+		case types.ContinuousModification_GrantAbility:
+			if x.definition == nil do return false
+			a := x.definition^
+			if _, _, mana := tap_mana_ability(a); !mana && !activated_supported(a) do return false
+		case types.ContinuousModification_GrantTrigger:
+			if x.trigger == nil || !trigger_supported(x.trigger^) do return false
+		}
+	}
+	return true
 }

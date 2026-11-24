@@ -126,7 +126,7 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return fixed && (!has || you)
 	case types.Effect_Token:
 		_, you := x.owner.(types.TargetFilter_Controller)
-		for st in x.static_abilities do if !static_supported(st) && !static_mode_supported(st) do return false
+		for st in x.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !own_grant_supported(st) do return false
 		for k in x.keywords do if !keyword_supported(k) do return false
 		return quantity_supported(x.count) && pt_supported(x.power) && pt_supported(x.toughness) && you && x.attach_to == nil && predefined_token_supported(x) &&
 			!x.enters_attacking && len(x.enter_with_counters) == 0

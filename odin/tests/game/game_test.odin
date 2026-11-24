@@ -1469,3 +1469,23 @@ enchanted_creature_deals_damage :: proc(t: ^testing.T) {
 	testing.expect(t, game.player(&g.state, 1).life == 18, "2 combat damage")
 	testing.expect(t, types.pvec_len(pl.library) == library - 1, "Curiosity drew a card")
 }
+
+@(test)
+token_with_its_own_trigger :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 111.4: Pest Summoning makes two Pests "with 'When this creature dies, you gain 1 life.'"
+	g := new_game()
+	for _ in 0 ..< 3 do add(t, g, "Swamp", 0, .Battlefield)
+	summoning := add(t, g, "Pest Summoning", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = summoning.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	pests := make([dynamic]^types.GameObject, context.temp_allocator)
+	for id in game.ids_of(g.state.battlefield) do if o := game.object(&g.state, id); o.is_token do append(&pests, o)
+	testing.expect(t, len(pests) == 2, "two Pests")
+	if len(pests) == 0 do return
+	game.destroy(g, pests[0])
+	game.give_priority(g, 0)
+	for types.pvec_len(g.state.stack) > 0 do game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, game.player(&g.state, 0).life == 21, "its dies trigger: 1 life")
+}
