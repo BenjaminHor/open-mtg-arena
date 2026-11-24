@@ -2861,6 +2861,14 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   change the plan. Keep translator internals, percentages and per-fix detail in this file and the commits.
 
 ## Known issues
+- (2026-11-24, Odin engine, rules-judge review of 9ab9548..7429070) Being fixed now: (1) "sacrifice this" and
+  "exile this" acted on the new object after a blink (CR 400.7); (2) a blinked token came back (CR 111.8) and
+  exiled tokens never ceased to exist (CR 704.5d); (3) accepting an impossible "you may" counted as "if you do"
+  (CR 608.2d); (4) a Treasure could pay mana and be sacrificed for the same spell's additional cost (CR 601.2h);
+  (5) filter comparisons against a target's amount were evaluated with no target (Fell the Mighty); (6)
+  activation cost reductions were ignored (channel lands); (7) legal actions listed no choose-two modes; mode
+  order cited 700.2d instead of 608.2c; spell-cast records said "hand" for commanders; a scoped instruction's
+  condition was rechecked after each player.
 - (2026-11-24, Odin engine, rules-judge review of bdedbc4..cceba79) Fixed, with tests (1-5, 7, 8): (1) a dies trigger's intervening
   "if" read the card in the graveyard, not the creature as it last existed (CR 603.10a, 608.2h; Deathknell
   Berserker); (2) mana value ignored X on the stack (CR 202.3e); (3) a mass "creatures can't block this turn" was
