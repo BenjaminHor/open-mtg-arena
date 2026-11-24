@@ -30,6 +30,13 @@ fn main() {
         std::process::exit(2);
     }
     let every: usize = args.get(2).map(|s| s.parse().expect("every-nth-state")).unwrap_or(25);
+    println!(
+        "size_of: GameState {}, GameObject {}, ResolvedCommandJournalEntry {}, ZoneChangeRecord {}",
+        std::mem::size_of::<GameState>(),
+        std::mem::size_of::<engine::game::game_object::GameObject>(),
+        std::mem::size_of::<engine::types::resolved_commands::ResolvedCommandJournalEntry>(),
+        std::mem::size_of::<engine::types::game_state::ZoneChangeRecord>(),
+    );
     let file = std::io::BufReader::new(std::fs::File::open(&args[1]).expect("recording"));
 
     let (mut states, mut clone_ns, mut write_ns, mut lookup_ns, mut objects) = (0u64, 0f64, 0f64, 0f64, 0u64);

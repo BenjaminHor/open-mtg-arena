@@ -220,7 +220,8 @@ bar is 2x, so the layout isn't settled. Where the time goes (same day):
   `spells_cast_this_game_by_player`, `sacrificed_permanents_this_turn`, `transient_continuous_effects`,
   `attribution` (all `im::Vector`/`im::HashMap`, O(1) to clone in Rust), then `objects` (an Odin map rebuilt).
 - Odin's types are fat where Rust boxes: GameState 19.8 KB, GameObject 8.9 KB, ZoneChangeRecord 2.9 KB, a journal
-  entry 432 B (a tagged union is as large as its largest variant). Rust's sizes to compare next (clone-bench).
+  entry 432 B (a tagged union is as large as its largest variant). Rust's (clone-bench): 16.2 KB, 5.8 KB, 2.0 KB,
+  288 B, so Odin's are 1.2–1.5x; the gap is in what gets copied, not mainly in size.
 - Object ids are dense: ids 1..N with a few gaps (next_object_id at most ~15 past the count in the recordings).
 Next design step, from these: carry the collection kind in odingen's shapes (`Vec`, `im::Vector`, `im::HashMap`,
 ordered maps; also the ordered-map follow-up), give the `im` collections their own Odin types behind a small API so
