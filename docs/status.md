@@ -38,13 +38,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     (full state per step), kept out of the repo for now.
   - Next: the replay harness (O-2): an Odin runner that loads a recording and, as logic is ported, applies each
     action and compares the state; a compact checkpoint form and a committed small corpus; then O-3, the core slice.
-- **D-177 import merged** (PR #116, squash bdd74cf, 2026-11-24, CI green). Pages deploys it from main (run 21,
-  queued behind a now-redundant branch check build, run 20, that this session wasn't allowed to cancel). Next: once
-  live, play it at https://benjaminhor.github.io/open-mtg-arena/ (phone sizes), ask the owner to try it on the
-  MacBook and the unfolded Duo, then write the Rust→Odin port plan as its own milestones for approval (D-178:
-  reference games recorded from the Rust engine, vertical slices behind the client's interface, build times
-  measured on the first slice). Plan: docs/odin-port.md, its shape approved (D-179: parser stays Rust, bit-exact
-  RNG, AI later). Next after the deploy: O-0, the go/no-go spike.
+- **D-177 import merged** (PR #116, squash bdd74cf, 2026-11-24, CI green). **Live** (Pages run 21 succeeded 03:37 UTC;
+  checked 04:55 UTC with Playwright at 915x412 landscape phone: the home page loads in ~8 s with no errors, Play vs AI
+  → Random Deck → Start Match plays a Commander game through the die roll, play-first choice and opening turns to the
+  cleanup discard, card art loading). Remaining from the plan: ask the owner to try it at
+  https://benjaminhor.github.io/open-mtg-arena/ on the
+  MacBook and the unfolded Duo. The port plan is docs/odin-port.md (D-179), now under way (D-180).
 - **O-0 spike plan (2026-11-24, written before starting).** Go/no-go questions, each with a measurement:
   1. Toolchain: Odin `dev-2026-11a` built from source here (GitHub release downloads are blocked in this container;
      anonymous git clone works; LLVM 18 present). Pin the tag; CI builds or caches the same.
