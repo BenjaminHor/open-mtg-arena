@@ -1351,3 +1351,28 @@ cycling_from_the_hand :: proc(t: ^testing.T) {
 	add(t, g, "Swamp", 0, .Battlefield)
 	for &a, i in on_battlefield.abilities^ do if a.activation_zone != nil do testing.expect(t, !game.can_activate(g, 0, on_battlefield, i), "not from the battlefield")
 }
+
+@(test)
+additional_cost_sacrifice :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 601.2b, 601.2h: Village Rites: "As an additional cost to cast this spell, sacrifice a creature. Draw two
+	// cards." Without a creature it can't be cast; the sacrifice is chosen and paid as it's cast.
+	g := new_game()
+	add(t, g, "Swamp", 0, .Battlefield)
+	rites := add(t, g, "Village Rites", 0, .Hand)
+	testing.expect(t, game.card_supported(&card(t, "Village Rites").face))
+	testing.expect(t, !game.castable(&g.state, 0, rites, g.card_db), "no creature to sacrifice")
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	pl := game.player(&g.state, 0)
+	hand := types.pvec_len(pl.hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = rites.id}))
+	w, asked := g.state.waiting_for.(types.WaitingFor_PayCost)
+	testing.expect(t, asked && len(w.choices) == 1, "what to sacrifice")
+	pick: [dynamic]types.ObjectId
+	append(&pick, bears.id)
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = pick}))
+	testing.expect(t, bears.zone == .Graveyard && rites.zone == .Stack, "sacrificed as it was cast")
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, types.pvec_len(pl.hand) == hand - 1 + 2, "two cards drawn")
+}

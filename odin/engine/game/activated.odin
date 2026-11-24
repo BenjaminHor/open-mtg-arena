@@ -143,9 +143,13 @@ Object_Cost :: struct {
 }
 
 object_cost :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, a: ^types.AbilityDefinition) -> (Object_Cost, bool) {
-	s := &g.state
+	cost, has := a.cost.?
+	if !has do return {}, false
+	return object_cost_of(&g.state, p, o, cost)
+}
+
+object_cost_of :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, cost: types.AbilityCost) -> (Object_Cost, bool) {
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
-	cost, _ := a.cost.?
 	cost_parts(cost, &parts)
 	for part in parts {
 		#partial switch x in part {
@@ -244,11 +248,7 @@ pay_activation :: proc(g: ^Game, p: types.PlayerId) {
 	o := object(s, g.pending.object)
 	a := activated_ability(o, g.pending.ability_index)
 	if c, has := object_cost(g, p, o, a); has && !g.pending.cost_chosen {
-		choices := make([dynamic]types.ObjectId)
-		append(&choices, ..c.choices[:])
-		kind: types.PayCostKind = types.PayCostKind_Sacrifice{}
-		if c.kind == .Discard do kind = types.PayCostKind_Discard{}
-		s.waiting_for = types.WaitingFor_PayCost{player = p, kind = kind, choices = choices, count = c.count, min_count = c.count, resume = types.CostResume_Resolution{}}
+		ask_cost_objects(g, p, c)
 		return
 	}
 	finish_activation(g, p, g.pending.object, g.pending.ability_index, g.pending.targets[:])
@@ -262,8 +262,18 @@ answer_cost_choice :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_PayC
 	g.pending.cost_objects = make([dynamic]types.ObjectId)
 	append(&g.pending.cost_objects, ..chosen)
 	g.pending.cost_chosen = true
-	pay_activation(g, p)
+	if g.pending.ability_index >= 0 do pay_activation(g, p)
+	else do next_target_or_finish(g, p) // a spell's additional cost (CR 601.2h)
 	return true
+}
+
+// The PayCost prompt for a cost that has the player choose objects.
+ask_cost_objects :: proc(g: ^Game, p: types.PlayerId, c: Object_Cost) {
+	choices := make([dynamic]types.ObjectId)
+	append(&choices, ..c.choices[:])
+	kind: types.PayCostKind = types.PayCostKind_Sacrifice{}
+	if c.kind == .Discard do kind = types.PayCostKind_Discard{}
+	g.state.waiting_for = types.WaitingFor_PayCost{player = p, kind = kind, choices = choices, count = c.count, min_count = c.count, resume = types.CostResume_Resolution{}}
 }
 
 // CR 602.2h: the costs are paid; the ability is activated and its controller gets priority (CR 117.3c).
@@ -315,3 +325,5 @@ discards_itself :: proc(a: types.AbilityDefinition) -> bool {
 	for part in parts do if d, ok := part.(types.AbilityCost_Discard); ok && d.self_scope == .SourceCard do return true
 	return false
 }
+
+cost_parts_of :: proc(c: types.AbilityCost, out: ^[dynamic]types.AbilityCost) {cost_parts(c, out)}
