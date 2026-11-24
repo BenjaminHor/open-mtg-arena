@@ -8,6 +8,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
+- **D-177 import merged** (PR #116, squash bdd74cf, 2026-11-24, CI green). Pages deploys it from main (run 21,
+  queued behind a now-redundant branch check build, run 20, that this session wasn't allowed to cancel). Next: once
+  live, play it at https://benjaminhor.github.io/open-mtg-arena/ (phone sizes), ask the owner to try it on the
+  MacBook and the unfolded Duo, then write the Rust→Odin port plan as its own milestones for approval (D-178:
+  reference games recorded from the Rust engine, vertical slices behind the client's interface, build times
+  measured on the first slice).
 - **M3 — First playable**, started 2026-11-22 (owner: "Get started"; Arena is the North Star, expect heavy UI
   refinement). Phase 1: M3-01 match host, M3-02 heuristic AI, M3-03 web scaffold, M3-04 landscape phone board.
   M3-01 plan, one PR per slice:
