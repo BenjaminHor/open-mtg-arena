@@ -405,6 +405,24 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
                         }
                     }
                     let tname = trait_path.segments.last().map(|s| s.ident.to_string()).unwrap_or_default();
+                    // An engine trait's methods (`impl ObjectIncarnationRefExt for ObjectIncarnationRef`) are
+                    // registered on the type like inherent ones; a name an inherent method or another trait also
+                    // gives the type is then ambiguous, which resolution refuses. Standard traits stay out: their
+                    // methods (`from`, `eq`, `fmt`, ...) are the language's, not engine logic.
+                    if !STD_TRAITS.contains(&tname.as_str()) && trait_path.segments.len() == 1 && !is_cfg_test(&i.attrs) {
+                        if let Some(n) = self_type_name(&i.self_ty) {
+                            for it in &i.items {
+                                if let syn::ImplItem::Fn(f) = it {
+                                    reg.fns.entry((Some(n.clone()), f.sig.ident.to_string())).or_default().push(FnDef {
+                                        sig: f.sig.clone(),
+                                        block: f.block.clone(),
+                                        file: file.to_path_buf(),
+                                        self_ty: Some(n.clone()),
+                                    });
+                                }
+                            }
+                        }
+                    }
                     if tname == "Serialize" || tname == "Deserialize" {
                         if let Some(n) = self_type_name(&i.self_ty) {
                             reg.custom_impls.entry(n).or_default().push(file.to_path_buf());
@@ -470,3 +488,13 @@ pub fn scan_file_type(path: &Path, name: &str) -> Option<TypeDef> {
     visit_items(&f.items, path, &mut reg);
     reg.types.remove(name)?.into_iter().next()
 }
+
+/// Traits of the standard library and serde whose impls aren't engine logic to translate.
+const STD_TRAITS: &[&str] = &[
+    "Default", "Serialize", "Deserialize", "PartialEq", "Eq", "PartialOrd", "Ord", "Hash", "Debug", "Display",
+    "Clone", "Copy", "From", "Into", "TryFrom", "TryInto", "Iterator", "IntoIterator", "DoubleEndedIterator",
+    "ExactSizeIterator", "Deref", "DerefMut", "AsRef", "AsMut", "Borrow", "BorrowMut", "FromStr", "Drop", "Add",
+    "Sub", "Mul", "Div", "Rem", "Neg", "Not", "BitAnd", "BitOr", "BitXor", "AddAssign", "SubAssign", "MulAssign",
+    "Index", "IndexMut", "Extend", "FromIterator", "Error", "Fn", "FnMut", "FnOnce", "Send", "Sync", "Visitor",
+    "Sum", "Product",
+];
