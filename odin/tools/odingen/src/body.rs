@@ -65,10 +65,17 @@ fn signature_with(tx: &mut Tx, owner: Option<&str>, f: &FnDef, extra: &[String])
             }
         }
     }
-    if matches!(&f.sig.output, ReturnType::Type(_, t) if returns_mut_ref(t)) {
+    // `&mut T` / `Option<&mut T>` results are pointers into the caller's data (MutRef); other borrowed-mutable
+    // results (in tuples, iterators) aren't handled.
+    let mut_ret = match &f.sig.output {
+        ReturnType::Type(_, t) => tx.mut_ref_result(t, owner),
+        ReturnType::Default => None,
+    };
+    if mut_ret.is_none() && matches!(&f.sig.output, ReturnType::Type(_, t) if returns_mut_ref(t)) {
         return Err("returns a mutable reference".into());
     }
     let ret = match &f.sig.output {
+        _ if mut_ret.is_some() => mut_ret.clone().unwrap(),
         ReturnType::Default => Shape::Unit,
         ReturnType::Type(_, t) => self_shape(tx, t, owner).map_err(|e| format!("return {e}"))?,
     };
@@ -437,6 +444,17 @@ impl Body<'_, '_, '_> {
             .ok_or_else(|| format!("let of an untyped value: {}", expr_kind(&init.expr)))?,
         };
         let sh = check(self.tx, sh)?;
+        // A `&mut` result (`let o = state.objects.get_mut(&id).unwrap()`): a pointer, used through as `o^`, like a
+        // `&mut` parameter, so writes land in place and matches through it bind pointers.
+        if let Shape::MutRef(inner) = &sh {
+            if !control {
+                let v = self.tx.expr(&init.expr, &sh)?;
+                let ident = self.fresh(&local_ident(&name));
+                self.line(&format!("{ident}: {} = {v}", self.tx.e.odin(&sh)));
+                self.tx.vars.insert(name, (format!("{ident}^"), (**inner).clone()));
+                return Ok(());
+            }
+        }
         if control {
             // `let x = if/match/{..}`: declare x, then each branch's value assigns it.
             let ident = self.fresh(&local_ident(&name));
@@ -544,7 +562,10 @@ impl Body<'_, '_, '_> {
                 _ => break,
             }
         }
-        if self.mut_ref_source(e) {
+        // A pointer-valued subject (`get_mut(..)`, a `&mut`-returning call): the pointer goes in a temporary and the
+        // pattern compiler matches through it (MutRef), binding pointers.
+        let pointer_valued = matches!(self.shape_of(e), Some(Shape::MutRef(_))) || matches!(self.shape_of(e), Some(Shape::Option(ref i)) if matches!(**i, Shape::MutRef(_)));
+        if self.mut_ref_source(e) && !pointer_valued {
             if !is_place(e) {
                 return Err("pattern on a mutable reference that isn't a place".into());
             }
@@ -1518,6 +1539,10 @@ fn harness_case(e: &mut Emitter, owner: Option<&str>, _name: &str, f: &FnDef, pn
                 params.push((sh, matches!(&*pt.ty, syn::Type::Reference(r) if r.mutability.is_some())));
             }
         }
+    }
+    // A borrowed result (`&mut T`, a pointer here) is never logged by the Rust side.
+    if matches!(&f.sig.output, ReturnType::Type(_, t) if t.to_token_stream().to_string().contains('&')) {
+        return None;
     }
     let ret = match &f.sig.output {
         ReturnType::Default => Shape::Unit,

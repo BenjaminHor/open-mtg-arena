@@ -318,7 +318,7 @@ impl<'a, 'b> Tx<'a, 'b> {
             Expr::Field(fe) => {
                 let mut base_shape = self.shape_of(&fe.base).ok_or("field of an unknown value")?;
                 let mut base = self.expr(&fe.base, &base_shape)?;
-                if let Shape::Ptr(inner, _) = base_shape.clone() {
+                if let Shape::Ptr(inner, _) | Shape::MutRef(inner) = base_shape.clone() {
                     base = format!("{base}^");
                     base_shape = *inner;
                 }
@@ -378,6 +378,19 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
             }
             Expr::Group(g) => self.expr(&g.expr, want),
+            // `&mut place` where a pointer is wanted (a function returning `&mut T`): the place's address.
+            Expr::Reference(r) if matches!(want, Shape::MutRef(_)) => {
+                let Shape::MutRef(inner) = want else { unreachable!() };
+                if let Some(Shape::MutRef(_)) = self.shape_of(&r.expr) {
+                    return self.expr(&r.expr, want);
+                }
+                let v = self.expr(&r.expr, inner)?;
+                // A `&mut` parameter or binding is used as `p^`: its address is `p`.
+                Ok(match v.strip_suffix('^') {
+                    Some(p) if !p.contains(['.', '[', '(']) => p.to_string(),
+                    _ => format!("&{v}"),
+                })
+            }
             Expr::Reference(r) => self.expr(&r.expr, want),
             Expr::Block(b) if b.block.stmts.len() == 1 => match &b.block.stmts[0] {
                 Stmt::Expr(e, None) => self.expr(e, want),
@@ -758,7 +771,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                     m => {
                         let (owner, recv) = match &recv_shape {
                             Shape::Named(n, _) => (Some(n.clone()), recv),
-                            Shape::Ptr(i, _) => match &**i {
+                            Shape::Ptr(i, _) | Shape::MutRef(i) => match &**i {
                                 Shape::Named(n, _) => (Some(n.clone()), format!("{recv}^")),
                                 _ => (None, recv),
                             },
@@ -796,7 +809,7 @@ impl<'a, 'b> Tx<'a, 'b> {
             Expr::Paren(p) => self.shape_of(&p.expr),
             Expr::Field(fe) => {
                 let base = match self.shape_of(&fe.base)? {
-                    Shape::Ptr(inner, _) => *inner,
+                    Shape::Ptr(inner, _) | Shape::MutRef(inner) => *inner,
                     s => s,
                 };
                 let Shape::Named(tn, _) = base else { return None };
@@ -823,7 +836,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                     };
                 };
                 let recv = match recv {
-                    Shape::Ptr(inner, _) => *inner,
+                    Shape::Ptr(inner, _) | Shape::MutRef(inner) => *inner,
                     s => s,
                 };
                 let args: Vec<&Expr> = mc.args.iter().collect();
@@ -879,6 +892,9 @@ impl<'a, 'b> Tx<'a, 'b> {
                     }
                     ("as_deref" | "as_ref", Shape::OptPtr(..), 0) => return Some(recv.clone()),
                     ("get", Shape::Map(_, v), 1) => return Some(Shape::Option(v.clone())),
+                    ("get_mut", Shape::Vec(i), 1) | ("first_mut" | "last_mut", Shape::Vec(i), 0) => {
+                        return Some(Shape::Option(Box::new(Shape::MutRef(i.clone()))))
+                    }
                     ("insert", Shape::Map(_, v), 2) => return Some(Shape::Option(v.clone())),
                     ("insert", Shape::Vec(_), 1) => return Some(Shape::Bool),
                     ("remove", Shape::Map(_, v), 1) => return Some(Shape::Option(v.clone())),
@@ -1299,10 +1315,16 @@ impl<'a, 'b> Tx<'a, 'b> {
 
     /// The shape an engine function returns (`Self` is its owner).
     pub fn return_shape(&mut self, f: &FnDef, owner: Option<&str>) -> Option<Shape> {
+        if let syn::ReturnType::Type(_, t) = &f.sig.output {
+            if let Some(s) = self.mut_ref_result(t, owner) {
+                return Some(s);
+            }
+        }
         // ObjectMap's iterators (type aliases over im's) are hand-written as Vecs in Rust's order (D-182).
         if owner == Some("ObjectMap") {
             let named = |n: &str| Shape::Named(n.to_string(), vec![]);
             match f.sig.ident.to_string().as_str() {
+                "get_mut" => return Some(Shape::Option(Box::new(Shape::MutRef(Box::new(named("GameObject")))))),
                 "values" => return Some(Shape::Vec(Box::new(named("GameObject")))),
                 "keys" => return Some(Shape::Vec(Box::new(named("ObjectId")))),
                 "iter" => return Some(Shape::Vec(Box::new(Shape::Tuple(vec![named("ObjectId"), named("GameObject")])))),
@@ -1322,6 +1344,34 @@ impl<'a, 'b> Tx<'a, 'b> {
                     }
                 })
             }
+        }
+    }
+
+    /// `&mut T` → MutRef(T), `Option<&mut T>` → Option(MutRef(T)): a result that points into the caller's data.
+    pub fn mut_ref_result(&mut self, t: &syn::Type, owner: Option<&str>) -> Option<Shape> {
+        let inner_of = |tx: &mut Self, t: &syn::Type| -> Shape {
+            let s = tx.e.shape(t, &[]);
+            match s {
+                Shape::Named(ref n, _) | Shape::Unknown(ref n) if n == "Self" => owner.map(|o| Shape::Named(o.to_string(), vec![])).unwrap_or(s),
+                s => s,
+            }
+        };
+        match t {
+            syn::Type::Reference(r) if r.mutability.is_some() => Some(Shape::MutRef(Box::new(inner_of(self, &r.elem)))),
+            syn::Type::Path(p) => {
+                let seg = p.path.segments.last()?;
+                if seg.ident != "Option" {
+                    return None;
+                }
+                let syn::PathArguments::AngleBracketed(a) = &seg.arguments else { return None };
+                match a.args.first()? {
+                    syn::GenericArgument::Type(syn::Type::Reference(r)) if r.mutability.is_some() => {
+                        Some(Shape::Option(Box::new(Shape::MutRef(Box::new(inner_of(self, &r.elem))))))
+                    }
+                    _ => None,
+                }
+            }
+            _ => None,
         }
     }
 
@@ -2070,6 +2120,23 @@ impl<'a, 'b> Tx<'a, 'b> {
                     format!("r{n}_")
                 }
                 ("clear", Shape::Vec(_), 0) if deref.is_empty() => format!("clear(&{recv})"),
+                // A pointer to an element, or nil: Option<&mut T>.
+                ("get_mut", Shape::Vec(i), 1) => {
+                    let ix = self.expr(args[0], &Shape::Int("int"))?;
+                    let n = self.next_temp();
+                    let v = format!("{recv}{deref}");
+                    self.pre.push(format!("gm{n}_: Maybe(^{})", self.e.odin(i)));
+                    self.pre.push(format!("if i{n}_ := {ix}; i{n}_ >= 0 && i{n}_ < len({v}) do gm{n}_ = &{v}[i{n}_]"));
+                    format!("gm{n}_")
+                }
+                ("first_mut" | "last_mut", Shape::Vec(i), 0) => {
+                    let n = self.next_temp();
+                    let v = format!("{recv}{deref}");
+                    let at = if m == "first_mut" { "0".to_string() } else { format!("len({v}) - 1") };
+                    self.pre.push(format!("gm{n}_: Maybe(^{})", self.e.odin(i)));
+                    self.pre.push(format!("if len({v}) > 0 do gm{n}_ = &{v}[{at}]"));
+                    format!("gm{n}_")
+                }
                 // A map's insert returns the value it replaced.
                 ("insert", Shape::Map(k, v), 2) if deref.is_empty() => {
                     let (key, val) = (self.expr(args[0], k)?, self.expr(args[1], v)?);

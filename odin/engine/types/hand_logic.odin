@@ -57,3 +57,24 @@ ObjectMap_iter :: proc(self_: ObjectMap) -> [dynamic]Tuple2(ObjectId, GameObject
 	for id in object_map_ordered_ids(self_) do append(&out, Tuple2(ObjectId, GameObject){id, self_.inner^[id]^})
 	return out
 }
+
+// ObjectMap::get_mut (types/object_map.rs): `inner.get_mut(id).map(Arc::make_mut)`. This state's own copy of the
+// object: the map is copied if another state shares it (each object retained, as cloning the im::HashMap shares its
+// Arcs), then the object is copied if another map shares it.
+ObjectMap_get_mut :: proc(self_: ^ObjectMap, id: ObjectId) -> Maybe(^GameObject) {
+	if self_.inner == nil do return nil
+	if _, ok := self_.inner^[id]; !ok do return nil
+	m := make_mut(&self_.inner, object_map_share)
+	slot := &m^[id]
+	return make_mut(slot, clone_GameObject)
+}
+
+// A copy of an ObjectMap's map sharing every object (cloning the im::HashMap of Arcs).
+object_map_share :: proc(x: map[ObjectId]^GameObject) -> map[ObjectId]^GameObject {
+	out := make(map[ObjectId]^GameObject, len(x))
+	for k, v in x {
+		shared_retain(v)
+		out[k] = v
+	}
+	return out
+}

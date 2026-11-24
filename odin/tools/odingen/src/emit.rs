@@ -34,6 +34,8 @@ pub enum Shape {
     Tuple(Vec<Shape>),
     Array(Box<Shape>, String),
     Named(String, Vec<Shape>),
+    /// A `&mut T` a translated function returns (`get_mut`): an Odin `^T` into the place, never owned or cloned.
+    MutRef(Box<Shape>),
     Param(String),
     /// A type defined by hand outside the generated model (the RNG), named as Odin knows it.
     Extern(String),
@@ -420,6 +422,7 @@ impl<'a> Emitter<'a> {
             Shape::Str => "string".into(),
             Shape::Char => "rune".into(),
             Shape::Unit => "Unit".into(),
+            Shape::MutRef(i) => format!("^{}", self.odin(i)),
             Shape::Json => "json.Value".into(),
             Shape::Option(i) => format!("Maybe({})", self.odin(i)),
             Shape::Result(t, e) => format!("Result({}, {})", self.odin(t), self.odin(e)),
@@ -1713,7 +1716,7 @@ impl<'a> Emitter<'a> {
 /// The model type names a shape mentions.
 fn shape_names(s: &Shape, out: &mut Vec<String>) {
     match s {
-        Shape::Option(i) | Shape::OptPtr(i, _) | Shape::Ptr(i, _) | Shape::Vec(i) | Shape::PVec(i) | Shape::Array(i, _) => shape_names(i, out),
+        Shape::Option(i) | Shape::OptPtr(i, _) | Shape::Ptr(i, _) | Shape::Vec(i) | Shape::PVec(i) | Shape::Array(i, _) | Shape::MutRef(i) => shape_names(i, out),
         Shape::Result(t, e) => {
             shape_names(t, out);
             shape_names(e, out);
@@ -1740,7 +1743,7 @@ impl<'a> Emitter<'a> {
     fn plain(&mut self, s: &Shape) -> bool {
         match s {
             Shape::Bool | Shape::Int(_) | Shape::Float(_) | Shape::Str | Shape::Char | Shape::Unit | Shape::Json
-            | Shape::Extern(_) | Shape::Unknown(_) | Shape::Param(_) => true,
+            | Shape::Extern(_) | Shape::Unknown(_) | Shape::Param(_) | Shape::MutRef(_) => true,
             Shape::Option(i) | Shape::Array(i, _) => self.plain(i),
             Shape::Tuple(es) => es.clone().iter().all(|e| self.plain(e)),
             Shape::Vec(_) | Shape::PVec(_) | Shape::Map(..) | Shape::Ptr(..) | Shape::OptPtr(..) => false,
