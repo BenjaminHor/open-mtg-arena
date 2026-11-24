@@ -861,10 +861,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                                     return self.call_with_sig(&proc_name_for(Some(o), m, &f), &f, Some(recv), &args);
                                 }
                             }
-                            return Err(match m {
-                                "iter" | "get" | "into_iter" | "extend" | "as_deref" | "or_else" => format!("method .{m}() on {}", crate::body::shape_kind(&recv_shape)),
-                                _ => format!("method .{m}()"),
-                            });
+                            return Err(format!("method .{m}() on {}", crate::body::shape_kind(&recv_shape)));
                         }
                         match owner.and_then(|o| self.inline_call(Some(o), m, Some((recv.clone(), recv_shape.clone())), &args, want)) {
                             Some(v) => v,
@@ -1853,7 +1850,10 @@ impl<'a, 'b> Tx<'a, 'b> {
             match e {
                 Expr::MethodCall(m) => match m.method.to_string().as_str() {
                     "iter" | "into_iter" | "copied" | "cloned" | "filter" | "map" | "filter_map" => e = &m.receiver,
-                    _ => return None,
+                    // Any other call is the source: an `impl Iterator` result is materialized as a Vec (an iterator
+                    // method on a Vec-shaped value can only be one: Vec and slices have no `any` or `map`). `chain`
+                    // refuses a source that isn't a Vec.
+                    _ => return Some(e),
                 },
                 Expr::Paren(p) => e = &p.expr,
                 _ => return Some(e),
@@ -1888,7 +1888,11 @@ impl<'a, 'b> Tx<'a, 'b> {
                         }
                     }
                 }
-                _ => None,
+                // A call as the source: a materialized `impl Iterator` (see `chain_source`).
+                _ => match self.shape_of(e)? {
+                    Shape::Vec(i) | Shape::PVec(i) => Some(*i),
+                    _ => None,
+                },
             },
             Expr::Paren(p) => self.chain_item_shape(&p.expr),
             _ => None,
@@ -2035,7 +2039,8 @@ impl<'a, 'b> Tx<'a, 'b> {
                         "filter" => stages.push(Stage::Filter(Self::closure_of(m.args.first().ok_or("filter")?)?)),
                         "map" => stages.push(Stage::Map(Self::closure_of(m.args.first().ok_or("map")?)?)),
                         "filter_map" => stages.push(Stage::FilterMap(Self::closure_of(m.args.first().ok_or("filter_map")?)?)),
-                        _ => return Err("iterator adapter".into()),
+                        // The source (see `chain_source`).
+                        _ => break,
                     }
                     e = &m.receiver;
                 }
