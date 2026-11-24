@@ -193,6 +193,8 @@ pub mod sba;
 #[cfg(any(test, feature = "test-support"))]
 pub mod scenario;
 #[cfg(any(test, feature = "test-support"))]
+pub mod scenario_capture;
+#[cfg(any(test, feature = "test-support"))]
 pub mod scenario_db;
 pub(crate) mod scoped_unless_poll;
 pub mod specialize;

@@ -164,3 +164,4 @@ scripts/changelog/backfill-drafts.json
 
 # Build output of the Odin port's standalone Rust tools
 odin/tools/*/target/
+client/src/wasm-odin/

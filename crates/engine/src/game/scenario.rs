@@ -10,9 +10,12 @@ use std::sync::Arc;
 use crate::database::synthesis::{
     merge_extracted_keywords, parse_oracle_with_cleave_brackets, synthesize_all,
 };
-use crate::game::engine::{apply_as_current, EngineError};
+use crate::game::engine::EngineError;
+// Every action a scenario applies goes through the capture wrapper (D-187): it records the step for the Odin engine's
+// tests when ENGINE_CAPTURE_DIR is set, and only delegates otherwise.
 use crate::game::game_object::GameObject;
 use crate::game::printed_cards::apply_card_face_to_object;
+use crate::game::scenario_capture::apply_as_current;
 use crate::game::zones::create_object;
 use crate::types::ability::{
     AbilityDefinition, AbilityKind, AdditionalCost, Effect, EffectKind, PtValue, QuantityExpr,
