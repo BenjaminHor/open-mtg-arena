@@ -148,6 +148,16 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     translated batch is checked before whole games pass; land O-1 through a PR with a CI job (patched Odin build,
     odingen output matches the committed files, one short game recorded, both round trips); the client boundary's
     types (ClientGameStateRef and the other wasm exports) added as model roots before shadow mode.
+- **O-2, the replay harness (2026-11-24, session claude/odin-o2-replay, D-185).** `odin/tools/replay` steps a
+  recorded game through the translated engine from each recorded state (RNG restored; run_ai_action's reducer
+  boundary; state compared as JSON with the first differing path, plus the RNG position) and reports the first step
+  that stops, at which stub or field. `odin/tools/replay.sh` translates, builds it, records red-vs-green seed 1 (400
+  steps) with a first-use trace of the Rust reducer (`odingen trace-patch`, a scratch copy), and lists every
+  untranslated function the game needs, by first use. CI prints the cheap report (no trace) without failing.
+  docs/odin-port.md, "Replaying recorded games". First run: all 400 steps stop at a stub, 347 at the reducer's entry
+  `engine_apply_action_boundary_with_stack_limit` and 53 at `AiDecisionContract_issue`; the game's reducer calls
+  3,105 functions: 1,516 translated, 13 as instances, 1,433 stubs, 143 not in the translation. Pair-list maps (keys
+  Odin can't hash) are compared ignoring order and counted apart (coordinator's note).
 - **D-177 import merged** (PR #116, squash bdd74cf, 2026-11-24, CI green). **Live** (Pages run 21 succeeded 03:37 UTC;
   checked 04:55 UTC with Playwright at 915x412 landscape phone: the home page loads in ~8 s with no errors, Play vs AI
   → Random Deck → Start Match plays a Commander game: the die roll, play-first choice, mulligan, then about five turns

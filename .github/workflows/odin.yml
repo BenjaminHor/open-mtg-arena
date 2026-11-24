@@ -105,10 +105,10 @@ jobs:
           odin build odin/tools/gamestate_roundtrip -out:gamestate_roundtrip
           ./gamestate_roundtrip recordings/*.jsonl
       # O-2 (docs/odin-port.md, "Replaying recorded games"): step the recorded game through the translated engine and
-      # print where it stops and the stubs it needs, by first use. Informational until O-2 passes: it doesn't fail
-      # the job.
+      # print where each step stops. Informational until O-2 passes: it doesn't fail the job. Without the first-use
+      # trace (TRACE=0): that is a third engine build, more than the runner's disk holds beside the other two.
       - name: Replay the game through the translated engine (report only)
         continue-on-error: true
         run: |
-          RECORDING=recordings/red-vs-green-1.jsonl \
+          TRACE=0 RECORDING=recordings/red-vs-green-1.jsonl \
             bash odin/tools/replay.sh odin/tools/odingen/target/release/odingen "$RUNNER_TEMP/replay" -- -top:30

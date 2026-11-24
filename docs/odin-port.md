@@ -381,17 +381,35 @@ step. Host settlements of physical contests aren't game actions (the host plays 
 they are skipped and counted. Not compared yet: the events and log entries a step returns.
 
 The report gives the counts per outcome, the first step that doesn't pass (with the RNG position), the first
-difference, and two rankings by first use. The first is the stubs that block steps (each step's first stub, with
-the number of steps it blocks): the translator's priority list. The second is the stubs reached after one.
+difference, and the stubs that block steps (each step's first stub, with its reason and the number of steps it
+blocks). The first stub per step only shows the top of the call tree, though: today the reducer's entry,
+`apply_action_boundary_with_stack_limit`, is itself a stub. So the script also records the game with a **first-use
+trace**: `odingen trace-patch` rewrites a scratch copy of phase-ast and the engine so that each function logs the
+first step whose reducer call reaches it (the flag is set only around `run_ai_action`'s reducer call, so the AI's
+own search doesn't count; the trace doesn't change the recording, checked byte for byte). The harness joins that
+with translated.odin: **every untranslated function the game needs, by first use**, with the construct that stopped
+it, and the functions the game calls that the translation doesn't define at all (trait impls, colliding names). The
+whole list is written as TSV (`-out:`) for the translator.
 
     odin/tools/replay.sh <odingen> <work-dir> [matchup] [seed] [max-steps] [-- replay options]
     # e.g. odin/tools/replay.sh odin/tools/odingen/target/release/odingen /tmp/replay   (red-vs-green, seed 1, 400)
 
-The script translates (translate-loop.sh), builds the harness, records a fresh game (`record-games`, built if
-missing), and prints the report. `RECORDING=<file>` replays an existing recording. Options:
-`-trace` (a line per step), `-from:N`, `-steps:N`, `-timeout:S` (5 s per step by default), `-first-stub` (end each
-step at its first stub), `-top:N`. CI (the Odin workflow) runs it on the game it records and prints the report
-without failing, until O-2 passes.
+The script translates (translate-loop.sh), builds the harness, builds the traced recorder (one more engine build,
+13 minutes with two jobs here), records a fresh game, and prints the report. `TRACE=0` skips the trace (the game
+is recorded by `target/tool/record-games`, or `RECORDING=<file>` replays an existing one). Harness options: `-trace`
+(a line per step), `-from:N`, `-steps:N`, `-timeout:S` (5 s per step by default), `-first-stub` (end each step at
+its first stub), `-top:N`, `-self-check` (the harness checks itself: each step's recorded result goes through the
+RNG restore and the comparison in place of the reducer's, and must pass; the script runs it on 50 steps first). A
+400-step game replays in about 8 s. CI (the Odin workflow) replays the game it
+records, with `TRACE=0` (a third engine build doesn't fit the runner's disk), and prints the report without
+failing, until O-2 passes.
+
+**First run (2026-11-24, red-vs-green seed 1, 400 steps, translator at 48.6%):** every step stops at a stub: 347 at
+`engine_apply_action_boundary_with_stack_limit` (the reducer's entry: `let` of an untyped `.and_then()`), 53
+verified AI stack passes at `AiDecisionContract_issue`. The reducer calls 3,105 functions in that game: 1,516
+translated, 13 more as instances, **1,433 stubs**, 143 not in the translation. The stubs' reasons, by count: `let`
+of an untyped value 200, expression forms 122, closure instances 61, iterators over untyped collections 50, type
+check rejections 37.
 
 ## Decided (D-179)
 

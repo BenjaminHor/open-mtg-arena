@@ -31,12 +31,16 @@
 //   -needs:F      the first-use log of the same game (odingen trace-patch; FIRST_USE_LOG): every function the
 //                 Rust reducer calls, with the step it is first called in. With -translation, the report lists
 //                 all the untranslated functions the game needs, by first use, not only the first stub per step.
+//   -self-check   check the harness, not the engine: each step's "result" is its own recorded state, decoded and
+//                 put through the same RNG restore and comparison (every step must pass)
+//   -out:F        with -needs: write that whole list as TSV (first step, procedure, status, why or file)
 package replay
 
 import "core:c"
 import "core:fmt"
 import "core:mem/virtual"
 import "core:os"
+import "core:path/filepath"
 import "core:slice"
 import "core:strconv"
 import "core:strings"
@@ -60,6 +64,7 @@ Outcome :: enum {
 child_fd: posix.FD
 step_stubs: map[string]bool
 stop_at_first_stub: bool
+self_check: bool
 
 child_send :: proc(msg: string) {
 	posix.write(child_fd, raw_data(msg), c.size_t(len(msg)))
@@ -115,7 +120,17 @@ run_step :: proc(prev, line: json.Value, prev_word_pos: u128) -> (Outcome, strin
 
 	// phase_ai::auto_play::run_ai_action's choice of reducer boundary.
 	result: types.Result(types.ActionResult, types.EngineError)
-	if _, verified := types.engine_verified_ai_stack_pass_player(state, action).?; verified {
+	if self_check {
+		// The recorded result in place of the reducer's, with its RNG at the recorded position after the step.
+		after_v, _ := json.get(line, "state")
+		state = {}
+		if !types.decode_GameState(after_v, &state) do return .Undecodable, fmt.tprintf("state: %v", types.decode_error)
+		pos_v, _ := json.get(line, "rng_word_pos")
+		pos: u128
+		types.decode_u128(pos_v, &pos)
+		state.rng = types.GameRng{generator = rng.from_u64(state.rng_seed)}
+		rng.set_word_pos(&state.rng.generator, pos)
+	} else if _, verified := types.engine_verified_ai_stack_pass_player(state, action).?; verified {
 		contract := types.AiDecisionContract_issue(state, types.PlayerId(owner))
 		result = types.engine_apply_verified_ai_priority_pass(&state, types.PlayerId(actor), contract, action)
 	} else {
@@ -259,7 +274,7 @@ main :: proc() {
 	}
 	max_steps, from, timeout_s, top := max(int), 0, 5, 40
 	trace := false
-	translation_path, needs_path: string
+	translation_path, needs_path, out_path: string
 	for a in os.args[2:] {
 		switch {
 		case strings.has_prefix(a, "-steps:"):   max_steps, _ = strconv.parse_int(a[len("-steps:"):])
@@ -267,9 +282,11 @@ main :: proc() {
 		case strings.has_prefix(a, "-timeout:"): timeout_s, _ = strconv.parse_int(a[len("-timeout:"):])
 		case strings.has_prefix(a, "-top:"):     top, _ = strconv.parse_int(a[len("-top:"):])
 		case strings.has_prefix(a, "-translation:"): translation_path = a[len("-translation:"):]
+		case strings.has_prefix(a, "-out:"):     out_path = a[len("-out:"):]
 		case strings.has_prefix(a, "-needs:"):   needs_path = a[len("-needs:"):]
 		case a == "-trace":                      trace = true
 		case a == "-first-stub":                 stop_at_first_stub = true
+		case a == "-self-check":                 self_check = true
 		case:
 			fmt.eprintln("unknown option", a)
 			os.exit(2)
@@ -378,16 +395,22 @@ main :: proc() {
 	if first_stop >= 0 do fmt.printf("first step that doesn't pass: %v\n", first_stop_line)
 	else do fmt.println("every replayed step passes")
 	if first_diff >= 0 do fmt.printf("first difference: %v\n", first_diff_line)
+	if self_check {
+		// The harness's own check: anything but a pass is the harness's fault.
+		if first_stop >= 0 do os.exit(1)
+		return
+	}
 
 	tr := read_translation(translation_path) if translation_path != "" else Translation{}
 	print_ranking("Stubs that block steps, by first use (each step's first stub):", blockers, top, tr)
 	if !stop_at_first_stub do print_ranking("Also reached after a stub returned a zero value (indicative only):", reached, top, tr)
-	if needs_path != "" && translation_path != "" do report_needs(needs_path, tr, top)
+	if needs_path != "" && translation_path != "" do report_needs(needs_path, tr, top, out_path)
 }
 
 Translation :: struct {
 	procs: map[string]bool,   // every procedure translated.odin defines
 	stubs: map[string]string, // the untranslated ones, with the construct that stopped them
+	instanced: map[string]bool, // generic or closure-taking functions translated per call site (`name__g..`, `name__cl..`)
 }
 
 // Reads translated.odin's procedure names and its stubs' reasons (`panic("not translated yet: <name> (<why>)")`).
@@ -397,6 +420,17 @@ read_translation :: proc(path: string) -> Translation {
 	if err != nil {
 		fmt.eprintln("can't read", path)
 		os.exit(1)
+	}
+	// Procedures written by hand (hand_logic.odin, the runtime) sit beside it and count as translated.
+	dir, _ := filepath.split(path)
+	if files, derr := os.read_all_directory_by_path(dir if dir != "" else ".", context.allocator); derr == nil {
+		for f in files {
+			if !strings.has_suffix(f.name, ".odin") || f.name == "translated.odin" do continue
+			text, ferr := os.read_entire_file_from_path(f.fullpath, context.allocator)
+			if ferr != nil do continue
+			r := string(text)
+			for line in strings.split_lines_iterator(&r) do if i := strings.index(line, " :: proc"); i > 0 && line[0] != '\t' && line[0] != ' ' do t.procs[line[:i]] = true
+		}
 	}
 	rest := string(data)
 	PANIC :: "panic(\"not translated yet: "
@@ -412,12 +446,17 @@ read_translation :: proc(path: string) -> Translation {
 			t.stubs[body[:sp]] = why
 		}
 	}
+	for name in t.procs {
+		for marker in ([]string{"__cl", "__g"}) {
+			if i := strings.index(name, marker); i > 0 do t.instanced[name[:i]] = true
+		}
+	}
 	return t
 }
 
 // Every function the Rust reducer called in the recorded game (the first-use log), against the translation: the
 // untranslated ones in the order the game first needs them, and those the translation doesn't define at all.
-report_needs :: proc(path: string, tr: Translation, top: int) {
+report_needs :: proc(path: string, tr: Translation, top: int, out_path: string) {
 	data, err := os.read_entire_file_from_path(path, context.allocator)
 	if err != nil {
 		fmt.eprintln("can't read", path)
@@ -425,7 +464,7 @@ report_needs :: proc(path: string, tr: Translation, top: int) {
 	}
 	Need :: struct { step: int, name, file: string }
 	needed, missing: [dynamic]Need
-	called, translated := 0, 0
+	called, translated, instanced := 0, 0, 0
 	seen := make(map[string]bool)
 	rest := string(data)
 	for line in strings.split_lines_iterator(&rest) {
@@ -437,13 +476,20 @@ report_needs :: proc(path: string, tr: Translation, top: int) {
 		n := Need{step, parts[1], parts[2]}
 		if n.name in tr.stubs do append(&needed, n)
 		else if n.name in tr.procs do translated += 1
+		else if n.name in tr.instanced do instanced += 1
 		else do append(&missing, n)
 	}
 	// The log is in call order; a stable sort by step keeps that order within a step.
 	slice.stable_sort_by(needed[:], proc(a, b: Need) -> bool { return a.step < b.step })
 	slice.stable_sort_by(missing[:], proc(a, b: Need) -> bool { return a.step < b.step })
-	fmt.printf("\nWhat the game needs (the Rust reducer's calls, %v): %v functions called; %v translated, %v stubs, %v not in the translation\n",
-		path, called, translated, len(needed), len(missing))
+	fmt.printf("\nWhat the game needs (the Rust reducer's calls, %v): %v functions called; %v translated, %v translated as instances (some call sites may lack one), %v stubs, %v not in the translation\n",
+		path, called, translated, instanced, len(needed), len(missing))
+	if out_path != "" {
+		b := strings.builder_make()
+		for n in needed do fmt.sbprintf(&b, "%v\t%v\tstub\t%v\n", n.step, n.name, tr.stubs[n.name])
+		for n in missing do fmt.sbprintf(&b, "%v\t%v\tabsent\t%v\n", n.step, n.name, n.file)
+		if werr := os.write_entire_file(out_path, transmute([]byte)strings.to_string(b)); werr != nil do fmt.eprintln("can't write", out_path)
+	}
 	fmt.println("\nUntranslated functions the game needs, by first use:")
 	fmt.println("  rank  first step  stub  (why it isn't translated)")
 	for n, i in needed {

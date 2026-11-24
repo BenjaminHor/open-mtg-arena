@@ -9,7 +9,7 @@
 # That is one more engine build (memory-hungry: run nothing else heavy alongside it).
 # TRACE=0 skips it: the game is recorded by target/tool/record-games (built if missing), or RECORDING=<file> replays
 # an existing recording, and the report ranks only the first stub of each step.
-set -eu
+set -euo pipefail
 ODINGEN=$(realpath "$1"); WORK=$(realpath -m "$2"); shift 2
 MATCHUP=red-vs-green; SEED=1; STEPS=400
 [ $# -gt 0 ] && [ "$1" != "--" ] && { MATCHUP=$1; shift; }
@@ -41,7 +41,7 @@ if [ "$TRACE" = 1 ]; then
   FIRST_USE_LOG="$WORK/rec/first-use.tsv" \
     "$WORK/target/tool/record-games" client/public/card-data.json "$WORK/rec" "$MATCHUP" "$SEED" 1 "$STEPS"
   REC="$WORK/rec/$MATCHUP-$SEED.jsonl"
-  NEEDS=("-needs:$WORK/rec/first-use.tsv")
+  NEEDS=("-needs:$WORK/rec/first-use.tsv" "-out:$WORK/needs.tsv")
 elif [ -n "${RECORDING:-}" ]; then
   REC=$RECORDING
 else
@@ -51,5 +51,8 @@ else
   REC="$WORK/rec/$MATCHUP-$SEED.jsonl"
 fi
 
-# 4. The report.
+# 4. The harness checks itself on the first 50 steps (recorded results through its restore and comparison), then the
+#    report.
+"$WORK/replay" "$REC" -self-check -steps:50 | sed -n 2p | sed 's/^ */self-check: /'
 "$WORK/replay" "$REC" "-translation:$WORK/tx/engine/types/translated.odin" "${NEEDS[@]}" "$@"
+if [ "$TRACE" = 1 ]; then echo "the whole list: $WORK/needs.tsv"; fi
