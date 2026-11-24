@@ -8,6 +8,131 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
+- **Odin port, the session goal (D-180):** remove all Rust from the engine, replace it with Odin, near-zero
+  regressions in functionality and performance. Plan: docs/odin-port.md. O-0 done (go). Now O-1: generate the Odin
+  data model and JSON codecs from the Rust types. odingen pass 1 (collect + report) done; design in odin-port.md
+  ("O-1 data model design").
+  - **Card data round-trips (2026-11-24).** `odin/tools/carddata_roundtrip`: all 36,406 cards of card-data.json decode
+    into the generated model (469 types; odin/engine/types/generated_*.odin, ~45k lines) and encode back to an equal
+    JSON value: 0 failures, 0 mismatches. Decode 1.6 s, encode+compare 3.2 s (debug build). One key skipped on
+    purpose: AbilityDefinition's computed `is_mana_ability` (CR 605.1a), which needs ability-walking logic the
+    translator will port; `consumes_source` is ported. Hand-written: 4 codecs (ChoiceType, CounterType,
+    ExileConcealment, SacrificeCost), 7 field adapters (legacy bools, bare-number minimums, damage pairs), 10
+    default/skip functions; odingen translates the other 186 default/skip functions and the `impl Default`s.
+  - **Build times (2026-11-24).** The generated model first took 58 s to build unoptimized, 43 s of it Odin's type
+    checker: Odin recomputed the size of every by-value nested type along every path (no memoization below the top
+    call), which a tagged-union AST hits hard. Fixed in the compiler: `odin/toolchain/0001-memoize-nested-size-
+    align.patch` against dev-2026-11a (to offer upstream). Now: type check 6.6 s, debug build 9.7 s, `-o:speed`
+    build 44 s (LLVM optimization 37 s). Generated code also calls procedures directly (no overload groups) and
+    generic types are monomorphized.
+  - Game-state model sized (2026-11-24): roots GameState, GameAction, WaitingFor, GameEvent, ReplayLog (+ card data)
+    reach 1,410 types, 1,310 of them serialized (the rest are runtime caches behind `#[serde(skip)]`, type only). odingen
+    reads GameState through its `declare_game_state!` macro. Left to write by hand before it compiles: 23 codecs
+    (ManaPool, ObjectMap, ResolvedRulesJournal, GameFormat, PendingCoinFlip, ...), 44 default/skip functions, and ~10
+    types defined by macros or outside the model (InteractionId family, ActiveLibrarySearches, the ChaCha20 RNG).
+    GameState's own reading goes through GameStateDecode (migrations), so its codec is checked against today's saves.
+  - **Game states round-trip (2026-11-24).** The full game-state model compiles (1,414 types) and every state and
+    action of six recorded AI-vs-AI games (`crates/phase-ai/src/bin/record_games.rs`, 2,134 steps over six matchups)
+    decodes and encodes back equal (`odin/tools/gamestate_roundtrip`): 0 failures, 0 mismatches. Rules and the one
+    gap left (payment recovery checkpoints) in docs/odin-port.md, "Game-state model". Recordings are 150-200 MB a game
+    (full state per step), kept out of the repo for now.
+  - **Coverage (2026-11-24).** Six games reach 268/1,307 model types; with the card data 601 types, 2,549/5,019 enum
+    variants, 21/32 hand decoders (`-define:COVERAGE=true` on the round-trip tools). The engine's integration tests
+    add little through `apply` (533 states from shard 2's 3,920 tests: they build states directly), but two of them
+    hold a payment recovery checkpoint, whose versioned form (ResolutionStateWire) needs the resolution-frame logic
+    (`canonicalize_legacy_resolution_state`), so it's ported with the logic. A sweep of one game per duel matchup
+    (32) followed: **every matchup round-trips, 11,852 states and 11,820 actions, 0 failures**. Combined coverage
+    (card data, the games, the sweep): 729/1,307 types, 2,753/5,019 variants, 23/32 hand decoders; the small
+    unreached hand codecs now have fixture cases in `odin/tools/hand_codecs_test`, leaving LiminalEntrant,
+    PeriodSignature, PendingCoinFlip and the checkpoint unexercised by data. Determinism: re-recording seed 1
+    gives identical bytes; both seats play.
+  - **Plan before the logic port (2026-11-24, with the advisor).** Three measurements first, each able to change the
+    translator's design:
+    1. What one recorded game executes: the set of Rust functions (instrumented build or callgrind). Sizes O-3,
+       shows whether mechanic slices are separable or the unit is `apply`'s whole call closure, and orders the port
+       leaf-first.
+    2. Clone and aliasing on that path: GameState/GameObject clones and `Arc::make_mut`. `Box`/`Arc` map to `^T` and
+       the translator treats `.clone()` as the value itself, fine for predicates but aliasing once code mutates. If
+       the engine clones state per action, the Odin state layout (and generated `clone_<T>`) is decided now, not
+       with the AI.
+    3. Hash-order dependence: ObjectMap is an `im::HashMap` with Fx hashing; Odin uses `map`. Re-record seed 1 with
+       a different hasher: identical bytes mean iteration order is unobservable; otherwise Odin reproduces the order
+       or the Rust reference moves to an ordered map first.
+    **Results (2026-11-24):**
+    1. Executed code (an instrumented `record-games`): one game (red-vs-green) runs 5,638 of the engine's 33,509
+       functions (52k of 359k lines) plus 1,993 AI functions; nine matchups together run 9,116 engine functions
+       (89k lines), still growing with each new deck. So the unit of porting is `apply`'s call closure, thousands
+       of functions, not a small mechanic slice; the executed list (`all.lcov` in the session scratchpad, to be
+       regenerated in CI) orders the port leaf-first.
+    2. Cloning: those games made ~230k full GameState clones (≈55 per action: per-action rollback snapshots in
+       engine.rs, cost/casting/mana simulations, staged trigger states) and 5.5M copy-on-write object writes
+       (`ObjectMap::get_mut` → `Arc::make_mut`). Rust gets this cheaply from persistent (`im`) collections and
+       `Arc`-shared objects. The Odin state must offer the same cheap snapshot/rollback, so its layout is decided
+       before translating logic, not with the AI (docs/odin-port.md said the latter; corrected).
+    3. Hash order: the `RandomState` maps already vary per process and recordings repeat byte for byte, so their
+       order isn't observable. The Fx-hashed ObjectMap's order is: with a random hasher, elves-mirror diverged at
+       step 111. That order is a function of the ids, reproduced exactly by a formula (D-182), so the Odin
+       ObjectMap iterates the same way; no Rust change.
+    Also found: **the card-text parser runs during play.** Token creation parses a token's catalog rules text
+    (`game/effects/token.rs` `catalog_rules_text_abilities`, 274 calls in nine games), and other engine modules
+    call into the parser (triggers, layers, combat, effects). An all-Odin engine needs those parses precomputed
+    into the card data (a Rust oracle-gen change) or the parser ported; D-179 assumed the engine never parses.
+    Question for the owner (Open questions).
+    **Logic port started (2026-11-24): the whole-function translator** (odin/tools/odingen/src/body.rs,
+    `odingen translate-report crates <dir> [filter]`; `odin/tools/translate-loop.sh` stubs whatever Odin's type
+    check rejects until it checks cleanly). Engine-wide 4,087 of 15,923 functions translate (25.7%) and, with typed
+    stubs for the rest, the whole engine type-checks in Odin. **Type-checking is not correctness**: two silent
+    mistranslations were found after the code checked cleanly (Known issues, 2026-11-24, both now fixed or refused),
+    so every translated procedure is now checked against Rust by **the vector check** (`odin/tools/vector-check.sh`;
+    docs/odin-port.md, "Verifying translated code"): calls logged from a patched scratch engine during a recorded game,
+    replayed against the translation. First run, red-vs-green seed 1, 400 steps: 605 translated procedures executed,
+    **344 pass, 1 fails, 260 only reach untranslated code**. The failure is explained: it reads a `#[serde(skip)]`
+    runtime field the log can't carry. Blockers are now also ranked over the functions the recorded games execute
+    (`ODINGEN_EXECUTED`, from an lcov profile): 27.4% of 5,852 executed functions translate (26.7% overall, 4,252). A
+    hand-written `ObjectMap_get` (odin/engine/types/hand_logic.odin, for generic Rust functions) cleared the top
+    executed blocker (294 callers). **The pattern compiler** (odin/tools/odingen/src/pattern.rs) then took patterns
+    off the blocker list: nested, tuple, slice, literal and range patterns, `@` bindings, guards, or-patterns, matches
+    on non-enums, `let`/`let else`/`if let`/`for` patterns (with `.enumerate()`), and matches through a mutable
+    reference, which bind pointers into the subject. Plain arithmetic is translated too. Now 5,025 of 15,922 (31.6%)
+    overall, 32.1% of executed functions. Next blockers (executed): generic functions (196), iterator adapters with
+    other closures (174), out-of-model local types (142), nested items (134). Translator now: value
+    `if`/`match`/block initializers (each branch assigns), empty collections typed by their later use, Option/Result
+    combinators, labelled loops. Next blockers: generic calls/functions (~1,280), nested items (527), patterns (let
+    457, let-else 423, for 236, or-with-bindings 221, if-let 173, nested 147), match on non-enums (432), mutable
+    reference bindings (320, refused on purpose until patterns bind pointers). docs/odin-port.md has the plan.
+    **O-0/O-1 in review: PR #117** (2026-11-24), with the Odin CI workflow; merge on green (D-027). A code review
+    of odingen, the recorder and the workflow (2026-11-24) led to: the recorder steps one AI action per line and
+    records contest settlements, the submitter and semantic owner, and the RNG position; skipped fields get their
+    defaults when read; integers compare exactly; the state-dump hook is removed (test dumps belong in the test
+    runner); the workflow installs LLVM on cache hits, passes `--locked` and checks a seed replays identically.
+    The rest is listed in docs/odin-port.md, "Review follow-ups". Rust clone baseline: 19–20 µs; Odin's first
+    generated clone: 87–159 µs (4–8x), so the state layout needs another step (docs/odin-port.md).
+    Then: per-module verification vectors (a Rust printer over recorded states, an Odin checker), so each
+    translated batch is checked before whole games pass; land O-1 through a PR with a CI job (patched Odin build,
+    odingen output matches the committed files, one short game recorded, both round trips); the client boundary's
+    types (ClientGameStateRef and the other wasm exports) added as model roots before shadow mode.
+- **D-177 import merged** (PR #116, squash bdd74cf, 2026-11-24, CI green). **Live** (Pages run 21 succeeded 03:37 UTC;
+  checked 04:55 UTC with Playwright at 915x412 landscape phone: the home page loads in ~8 s with no errors, Play vs AI
+  → Random Deck → Start Match plays a Commander game: the die roll, play-first choice, mulligan, then about five turns
+  in which the script only passed and discarded (cleanup's discard prompt works) while the AI played lands, cast its
+  commander and attacked (40 → 36 life); card art loads. Not checked: casting spells, combat choices, a game's end). Remaining from the plan: ask the owner to try it at
+  https://benjaminhor.github.io/open-mtg-arena/ on the
+  MacBook and the unfolded Duo. The port plan is docs/odin-port.md (D-179), now under way (D-180).
+- **O-0 spike plan (2026-11-24, written before starting).** Go/no-go questions, each with a measurement:
+  1. Toolchain: Odin `dev-2026-11a` built from source here (GitHub release downloads are blocked in this container;
+     anonymous git clone works; LLVM 18 present). Pin the tag; CI builds or caches the same.
+  2. WASM: an Odin module for `js_wasm32` (or `freestanding_wasm32`) loads in Node and in the engine worker, takes a
+     JSON string in and returns a JSON string out (the boundary every export uses).
+  3. Card data: parse `card-data.json` (98 MB) or a slice of it with `core:encoding/json` into Odin types for a few AST
+     nodes; time and memory in wasm.
+  4. RNG: ChaCha20 seeded from a u64 plus rand 0.9's `shuffle`, `random_range`, `choose`, `random_bool`, matched bit
+     for bit against vectors from a small Rust program using the same crates.
+  5. Build time and wasm size of the spike.
+  Code in `odin/` at the repo root (spike under `odin/spike/`). Result and verdict go here and in docs/odin-port.md.
+  - **Result (2026-11-24): go.** Toolchain builds here (76 s); the RNG is byte-identical to Rust over six seeds; a
+    243 KB js_wasm32 module with two trivial imports does JSON in/out; the full card data parses in 0.94 s in wasm
+    (156 MB); builds take ~2.6 s. Cost found: serde's tagged enums need generated Odin types and decoders (folded into
+    O-1). Details in docs/odin-port.md. Next: O-1 (generated data model, then the recorder).
 - **M3 — First playable**, started 2026-11-22 (owner: "Get started"; Arena is the North Star, expect heavy UI
   refinement). Phase 1: M3-01 match host, M3-02 heuristic AI, M3-03 web scaffold, M3-04 landscape phone board.
   M3-01 plan, one PR per slice:
@@ -2439,6 +2564,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions
+- (2026-11-24, Odin port) The Rust engine parses card text during play (tokens' rules text, and parser helpers
+  used by triggers, layers and combat), so "the parser stays Rust as a build tool" (D-179) doesn't hold as is.
+  Options: (a) precompute every runtime parse into the card data at build time (oracle-gen), so the Odin engine
+  never parses; (b) port the parser to Odin too (≈174k lines); (c) keep a small Rust parser beside the Odin engine
+  (contradicts D-180's "no Rust in the engine"). Recommended: (a), checked by a census of the runtime parse calls.
 
 - Settled (2026-11-23, D-178): after the import is playable, the Rust to Odin port comes next, planned first; the
   LLM opponent and the RPG are on hold.
@@ -2530,6 +2660,26 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- (2026-11-24, Odin port, translator) Two silent mistranslations in code that type-checked cleanly, found by probes:
+  (1) Odin's unlabelled `break` inside a `switch` leaves only the switch, so a Rust `break` in a `match` arm inside a
+  loop was translated as a no-op; fixed: every translated loop is labelled and `break`/`continue` name it.
+  (2) Bindings from a mutable reference (`let x = &mut ..`, `if let Some(x) = opt_mut`, `for x in v_mut`,
+  `as_mut`/`get_mut`/`*_mut`, `ref mut`, `match self` in a `&mut self` method) became copies, losing writes;
+  now refused (320 functions, plus 183 that return `&mut`) until the pattern compiler binds pointers. Hoisted
+  statements under `&&`/`||` (which would run unconditionally) are refused too. Lesson: a clean type check proves
+  little. The vector check then found two more, both fixed: (3) free functions were looked up by bare name, so
+  `players::is_opponent`, which delegates to `topology::is_opponent`, called itself (now resolved by module path or
+  the caller's file, ambiguous calls and shared procedure names refused); (4) `Some(Vec::new())`, `Some(None)` and
+  `Err(Default::default())` became untyped `{}`/`nil`, which Odin reads as None/no error (now typed explicitly).
+- (2026-11-24, found by the Odin port) A game state whose WaitingFor holds a target slot with
+  `TargetEffectDetail::Modification(..)` can't round-trip through `serde_json::Value`: serde writes `"type"` twice
+  (`{"type":"Modification","type":"Increase"}`, an internally tagged enum inside another with the same tag) and a
+  Value's map keeps only the last. Direct to/from strings is fine, but the client does go through objects: the
+  wasm bridge's `to_js` parses the engine's JSON with `JSON.parse` (last key wins), and `WasmAdapter.restoreState`
+  sends a `JSON.stringify` of the stored object back to `restore_game_state`. So recovering or resuming a game paused
+  on a target prompt for a P/T pump (`TargetEffectDetail::Modification`) would fail to restore ("unknown variant
+  Increase"). Pre-existing in the Rust app, not yet reproduced in the browser. A fix changes a wire format (e.g.
+  PtDirection written as a plain string), so it waits for the owner's go-ahead.
 - (2026-11-23, UX review of M3-05, in both layouts, not yet fixed) The zone browser crops its card at the right; the
   main button disabled ("No Attacks / Not yet: 1 must attack") reads as bare text, without a button's shape.
 - Fixed (2026-11-23, found while planning the pacing slice): the whole-game e2e (`playWholeGame`, M3's acceptance,

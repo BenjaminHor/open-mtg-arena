@@ -1,0 +1,103 @@
+# The Odin port's checks (docs/odin-port.md, D-180), on pull requests that touch the Odin code or the Rust crates it
+# mirrors:
+# 1. the pinned Odin compiler, built from source with our patch (odin/toolchain),
+# 2. odingen's output matches the committed model (a Rust type change regenerates it) and the model type-checks,
+# 3. the card data round-trips through the model, and so do the states and actions of a game the Rust engine records.
+name: Odin
+
+on:
+  pull_request:
+    paths:
+      - "odin/**"
+      - "crates/**"
+      - "Cargo.lock"
+      - ".github/workflows/odin.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push waits for the run under way instead of cancelling it: the job is long, and a cancelled run checks
+# nothing.
+concurrency:
+  group: odin-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ODIN_TAG: dev-2026-11a
+  # The engine is built twice in the tool profile (card data, recorder); without debug info it fits the runner's disk.
+  CARGO_PROFILE_TOOL_DEBUG: "0"
+
+jobs:
+  model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            .
+            odin/tools/odingen
+
+      # The compiler: the pinned tag plus our patches, cached by both and the runner image. It links LLVM 18 and
+      # calls clang at run time, so those are installed even when the build comes from the cache.
+      - name: LLVM 18 and clang
+        run: sudo apt-get update && sudo apt-get install -y llvm-18-dev clang-18
+      # The runner image (ImageOS/ImageVersion are runner environment variables, not workflow `env`).
+      - name: Runner image
+        id: image
+        run: |
+          echo "image=${ImageOS:-unknown}-${ImageVersion:-unknown}" >> "$GITHUB_OUTPUT"
+          df -h /
+      - uses: actions/cache@v4
+        id: odin-cache
+        with:
+          path: ~/odin
+          key: odin-${{ env.ODIN_TAG }}-${{ hashFiles('odin/toolchain/*.patch') }}-${{ steps.image.outputs.image }}
+      - name: Build Odin
+        if: steps.odin-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch "$ODIN_TAG" https://github.com/odin-lang/Odin.git ~/odin
+          cd ~/odin
+          for p in "$GITHUB_WORKSPACE"/odin/toolchain/*.patch; do git apply "$p"; done
+          LLVM_CONFIG=llvm-config-18 ./build_odin.sh release
+      - run: echo "$HOME/odin" >> "$GITHUB_PATH"
+      - run: odin version
+
+      - name: The committed model is odingen's output
+        run: |
+          cargo run --locked --release --manifest-path odin/tools/odingen/Cargo.toml -- gen crates odin/engine/types
+          git diff --exit-code -- odin/engine/types
+      - name: The model type-checks
+        run: odin check odin/engine/types -no-entry-point
+      - name: Hand-written codec edge cases
+        run: odin run odin/tools/hand_codecs_test -out:hand_codecs_test
+
+      # MTGJSON's files change weekly at most; the script refreshes them once a week (UTC), as in Pages.
+      - name: Week for the MTGJSON cache
+        id: week
+        run: echo "week=$(date -u +%Y-W%V)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: data/mtgjson
+          key: mtgjson-${{ steps.week.outputs.week }}
+      - name: Generate the card data
+        run: ./scripts/gen-card-data.sh
+
+      - name: Card data round trip
+        run: |
+          odin build odin/tools/carddata_roundtrip -out:carddata_roundtrip
+          ./carddata_roundtrip client/public/card-data.json
+      # Twice: the recordings are a reference only if a seed replays the same game (D-182's control).
+      - name: Record a game with the Rust engine
+        run: |
+          cargo build --locked --profile tool -p phase-ai --bin record-games
+          ./target/tool/record-games client/public/card-data.json recordings red-vs-green 1 1 400
+          ./target/tool/record-games client/public/card-data.json recordings-again red-vs-green 1 1 400
+          cmp recordings/red-vs-green-1.jsonl recordings-again/red-vs-green-1.jsonl
+      - name: Game state round trip
+        run: |
+          odin build odin/tools/gamestate_roundtrip -out:gamestate_roundtrip
+          ./gamestate_roundtrip recordings/*.jsonl

@@ -2858,3 +2858,65 @@ owner's answer to the D-089 open question, option (a))
   app, which no longer refresh (the scraper and its daily job stay removed). The starter decks' feed gets back its
   original "no format" (the strip had labelled it Standard, which they aren't legal in).
 
+
+**D-179: The Odin port's shape: the parser stays Rust, the RNG stays bit-exact, the AI comes later (owner, 2026-11-24)** · 2026-11-24 · accepted
+- Plan: docs/odin-port.md. Survey: the engine runs the parsed card AST shipped in `card-data.json` (it never parses
+  Oracle text in play), and the client talks to the engine only in JSON. So an Odin engine reads the same card data
+  and speaks the same JSON behind the client's worker. Safety: the Rust engine records games and test runs (actions
+  plus a normalized checkpoint after each), and Odin must reproduce them. Speed: slices by mechanic, measured by the
+  share of cards Odin can fully play; Odin runs in shadow mode beside Rust before any game switches to it.
+- The owner, on the plan's questions: "yes to 1 and 2, port the AI later". So:
+  1. The Rust card-text parser (`phase-parser`, `oracle-gen`) stays, as an offline build tool producing
+     `card-data.json`; only the engine is ported. Porting the parser is a separate decision at the end.
+  2. The RNG is reproduced bit for bit (ChaCha20 seeded from a u64, and rand 0.9's `shuffle`, `random_range`,
+     `choose`, `random_bool`), so seeds, recordings and saved replays carry over between the engines.
+  3. The existing AI is ported later, after the engine slices it depends on; until then Odin-run games use a simple
+     stand-in or stay in shadow mode.
+- Not yet answered: how often the owner play-checks a slice. Default until then: whenever a slice changes what a
+  player can see or play.
+
+**D-180: The goal: no Rust left in the engine, near-zero regressions (owner, 2026-11-24)** · 2026-11-24 · accepted
+- The owner set the session goal: "continue with the Odin port - the goal is to remove all rust code from the engine
+  and replace it with Odin with near zero regressions in functionality and performance".
+- So the port runs to completion, not just its first milestones: the engine, its AST types and the AI end up in Odin,
+  the Rust crates are removed, and every step is held to the recordings (functionality) and to measured speed against
+  the Rust engine (performance: game actions, AI move time, card-data load, wasm size).
+- D-179's "the parser stays Rust" was about order: the card-text parser is a build tool, not the engine, and stays
+  Rust until the engine is done; whether it is ported too is decided then.
+
+**D-181: The Odin data model: wire forms, today's save format only (2026-11-24)** · 2026-11-24 · accepted
+- Where a Rust type keeps a runtime form and converts to a separate wire form (`serde(from/into)`), the Odin model
+  holds what the engine needs and the codec writes Rust's wire form exactly. ManaPool is modeled as its wire form,
+  the units in pool order (Rust's shape-and-slot index is a speed cache over it; pools are a handful of units, and the
+  ported logic works on the list). ResolvedRulesJournal keeps Rust's fields and rebuilds its runtime index in logic.
+- Types whose `from` conversion also accepts older save formats (ObjectIncarnationRef, PhaseStop, TriggerCause and six
+  more, plus `deserialize_with` adapters marked compat) are read in today's form only. Consequence: a save written by
+  an older Rust build that still uses a legacy form won't load in the Odin engine, where the Rust engine would migrate
+  it. Saves written by the current build load. If old saves matter at the switch, their migrations are ported then.
+- Fields Rust writes but never reads (`skip_deserializing`, 13 names in WRITE_ONLY_FIELDS) aren't read by the Odin
+  model either; the ported logic derives them, as Rust does.
+- Why: one exact wire format keeps the Rust and Odin engines comparable step by step (D-179's recordings) without
+  porting a decade of save migrations up front.
+
+**D-182: The Odin ObjectMap iterates in the Rust engine's order (2026-11-24)** · 2026-11-24 · accepted
+- Found by experiment: the order of `GameState.objects` is observable. With ObjectMap's FxBuildHasher swapped for
+  a random one, an elves-mirror recording diverged at step 111 (`last_zone_changed_ids` [23, 24] vs [24, 23]),
+  where an effect moved several objects in map order. (Three other matchups didn't diverge.) Control: all 32 duel
+  matchups recorded twice with the unmodified recorder are byte-identical, so the randomly seeded maps elsewhere
+  don't reach the recordings and the divergence is ObjectMap's.
+- That order is a pure function of the ids: `im::HashMap` (15.1) walks its hash trie by the key hash's 5-bit
+  chunks from the lowest, and the hash of `ObjectId(i)` is rustc-hash 2.1's FxHash, `((i * K) rotl 26)` truncated
+  to u32 (K = 0xf1357aea2e62a9c5). Sorting ids by those chunks reproduces im's order exactly, also after removals
+  (checked against the real crates over 400 ids with removals and large ids).
+- So the Odin ObjectMap keeps its objects in that order, with no change to the Rust engine and no re-recording.
+  The alternative, switching Rust to an ordered map, would re-record everything and risk speed in its hottest
+  lookup.
+- It is the 64-bit order. The shipped browser build (wasm32) hashes with the 32-bit FxHash constants, so today's
+  browser game already iterates differently from native runs; both are arbitrary tie orders. The Odin engine uses
+  the 64-bit order everywhere, so it matches the native recordings it is checked against.
+- Consequence for O-2's shadow mode in the browser (Odin beside the shipped wasm Rust): the two would differ on
+  ties by construction. So the order is a parameter of the Odin ObjectMap (64-bit for recordings; the 32-bit FxHash,
+  K = 0x93d765dd, write_u64 as two words, rotl 15, for the browser), and the 32-bit formula is checked against a
+  wasm32 build of the same test before shadow mode relies on it. Until then, shadow comparison runs natively only.
+- Not covered: two ids with equal 32-bit hashes (im keeps them in a collision node, in insertion order); none
+  exist below 2^32 ids in practice, but the Odin map asserts it.

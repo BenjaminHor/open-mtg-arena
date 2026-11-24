@@ -1,0 +1,53 @@
+diff --git a/src/types.cpp b/src/types.cpp
+index 4e5499f..73fd2b0 100644
+--- a/src/types.cpp
++++ b/src/types.cpp
+@@ -4576,7 +4576,25 @@ gb_internal void wait_for_union_variants(Type *t) {
+ 	}
+ }
+ 
++gb_internal i64 type_align_of_internal_compute(Type *t, TypePath *path);
++
++// Memoizes the alignment of completed structs and unions inside the recursion. Only the outermost
++// type_align_of call cached before, so a graph of types nested by value was re-walked along every path
++// to each node: exponential in nesting depth (a 467-type tagged-union model took 31 s to check).
++// Results computed while a cycle was being reported (path->failure) are not cached.
+ gb_internal i64 type_align_of_internal(Type *t, TypePath *path) {
++	bool memo = t != nullptr && (t->kind == Type_Struct || t->kind == Type_Union);
++	if (memo && t->cached_align.load() > 0) {
++		return t->cached_align.load();
++	}
++	i64 align = type_align_of_internal_compute(t, path);
++	if (memo && !path->failure && align > 0) {
++		t->cached_align.store(align);
++	}
++	return align;
++}
++
++gb_internal i64 type_align_of_internal_compute(Type *t, TypePath *path) {
+ 	GB_ASSERT(path != nullptr);
+ 	if (t->failure) {
+ 		return FAILURE_ALIGNMENT;
+@@ -4843,7 +4861,22 @@ gb_internal bool type_set_offsets(Type *t) {
+ 	return false;
+ }
+ 
++gb_internal i64 type_size_of_internal_compute(Type *t, TypePath *path);
++
++// Memoizes completed struct and union sizes inside the recursion; see type_align_of_internal.
+ gb_internal i64 type_size_of_internal(Type *t, TypePath *path) {
++	bool memo = t != nullptr && (t->kind == Type_Struct || t->kind == Type_Union);
++	if (memo && t->cached_size.load() >= 0) {
++		return t->cached_size.load();
++	}
++	i64 size = type_size_of_internal_compute(t, path);
++	if (memo && !path->failure && !t->failure) {
++		t->cached_size.store(size);
++	}
++	return size;
++}
++
++gb_internal i64 type_size_of_internal_compute(Type *t, TypePath *path) {
+ 	if (t->failure) {
+ 		return FAILURE_SIZE;
+ 	}

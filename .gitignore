@@ -158,3 +158,9 @@ scripts/changelog/backfill-drafts.json
 .env
 .env.*
 /*.png
+
+# LLVM coverage output (instrumented builds)
+*.profraw
+
+# Build output of the Odin port's standalone Rust tools
+odin/tools/*/target/

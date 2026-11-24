@@ -1,0 +1,13 @@
+# Prints RNG test vectors from the exact crates the engine uses (O-0 spike, docs/odin-port.md). The Odin port of the
+# RNG (odin/spike/rng) must print the same bytes. Standalone: not a member of the engine's workspace.
+[package]
+name = "rng-vectors"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+rand = "=0.9.4"
+rand_chacha = "=0.9.0"
