@@ -502,7 +502,28 @@ impl Body<'_, '_, '_> {
             crate::closures::register(&name, crate::closures::ClosureInfo { closure: c.clone(), env, args: None, ret: None, scope: crate::closures::scope_now() });
             return Ok(());
         }
-        if pi.by_ref.is_some() || self.mut_ref_source(&init.expr) {
+        // `let x = &mut place;`: a pointer to the place, used through as `x^` (writes land in place).
+        if let (None, Expr::Reference(r)) = (ty, &*init.expr) {
+            if r.mutability.is_some() && pi.by_ref.is_none() && is_place(&r.expr) {
+                let sh = self.shape_of(&r.expr).ok_or("binding to a mutable reference of an untyped place")?;
+                if !matches!(sh, Shape::MutRef(_)) {
+                    let place = self.tx.expr(&r.expr, &sh)?;
+                    let ident = self.fresh(&local_ident(&name));
+                    let ptr = match place.strip_suffix('^') {
+                        // Already a pointer read through (a `&mut` parameter): the pointer itself.
+                        Some(p) if !p.contains(['.', '[', '(']) => p.to_string(),
+                        _ => format!("&{place}"),
+                    };
+                    self.line(&format!("{ident} := {ptr}"));
+                    self.tx.vars.insert(name, (format!("{ident}^"), sh));
+                    return Ok(());
+                }
+            }
+        }
+        // A `&mut` the shapes know (`get_mut(..).expect(..)`, a MutRef) is bound as a pointer further down; any other
+        // mutable-reference source is refused.
+        let known_mut_ref = matches!(self.shape_of(&init.expr), Some(Shape::MutRef(_)));
+        if pi.by_ref.is_some() || (self.mut_ref_source(&init.expr) && !known_mut_ref) {
             return Err("binding to a mutable reference".into());
         }
         // The Rust type, where the let shows it: an annotation, or a constructor (`Vec::new()`, `BTreeSet::new()`).
