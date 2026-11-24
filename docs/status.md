@@ -115,7 +115,13 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     inside inlined closures, derived equality for `==` on structs/enums/collections, a call returning `impl Iterator`
     starting a chain, `enumerate`/`flat_map` stages (terminals break the chain's labelled outer loop),
     `Definitions<T>` iteration, `unwrap_or_else`, Vec reads through nil-able pointers: 7,459 of 15,918 (46.9%),
-    executed 47.4%. Method refusals now name the receiver's shape. Next blockers (executed): type
+    executed 47.4%. Method refusals now name the receiver's shape. Then `while let`, empty collections typed by a
+    later use (a placeholder type filled in when the function is done), chain terminals typed over untyped receivers,
+    `for` over im::Vector (by index) and over a Vec behind a nil-able pointer, an Option as a chain's source, and
+    `return` inside inlined closures (leaves the closure's block, like `?`): 7,607 of 15,918 (47.8%), executed
+    48.6% (2,844 of 5,849). Vector check (after the chain work): 654 pass, 0 unexplained failures, 0 crashes
+    (`controls_exact_fetchland` reads the skipped `layers_dirty`, explained). D-184 is done (Known issues). Next
+    blockers (executed): type
     parameters whose callers aren't translated yet (88), closure-parameter callees (87, translated as instances
     through their callers), the type-check tail (83), closures/combinators of untyped values (~130), lets of
     untyped values (~200 across kinds). Older next blockers
