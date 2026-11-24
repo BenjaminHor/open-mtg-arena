@@ -41,7 +41,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     add little through `apply` (533 states from shard 2's 3,920 tests: they build states directly), but two of them
     hold a payment recovery checkpoint, whose versioned form (ResolutionStateWire) needs the resolution-frame logic
     (`canonicalize_legacy_resolution_state`), so it's ported with the logic. A sweep of one game per duel matchup
-    (32) is running for more coverage. Determinism: re-recording seed 1 gives identical bytes; both seats play.
+    (32) followed: **every matchup round-trips, 11,852 states and 11,820 actions, 0 failures**. Combined coverage
+    (card data, the games, the sweep): 729/1,307 types, 2,753/5,019 variants, 23/32 hand decoders; the small
+    unreached hand codecs now have fixture cases in `odin/tools/hand_codecs_test`, leaving LiminalEntrant,
+    PeriodSignature, PendingCoinFlip and the checkpoint unexercised by data. Determinism: re-recording seed 1
+    gives identical bytes; both seats play.
   - **Plan before the logic port (2026-11-24, with the advisor).** Three measurements first, each able to change the
     translator's design:
     1. What one recorded game executes: the set of Rust functions (instrumented build or callgrind). Sizes O-3,

@@ -62,6 +62,17 @@ main :: proc() {
 	expect("budget limited", `7`, types.StackResolutionBudget, types.decode_StackResolutionBudget, types.encode_StackResolutionBudget, `7`)
 	// types/ability.rs CostPaidObjectRecord: a bare id is MembershipOnly.
 	expect("cost-paid id", `12`, types.CostPaidObjectRecord, types.decode_CostPaidObjectRecord, types.encode_CostPaidObjectRecord, `12`)
+	// Small wire forms the recorded games didn't reach (types/game_state.rs, game/game_object.rs, card_printing.rs).
+	expect("search visibility", `true`, types.SearchFoundVisibility, types.decode_SearchFoundVisibility, types.encode_SearchFoundVisibility, `true`)
+	expect("search visibility private", `false`, types.SearchFoundVisibility, types.decode_SearchFoundVisibility, types.encode_SearchFoundVisibility, `false`)
+	expect("entry event replay", `false`, types.EntryEventReplay, types.decode_EntryEventReplay, types.encode_EntryEventReplay, `false`)
+	expect("bestow flag", `true`, Maybe(types.BestowFormState), types.decode_with_bestow_form_serde, types.encode_with_bestow_form_serde, `true`)
+	expect("bestow null is the default form", `null`, Maybe(types.BestowFormState), types.decode_with_bestow_form_serde, types.encode_with_bestow_form_serde, `true`)
+	expect("bestow payload", `{"removed_creature_subtypes":["Spirit"]}`, Maybe(types.BestowFormState), types.decode_with_bestow_form_serde, types.encode_with_bestow_form_serde, `{"removed_creature_subtypes":["Spirit"]}`)
+	expect("bestow off", `false`, Maybe(types.BestowFormState), types.decode_with_bestow_form_serde, types.encode_with_bestow_form_serde, `false`)
+	expect("unit marker", `null`, Maybe(types.MutateFormState), types.decode_with_unit_marker_option_serde, types.encode_with_unit_marker_option_serde, `true`)
+	expect("unit marker off", `false`, Maybe(types.MutateFormState), types.decode_with_unit_marker_option_serde, types.encode_with_unit_marker_option_serde, `false`)
+	expect("owner printing", `{"set_code":"M10","collector_number":"146"}`, types.CardPrinting, types.decode_with_owner_printing_pair, types.encode_with_owner_printing_pair, `{"set_code":"M10","collector_number":"146"}`)
 	if failures > 0 { fmt.printf("%v failure(s)\n", failures); os.exit(1) }
 	fmt.println("hand codec edge cases: all pass")
 }
