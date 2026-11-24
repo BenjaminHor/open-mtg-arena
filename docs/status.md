@@ -2676,6 +2676,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- (2026-11-24, Odin port, translator) The model holds sets as Vecs, so set operations were translated as Vec ones:
+  `set.remove(&id)` became `Vec::remove(index)` (the vector check caught a crash; a small id would have removed the
+  wrong element silently), and collects into a `BTreeSet` would have kept neither its order nor its uniqueness. Fixed:
+  set operations and collects look up the Rust type (fields, parameters, a let's annotation or constructor, the
+  function's result, a turbofish); BTreeSets stay sorted, HashSets deduplicate (their Rust order is random, so not
+  observable); an unseen destination in a function using sets is refused.
 - (2026-11-24, Odin port, translator) Two silent mistranslations in code that type-checked cleanly, found by probes:
   (1) Odin's unlabelled `break` inside a `switch` leaves only the switch, so a Rust `break` in a `match` arm inside a
   loop was translated as a no-op; fixed: every translated loop is labelled and `break`/`continue` name it.

@@ -128,6 +128,8 @@ struct Target {
 }
 
 thread_local! {
+    /// The Rust result type of the function being translated (a collect in a result lands there).
+    static RET_TEXT: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
     /// Procedures whose translation Odin rejected (ODINGEN_DENY, a file of names, one per line): stubbed instead,
     /// until the translator handles what tripped them (odin/tools/translate-loop.sh).
     static DENY: std::collections::BTreeSet<String> = std::env::var("ODINGEN_DENY")
@@ -168,8 +170,36 @@ fn translate_fn_with(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef
     if f.sig.asyncness.is_some() || f.sig.unsafety.is_some() {
         return Err("async or unsafe function".into());
     }
+    // The model holds sets as Vecs: a collect could land in a set (needing sorting or deduplication) through a
+    // type the translator doesn't see; refused rather than guessed.
+    let body_text = f.block.to_token_stream().to_string();
+    let sig_text = f.sig.to_token_stream().to_string();
+    let names_a_set = |t: &str| t.split(|c: char| !c.is_alphanumeric() && c != '_').any(|w| matches!(w, "BTreeSet" | "HashSet" | "IndexSet" | "OrdSet" | "FxHashSet"));
+    let saved_mentions = crate::translate::MENTIONS_SET.with(|m| m.replace(names_a_set(&body_text) || names_a_set(&sig_text)));
+    let saved_ret_text = RET_TEXT.with(|r| r.replace(match &f.sig.output {
+        ReturnType::Type(_, t) => Some(t.to_token_stream().to_string()),
+        ReturnType::Default => None,
+    }));
+    let mut rust_types = BTreeMap::new();
+    for input in &f.sig.inputs {
+        if let FnArg::Typed(pt) = input {
+            if let Pat::Ident(pi) = &*pt.pat {
+                rust_types.insert(pi.ident.to_string(), pt.ty.to_token_stream().to_string());
+            }
+        }
+    }
+    let saved_types = crate::translate::RUST_TYPES.with(|t| std::mem::replace(&mut *t.borrow_mut(), rust_types));
     let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: owner.map(str::to_string), depth: 0, calls: true, pre: Vec::new(), fn_ret: Shape::Unit, temps: 0 };
-    let (sig, ret, mut_params) = signature_with(&mut tx, owner, f, extra)?;
+    let sig_r = signature_with(&mut tx, owner, f, extra);
+    let (sig, ret, mut_params) = match sig_r {
+        Ok(x) => x,
+        Err(e) => {
+            crate::translate::RUST_TYPES.with(|t| *t.borrow_mut() = saved_types);
+            crate::translate::MENTIONS_SET.with(|m| m.set(saved_mentions));
+            RET_TEXT.with(|r| r.replace(saved_ret_text));
+            return Err(e);
+        }
+    };
     tx.fn_ret = ret.clone();
     // Immutable parameters can't be pointed to: closures capture them by value (closures.rs).
     let by_value: BTreeSet<String> = tx
@@ -198,6 +228,9 @@ fn translate_fn_with(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef
     let out = std::mem::take(&mut b.out);
     tx.e.subst = saved_subst;
     crate::closures::BY_VALUE.with(|b| *b.borrow_mut() = saved_by_value);
+    crate::translate::RUST_TYPES.with(|t| *t.borrow_mut() = saved_types);
+    crate::translate::MENTIONS_SET.with(|m| m.set(saved_mentions));
+    RET_TEXT.with(|r| r.replace(saved_ret_text));
     r?;
     let code = format!("{pname} :: proc{sig} {{\n{out}}}\n");
     let touches_unlogged = crate::translate::TOUCHES_UNLOGGED.with(|t| t.get());
@@ -290,6 +323,13 @@ impl Body<'_, '_, '_> {
             // A branch that leaves (`return`, `continue`, `break`, a panic) has no value.
             Expr::Return(_) | Expr::Continue(_) | Expr::Break(_) => self.stmt_expr(e),
             Expr::Macro(m) if is_panic_macro(m) => self.stmt_expr(e),
+            _ if self.target.is_none() => {
+                let ret = self.ret.clone();
+                let rt = RET_TEXT.with(|r| r.borrow().clone());
+                let v = crate::translate::with_collect_target(e, rt.as_deref(), || self.tx.expr(e, &ret))?;
+                self.line(&format!("return {v}"));
+                Ok(())
+            }
             _ => {
                 if let Some(t) = &self.target {
                     if t.infer {
@@ -419,6 +459,24 @@ impl Body<'_, '_, '_> {
         if pi.by_ref.is_some() || self.mut_ref_source(&init.expr) {
             return Err("binding to a mutable reference".into());
         }
+        // The Rust type, where the let shows it: an annotation, or a constructor (`Vec::new()`, `BTreeSet::new()`).
+        let rust_ty = match (ty, &*init.expr) {
+            (Some(t), _) => Some(t.to_token_stream().to_string()),
+            (None, Expr::Call(c)) => match &*c.func {
+                Expr::Path(p) if p.path.segments.len() >= 2 => Some(p.path.segments[p.path.segments.len() - 2].ident.to_string()),
+                _ => None,
+            },
+            (None, Expr::Macro(m)) if m.mac.path.is_ident("vec") => Some("Vec".to_string()),
+            _ => None,
+        };
+        crate::translate::RUST_TYPES.with(|t| match rust_ty {
+            Some(rt) => {
+                t.borrow_mut().insert(name.clone(), rt);
+            }
+            None => {
+                t.borrow_mut().remove(&name);
+            }
+        });
         let control = matches!(&*init.expr, Expr::If(_) | Expr::Match(_) | Expr::Block(_));
         let check = |tx: &mut Tx, sh: Shape| -> R<Shape> {
             // A local's type must be one Odin knows (not a lifetime-generic or out-of-model type).
@@ -466,7 +524,8 @@ impl Body<'_, '_, '_> {
             self.tx.vars.insert(name, (ident, sh));
             return Ok(());
         }
-        let v = self.tx.expr(&init.expr, &sh)?;
+        let ann = ty.map(|t| t.to_token_stream().to_string());
+        let v = crate::translate::with_collect_target(&init.expr, ann.as_deref(), || self.tx.expr(&init.expr, &sh))?;
         let ident = self.fresh(&local_ident(&name));
         self.line(&format!("{ident}: {} = {v}", self.tx.e.odin(&sh)));
         self.tx.vars.insert(name, (ident, sh));
@@ -708,7 +767,8 @@ impl Body<'_, '_, '_> {
                 match &r.expr {
                     Some(v) => {
                         let ret = self.ret.clone();
-                        let v = self.tx.expr(v, &ret)?;
+                        let rt = RET_TEXT.with(|r| r.borrow().clone());
+                        let v = crate::translate::with_collect_target(v, rt.as_deref(), || self.tx.expr(v, &ret))?;
                         self.line(&format!("return {v}"));
                     }
                     None => self.line("return"),

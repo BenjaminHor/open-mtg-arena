@@ -47,6 +47,13 @@ pub fn proc_name(owner: Option<&str>, name: &str) -> String {
 thread_local! {
     /// The file of the function being translated (free calls resolve against it).
     pub static CURRENT_FILE: std::cell::RefCell<Option<std::path::PathBuf>> = const { std::cell::RefCell::new(None) };
+    /// The Rust types of the current procedure's parameters and annotated or constructed locals, by Rust name: the
+    /// model holds sets as Vecs, so set operations look here (and at field types) to know what they act on.
+    pub static RUST_TYPES: std::cell::RefCell<BTreeMap<String, String>> = std::cell::RefCell::new(BTreeMap::new());
+    /// The function being translated names a std set type: a collect whose destination isn't seen is refused.
+    pub static MENTIONS_SET: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+    /// The collect expression (by address) whose destination the context knows, and what that destination is.
+    pub static COLLECT_INTO: std::cell::RefCell<Option<(usize, SetKind)>> = const { std::cell::RefCell::new(None) };
     /// Set when translated code reads or writes a field the Rust engine doesn't serialize (`#[serde(skip)]`).
     pub static TOUCHES_UNLOGGED: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
     /// Procedures written by hand (hand_logic.odin and the runtime): callable even when the Rust one is generic.
@@ -1380,6 +1387,39 @@ impl<'a, 'b> Tx<'a, 'b> {
         Ok(res)
     }
 
+    /// What a Vec-shaped value is in Rust: a Vec, a sorted set, or a hash set (None when the translator can't tell).
+    pub fn set_kind(&mut self, e: &Expr) -> Option<SetKind> {
+        let ty = match e {
+            Expr::Paren(p) => return self.set_kind(&p.expr),
+            Expr::Reference(r) => return self.set_kind(&r.expr),
+            Expr::Unary(u) => return self.set_kind(&u.expr),
+            Expr::Path(p) if p.path.segments.len() == 1 => RUST_TYPES.with(|t| t.borrow().get(&p.path.segments[0].ident.to_string()).cloned())?,
+            Expr::Field(fe) => {
+                let base = match self.shape_of(&fe.base)? {
+                    Shape::Ptr(i, _) | Shape::MutRef(i) => *i,
+                    s => s,
+                };
+                let Shape::Named(tn, _) = base else { return None };
+                let syn::Member::Named(id) = &fe.member else { return None };
+                let Some(Fields::Named(fs)) = self.named_fields(&tn, None) else { return None };
+                let f = fs.iter().find(|f| f.name.as_deref() == Some(&id.to_string()))?;
+                let t = &f.ty;
+                quote::quote!(#t).to_string()
+            }
+            _ => return None,
+        };
+        Some(set_kind_of(&ty))
+    }
+
+    /// Whether Odin's `<` orders values of this shape as Rust's Ord does (numbers, strings, plain enums, newtypes).
+    fn ordered(&mut self, s: &Shape) -> bool {
+        match s {
+            Shape::Int(_) | Shape::Str | Shape::Char | Shape::Bool => true,
+            Shape::Named(n, _) => self.is_distinct_number(n) || self.enum_variants(n).is_some_and(|v| v.0),
+            _ => false,
+        }
+    }
+
     fn next_temp(&mut self) -> u32 {
         self.temps += 1;
         self.temps
@@ -1996,8 +2036,31 @@ impl<'a, 'b> Tx<'a, 'b> {
         let (init, step, value) = match mc.method.to_string().as_str() {
             "collect" => {
                 let ty = self.e.odin(want);
+                // Where it lands: a set collects differently (sorted and deduplicated, or deduplicated) though the
+                // model holds both as Vecs. The destination type comes from a turbofish or the context (a let's
+                // annotation, the function's result); unseen in a function that uses sets, it is refused.
+                let kind = match &mc.turbofish {
+                    Some(tf) => set_kind_of(&quote::quote!(#tf).to_string()),
+                    None => match COLLECT_INTO.with(|c| c.borrow().clone()) {
+                        Some((at, k)) if at == mc as *const syn::ExprMethodCall as usize => k,
+                        _ if MENTIONS_SET.with(|m| m.get()) => return Err("collect into a type the translator can't see, in a function using sets".into()),
+                        _ => SetKind::NotSet,
+                    },
+                };
                 match want {
-                    Shape::Vec(_) => (format!("{res}: {ty}"), format!("append(&{res}, {cur})"), res.clone()),
+                    Shape::Vec(i) => {
+                        let i = (**i).clone();
+                        match kind {
+                            SetKind::NotSet => (format!("{res}: {ty}"), format!("append(&{res}, {cur})"), res.clone()),
+                            SetKind::Hash if self.comparable(&i) => (format!("{res}: {ty}"), format!("if !vec_contains({res}[:], {cur}) do append(&{res}, {cur})"), res.clone()),
+                            SetKind::Sorted if self.comparable(&i) && self.ordered(&i) => {
+                                // Inserted in order, duplicates dropped: what a BTreeSet holds.
+                                let step = format!("if !vec_contains({res}[:], {cur}) {{ at{n}_ := len({res}); for e{n}_, k{n}_ in {res} {{ if {cur} < e{n}_ {{ at{n}_ = k{n}_; break }} }}; inject_at(&{res}, at{n}_, {cur}) }}");
+                                (format!("{res}: {ty}"), step, res.clone())
+                            }
+                            _ => return Err("collect into a set of a type Odin can't compare or order".into()),
+                        }
+                    }
                     _ => return Err("collect into something other than a Vec".into()),
                 }
             }
@@ -2198,7 +2261,22 @@ impl<'a, 'b> Tx<'a, 'b> {
                     Some(c) => format!("{c}({recv})"),
                     None => recv,
                 },
+                // A set (a Vec in the model) removes by value and says whether it held it; a Vec removes by index.
+                ("remove", Shape::Vec(i), 1) if deref.is_empty() && self.set_kind(&mc.receiver).is_some_and(|k| k != SetKind::NotSet) => {
+                    if !self.comparable(&i.clone()) {
+                        return Err("set of a type Odin can't compare".into());
+                    }
+                    let v = self.expr(args[0], i)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("sv{n}_ := {v}"));
+                    self.pre.push(format!("sr{n}_ := false"));
+                    self.pre.push(format!("for e{n}_, k{n}_ in {recv} {{ if e{n}_ == sv{n}_ {{ ordered_remove(&{recv}, k{n}_); sr{n}_ = true; break }} }}"));
+                    format!("sr{n}_")
+                }
                 ("remove", Shape::Vec(_), 1) if deref.is_empty() => {
+                    if self.set_kind(&mc.receiver) != Some(SetKind::NotSet) {
+                        return Err("remove on a collection that may be a set".into());
+                    }
                     let ix = self.expr(args[0], &Shape::Int("int"))?;
                     let n = self.next_temp();
                     self.pre.push(format!("i{n}_ := {ix}"));
@@ -2250,7 +2328,20 @@ impl<'a, 'b> Tx<'a, 'b> {
                     format!("old{n}_")
                 }
                 // A set (a Vec in the model) inserts only what it doesn't hold, and says whether it did.
-                ("insert", Shape::Vec(i), 1) if deref.is_empty() && self.comparable(&i.clone()) => {
+                // A BTreeSet stays sorted (its iteration order is observable); a HashSet's order isn't (random hashing
+                // in Rust), so insertion order stands in for it.
+                ("insert", Shape::Vec(i), 1) if deref.is_empty() && self.comparable(&i.clone()) && self.set_kind(&mc.receiver) == Some(SetKind::Sorted) => {
+                    if !self.ordered(&i.clone()) {
+                        return Err("sorted set of a type Odin can't order".into());
+                    }
+                    let v = self.expr(args[0], i)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("sv{n}_ := {v}"));
+                    self.pre.push(format!("si{n}_ := !vec_contains({recv}[:], sv{n}_)"));
+                    self.pre.push(format!("if si{n}_ {{ at{n}_ := len({recv}); for e{n}_, k{n}_ in {recv} {{ if sv{n}_ < e{n}_ {{ at{n}_ = k{n}_; break }} }}; inject_at(&{recv}, at{n}_, sv{n}_) }}"));
+                    format!("si{n}_")
+                }
+                ("insert", Shape::Vec(i), 1) if deref.is_empty() && self.comparable(&i.clone()) && self.set_kind(&mc.receiver) == Some(SetKind::Hash) => {
                     let v = self.expr(args[0], i)?;
                     let n = self.next_temp();
                     self.pre.push(format!("sv{n}_ := {v}"));
@@ -2300,7 +2391,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                 // An iterator over a Vec, taken whole: the Vec (translated logic materializes iterators).
                 ("iter" | "into_iter", Shape::Vec(_), 0) if deref.is_empty() => recv,
                 ("as_deref" | "as_ref", Shape::OptPtr(..), 0) => recv,
-                ("extend", Shape::Vec(i), 1) if deref.is_empty() => {
+                ("extend", Shape::Vec(i), 1) if deref.is_empty() && self.set_kind(&mc.receiver) == Some(SetKind::NotSet) => {
                     let items = self.expr(args[0], &Shape::Vec(i.clone()))?;
                     let n = self.next_temp();
                     self.pre.push(format!("x{n}_ := {items}"));
@@ -2458,4 +2549,34 @@ fn unify(ty: &syn::Type, sh: &Shape, tparams: &[String], out: &mut BTreeMap<Stri
         }
         _ => {}
     }
+}
+
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum SetKind {
+    NotSet,
+    Sorted,
+    Hash,
+}
+
+/// The set kind a Rust type's text names (a sequence type is NotSet).
+pub fn set_kind_of(ty: &str) -> SetKind {
+    if ty.contains("BTreeSet") || ty.contains("OrdSet") {
+        SetKind::Sorted
+    } else if ty.contains("HashSet") || ty.contains("IndexSet") {
+        SetKind::Hash
+    } else {
+        SetKind::NotSet
+    }
+}
+
+/// Runs `f` with the destination of a collect that is exactly `e` known (a let's annotation, a function's result).
+pub fn with_collect_target<T>(e: &Expr, rust_ty: Option<&str>, f: impl FnOnce() -> T) -> T {
+    let target = match (e, rust_ty) {
+        (Expr::MethodCall(mc), Some(t)) if mc.method == "collect" => Some((mc as *const syn::ExprMethodCall as usize, set_kind_of(t))),
+        _ => None,
+    };
+    let saved = COLLECT_INTO.with(|c| std::mem::replace(&mut *c.borrow_mut(), target));
+    let r = f();
+    COLLECT_INTO.with(|c| *c.borrow_mut() = saved);
+    r
 }
