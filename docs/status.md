@@ -36,8 +36,28 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     decodes and encodes back equal (`odin/tools/gamestate_roundtrip`): 0 failures, 0 mismatches. Rules and the one
     gap left (payment recovery checkpoints) in docs/odin-port.md, "Game-state model". Recordings are 150-200 MB a game
     (full state per step), kept out of the repo for now.
-  - Next: the replay harness (O-2): an Odin runner that loads a recording and, as logic is ported, applies each
-    action and compares the state; a compact checkpoint form and a committed small corpus; then O-3, the core slice.
+  - **Coverage (2026-11-24).** Six games reach 268/1,307 model types; with the card data 601 types, 2,549/5,019 enum
+    variants, 21/32 hand decoders (`-define:COVERAGE=true` on the round-trip tools). The engine's integration tests
+    add little through `apply` (533 states from shard 2's 3,920 tests: they build states directly), but two of them
+    hold a payment recovery checkpoint, whose versioned form (ResolutionStateWire) needs the resolution-frame logic
+    (`canonicalize_legacy_resolution_state`), so it's ported with the logic. A sweep of one game per duel matchup
+    (32) is running for more coverage. Determinism: re-recording seed 1 gives identical bytes; both seats play.
+  - **Plan before the logic port (2026-11-24, with the advisor).** Three measurements first, each able to change the
+    translator's design:
+    1. What one recorded game executes: the set of Rust functions (instrumented build or callgrind). Sizes O-3,
+       shows whether mechanic slices are separable or the unit is `apply`'s whole call closure, and orders the port
+       leaf-first.
+    2. Clone and aliasing on that path: GameState/GameObject clones and `Arc::make_mut`. `Box`/`Arc` map to `^T` and
+       the translator treats `.clone()` as the value itself, fine for predicates but aliasing once code mutates. If
+       the engine clones state per action, the Odin state layout (and generated `clone_<T>`) is decided now, not
+       with the AI.
+    3. Hash-order dependence: ObjectMap is an `im::HashMap` with Fx hashing; Odin uses `map`. Re-record seed 1 with
+       a different hasher: identical bytes mean iteration order is unobservable; otherwise Odin reproduces the order
+       or the Rust reference moves to an ordered map first.
+    Then: per-module verification vectors (a Rust printer over recorded states, an Odin checker), so each
+    translated batch is checked before whole games pass; land O-1 through a PR with a CI job (patched Odin build,
+    odingen output matches the committed files, one short game recorded, both round trips); the client boundary's
+    types (ClientGameStateRef and the other wasm exports) added as model roots before shadow mode.
 - **D-177 import merged** (PR #116, squash bdd74cf, 2026-11-24, CI green). **Live** (Pages run 21 succeeded 03:37 UTC;
   checked 04:55 UTC with Playwright at 915x412 landscape phone: the home page loads in ~8 s with no errors, Play vs AI
   → Random Deck → Start Match plays a Commander game: the die roll, play-first choice, mulligan, then about five turns
