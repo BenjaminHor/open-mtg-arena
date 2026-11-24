@@ -79,6 +79,10 @@ initialize_game :: proc(b: ^strings.Builder, args: []json.Value) {
 			append(&main, card)
 		}
 		decks[i].main = main[:]
+		commanders: [dynamic]^types.CardExportEntry
+		listed, _ := json.get(json.get_or_null(deck_data, seat), "commander")
+		for name in listed.items do if card, found := find_card(name.text); found do append(&commanders, card)
+		decks[i].commanders = commanders[:]
 	}
 	seed, has_seed := json.to_u64(arg(args, 1))
 	if !has_seed do seed = random_seed()

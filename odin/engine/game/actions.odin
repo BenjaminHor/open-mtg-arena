@@ -226,7 +226,7 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		append(&out, types.GameAction_MulliganDecision{choice = types.MulliganChoice_Mulligan{}})
 	case types.WaitingFor_Priority:
 		append(&out, types.GameAction_PassPriority{})
-		for id in ids_of(player(s, p).hand) {
+		for id in castable_zone_ids(s, p) {
 			o := object(s, id)
 			if can_play_land(s, p, o) && object_supported(o, g.card_db) {
 				append(&out, types.GameAction_PlayLand{object_id = id, card_id = o.card_id})
@@ -270,4 +270,12 @@ is_deciding :: proc(s: ^types.GameState, p: types.PlayerId) -> bool {
 has_duplicates :: proc(ids: []types.ObjectId) -> bool {
 	for a, i in ids do for b in ids[i + 1:] do if a == b do return true
 	return false
+}
+
+// The cards a player could cast or play: their hand, and their commanders in the command zone (CR 903.8).
+castable_zone_ids :: proc(s: ^types.GameState, p: types.PlayerId) -> [dynamic]types.ObjectId {
+	out := make([dynamic]types.ObjectId, context.temp_allocator)
+	append(&out, ..ids_of(player(s, p).hand))
+	for id in ids_of(s.command_zone) do if object(s, id).owner == p do append(&out, id)
+	return out
 }

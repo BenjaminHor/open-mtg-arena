@@ -261,3 +261,73 @@ target_that_left_and_returned_is_a_new_object :: proc(t: ^testing.T) {
 	testing.expect(t, shock.zone == .Graveyard, "Shock left the stack")
 	testing.expect(t, bears.damage_marked == 0 && bears.zone == .Battlefield, "the new Grizzly Bears took no damage")
 }
+
+@(test)
+casting_an_instant_triggers_young_pyromancer :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 601.2i, 603.2: "whenever you cast an instant or sorcery spell" triggers once the spell is cast, and its
+	// ability resolves before the spell (it's put on the stack above it).
+	g := new_game()
+	add(t, g, "Young Pyromancer", 0, .Battlefield)
+	add(t, g, "Mountain", 0, .Battlefield)
+	shock := add(t, g, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	testing.expect(t, types.pvec_len(g.state.stack) == 2, "Shock and the trigger are on the stack")
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	tokens := 0
+	for id in game.ids_of(g.state.battlefield) do if game.object(&g.state, id).is_token do tokens += 1
+	testing.expect(t, tokens == 1, "an Elemental token")
+	testing.expect(t, game.player(&g.state, 1).life == 20, "Shock hasn't resolved yet")
+}
+
+@(test)
+damage_to_each_creature :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Tremor: 1 damage to each creature without flying (CR 120.3, 704.5g).
+	g := new_game()
+	add(t, g, "Mountain", 0, .Battlefield)
+	tremor := add(t, g, "Tremor", 0, .Hand)
+	elves := add(t, g, "Llanowar Elves", 1, .Battlefield)
+	bird := add(t, g, "Suntail Hawk", 1, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = tremor.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, elves.zone == .Graveyard, "the 1/1 without flying died")
+	testing.expect(t, bird.zone == .Battlefield, "the flyer was spared")
+	testing.expect(t, bears.zone == .Battlefield && bears.damage_marked == 1, "the 2/2 took 1")
+}
+
+@(test)
+commander_cast_from_command_zone_with_tax :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 903.6: the commander starts in the command zone. CR 903.8: it can be cast from there, for {2} more for
+	// each earlier cast from there. CR 903.9a: when it dies it goes back to the command zone.
+	lands := make([]^types.CardExportEntry, 40)
+	for &l in lands do l = card(t, "Forest")
+	commanders := []^types.CardExportEntry{card(t, "Grizzly Bears")} // any creature will do for the zone rules
+	format: types.FormatConfig
+	format.starting_life = 40
+	g := game.start_game([]game.Deck{{main = lands, commanders = commanders}, {main = lands}}, 1, format, 0, lookup)
+	s := &g.state
+	testing.expect(t, types.pvec_len(s.command_zone) == 1, "the commander is in the command zone")
+	commander := game.object(s, types.pvec_get(s.command_zone, 0))
+	s.turn_number, s.phase, s.active_player = 2, .PreCombatMain, 0
+	s.waiting_for = types.WaitingFor_Priority{player = 0}
+	for _ in 0 ..< 4 do add(t, g, "Forest", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = commander.id}), "cast from the command zone")
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, commander.zone == .Battlefield)
+	game.destroy(g, commander)
+	game.check_state_based_actions(g)
+	testing.expect(t, commander.zone == .Command, "back to the command zone")
+	// Second cast: {1}{G} + {2} = four mana; three untapped Forests aren't enough, four are.
+	for id in game.ids_of(s.battlefield) do game.object(s, id).tapped = false
+	game.object(s, game.ids_of(s.battlefield)[0]).tapped = true
+	testing.expect(t, !game.castable(s, 0, commander, lookup), "three lands don't pay the tax")
+	game.object(s, game.ids_of(s.battlefield)[0]).tapped = false
+	testing.expect(t, game.castable(s, 0, commander, lookup), "four lands do")
+}

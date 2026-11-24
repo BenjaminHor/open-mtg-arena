@@ -55,7 +55,7 @@ priority_action :: proc(g: ^Game, p: types.PlayerId) -> types.GameAction {
 	}
 	// Only spells cast on its own turn's main phase, or burn aimed at a creature it can kill; it doesn't hold tricks.
 	best: ^types.GameObject
-	for id in hand {
+	for id in castable_zone_ids(s, p) {
 		o := object(s, id)
 		if !castable(s, p, o, g.card_db) || !worth_casting(g, p, o) do continue
 		if best == nil || mana_value(o.mana_cost) > mana_value(best.mana_cost) do best = o

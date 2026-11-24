@@ -13,7 +13,8 @@ STARTING_HAND_SIZE :: 7 // CR 103.5
 
 // One player's deck: the cards, already looked up in the card database, in deck-list order.
 Deck :: struct {
-	main: []^types.CardExportEntry,
+	main:       []^types.CardExportEntry,
+	commanders: []^types.CardExportEntry, // CR 903.3: a Commander game's commander(s), outside the 99
 }
 
 Game :: struct {
@@ -67,6 +68,12 @@ start_game :: proc(decks: []Deck, seed: u64, format: types.FormatConfig, first_p
 		p.id = player
 		p.life = format.starting_life
 		p.starting_deck_size = u32(len(deck.main))
+		// CR 903.6: each player's commander starts face up in the command zone.
+		for c in deck.commanders {
+			obj := new_card_object(s, c, player, .Command)
+			obj.is_commander = true
+			types.pvec_push_new(&s.command_zone, obj.id)
+		}
 		library := make([dynamic]types.ObjectId, 0, len(deck.main))
 		for card in deck.main {
 			obj := new_card_object(s, card, player, .Library)

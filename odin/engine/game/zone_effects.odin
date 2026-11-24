@@ -91,7 +91,7 @@ card_matches_type :: proc(o: ^types.GameObject, t: types.TypeFilter) -> bool {
 do_change_zone :: proc(g: ^Game, x: types.Effect_ChangeZone, controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) {
 	s := &g.state
 	moved: ^types.GameObject
-	if t, ok := target.?.(types.TargetRef_Object); ok do moved = object(s, t._0)
+	if id, ok := target_object(target); ok do moved = object(s, id)
 	else if is_self(x.target) do moved = object(s, source)
 	if moved == nil do return
 	if origin, has := x.origin.?; has && moved.zone != origin do return // it left that zone: nothing to move

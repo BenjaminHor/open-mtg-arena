@@ -10,6 +10,7 @@ Event_Kind :: enum {
 	Zone_Change,
 	Step_Begin,
 	Attack,
+	Spell_Cast,
 }
 
 // Something that happened that an ability may trigger on (CR 603.2).
@@ -32,7 +33,9 @@ Pending_Trigger :: struct {
 
 trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	if t.execute == nil || !ability_supported(t.execute^) do return false
-	if t.condition != nil || t.unless_pay != nil || t.valid_target != nil || t.valid_source != nil || t.batched do return false
+	if t.condition != nil || t.unless_pay != nil || t.valid_source != nil || t.batched do return false
+	// "you" as the one acting is read only by spell-cast triggers ("whenever you cast").
+	if _, is_cast := t.mode.(types.TriggerMode_SpellCast); !is_cast && t.valid_target != nil do return false
 	if len(t.origin_zones) > 0 || len(t.zone_change_clauses) > 0 || t.counter_filter != nil || t.saga_chapter != nil do return false
 	if c, has := t.constraint.?; has {
 		#partial switch _ in c {
@@ -52,6 +55,38 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		f, has := t.valid_card.?
 		_, self := f.(types.TargetFilter_SelfRef)
 		return has && self && t.attack_target_filter == nil
+	case types.TriggerMode_SpellCast:
+		// "Whenever you cast a [kind of] spell", or "when you cast this spell".
+		if v, has := t.valid_target.?; has {
+			if _, you := v.(types.TargetFilter_Controller); !you do return false
+		}
+		f, has := t.valid_card.?
+		return !has || spell_filter_supported(f)
+	}
+	return false
+}
+
+spell_filter_supported :: proc(f: types.TargetFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_SelfRef:
+		return true
+	case types.TargetFilter_Typed:
+		return typed_supported(x._0)
+	case types.TargetFilter_Or:
+		for y in x.filters do if !spell_filter_supported(y) || is_self(y) do return false
+		return true
+	}
+	return false
+}
+
+spell_matches :: proc(s: ^types.GameState, spell: ^types.GameObject, f: types.TargetFilter, watcher: ^types.GameObject) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_SelfRef:
+		return spell.id == watcher.id
+	case types.TargetFilter_Typed:
+		return object_matches(s, spell, x._0, watcher.controller, watcher.id)
+	case types.TargetFilter_Or:
+		for y in x.filters do if spell_matches(s, spell, y, watcher) do return true
 	}
 	return false
 }
@@ -104,6 +139,23 @@ collect_triggers :: proc(g: ^Game) {
 					step, _ := t.phase.?
 					if step != e.step || !turn_constraint_met(s, t^, o.controller) do continue
 					add_trigger(g, o.id, o.controller, t)
+				}
+			}
+		case .Spell_Cast:
+			// CR 601.2i: abilities that trigger on casting trigger once the spell is cast.
+			spell := object(s, e.object)
+			watchers := make([dynamic]^types.GameObject, context.temp_allocator)
+			append(&watchers, spell)
+			for id in ids_of(s.battlefield) do append(&watchers, object(s, id))
+			for w in watchers {
+				for &entry in trigger_definitions(w) {
+					t := &entry.definition
+					if _, is_cast := t.mode.(types.TriggerMode_SpellCast); !is_cast || !trigger_supported(t^) do continue
+					f, has := t.valid_card.?
+					if w.id == spell.id && !(has && is_self(f)) do continue // a spell's own triggers are "this spell" ones
+					if has && !spell_matches(s, spell, f, w) do continue
+					if _, you := t.valid_target.?; you && e.controller != w.controller do continue
+					add_trigger(g, w.id, w.controller, t)
 				}
 			}
 		case .Attack:

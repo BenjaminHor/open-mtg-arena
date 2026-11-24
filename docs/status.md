@@ -2775,6 +2775,15 @@ Progress:
   The report ranks missing pieces: triggered abilities lead (zone-change triggers block 3,623 cards and are the
   only gap for 1,709), then continuous statics (1,623), "as it enters" replacements (883), step and attack triggers,
   spell-cast triggers. Next: triggered abilities (CR 603).
+- Step 3 progress (2026-11-24, later): triggered abilities (CR 603: zone changes, steps, attacks, spell casts),
+  tokens (111), layers (613: static P/T and keyword effects, counters, until-end-of-turn grants), activated
+  abilities (602: mana, tap, sacrifice-self, pay-life costs), enters-tapped/with-counters replacements (614.1c),
+  zone-change effects (exile, bounce, graveyard returns), counters/tap/mill/mass pump/destroy all/damage each,
+  one object-filter matcher (types, subtypes, colors, keywords, mana value, P/T, attacking...), the attacker's
+  damage division (510.1c, 702.19b), target incarnations (400.7), commanders (903.6, 903.8 tax, 903.9a return;
+  the owner's choice to return is always taken, hand/library replacement 903.9b and commander damage 903.10a not
+  yet). A rules-judge review of the core was fixed in full. Native rules tests: `odin test odin/tests/game
+  -define:ODIN_TEST_TRACK_MEMORY=false` (15, each citing its rule). Pool coverage: 1,886 of 15,772.
 - Step 2/3 start: `odin/engine/game/setup.odin` starts a game from the CR (103: libraries shuffled with the seeded
   generator, starting life, seven-card hands, mulligan decisions in turn order); `game_calls.odin` serves
   `initialize_game` (decks checked against the format first, as Rust does), `get_game_state`,

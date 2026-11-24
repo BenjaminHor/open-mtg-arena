@@ -72,6 +72,7 @@ ability_supported :: proc(a: types.AbilityDefinition) -> bool {
 }
 
 effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bool {
+	if supported, known := more_effect_supported(e, duration); known do return supported
 	#partial switch x in e {
 	case types.Effect_DealDamage:
 		_, fixed := fixed_quantity(x.amount)
@@ -143,6 +144,12 @@ effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
 	case types.Effect_ChangeZone:
 		f = x.target
 	case types.Effect_Bounce:
+		f = x.target
+	case types.Effect_PutCounter:
+		f = x.target
+	case types.Effect_SetTapState:
+		f = x.target
+	case types.Effect_Mill:
 		f = x.target
 	case:
 		return nil, false
@@ -241,13 +248,24 @@ sorcery_timing :: proc(s: ^types.GameState, p: types.PlayerId) -> bool {
 
 // Whether the player can cast this card from their hand now: supported, timely, with legal targets and payable.
 castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, card_db: Card_Lookup) -> bool {
-	if o.zone != .Hand || o.owner != p do return false
+	// From the hand, or a commander from the command zone (CR 903.8).
+	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander)) do return false
 	if !object_supported(o, card_db) || !can_cast_now(s, p, o) do return false
 	if a := spell_ability(o); a != nil {
 		for f in target_slots(a) do if len(legal_targets(s, f, p, o.id)) == 0 do return false
 	}
-	_, payable := plan_payment(s, p, o.mana_cost)
+	_, payable := plan_payment(s, p, spell_cost(s, o))
 	return payable
+}
+
+// The total cost to cast it: its mana cost, plus {2} for each earlier cast of a commander from the command zone
+// (CR 903.8, the commander tax).
+spell_cost :: proc(s: ^types.GameState, o: ^types.GameObject) -> types.ManaCost {
+	if o.zone != .Command do return o.mana_cost
+	c, is_cost := o.mana_cost.(types.ManaCost_Cost)
+	if !is_cost do return o.mana_cost
+	c.generic += 2 * s.commander_cast_count[o.id]
+	return c
 }
 
 // Looks up the card an object was made from, to check what this engine supports of it.
@@ -349,8 +367,12 @@ choose_target :: proc(g: ^Game, p: types.PlayerId, t: types.TargetRef) -> bool {
 finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []types.TargetRef) {
 	s := &g.state
 	o := object(s, id)
-	taps, _ := plan_payment(s, p, o.mana_cost)
+	taps, _ := plan_payment(s, p, spell_cost(s, o))
 	for t in taps do t.tapped = true // CR 605.3: the mana abilities are activated while paying
+	if o.zone == .Command {
+		s.commander_cast_count[o.id] += 1
+		o.commander_tax = 2 * s.commander_cast_count[o.id]
+	}
 	move_object(g, id, .Stack)
 	o.controller = p
 	resolved := new(types.ResolvedAbility)
@@ -360,6 +382,7 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	for t in targets do append(&resolved.targets, t)
 	record_target_incarnations(s, resolved)
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = id, controller = p, kind = types.StackEntryKind_Spell{card_id = o.card_id, ability = resolved}}, copy_entry)
+	append(&g.events, Event{kind = .Spell_Cast, object = id, controller = p}) // CR 601.2i
 	s.priority_passes = nil
 	give_priority(g, p)
 }
@@ -400,13 +423,17 @@ is_permanent_card :: proc(o: ^types.GameObject) -> bool {
 // One effect of a resolving spell.
 do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) {
 	s := &g.state
+	if _, known := more_effect_supported(a.effect^, a.duration); known {
+		do_more_effect(g, a.effect^, controller, source, target)
+		return
+	}
 	#partial switch x in a.effect^ {
 	case types.Effect_DealDamage:
 		n, _ := fixed_quantity(x.amount)
 		deal_damage(g, source, target.?, n)
 	case types.Effect_Pump:
 		pumped: ^types.GameObject
-		if t, ok := target.?.(types.TargetRef_Object); ok do pumped = object(s, t._0)
+		if id, ok := target_object(target); ok do pumped = object(s, id)
 		else if is_self(x.target) do pumped = object(s, source)
 		// "This creature gets +N/+N": only while it's still the same object on the battlefield (CR 400.7).
 		if pumped != nil && pumped.zone == .Battlefield do pump(g, pumped, x.power.(types.PtValue_Fixed)._0, x.toughness.(types.PtValue_Fixed)._0)
@@ -416,10 +443,10 @@ do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Playe
 	case types.Effect_ChangeZone:
 		do_change_zone(g, x, controller, source, target)
 	case types.Effect_Bounce:
-		if t, ok := target.?.(types.TargetRef_Object); ok && object(s, t._0).zone == .Battlefield do move_object(g, t._0, .Hand)
+		if id, ok := target_object(target); ok && object(s, id).zone == .Battlefield do move_object(g, id, .Hand)
 	case types.Effect_GenericEffect:
 		affected: ^types.GameObject
-		if t, ok := target.?.(types.TargetRef_Object); ok do affected = object(s, t._0)
+		if id, ok := target_object(target); ok do affected = object(s, id)
 		else do affected = object(s, source)
 		if affected != nil && affected.zone == .Battlefield do add_temp_effect(g, affected, x)
 	case types.Effect_Token:
@@ -432,7 +459,7 @@ do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Playe
 		n, _ := fixed_quantity(x.amount)
 		gain_life(s, controller, n)
 	case types.Effect_Destroy:
-		if t, ok := target.?.(types.TargetRef_Object); ok do destroy(g, object(s, t._0))
+		if id, ok := target_object(target); ok do destroy(g, object(s, id))
 	}
 }
 
@@ -577,4 +604,19 @@ same_object_as_chosen :: proc(s: ^types.GameState, resolved: ^types.ResolvedAbil
 	o, is_object := resolved.targets[i].(types.TargetRef_Object)
 	if !is_object || i >= len(resolved.target_incarnations) do return true
 	return object(s, o._0).incarnation == resolved.target_incarnations[i].incarnation
+}
+
+// The object or player an effect's target is, if it has one (and is that kind).
+target_object :: proc(target: Maybe(types.TargetRef)) -> (types.ObjectId, bool) {
+	t, has := target.?
+	if !has do return 0, false
+	o, is_object := t.(types.TargetRef_Object)
+	return o._0, is_object
+}
+
+target_player :: proc(target: Maybe(types.TargetRef)) -> (types.PlayerId, bool) {
+	t, has := target.?
+	if !has do return 0, false
+	p, is_player := t.(types.TargetRef_Player)
+	return p._0, is_player
 }

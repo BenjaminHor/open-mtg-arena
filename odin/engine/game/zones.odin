@@ -53,6 +53,8 @@ zone_list :: proc(s: ^types.GameState, zone: types.Zone, owner: types.PlayerId) 
 		return &s.battlefield
 	case .Exile:
 		return &s.exile
+	case .Command:
+		return &s.command_zone
 	}
 	return nil
 }

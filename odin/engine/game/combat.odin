@@ -337,6 +337,14 @@ check_state_based_actions :: proc(g: ^Game) {
 			}
 		}
 		if remove_departed_tokens(g) do changed = true
+		// CR 903.9a: a commander put into a graveyard or exile goes back to the command zone (its owner may choose
+		// this; this engine always does).
+		for list in ([?]^types.PVec(types.ObjectId){&s.exile, &s.players[0].graveyard, &s.players[len(s.players) - 1].graveyard}) {
+			for id in ids_of(list^) do if object(s, id).is_commander {
+				move_object(g, id, .Command)
+				changed = true
+			}
+		}
 		if !changed do break
 		apply_continuous_effects(g) // a permanent that left takes its effects with it
 	}
