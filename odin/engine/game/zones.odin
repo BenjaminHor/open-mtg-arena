@@ -91,7 +91,7 @@ move_object :: proc(g: ^Game, id: types.ObjectId, to: types.Zone) {
 		o.summoning_sick = true
 		o.timestamp = s.next_timestamp
 		s.next_timestamp += 1
-		apply_entering_replacements(o) // CR 614.12
+		apply_entering_replacements(s, o) // CR 614.12
 	} else {
 		o.entered_battlefield_turn = nil
 	}

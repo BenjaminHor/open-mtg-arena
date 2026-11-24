@@ -657,3 +657,26 @@ heroic_triggers_on_a_spell_that_targets_it :: proc(t: ^testing.T) {
 	}
 	testing.expect(t, hoplite.zone == .Battlefield && hoplite.damage_marked == 2, "3/3 with the counter, 2 damage")
 }
+
+@(test)
+lands_that_enter_tapped_unless :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 614.1c, 614.12: "enters tapped unless you control two or fewer other lands" is checked as the land
+	// enters; the land itself isn't one of the others.
+	g := new_game()
+	for _ in 0 ..< 2 do add(t, g, "Swamp", 0, .Battlefield)
+	early := add(t, g, "Blackcleave Cliffs", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = early.id}))
+	testing.expect(t, !early.tapped, "two other lands: untapped")
+	late := add(t, g, "Blackcleave Cliffs", 0, .Hand)
+	game.move_object(g, late.id, .Battlefield)
+	testing.expect(t, late.tapped, "three other lands: tapped")
+	// "Unless you control a Plains."
+	castle := add(t, g, "Castle Ardenvale", 0, .Hand)
+	game.move_object(g, castle.id, .Battlefield)
+	testing.expect(t, castle.tapped, "no Plains: tapped")
+	add(t, g, "Plains", 0, .Battlefield)
+	castle2 := add(t, g, "Castle Ardenvale", 0, .Hand)
+	game.move_object(g, castle2.id, .Battlefield)
+	testing.expect(t, !castle2.tapped, "a Plains: untapped")
+}

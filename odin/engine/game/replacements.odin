@@ -7,7 +7,8 @@ import types "../types"
 replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
 	if _, moved := r.event.(types.ReplacementEvent_Moved); !moved do return false
 	if _, mandatory := r.mode.(types.ReplacementMode_Mandatory); !mandatory do return false
-	if r.condition != nil || r.execute == nil || r.execute.sub_ability != nil || r.execute.condition != nil do return false
+	if c, has := r.condition.?; has && !entry_condition_supported(c) do return false
+	if r.execute == nil || r.execute.sub_ability != nil || r.execute.condition != nil do return false
 	if dest, has := r.destination_zone.?; !has || dest != .Battlefield do return false
 	f, has := r.valid_card.?
 	if !has || !is_self(f) || r.execute.effect == nil do return false
@@ -24,12 +25,60 @@ replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
 	return false
 }
 
+// "Enters tapped unless ...": the conditions lands check as they enter.
+entry_condition_supported :: proc(c: types.ReplacementCondition) -> bool {
+	#partial switch x in c {
+	case types.ReplacementCondition_UnlessControlsSubtype, types.ReplacementCondition_UnlessPlayerLifeAtMost,
+	     types.ReplacementCondition_UnlessMultipleOpponents, types.ReplacementCondition_UnlessYourTurn:
+		return true
+	case types.ReplacementCondition_UnlessControlsOtherLeq:
+		return typed_supported(x.filter)
+	case types.ReplacementCondition_UnlessControlsMatching:
+		return mass_filter_supported(x.filter)
+	case types.ReplacementCondition_UnlessControlsCountMatching:
+		return mass_filter_supported(x.filter)
+	}
+	return false
+}
+
+// Whether the replacement applies to the entering permanent `o`. CR 614.12: it's checked as the permanent would
+// enter, so the permanent itself isn't among those its controller already controls.
+entry_condition_holds :: proc(s: ^types.GameState, o: ^types.GameObject, c: types.ReplacementCondition) -> bool {
+	count :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.TypedFilter) -> int {
+		n := 0
+		for perm in permanents_of(s, o.controller) do if perm.id != o.id && object_matches(s, perm, f, o.controller, o.id) do n += 1
+		return n
+	}
+	#partial switch x in c {
+	case types.ReplacementCondition_UnlessControlsSubtype:
+		for perm in permanents_of(s, o.controller) do if perm.id != o.id {
+			for name in x.subtypes do if has_subtype(perm, name) do return false
+		}
+		return true
+	case types.ReplacementCondition_UnlessControlsOtherLeq:
+		return count(s, o, x.filter) > int(x.count)
+	case types.ReplacementCondition_UnlessControlsMatching:
+		return count(s, o, x.filter.(types.TargetFilter_Typed)._0) == 0
+	case types.ReplacementCondition_UnlessControlsCountMatching:
+		return count(s, o, x.filter.(types.TargetFilter_Typed)._0) < int(x.minimum)
+	case types.ReplacementCondition_UnlessPlayerLifeAtMost:
+		for &p in s.players do if p.life <= i32(x.amount) do return false
+		return true
+	case types.ReplacementCondition_UnlessMultipleOpponents:
+		return len(s.players) <= 2 // a two-player game has one opponent
+	case types.ReplacementCondition_UnlessYourTurn:
+		return s.active_player != o.controller
+	}
+	return true
+}
+
 // CR 614.12: as the permanent enters, its own replacement effects apply.
-apply_entering_replacements :: proc(o: ^types.GameObject) {
+apply_entering_replacements :: proc(s: ^types.GameState, o: ^types.GameObject) {
 	entry, ok := card_entry_of(o)
 	if !ok do return
 	for r in entry.face.replacements {
 		if !replacement_supported(r) do continue
+		if c, has := r.condition.?; has && !entry_condition_holds(s, o, c) do continue
 		#partial switch e in r.execute.effect^ {
 		case types.Effect_SetTapState:
 			o.tapped = true
