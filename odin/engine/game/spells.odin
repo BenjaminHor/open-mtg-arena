@@ -75,7 +75,7 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 	if supported, known := more_effect_supported(e, duration); known do return supported
 	#partial switch x in e {
 	case types.Effect_DealDamage:
-		_, fixed := fixed_quantity(x.amount)
+		fixed := quantity_supported(x.amount)
 		return fixed && x.damage_source == nil && x.excess == nil && filter_supported(x.target)
 	case types.Effect_Pump:
 		_, pf := x.power.(types.PtValue_Fixed)
@@ -85,18 +85,18 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		// A pump aimed at "any target" is a misparsed mass pump: a player can't get +N/+N.
 		return pf && tf && has && eot && (is_self(x.target) || (filter_supported(x.target) && !is_any(x.target)))
 	case types.Effect_LoseLife:
-		_, fixed := fixed_quantity(x.amount)
+		fixed := quantity_supported(x.amount)
 		t, has := x.target.?
 		_, you := t.(types.TargetFilter_Controller)
 		return fixed && (!has || you)
 	case types.Effect_Token:
-		_, fixed := fixed_quantity(x.count)
+		fixed := quantity_supported(x.count)
 		_, pf := x.power.(types.PtValue_Fixed)
 		_, tf := x.toughness.(types.PtValue_Fixed)
 		_, you := x.owner.(types.TargetFilter_Controller)
 		return fixed && pf && tf && you && x.attach_to == nil && !x.enters_attacking && len(x.static_abilities) == 0 && len(x.enter_with_counters) == 0
 	case types.Effect_Draw:
-		_, fixed := fixed_quantity(x.count)
+		fixed := quantity_supported(x.count)
 		_, you := x.target.(types.TargetFilter_Controller)
 		return fixed && you
 	case types.Effect_GenericEffect:
@@ -112,7 +112,7 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 	case types.Effect_Bounce:
 		return bounce_supported(x)
 	case types.Effect_GainLife:
-		_, fixed := fixed_quantity(x.amount)
+		fixed := quantity_supported(x.amount)
 		_, you := x.player.(types.TargetFilter_Controller)
 		return fixed && (you || x.player == nil)
 	case types.Effect_Destroy:
@@ -447,7 +447,7 @@ do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Playe
 		n, _ := fixed_quantity(x.count)
 		return ask_scry(g, controller, n, true)
 	case types.Effect_DealDamage:
-		n, _ := fixed_quantity(x.amount)
+		n := amount(g, x.amount, controller, source, target)
 		deal_damage(g, source, target.?, n)
 	case types.Effect_Pump:
 		pumped: ^types.GameObject
@@ -456,7 +456,7 @@ do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Playe
 		// "This creature gets +N/+N": only while it's still the same object on the battlefield (CR 400.7).
 		if pumped != nil && pumped.zone == .Battlefield do pump(g, pumped, x.power.(types.PtValue_Fixed)._0, x.toughness.(types.PtValue_Fixed)._0)
 	case types.Effect_LoseLife:
-		n, _ := fixed_quantity(x.amount)
+		n := amount(g, x.amount, controller, source, target)
 		lose_life(s, controller, n)
 	case types.Effect_ChangeZone:
 		do_change_zone(g, x, controller, source, target)
@@ -467,13 +467,13 @@ do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Playe
 		if id, ok := target_object(target); ok do targeted = object(s, id)
 		add_temp_effect(g, x, controller, source, targeted)
 	case types.Effect_Token:
-		n, _ := fixed_quantity(x.count)
+		n := amount(g, x.count, controller, source, target)
 		for _ in 0 ..< n do create_token(g, x, controller)
 	case types.Effect_Draw:
-		n, _ := fixed_quantity(x.count)
+		n := amount(g, x.count, controller, source, target)
 		for _ in 0 ..< n do draw_card(s, player(s, controller))
 	case types.Effect_GainLife:
-		n, _ := fixed_quantity(x.amount)
+		n := amount(g, x.amount, controller, source, target)
 		gain_life(s, controller, n)
 	case types.Effect_Destroy:
 		if id, ok := target_object(target); ok do destroy(g, object(s, id))
@@ -641,4 +641,16 @@ target_player :: proc(target: Maybe(types.TargetRef)) -> (types.PlayerId, bool) 
 	if !has do return 0, false
 	p, is_player := t.(types.TargetRef_Player)
 	return p._0, is_player
+}
+
+// An instruction's amount, worked out now (CR 608.2h: the values are determined as it's carried out). "Its"
+// refers to the ability's first object target.
+amount :: proc(g: ^Game, q: types.QuantityExpr, controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) -> int {
+	first: types.ObjectId
+	if id, ok := target_object(target); ok do first = id
+	else do for t in g.resolution.targets do if o, is_object := t.(types.TargetRef_Object); is_object {
+		first = o._0
+		break
+	}
+	return quantity_value(&g.state, q, controller, source, first)
 }

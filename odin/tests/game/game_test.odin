@@ -401,3 +401,20 @@ scry_two_one_to_the_bottom :: proc(t: ^testing.T) {
 	testing.expect(t, game.object(&g.state, second).zone == .Hand, "then Opt drew the next card")
 	testing.expect(t, opt.zone == .Graveyard, "and Opt finished resolving")
 }
+
+@(test)
+draw_a_card_for_each_creature :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 608.2h: an amount that depends on the game is worked out as the instruction is carried out.
+	g := new_game()
+	for _ in 0 ..< 6 do add(t, g, "Forest", 0, .Battlefield)
+	add(t, g, "Grizzly Bears", 0, .Battlefield)
+	add(t, g, "Llanowar Elves", 0, .Battlefield)
+	add(t, g, "Grizzly Bears", 1, .Battlefield) // the opponent's doesn't count
+	spell := add(t, g, "Collective Unconscious", 0, .Hand) // {4}{G}: draw a card for each creature you control
+	before := types.pvec_len(game.player(&g.state, 0).hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, types.pvec_len(game.player(&g.state, 0).hand) == before - 1 + 2, "two cards drawn")
+}
