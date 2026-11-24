@@ -2913,5 +2913,9 @@ owner's answer to the D-089 open question, option (a))
 - It is the 64-bit order. The shipped browser build (wasm32) hashes with the 32-bit FxHash constants, so today's
   browser game already iterates differently from native runs; both are arbitrary tie orders. The Odin engine uses
   the 64-bit order everywhere, so it matches the native recordings it is checked against.
+- Consequence for O-2's shadow mode in the browser (Odin beside the shipped wasm Rust): the two would differ on
+  ties by construction. So the order is a parameter of the Odin ObjectMap (64-bit for recordings; the 32-bit FxHash,
+  K = 0x93d765dd, write_u64 as two words, rotl 15, for the browser), and the 32-bit formula is checked against a
+  wasm32 build of the same test before shadow mode relies on it. Until then, shadow comparison runs natively only.
 - Not covered: two ids with equal 32-bit hashes (im keeps them in a collision node, in insertion order); none
   exist below 2^32 ids in practice, but the Odin map asserts it.

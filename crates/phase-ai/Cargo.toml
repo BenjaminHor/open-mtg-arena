@@ -53,6 +53,12 @@ path = "src/bin/record_games.rs"
 test = false
 
 [[bin]]
+name = "clone-bench"
+# Times GameState clones, the baseline for the Odin state layout (docs/odin-port.md); temporary tooling.
+path = "src/bin/clone_bench.rs"
+test = false
+
+[[bin]]
 name = "ai-tune"
 path = "src/bin/ai_tune.rs"
 test = false
