@@ -1030,6 +1030,9 @@ ability_condition_supported :: proc(c: types.AbilityCondition) -> bool {
 		return of_source && x.source != .NonKicker && x.origin == nil && x.variant == nil
 	case types.AbilityCondition_AdditionalCostPaidInstead:
 		return true
+	case types.AbilityCondition_ConditionInstead:
+		// "If [condition], [this] instead": replaces the instruction before it when the condition holds.
+		return x.inner != nil && ability_condition_supported(x.inner^)
 	case types.AbilityCondition_QuantityCheck:
 		return quantity_supported(x.lhs) && quantity_supported(x.rhs)
 	case types.AbilityCondition_TargetMatchesFilter:
@@ -1062,6 +1065,8 @@ ability_condition_holds :: proc(s: ^types.GameState, c: types.AbilityCondition, 
 		return o != nil && object_matches(s, o, x.filter.(types.TargetFilter_Typed)._0, controller, source)
 	case types.AbilityCondition_AdditionalCostPaid, types.AbilityCondition_AdditionalCostPaidInstead:
 		return kicked(object(s, source)) // CR 702.33d
+	case types.AbilityCondition_ConditionInstead:
+		return ability_condition_holds(s, x.inner^, controller, source, subjects)
 	}
 	return false
 }

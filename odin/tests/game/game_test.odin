@@ -1422,3 +1422,23 @@ kicked_creature_enters_with_counters :: proc(t: ^testing.T) {
 	testing.expect(t, run(t, true) == 1, "kicked: its enters trigger")
 	testing.expect(t, run(t, false) == 0, "not kicked: no trigger")
 }
+
+@(test)
+condition_instead :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 608.2c: Electrostatic Bolt: "deals 2 damage to target creature. If it's an artifact creature, deals 4
+	// damage to it instead."
+	run :: proc(t: ^testing.T, name: string) -> u32 {
+		g := new_game()
+		add(t, g, "Mountain", 0, .Battlefield)
+		bolt := add(t, g, "Electrostatic Bolt", 0, .Hand)
+		c := add(t, g, name, 1, .Battlefield)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = bolt.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{c.id}}))
+		game.apply(g, 0, types.GameAction_PassPriority{})
+		game.apply(g, 1, types.GameAction_PassPriority{})
+		return c.damage_marked
+	}
+	testing.expect(t, run(t, "Hill Giant") == 2, "a creature: 2")
+	testing.expect(t, run(t, "Darksteel Colossus") == 4, "an artifact creature: 4 instead")
+}

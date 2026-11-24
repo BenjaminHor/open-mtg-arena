@@ -123,8 +123,8 @@ continue_resolution :: proc(g: ^Game) -> bool {
 		} else {
 			append(&affected, nil)
 		}
-		if sub := x.sub_ability; sub != nil && is_instead(sub) && kicked(object(s, r.source)) {
-			continue // replaced by the next instruction ("... instead", CR 702.33e); its targets stay for "it"
+		if sub := x.sub_ability; sub != nil && is_instead(sub) && condition_holds_now(r, s, sub.condition.?) {
+			continue // replaced by the next instruction ("... instead", CR 608.2c); its targets stay for "it"
 		}
 		if c, has := x.condition.?; has && !condition_holds_now(r, s, c) {
 			// CR 608.2c: the instruction doesn't happen, nor what depends on it; the next independent instruction
@@ -400,6 +400,9 @@ answer_optional :: proc(g: ^Game, p: types.PlayerId, accept: bool) -> bool {
 is_instead :: proc(n: ^types.ResolvedAbility) -> bool {
 	c, has := n.condition.?
 	if !has do return false
-	_, instead := c.(types.AbilityCondition_AdditionalCostPaidInstead)
-	return instead
+	#partial switch _ in c {
+	case types.AbilityCondition_AdditionalCostPaidInstead, types.AbilityCondition_ConditionInstead:
+		return true
+	}
+	return false
 }

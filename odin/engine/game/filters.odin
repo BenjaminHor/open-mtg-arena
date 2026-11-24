@@ -25,6 +25,8 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 	#partial switch x in p {
 	case types.FilterProp_EnchantedBy, types.FilterProp_EquippedBy:
 		return true
+	case types.FilterProp_InZone:
+		return x.zone == .Battlefield // "you control" on the battlefield (graveyard filters are read by graveyard_filter)
 	case types.FilterProp_Targets:
 		// "A spell that targets this creature" (CR 601.2c: its targets are chosen as it's cast).
 		if x.filter == nil do return false
@@ -207,8 +209,10 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 			if host == nil || host.id != o.id do return false
 		case types.FilterProp_Targets:
 			if !spell_targets_one(s, o.id, x.filter^, chooser, source) do return false
-		case types.FilterProp_InZone, types.FilterProp_Owned:
-		// The zone and owner are checked where the candidates are gathered (graveyard_targets).
+		case types.FilterProp_InZone:
+			if o.zone != x.zone do return false
+		case types.FilterProp_Owned:
+		// The owner is checked where the candidates are gathered (graveyard_targets).
 		}
 	}
 	return true
