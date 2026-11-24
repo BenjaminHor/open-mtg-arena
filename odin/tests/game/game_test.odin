@@ -798,3 +798,28 @@ x_is_announced_then_paid :: proc(t: ^testing.T) {
 	testing.expect(t, game.player(&g.state, 1).life == 17, "3 damage")
 	testing.expect(t, blaze.zone == .Graveyard && blaze.cost_x_paid == nil, "X is gone once it leaves the stack")
 }
+
+@(test)
+if_its_an_artifact_creature :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 608.2c: Built to Smash: "Target attacking creature gets +3/+3 until end of turn. If it's an artifact
+	// creature, it gains trample until end of turn": the second instruction happens only if the condition is true.
+	cast_on :: proc(t: ^testing.T, name: string) -> ^types.GameObject {
+		g := new_game()
+		add(t, g, "Mountain", 0, .Battlefield)
+		spell := add(t, g, "Built to Smash", 0, .Hand)
+		c := add(t, g, name, 0, .Battlefield)
+		game.begin_step(g, .DeclareAttackers)
+		attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{c.id, types.AttackTarget_Player{1}}}
+		testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{c.id}}))
+		game.apply(g, 0, types.GameAction_PassPriority{})
+		game.apply(g, 1, types.GameAction_PassPriority{})
+		return c
+	}
+	bears := cast_on(t, "Grizzly Bears")
+	testing.expect(t, bears.power.? == 5 && !game.keyword_in(bears, types.Keyword_Trample{}), "+3/+3, no trample")
+	thopter := cast_on(t, "Ornithopter")
+	testing.expect(t, thopter.power.? == 3 && game.keyword_in(thopter, types.Keyword_Trample{}), "+3/+3 and trample")
+}

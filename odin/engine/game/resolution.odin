@@ -61,6 +61,12 @@ continue_resolution :: proc(g: ^Game) -> bool {
 				target = types.TargetRef_Player{object(&g.state, id).controller}
 			}
 		}
+		if c, has := x.condition.?; has && !ability_condition_holds(&g.state, c, r.controller, r.source, r.targets, r.legal) {
+			// CR 608.2c: the instruction doesn't happen, nor what depends on it; an independent next instruction
+			// still does.
+			if sub := x.sub_ability; sub == nil || sub.sub_link != .SequentialSibling do r.next = nil
+			continue
+		}
 		if do_effect(g, x, r.controller, r.source, target) do return false // waiting for a choice
 	}
 	if r.spell != 0 do move_object(g, r.spell, .Graveyard) // CR 608.2n

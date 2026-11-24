@@ -71,7 +71,8 @@ spell_ability_supported :: proc(a: types.AbilityDefinition) -> bool {
 // `after_target`: an earlier instruction of the same ability chose a target, which "it" or "that creature" can
 // refer to.
 ability_supported :: proc(a: types.AbilityDefinition, after_target := false) -> bool {
-	if a.effect == nil || a.condition != nil || a.optional_targeting || a.modal != nil do return false
+	if a.effect == nil || a.optional_targeting || a.modal != nil do return false
+	if c, has := a.condition.?; has && !ability_condition_supported(c) do return false
 	// "Each player draws", "an opponent draws", "for each creature chosen": scopes and groups not carried out yet.
 	// (Declaring a group is harmless while nothing reads it; reading one isn't supported.)
 	if a.player_scope != nil || a.reads_chosen_group != nil || a.starting_with != nil do return false
@@ -794,7 +795,7 @@ static_gap :: proc(st: types.StaticDefinition) -> string {
 
 @(private = "file")
 ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: string) {
-	if a.condition != nil do append(out, "spell:condition")
+	if c, has := a.condition.?; has && !ability_condition_supported(c) do append(out, "spell:condition")
 	if a.optional || a.optional_targeting do append(out, "spell:optional")
 	if a.modal != nil do append(out, "spell:modal")
 	if a.multi_target != nil || a.distribute != nil do append(out, "spell:multiple targets")
@@ -902,6 +903,44 @@ pt_supported :: proc(v: types.PtValue) -> bool {
 		return true
 	case types.PtValue_Quantity:
 		return quantity_supported(x._0)
+	}
+	return false
+}
+
+// ---- Conditions on instructions ("if ...", CR 608.2c) ---------------------------------------------------------
+
+ability_condition_supported :: proc(c: types.AbilityCondition) -> bool {
+	#partial switch x in c {
+	case types.AbilityCondition_QuantityCheck:
+		return quantity_supported(x.lhs) && quantity_supported(x.rhs)
+	case types.AbilityCondition_TargetMatchesFilter:
+		// "If that creature is attacking": the target chosen for an earlier slot, as it is now.
+		typed, ok := x.filter.(types.TargetFilter_Typed)
+		_, of_target := x.subject.(types.ObjectScope_Target)
+		return ok && of_target && !x.use_lki && typed_supported(typed._0)
+	case types.AbilityCondition_SourceMatchesFilter:
+		typed, ok := x.filter.(types.TargetFilter_Typed)
+		return ok && typed_supported(typed._0)
+	}
+	return false
+}
+
+// Checked as the instruction is carried out.
+ability_condition_holds :: proc(s: ^types.GameState, c: types.AbilityCondition, controller: types.PlayerId, source: types.ObjectId, targets: []types.TargetRef, legal: []bool) -> bool {
+	#partial switch x in c {
+	case types.AbilityCondition_QuantityCheck:
+		return compare(quantity_value(s, x.lhs, controller, source, 0), x.comparator, quantity_value(s, x.rhs, controller, source, 0))
+	case types.AbilityCondition_TargetMatchesFilter:
+		slot := x.subject_slot.? or_else 0
+		// CR 608.2b: nothing can be learned from an illegal target.
+		if slot >= len(targets) || !legal[slot] do return false
+		id, is_object := target_object(targets[slot])
+		if !is_object do return false
+		o := object(s, id)
+		return o != nil && object_matches(s, o, x.filter.(types.TargetFilter_Typed)._0, controller, source)
+	case types.AbilityCondition_SourceMatchesFilter:
+		o := object(s, source)
+		return o != nil && object_matches(s, o, x.filter.(types.TargetFilter_Typed)._0, controller, source)
 	}
 	return false
 }
