@@ -8,6 +8,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
+- **D-183 runtime parses into the card data (2026-11-24, branch
+  claude/odin-d183-parse-precompute).** Census in docs/odin-port.md ("D-183 runtime parse census"): 52 parser
+  call sites outside tests and card-data generation; five run during play (dungeon rooms, catalog token rules text,
+  ability stickers, Champion types, protection subtype words), all with inputs fixed at build time. Those five now
+  read a table oracle-gen writes into card-data.json (`__engine_parses__`, D-186); the Odin model has
+  `EngineParses`. Next: the deck-building parses and coverage tooling (census rows 6-7), outside play.
 - **Odin port, the session goal (D-180):** remove all Rust from the engine, replace it with Odin, near-zero
   regressions in functionality and performance. Plan: docs/odin-port.md. O-0 done (go). Now O-1: generate the Odin
   data model and JSON codecs from the Rust types. odingen pass 1 (collect + report) done; design in odin-port.md

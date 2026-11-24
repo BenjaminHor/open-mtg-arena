@@ -134,7 +134,7 @@ thread_local! {
     static TRANSLATE_REPORT: std::cell::RefCell<Option<Option<String>>> = const { std::cell::RefCell::new(None) };
 }
 
-const DEFAULT_ROOTS: &[&str] = &["CardExportEntry", "GameState", "GameAction", "WaitingFor", "GameEvent", "ReplayLog"];
+const DEFAULT_ROOTS: &[&str] = &["CardExportEntry", "GameState", "GameAction", "WaitingFor", "GameEvent", "ReplayLog", "EngineParses"];
 
 fn main() {
     // Deep syntax trees and nested translation (closure instances) need more than the default stack.
@@ -172,7 +172,8 @@ fn real_main() {
             let crates = PathBuf::from(&args[2]);
             let out_dir = PathBuf::from(&args[3]);
             // The model's roots: what the engine reads and writes (states, actions, decisions, events, replays) and the
-            // card data. Other roots are for experiments; the committed model and CI use these.
+            // card data, with its precomputed parse table (EngineParses, D-183). Other roots are for experiments; the
+            // committed model and CI use these.
             let mut roots: Vec<&str> = args[4..].iter().map(String::as_str).collect();
             if roots.is_empty() {
                 roots = DEFAULT_ROOTS.to_vec();

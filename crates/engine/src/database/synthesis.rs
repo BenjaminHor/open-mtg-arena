@@ -8119,23 +8119,41 @@ pub fn synthesize_backup(face: &mut CardFace) {
 /// `FilterProp::Another` enforces the "another" clause (CR 109.1): the
 /// championing permanent itself can never be the exiled permanent.
 fn champion_type_filter(type_str: &str) -> TargetFilter {
-    let any_creature = type_str.eq_ignore_ascii_case("creature");
     // CR 109.2 + CR 205.3m: a creature type names any permanent with that
     // type, kindreds included; only "a creature" is scoped to creatures.
-    let scope = if any_creature {
-        TypedFilter::creature()
-    } else {
-        TypedFilter::permanent()
+    if type_str.eq_ignore_ascii_case("creature") {
+        return TargetFilter::Typed(
+            TypedFilter::creature()
+                .controller(ControllerRef::You)
+                .properties(vec![FilterProp::Another]),
+        );
     }
-    .controller(ControllerRef::You)
-    .properties(vec![FilterProp::Another]);
-    if any_creature {
-        return TargetFilter::Typed(scope);
-    }
-    if let Some(union) = crate::parser::oracle_target::parse_type_phrase_union(type_str, &scope) {
+    if let Some(union) = champion_type_union(type_str) {
         return union;
     }
-    TargetFilter::Typed(scope.subtype(type_str.to_string()))
+    TargetFilter::Typed(champion_permanent_scope().subtype(type_str.to_string()))
+}
+
+/// The scope [`champion_type_filter`] gives a Champion creature type: another
+/// permanent you control (CR 702.72a + CR 109.2).
+fn champion_permanent_scope() -> TypedFilter {
+    TypedFilter::permanent()
+        .controller(ControllerRef::You)
+        .properties(vec![FilterProp::Another])
+}
+
+/// CR 702.72a: an "X or Y" Champion type as the union of both types, or `None` for a
+/// single type. D-183: reads the parse precomputed into the card data, and parses
+/// only when no card data with the table is loaded (unit tests).
+fn champion_type_union(type_str: &str) -> Option<TargetFilter> {
+    crate::database::engine_parses::champion_type_union(type_str)
+        .unwrap_or_else(|| parse_champion_type_union(type_str))
+}
+
+/// Parse a Champion type phrase as [`champion_type_union`] reads it: what oracle-gen
+/// precomputes into the card data (D-183).
+pub(crate) fn parse_champion_type_union(type_str: &str) -> Option<TargetFilter> {
+    crate::parser::oracle_target::parse_type_phrase_union(type_str, &champion_permanent_scope())
 }
 
 fn champion_has_eligible_object_condition(type_str: &str) -> AbilityCondition {

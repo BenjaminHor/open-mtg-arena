@@ -1467,9 +1467,16 @@ pub fn matching_card_type_quality(
 }
 
 fn source_subtype_matches_protection_quality(source_subtype: &str, quality: &str) -> bool {
-    parse_subtype(quality).is_some_and(|(subtype, consumed)| {
+    protection_quality_subtype(quality).is_some_and(|(subtype, consumed)| {
         consumed == quality.len() && subtype.eq_ignore_ascii_case(source_subtype)
     })
+}
+
+/// CR 205.3m: a lowercased protection quality read as a subtype word ("elves" -> Elf,
+/// with the bytes it spans). D-183: reads the result precomputed into the card data,
+/// and runs the subtype reader only when no card data with the table is loaded.
+fn protection_quality_subtype(quality: &str) -> Option<(String, usize)> {
+    crate::database::engine_parses::subtype_word(quality).unwrap_or_else(|| parse_subtype(quality))
 }
 
 pub fn source_matches_quality(source: &GameObject, quality: &str) -> bool {

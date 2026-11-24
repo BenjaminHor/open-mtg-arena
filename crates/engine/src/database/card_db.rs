@@ -210,6 +210,50 @@ impl PartialEq for FaceIndex {
 #[cfg(feature = "test-support")]
 mod fixture_cache;
 
+/// `card-data.json` as the loaders read it: the cards by key, and the reserved
+/// `__engine_parses__` table (D-183) apart from them. Read in one pass, entry by
+/// entry, so the 98 MB file isn't buffered a second time.
+struct ExportFile {
+    cards: HashMap<String, CardExportEntry>,
+    engine_parses: Option<super::engine_parses::EngineParses>,
+}
+
+impl<'de> Deserialize<'de> for ExportFile {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct ExportFileVisitor;
+
+        impl<'de> serde::de::Visitor<'de> for ExportFileVisitor {
+            type Value = ExportFile;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("a map of card-data entries")
+            }
+
+            fn visit_map<A: serde::de::MapAccess<'de>>(
+                self,
+                mut map: A,
+            ) -> Result<ExportFile, A::Error> {
+                let mut cards = HashMap::with_capacity(map.size_hint().unwrap_or(0));
+                let mut engine_parses = None;
+                while let Some(key) = map.next_key::<String>()? {
+                    if key == super::engine_parses::ENGINE_PARSES_KEY {
+                        engine_parses = Some(map.next_value()?);
+                    } else {
+                        let entry: CardExportEntry = map.next_value()?;
+                        cards.insert(key, entry);
+                    }
+                }
+                Ok(ExportFile {
+                    cards,
+                    engine_parses,
+                })
+            }
+        }
+
+        deserializer.deserialize_map(ExportFileVisitor)
+    }
+}
+
 #[derive(Default)]
 pub struct CardDatabase {
     pub(crate) cards: HashMap<String, CardRules>,
@@ -287,9 +331,18 @@ impl CardDatabase {
 
     /// Load from a card-data export JSON string.
     /// Used by the WASM bridge to receive card data from the frontend.
+    /// D-183: the export's precomputed parse table (`__engine_parses__`), when it
+    /// has one, is read apart from the cards and installed for play
+    /// ([`super::engine_parses::install`]).
     pub fn from_json_str(json: &str) -> Result<Self, serde_json::Error> {
-        let entries: HashMap<String, CardExportEntry> = serde_json::from_str(json)?;
-        Ok(Self::from_export_entries(entries))
+        let ExportFile {
+            cards,
+            engine_parses,
+        } = serde_json::from_str(json)?;
+        if let Some(parses) = engine_parses {
+            super::engine_parses::install(Arc::new(parses));
+        }
+        Ok(Self::from_export_entries(cards))
     }
 
     /// Test loader: like [`Self::from_export_reader`], but each face is typed on its first read,
@@ -309,7 +362,11 @@ impl CardDatabase {
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let text = Arc::new(json);
         // Borrowed raw values are slices of `text`, so each record's range is its address offset.
-        let records: HashMap<String, &serde_json::value::RawValue> = serde_json::from_str(&text)?;
+        let mut records: HashMap<String, &serde_json::value::RawValue> =
+            serde_json::from_str(&text)?;
+        if let Some(parses) = records.remove(super::engine_parses::ENGINE_PARSES_KEY) {
+            super::engine_parses::install(Arc::new(serde_json::from_str(parses.get())?));
+        }
         let mut parsed = Vec::with_capacity(records.len());
         for (key, record) in records {
             let record = record.get();

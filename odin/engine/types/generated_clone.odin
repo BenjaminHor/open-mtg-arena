@@ -3044,6 +3044,52 @@ clone_ReplayLog :: proc(x: ReplayLog) -> ReplayLog {
 	return out
 }
 
+cln_map_string_AbilityDefinition :: proc(x: map[string]AbilityDefinition) -> map[string]AbilityDefinition {
+	out := make(map[string]AbilityDefinition, len(x))
+	for key, val in x do out[key] = clone_AbilityDefinition(val)
+	return out
+}
+
+cln_map_string_TokenRulesTextParse :: proc(x: map[string]TokenRulesTextParse) -> map[string]TokenRulesTextParse {
+	out := make(map[string]TokenRulesTextParse, len(x))
+	for key, val in x do out[key] = clone_TokenRulesTextParse(val)
+	return out
+}
+
+cln_map_string_map_string_TokenRulesTextParse :: proc(x: map[string]map[string]TokenRulesTextParse) -> map[string]map[string]TokenRulesTextParse {
+	out := make(map[string]map[string]TokenRulesTextParse, len(x))
+	for key, val in x do out[key] = cln_map_string_TokenRulesTextParse(val)
+	return out
+}
+
+cln_map_string_CardFace :: proc(x: map[string]CardFace) -> map[string]CardFace {
+	out := make(map[string]CardFace, len(x))
+	for key, val in x do out[key] = clone_CardFace(val)
+	return out
+}
+
+cln_map_string_opt_TargetFilter :: proc(x: map[string]Maybe(TargetFilter)) -> map[string]Maybe(TargetFilter) {
+	out := make(map[string]Maybe(TargetFilter), len(x))
+	for key, val in x do out[key] = cln_opt_TargetFilter(val)
+	return out
+}
+
+cln_map_string_opt_SubtypeWord :: proc(x: map[string]Maybe(SubtypeWord)) -> map[string]Maybe(SubtypeWord) {
+	out := make(map[string]Maybe(SubtypeWord), len(x))
+	for key, val in x do out[key] = val
+	return out
+}
+
+clone_EngineParses :: proc(x: EngineParses) -> EngineParses {
+	out := x
+	out.effect_chains = cln_map_string_AbilityDefinition(x.effect_chains)
+	out.token_rules_texts = cln_map_string_map_string_TokenRulesTextParse(x.token_rules_texts)
+	out.sticker_faces = cln_map_string_CardFace(x.sticker_faces)
+	out.champion_type_unions = cln_map_string_opt_TargetFilter(x.champion_type_unions)
+	out.subtype_words = cln_map_string_opt_SubtypeWord(x.subtype_words)
+	return out
+}
+
 cln_opt_PtValue :: proc(x: Maybe(PtValue)) -> Maybe(PtValue) {
 	if y, ok := x.?; ok do return clone_PtValue(y)
 	return nil
@@ -12635,6 +12681,14 @@ clone_DeckList :: proc(x: DeckList) -> DeckList {
 	out.ai_decks = cln_dyn_PlayerDeckList(x.ai_decks)
 	out.ai_difficulties = cln_dyn_string(x.ai_difficulties)
 	out.draft_set_codes = cln_dyn_string(x.draft_set_codes)
+	return out
+}
+
+clone_TokenRulesTextParse :: proc(x: TokenRulesTextParse) -> TokenRulesTextParse {
+	out := x
+	out.static_definitions = cln_dyn_StaticDefinition(x.static_definitions)
+	out.modifications = cln_dyn_ContinuousModification(x.modifications)
+	out.unparsed_lines = cln_dyn_string(x.unparsed_lines)
 	return out
 }
 

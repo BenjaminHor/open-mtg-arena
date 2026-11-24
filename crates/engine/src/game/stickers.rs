@@ -744,7 +744,26 @@ fn grant_ability_sticker(obj: &mut GameObject, text: &str) {
     }
 }
 
+/// CR 123.7: the abilities an ability sticker's text grants, as a card face. D-183:
+/// reads the parse precomputed into the card data, and parses only when no card
+/// data with the table is loaded (unit tests).
 fn parse_sticker_ability_face(oracle_text: &str) -> CardFace {
+    crate::database::engine_parses::sticker_face(oracle_text)
+        .unwrap_or_else(|| build_sticker_ability_face(oracle_text))
+}
+
+/// Every ability sticker's text on the sticker sheets: the inputs oracle-gen
+/// precomputes (D-183).
+pub(crate) fn ability_sticker_texts() -> Vec<String> {
+    sticker_sheets()
+        .iter()
+        .flat_map(|sheet| sheet.abilities.iter().map(|ability| ability.text.clone()))
+        .collect()
+}
+
+/// Parse an ability sticker's text into a card face: what oracle-gen precomputes
+/// into the card data (D-183).
+pub(crate) fn build_sticker_ability_face(oracle_text: &str) -> CardFace {
     let mut source = GameObject::new(
         ObjectId(0),
         CardId(0),

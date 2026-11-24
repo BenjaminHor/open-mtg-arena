@@ -3053,6 +3053,14 @@ ReplayLog :: struct {
 	resolve_all_boundaries: [dynamic]RecordedResolveAll,
 }
 
+EngineParses :: struct {
+	effect_chains: map[string]AbilityDefinition,
+	token_rules_texts: map[string]map[string]TokenRulesTextParse,
+	sticker_faces: map[string]CardFace,
+	champion_type_unions: map[string]Maybe(TargetFilter),
+	subtype_words: map[string]Maybe(SubtypeWord),
+}
+
 CardFace :: struct {
 	name: string,
 	mana_cost: ManaCost,
@@ -20436,6 +20444,17 @@ RecordedActionKind_VerifiedAiPriorityPass :: struct {
 RecordedActionKind :: union {
 	RecordedActionKind_Submitted,
 	RecordedActionKind_VerifiedAiPriorityPass,
+}
+
+TokenRulesTextParse :: struct {
+	static_definitions: [dynamic]StaticDefinition,
+	modifications: [dynamic]ContinuousModification,
+	unparsed_lines: [dynamic]string,
+}
+
+SubtypeWord :: struct {
+	subtype: string,
+	consumed: int,
 }
 
 TriggerMode_ChangesZone :: struct {

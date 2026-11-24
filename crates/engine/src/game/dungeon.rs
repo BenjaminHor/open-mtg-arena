@@ -513,6 +513,57 @@ pub fn dungeon_sentinel_id(player: PlayerId) -> crate::types::identifiers::Objec
 
 // ─── Room Effects ───────────────────────────────────────────────────────────
 
+/// Room texts the engine builds from the Oracle text with the card-text parser.
+/// D-183: their parses are precomputed into the card data (`EngineParses::effect_chains`),
+/// so play reads them there; every text a room parses must be listed in
+/// [`ROOM_EFFECT_TEXTS`], which is what oracle-gen precomputes.
+const TOMB_VEILS_OF_FEAR: &str =
+    "Each player loses 2 life unless they discard a card.";
+const TOMB_SANDFALL_CELL: &str =
+    "Each player loses 2 life unless they sacrifice a creature, artifact, or land of their choice.";
+const BALDURS_GATE_GRYMFORGE: &str =
+    "For each opponent, goad up to one target creature that player controls.";
+const BALDURS_GATE_GITHYANKI_CRECHE: &str =
+    "Distribute three +1/+1 counters among up to three target creatures you control.";
+const BALDURS_GATE_REITHWIN_TOLLHOUSE: &str =
+    "Roll 2d4 and create that many Treasure tokens.";
+const BALDURS_GATE_MOONRISE_TOWERS: &str =
+    "Instant and sorcery spells you cast this turn cost {3} less to cast.";
+const BALDURS_GATE_BALTHAZARS_LAB: &str =
+    "Return up to two target creature cards from your graveyard to your hand.";
+const BALDURS_GATE_CIRCUS_OF_THE_LAST_DAYS: &str =
+    "Create a token that's a copy of one of your commanders, except it's not legendary.";
+const BALDURS_GATE_ANSURS_SANCTUM: &str =
+    "Reveal the top four cards of your library and put them into your hand. Each opponent loses life equal to those cards' total mana value.";
+const UNDERCITY_THRONE_OF_THE_DEAD_THREE: &str =
+    "Reveal the top ten cards of your library. Put a creature card from among them onto the battlefield with three +1/+1 counters on it. It gains hexproof until your next turn. Then shuffle.";
+
+/// Every room text [`room_effect_chain`] is called with (D-183).
+pub const ROOM_EFFECT_TEXTS: [&str; 10] = [
+    TOMB_VEILS_OF_FEAR,
+    TOMB_SANDFALL_CELL,
+    BALDURS_GATE_GRYMFORGE,
+    BALDURS_GATE_GITHYANKI_CRECHE,
+    BALDURS_GATE_REITHWIN_TOLLHOUSE,
+    BALDURS_GATE_MOONRISE_TOWERS,
+    BALDURS_GATE_BALTHAZARS_LAB,
+    BALDURS_GATE_CIRCUS_OF_THE_LAST_DAYS,
+    BALDURS_GATE_ANSURS_SANCTUM,
+    UNDERCITY_THRONE_OF_THE_DEAD_THREE,
+];
+
+/// CR 309.4c: a room's effect, parsed from its text as a spell ability. Reads the
+/// precomputed parse from the card data (D-183) and parses only when no card data
+/// with the table is loaded (unit tests).
+fn room_effect_chain(text: &str) -> crate::types::ability::AbilityDefinition {
+    debug_assert!(
+        ROOM_EFFECT_TEXTS.contains(&text),
+        "room text missing from ROOM_EFFECT_TEXTS, so the card data has no parse for it: {text}"
+    );
+    crate::database::engine_parses::effect_chain(text)
+        .unwrap_or_else(|| parse_effect_chain(text, AbilityKind::Spell))
+}
+
 use crate::game::ability_utils::build_resolved_from_def;
 use crate::parser::oracle_effect::parse_effect_chain;
 use crate::types::ability::{
@@ -794,8 +845,7 @@ pub fn room_effects(
         // ScopedPlayer). The room was wrongly implemented as "each player
         // sacrifices a creature".
         (DungeonId::TombOfAnnihilation, 1) => {
-            const ORACLE: &str = "Each player loses 2 life unless they discard a card.";
-            let def = parse_effect_chain(ORACLE, AbilityKind::Spell);
+            let def = room_effect_chain(TOMB_VEILS_OF_FEAR);
             (build_resolved_from_def(&def, source_id, controller), vec![])
         }
         // 2: Oubliette — "Discard a card and sacrifice a creature, an artifact,
@@ -843,9 +893,7 @@ pub fn room_effects(
         // "you lose 2 life and create a 2/2 black Zombie token" — a fabricated
         // effect that appears nowhere on the card.
         (DungeonId::TombOfAnnihilation, 3) => {
-            const ORACLE: &str =
-                "Each player loses 2 life unless they sacrifice a creature, artifact, or land of their choice.";
-            let def = parse_effect_chain(ORACLE, AbilityKind::Spell);
+            let def = room_effect_chain(TOMB_SANDFALL_CELL);
             (build_resolved_from_def(&def, source_id, controller), vec![])
         }
         // 4: Cradle of the Death God — "Create The Atropal, a legendary 4/4 black God Horror
@@ -1069,17 +1117,13 @@ pub fn room_effects(
         ),
         // 7: Grymforge — "For each opponent, goad up to one target creature that player controls."
         (DungeonId::BaldursGateWilderness, 7) => {
-            const ORACLE: &str =
-                "For each opponent, goad up to one target creature that player controls.";
-            let def = parse_effect_chain(ORACLE, AbilityKind::Spell);
+            let def = room_effect_chain(BALDURS_GATE_GRYMFORGE);
             (build_resolved_from_def(&def, source_id, controller), vec![])
         }
         // 8: Githyanki Crèche — "Distribute three +1/+1 counters among up to three target
         //    creatures you control."
         (DungeonId::BaldursGateWilderness, 8) => {
-            const ORACLE: &str =
-                "Distribute three +1/+1 counters among up to three target creatures you control.";
-            let def = parse_effect_chain(ORACLE, AbilityKind::Spell);
+            let def = room_effect_chain(BALDURS_GATE_GITHYANKI_CRECHE);
             (build_resolved_from_def(&def, source_id, controller), vec![])
         }
         // 9: Last Light Inn — "Draw two cards"
@@ -1096,16 +1140,13 @@ pub fn room_effects(
         ),
         // 10: Reithwin Tollhouse — "Roll 2d4 and create that many Treasure tokens."
         (DungeonId::BaldursGateWilderness, 10) => {
-            const ORACLE: &str = "Roll 2d4 and create that many Treasure tokens.";
-            let def = parse_effect_chain(ORACLE, AbilityKind::Spell);
+            let def = room_effect_chain(BALDURS_GATE_REITHWIN_TOLLHOUSE);
             (build_resolved_from_def(&def, source_id, controller), vec![])
         }
         // 11: Moonrise Towers — "Instant and sorcery spells you cast this turn cost {3} less
         //     to cast."
         (DungeonId::BaldursGateWilderness, 11) => {
-            const ORACLE: &str =
-                "Instant and sorcery spells you cast this turn cost {3} less to cast.";
-            let def = parse_effect_chain(ORACLE, AbilityKind::Spell);
+            let def = room_effect_chain(BALDURS_GATE_MOONRISE_TOWERS);
             (
                 patch_moonrise_cost_grant(build_resolved_from_def(&def, source_id, controller)),
                 vec![],
@@ -1127,17 +1168,13 @@ pub fn room_effects(
         // 13: Balthazar's Lab — "Return up to two target creature cards from your graveyard
         //     to your hand."
         (DungeonId::BaldursGateWilderness, 13) => {
-            const ORACLE: &str =
-                "Return up to two target creature cards from your graveyard to your hand.";
-            let def = parse_effect_chain(ORACLE, AbilityKind::Spell);
+            let def = room_effect_chain(BALDURS_GATE_BALTHAZARS_LAB);
             (build_resolved_from_def(&def, source_id, controller), vec![])
         }
         // 14: Circus of the Last Days — "Create a token that's a copy of one of your
         //     commanders, except it's not legendary."
         (DungeonId::BaldursGateWilderness, 14) => {
-            const ORACLE: &str =
-                "Create a token that's a copy of one of your commanders, except it's not legendary.";
-            let def = parse_effect_chain(ORACLE, AbilityKind::Spell);
+            let def = room_effect_chain(BALDURS_GATE_CIRCUS_OF_THE_LAST_DAYS);
             (
                 patch_circus_commander_choice(build_resolved_from_def(&def, source_id, controller)),
                 vec![],
@@ -1205,8 +1242,7 @@ pub fn room_effects(
         // 17: Ansur's Sanctum — "Reveal the top four cards of your library and put them into
         //     your hand. Each opponent loses life equal to those cards' total mana value."
         (DungeonId::BaldursGateWilderness, 17) => {
-            const ORACLE: &str = "Reveal the top four cards of your library and put them into your hand. Each opponent loses life equal to those cards' total mana value.";
-            let def = parse_effect_chain(ORACLE, AbilityKind::Spell);
+            let def = room_effect_chain(BALDURS_GATE_ANSURS_SANCTUM);
             (
                 patch_ansur_drain(build_resolved_from_def(&def, source_id, controller)),
                 vec![],
@@ -1296,8 +1332,7 @@ fn creature_token(
 /// among them onto the battlefield with three +1/+1 counters, grant hexproof
 /// until your next turn, then shuffle.
 fn throne_of_dead_three(source_id: ObjectId, controller: PlayerId) -> ResolvedAbility {
-    const ORACLE: &str = "Reveal the top ten cards of your library. Put a creature card from among them onto the battlefield with three +1/+1 counters on it. It gains hexproof until your next turn. Then shuffle.";
-    let def = parse_effect_chain(ORACLE, AbilityKind::Spell);
+    let def = room_effect_chain(UNDERCITY_THRONE_OF_THE_DEAD_THREE);
     patch_throne_parsed_chain(build_resolved_from_def(&def, source_id, controller))
 }
 

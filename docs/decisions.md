@@ -2956,3 +2956,20 @@ owner's answer to the D-089 open question, option (a))
      untranslated or differing step.
 - Each opens its own pull request and merges on green CI (D-027), merging main first. The main session reviews
   their reports and keeps docs/status.md current.
+
+**D-186: Runtime parses are a keyed table in card-data.json, with a parse fallback in Rust (2026-11-24)** · 2026-11-24 · accepted
+- How D-183 is done (census: docs/odin-port.md, "D-183 runtime parse census"). The five parses that run during play
+  (dungeon rooms, catalog token rules text, ability stickers, Champion types, protection subtype words) take inputs
+  that are engine constants or strings from the card data, so oracle-gen runs them at build time and writes the
+  results into `card-data.json` under one reserved top-level key, `__engine_parses__` (`EngineParses`, keyed by
+  input). The cards' bytes are unchanged; the key is appended after them.
+- The card-data loaders read the key apart from the cards and install the table process-wide; each parse site looks
+  its input up first. In Rust a miss falls back to the parser, so tests that build cards from Oracle text keep
+  working with no card data; with card data loaded, a miss is a gap in the build-time enumeration, counted
+  (`engine_parses::miss_count`, printed by record-games). The Odin engine reads only the table.
+- Why a table and not new AST fields: the parse inputs (a Champion type, a protection word) are already in the card
+  data and in saved states; keying results by input leaves every existing wire form, and so every recording,
+  byte-identical. Why one reserved key and not a sidecar file: the client and both wasm modules already load
+  `card-data.json` and nothing else, so no client change is needed.
+- Not yet: deck-building parses (commander permission, the copy-limit fallback) and the client's coverage tooling
+  (census rows 6-7) run outside play; they move next, per card, into the same table or face fields.

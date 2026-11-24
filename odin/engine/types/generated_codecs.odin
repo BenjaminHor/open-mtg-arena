@@ -2126,6 +2126,7 @@ COVERAGE_KEYS := []string{
 	"EnclosingPostReplacementFrame",
 	"EndEffectGroupId",
 	"EndEffectPermission",
+	"EngineParses",
 	"EnterWithGrant",
 	"EnterWithGrants",
 	"EnteringAuraAuthority",
@@ -5436,6 +5437,7 @@ COVERAGE_KEYS := []string{
 	"SubtypeSet::Land",
 	"SubtypeSet::Planeswalker",
 	"SubtypeSet::Spell",
+	"SubtypeWord",
 	"Supertype",
 	"Supertype::Basic",
 	"Supertype::Host",
@@ -5613,6 +5615,7 @@ COVERAGE_KEYS := []string{
 	"TokenHostRequest::NotRequested",
 	"TokenHostRequest::Unbound",
 	"TokenImageRef",
+	"TokenRulesTextParse",
 	"TokenSpec",
 	"TrackedAnaphorSource",
 	"TrackedAnaphorSource::ChainSet",
@@ -13179,6 +13182,32 @@ encode_ReplayLog_members :: proc(b: ^strings.Builder, x: ReplayLog, first: ^bool
 	member(b, first, "header"); encode_ReplayHeader(b, x.header)
 	member(b, first, "actions"); enc_dyn_RecordedAction(b, x.actions)
 	if !((len(x.resolve_all_boundaries) == 0)) { member(b, first, "resolve_all_boundaries"); enc_dyn_RecordedResolveAll(b, x.resolve_all_boundaries) }
+}
+
+decode_EngineParses :: proc(v: json.Value, out: ^EngineParses) -> bool {
+	when COVERAGE do cov_hit("EngineParses")
+	if v.kind != .Object do return fail("EngineParses: not an object")
+	if fv, found := get_any(v, "effect_chains"); found { if !dec_map_string_AbilityDefinition(fv, &out.effect_chains) do return fail("EngineParses.effect_chains") }
+	if fv, found := get_any(v, "token_rules_texts"); found { if !dec_map_string_map_string_TokenRulesTextParse(fv, &out.token_rules_texts) do return fail("EngineParses.token_rules_texts") }
+	if fv, found := get_any(v, "sticker_faces"); found { if !dec_map_string_CardFace(fv, &out.sticker_faces) do return fail("EngineParses.sticker_faces") }
+	if fv, found := get_any(v, "champion_type_unions"); found { if !dec_map_string_opt_TargetFilter(fv, &out.champion_type_unions) do return fail("EngineParses.champion_type_unions") }
+	if fv, found := get_any(v, "subtype_words"); found { if !dec_map_string_opt_SubtypeWord(fv, &out.subtype_words) do return fail("EngineParses.subtype_words") }
+	return true
+}
+
+encode_EngineParses :: proc(b: ^strings.Builder, x: EngineParses) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_EngineParses_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_EngineParses_members :: proc(b: ^strings.Builder, x: EngineParses, first: ^bool) {
+	member(b, first, "effect_chains"); enc_map_string_AbilityDefinition(b, x.effect_chains)
+	member(b, first, "token_rules_texts"); enc_map_string_map_string_TokenRulesTextParse(b, x.token_rules_texts)
+	member(b, first, "sticker_faces"); enc_map_string_CardFace(b, x.sticker_faces)
+	member(b, first, "champion_type_unions"); enc_map_string_opt_TargetFilter(b, x.champion_type_unions)
+	member(b, first, "subtype_words"); enc_map_string_opt_SubtypeWord(b, x.subtype_words)
 }
 
 decode_CardFace :: proc(v: json.Value, out: ^CardFace) -> bool {
@@ -56254,6 +56283,48 @@ encode_RecordedActionKind_members :: proc(b: ^strings.Builder, x: RecordedAction
 	}
 }
 
+decode_TokenRulesTextParse :: proc(v: json.Value, out: ^TokenRulesTextParse) -> bool {
+	when COVERAGE do cov_hit("TokenRulesTextParse")
+	if v.kind != .Object do return fail("TokenRulesTextParse: not an object")
+	if fv, found := get_any(v, "static_definitions"); found { if !dec_dyn_StaticDefinition(fv, &out.static_definitions) do return fail("TokenRulesTextParse.static_definitions") } else { return fail("TokenRulesTextParse.static_definitions missing") }
+	if fv, found := get_any(v, "modifications"); found { if !dec_dyn_ContinuousModification(fv, &out.modifications) do return fail("TokenRulesTextParse.modifications") } else { return fail("TokenRulesTextParse.modifications missing") }
+	if fv, found := get_any(v, "unparsed_lines"); found { if !dec_dyn_string(fv, &out.unparsed_lines) do return fail("TokenRulesTextParse.unparsed_lines") } else { return fail("TokenRulesTextParse.unparsed_lines missing") }
+	return true
+}
+
+encode_TokenRulesTextParse :: proc(b: ^strings.Builder, x: TokenRulesTextParse) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_TokenRulesTextParse_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_TokenRulesTextParse_members :: proc(b: ^strings.Builder, x: TokenRulesTextParse, first: ^bool) {
+	member(b, first, "static_definitions"); enc_dyn_StaticDefinition(b, x.static_definitions)
+	member(b, first, "modifications"); enc_dyn_ContinuousModification(b, x.modifications)
+	member(b, first, "unparsed_lines"); enc_dyn_string(b, x.unparsed_lines)
+}
+
+decode_SubtypeWord :: proc(v: json.Value, out: ^SubtypeWord) -> bool {
+	when COVERAGE do cov_hit("SubtypeWord")
+	if v.kind != .Object do return fail("SubtypeWord: not an object")
+	if fv, found := get_any(v, "subtype"); found { if !decode_string(fv, &out.subtype) do return fail("SubtypeWord.subtype") } else { return fail("SubtypeWord.subtype missing") }
+	if fv, found := get_any(v, "consumed"); found { if !decode_int(fv, &out.consumed) do return fail("SubtypeWord.consumed") } else { return fail("SubtypeWord.consumed missing") }
+	return true
+}
+
+encode_SubtypeWord :: proc(b: ^strings.Builder, x: SubtypeWord) {
+	strings.write_byte(b, '{')
+	f := true
+	encode_SubtypeWord_members(b, x, &f)
+	strings.write_byte(b, '}')
+}
+
+encode_SubtypeWord_members :: proc(b: ^strings.Builder, x: SubtypeWord, first: ^bool) {
+	member(b, first, "subtype"); encode_string(b, x.subtype)
+	member(b, first, "consumed"); encode_int(b, x.consumed)
+}
+
 decode_TriggerMode :: proc(v: json.Value, out: ^TriggerMode) -> bool {
 	when COVERAGE do cov_hit("TriggerMode")
 	variant: string
@@ -75172,6 +75243,175 @@ enc_dyn_RecordedResolveAll :: proc(b: ^strings.Builder, x: [dynamic]RecordedReso
 		encode_RecordedResolveAll(b, item)
 	}
 	strings.write_byte(b, ']')
+}
+
+dec_map_string_AbilityDefinition :: proc(v: json.Value, out: ^map[string]AbilityDefinition) -> bool {
+	if v.kind != .Object do return fail("expected an object (map)")
+	out^ = make(map[string]AbilityDefinition, len(v.members))
+	for m in v.members {
+		key: string
+		val: AbilityDefinition
+		key = m.key; ok_k := true
+		if !ok_k || !decode_AbilityDefinition(m.value, &val) do return false
+		out[key] = val
+	}
+	return true
+}
+
+dec_map_string_TokenRulesTextParse :: proc(v: json.Value, out: ^map[string]TokenRulesTextParse) -> bool {
+	if v.kind != .Object do return fail("expected an object (map)")
+	out^ = make(map[string]TokenRulesTextParse, len(v.members))
+	for m in v.members {
+		key: string
+		val: TokenRulesTextParse
+		key = m.key; ok_k := true
+		if !ok_k || !decode_TokenRulesTextParse(m.value, &val) do return false
+		out[key] = val
+	}
+	return true
+}
+
+dec_map_string_map_string_TokenRulesTextParse :: proc(v: json.Value, out: ^map[string]map[string]TokenRulesTextParse) -> bool {
+	if v.kind != .Object do return fail("expected an object (map)")
+	out^ = make(map[string]map[string]TokenRulesTextParse, len(v.members))
+	for m in v.members {
+		key: string
+		val: map[string]TokenRulesTextParse
+		key = m.key; ok_k := true
+		if !ok_k || !dec_map_string_TokenRulesTextParse(m.value, &val) do return false
+		out[key] = val
+	}
+	return true
+}
+
+dec_map_string_CardFace :: proc(v: json.Value, out: ^map[string]CardFace) -> bool {
+	if v.kind != .Object do return fail("expected an object (map)")
+	out^ = make(map[string]CardFace, len(v.members))
+	for m in v.members {
+		key: string
+		val: CardFace
+		key = m.key; ok_k := true
+		if !ok_k || !decode_CardFace(m.value, &val) do return false
+		out[key] = val
+	}
+	return true
+}
+
+dec_map_string_opt_TargetFilter :: proc(v: json.Value, out: ^map[string]Maybe(TargetFilter)) -> bool {
+	if v.kind != .Object do return fail("expected an object (map)")
+	out^ = make(map[string]Maybe(TargetFilter), len(v.members))
+	for m in v.members {
+		key: string
+		val: Maybe(TargetFilter)
+		key = m.key; ok_k := true
+		if !ok_k || !dec_opt_TargetFilter(m.value, &val) do return false
+		out[key] = val
+	}
+	return true
+}
+
+dec_opt_SubtypeWord :: proc(v: json.Value, out: ^Maybe(SubtypeWord)) -> bool {
+	if v.kind == .Null { out^ = nil; return true }
+	x: SubtypeWord
+	if !decode_SubtypeWord(v, &x) do return false
+	out^ = x
+	return true
+}
+
+dec_map_string_opt_SubtypeWord :: proc(v: json.Value, out: ^map[string]Maybe(SubtypeWord)) -> bool {
+	if v.kind != .Object do return fail("expected an object (map)")
+	out^ = make(map[string]Maybe(SubtypeWord), len(v.members))
+	for m in v.members {
+		key: string
+		val: Maybe(SubtypeWord)
+		key = m.key; ok_k := true
+		if !ok_k || !dec_opt_SubtypeWord(m.value, &val) do return false
+		out[key] = val
+	}
+	return true
+}
+
+enc_map_string_AbilityDefinition :: proc(b: ^strings.Builder, x: map[string]AbilityDefinition) {
+	strings.write_byte(b, '{')
+	first := true
+	for k, val in x {
+		if !first do strings.write_byte(b, ',')
+		first = false
+		json.write_string(b, k)
+		strings.write_byte(b, ':')
+		encode_AbilityDefinition(b, val)
+	}
+	strings.write_byte(b, '}')
+}
+
+enc_map_string_TokenRulesTextParse :: proc(b: ^strings.Builder, x: map[string]TokenRulesTextParse) {
+	strings.write_byte(b, '{')
+	first := true
+	for k, val in x {
+		if !first do strings.write_byte(b, ',')
+		first = false
+		json.write_string(b, k)
+		strings.write_byte(b, ':')
+		encode_TokenRulesTextParse(b, val)
+	}
+	strings.write_byte(b, '}')
+}
+
+enc_map_string_map_string_TokenRulesTextParse :: proc(b: ^strings.Builder, x: map[string]map[string]TokenRulesTextParse) {
+	strings.write_byte(b, '{')
+	first := true
+	for k, val in x {
+		if !first do strings.write_byte(b, ',')
+		first = false
+		json.write_string(b, k)
+		strings.write_byte(b, ':')
+		enc_map_string_TokenRulesTextParse(b, val)
+	}
+	strings.write_byte(b, '}')
+}
+
+enc_map_string_CardFace :: proc(b: ^strings.Builder, x: map[string]CardFace) {
+	strings.write_byte(b, '{')
+	first := true
+	for k, val in x {
+		if !first do strings.write_byte(b, ',')
+		first = false
+		json.write_string(b, k)
+		strings.write_byte(b, ':')
+		encode_CardFace(b, val)
+	}
+	strings.write_byte(b, '}')
+}
+
+enc_map_string_opt_TargetFilter :: proc(b: ^strings.Builder, x: map[string]Maybe(TargetFilter)) {
+	strings.write_byte(b, '{')
+	first := true
+	for k, val in x {
+		if !first do strings.write_byte(b, ',')
+		first = false
+		json.write_string(b, k)
+		strings.write_byte(b, ':')
+		enc_opt_TargetFilter(b, val)
+	}
+	strings.write_byte(b, '}')
+}
+
+enc_opt_SubtypeWord :: proc(b: ^strings.Builder, x: Maybe(SubtypeWord)) {
+	if y, ok := x.?; ok do encode_SubtypeWord(b, y)
+	else do strings.write_string(b, "null")
+}
+
+enc_map_string_opt_SubtypeWord :: proc(b: ^strings.Builder, x: map[string]Maybe(SubtypeWord)) {
+	strings.write_byte(b, '{')
+	first := true
+	for k, val in x {
+		if !first do strings.write_byte(b, ',')
+		first = false
+		json.write_string(b, k)
+		strings.write_byte(b, ':')
+		enc_opt_SubtypeWord(b, val)
+	}
+	strings.write_byte(b, '}')
 }
 
 dec_opt_PtValue :: proc(v: json.Value, out: ^Maybe(PtValue)) -> bool {

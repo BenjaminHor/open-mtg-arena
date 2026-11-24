@@ -756,6 +756,36 @@ fn insert_face_with_priority(
     }
 }
 
+/// D-183: append the engine's precomputed parses (`engine::database::engine_parses`)
+/// to the serialized export under its reserved key, after the cards, so the cards'
+/// bytes stay as they were.
+fn with_engine_parses(
+    mut card_data: Vec<u8>,
+    face_index: &BTreeMap<String, CardExportEntry>,
+) -> Vec<u8> {
+    use engine::database::engine_parses::{build, ENGINE_PARSES_KEY};
+    let parses = build(face_index.values().map(|entry| &entry.face));
+    eprintln!(
+        "Engine parses: {} room texts, {} token rules texts, {} sticker faces, {} Champion types, {} protection qualities",
+        parses.effect_chains.len(),
+        parses.token_rules_texts.values().map(BTreeMap::len).sum::<usize>(),
+        parses.sticker_faces.len(),
+        parses.champion_type_unions.len(),
+        parses.subtype_words.len(),
+    );
+    assert_eq!(card_data.pop(), Some(b'}'), "the export is a JSON object");
+    if card_data.len() > 1 {
+        card_data.push(b',');
+    }
+    card_data.extend_from_slice(
+        &serde_json::to_vec(ENGINE_PARSES_KEY).expect("a string serializes"),
+    );
+    card_data.push(b':');
+    card_data.extend_from_slice(&serde_json::to_vec(&parses).expect("Failed to serialize engine parses"));
+    card_data.push(b'}');
+    card_data
+}
+
 /// CR 707.13 + CR 709.3c: gap every copy-by-name clause whose names the export
 /// cannot materialize as whole single-faced cards (see
 /// `database::name_copy_gate`). A single-faced export entry carries no `layout`.
@@ -1760,7 +1790,10 @@ fn main() {
         );
     }
 
-    let card_data_bytes = serde_json::to_vec(&face_index).expect("Failed to serialize card data");
+    let card_data_bytes = with_engine_parses(
+        serde_json::to_vec(&face_index).expect("Failed to serialize card data"),
+        &face_index,
+    );
     if let (Some(output), Some(provenance_out)) = (&output, &provenance_out) {
         match output_paths_share_destination(output, provenance_out) {
             Ok(true) => {

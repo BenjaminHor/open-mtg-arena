@@ -6,6 +6,7 @@ pub mod combo_table;
 pub mod contraptions;
 pub mod embalm_eternalize;
 pub mod encore;
+pub mod engine_parses;
 #[cfg(feature = "forge")]
 pub mod forge;
 pub mod haunt;

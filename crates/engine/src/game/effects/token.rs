@@ -6089,7 +6089,30 @@ fn apply_token_ability_payload(obj: &mut GameObject, materialized: TokenAbilityM
     }
 }
 
+/// A catalog token's rules text as the abilities it defines. D-183: reads the parse
+/// precomputed into the card data, and parses only when no card data with the table
+/// is loaded (unit tests).
 fn catalog_rules_text_abilities(
+    rules_text: &str,
+    card_name: &str,
+) -> (
+    Vec<StaticDefinition>,
+    Vec<ContinuousModification>,
+    Vec<String>,
+) {
+    match crate::database::engine_parses::token_rules_text(card_name, rules_text) {
+        Some(parsed) => (
+            parsed.static_definitions,
+            parsed.modifications,
+            parsed.unparsed_lines,
+        ),
+        None => parse_catalog_rules_text(rules_text, card_name),
+    }
+}
+
+/// Parse a catalog token's rules text (`TokenPreset::rules_text`) for its display
+/// name: what oracle-gen precomputes into the card data (D-183).
+pub(crate) fn parse_catalog_rules_text(
     rules_text: &str,
     card_name: &str,
 ) -> (

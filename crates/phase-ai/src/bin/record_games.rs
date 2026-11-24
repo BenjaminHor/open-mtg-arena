@@ -152,4 +152,6 @@ fn main() {
         out.flush().unwrap();
         eprintln!("{}: {step} steps, turn {}, {:?}", path.display(), state.turn_number, state.waiting_for);
     }
+    // D-183: lookups of the card data's precomputed parses that missed and fell back to the parser.
+    eprintln!("engine parse table misses: {}", engine::database::engine_parses::miss_count());
 }

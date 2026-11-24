@@ -384,7 +384,7 @@ only while oracle-gen builds the card data. Also not parses in this sense: `From
 No call parses text built from game state mid-game: every text in rows 1-5 is either an engine constant or a
 string from card data, so the full set of inputs is known when the card data is generated.
 
-### The precompute (rows 1-5 first)
+### The precompute (rows 1-5 first; D-186)
 
 oracle-gen writes the results into `card-data.json` under one reserved top-level key, `__engine_parses__`, which
 the card-database loaders strip before reading cards. Its keys are the parse inputs: the room texts, every
