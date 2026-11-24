@@ -161,9 +161,11 @@ procedure; the 62 hand-written ones get hand-written Odin codecs that the genera
 - **Result (2026-11-24)**: six recorded AI-vs-AI games (2,134 steps, six matchups; `record-games`, seeds 1-6) round-trip
   every state (2,140) and action (2,134) with 0 failures and 0 mismatches; decode 7.7 ms and encode+compare 6.5 ms per
   state (debug build, ~440 KB of JSON each). The card data still round-trips (36,406 cards).
-- **Known performance question for later**: the Rust engine clones `GameState` cheaply (persistent `im` collections),
-  which the AI's search relies on. Plain Odin arrays and maps make a clone a deep copy, so the engine's state layout
-  (arenas, copy-on-write, or undo logs instead of clones) is decided when the AI is ported, measured against Rust.
+- **State layout, decided before the logic (corrected 2026-11-24)**: the Rust engine clones `GameState` about 55
+  times per action even without the AI (rollback snapshots, cost and casting simulations) and writes objects
+  copy-on-write 5.5M times in nine games. Plain Odin arrays and maps would make each clone a deep copy, so the
+  Odin state needs cheap snapshots (persistent or copy-on-write collections, or undo logs) before logic is
+  translated; measured against Rust (status.md, "Plan before the logic port").
 
 ## Toolchain note: a compiler patch (2026-11-24)
 

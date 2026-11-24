@@ -54,6 +54,25 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     3. Hash-order dependence: ObjectMap is an `im::HashMap` with Fx hashing; Odin uses `map`. Re-record seed 1 with
        a different hasher: identical bytes mean iteration order is unobservable; otherwise Odin reproduces the order
        or the Rust reference moves to an ordered map first.
+    **Results (2026-11-24):**
+    1. Executed code (an instrumented `record-games`): one game (red-vs-green) runs 5,638 of the engine's 33,509
+       functions (52k of 359k lines) plus 1,993 AI functions; nine matchups together run 9,116 engine functions
+       (89k lines), still growing with each new deck. So the unit of porting is `apply`'s call closure, thousands
+       of functions, not a small mechanic slice; the executed list (`all.lcov` in the session scratchpad, to be
+       regenerated in CI) orders the port leaf-first.
+    2. Cloning: those games made ~230k full GameState clones (≈55 per action: per-action rollback snapshots in
+       engine.rs, cost/casting/mana simulations, staged trigger states) and 5.5M copy-on-write object writes
+       (`ObjectMap::get_mut` → `Arc::make_mut`). Rust gets this cheaply from persistent (`im`) collections and
+       `Arc`-shared objects. The Odin state must offer the same cheap snapshot/rollback, so its layout is decided
+       before translating logic, not with the AI (docs/odin-port.md said the latter; corrected).
+    3. Hash order: the `RandomState` maps already vary per process and recordings repeat byte for byte, so their
+       order isn't observable. The Fx-hashed ObjectMap is being tested (switched to `RandomState` in a scratch
+       copy, seed 1 re-recorded).
+    Also found: **the card-text parser runs during play.** Token creation parses a token's catalog rules text
+    (`game/effects/token.rs` `catalog_rules_text_abilities`, 274 calls in nine games), and other engine modules
+    call into the parser (triggers, layers, combat, effects). An all-Odin engine needs those parses precomputed
+    into the card data (a Rust oracle-gen change) or the parser ported; D-179 assumed the engine never parses.
+    Question for the owner (Open questions).
     Then: per-module verification vectors (a Rust printer over recorded states, an Odin checker), so each
     translated batch is checked before whole games pass; land O-1 through a PR with a CI job (patched Odin build,
     odingen output matches the committed files, one short game recorded, both round trips); the client boundary's
@@ -2511,6 +2530,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions
+- (2026-11-24, Odin port) The Rust engine parses card text during play (tokens' rules text, and parser helpers
+  used by triggers, layers and combat), so "the parser stays Rust as a build tool" (D-179) doesn't hold as is.
+  Options: (a) precompute every runtime parse into the card data at build time (oracle-gen), so the Odin engine
+  never parses; (b) port the parser to Odin too (≈174k lines); (c) keep a small Rust parser beside the Odin engine
+  (contradicts D-180's "no Rust in the engine"). Recommended: (a), checked by a census of the runtime parse calls.
 
 - Settled (2026-11-23, D-178): after the import is playable, the Rust to Odin port comes next, planned first; the
   LLM opponent and the RPG are on hold.
