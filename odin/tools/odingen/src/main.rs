@@ -7,6 +7,7 @@ mod body;
 mod census;
 mod emit;
 mod translate;
+mod vectors;
 mod model;
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -139,6 +140,11 @@ fn main() {
         Some("report") => {
             let crates = PathBuf::from(&args[2]);
             report(&[crates.join("phase-ast/src"), crates.join("engine/src")]);
+        }
+        Some("vector-patch") => {
+            // In a scratch copy of the crates only: wraps engine functions to log their calls (vectors.rs).
+            let only = args.get(3).map(|f| std::fs::read_to_string(f).expect("names file").lines().map(|l| l.trim().to_string()).filter(|l| !l.is_empty()).collect());
+            vectors::patch(&PathBuf::from(&args[2]), only.as_ref());
         }
         Some("census") => {
             let crates = PathBuf::from(&args[2]);
@@ -319,11 +325,13 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
             .filter(|(_, d)| d[0].generics.is_empty())
             .map(|(n, _)| n.clone())
             .collect();
+        // Types with codecs, before the logic-only types join: the vector harness decodes only these.
+        let codecs: std::collections::BTreeSet<String> = e.wire.intersection(&e.emitted).cloned().collect();
         let before = e.types_out.len();
         e.emit_more(&all);
         let more_types = e.types_out[before..].to_string();
         std::fs::write(out_dir.join("generated_types_logic.odin"), format!("{HEADER}import \"../json\"\nimport \"../rng\"\n\n_ :: json\n_ :: rng\n\n{more_types}")).unwrap();
-        body::report(&mut e, filter.as_deref(), Some(&out_dir.join("translated.odin")));
+        body::report(&mut e, filter.as_deref(), Some(&out_dir.join("translated.odin")), &codecs);
         // Translation asked for more clone helpers; the clone file is written again with them.
         std::fs::write(out_dir.join("generated_clone.odin"), format!("{HEADER}import \"../json\"\n\n_ :: json\n\n{}", e.clone_out)).unwrap();
     }

@@ -317,6 +317,30 @@ a handful of errors left). Top blockers engine-wide: untyped `let` (2,176), `Res
 (934), `let else` (914), nested items (483), generic functions (430). Not yet checked against Rust's results (the
 vector printer is next); none of it is committed as engine code until it is.
 
+### Verifying translated code: the vector check (2026-11-24)
+
+A clean Odin type check proved little: two silent mistranslations passed it (docs/status.md, Known issues). So every
+translated procedure is checked against the Rust function it came from, on inputs the real engine produced:
+
+1. `odingen translate-report` writes, beside translated.odin, `vector_harness.odin`: a case per translated procedure
+   whose parameters and result have codecs. A case decodes the arguments, calls the procedure, encodes the result and
+   the `&mut` arguments afterwards, and compares them with the Rust values as JSON. In a `-define:VECTOR=true` build
+   a stub records that it was reached and returns a zero value, so such a call counts as inconclusive, not as a
+   failure or a crash.
+2. `odingen vector-patch <scratch crates copy> <names>` rewrites a scratch copy of the engine, never the real tree.
+   Each named function is renamed `__orig_<name>` and wrapped. The wrapper logs the arguments, the result and the
+   `&mut` arguments afterwards as serde JSON for the first three calls, then the 10th, 100th, and so on. Types
+   without Serialize are marked unlogged, through autoref specialization in non-generic code. Large values (game
+   states) are written once to `<log>.values` and referenced by hash. Only the harness's cases are wrapped:
+   wrapping all ~14,000 candidates makes the engine crate too big to compile in 16 GB.
+3. The patched `record-games` plays a recorded matchup with `VECTOR_LOG=<file>`. `odin/tools/vector_check` replays
+   the log against the translation and reports, for each procedure: pass, fail (with the first differing JSON path),
+   undecodable, only-stubs-reached, or unlogged.
+
+A translated procedure becomes engine code only after passing here. Fields Rust doesn't serialize (runtime caches
+behind `#[serde(skip)]`) reach Odin as defaults, so a function that reads one shows up as a failure. Investigating
+each such failure is part of the check.
+
 ## Decided (D-179)
 
 1. The Rust card-text parser stays as an offline build tool; only the engine is ported.
