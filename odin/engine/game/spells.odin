@@ -544,8 +544,7 @@ choose_target :: proc(g: ^Game, p: types.PlayerId, t: types.TargetRef) -> bool {
 finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []types.TargetRef) {
 	s := &g.state
 	o := object(s, id)
-	taps, _ := plan_payment(s, p, spell_cost(s, o, p))
-	for t in taps do t.tapped = true // CR 605.3: the mana abilities are activated while paying
+	pay_mana(g, p, spell_cost(s, o, p)) // CR 605.3: the mana abilities are activated while paying
 	if o.zone == .Command {
 		s.commander_cast_count[o.id] += 1
 		o.commander_tax = 2 * s.commander_cast_count[o.id]

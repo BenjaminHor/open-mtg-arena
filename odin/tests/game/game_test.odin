@@ -823,3 +823,28 @@ if_its_an_artifact_creature :: proc(t: ^testing.T) {
 	thopter := cast_on(t, "Ornithopter")
 	testing.expect(t, thopter.power.? == 3 && game.keyword_in(thopter, types.Keyword_Trample{}), "+3/+3 and trample")
 }
+
+@(test)
+painland_and_sacrifice_mana_riders :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 605.3b: a mana ability resolves at once, rider and all. Adarkar Wastes: "{T}: Add {C}. {T}: Add {W} or
+	// {U}. This land deals 1 damage to you." Paying generic mana uses the painless ability.
+	g := new_game()
+	wastes := add(t, g, "Adarkar Wastes", 0, .Battlefield)
+	ring := add(t, g, "Sol Ring", 0, .Hand) // {1}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = ring.id}))
+	testing.expect(t, wastes.tapped && game.player(&g.state, 0).life == 20, "{C} for {1}: no damage")
+
+	g2 := new_game()
+	wastes2 := add(t, g2, "Adarkar Wastes", 0, .Battlefield)
+	lions := add(t, g2, "Savannah Lions", 0, .Hand) // {W}
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = lions.id}))
+	testing.expect(t, wastes2.tapped && game.player(&g2.state, 0).life == 19, "{W}: 1 damage")
+
+	// Abandoned Outpost: "{T}: Add {W}. {T}, Sacrifice this land: Add one mana of any color."
+	g3 := new_game()
+	outpost := add(t, g3, "Abandoned Outpost", 0, .Battlefield)
+	opt := add(t, g3, "Opt", 0, .Hand) // {U}
+	testing.expect(t, game.apply(g3, 0, types.GameAction_CastSpell{object_id = opt.id}))
+	testing.expect(t, outpost.zone == .Graveyard, "sacrificed for {U}")
+}

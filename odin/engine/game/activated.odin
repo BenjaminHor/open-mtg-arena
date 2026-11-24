@@ -207,8 +207,7 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 	for part in parts {
 		#partial switch x in part {
 		case types.AbilityCost_Mana:
-			taps, _ := plan_payment(s, p, x.cost, source if taps_self else 0)
-			for t in taps do t.tapped = true
+			pay_mana(g, p, x.cost, source if taps_self else 0)
 		case types.AbilityCost_Tap:
 			o.tapped = true
 		case types.AbilityCost_PayLife:
