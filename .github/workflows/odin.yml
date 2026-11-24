@@ -60,6 +60,8 @@ jobs:
           git diff --exit-code -- odin/engine/types
       - name: The model type-checks
         run: odin check odin/engine/types -no-entry-point
+      - name: Hand-written codec edge cases
+        run: odin run odin/tools/hand_codecs_test -out:hand_codecs_test
 
       # MTGJSON's files change weekly at most; the script refreshes them once a week (UTC), as in Pages.
       - name: Week for the MTGJSON cache

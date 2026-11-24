@@ -32,15 +32,15 @@ decode_SacrificeCost :: proc(v: json.Value, out: ^SacrificeCost) -> bool {
 	if v.kind != .Object do return fail("SacrificeCost: not an object")
 	t, has_target := json.get(v, "target")
 	if !has_target || !decode_TargetFilter(t, &out.target) do return fail("SacrificeCost.target")
-	if c, ok := json.get(v, "count"); ok {
-		n: u32
-		if !decode_u32(c, &n) do return fail("SacrificeCost.count")
-		out.requirement = SacrificeRequirement_Count{count = n}
-	} else if r, ok2 := json.get(v, "requirement"); ok2 {
+	// As Rust reads it: only these three keys; `requirement` wins over `count`; neither means a count of 1.
+	for m in v.members do if m.key != "target" && m.key != "count" && m.key != "requirement" do return fail("SacrificeCost: unknown field")
+	if r, ok := json.get(v, "requirement"); ok {
 		if !decode_SacrificeRequirement(r, &out.requirement) do return fail("SacrificeCost.requirement")
-	} else {
-		return fail("SacrificeCost: needs count or requirement")
+		return true
 	}
+	n: u32 = 1
+	if c, ok := json.get(v, "count"); ok && !decode_u32(c, &n) do return fail("SacrificeCost.count")
+	out.requirement = SacrificeRequirement_Count{count = n}
 	return true
 }
 
@@ -126,7 +126,7 @@ counter_type_as_str :: proc(b: ^strings.Builder, x: CounterType) {
 parse_signed_counter_delta :: proc(text: string) -> (i32, bool) {
 	t := strings.trim_space(text)
 	if len(t) < 2 do return 0, false
-	magnitude, ok := strconv.parse_i64_of_base(t[1:], 10)
+	magnitude, ok := parse_rust_int(t[1:])
 	if !ok || magnitude > i64(max(i32)) || magnitude < i64(min(i32)) do return 0, false
 	switch t[0] {
 	case '+': return i32(magnitude), true
@@ -183,8 +183,10 @@ try_parse_counter_type :: proc(text: string) -> (CounterType, bool) {
 
 // types/counter.rs `parse_counter_type`: unrecognized text becomes a Generic counter of the lowercased text.
 parse_counter_type :: proc(text: string) -> CounterType {
-	if c, ok := try_parse_counter_type(text); ok do return c
-	return CounterType_Generic{_0 = strings.to_lower(trim_counter_suffix(text))}
+	// Rust trims here and try_parse_counter_type trims again ("x counter  counter" loses both suffixes).
+	trimmed := trim_counter_suffix(text)
+	if c, ok := try_parse_counter_type(trimmed); ok do return c
+	return CounterType_Generic{_0 = strings.to_lower(trimmed)}
 }
 
 decode_CounterType :: proc(v: json.Value, out: ^CounterType) -> bool {
@@ -280,7 +282,7 @@ decode_ChoiceType :: proc(v: json.Value, out: ^ChoiceType) -> bool {
 		out^ = x
 	case "Keyword":
 		x := ChoiceType_Keyword{count = 1} // default_keyword_choice_count
-		if !req(d, "options", &x.options, dec_dyn_Keyword) || !opt(d, "count", &x.count, decode_int) do return false
+		if !req(d, "options", &x.options, dec_dyn_Keyword) || !opt(d, "count", &x.count, decode_usize) do return false
 		out^ = x
 	case "CounterKind":
 		x: ChoiceType_CounterKind
@@ -382,38 +384,15 @@ ability_cost_consumes_source :: proc(c: AbilityCost) -> bool {
 
 // ------------------------------------------------------------------------ defaults and skip predicates by hand ---
 
-// types/ability.rs `ObjectSelectionCardinality::SINGLE` = Exactly { count: 1 }.
-hand_ObjectSelectionCardinality_single :: proc() -> ObjectSelectionCardinality {
-	return ObjectSelectionCardinality_Exactly{count = 1}
-}
 
 hand_ObjectSelectionCardinality_is_single :: proc(x: ObjectSelectionCardinality) -> bool {
 	e, ok := x.(ObjectSelectionCardinality_Exactly)
 	return ok && e.count == 1
 }
 
-// types/ability.rs `default_target_filter_permanent` = TargetFilter::Typed(TypedFilter::permanent()), and
-// `TypedFilter::new` leaves controller and properties empty.
-hand_default_target_filter_permanent :: proc() -> TargetFilter {
-	return TargetFilter_Typed{_0 = TypedFilter{type_filters = dynamic_from([]TypeFilter{TypeFilter_Permanent{}})}}
-}
 
-// types/card.rs `CardMetadata::is_empty`.
-hand_CardMetadata_is_empty :: proc(x: CardMetadata) -> bool {
-	return x.forge_abilities == 0 && x.forge_triggers == 0 && x.forge_statics == 0 && x.forge_replacements == 0 &&
-		len(x.related_token_ids) == 0 && len(x.source_printing_ids) == 0 && len(x.spellbook) == 0 &&
-		x.off_stack_mana_value_override == nil && len(x.off_stack_mana_costs) == 0 && x.confirmed_misparse == nil
-}
 
-// types/ability.rs `PendingEntersModifications::is_empty`.
-hand_PendingEntersModifications_is_empty :: proc(x: PendingEntersModifications) -> bool {
-	return len(x.modifications) == 0
-}
 
-// types/ability.rs `is_default_library_shuffle_mode` = `LibraryShuffleMode::is_per_object`.
-hand_is_default_library_shuffle_mode :: proc(x: LibraryShuffleMode) -> bool {
-	return x == .PerObject
-}
 
 // types/ability.rs `is_default_search_zones`: exactly [Library].
 hand_is_default_search_zones :: proc(x: [dynamic]Zone) -> bool {
@@ -530,10 +509,6 @@ hand_is_clean_signals :: proc(x: BracketSignals) -> bool {
 	return !x.game_changer && !x.mass_land_denial && !x.extra_turn && !x.efficient_tutor
 }
 
-// types/mana.rs `impl Default for ManaCost` = ManaCost::zero() = Cost { shards: [], generic: 0 }.
-hand_default_ManaCost :: proc() -> ManaCost {
-	return ManaCost_Cost{}
-}
 
 // types/ability.rs `impl Default for CostObjectCount` = CostObjectCount::exactly(1).
 hand_default_CostObjectCount :: proc() -> CostObjectCount {
@@ -633,7 +608,7 @@ decode_GameFormat :: proc(v: json.Value, out: ^GameFormat) -> bool {
 	when COVERAGE do cov_hit("hand:GameFormat")
 	if v.kind != .String do return fail("GameFormat: expected a string")
 	if strings.has_prefix(v.text, "Custom:") {
-		n, ok := strconv.parse_u64_of_base(v.text[len("Custom:"):], 10)
+		n, ok := parse_rust_uint(v.text[len("Custom:"):])
 		if !ok || n > u64(max(u16)) do return fail("GameFormat: invalid Custom format id")
 		out^ = GameFormat_Custom{_0 = CustomFormatId(n)}
 		return true
@@ -926,7 +901,8 @@ decode_with_counter_map_serde :: proc(v: json.Value, out: ^[dynamic]Tuple2(Count
 		n: u32
 		if !decode_CounterType(json.Value{kind = .String, text = m.key}, &ct) || !decode_u32(m.value, &n) do return false
 		for &e in out {
-			if counter_key(e._0) == counter_key(ct) {
+			// Rust merges by CounterType value: "Stun" parses to Generic("stun"), a different key from Stun.
+			if e._0 == ct {
 				if u64(e._1) + u64(n) > u64(max(u32)) do return fail("counters: count overflow")
 				e._1 += n
 				continue outer
@@ -936,13 +912,6 @@ decode_with_counter_map_serde :: proc(v: json.Value, out: ^[dynamic]Tuple2(Count
 	}
 	return true
 }
-@(private)
-counter_key :: proc(x: CounterType) -> string {
-	kb := strings.builder_make(context.temp_allocator)
-	counter_type_as_str(&kb, x)
-	return strings.to_string(kb)
-}
-
 encode_with_counter_map_serde :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(CounterType, u32)) {
 	strings.write_byte(b, '{')
 	for e, i in x {
@@ -958,15 +927,19 @@ encode_with_counter_map_serde :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(Co
 decode_with_tuple_key_map :: proc(v: json.Value, out: ^[dynamic]Tuple2(Tuple2(ObjectId, int), u32)) -> bool {
 	when COVERAGE do cov_hit("hand:with_tuple_key_map")
 	if v.kind != .Object do return fail("tuple-key map: expected an object")
-	out^ = make([dynamic]Tuple2(Tuple2(ObjectId, int), u32), len(v.members))
-	for m, i in v.members {
+	out^ = make([dynamic]Tuple2(Tuple2(ObjectId, int), u32), 0, len(v.members))
+	outer: for m in v.members {
 		sep := strings.index_byte(m.key, '_')
 		if sep < 0 do return fail("tuple-key map: invalid key")
-		oid, ok1 := strconv.parse_u64_of_base(m.key[:sep], 10)
-		idx, ok2 := strconv.parse_u64_of_base(m.key[sep + 1:], 10)
+		oid, ok1 := parse_rust_uint(m.key[:sep])
+		idx, ok2 := parse_rust_uint(m.key[sep + 1:])
 		if !ok1 || !ok2 do return fail("tuple-key map: invalid key")
-		out[i]._0 = {ObjectId(oid), int(idx)}
-		if !decode_u32(m.value, &out[i]._1) do return false
+		key := Tuple2(ObjectId, int){ObjectId(oid), int(idx)}
+		n: u32
+		if !decode_u32(m.value, &n) do return false
+		// Two spellings of one key ("42_0", "+42_0"): the later wins, as in Rust's HashMap.
+		for &e in out do if e._0 == key { e._1 = n; continue outer }
+		append(out, Tuple2(Tuple2(ObjectId, int), u32){key, n})
 	}
 	return true
 }
@@ -1020,8 +993,8 @@ write_usage_key :: proc(b: ^strings.Builder, k: AbilityUsageKey) {
 parse_stamp :: proc(s: string) -> (ObjectIncarnationRef, bool) {
 	dot := strings.index_byte(s, '.')
 	if dot < 0 do return {}, false
-	oid, ok1 := strconv.parse_u64_of_base(s[:dot], 10)
-	inc, ok2 := strconv.parse_u64_of_base(s[dot + 1:], 10)
+	oid, ok1 := parse_rust_uint(s[:dot])
+	inc, ok2 := parse_rust_uint(s[dot + 1:])
 	return {object_id = ObjectId(oid), incarnation = inc}, ok1 && ok2
 }
 
@@ -1036,7 +1009,7 @@ read_usage_key :: proc(raw: string) -> (k: AbilityUsageKey, ok: bool) {
 		rest = rest[sep + 1:]
 	}
 	parts[5] = rest
-	src, src_ok := strconv.parse_u64_of_base(parts[0], 10)
+	src, src_ok := parse_rust_uint(parts[0])
 	if !src_ok do return {}, false
 	k.source = ObjectId(src)
 	if parts[1] != "-" {
@@ -1064,8 +1037,7 @@ read_usage_key :: proc(raw: string) -> (k: AbilityUsageKey, ok: bool) {
 	case: return {}, false
 	}
 	if parts[4] != "" {
-		chain := parts[4]
-		for seg in strings.split_iterator(&chain, ",") {
+		for seg in strings.split(parts[4], ",") {
 			r, r_ok := parse_stamp(seg)
 			if !r_ok do return {}, false
 			append(&k.grant_chain, r)
@@ -1077,12 +1049,14 @@ read_usage_key :: proc(raw: string) -> (k: AbilityUsageKey, ok: bool) {
 decode_with_ability_usage_key_map :: proc(v: json.Value, out: ^[dynamic]Tuple2(AbilityUsageKey, u32)) -> bool {
 	when COVERAGE do cov_hit("hand:with_ability_usage_key_map")
 	if v.kind != .Object do return fail("ability usage map: expected an object")
-	out^ = make([dynamic]Tuple2(AbilityUsageKey, u32), len(v.members))
-	for m, i in v.members {
+	out^ = make([dynamic]Tuple2(AbilityUsageKey, u32), 0, len(v.members))
+	outer: for m in v.members {
 		k, ok := read_usage_key(m.key)
 		if !ok do return fail("ability usage map: invalid key")
-		out[i]._0 = k
-		if !decode_u32(m.value, &out[i]._1) do return false
+		n: u32
+		if !decode_u32(m.value, &n) do return false
+		for &e in out do if usage_key_equal(e._0, k) { e._1 = n; continue outer }
+		append(out, Tuple2(AbilityUsageKey, u32){k, n})
 	}
 	return true
 }
@@ -1104,15 +1078,17 @@ encode_with_ability_usage_key_map :: proc(b: ^strings.Builder, x: [dynamic]Tuple
 decode_with_departed_activation_tally_map :: proc(v: json.Value, out: ^[dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32)) -> bool {
 	when COVERAGE do cov_hit("hand:with_departed_activation_tally_map")
 	if v.kind != .Object do return fail("departed tally map: expected an object")
-	out^ = make([dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32), len(v.members))
-	for m, i in v.members {
+	out^ = make([dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32), 0, len(v.members))
+	outer: for m in v.members {
 		sep := strings.index_byte(m.key, '#')
 		if sep < 0 do return fail("departed tally map: invalid key")
-		inc, ok1 := strconv.parse_u64_of_base(m.key[:sep], 10)
+		inc, ok1 := parse_rust_uint(m.key[:sep])
 		k, ok2 := read_usage_key(m.key[sep + 1:])
 		if !ok1 || !ok2 do return fail("departed tally map: invalid key")
-		out[i]._0 = {k, inc}
-		if !decode_u32(m.value, &out[i]._1) do return false
+		n: u32
+		if !decode_u32(m.value, &n) do return false
+		for &e in out do if e._0._1 == inc && usage_key_equal(e._0._0, k) { e._1 = n; continue outer }
+		append(out, Tuple2(Tuple2(AbilityUsageKey, u64), u32){{k, inc}, n})
 	}
 	return true
 }
@@ -1178,4 +1154,50 @@ HAND_COVERAGE_KEYS := []string{
 	"hand:with_ability_usage_key_map",
 	"hand:with_departed_activation_tally_map",
 	"hand:with_persisted_checkpoint_state",
+}
+
+// Rust's `u64::from_str`: an optional `+`, then one or more ASCII digits, no separators (Odin's strconv also takes
+// `_` and base prefixes, which Rust rejects).
+parse_rust_uint :: proc(s: string) -> (u64, bool) {
+	t := s
+	if len(t) > 0 && t[0] == '+' do t = t[1:]
+	if len(t) == 0 do return 0, false
+	n: u64
+	for c in transmute([]byte)t {
+		if c < '0' || c > '9' do return 0, false
+		d := u64(c - '0')
+		if n > (max(u64) - d) / 10 do return 0, false
+		n = n * 10 + d
+	}
+	return n, true
+}
+
+// Rust's `i32::from_str` (as i64): an optional sign, then ASCII digits, within i32.
+parse_rust_int :: proc(s: string) -> (i64, bool) {
+	neg := len(s) > 0 && s[0] == '-'
+	n, ok := parse_rust_uint(neg ? s[1:] : s)
+	if !ok || (neg && len(s) > 1 && s[1] == '+') do return 0, false
+	if neg {
+		if n > u64(max(i32)) + 1 do return 0, false
+		return -i64(n), true
+	}
+	if n > u64(max(i32)) do return 0, false
+	return i64(n), true
+}
+
+// A usize field (ChoiceType::Keyword.count): non-negative.
+@(private)
+decode_usize :: proc(v: json.Value, out: ^int) -> bool {
+	n: u64
+	if !decode_u64(v, &n) || n > u64(max(int)) do return fail("expected a usize")
+	out^ = int(n)
+	return true
+}
+
+// AbilityUsageKey's derived PartialEq (its grant chain is a list, which Odin's == doesn't compare).
+@(private)
+usage_key_equal :: proc(a, b: AbilityUsageKey) -> bool {
+	if a.source != b.source || a.provenance != b.provenance || a.description != b.description || a.fingerprint != b.fingerprint || len(a.grant_chain) != len(b.grant_chain) do return false
+	for r, i in a.grant_chain do if r != b.grant_chain[i] do return false
+	return true
 }

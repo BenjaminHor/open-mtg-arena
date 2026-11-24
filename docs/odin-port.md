@@ -153,6 +153,11 @@ procedure; the 62 hand-written ones get hand-written Odin codecs that the genera
     written through the versioned ResolutionStateWire).
   - Map adapters write entries in model order where Rust sorts them; value comparison ignores member order. Byte-
     identical output would sort there.
+  - Reviewed against the Rust impls (2026-11-24): every form Rust writes today matches. Fixed from the review, each
+    case kept in `odin/tools/hand_codecs_test`: counter maps merge by counter value, the double " counter" trim,
+    Rust's strict integer parsing (no `_` separators), keys that parse equal collapse (last wins), a trailing comma
+    in a grant chain, SacrificeCost's absent count. Left for the logic port: PendingCoinFlip's
+    `validate_incoming_pins` on reading (Rust refuses a parked flip whose incoming references lack pins).
 - **Result (2026-11-24)**: six recorded AI-vs-AI games (2,134 steps, six matchups; `record-games`, seeds 1-6) round-trip
   every state (2,140) and action (2,134) with 0 failures and 0 mismatches; decode 7.7 ms and encode+compare 6.5 ms per
   state (debug build, ~440 KB of JSON each). The card data still round-trips (36,406 cards).
