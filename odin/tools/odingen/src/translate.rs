@@ -563,8 +563,15 @@ impl<'a, 'b> Tx<'a, 'b> {
                     _ => val,
                 })
             }
+            Expr::Macro(m) if m.mac.path.is_ident("matches") && self.calls => {
+                let mac: MatchesArgs = m.mac.parse_body().map_err(|e| e.to_string())?;
+                self.matches_general(&mac)
+            }
             Expr::Macro(m) if m.mac.path.is_ident("matches") => {
                 let mac: MatchesArgs = m.mac.parse_body().map_err(|e| e.to_string())?;
+                if mac.guard.is_some() {
+                    return Err("matches! with a guard".into());
+                }
                 let sh = self.shape_of(&mac.subject).ok_or("matches! subject")?;
                 let subj = self.expr(&mac.subject, &sh)?;
                 let alts: Vec<&Pat> = match &mac.pat {
@@ -973,6 +980,51 @@ impl<'a, 'b> Tx<'a, 'b> {
         }
     }
 
+    /// `matches!(e, P | Q if guard)` with any patterns (pattern.rs): each alternative is a labelled block whose
+    /// failed tests leave it; the value is whether one got through.
+    fn matches_general(&mut self, mac: &MatchesArgs) -> R<String> {
+        let sh = self.shape_of(&mac.subject).ok_or("matches! subject")?;
+        let v = self.expr(&mac.subject, &sh)?;
+        let n = self.next_temp();
+        let subj = format!("mx{n}_");
+        let res = format!("mr{n}_");
+        self.pre.push(format!("{subj} := {v}"));
+        self.pre.push(format!("{res} := false"));
+        let alts: Vec<&Pat> = match &mac.pat {
+            Pat::Or(o) => o.cases.iter().collect(),
+            p => vec![p],
+        };
+        for alt in alts {
+            let code = crate::pattern::compile(self, alt, &subj, &sh, crate::pattern::Mode::Value)?;
+            let label = format!("ma{}_", self.next_temp());
+            let mut body: Vec<String> = code.stmts.iter().map(|st| st.replace(crate::pattern::FAIL, &format!("break {label}"))).collect();
+            let mut saved = Vec::new();
+            for (name, init, bsh, _) in &code.binds {
+                let ident = format!("{}_m{}", crate::emit::field_ident(name), self.next_temp());
+                body.push(format!("{ident} := {init}"));
+                saved.push((name.clone(), self.vars.insert(name.clone(), (ident, bsh.clone()))));
+            }
+            if let Some(g) = &mac.guard {
+                let outer = std::mem::take(&mut self.pre);
+                let c = self.expr(g, &Shape::Bool);
+                let inner = std::mem::replace(&mut self.pre, outer);
+                body.extend(inner);
+                let c = match c {
+                    Ok(c) => c,
+                    Err(e) => {
+                        self.unbind(saved);
+                        return Err(e);
+                    }
+                };
+                body.push(format!("if !({c}) do break {label}"));
+            }
+            self.unbind(saved);
+            body.push(format!("{res} = true"));
+            self.pre.push(format!("if !{res} {{ {label}: {{\n{}\n}} }}", body.join("\n")));
+        }
+        Ok(res)
+    }
+
     fn next_temp(&mut self) -> u32 {
         self.temps += 1;
         self.temps
@@ -1220,6 +1272,9 @@ pub fn defaults_and_skips(e: &mut Emitter) -> (String, Vec<String>) {
                     let stmts = match body {
                         Expr::Macro(m) if m.mac.path.is_ident("matches") => {
                             let mac: MatchesArgs = m.mac.parse_body().map_err(|e| e.to_string())?;
+                            if mac.guard.is_some() {
+                                return Err("matches! with a guard".into());
+                            }
                             let subject_shape = tx.shape_of(&mac.subject).ok_or("matches! subject")?;
                             tx.matches_stmts("x", &subject_shape, &mac.pat)?
                         }
@@ -1274,6 +1329,7 @@ pub fn defaults_and_skips(e: &mut Emitter) -> (String, Vec<String>) {
 struct MatchesArgs {
     subject: Expr,
     pat: Pat,
+    guard: Option<Expr>,
 }
 
 impl syn::parse::Parse for MatchesArgs {
@@ -1281,9 +1337,15 @@ impl syn::parse::Parse for MatchesArgs {
         let subject: Expr = input.parse()?;
         input.parse::<syn::Token![,]>()?;
         let pat = Pat::parse_multi_with_leading_vert(input)?;
-        // An `if` guard or trailing comma isn't used by these predicates.
+        // `matches!(x, P if cond)`: the guard is part of the test.
+        let guard = if input.peek(syn::Token![if]) {
+            input.parse::<syn::Token![if]>()?;
+            Some(input.parse::<Expr>()?)
+        } else {
+            None
+        };
         let _ = input.parse::<Option<syn::Token![,]>>();
-        Ok(MatchesArgs { subject, pat })
+        Ok(MatchesArgs { subject, pat, guard })
     }
 }
 

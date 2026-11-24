@@ -225,7 +225,7 @@ impl Body<'_, '_, '_> {
                     };
                     return Err(format!("item inside a function: {kind}"));
                 }
-                Stmt::Macro(_) => return Err("statement macro".into()),
+                Stmt::Macro(m) => self.stmt_macro(&m.mac)?,
             }
         }
         Ok(())
@@ -715,6 +715,7 @@ impl Body<'_, '_, '_> {
                 self.line(&v);
                 Ok(())
             }
+            Expr::Macro(m) => self.stmt_macro(&m.mac),
             other => Err(format!("statement {}", kind(other))),
         }
     }
@@ -1060,6 +1061,41 @@ impl Body<'_, '_, '_> {
         self.line("}");
         self.loops.pop();
         Ok(())
+    }
+
+    /// A macro used as a statement. Logging and debug assertions are left out (they don't change the game; the
+    /// shipped Rust build compiles debug assertions out too); `assert!` is an Odin assert; `panic!`-like macros panic.
+    fn stmt_macro(&mut self, mac: &syn::Macro) -> R<()> {
+        let name = mac.path.segments.last().map(|s| s.ident.to_string()).unwrap_or_default();
+        match name.as_str() {
+            "debug_assert" | "debug_assert_eq" | "debug_assert_ne" | "trace" | "debug" | "info" | "warn" | "error"
+            | "eprintln" | "println" | "eprint" | "print" | "dbg" => Ok(()),
+            "assert" => {
+                let args = mac.parse_body_with(syn::punctuated::Punctuated::<Expr, syn::Token![,]>::parse_terminated).map_err(|_| "assert! arguments")?;
+                let cond = args.first().ok_or("assert! without a condition")?;
+                let c = self.tx.expr(cond, &Shape::Bool)?;
+                self.line(&format!("assert({c})"));
+                Ok(())
+            }
+            "assert_eq" | "assert_ne" => {
+                let args = mac.parse_body_with(syn::punctuated::Punctuated::<Expr, syn::Token![,]>::parse_terminated).map_err(|_| "assert_eq! arguments")?;
+                let (a, b) = (args.get(0).ok_or("assert_eq!")?, args.get(1).ok_or("assert_eq!")?);
+                let sh = self.shape_of(a).or_else(|| self.shape_of(b)).ok_or("assert_eq! of untyped values")?;
+                if !self.tx.comparable_pub(&sh) {
+                    return Err("assert_eq! on a type Odin can't compare".into());
+                }
+                let (x, y) = (self.tx.expr(a, &sh)?, self.tx.expr(b, &sh)?);
+                let op = if name == "assert_eq" { "==" } else { "!=" };
+                self.line(&format!("assert({x} {op} {y})"));
+                Ok(())
+            }
+            "panic" | "unreachable" | "todo" | "unimplemented" => {
+                let msg = crate::translate::odin_string(&format!("{name}! in translated code"));
+                self.line(&format!("panic({msg})"));
+                Ok(())
+            }
+            other => Err(format!("statement macro {other}!")),
+        }
     }
 
     /// A new loop: its Odin label, pushed on the loop stack (the caller pops it).
