@@ -2863,6 +2863,13 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   none to me"). Report only what matters to the owner, in plain terms and briefly: milestones reached (a recorded
   game replaying in Odin, a PR merged, performance numbers), decisions or approvals needed, and problems that
   change the plan. Keep translator internals, percentages and per-fix detail in this file and the commits.
+- Owner (2026-11-24), on whether the 11,160 usable fixtures are comprehensive: they aren't. Only 2,130 of the
+  15,772 pool cards appear in a usable fixture (2,449 in any captured one), so "all of a card's fixtures pass on
+  Odin" can't exceed about 2,100 cards. Proposed filling the gap with Rust AI-vs-AI games whose decks rotate through
+  the pool, recorded and replayed on Odin. Owner: "we can stick with the 11,000 fixtures for now. I think once the
+  engine is fully fleshed out, we can consider covering any gaps." So: grow the engine against the 11,160 fixtures
+  and the static coverage check; report both the fixture pass rate and fully supported pool cards; take up the
+  gap recordings only once the engine is fleshed out (ask then).
 
 ## Known issues
 - (2026-11-24, Odin engine, rules-judge review of 9ab9548..7429070) Fixed, with tests: (1) "sacrifice this" and
