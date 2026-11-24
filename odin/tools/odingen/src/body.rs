@@ -3,7 +3,9 @@
 //! doesn't handle is refused with the construct that stopped it, which `odingen translate-report` ranks; nothing is
 //! guessed.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
+
+use quote::ToTokens;
 use std::fmt::Write;
 
 use syn::{Block, Expr, FnArg, Pat, ReturnType, Stmt};
@@ -23,6 +25,11 @@ pub struct Translated {
 
 /// The Odin signature of a function (`(params) -> ret`), and the Rust `mut` parameters needing a local copy.
 fn signature(tx: &mut Tx, owner: Option<&str>, f: &FnDef) -> R<(String, Shape, Vec<String>)> {
+    signature_with(tx, owner, f, &[])
+}
+
+/// The signature with extra parameters at the end (a closure instance's captures).
+fn signature_with(tx: &mut Tx, owner: Option<&str>, f: &FnDef, extra: &[String]) -> R<(String, Shape, Vec<String>)> {
     let mut params = Vec::new();
     let mut mut_params = Vec::new();
     for input in &f.sig.inputs {
@@ -65,6 +72,7 @@ fn signature(tx: &mut Tx, owner: Option<&str>, f: &FnDef) -> R<(String, Shape, V
         ReturnType::Default => Shape::Unit,
         ReturnType::Type(_, t) => self_shape(tx, t, owner).map_err(|e| format!("return {e}"))?,
     };
+    params.extend(extra.iter().cloned());
     let ret_ty = if matches!(ret, Shape::Unit) { String::new() } else { format!(" -> {}", tx.e.odin(&ret)) };
     Ok((format!("({}){ret_ty}", params.join(", ")), ret, mut_params))
 }
@@ -123,7 +131,19 @@ thread_local! {
 }
 
 pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef) -> R<Translated> {
-    if DENY.with(|d| d.contains(&proc_name_for(owner, name, f))) {
+    // A fresh procedure: no closures in scope, no instances being made around it.
+    let saved = crate::closures::CLOSURES.with(|c| std::mem::take(&mut *c.borrow_mut()));
+    let r = translate_fn_with(e, owner, name, f, None, &[]);
+    crate::closures::CLOSURES.with(|c| *c.borrow_mut() = saved);
+    r
+}
+
+/// A function translated under another procedure name (a closure instance), with extra parameters at the end.
+fn translate_fn_with(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, pname_override: Option<&str>, extra: &[String]) -> R<Translated> {
+    if pname_override.is_some_and(|p| DENY.with(|d| d.contains(p))) {
+        return Err("translation rejected by the Odin type check".into());
+    }
+    if DENY.with(|d| d.contains(&proc_name_for(owner, name, f))) && pname_override.is_none() {
         return Err("translation rejected by the Odin type check".into());
     }
     if crate::translate::COLLIDING.with(|c| c.borrow().contains(&proc_name_for(owner, name, f))) {
@@ -142,14 +162,23 @@ pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef)
         return Err("async or unsafe function".into());
     }
     let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: owner.map(str::to_string), depth: 0, calls: true, pre: Vec::new(), fn_ret: Shape::Unit, temps: 0 };
-    let (sig, ret, mut_params) = signature(&mut tx, owner, f)?;
+    let (sig, ret, mut_params) = signature_with(&mut tx, owner, f, extra)?;
     tx.fn_ret = ret.clone();
+    // Immutable parameters can't be pointed to: closures capture them by value (closures.rs).
+    let by_value: BTreeSet<String> = tx
+        .vars
+        .values()
+        .map(|(o, _)| o.clone())
+        .filter(|o| !o.ends_with('^') && !mut_params.contains(o))
+        .chain(extra.iter().filter(|p| !p.contains(": ^")).filter_map(|p| p.split(':').next().map(|x| x.trim().to_string())))
+        .collect();
+    let saved_by_value = crate::closures::BY_VALUE.with(|b| std::mem::replace(&mut *b.borrow_mut(), by_value));
     // `Self` in the body's types (`let x: Self`, `Vec<Self>`) is the impl's type.
     let saved_subst = tx.e.subst.clone();
     if let Some(o) = owner {
         tx.e.subst.insert("Self".into(), Shape::Named(o.to_string(), vec![]));
     }
-    let pname = proc_name_for(owner, name, f);
+    let pname = pname_override.map(str::to_string).unwrap_or_else(|| proc_name_for(owner, name, f));
     let mut b = Body { tx: &mut tx, out: String::new(), indent: 1, ret, declared: Default::default(), target: None, loops: Vec::new() };
     for (_, (odin, _)) in b.tx.vars.clone() {
         b.declared.insert(odin.trim_end_matches('^').to_string());
@@ -161,6 +190,7 @@ pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef)
     let r = b.block(&f.block, true);
     let out = std::mem::take(&mut b.out);
     tx.e.subst = saved_subst;
+    crate::closures::BY_VALUE.with(|b| *b.borrow_mut() = saved_by_value);
     r?;
     let code = format!("{pname} :: proc{sig} {{\n{out}}}\n");
     let touches_unlogged = crate::translate::TOUCHES_UNLOGGED.with(|t| t.get());
@@ -369,6 +399,16 @@ impl Body<'_, '_, '_> {
         };
         let name = pi.ident.to_string();
         let init = l.init.as_ref().ok_or("let without a value")?;
+        // `let f = |x| ..;`: remembered, not emitted; calls of f inline it (closures.rs). Without `move`, Rust's
+        // borrows keep its captures unchanged while it lives, so reading them at each call is exact.
+        if let (None, Expr::Closure(c)) = (ty, &*init.expr) {
+            if c.capture.is_some() {
+                return Err("move closure in a let".into());
+            }
+            let env = crate::closures::captures(self.tx, c);
+            crate::closures::register(&name, crate::closures::ClosureInfo { closure: c.clone(), env, args: None, ret: None, scope: crate::closures::scope_now() });
+            return Ok(());
+        }
         if pi.by_ref.is_some() || self.mut_ref_source(&init.expr) {
             return Err("binding to a mutable reference".into());
         }
@@ -1041,6 +1081,10 @@ impl Body<'_, '_, '_> {
         let item = self.fresh("it");
         let idx = self.fresh("ix");
         let label = self.open_loop(fl.label.as_ref());
+        crate::closures::BY_VALUE.with(|bv| {
+            bv.borrow_mut().insert(item.clone());
+            bv.borrow_mut().insert(idx.clone());
+        });
         let amp = if mode == Mode::Mut { "&" } else { "" };
         self.line(&format!("{label}: for {amp}{item}, {idx} in {c} {{"));
         self.indent += 1;
@@ -1143,6 +1187,7 @@ impl Body<'_, '_, '_> {
             let (a, b) = (self.tx.expr(a, &sh)?, self.tx.expr(b, &sh)?);
             let op = if matches!(rg.limits, syn::RangeLimits::Closed(_)) { "..=" } else { "..<" };
             let label = self.open_loop(fl.label.as_ref());
+            crate::closures::BY_VALUE.with(|bv| bv.borrow_mut().insert(ident.clone()));
             self.line(&format!("{label}: for {ident} in {a} {op} {b} {{"));
             let saved = self.tx.vars.insert(name.clone(), (ident, sh));
             self.indent += 1;
@@ -1169,6 +1214,7 @@ impl Body<'_, '_, '_> {
         };
         let c = self.tx.expr(coll, &sh)?;
         let label = self.open_loop(fl.label.as_ref());
+        crate::closures::BY_VALUE.with(|bv| bv.borrow_mut().insert(ident.clone()));
         self.line(&format!("{label}: for {ident} in {c} {{"));
         let saved = self.tx.vars.insert(name.clone(), (ident, elem));
         self.indent += 1;
@@ -1257,6 +1303,7 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
         }
     }
     crate::translate::COLLIDING.with(|c| *c.borrow_mut() = by_name.into_iter().filter(|(_, n)| *n > 1).map(|(k, _)| k).collect());
+    crate::closures::INSTANCES.with(|i| *i.borrow_mut() = Default::default());
     let mut ok = Vec::new();
     let mut done: Vec<(String, Option<String>, String, FnDef, bool)> = Vec::new();
     let mut stubs = Vec::new();
@@ -1323,6 +1370,15 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
         for t in ok.iter().chain(stubs.iter()) {
             if seen.insert(t.name.clone()) {
                 code.push_str(&t.code);
+                code.push('\n');
+            }
+        }
+        // Closure instances (closures.rs), made while translating their callers.
+        let instances = crate::closures::INSTANCES.with(|i| std::mem::take(&mut i.borrow_mut().1));
+        println!("closure instances: {}", instances.len());
+        for (n, c) in instances {
+            if seen.insert(n) {
+                code.push_str(&c);
                 code.push('\n');
             }
         }
@@ -1744,4 +1800,68 @@ pub fn generic_kind(sig: &syn::Signature) -> Option<&'static str> {
         }
     }
     kind
+}
+
+/// A closure instance of `f` (closures.rs): its closure parameters dropped (calls of them inline the closures),
+/// generic closure types gone with them, the captures as extra parameters.
+pub fn translate_instance(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, iname: &str, closures: &[(usize, crate::closures::ClosureInfo)], cap_params: &[String]) -> R<String> {
+    let skip: BTreeSet<usize> = closures.iter().map(|c| c.0).collect();
+    let mut g = f.clone();
+    let mut map = BTreeMap::new();
+    let mut ti = 0;
+    let mut closure_types = BTreeSet::new();
+    g.sig.inputs = f
+        .sig
+        .inputs
+        .iter()
+        .filter(|inp| match inp {
+            FnArg::Receiver(_) => true,
+            FnArg::Typed(pt) => {
+                let this = ti;
+                ti += 1;
+                if skip.contains(&this) {
+                    if let Pat::Ident(pi) = &*pt.pat {
+                        let info = closures.iter().find(|c| c.0 == this).map(|c| c.1.clone()).expect("closure");
+                        map.insert(pi.ident.to_string(), info);
+                    }
+                    closure_types.insert(pt.ty.to_token_stream().to_string().trim_start_matches("& mut ").trim_start_matches("& ").to_string());
+                    false
+                } else {
+                    true
+                }
+            }
+        })
+        .cloned()
+        .collect();
+    // Type parameters that were the closures' types go; any other makes it a generic function still.
+    g.sig.generics.params = f.sig.generics.params.iter().filter(|p| !matches!(p, syn::GenericParam::Type(t) if closure_types.contains(&t.ident.to_string()))).cloned().collect();
+    g.sig.generics.where_clause = None;
+    let saved_closures = crate::closures::CLOSURES.with(|c| std::mem::replace(&mut *c.borrow_mut(), map));
+    let saved_file = crate::translate::CURRENT_FILE.with(|c| c.borrow().clone());
+    let saved_touch = crate::translate::TOUCHES_UNLOGGED.with(|t| t.get());
+    let r = translate_fn_with(e, owner, name, &g, Some(iname), cap_params);
+    crate::closures::CLOSURES.with(|c| *c.borrow_mut() = saved_closures);
+    crate::translate::CURRENT_FILE.with(|c| *c.borrow_mut() = saved_file);
+    crate::translate::TOUCHES_UNLOGGED.with(|t| t.set(saved_touch));
+    r.map(|t| t.code)
+}
+
+/// A closure body with statements, inlined where its value is needed: a block assigning a result (none for unit).
+pub fn inline_block(tx: &mut Tx, block: &Block, shape: &Shape) -> R<String> {
+    let unit = matches!(shape, Shape::Unit);
+    tx.temps += 1;
+    let res = format!("cr{}_", tx.temps);
+    let outer = std::mem::take(&mut tx.pre);
+    let target = if unit { None } else { Some(Target { ident: res.clone(), shape: Some(shape.clone()), weak: false, infer: false }) };
+    let mut b = Body { tx, out: String::new(), indent: 1, ret: Shape::Unit, declared: Default::default(), target, loops: Vec::new() };
+    let r = b.block(block, !unit);
+    let code = std::mem::take(&mut b.out);
+    let tx = b.tx;
+    tx.pre = outer;
+    r?;
+    if !unit {
+        tx.pre.push(format!("{res}: {}", tx.e.odin(shape)));
+    }
+    tx.pre.push(format!("{{\n{code}}}"));
+    Ok(if unit { String::new() } else { res })
 }

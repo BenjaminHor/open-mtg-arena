@@ -4,6 +4,7 @@
 //! impls and the type names fields use that nothing defines.
 
 mod body;
+mod closures;
 mod census;
 mod emit;
 mod translate;
@@ -136,6 +137,12 @@ thread_local! {
 const DEFAULT_ROOTS: &[&str] = &["CardExportEntry", "GameState", "GameAction", "WaitingFor", "GameEvent", "ReplayLog"];
 
 fn main() {
+    // Deep syntax trees and nested translation (closure instances) need more than the default stack.
+    let worker = std::thread::Builder::new().stack_size(512 << 20).spawn(real_main).expect("thread");
+    worker.join().expect("odingen");
+}
+
+fn real_main() {
     let args: Vec<String> = std::env::args().collect();
     match args.get(1).map(String::as_str) {
         Some("report") => {

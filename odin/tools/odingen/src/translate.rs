@@ -7,6 +7,7 @@
 use std::collections::BTreeMap;
 use std::fmt::Write;
 
+use quote::ToTokens;
 use syn::{BinOp, Expr, Lit, Pat, Stmt, UnOp};
 
 use crate::emit::{field_ident, Emitter, Shape};
@@ -430,6 +431,12 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let segs = path_segs(&fp.path);
                 let last = segs.last().cloned().unwrap_or_default();
                 let args: Vec<&Expr> = c.args.iter().collect();
+                // A call of a closure in scope (a local one, or an instance's closure parameter): its body, inlined.
+                if self.calls && segs.len() == 1 && !self.vars.contains_key(&segs[0]) {
+                    if let Some(info) = crate::closures::lookup(&segs[0]) {
+                        return self.inline_closure(&info, &args, want);
+                    }
+                }
                 match (segs.as_slice(), last.as_str()) {
                     (_, "Ok" | "Err") if args.len() == 1 && self.calls => {
                         let Shape::Result(t, er) = want else { return Err("Ok/Err without a Result type".into()) };
@@ -893,6 +900,29 @@ impl<'a, 'b> Tx<'a, 'b> {
                 if last == "Some" && c.args.len() == 1 {
                     return Some(Shape::Option(Box::new(self.shape_of(&c.args[0])?)));
                 }
+                if segs.len() == 1 && !self.vars.contains_key(&segs[0]) {
+                    if let Some(info) = crate::closures::lookup(&segs[0]) {
+                        if let Some(r) = info.ret {
+                            return Some(r);
+                        }
+                        if info.closure.inputs.len() == 1 && c.args.len() == 1 && info.env.is_empty() && crate::closures::inline_depth() <= 12 {
+                            let a = self.shape_of(&c.args[0])?;
+                            return crate::closures::in_scope(&info, || self.closure_shape(&info.closure, "_", &a));
+                        }
+                        // With captures: bind them, then type the body.
+                        let mut saved = Vec::new();
+                        for (n, o, sh) in &info.env {
+                            saved.push((n.clone(), self.vars.insert(n.clone(), (o.clone(), sh.clone()))));
+                        }
+                        let a = if info.closure.inputs.len() == 1 && c.args.len() == 1 { self.shape_of(&c.args[0]) } else { None };
+                        let r = match a {
+                            Some(a) if crate::closures::inline_depth() <= 12 => crate::closures::in_scope(&info, || self.closure_shape(&info.closure, "_", &a)),
+                            _ => None,
+                        };
+                        self.unbind(saved);
+                        return r;
+                    }
+                }
                 if segs.len() >= 2 && segs[segs.len() - 2] == "mem" && matches!(last.as_str(), "take" | "replace") {
                     return self.shape_of(&c.args[0]);
                 }
@@ -975,6 +1005,196 @@ impl<'a, 'b> Tx<'a, 'b> {
             }
             _ => None,
         }
+    }
+
+    /// A closure call: the arguments into temporaries, the captures and parameters bound, the body translated in place
+    /// (a body with statements becomes a block assigning a result).
+    pub fn inline_closure(&mut self, info: &crate::closures::ClosureInfo, args: &[&Expr], want: &Shape) -> R<String> {
+        if crate::closures::inline_depth() > 12 {
+            return Err("closures inlined too deep".into());
+        }
+        let c = &info.closure;
+        if c.inputs.len() != args.len() {
+            return Err("closure called with a different number of arguments".into());
+        }
+        if has_try(&c.body) || crate::closures::has_return(&c.body) {
+            return Err("closure with ? or return".into());
+        }
+        if !crate::closures::simple_params(c) {
+            return Err("closure parameter pattern".into());
+        }
+        let mut vals = Vec::new();
+        for (i, a) in args.iter().enumerate() {
+            // The parameter's own annotation (`|x: i32|`), else the callee's bound, else the argument's shape.
+            let annotated = match &c.inputs[i] {
+                Pat::Type(pt) => Some(self.e.shape(&pt.ty, &[])),
+                _ => None,
+            };
+            let sh = match (annotated, info.args.as_ref().and_then(|v| v.get(i))) {
+                (Some(s), _) => s,
+                (None, Some(s)) => s.clone(),
+                (None, None) => self.shape_of(a).ok_or("closure argument of an untyped value")?,
+            };
+            let v = self.expr(a, &sh)?;
+            let n = self.next_temp();
+            let t = format!("ca{n}_");
+            self.pre.push(format!("{t}: {} = {v}", self.e.odin(&sh)));
+            vals.push((t, sh));
+        }
+        let mut saved = Vec::new();
+        for (name, odin, sh) in &info.env {
+            saved.push((name.clone(), self.vars.insert(name.clone(), (odin.clone(), sh.clone()))));
+        }
+        for (p, (v, sh)) in c.inputs.iter().zip(vals.iter()) {
+            match self.bind_param(p, v, sh) {
+                Ok(s) => saved.extend(s),
+                Err(e) => {
+                    self.unbind(saved);
+                    return Err(e);
+                }
+            }
+        }
+        let single = match &*c.body {
+            Expr::Block(b) if b.block.stmts.len() == 1 => match &b.block.stmts[0] {
+                Stmt::Expr(e, None) => Some(e.clone()),
+                _ => None,
+            },
+            Expr::Block(_) => None,
+            e => Some(e.clone()),
+        };
+        let out = match (&info.ret, &single) {
+            (Some(r), _) => r.clone(),
+            (None, Some(e)) => self.shape_of(e).unwrap_or_else(|| want.clone()),
+            (None, None) => want.clone(),
+        };
+        let r = crate::closures::in_scope(info, || match (&single, &*c.body) {
+            (Some(e), _) => self.expr(e, &out),
+            (None, Expr::Block(b)) => crate::body::inline_block(self, &b.block, &out),
+            _ => Err("closure body".into()),
+        });
+        self.unbind(saved);
+        let r = r?;
+        // A value-returning closure called as a statement: its value is dropped.
+        Ok(if matches!(want, Shape::Unit) && !matches!(out, Shape::Unit) && !r.is_empty() { format!("_ = {r}") } else { r })
+    }
+
+    /// A call passing closures to `f`: a call of the instance of `f` made for those closures (closures.rs).
+    fn call_instance(&mut self, name: &str, f: &FnDef, recv: Option<String>, args: &[&Expr], cps: &[(usize, Vec<syn::Type>, Option<syn::Type>)]) -> R<String> {
+        use crate::closures::{ClosureInfo, ClosureOrName};
+        let has_recv = f.sig.inputs.iter().any(|i| matches!(i, syn::FnArg::Receiver(_)));
+        let shift = usize::from(has_recv && recv.is_none());
+        let mut closures: Vec<(usize, ClosureInfo)> = Vec::new();
+        let (mut cap_params, mut cap_args, mut key) = (Vec::new(), Vec::new(), Vec::new());
+        for (pi, targs, tret) in cps {
+            let a = args.get(pi + shift).ok_or("closure argument missing")?;
+            let (closure, env, scope) = match crate::closures::closure_arg(a, targs.len()).ok_or("closure argument that isn't a closure")? {
+                ClosureOrName::Closure(c) => {
+                    let env = crate::closures::captures(self, &c);
+                    (c, env, crate::closures::scope_now())
+                }
+                ClosureOrName::Named(n) => {
+                    let info = crate::closures::lookup(&n).ok_or("closure")?;
+                    (info.closure, info.env, info.scope)
+                }
+            };
+            let arg_shapes: Vec<Shape> = targs.iter().map(|t| self.e.shape(t, &[])).collect();
+            let ret_shape = tret.as_ref().map(|t| self.e.shape(t, &[])).unwrap_or(Shape::Unit);
+            if arg_shapes.iter().chain(std::iter::once(&ret_shape)).any(|s| matches!(s, Shape::Unknown(_) | Shape::Param(_))) {
+                return Err("closure with a generic signature".into());
+            }
+            let mut env_inst = Vec::new();
+            for (rn, odin, sh) in env {
+                let k = cap_params.len();
+                let p = format!("cap{k}_");
+                let ty = self.e.odin(&sh);
+                let by_value = crate::closures::BY_VALUE.with(|b| b.borrow().contains(&odin));
+                let mode = if let Some(ptr) = odin.strip_suffix('^') {
+                    cap_params.push(format!("{p}: ^{ty}"));
+                    cap_args.push(ptr.to_string());
+                    env_inst.push((rn.clone(), format!("{p}^"), sh));
+                    "ptr"
+                } else if by_value {
+                    cap_params.push(format!("{p}: {ty}"));
+                    cap_args.push(odin.clone());
+                    env_inst.push((rn.clone(), p.clone(), sh));
+                    "val"
+                } else {
+                    cap_params.push(format!("{p}: ^{ty}"));
+                    cap_args.push(format!("&{odin}"));
+                    env_inst.push((rn.clone(), format!("{p}^"), sh));
+                    "ptr"
+                };
+                key.push(format!("{rn}:{ty}:{mode}"));
+            }
+            key.push(closure.to_token_stream().to_string());
+            // A closure that uses other closures of its scope: those are inlined inside the instance too, so their own
+            // captures would have to travel with it. Refused for now.
+            if !scope.is_empty() && crate::closures::uses_any(&closure, &scope) {
+                return Err("closure using another closure, passed to a function".into());
+            }
+            closures.push((*pi, ClosureInfo { closure, env: env_inst, args: Some(arg_shapes), ret: Some(ret_shape), scope: Default::default() }));
+        }
+        let iname = crate::closures::instance_key(name, &key);
+        let known = crate::closures::INSTANCES.with(|i| i.borrow().0.get(&iname).cloned());
+        match known {
+            Some(v) if v.starts_with('!') => return Err(format!("closure instance: {}", &v[1..])),
+            Some(_) => {}
+            None => {
+                // Instances made inside instances: bounded (a closure rebuilt at each level would never end).
+                let depth = crate::closures::DEPTH.with(|d| d.get());
+                if depth >= 6 {
+                    return Err("closure instances nested too deep".into());
+                }
+                // Registered first, so a recursive call inside the instance calls it rather than remaking it.
+                crate::closures::INSTANCES.with(|i| i.borrow_mut().0.insert(iname.clone(), iname.clone()));
+                crate::closures::DEPTH.with(|d| d.set(depth + 1));
+                let made = crate::body::translate_instance(self.e, f.self_ty.as_deref(), &f.sig.ident.to_string(), f, &iname, &closures, &cap_params);
+                crate::closures::DEPTH.with(|d| d.set(depth));
+                match made {
+                    Ok(code) => crate::closures::INSTANCES.with(|i| i.borrow_mut().1.push((iname.clone(), code))),
+                    Err(e) => {
+                        crate::closures::INSTANCES.with(|i| i.borrow_mut().0.insert(iname.clone(), format!("!{e}")));
+                        return Err(format!("closure instance: {e}"));
+                    }
+                }
+            }
+        }
+        // The call: the other arguments as usual, then the captures.
+        let skip: std::collections::BTreeSet<usize> = closures.iter().map(|c| c.0).collect();
+        let mut parts = Vec::new();
+        let mut ai = 0;
+        let mut ti = 0;
+        for input in &f.sig.inputs {
+            match input {
+                syn::FnArg::Receiver(rc) => {
+                    let r = match recv.clone() {
+                        Some(r) => r,
+                        None => {
+                            let a = args.get(ai).ok_or("method called without a receiver")?;
+                            ai += 1;
+                            let owner = f.self_ty.clone().ok_or("receiver of a free function")?;
+                            self.expr(a, &Shape::Named(owner, vec![]))?
+                        }
+                    };
+                    parts.push(if rc.mutability.is_some() && rc.reference.is_some() { format!("&{r}") } else { r });
+                }
+                syn::FnArg::Typed(pt) => {
+                    let a = args.get(ai).ok_or("argument count")?;
+                    ai += 1;
+                    let this = ti;
+                    ti += 1;
+                    if skip.contains(&this) {
+                        continue;
+                    }
+                    let sh = self.e.shape(&pt.ty, &[]);
+                    let v = self.expr(a, &sh)?;
+                    let by_mut_ref = matches!(&*pt.ty, syn::Type::Reference(r) if r.mutability.is_some());
+                    parts.push(if by_mut_ref { format!("&{v}") } else { v });
+                }
+            }
+        }
+        parts.extend(cap_args);
+        Ok(format!("{iname}({})", parts.join(", ")))
     }
 
     /// An Odin value given its type when it is an untyped literal (`{..}` or `nil`).
@@ -1096,6 +1316,10 @@ impl<'a, 'b> Tx<'a, 'b> {
 
     /// A call to a translated engine function: arguments shaped by its parameters, `&mut` ones by pointer.
     pub fn call_with_sig(&mut self, name: &str, f: &FnDef, recv: Option<String>, args: &[&Expr]) -> R<String> {
+        let cps = crate::closures::closure_params(f);
+        if !cps.is_empty() {
+            return self.call_instance(name, f, recv, args, &cps);
+        }
         // A generic function is callable only written by hand, its parameters typed by the call's arguments.
         let hand_generic = crate::body::generic_kind(&f.sig).is_some();
         if hand_generic && !HAND.with(|h| h.borrow().contains(name)) {
