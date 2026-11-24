@@ -416,8 +416,9 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       @tauri-apps/*, peerjs, wrangler. Behaviour the owner will see: no deck import from a Moxfield/Archidekt link (it
       went through their server; restorable from 4fb4ed6's parent ed49f34), no Commander/Winston pod drafts, no
       Multiplayer or Experimental settings tabs, no status banner; the Jev LLM provider needs a relay address
-      entered by hand. The offline takeback against the AI was removed by mistake and is being restored; the human's
-      seat in tests (seat 1 to seat 0) is being checked. Left for the rebrand: links to the upstream project
+      entered by hand. Checked: no offline takeback was lost (only the online adapters ever offered the menu's
+      takeback; a vs-AI game's undo is the Undo button by the player's info, unchanged), and a vs-AI game seats the
+      human at 0 as before (the tests that moved to seat 0 were set up as online games). Left for the rebrand: links to the upstream project
       (PreviewBadge, commit links, "report an issue"), Aetherhub links, `multiplayer` names that now hold only seat
       names and best-of-three sideboarding. The integration suite (`pnpm test:integration`) needs the built engine
       WASM; not run yet.
