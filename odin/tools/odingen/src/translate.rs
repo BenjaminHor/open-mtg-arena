@@ -365,6 +365,19 @@ impl<'a, 'b> Tx<'a, 'b> {
                     _ => format!("&{v}"),
                 });
             }
+            // An `Option<Box<T>>` (a nil-able `^T`) read where an `Option<T>` is wanted (`.as_deref()` into a
+            // local): the value, copied, or nil.
+            Shape::Option(i) if !matches!(**i, Shape::MutRef(_) | Shape::Ptr(..)) => {
+                if let Some(Shape::OptPtr(inner, _)) = self.shape_of(ex) {
+                    if *inner == **i {
+                        let v = self.expr_raw(ex, &Shape::OptPtr(inner.clone(), false))?;
+                        let n = self.next_temp();
+                        self.pre.push(format!("op{n}_ := {v}"));
+                        return Ok(format!("(Maybe({})(op{n}_^) if op{n}_ != nil else nil)", self.e.odin(i)));
+                    }
+                }
+                self.expr_raw(ex, want)
+            }
             Shape::Ptr(..) | Shape::OptPtr(..) | Shape::Option(_) | Shape::Unit => self.expr_raw(ex, want),
             _ => {
                 // A Box/Arc where its contents are wanted: dereferenced.

@@ -697,6 +697,8 @@ impl Body<'_, '_, '_> {
         }
         let tmp = self.fresh("ms");
         self.line(&format!("{tmp} := {v}"));
+        // A pattern that binds and tests nothing (`Some(_)` aside, `_`) leaves it unread, which Odin rejects.
+        self.line(&format!("_ = {tmp}"));
         Ok((tmp, sh, mode))
     }
 
