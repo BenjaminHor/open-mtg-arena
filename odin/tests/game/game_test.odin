@@ -1214,3 +1214,28 @@ sacrifice_effects :: proc(t: ^testing.T) {
 	testing.expect(t, game.apply(g2, 0, types.GameAction_SelectCards{cards = pick}))
 	testing.expect(t, bears.zone == .Graveyard && centaur.zone == .Battlefield && theirs.zone == .Battlefield)
 }
+
+@(test)
+counter_target_spell :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 701.6a: a countered spell doesn't resolve and goes to its owner's graveyard. Essence Scatter ("counter
+	// target creature spell") can't target a noncreature spell.
+	g := new_game()
+	add(t, g, "Mountain", 0, .Battlefield)
+	for _ in 0 ..< 2 do add(t, g, "Island", 1, .Battlefield)
+	shock := add(t, g, "Shock", 0, .Hand)
+	counterspell := add(t, g, "Counterspell", 1, .Hand)
+	scatter := add(t, g, "Essence Scatter", 1, .Hand)
+	testing.expect(t, !game.castable(&g.state, 1, counterspell, g.card_db), "nothing to counter yet")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	testing.expect(t, !game.castable(&g.state, 1, scatter, g.card_db), "Shock isn't a creature spell")
+	testing.expect(t, game.apply(g, 1, types.GameAction_CastSpell{object_id = counterspell.id}))
+	if _, asked := g.state.waiting_for.(types.WaitingFor_TargetSelection); asked {
+		testing.expect(t, game.apply(g, 1, types.GameAction_ChooseTarget{target = types.TargetRef_Object{shock.id}}))
+	}
+	for types.pvec_len(g.state.stack) > 0 do game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, shock.zone == .Graveyard && counterspell.zone == .Graveyard, "both in graveyards")
+	testing.expect(t, game.player(&g.state, 1).life == 20, "Shock didn't resolve")
+}

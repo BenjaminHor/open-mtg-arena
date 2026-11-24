@@ -132,6 +132,8 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return search_supported(x)
 	case types.Effect_Sacrifice:
 		return sacrifice_supported(x)
+	case types.Effect_Counter:
+		return counter_supported(x)
 	case types.Effect_Shuffle:
 		return is_controller(x.target)
 	case types.Effect_Attach:
@@ -213,6 +215,8 @@ effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
 	#partial switch _ in f {
 	case types.TargetFilter_Any, types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_Typed, types.TargetFilter_Or:
 		return f, true
+	case types.TargetFilter_StackSpell, types.TargetFilter_And:
+		return f, is_spell_target(f)
 	}
 	return nil, false
 }
@@ -257,6 +261,8 @@ effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 	case types.Effect_Mill:
 		f = x.target
 	case types.Effect_Discard:
+		f = x.target
+	case types.Effect_Counter:
 		f = x.target
 	}
 	return f
@@ -340,7 +346,13 @@ legal_targets :: proc(s: ^types.GameState, f: types.TargetFilter, controller: ty
 		for p in s.players do append(&out, types.TargetRef_Player{p.id})
 	case types.TargetFilter_Opponent:
 		for p in s.players do if p.id != controller do append(&out, types.TargetRef_Player{p.id})
+	case types.TargetFilter_StackSpell, types.TargetFilter_And:
+		spell_targets(s, f, controller, source, &out)
 	case types.TargetFilter_Or:
+		if is_spell_target(f) {
+			spell_targets(s, f, controller, source, &out)
+			return out
+		}
 		for y in x.filters do for t in legal_targets(s, y, controller, source) {
 			if !slice.contains(out[:], t) do append(&out, t)
 		}
@@ -713,6 +725,8 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		return true
 	case types.Effect_Sacrifice:
 		return do_sacrifice(g, x, controller, source)
+	case types.Effect_Counter:
+		if id, ok := target_object(target); ok do counter_spell(g, id)
 	case types.Effect_Shuffle:
 		shuffle_library(g, controller)
 	case types.Effect_Bounce:
