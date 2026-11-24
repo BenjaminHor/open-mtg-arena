@@ -1105,7 +1105,19 @@ impl<'a, 'b> Tx<'a, 'b> {
                     ("then_some", Shape::Bool, 1) => return Some(Shape::Option(Box::new(self.shape_of(args[0])?))),
                     ("then", Shape::Bool, 1) => {
                         let Expr::Closure(c) = args[0] else { return None };
-                        return Some(Shape::Option(Box::new(self.shape_of(&c.body)?)));
+                        // A body with statements, or an if/match: a dry run finds its value's shape.
+                        let inner = match &*c.body {
+                            Expr::Block(b) => crate::body::infer_block_shape(self, &b.block),
+                            e @ (Expr::If(_) | Expr::Match(_)) => match self.shape_of(e) {
+                                Some(s) => Some(s),
+                                None => {
+                                    let block: syn::Block = syn::parse_quote!({ #e });
+                                    crate::body::infer_block_shape(self, &block)
+                                }
+                            },
+                            e => self.shape_of(e),
+                        }?;
+                        return Some(Shape::Option(Box::new(inner)));
                     }
                     ("as_deref" | "as_ref", Shape::OptPtr(..), 0) => return Some(recv.clone()),
                     ("get", Shape::Map(_, v), 1) => return Some(Shape::Option(v.clone())),
@@ -2852,7 +2864,19 @@ impl<'a, 'b> Tx<'a, 'b> {
                     }
                     let n = self.next_temp();
                     let outer = std::mem::take(&mut self.pre);
-                    let v = self.expr(&c.body, &i);
+                    // A body with statements goes the block way (a value-assigning block, `return` leaving it).
+                    let v = match &*c.body {
+                        Expr::Block(b) if b.block.stmts.len() != 1 || crate::closures::has_return(&c.body) => crate::body::inline_block(self, &b.block, &i),
+                        e @ (Expr::If(_) | Expr::Match(_)) if self.shape_of(e).is_none() => {
+                            let block: syn::Block = syn::parse_quote!({ #e });
+                            crate::body::inline_block(self, &block, &i)
+                        }
+                        Expr::Block(b) => match &b.block.stmts[0] {
+                            Stmt::Expr(e, None) => self.expr(e, &i),
+                            _ => crate::body::inline_block(self, &b.block, &i),
+                        },
+                        e => self.expr(e, &i),
+                    };
                     let inner = std::mem::replace(&mut self.pre, outer);
                     let v = v?;
                     self.pre.push(format!("tt{n}_: Maybe({})", self.e.odin(&i)));
