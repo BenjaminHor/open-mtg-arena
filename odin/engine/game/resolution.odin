@@ -19,6 +19,9 @@ Resolution :: struct {
 	answer:       Maybe(bool),
 	performed:    bool, // whether the latest "you may" instruction was done: "if you do" (CR 608.2c)
 	found:        [dynamic]types.ObjectId, // the cards a library search found: "those cards" next
+	scope_node:   ^types.ResolvedAbility, // an instruction carried out for each player in a scope...
+	scope:        [dynamic]types.PlayerId, // ...for these players...
+	scope_next:   int, // ...of which this is the next
 }
 
 // The spell or ability as it goes on the stack: one node per instruction, each with the targets chosen for it (CR
@@ -40,6 +43,7 @@ resolved_tree :: proc(s: ^types.GameState, a: ^types.AbilityDefinition, targets:
 		node.description = x.description
 		node.optional = x.optional
 		node.multi_target = x.multi_target
+		node.player_scope = x.player_scope
 		if x.effect != nil {
 			if _, targets_one := effect_target(x.effect^); targets_one {
 				n := counts[k] if k < len(counts) else 1
@@ -142,6 +146,24 @@ continue_resolution :: proc(g: ^Game) -> bool {
 				s.waiting_for = types.WaitingFor_OptionalEffectChoice{player = r.controller, source_id = r.source, description = x.description}
 				return false
 			}
+		}
+		if scope, scoped := x.player_scope.?; scoped {
+			// "Each player ...": the instruction for each player in turn, as that player, resuming after a choice.
+			if r.scope_node != x {
+				r.scope_node = x
+				r.scope = scope_players(s, scope, r.controller)
+				r.scope_next = 0
+			}
+			for r.scope_next < len(r.scope) {
+				p := r.scope[r.scope_next]
+				r.scope_next += 1
+				if do_effect(g, x.effect, x.duration, p, r.source, nil) {
+					r.next = x // carried on once the player has chosen
+					return false
+				}
+			}
+			r.scope_node = nil
+			continue
 		}
 		for t in affected do if do_effect(g, x.effect, x.duration, r.controller, r.source, t) do return false // waiting for a choice
 	}

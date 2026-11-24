@@ -1277,3 +1277,49 @@ graveyard_either_or_and_blink :: proc(t: ^testing.T) {
 	game.apply(g2, 1, types.GameAction_PassPriority{})
 	testing.expect(t, bears.zone == .Battlefield && !bears.tapped && bears.incarnation > before, "back as a new, untapped object")
 }
+
+@(test)
+each_player_and_each_opponent :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 101.4: "each player" instructions go in turn order from the active player, each choosing for themself.
+	// Barter in Blood: each player sacrifices two creatures.
+	g := new_game()
+	for _ in 0 ..< 4 do add(t, g, "Swamp", 0, .Battlefield)
+	barter := add(t, g, "Barter in Blood", 0, .Hand)
+	mine: [3]^types.GameObject
+	for &m in mine do m = add(t, g, "Grizzly Bears", 0, .Battlefield)
+	theirs := [2]^types.GameObject{add(t, g, "Grizzly Bears", 1, .Battlefield), add(t, g, "Hill Giant", 1, .Battlefield)}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = barter.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	w, asked := g.state.waiting_for.(types.WaitingFor_EffectZoneChoice)
+	testing.expect(t, asked && w.player == 0 && w.count == 2, "the active player chooses two of three")
+	if asked {
+		two: [dynamic]types.ObjectId
+		append(&two, mine[0].id, mine[1].id)
+		testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = two}))
+	}
+	testing.expect(t, mine[2].zone == .Battlefield && mine[0].zone == .Graveyard, "two of the caster's")
+	testing.expect(t, theirs[0].zone == .Graveyard && theirs[1].zone == .Graveyard, "the opponent had just two")
+
+	// Burglar Rat: when it enters, each opponent discards a card (the opponent, not its controller).
+	g2 := new_game()
+	for _ in 0 ..< 2 do add(t, g2, "Swamp", 0, .Battlefield)
+	rat := add(t, g2, "Burglar Rat", 0, .Hand)
+	mine_hand := types.pvec_len(game.player(&g2.state, 0).hand)
+	theirs_hand := types.pvec_len(game.player(&g2.state, 1).hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = rat.id}))
+	for i := 0; i < 8; i += 1 {
+		#partial switch w2 in g2.state.waiting_for {
+		case types.WaitingFor_DiscardChoice:
+			testing.expect(t, w2.player == 1, "the opponent discards")
+			one: [dynamic]types.ObjectId
+			append(&one, w2.cards[0])
+			game.apply(g2, 1, types.GameAction_SelectCards{cards = one})
+		case:
+			game.apply(g2, g2.state.priority_player, types.GameAction_PassPriority{})
+		}
+	}
+	testing.expect(t, types.pvec_len(game.player(&g2.state, 1).hand) == theirs_hand - 1, "one card from the opponent")
+	testing.expect(t, types.pvec_len(game.player(&g2.state, 0).hand) == mine_hand - 1, "the caster only cast the Rat")
+}

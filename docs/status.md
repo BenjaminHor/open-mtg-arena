@@ -2864,7 +2864,9 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   condition dropped later independent instructions; (8) the gap report listed supported X spells. Open: (6) "that
   creature's controller" should use last known information once control-changing effects exist; the intervening
   "if" is first checked when triggers are collected, not at the event; the player doesn't choose which mana
-  abilities pay (CR 601.2g), so automatic payment may take painland damage or sacrifice a land.
+  abilities pay (CR 601.2g), so automatic payment may take painland damage or sacrifice a land. "Each player"
+  instructions are carried out player by player in turn order; CR 101.4 has the choices made in that order and
+  the actions happen at the same time (matters for triggers on those actions).
 - (2026-11-24, Odin engine, rules-judge review of odin/engine/game at f7800b5) Being fixed now: (1) only a permanent's
   first mana ability was used (dual lands made one color; CR 605.3a); (2) mana-ability riders (damage, "activate only
   if", spending restrictions, extra mana) ignored while the card counted as supported; (4) creatures that left the

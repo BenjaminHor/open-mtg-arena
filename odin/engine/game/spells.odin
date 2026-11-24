@@ -83,7 +83,8 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	if c, has := a.condition.?; has && !ability_condition_supported(c) do return false
 	// "Each player draws", "an opponent draws", "for each creature chosen": scopes and groups not carried out yet.
 	// (Declaring a group is harmless while nothing reads it; reading one isn't supported.)
-	if a.player_scope != nil || a.reads_chosen_group != nil || a.starting_with != nil do return false
+	if a.reads_chosen_group != nil || a.starting_with != nil do return false
+	if scope, has := a.player_scope.?; has && !player_scope_ok(scope, a) do return false
 	if a.target_chooser != nil || a.optional_player != nil || a.optional_for != nil do return false
 	if !multi_target_supported(a) || a.distribute != nil || a.repeat_for != nil || a.unless_pay != nil do return false
 	if a.else_ability != nil do return false
@@ -1041,4 +1042,51 @@ record_spell_cast :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.Game
 spells_cast_this_turn_by :: proc(s: ^types.GameState, p: types.PlayerId) -> int {
 	if list, ok := s.spells_cast_this_turn_by_player[p]; ok do return types.pvec_len(list)
 	return 0
+}
+
+// "Each player draws a card", "each opponent loses 1 life": an instruction for each player in the scope, as that
+// player. Supported for instructions about the player themself with fixed amounts (a "you" inside an amount would
+// be ambiguous).
+player_scope_ok :: proc(scope: types.PlayerFilter, a: types.AbilityDefinition) -> bool {
+	#partial switch _ in scope {
+	case types.PlayerFilter_All, types.PlayerFilter_Opponent:
+	case:
+		return false
+	}
+	if a.optional || a.effect == nil do return false
+	#partial switch x in a.effect^ {
+	case types.Effect_LoseLife:
+		_, fixed := fixed_quantity(x.amount)
+		t, has := x.target.?
+		return fixed && (!has || is_controller(t))
+	case types.Effect_GainLife:
+		_, fixed := fixed_quantity(x.amount)
+		return fixed && is_controller(x.player)
+	case types.Effect_Draw:
+		_, fixed := fixed_quantity(x.count)
+		return fixed && is_controller(x.target)
+	case types.Effect_Discard:
+		_, fixed := fixed_quantity(x.count)
+		return fixed && is_controller(x.target)
+	case types.Effect_Mill:
+		_, fixed := fixed_quantity(x.count)
+		return fixed && is_controller(x.target)
+	case types.Effect_Sacrifice:
+		return !is_self(x.target)
+	}
+	return false
+}
+
+// The players an instruction is carried out for: each player starting with the active player, or each opponent
+// (CR 101.4: in turn order, starting with the active player).
+scope_players :: proc(s: ^types.GameState, scope: types.PlayerFilter, controller: types.PlayerId) -> [dynamic]types.PlayerId {
+	out: [dynamic]types.PlayerId
+	n := len(s.players)
+	for i in 0 ..< n {
+		p := types.PlayerId((int(s.active_player) + i) % n)
+		if _, opponents := scope.(types.PlayerFilter_Opponent); opponents && p == controller do continue
+		if player(s, p).is_eliminated do continue
+		append(&out, p)
+	}
+	return out
 }
