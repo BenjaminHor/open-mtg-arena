@@ -2,6 +2,7 @@
 // player to choose (scry, surveil); the resolution pauses there and continues once they answer.
 package game
 
+import rng "../rng"
 import types "../types"
 
 Resolution :: struct {
@@ -112,4 +113,127 @@ answer_scry :: proc(g: ^Game, p: types.PlayerId, looked: []types.ObjectId, keep:
 	s.waiting_for = nil
 	if continue_resolution(g) do after_resolution(g)
 	return true
+}
+
+// ---- Discard (CR 701.9) -------------------------------------------------------------------------------------
+
+// CR 701.9b: the discarding player chooses which cards, unless the effect says random. A player with no more cards
+// than the count discards their hand; nothing to choose.
+start_discard :: proc(g: ^Game, p: types.PlayerId, n: int, random: bool, source: types.ObjectId) -> (asked: bool) {
+	s := &g.state
+	hand := ids_of(player(s, p).hand)
+	if n <= 0 || len(hand) == 0 do return false
+	if len(hand) <= n {
+		for id in hand do move_object(g, id, .Graveyard)
+		return false
+	}
+	if random {
+		for _ in 0 ..< n {
+			cards := ids_of(player(s, p).hand)
+			move_object(g, cards[choose_index(g, len(cards))], .Graveyard)
+		}
+		return false
+	}
+	cards: [dynamic]types.ObjectId
+	append(&cards, ..hand)
+	s.priority_player = p
+	s.waiting_for = types.WaitingFor_DiscardChoice{player = p, count = n, cards = cards, source_id = source}
+	return true
+}
+
+answer_discard :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_DiscardChoice, chosen: []types.ObjectId) -> bool {
+	if len(chosen) != w.count || has_duplicates(chosen) do return false
+	for id in chosen {
+		found := false
+		for c in w.cards do if c == id do found = true
+		if !found do return false
+	}
+	for id in chosen do move_object(g, id, .Graveyard)
+	g.state.waiting_for = nil
+	if continue_resolution(g) do after_resolution(g)
+	return true
+}
+
+// ---- Look at the top cards and take some ("dig") ------------------------------------------------------------
+
+// "Look at the top N cards of your library. Put K of them [matching] into your hand and the rest on the bottom of
+// your library [or into your graveyard]."
+start_dig :: proc(g: ^Game, x: types.Effect_Dig, p: types.PlayerId, controller: types.PlayerId, source: types.ObjectId) -> (asked: bool) {
+	s := &g.state
+	n := quantity_value(s, x.count, controller, source, 0)
+	cards := top_cards(player(s, p), n)
+	if len(cards) == 0 do return false
+	selectable: [dynamic]types.ObjectId
+	for id in cards do if dig_matches(s, x.filter, object(s, id), controller, source) do append(&selectable, id)
+	keep, _ := x.keep_count.?
+	s.priority_player = p
+	s.waiting_for = types.WaitingFor_DigChoice {
+		player           = p,
+		library_owner    = p,
+		cards            = cards,
+		keep_count       = int(keep),
+		up_to            = x.up_to,
+		selectable_cards = selectable,
+		kept_destination = x.destination,
+		rest_destination = x.rest_destination,
+		source_id        = source,
+	}
+	return true
+}
+
+dig_matches :: proc(s: ^types.GameState, f: types.TargetFilter, o: ^types.GameObject, controller: types.PlayerId, source: types.ObjectId) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Any:
+		return true
+	case types.TargetFilter_Typed:
+		plain := x._0
+		plain.controller = nil
+		return object_matches(s, o, plain, controller, source)
+	case types.TargetFilter_Or:
+		for y in x.filters do if dig_matches(s, y, o, controller, source) do return true
+	}
+	return false
+}
+
+answer_dig :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_DigChoice, kept: []types.ObjectId) -> bool {
+	s := &g.state
+	if has_duplicates(kept) || len(kept) > w.keep_count do return false
+	// "Up to" may take fewer; otherwise as many as there are to take (CR 107.1c doesn't force the impossible).
+	if !w.up_to && len(kept) < min(w.keep_count, len(w.selectable_cards)) do return false
+	for id in kept {
+		found := false
+		for c in w.selectable_cards do if c == id do found = true
+		if !found do return false
+	}
+	pl := player(s, p)
+	kept_to, _ := w.kept_destination.?
+	rest_to := w.rest_destination.? or_else .Library
+	for id in kept do move_object(g, id, kept_to)
+	rest := make([dynamic]types.ObjectId, context.temp_allocator)
+	for id in w.cards {
+		taken := false
+		for k in kept do if k == id do taken = true
+		if !taken do append(&rest, id)
+	}
+	if rest_to == .Library {
+		// The rest go to the bottom (the front of the list), in the order they were.
+		others := make([dynamic]types.ObjectId, context.temp_allocator)
+		for id in ids_of(pl.library) {
+			looked := false
+			for r in rest do if r == id do looked = true
+			if !looked do append(&others, id)
+		}
+		pl.library = {}
+		for id in rest do types.pvec_push(&pl.library, id, copy_id)
+		for id in others do types.pvec_push(&pl.library, id, copy_id)
+	} else {
+		for id in rest do move_object(g, id, rest_to)
+	}
+	s.waiting_for = nil
+	if continue_resolution(g) do after_resolution(g)
+	return true
+}
+
+choose_index :: proc(g: ^Game, n: int) -> int {
+	return rng.choose_index(&g.rng, n)
 }

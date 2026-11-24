@@ -36,6 +36,13 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		return types.GameAction_DecideOptionalEffect{accept = true}, true
 	case types.WaitingFor_ScryChoice:
 		return types.GameAction_SelectCards{cards = ai_keep_on_top(g, p, w.cards[:])}, true
+	case types.WaitingFor_DiscardChoice:
+		return types.GameAction_SelectCards{cards = worst_cards(g, p, w.count)}, true
+	case types.WaitingFor_DigChoice:
+		// Take the most expensive castable-soon cards it may.
+		picks: [dynamic]types.ObjectId
+		for id in w.selectable_cards do if len(picks) < w.keep_count do append(&picks, id)
+		return types.GameAction_SelectCards{cards = picks}, true
 	case types.WaitingFor_SurveilChoice:
 		return types.GameAction_SelectCards{cards = ai_keep_on_top(g, p, w.cards[:])}, true
 	case types.WaitingFor_AssignCombatDamage:

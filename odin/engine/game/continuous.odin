@@ -15,10 +15,23 @@ import types "../types"
 // or to permanents of a kind, with fixed numbers.
 static_supported :: proc(st: types.StaticDefinition) -> bool {
 	if _, continuous := st.mode.(types.StaticMode_Continuous); !continuous do return false
-	if st.condition != nil || st.per_player_condition != nil || st.characteristic_defining do return false
+	if st.per_player_condition != nil do return false
+	if c, has := st.condition.?; has && !condition_supported(c) do return false
+	if st.characteristic_defining {
+		// CR 604.3: a characteristic-defining ability sets power/toughness or color on the object itself.
+		for m in st.modifications {
+			#partial switch _ in m {
+			case types.ContinuousModification_SetDynamicPower, types.ContinuousModification_SetDynamicToughness,
+			     types.ContinuousModification_SetColor, types.ContinuousModification_SetPower, types.ContinuousModification_SetToughness:
+			case:
+				return false
+			}
+		}
+	}
 	if st.affected_zone != nil || st.effect_zone != nil || len(st.active_zones) > 0 do return false
 	affected, has := st.affected.?
-	if !has || !affected_supported(affected) do return false
+	if !has && !st.characteristic_defining do return false
+	if has && !affected_supported(affected) do return false
 	if len(st.modifications) == 0 do return false
 	for m in st.modifications do if !modification_supported(m) do return false
 	return true
@@ -28,6 +41,16 @@ static_supported :: proc(st: types.StaticDefinition) -> bool {
 // power and toughness set or changed (layer 7b, 7c).
 modification_supported :: proc(m: types.ContinuousModification) -> bool {
 	#partial switch k in m {
+	case types.ContinuousModification_AddDynamicPower:
+		return quantity_supported(k.value)
+	case types.ContinuousModification_AddDynamicToughness:
+		return quantity_supported(k.value)
+	case types.ContinuousModification_SetDynamicPower:
+		return quantity_supported(k.value)
+	case types.ContinuousModification_SetDynamicToughness:
+		return quantity_supported(k.value)
+	case types.ContinuousModification_SetColor:
+		return true
 	case types.ContinuousModification_AddPower, types.ContinuousModification_AddToughness,
 	     types.ContinuousModification_SetPower, types.ContinuousModification_SetToughness,
 	     types.ContinuousModification_AddType, types.ContinuousModification_AddSubtype:
@@ -109,14 +132,33 @@ apply_continuous_effects :: proc(g: ^Game) {
 			for m in e.static.modifications do if k, ok := m.(types.ContinuousModification_AddKeyword); ok && !has_keyword_in(keywords[:], k.keyword) do append(&keywords, k.keyword)
 		}
 		for mods in temps do for m in mods do if k, ok := m.(types.ContinuousModification_AddKeyword); ok && !has_keyword_in(keywords[:], k.keyword) do append(&keywords, k.keyword)
-		// Layer 7b (CR 613.4b): power and toughness set to a number.
+		// Layer 5 (CR 613.1e): color.
+		colors_set := false
 		for e in statics do if affects(s, e.source, e.static, o) {
-			for m in e.static.modifications {
-				#partial switch k in m {
-				case types.ContinuousModification_SetPower:
-					power = k.value
-				case types.ContinuousModification_SetToughness:
-					toughness = k.value
+			for m in e.static.modifications do if k, ok := m.(types.ContinuousModification_SetColor); ok {
+				o.color = k.colors
+				colors_set = true
+			}
+		}
+		for mods in temps do for m in mods do if k, ok := m.(types.ContinuousModification_SetColor); ok {
+			o.color = k.colors
+			colors_set = true
+		}
+		if !colors_set do o.color = o.base_color
+		// Layer 7a (CR 613.4a): characteristic-defining abilities, then layer 7b (613.4b): set to a value.
+		for pass in 0 ..< 2 {
+			for e in statics do if e.static.characteristic_defining == (pass == 0) && affects(s, e.source, e.static, o) {
+				for m in e.static.modifications {
+					#partial switch k in m {
+					case types.ContinuousModification_SetPower:
+						power = k.value
+					case types.ContinuousModification_SetToughness:
+						toughness = k.value
+					case types.ContinuousModification_SetDynamicPower:
+						power = i32(quantity_value(s, k.value, e.source.controller, e.source.id, 0))
+					case types.ContinuousModification_SetDynamicToughness:
+						toughness = i32(quantity_value(s, k.value, e.source.controller, e.source.id, 0))
+					}
 				}
 			}
 		}
@@ -137,6 +179,10 @@ apply_continuous_effects :: proc(g: ^Game) {
 					dp += k.value
 				case types.ContinuousModification_AddToughness:
 					dt += k.value
+				case types.ContinuousModification_AddDynamicPower:
+					dp += i32(quantity_value(s, k.value, e.source.controller, e.source.id, 0))
+				case types.ContinuousModification_AddDynamicToughness:
+					dt += i32(quantity_value(s, k.value, e.source.controller, e.source.id, 0))
 				}
 			}
 		}
@@ -179,7 +225,9 @@ has_keyword_in :: proc(list: []types.Keyword, k: types.Keyword) -> bool {
 // Whether a static ability of `source` applies to `o`.
 @(private = "file")
 affects :: proc(s: ^types.GameState, source: ^types.GameObject, st: ^types.StaticDefinition, o: ^types.GameObject) -> bool {
-	affected, _ := st.affected.?
+	if !condition_holds(s, source, st.condition) do return false
+	affected, has := st.affected.?
+	if !has && st.characteristic_defining do return o.id == source.id // a CDA defines its own object
 	#partial switch x in affected {
 	case types.TargetFilter_SelfRef:
 		return o.id == source.id
@@ -250,4 +298,56 @@ add_temp_effect :: proc(g: ^Game, e: types.Effect_GenericEffect, controller: typ
 		}
 	}
 	apply_continuous_effects(g)
+}
+
+// ---- Conditions ("as long as ...", CR 611.3b) -----------------------------------------------------------------
+
+condition_supported :: proc(c: types.StaticCondition) -> bool {
+	#partial switch x in c {
+	case types.StaticCondition_DuringYourTurn:
+		return true
+	case types.StaticCondition_IsPresent:
+		f, has := x.filter.?
+		return has && mass_filter_supported(f)
+	case types.StaticCondition_QuantityComparison:
+		return quantity_supported(x.lhs) && quantity_supported(x.rhs)
+	case types.StaticCondition_HasCounters:
+		#partial switch m in x.counters {
+		case types.CounterMatch_Any:
+			return true
+		case types.CounterMatch_OfType:
+			return counter_kind_supported(m._0)
+		}
+	}
+	return false
+}
+
+// Whether the condition of a static ability of `source` holds now.
+condition_holds :: proc(s: ^types.GameState, source: ^types.GameObject, c: Maybe(types.StaticCondition)) -> bool {
+	cond, has := c.?
+	if !has do return true
+	#partial switch x in cond {
+	case types.StaticCondition_DuringYourTurn:
+		return s.active_player == source.controller
+	case types.StaticCondition_IsPresent:
+		f, _ := x.filter.?
+		return len(affected_permanents(s, f, source.controller, source.id)) > 0
+	case types.StaticCondition_QuantityComparison:
+		l := quantity_value(s, x.lhs, source.controller, source.id, 0)
+		r := quantity_value(s, x.rhs, source.controller, source.id, 0)
+		return compare(l, x.comparator, r)
+	case types.StaticCondition_HasCounters:
+		n: u32
+		for c in source.counters {
+			#partial switch m in x.counters {
+			case types.CounterMatch_Any:
+				n += c._1
+			case types.CounterMatch_OfType:
+				if same_counter(c._0, m._0) do n += c._1
+			}
+		}
+		if max_n, has_max := x.maximum.?; has_max && n > max_n do return false
+		return n >= x.minimum
+	}
+	return false
 }

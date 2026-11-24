@@ -493,3 +493,56 @@ equip_moves_the_bonus :: proc(t: ^testing.T) {
 	game.check_state_based_actions(g)
 	testing.expect(t, splitter.zone == .Battlefield && game.host_of(&g.state, splitter) == nil, "unattached, still in play")
 }
+
+@(test)
+characteristic_defining_and_conditional_statics :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 604.3, 613.4a: a */* creature's power and toughness come from its characteristic-defining ability.
+	// CR 611.3b: a static ability with "as long as" applies only while the condition holds.
+	g := new_game()
+	for _ in 0 ..< 3 do add(t, g, "Forest", 0, .Battlefield)
+	wurm := add(t, g, "Molimo, Maro-Sorcerer", 0, .Battlefield) // */* equal to the number of lands you control
+	testing.expectf(t, game.power_of(wurm) == 3 && game.toughness_of(wurm) == 3, "3/3 with three lands, got %d/%d", game.power_of(wurm), game.toughness_of(wurm))
+	add(t, g, "Forest", 0, .Battlefield)
+	testing.expect(t, game.power_of(wurm) == 4, "4/4 with four")
+}
+
+@(test)
+target_player_discards_chosen_cards :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 701.9b: the discarding player chooses the cards (Mind Rot: target player discards two cards).
+	g := new_game()
+	for _ in 0 ..< 3 do add(t, g, "Swamp", 0, .Battlefield)
+	rot := add(t, g, "Mind Rot", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = rot.id}))
+	game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}})
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	w, asked := g.state.waiting_for.(types.WaitingFor_DiscardChoice)
+	testing.expect(t, asked && w.player == 1 && w.count == 2, "player 1 chooses two")
+	two: [dynamic]types.ObjectId
+	append(&two, w.cards[0], w.cards[1])
+	testing.expect(t, game.apply(g, 1, types.GameAction_SelectCards{cards = two}))
+	testing.expect(t, types.pvec_len(game.player(&g.state, 1).graveyard) == 2 && rot.zone == .Graveyard)
+}
+
+@(test)
+look_at_three_take_one :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Anticipate: look at the top three cards, put one into your hand and the rest on the bottom.
+	g := new_game()
+	for _ in 0 ..< 2 do add(t, g, "Island", 0, .Battlefield)
+	spell := add(t, g, "Anticipate", 0, .Hand)
+	pl := game.player(&g.state, 0)
+	n := types.pvec_len(pl.library)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	w, asked := g.state.waiting_for.(types.WaitingFor_DigChoice)
+	testing.expect(t, asked && len(w.cards) == 3 && w.keep_count == 1, "three to look at, one to keep")
+	pick: [dynamic]types.ObjectId
+	append(&pick, w.cards[1])
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = pick}))
+	testing.expect(t, game.object(&g.state, w.cards[1]).zone == .Hand, "the pick is in hand")
+	testing.expect(t, types.pvec_len(pl.library) == n - 1 && types.pvec_get(pl.library, 0) == w.cards[0], "the rest on the bottom")
+}

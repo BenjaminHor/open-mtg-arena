@@ -70,7 +70,8 @@ spell_ability_supported :: proc(a: types.AbilityDefinition) -> bool {
 ability_supported :: proc(a: types.AbilityDefinition) -> bool {
 	if a.effect == nil || a.condition != nil || a.optional_targeting || a.modal != nil do return false
 	// "Each player draws", "an opponent draws", "for each creature chosen": scopes and groups not carried out yet.
-	if a.player_scope != nil || a.declares_chosen_group != nil || a.reads_chosen_group != nil || a.starting_with != nil do return false
+	// (Declaring a group is harmless while nothing reads it; reading one isn't supported.)
+	if a.player_scope != nil || a.reads_chosen_group != nil || a.starting_with != nil do return false
 	if a.target_chooser != nil || a.optional_player != nil || a.optional_for != nil do return false
 	if a.multi_target != nil || a.distribute != nil || a.repeat_for != nil || a.unless_pay != nil do return false
 	if a.else_ability != nil do return false
@@ -111,6 +112,17 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return generic_effect_supported(x)
 	case types.Effect_Attach:
 		return attach_effect_supported(x)
+	case types.Effect_Discard:
+		// "You discard N" or "target player discards N", chosen by the discarder or at random.
+		return quantity_supported(x.count) && x.unless_filter == nil && x.filter == nil && (is_controller(x.target) || is_player_filter(x.target))
+	case types.Effect_Dig:
+		keep, has_keep := x.keep_count.?
+		dest, has_dest := x.destination.?
+		rest, has_rest := x.rest_destination.?
+		return is_controller(x.player) && quantity_supported(x.count) && has_keep && keep >= 1 && x.keep_count_expr == nil &&
+			has_dest && (dest == .Hand || dest == .Graveyard) && has_rest && (rest == .Library || rest == .Graveyard) &&
+			x.rest_remainder == .Route && x.rest_split_top_count == nil && x.source == .Library && !x.enter_tapped && !x.enters_attacking &&
+			(is_any(x.filter) || mass_filter_supported(x.filter) || spell_filter_supported(x.filter))
 	case types.Effect_Scry:
 		_, fixed := fixed_quantity(x.count)
 		return fixed && (x.target == nil || is_controller(x.target))
@@ -168,6 +180,8 @@ effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
 	case types.Effect_SetTapState:
 		f = x.target
 	case types.Effect_Mill:
+		f = x.target
+	case types.Effect_Discard:
 		f = x.target
 	case:
 		return nil, false
@@ -484,6 +498,13 @@ do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Playe
 		// CR 702.6a, 701.3: the source (an Equipment) becomes attached to the target.
 		equipment := object(s, source)
 		if id, ok := target_object(target); ok && equipment != nil && equipment.zone == .Battlefield do attach(s, equipment, object(s, id))
+	case types.Effect_Discard:
+		who := controller
+		if pid, ok := target_player(target); ok do who = pid
+		n := amount(g, x.count, controller, source, target)
+		return start_discard(g, who, n, x.selection == .Random, source)
+	case types.Effect_Dig:
+		return start_dig(g, x, controller, controller, source)
 	case types.Effect_Scry:
 		n, _ := fixed_quantity(x.count)
 		return ask_scry(g, controller, n, false)

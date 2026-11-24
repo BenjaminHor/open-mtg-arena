@@ -12,6 +12,8 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 		return x.inner != nil && quantity_supported(x.inner^)
 	case types.QuantityExpr_Multiply:
 		return x.inner != nil && quantity_supported(x.inner^)
+	case types.QuantityExpr_ClampMin:
+		return x.inner != nil && quantity_supported(x.inner^)
 	case types.QuantityExpr_Ref:
 		#partial switch r in x.qty {
 		case types.QuantityRef_ObjectCount:
@@ -24,6 +26,11 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			_, from_source := r.scope.(types.ObjectScope_Source)
 			kind, has := r.counter_type.?
 			return from_source && (!has || counter_kind_supported(kind))
+		case types.QuantityRef_HandSize:
+			#partial switch _ in r.player {
+			case types.PlayerScope_Controller, types.PlayerScope_Opponent:
+				return true
+			}
 		}
 	}
 	return false
@@ -47,6 +54,8 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 		return quantity_value(s, x.inner^, controller, source, target) + int(x.offset)
 	case types.QuantityExpr_Multiply:
 		return quantity_value(s, x.inner^, controller, source, target) * int(x.factor)
+	case types.QuantityExpr_ClampMin:
+		return max(quantity_value(s, x.inner^, controller, source, target), int(x.minimum))
 	case types.QuantityExpr_Ref:
 		#partial switch r in x.qty {
 		case types.QuantityRef_ObjectCount:
@@ -62,6 +71,11 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			n := 0
 			for c in o.counters do if !has || same_counter(c._0, kind) do n += int(c._1)
 			return n
+		case types.QuantityRef_HandSize:
+			// "The number of cards in your hand" (or an opponent's, in a two-player game).
+			who := controller
+			if _, opp := r.player.(types.PlayerScope_Opponent); opp do who = opponent(s, controller)
+			return types.pvec_len(player(s, who).hand)
 		}
 	}
 	return 0

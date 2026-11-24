@@ -30,6 +30,10 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_ScryChoice:
 		return w.player, true
+	case types.WaitingFor_DiscardChoice:
+		return w.player, true
+	case types.WaitingFor_DigChoice:
+		return w.player, true
 	case types.WaitingFor_SurveilChoice:
 		return w.player, true
 	}
@@ -132,6 +136,12 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_ScryChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		return ok && answer_scry(g, p, w.cards[:], a.cards[:], false)
+	case types.WaitingFor_DiscardChoice:
+		a, ok := action.(types.GameAction_SelectCards)
+		return ok && answer_discard(g, p, w, a.cards[:])
+	case types.WaitingFor_DigChoice:
+		a, ok := action.(types.GameAction_SelectCards)
+		return ok && answer_dig(g, p, w, a.cards[:])
 	case types.WaitingFor_SurveilChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		return ok && answer_scry(g, p, w.cards[:], a.cards[:], true)
