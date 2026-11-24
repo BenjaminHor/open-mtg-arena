@@ -80,11 +80,15 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     Question for the owner (Open questions).
     **Logic port started (2026-11-24): the whole-function translator** (odin/tools/odingen/src/body.rs,
     `odingen translate-report crates <dir> [filter]`; `odin/tools/translate-loop.sh` stubs whatever Odin's type
-    check rejects until it checks cleanly). Engine-wide 3,894 of 15,923 functions translate (24.5%; phase-ast 44%)
-    and, with typed stubs for the rest, the whole engine type-checks in Odin with 0 errors (151 translations demoted
-    by the type check, to fix in the translator). Next blockers: untyped `let` (1,978), generic calls/functions
-    (~1,100), nested items (527), match on non-enums (443), let patterns (436), let-else patterns (413). Then the vector printer (Rust
-    results for the translated functions) before any of it becomes engine code. docs/odin-port.md has the plan.
+    check rejects until it checks cleanly). Engine-wide 4,087 of 15,923 functions translate (25.7%) and, with typed
+    stubs for the rest, the whole engine type-checks in Odin. **Type-checking is not correctness**: two silent
+    mistranslations were found after the code checked cleanly (Known issues, 2026-11-24, both now fixed or refused),
+    so the next step is the vector check (Rust results vs Odin, over functions the recorded games execute) before
+    more breadth, then a general pattern compiler that binds `&mut` scrutinees as pointers. Translator now: value
+    `if`/`match`/block initializers (each branch assigns), empty collections typed by their later use, Option/Result
+    combinators, labelled loops. Next blockers: generic calls/functions (~1,280), nested items (527), patterns (let
+    457, let-else 423, for 236, or-with-bindings 221, if-let 173, nested 147), match on non-enums (432), mutable
+    reference bindings (320, refused on purpose until patterns bind pointers). docs/odin-port.md has the plan.
     **O-0/O-1 in review: PR #117** (2026-11-24), with the Odin CI workflow; merge on green (D-027). A code review
     of odingen, the recorder and the workflow (2026-11-24) led to: the recorder steps one AI action per line and
     records contest settlements, the submitter and semantic owner, and the RNG position; skipped fields get their
@@ -2645,6 +2649,14 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   Done: the median of five idle runs.)
 
 ## Known issues
+- (2026-11-24, Odin port, translator) Two silent mistranslations in code that type-checked cleanly, found by probes:
+  (1) Odin's unlabelled `break` inside a `switch` leaves only the switch, so a Rust `break` in a `match` arm inside a
+  loop was translated as a no-op; fixed: every translated loop is labelled and `break`/`continue` name it.
+  (2) Bindings from a mutable reference (`let x = &mut ..`, `if let Some(x) = opt_mut`, `for x in v_mut`,
+  `as_mut`/`get_mut`/`*_mut`, `ref mut`, `match self` in a `&mut self` method) became copies, losing writes;
+  now refused (320 functions, plus 183 that return `&mut`) until the pattern compiler binds pointers. Hoisted
+  statements under `&&`/`||` (which would run unconditionally) are refused too. Lesson: a clean type check proves
+  little; the vector check comes next.
 - (2026-11-24, found by the Odin port) A game state whose WaitingFor holds a target slot with
   `TargetEffectDetail::Modification(..)` can't round-trip through `serde_json::Value`: serde writes `"type"` twice
   (`{"type":"Modification","type":"Increase"}`, an internally tagged enum inside another with the same tag) and a

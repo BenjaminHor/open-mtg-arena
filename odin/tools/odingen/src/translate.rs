@@ -536,7 +536,12 @@ impl<'a, 'b> Tx<'a, 'b> {
                 // Comparisons take the left side's type for the right (literals, variants).
                 let left_shape = self.shape_of(&b.left).unwrap_or(Shape::Bool);
                 let l = self.expr(&b.left, &left_shape)?;
+                let hoisted = self.pre.len();
                 let r = self.expr(&b.right, &left_shape)?;
+                // `a && b` evaluates b only when a holds: statements b needs can't be hoisted before the whole.
+                if matches!(op, "&&" | "||") && self.pre.len() > hoisted {
+                    return Err("hoisted statement under && or ||".into());
+                }
                 if matches!(op, "==" | "!=") {
                     if let Shape::Named(n, _) = &left_shape {
                         if !self.enum_variants(n).map(|x| x.0).unwrap_or(true) {
@@ -592,7 +597,14 @@ impl<'a, 'b> Tx<'a, 'b> {
                     }
                     "clone" | "into" | "to_owned" | "to_string" => Ok(recv),
                     m => {
-                        let owner = match &recv_shape { Shape::Named(n, _) => Some(n.clone()), _ => None };
+                        let (owner, recv) = match &recv_shape {
+                            Shape::Named(n, _) => (Some(n.clone()), recv),
+                            Shape::Ptr(i, _) => match &**i {
+                                Shape::Named(n, _) => (Some(n.clone()), format!("{recv}^")),
+                                _ => (None, recv),
+                            },
+                            _ => (None, recv),
+                        };
                         let args: Vec<&Expr> = mc.args.iter().collect();
                         if self.calls {
                             if let Some(o) = owner.as_ref() {
@@ -637,12 +649,56 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
             }
             Expr::MethodCall(mc) if self.calls => {
-                let recv = match self.shape_of(&mc.receiver)? {
+                let m = mc.method.to_string();
+                let Some(recv) = self.shape_of(&mc.receiver) else {
+                    // An untyped receiver (an iterator chain): methods whose result doesn't depend on it.
+                    return match m.as_str() {
+                        "len" | "count" => Some(Shape::Int("int")),
+                        "is_empty" | "is_some" | "is_none" | "contains" | "contains_key" | "any" | "all" | "is_some_and"
+                        | "is_none_or" => Some(Shape::Bool),
+                        "position" => Some(Shape::Option(Box::new(Shape::Int("int")))),
+                        _ => None,
+                    };
+                };
+                let recv = match recv {
                     Shape::Ptr(inner, _) => *inner,
                     s => s,
                 };
+                let args: Vec<&Expr> = mc.args.iter().collect();
+                // Combinators: the result follows from the receiver and the closure.
+                match (m.as_str(), &recv, args.len()) {
+                    ("map", Shape::Option(i), 1) => {
+                        let c = Self::closure_of(args[0]).ok()?;
+                        return self.closure_shape(c, "_", i).map(|s| Shape::Option(Box::new(s)));
+                    }
+                    ("and_then", Shape::Option(i), 1) => {
+                        let c = Self::closure_of(args[0]).ok()?;
+                        return self.closure_shape(c, "_", i).filter(|s| matches!(s, Shape::Option(_)));
+                    }
+                    ("filter" | "or" | "or_else" | "take" | "xor", Shape::Option(_), _) => return Some(recv.clone()),
+                    ("map_or", Shape::Option(i), 2) => {
+                        return self.shape_of(args[0]).or_else(|| Self::closure_of(args[1]).ok().and_then(|c| self.closure_shape(c, "_", i)));
+                    }
+                    ("ok_or", Shape::Option(i), 1) => return Some(Shape::Result(i.clone(), Box::new(self.shape_of(args[0])?))),
+                    ("ok_or_else", Shape::Option(i), 1) => {
+                        let Expr::Closure(c) = args[0] else { return None };
+                        let err = if c.inputs.is_empty() { self.shape_of(&c.body)? } else { return None };
+                        return Some(Shape::Result(i.clone(), Box::new(err)));
+                    }
+                    ("map_err", Shape::Result(v, e), 1) => {
+                        let c = Self::closure_of(args[0]).ok()?;
+                        return Some(Shape::Result(v.clone(), Box::new(self.closure_shape(c, "_", e)?)));
+                    }
+                    ("ok", Shape::Result(v, _), 0) => return Some(Shape::Option(v.clone())),
+                    ("unwrap" | "expect", Shape::Result(v, _), _) => return Some((**v).clone()),
+                    ("is_ok" | "is_err", Shape::Result(..), 0) => return Some(Shape::Bool),
+                    ("min" | "max" | "saturating_sub" | "saturating_add" | "abs" | "clamp", Shape::Int(_), _) => return Some(recv.clone()),
+                    ("to_vec", Shape::Vec(_), 0) => return Some(recv.clone()),
+                    ("remove", Shape::Vec(i), 1) => return Some((**i).clone()),
+                    ("pop", Shape::Vec(i), 0) => return Some(Shape::Option(i.clone())),
+                    _ => {}
+                }
                 // Library methods whose result shape follows from the receiver's.
-                let m = mc.method.to_string();
                 match (m.as_str(), &recv) {
                     ("len", _) | ("count", _) => return Some(Shape::Int("int")),
                     ("is_empty" | "is_some" | "is_none" | "contains" | "contains_key" | "starts_with" | "ends_with"
@@ -664,6 +720,9 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let last = segs.last()?.clone();
                 if last == "Some" && c.args.len() == 1 {
                     return Some(Shape::Option(Box::new(self.shape_of(&c.args[0])?)));
+                }
+                if segs.len() >= 2 && segs[segs.len() - 2] == "mem" && matches!(last.as_str(), "take" | "replace") {
+                    return self.shape_of(&c.args[0]);
                 }
                 // A tuple variant `Enum::V(..)` or a newtype `T(..)`.
                 if segs.len() >= 2 {
@@ -744,6 +803,15 @@ impl<'a, 'b> Tx<'a, 'b> {
             }
             _ => None,
         }
+    }
+
+    fn next_temp(&mut self) -> u32 {
+        self.temps += 1;
+        self.temps
+    }
+
+    fn shape_of_pub_mc(&mut self, mc: &syn::ExprMethodCall) -> Option<Shape> {
+        self.shape_of(&Expr::MethodCall(mc.clone()))
     }
 
     pub fn shape_of_pub(&mut self, ex: &Expr) -> Option<Shape> {
@@ -1134,7 +1202,10 @@ impl<'a, 'b> Tx<'a, 'b> {
         let body = match &*c.body {
             Expr::Block(b) if b.block.stmts.len() == 1 => match &b.block.stmts[0] {
                 Stmt::Expr(e, None) => e.clone(),
-                _ => return None,
+                _ => {
+                    self.unbind(saved);
+                    return None;
+                }
             },
             e => e.clone(),
         };
@@ -1310,6 +1381,126 @@ impl<'a, 'b> Tx<'a, 'b> {
                     format!("({recv}.? or_else {d})")
                 }
                 ("as_ref" | "as_deref" | "copied" | "cloned" | "as_mut", Shape::Option(_), 0) => recv,
+                // Option combinators: the closure runs only when there is a value (its statements inside the `if`).
+                ("map" | "and_then" | "filter" | "map_or", Shape::Option(i), _) if deref.is_empty() => {
+                    let c = Self::closure_of(args[args.len() - 1])?;
+                    let out = match m.as_str() {
+                        "filter" => recv_shape.clone(),
+                        _ => self.shape_of_pub_mc(mc).ok_or("combinator of an untyped value")?,
+                    };
+                    let n = self.next_temp();
+                    let (t, r, v) = (format!("o{n}_"), format!("r{n}_"), format!("v{n}_"));
+                    let mut body = Vec::new();
+                    let inner_want = match m.as_str() {
+                        "map" => match &out {
+                            Shape::Option(o) => (**o).clone(),
+                            _ => return Err("map result".into()),
+                        },
+                        "filter" => Shape::Bool,
+                        _ => out.clone(),
+                    };
+                    let val = self.closure_in(&mut body, c, &v, i, &inner_want)?;
+                    let init = if m == "map_or" {
+                        let d = self.expr(args[0], &out)?;
+                        format!("{r}: {} = {d}", self.e.odin(&out))
+                    } else {
+                        format!("{r}: {}", self.e.odin(&out))
+                    };
+                    let set = if m == "filter" { format!("if {val} do {r} = {v}") } else { format!("{r} = {val}") };
+                    self.pre.push(format!("{t} := {recv}"));
+                    self.pre.push(init);
+                    self.pre.push(format!("if {v}, ok{n}_ := {t}.?; ok{n}_ {{\n{}\n{set}\n}}", body.join("\n")));
+                    r
+                }
+                ("ok_or" | "ok_or_else", Shape::Option(i), 1) => {
+                    let out = self.shape_of_pub_mc(mc).ok_or("ok_or of an untyped error")?;
+                    let Shape::Result(_, err) = &out else { return Err("ok_or result".into()) };
+                    let err = (**err).clone();
+                    let n = self.next_temp();
+                    let (t, r, v) = (format!("o{n}_"), format!("r{n}_"), format!("v{n}_"));
+                    let outer = std::mem::take(&mut self.pre);
+                    let e = if m == "ok_or" {
+                        self.expr(args[0], &err)
+                    } else {
+                        match args[0] {
+                            Expr::Closure(c) if c.inputs.is_empty() => self.expr(&c.body, &err),
+                            _ => Err("ok_or_else without a closure".into()),
+                        }
+                    };
+                    let body = std::mem::replace(&mut self.pre, outer);
+                    let e = e?;
+                    let _ = i;
+                    self.pre.push(format!("{t} := {recv}"));
+                    self.pre.push(format!("{r}: {}", self.e.odin(&out)));
+                    self.pre.push(format!("if {v}, ok{n}_ := {t}.?; ok{n}_ {{ {r}.ok = {v} }} else {{\n{}\n{r}.err = {e}\n}}", body.join("\n")));
+                    r
+                }
+                ("map_err", Shape::Result(v, e), 1) => {
+                    let c = Self::closure_of(args[0])?;
+                    let out = self.shape_of_pub_mc(mc).ok_or("map_err of an untyped error")?;
+                    let Shape::Result(_, e2) = &out else { return Err("map_err result".into()) };
+                    let (e2, _v) = ((**e2).clone(), v);
+                    let n = self.next_temp();
+                    let (t, r, x) = (format!("o{n}_"), format!("r{n}_"), format!("e{n}_"));
+                    let mut body = Vec::new();
+                    let val = self.closure_in(&mut body, c, &x, e, &e2)?;
+                    self.pre.push(format!("{t} := {recv}"));
+                    self.pre.push(format!("{r}: {}", self.e.odin(&out)));
+                    self.pre.push(format!("{r}.ok = {t}.ok"));
+                    self.pre.push(format!("if {x}, f{n}_ := {t}.err.?; f{n}_ {{\n{}\n{r}.err = {val}\n}}", body.join("\n")));
+                    r
+                }
+                ("ok", Shape::Result(_, _), 0) => {
+                    let n = self.next_temp();
+                    self.pre.push(format!("o{n}_ := {recv}"));
+                    format!("(Maybe({})(o{n}_.ok) if o{n}_.err == nil else nil)", self.e.odin(&match &base { Shape::Result(v, _) => (**v).clone(), _ => unreachable!() }))
+                }
+                ("is_ok", Shape::Result(_, _), 0) => format!("({recv}.err == nil)"),
+                ("is_err", Shape::Result(_, _), 0) => format!("({recv}.err != nil)"),
+                ("or", Shape::Option(_), 1) => {
+                    let d = self.expr(args[0], &base)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("r{n}_ := {recv}"));
+                    self.pre.push(format!("if r{n}_ == nil do r{n}_ = {d}"));
+                    format!("r{n}_")
+                }
+                ("take", Shape::Option(_), 0) if deref.is_empty() => {
+                    let n = self.next_temp();
+                    self.pre.push(format!("r{n}_ := {recv}"));
+                    self.pre.push(format!("{recv} = nil"));
+                    format!("r{n}_")
+                }
+                ("min" | "max", Shape::Int(_), 1) => {
+                    let b = self.expr(args[0], &base)?;
+                    format!("{m}({recv}, {b})")
+                }
+                // Unsigned only: a signed saturating subtraction clamps at the type's minimum instead.
+                ("saturating_sub", Shape::Int(t), 1) if t.starts_with('u') || *t == "int" => {
+                    let b = self.expr(args[0], &base)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("a{n}_, b{n}_ := {recv}, {b}"));
+                    format!("(a{n}_ - b{n}_ if a{n}_ > b{n}_ else 0)")
+                }
+                ("abs", Shape::Int(t), 0) if t.starts_with('i') => format!("abs({recv})"),
+                ("to_vec", Shape::Vec(_), 0) => match self.e.cloner(&base) {
+                    Some(c) => format!("{c}({recv})"),
+                    None => recv,
+                },
+                ("remove", Shape::Vec(_), 1) if deref.is_empty() => {
+                    let ix = self.expr(args[0], &Shape::Int("int"))?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("i{n}_ := {ix}"));
+                    self.pre.push(format!("r{n}_ := {recv}[i{n}_]"));
+                    self.pre.push(format!("ordered_remove(&{recv}, i{n}_)"));
+                    format!("r{n}_")
+                }
+                ("pop", Shape::Vec(i), 0) if deref.is_empty() => {
+                    let n = self.next_temp();
+                    self.pre.push(format!("r{n}_: Maybe({})", self.e.odin(i)));
+                    self.pre.push(format!("if x{n}_, ok{n}_ := pop_safe(&{recv}); ok{n}_ do r{n}_ = x{n}_"));
+                    format!("r{n}_")
+                }
+                ("clear", Shape::Vec(_), 0) if deref.is_empty() => format!("clear(&{recv})"),
                 ("is_some_and", Shape::Option(i), 1) | ("is_none_or", Shape::Option(i), 1) => {
                     let c = Self::closure_of(args[0])?;
                     self.temps += 1;

@@ -8,8 +8,9 @@ ODIN=${ODIN:-odin}
 : > "$DIR/deny.txt"
 for round in $(seq 1 30); do
   ODINGEN_DENY="$DIR/deny.txt" "$ODINGEN" translate-report crates "$DIR" "$FILTER" > "$DIR/report.txt" 2>&1
-  errs=$("$ODIN" check "$DIR" -no-entry-point 2>&1 | grep -E "^/.*translated\.odin\([0-9]+:" | sed -E 's/.*translated\.odin\(([0-9]+):.*/\1/' | sort -un)
-  other=$("$ODIN" check "$DIR" -no-entry-point 2>&1 | grep -E "Error" | grep -vc "translated\.odin" || true)
+  out=$("$ODIN" check "$DIR" -no-entry-point -max-error-count:100000 2>&1)
+  errs=$(echo "$out" | grep -E "^/.*translated\.odin\([0-9]+:" | sed -E 's/.*translated\.odin\(([0-9]+):.*/\1/' | sort -un)
+  other=$(echo "$out" | grep -E "Error" | grep -vc "translated\.odin" || true)
   if [ -z "$errs" ]; then
     echo "round $round: clean (errors outside translated.odin: $other)"
     break

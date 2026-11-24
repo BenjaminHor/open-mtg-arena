@@ -56,6 +56,9 @@ fn signature(tx: &mut Tx, owner: Option<&str>, f: &FnDef) -> R<(String, Shape, V
             }
         }
     }
+    if matches!(&f.sig.output, ReturnType::Type(_, t) if returns_mut_ref(t)) {
+        return Err("returns a mutable reference".into());
+    }
     let ret = match &f.sig.output {
         ReturnType::Default => Shape::Unit,
         ReturnType::Type(_, t) => self_shape(tx, t, owner).map_err(|e| format!("return {e}"))?,
@@ -84,6 +87,22 @@ struct Body<'t, 'a, 'b> {
     ret: Shape,
     /// Odin names declared in this procedure: a Rust shadowing `let` gets a fresh one (`x_2`).
     declared: std::collections::BTreeSet<String>,
+    /// Where tail values go: None is the function's result (`return v`); Some is a local that a value-position
+    /// `if`/`match`/block initializes (`let x = match ..`), each branch assigning it.
+    target: Option<Target>,
+    /// The enclosing loops, innermost last: (Rust label, Odin label). Every loop is labelled and every `break` and
+    /// `continue` names its loop, because in Odin an unlabelled `break` inside a `switch` leaves only the switch.
+    loops: Vec<(Option<String>, String)>,
+}
+
+struct Target {
+    ident: String,
+    /// The local's shape; None while a dry run (`infer`) is still looking for it.
+    shape: Option<Shape>,
+    /// The shape came from an unsuffixed integer literal, which another branch's typed value overrides.
+    weak: bool,
+    /// A dry run: branches emit nothing and the first typed tail value sets `shape`.
+    infer: bool,
 }
 
 thread_local! {
@@ -113,7 +132,7 @@ pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef)
     let (sig, ret, mut_params) = signature(&mut tx, owner, f)?;
     tx.fn_ret = ret.clone();
     let pname = proc_name_for(owner, name, f);
-    let mut b = Body { tx: &mut tx, out: String::new(), indent: 1, ret, declared: Default::default() };
+    let mut b = Body { tx: &mut tx, out: String::new(), indent: 1, ret, declared: Default::default(), target: None, loops: Vec::new() };
     for (_, (odin, _)) in b.tx.vars.clone() {
         b.declared.insert(odin.trim_end_matches('^').to_string());
     }
@@ -171,8 +190,10 @@ impl Body<'_, '_, '_> {
         for (i, st) in blk.stmts.iter().enumerate() {
             let last = i + 1 == n;
             match st {
-                Stmt::Local(l) => self.local(l)?,
-                Stmt::Expr(e, None) if last && tail && !matches!(self.ret, Shape::Unit) => self.tail_expr(e)?,
+                Stmt::Local(l) => self.local(l, &blk.stmts[i + 1..], tail)?,
+                Stmt::Expr(e, None) if last && tail && (self.target.is_some() || !matches!(self.ret, Shape::Unit)) => {
+                    self.tail_expr(e)?
+                }
                 Stmt::Expr(e, _) => self.stmt_expr(e)?,
                 Stmt::Item(_) => return Err("item inside a function".into()),
                 Stmt::Macro(_) => return Err("statement macro".into()),
@@ -194,7 +215,29 @@ impl Body<'_, '_, '_> {
                 self.line("}");
                 Ok(())
             }
+            // A branch that leaves (`return`, `continue`, `break`, a panic) has no value.
+            Expr::Return(_) | Expr::Continue(_) | Expr::Break(_) => self.stmt_expr(e),
+            Expr::Macro(m) if is_panic_macro(m) => self.stmt_expr(e),
             _ => {
+                if let Some(t) = &self.target {
+                    if t.infer {
+                        if t.shape.is_none() || t.weak {
+                            let weak = is_unsuffixed_int(e);
+                            if let Some(s) = self.shape_of(e) {
+                                let t = self.target.as_mut().unwrap();
+                                if t.shape.is_none() || !weak {
+                                    t.shape = Some(s);
+                                    t.weak = weak;
+                                }
+                            }
+                        }
+                        return Ok(());
+                    }
+                    let (ident, sh) = (t.ident.clone(), t.shape.clone().ok_or("value of an unknown shape")?);
+                    let v = self.tx.expr(e, &sh)?;
+                    self.line(&format!("{ident} = {v}"));
+                    return Ok(());
+                }
                 let ret = self.ret.clone();
                 let v = self.tx.expr(e, &ret)?;
                 self.line(&format!("return {v}"));
@@ -203,7 +246,79 @@ impl Body<'_, '_, '_> {
         }
     }
 
-    fn local(&mut self, l: &syn::Local) -> R<()> {
+    /// The shape of a value-position `if`/`match`/block: a dry run over its branches, keeping the first typed tail
+    /// (pattern bindings and the branches' own locals are in scope there, unlike for `shape_of` on the whole).
+    fn infer_tail_shape(&mut self, e: &Expr) -> Option<Shape> {
+        let snap = (self.out.len(), self.tx.vars.clone(), self.declared.clone(), self.tx.pre.clone(), self.tx.temps, self.indent);
+        let loops = self.loops.clone();
+        let saved = self.target.replace(Target { ident: String::new(), shape: None, weak: false, infer: true });
+        let _ = self.tail_expr(e);
+        let t = std::mem::replace(&mut self.target, saved).expect("target");
+        self.out.truncate(snap.0);
+        (self.tx.vars, self.declared, self.tx.pre, self.tx.temps, self.indent) = (snap.1, snap.2, snap.3, snap.4, snap.5);
+        self.loops = loops;
+        t.shape
+    }
+
+    /// The shape of a local initialized empty (`Vec::new()`, `HashMap::new()`, `vec![]`, `Default::default()`), from
+    /// its first later use that fixes it: returned as the result, pushed or inserted into, or a struct field's value.
+    fn forward_shape(&mut self, name: &str, init: &Expr, rest: &[Stmt], tail: bool) -> Option<Shape> {
+        let ctor = empty_ctor(init)?;
+        let result = if tail {
+            match &self.target {
+                Some(t) => t.shape.clone(),
+                None => Some(self.ret.clone()),
+            }
+        } else {
+            None
+        };
+        let fn_ret = self.ret.clone();
+        let mut found: Option<Shape> = None;
+        let mut uses = Uses { name, out: Vec::new() };
+        for (i, st) in rest.iter().enumerate() {
+            match st {
+                // The block's own value.
+                Stmt::Expr(e, None) if i + 1 == rest.len() => {
+                    if let (Some(r), Some(sh)) = (&result, value_of(e, name, result.as_ref())) {
+                        let _ = r;
+                        found.get_or_insert(sh);
+                    }
+                    syn::visit::visit_stmt(&mut uses, st);
+                }
+                _ => syn::visit::visit_stmt(&mut uses, st),
+            }
+        }
+        for u in uses.out {
+            if found.is_some() {
+                break;
+            }
+            found = match u {
+                Use::Returned(e) => value_of(&e, name, Some(&fn_ret)),
+                Use::Push(arg) => self.shape_of(&arg).map(|s| Shape::Vec(Box::new(s))),
+                Use::Insert1(arg) => self.shape_of(&arg).map(|s| Shape::Vec(Box::new(s))),
+                Use::Insert2(k, v) => match (self.shape_of(&k), self.shape_of(&v)) {
+                    (Some(k), Some(v)) => Some(Shape::Map(Box::new(k), Box::new(v))),
+                    _ => None,
+                },
+                Use::Field(ty, variant, field) => {
+                    let ty = if ty == "Self" { self.tx.self_ty.clone()? } else { ty };
+                    match self.tx.named_fields_pub(&ty, variant.as_deref()) {
+                        Some(Fields::Named(fs)) => fs.iter().find(|f| f.name.as_deref() == Some(&field)).map(|f| self.tx.e.shape(&f.ty, &[])),
+                        _ => None,
+                    }
+                }
+            };
+        }
+        let sh = found?;
+        // The use must agree with the constructor's kind (a `Vec::new()` is a Vec, never a map).
+        let ok = match (ctor, &sh) {
+            (Ctor::Seq, Shape::Vec(_)) | (Ctor::Map, Shape::Map(..)) | (Ctor::Str, Shape::Str) | (Ctor::Any, _) => true,
+            _ => false,
+        };
+        (ok && !matches!(sh, Shape::Unknown(_) | Shape::Unit)).then_some(sh)
+    }
+
+    fn local(&mut self, l: &syn::Local, rest: &[Stmt], tail: bool) -> R<()> {
         if let Some(init) = l.init.as_ref() {
             if let Some((_, els)) = &init.diverge {
                 return self.let_else(&l.pat, &init.expr, els);
@@ -216,10 +331,30 @@ impl Body<'_, '_, '_> {
         let Pat::Ident(pi) = pat else { return Err("let pattern".into()) };
         let name = pi.ident.to_string();
         let init = l.init.as_ref().ok_or("let without a value")?;
+        if pi.by_ref.is_some() || self.mut_ref_source(&init.expr) {
+            return Err("binding to a mutable reference".into());
+        }
+        let control = matches!(&*init.expr, Expr::If(_) | Expr::Match(_) | Expr::Block(_));
         let sh = match ty {
             Some(t) => self.tx.e.shape(t, &[]),
-            None => self.shape_of(&init.expr).ok_or("let of an untyped value")?,
+            None => match self.shape_of(&init.expr) {
+                Some(s) => Some(s),
+                None if control => self.infer_tail_shape(&init.expr),
+                None => self.forward_shape(&name, &init.expr, rest, tail),
+            }
+            .ok_or_else(|| format!("let of an untyped value: {}", expr_kind(&init.expr)))?,
         };
+        if control {
+            // `let x = if/match/{..}`: declare x, then each branch's value assigns it.
+            let ident = self.fresh(&local_ident(&name));
+            self.line(&format!("{ident}: {}", self.tx.e.odin(&sh)));
+            let saved = self.target.replace(Target { ident: ident.clone(), shape: Some(sh.clone()), weak: false, infer: false });
+            let r = self.tail_expr(&init.expr);
+            self.target = saved;
+            r?;
+            self.tx.vars.insert(name, (ident, sh));
+            return Ok(());
+        }
         let v = self.tx.expr(&init.expr, &sh)?;
         let ident = self.fresh(&local_ident(&name));
         self.line(&format!("{ident}: {} = {v}", self.tx.e.odin(&sh)));
@@ -230,6 +365,9 @@ impl Body<'_, '_, '_> {
     /// `let Some(x) = e else { .. };` and `let Enum::V(a, ..) = e else { .. };` (the else block diverges).
     fn let_else(&mut self, pat: &Pat, e: &Expr, els: &Expr) -> R<()> {
         let Pat::TupleStruct(ts) = pat else { return Err("let else pattern".into()) };
+        if self.mut_ref_source(e) || pat_ref_mut(pat) {
+            return Err("binding to a mutable reference".into());
+        }
         let segs: Vec<String> = ts.path.segments.iter().map(|s| s.ident.to_string()).collect();
         let sh = self.shape_of(e).ok_or("let else on an untyped value")?;
         let v = self.tx.expr(e, &sh)?;
@@ -333,28 +471,39 @@ impl Body<'_, '_, '_> {
             }
             Expr::ForLoop(fl) => self.for_loop(fl),
             Expr::While(w) => {
-                let c = self.tx.expr(&w.cond, &Shape::Bool)?;
-                self.line(&format!("for {c} {{"));
+                if matches!(&*w.cond, Expr::Let(_)) {
+                    return Err("while let".into());
+                }
+                // The condition is evaluated each time round, so statements it needs go inside the loop.
+                let label = self.open_loop(w.label.as_ref());
+                self.line(&format!("{label}: for {{"));
                 self.indent += 1;
+                let c = self.tx.expr(&w.cond, &Shape::Bool)?;
+                self.line(&format!("if !({c}) do break {label}"));
                 self.block(&w.body, false)?;
                 self.indent -= 1;
                 self.line("}");
+                self.loops.pop();
                 Ok(())
             }
             Expr::Loop(lp) => {
-                self.line("for {");
+                let label = self.open_loop(lp.label.as_ref());
+                self.line(&format!("{label}: for {{"));
                 self.indent += 1;
                 self.block(&lp.body, false)?;
                 self.indent -= 1;
                 self.line("}");
+                self.loops.pop();
                 Ok(())
             }
-            Expr::Break(b) if b.expr.is_none() && b.label.is_none() => {
-                self.line("break");
+            Expr::Break(b) if b.expr.is_none() => {
+                let l = self.loop_label(b.label.as_ref())?;
+                self.line(&format!("break {l}"));
                 Ok(())
             }
-            Expr::Continue(c) if c.label.is_none() => {
-                self.line("continue");
+            Expr::Continue(c) => {
+                let l = self.loop_label(c.label.as_ref())?;
+                self.line(&format!("continue {l}"));
                 Ok(())
             }
             Expr::Block(b) => {
@@ -383,6 +532,9 @@ impl Body<'_, '_, '_> {
                 return Err("if let on something other than Some".into());
             }
             let Pat::Ident(pi) = &ts.elems[0] else { return Err("if let Some binding".into()) };
+            if pi.by_ref.is_some() || self.mut_ref_source(&l.expr) {
+                return Err("binding to a mutable reference".into());
+            }
             let sh = self.shape_of(&l.expr).ok_or("if let on an untyped value")?;
             let inner = match &sh {
                 Shape::Option(i) => (**i).clone(),
@@ -439,6 +591,9 @@ impl Body<'_, '_, '_> {
     }
 
     fn match_expr(&mut self, m: &syn::ExprMatch, tail: bool) -> R<()> {
+        if (self.mut_ref_source(&m.expr) && m.arms.iter().any(|a| pat_binds(&a.pat))) || m.arms.iter().any(|a| pat_ref_mut(&a.pat)) {
+            return Err("binding to a mutable reference".into());
+        }
         let sh = self.shape_of(&m.expr).ok_or("match on an untyped value")?;
         let Shape::Named(en, _) = &sh else { return Err("match on a non-enum".into()) };
         let en = en.clone();
@@ -544,12 +699,55 @@ impl Body<'_, '_, '_> {
             }
             self.indent -= 1;
         }
-        self.line("}");
         if tail && !has_default {
             // Odin can't see that the switch covers every case; Rust did.
+            self.line("case:");
+            self.indent += 1;
             self.line("unreachable()");
+            self.indent -= 1;
         }
+        self.line("}");
         Ok(())
+    }
+
+    /// Whether an expression is a mutable reference (`&mut e`, a `&mut` parameter, `as_mut()`, `get_mut(..)`,
+    /// `iter_mut()`, any `*_mut` method, possibly unwrapped). Bindings from one alias the place they point into, but
+    /// translated bindings are copies, so writes through them would be lost: refused until patterns bind pointers.
+    fn mut_ref_source(&self, e: &Expr) -> bool {
+        match e {
+            Expr::Reference(r) => r.mutability.is_some(),
+            Expr::Paren(p) => self.mut_ref_source(&p.expr),
+            Expr::Group(g) => self.mut_ref_source(&g.expr),
+            Expr::Path(p) if p.path.segments.len() == 1 => {
+                self.tx.vars.get(&p.path.segments[0].ident.to_string()).is_some_and(|v| v.0.ends_with('^'))
+            }
+            Expr::MethodCall(mc) => {
+                let m = mc.method.to_string();
+                m.ends_with("_mut")
+                    || matches!(m.as_str(), "entry" | "or_insert" | "or_insert_with" | "or_default")
+                    || (matches!(m.as_str(), "unwrap" | "expect" | "unwrap_or_else") && self.mut_ref_source(&mc.receiver))
+            }
+            Expr::Try(t) => self.mut_ref_source(&t.expr),
+            _ => false,
+        }
+    }
+
+    /// A new loop: its Odin label, pushed on the loop stack (the caller pops it).
+    fn open_loop(&mut self, rust: Option<&syn::Label>) -> String {
+        let label = self.fresh("loop");
+        self.loops.push((rust.map(|l| l.name.ident.to_string()), label.clone()));
+        label
+    }
+
+    /// The Odin label of the loop a `break`/`continue` leaves: the innermost, or the one its Rust label names.
+    fn loop_label(&self, rust: Option<&syn::Lifetime>) -> R<String> {
+        match rust {
+            None => self.loops.last().map(|l| l.1.clone()).ok_or_else(|| "break outside a loop".into()),
+            Some(lt) => {
+                let n = lt.ident.to_string();
+                self.loops.iter().rev().find(|l| l.0.as_deref() == Some(n.as_str())).map(|l| l.1.clone()).ok_or_else(|| "break to an unknown label".into())
+            }
+        }
     }
 
     fn for_loop(&mut self, fl: &syn::ExprForLoop) -> R<()> {
@@ -562,14 +760,19 @@ impl Body<'_, '_, '_> {
             let sh = self.shape_of(a).or_else(|| self.shape_of(b)).unwrap_or(Shape::Int("int"));
             let (a, b) = (self.tx.expr(a, &sh)?, self.tx.expr(b, &sh)?);
             let op = if matches!(rg.limits, syn::RangeLimits::Closed(_)) { "..=" } else { "..<" };
-            self.line(&format!("for {ident} in {a} {op} {b} {{"));
+            let label = self.open_loop(fl.label.as_ref());
+            self.line(&format!("{label}: for {ident} in {a} {op} {b} {{"));
             let saved = self.tx.vars.insert(name.clone(), (ident, sh));
             self.indent += 1;
             self.block(&fl.body, false)?;
             self.indent -= 1;
             self.line("}");
+            self.loops.pop();
             restore(&mut self.tx.vars, name, saved);
             return Ok(());
+        }
+        if self.mut_ref_source(&fl.expr) {
+            return Err("binding to a mutable reference".into());
         }
         // `for x in &v`, `for x in v.iter()`.
         let coll = match &*fl.expr {
@@ -583,12 +786,14 @@ impl Body<'_, '_, '_> {
             _ => return Err("for over a non-Vec collection".into()),
         };
         let c = self.tx.expr(coll, &sh)?;
-        self.line(&format!("for {ident} in {c} {{"));
+        let label = self.open_loop(fl.label.as_ref());
+        self.line(&format!("{label}: for {ident} in {c} {{"));
         let saved = self.tx.vars.insert(name.clone(), (ident, elem));
         self.indent += 1;
         self.block(&fl.body, false)?;
         self.indent -= 1;
         self.line("}");
+        self.loops.pop();
         restore(&mut self.tx.vars, name, saved);
         Ok(())
     }
@@ -677,7 +882,8 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
     println!("functions {}: translated {} ({:.1}%)", fns.len(), ok.len(), 100.0 * ok.len() as f64 / fns.len().max(1) as f64);
     let mut rs: Vec<_> = reasons.into_iter().collect();
     rs.sort_by(|a, b| b.1.cmp(&a.1));
-    for (r, n) in rs.iter().take(40) {
+    let top: usize = std::env::var("ODINGEN_TOP").ok().and_then(|v| v.parse().ok()).unwrap_or(40);
+    for (r, n) in rs.iter().take(top) {
         println!("  {n:>6}  {r}");
     }
     if let Some(path) = out_file {
@@ -690,5 +896,185 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
             }
         }
         std::fs::write(path, code).unwrap();
+    }
+}
+
+/// A short description of an expression's kind, for the translate report's blocker list.
+fn expr_kind(e: &Expr) -> String {
+    match e {
+        Expr::MethodCall(mc) => format!("method .{}()", mc.method),
+        Expr::Call(c) => match &*c.func {
+            Expr::Path(p) => format!("call {}", p.path.segments.iter().map(|s| s.ident.to_string()).collect::<Vec<_>>().join("::")),
+            _ => "call".into(),
+        },
+        Expr::Path(_) => "path".into(),
+        Expr::Field(_) => "field".into(),
+        Expr::If(_) => "if".into(),
+        Expr::Match(_) => "match".into(),
+        Expr::Block(_) => "block".into(),
+        Expr::Closure(_) => "closure".into(),
+        Expr::Macro(m) => format!("macro {}!", m.mac.path.segments.last().map(|s| s.ident.to_string()).unwrap_or_default()),
+        Expr::Unary(u) => format!("unary {}", expr_kind(&u.expr)),
+        Expr::Reference(r) => format!("ref {}", expr_kind(&r.expr)),
+        Expr::Try(t) => format!("try {}", expr_kind(&t.expr)),
+        Expr::Struct(_) => "struct".into(),
+        Expr::Array(_) => "array".into(),
+        Expr::Index(_) => "index".into(),
+        Expr::Binary(_) => "binary".into(),
+        Expr::Lit(_) => "lit".into(),
+        Expr::Tuple(_) => "tuple".into(),
+        Expr::Range(_) => "range".into(),
+        _ => "other".into(),
+    }
+}
+
+/// A `panic!`, `unreachable!`, `todo!` or `unimplemented!`: a branch with no value.
+fn is_panic_macro(m: &syn::ExprMacro) -> bool {
+    m.mac.path.segments.last().is_some_and(|s| matches!(s.ident.to_string().as_str(), "panic" | "unreachable" | "todo" | "unimplemented"))
+}
+
+fn is_unsuffixed_int(e: &Expr) -> bool {
+    matches!(e, Expr::Lit(l) if matches!(&l.lit, syn::Lit::Int(i) if i.suffix().is_empty()))
+}
+
+#[derive(Clone, Copy)]
+enum Ctor {
+    Seq,
+    Map,
+    Str,
+    Any,
+}
+
+/// An empty collection constructor, by the kind of shape it makes.
+fn empty_ctor(e: &Expr) -> Option<Ctor> {
+    match e {
+        Expr::Call(c) => {
+            let Expr::Path(p) = &*c.func else { return None };
+            let segs: Vec<String> = p.path.segments.iter().map(|s| s.ident.to_string()).collect();
+            let last = segs.last()?.as_str();
+            if segs.len() == 2 && segs[0] == "Default" && last == "default" && c.args.is_empty() {
+                return Some(Ctor::Any);
+            }
+            if segs.len() != 2 || !matches!(last, "new" | "with_capacity" | "default") {
+                return None;
+            }
+            match segs[0].as_str() {
+                "Vec" | "VecDeque" | "HashSet" | "BTreeSet" | "IndexSet" | "SmallVec" => Some(Ctor::Seq),
+                "HashMap" | "BTreeMap" | "IndexMap" | "FxHashMap" => Some(Ctor::Map),
+                "String" => Some(Ctor::Str),
+                _ => None,
+            }
+        }
+        Expr::Macro(m) if m.mac.path.is_ident("vec") && m.mac.tokens.is_empty() => Some(Ctor::Seq),
+        _ => None,
+    }
+}
+
+/// The shape `name` has when `e` (a result of the given shape) is it, `Ok(it)` or `Some(it)`.
+fn value_of(e: &Expr, name: &str, result: Option<&Shape>) -> Option<Shape> {
+    let result = result?;
+    match e {
+        Expr::Path(p) if p.path.is_ident(name) => Some(result.clone()),
+        Expr::Paren(p) => value_of(&p.expr, name, Some(result)),
+        Expr::Call(c) if c.args.len() == 1 => {
+            let Expr::Path(f) = &*c.func else { return None };
+            match (f.path.segments.last()?.ident.to_string().as_str(), result) {
+                ("Ok", Shape::Result(v, _)) => value_of(&c.args[0], name, Some(v)),
+                ("Some", Shape::Option(v)) => value_of(&c.args[0], name, Some(v)),
+                _ => None,
+            }
+        }
+        _ => None,
+    }
+}
+
+/// A later use of a local that fixes its shape (`forward_shape`).
+enum Use {
+    Returned(Expr),
+    Push(Expr),
+    Insert1(Expr),
+    Insert2(Expr, Expr),
+    /// `Type { field: name }` or `Enum::Variant { field: name }`: the type (or enum), the variant, the field.
+    Field(String, Option<String>, String),
+}
+
+struct Uses<'n> {
+    name: &'n str,
+    out: Vec<Use>,
+}
+
+impl<'ast> syn::visit::Visit<'ast> for Uses<'_> {
+    fn visit_expr_return(&mut self, r: &'ast syn::ExprReturn) {
+        if let Some(e) = &r.expr {
+            self.out.push(Use::Returned((**e).clone()));
+        }
+        syn::visit::visit_expr_return(self, r);
+    }
+    fn visit_expr_method_call(&mut self, mc: &'ast syn::ExprMethodCall) {
+        if matches!(&*mc.receiver, Expr::Path(p) if p.path.is_ident(self.name)) {
+            let args: Vec<Expr> = mc.args.iter().cloned().collect();
+            match (mc.method.to_string().as_str(), args.len()) {
+                ("push" | "push_back", 1) => self.out.push(Use::Push(args[0].clone())),
+                ("insert", 1) => self.out.push(Use::Insert1(args[0].clone())),
+                ("insert", 2) => self.out.push(Use::Insert2(args[0].clone(), args[1].clone())),
+                _ => {}
+            }
+        }
+        syn::visit::visit_expr_method_call(self, mc);
+    }
+    fn visit_expr_struct(&mut self, st: &'ast syn::ExprStruct) {
+        let segs: Vec<String> = st.path.segments.iter().map(|s| s.ident.to_string()).collect();
+        for fv in &st.fields {
+            let syn::Member::Named(id) = &fv.member else { continue };
+            if matches!(&fv.expr, Expr::Path(p) if p.path.is_ident(self.name)) {
+                let (ty, variant) = match segs.len() {
+                    1 => (segs[0].clone(), None),
+                    n => (segs[n - 2].clone(), Some(segs[n - 1].clone())),
+                };
+                self.out.push(Use::Field(ty, variant, id.to_string()));
+            }
+        }
+        syn::visit::visit_expr_struct(self, st);
+    }
+    // Closures and nested functions have their own `return`s.
+    fn visit_expr_closure(&mut self, _: &'ast syn::ExprClosure) {}
+    fn visit_item_fn(&mut self, _: &'ast syn::ItemFn) {}
+}
+
+/// Whether a pattern binds a name.
+fn pat_binds(p: &Pat) -> bool {
+    match p {
+        Pat::Ident(_) => true,
+        Pat::Or(o) => o.cases.iter().any(pat_binds),
+        Pat::Paren(pp) => pat_binds(&pp.pat),
+        Pat::Reference(r) => pat_binds(&r.pat),
+        Pat::Struct(s) => s.fields.iter().any(|f| pat_binds(&f.pat)),
+        Pat::Tuple(t) => t.elems.iter().any(pat_binds),
+        Pat::TupleStruct(t) => t.elems.iter().any(pat_binds),
+        Pat::Slice(s) => s.elems.iter().any(pat_binds),
+        Pat::Type(t) => pat_binds(&t.pat),
+        _ => false,
+    }
+}
+
+/// `&mut T`, `Option<&mut T>` and the like: what the function returns aliases its argument.
+fn returns_mut_ref(t: &syn::Type) -> bool {
+    use quote::ToTokens;
+    t.to_token_stream().to_string().contains("& mut")
+}
+
+/// Whether a pattern has a `ref mut` binding.
+fn pat_ref_mut(p: &Pat) -> bool {
+    match p {
+        Pat::Ident(pi) => (pi.by_ref.is_some() && pi.mutability.is_some()) || pi.subpat.as_ref().is_some_and(|(_, sp)| pat_ref_mut(sp)),
+        Pat::Or(o) => o.cases.iter().any(pat_ref_mut),
+        Pat::Paren(pp) => pat_ref_mut(&pp.pat),
+        Pat::Reference(r) => pat_ref_mut(&r.pat),
+        Pat::Struct(s) => s.fields.iter().any(|f| pat_ref_mut(&f.pat)),
+        Pat::Tuple(t) => t.elems.iter().any(pat_ref_mut),
+        Pat::TupleStruct(t) => t.elems.iter().any(pat_ref_mut),
+        Pat::Slice(s) => s.elems.iter().any(pat_ref_mut),
+        Pat::Type(t) => pat_ref_mut(&t.pat),
+        _ => false,
     }
 }
