@@ -212,10 +212,14 @@ pub struct Emitter<'a> {
     /// Generated `clone_<T>` procedures and their per-shape helpers (generated_clone.odin).
     pub clone_out: String,
     clone_names: BTreeMap<String, String>,
+    /// `drop_<T>` procedures (in generated_clone.odin beside the clones): Rust's Drop as far as counts go.
+    drop_names: BTreeMap<String, Option<String>>,
+    drop_pending: Vec<(TypeDef, BTreeMap<String, Shape>)>,
     /// Generated `eq_<T>` procedures (Rust's derived PartialEq, for `==` on values Odin can't compare itself).
     pub eq_out: String,
     eq_names: BTreeMap<String, Result<Option<String>, String>>,
     plain_memo: BTreeMap<String, bool>,
+    counts_memo: BTreeMap<String, bool>,
     pub emitted: BTreeSet<String>,
     queue: VecDeque<String>,
     /// Named skip predicates and default functions the codecs call, by Odin procedure name: the Rust path, the
@@ -252,9 +256,12 @@ impl<'a> Emitter<'a> {
             codec_out: String::new(),
             clone_out: String::new(),
             clone_names: BTreeMap::new(),
+            drop_names: BTreeMap::new(),
+            drop_pending: Vec::new(),
             eq_out: String::new(),
             eq_names: BTreeMap::new(),
             plain_memo: BTreeMap::new(),
+            counts_memo: BTreeMap::new(),
             emitted: BTreeSet::new(),
             queue: VecDeque::new(),
             skip_reqs: BTreeMap::new(),
@@ -1026,7 +1033,23 @@ impl<'a> Emitter<'a> {
         self.drain();
     }
 
+    /// Emits every queued type, then the drops of those types (after, so that what the drops look at doesn't
+    /// reorder the types and codecs), and again for anything the drops queued.
     fn drain(&mut self) {
+        loop {
+            self.drain_queue();
+            if self.drop_pending.is_empty() {
+                break;
+            }
+            for (def, subst) in std::mem::take(&mut self.drop_pending) {
+                self.subst = subst;
+                self.current = def.name.clone();
+                self.emit_drop(&def);
+            }
+        }
+    }
+
+    fn drain_queue(&mut self) {
         while let Some(name) = self.queue.pop_front() {
             if self.emitted.contains(&name) {
                 continue;
@@ -1061,6 +1084,7 @@ impl<'a> Emitter<'a> {
             }
             self.emit_type(def);
             self.emit_clone(def);
+            self.drop_pending.push((def.clone(), self.subst.clone()));
             let base = inst.as_ref().map(|(b, _)| b.clone()).unwrap_or(name.clone());
             if !self.wire.contains(&base) {
                 continue;
@@ -1965,6 +1989,292 @@ impl<'a> Emitter<'a> {
             }
         }
         let _ = writeln!(self.clone_out, "clone_{name} :: proc(x: {name}) -> {name} {{\n{body}}}\n");
+    }
+}
+
+// ----------------------------------------------------------------------------------------------------- drops ---
+// Rust's Drop, as far as sharing goes: `drop_<T>` gives back the counts a value holds. A shared pointer's count goes
+// down, and when it reaches zero what it points at is dropped in turn (it held counts too); owned parts are walked.
+// Memory itself belongs to the arena it came from (docs/odin-port.md, "State layout"), so nothing is freed here.
+// Translated code drops a value that dies at scope end, as Rust would (never one moved elsewhere: that would
+// under-count and let a write reach shared data). Without a drop a count stays high, which only costs a copy.
+impl<'a> Emitter<'a> {
+    /// The procedure that drops a value of this shape, or None when it holds no counts.
+    pub fn dropper(&mut self, s: &Shape) -> Option<String> {
+        if self.plain(s) {
+            return None;
+        }
+        if let Shape::PVec(i) = s {
+            let d = self.dropper(i).unwrap_or_else(|| "nil".into());
+            let ty = self.odin(s);
+            let name = format!("drp_{}", mangle(&ty));
+            if !self.drop_names.contains_key(&ty) {
+                self.drop_names.insert(ty.clone(), Some(name.clone()));
+                let _ = writeln!(self.clone_out, "{name} :: proc(x: {ty}) {{\n\tpvec_drop(x, {d})\n}}\n");
+            }
+            return Some(name);
+        }
+        let ty = self.odin(s);
+        let shared = matches!(s, Shape::Ptr(_, true) | Shape::OptPtr(_, true));
+        let key = if shared { format!("{ty}#shared") } else { ty.clone() };
+        if let Some(n) = self.drop_names.get(&key) {
+            return n.clone();
+        }
+        if let Shape::Named(n, a) = s {
+            if a.is_empty() {
+                // Emitted with its type (emit_drop); a type with no counts inside gets no procedure.
+                let name = self.named_holds_counts(s).then(|| format!("drop_{n}"));
+                self.drop_names.insert(key, name.clone());
+                return name;
+            }
+        }
+        let m = if shared { mangle(&ty).replacen("ptr_", "shared_", 1) } else { mangle(&ty) };
+        let name = format!("drp_{m}");
+        // Reserved first: recursive shapes refer to themselves.
+        self.drop_names.insert(key.clone(), Some(name.clone()));
+        let body = match s {
+            Shape::Option(i) => match self.dropper(i) {
+                Some(d) => format!("\tif y, ok := x.?; ok do {d}(y)\n"),
+                None => String::new(),
+            },
+            Shape::Ptr(i, true) | Shape::OptPtr(i, true) => {
+                let then = match self.dropper(i) {
+                    Some(d) => format!("\tif c^ == 0 do {d}(x^)\n"),
+                    None => String::new(),
+                };
+                format!("\tif x == nil do return\n\tc := shared_count(x)\n\tc^ -= 1\n{then}")
+            }
+            Shape::Ptr(i, false) | Shape::OptPtr(i, false) => match self.dropper(i) {
+                Some(d) => format!("\tif x != nil do {d}(x^)\n"),
+                None => String::new(),
+            },
+            Shape::Vec(i) | Shape::Array(i, _) => match self.dropper(i) {
+                Some(d) => format!("\tfor item in x do {d}(item)\n"),
+                None => String::new(),
+            },
+            Shape::Map(k, v) => {
+                if ty.starts_with("map[") {
+                    let (dk, dv) = (self.dropper(k), self.dropper(v));
+                    let mut b = String::new();
+                    if let Some(d) = dk {
+                        b.push_str(&format!("\t\t{d}(key)\n"));
+                    }
+                    if let Some(d) = dv {
+                        b.push_str(&format!("\t\t{d}(val)\n"));
+                    }
+                    if b.is_empty() { b } else { format!("\tfor key, val in x {{\n{b}\t}}\n") }
+                } else {
+                    let pair = Shape::Tuple(vec![(**k).clone(), (**v).clone()]);
+                    match self.dropper(&pair) {
+                        Some(d) => format!("\tfor item in x do {d}(item)\n"),
+                        None => String::new(),
+                    }
+                }
+            }
+            Shape::Result(t, er) => {
+                let (t, er) = (t.clone(), er.clone());
+                let mut b = String::new();
+                if let Some(d) = self.dropper(&t) {
+                    b.push_str(&format!("\t{d}(x.ok)\n"));
+                }
+                if let Some(d) = self.dropper(&er) {
+                    b.push_str(&format!("\tif e, failed := x.err.?; failed do {d}(e)\n"));
+                }
+                b
+            }
+            Shape::Tuple(es) => {
+                let mut b = String::new();
+                for (i, e) in es.clone().iter().enumerate() {
+                    if let Some(d) = self.dropper(e) {
+                        b.push_str(&format!("\t{d}(x._{i})\n"));
+                    }
+                }
+                b
+            }
+            _ => String::new(),
+        };
+        if body.is_empty() {
+            self.drop_names.insert(key, None);
+            return None;
+        }
+        let _ = writeln!(self.clone_out, "{name} :: proc(x: {ty}) {{\n{body}}}\n");
+        Some(name)
+    }
+
+    /// Whether a named type holds a count anywhere inside (a shared pointer, a PVec, a hand type), so its drop does
+    /// something. Owned-only types (a Box of plain data) need no drop. Recursive types make this a fixpoint: the
+    /// named types reachable from `s` are gathered, then marked from the ones holding a count directly.
+    fn named_holds_counts(&mut self, s: &Shape) -> bool {
+        let ty = self.odin(s);
+        if let Some(p) = self.counts_memo.get(&ty) {
+            return *p;
+        }
+        let mut nodes: BTreeMap<String, (bool, Vec<String>)> = BTreeMap::new();
+        let mut stack = vec![s.clone()];
+        while let Some(x) = stack.pop() {
+            let t = self.odin(&x);
+            if self.counts_memo.contains_key(&t) || nodes.contains_key(&t) {
+                continue;
+            }
+            let mut direct = false;
+            let mut succ = Vec::new();
+            if let Shape::Named(n, _) = &x {
+                if self.hand_types.contains(n) {
+                    direct = true;
+                } else {
+                    for f in self.named_field_shapes(&x) {
+                        self.scan_counts(&f, &mut direct, &mut succ);
+                    }
+                }
+            }
+            let names: Vec<String> = succ.iter().map(|y| self.odin(y)).collect();
+            nodes.insert(t, (direct, names));
+            stack.extend(succ);
+        }
+        let mut holds: BTreeSet<String> = nodes.iter().filter(|(_, (d, _))| *d).map(|(n, _)| n.clone()).collect();
+        loop {
+            let mut changed = false;
+            for (n, (_, succ)) in &nodes {
+                if !holds.contains(n) && succ.iter().any(|y| holds.contains(y) || self.counts_memo.get(y) == Some(&true)) {
+                    holds.insert(n.clone());
+                    changed = true;
+                }
+            }
+            if !changed {
+                break;
+            }
+        }
+        for n in nodes.keys() {
+            self.counts_memo.insert(n.clone(), holds.contains(n));
+        }
+        self.counts_memo[&ty]
+    }
+
+    /// The shapes of a named type's fields (every variant's, for an enum).
+    fn named_field_shapes(&mut self, s: &Shape) -> Vec<Shape> {
+        let Shape::Named(n, args) = s else { return vec![] };
+        let (def, sub) = match self.def(n) {
+            Some(d) => (d.clone(), None),
+            None => match self.instances.get(n).cloned() {
+                Some((base, a)) => match self.def(&base) {
+                    Some(d) => {
+                        let d = d.clone();
+                        let sub: BTreeMap<String, Shape> = d.generics.iter().cloned().zip(a).collect();
+                        (d, Some(sub))
+                    }
+                    None => return vec![],
+                },
+                None => return vec![],
+            },
+        };
+        // Only answers a question: the types it touches mustn't join the emission queue early (that would reorder
+        // the generated files).
+        let saved_queue = self.queue.clone();
+        let saved = self.subst.clone();
+        if let Some(sub) = sub {
+            self.subst = sub;
+        } else if !args.is_empty() {
+            self.subst = def.generics.iter().cloned().zip(args.iter().cloned()).collect();
+        }
+        let mut shapes = Vec::new();
+        let mut collect = |e: &mut Self, fs: &Fields| {
+            if let Fields::Named(v) | Fields::Tuple(v) = fs {
+                for f in v {
+                    shapes.push(e.shape(&f.ty, &def.generics));
+                }
+            }
+        };
+        match &def.kind {
+            Kind::Struct(fs) => collect(self, fs),
+            Kind::Enum(vs) => {
+                for v in vs {
+                    collect(self, &v.fields);
+                }
+            }
+        }
+        self.subst = saved;
+        self.queue = saved_queue;
+        shapes
+    }
+
+    /// Walks a field's shape: a count held directly sets `direct`; named types inside go to `succ`.
+    fn scan_counts(&mut self, s: &Shape, direct: &mut bool, succ: &mut Vec<Shape>) {
+        match s {
+            Shape::Ptr(_, true) | Shape::OptPtr(_, true) | Shape::PVec(_) => *direct = true,
+            Shape::Option(i) | Shape::Array(i, _) | Shape::Vec(i) | Shape::Ptr(i, false) | Shape::OptPtr(i, false) => {
+                self.scan_counts(i, direct, succ)
+            }
+            Shape::Map(k, v) => {
+                self.scan_counts(k, direct, succ);
+                self.scan_counts(v, direct, succ);
+            }
+            Shape::Tuple(es) => es.iter().for_each(|e| self.scan_counts(e, direct, succ)),
+            Shape::Result(t, e) => {
+                self.scan_counts(t, direct, succ);
+                self.scan_counts(e, direct, succ);
+            }
+            Shape::Named(..) => succ.push(s.clone()),
+            _ => {}
+        }
+    }
+
+    /// `drop_<T>` for a model type that holds counts: drop each field that does.
+    fn emit_drop(&mut self, def: &TypeDef) {
+        if !def.generics.is_empty() {
+            return;
+        }
+        let name = def.name.clone();
+        let shape = Shape::Named(name.clone(), vec![]);
+        if self.plain(&shape) || !self.named_holds_counts(&shape) {
+            return;
+        }
+        let field_lines = |e: &mut Self, fs: &Fields, src: &str| -> String {
+            let mut out = String::new();
+            match fs {
+                Fields::Named(v) => {
+                    for f in v {
+                        let sh = e.shape(&f.ty, &[]);
+                        if let Some(d) = e.dropper(&sh) {
+                            out.push_str(&format!("\t{d}({src}.{})\n", field_ident(f.name.as_ref().unwrap())));
+                        }
+                    }
+                }
+                Fields::Tuple(v) => {
+                    for (i, f) in v.iter().enumerate() {
+                        let sh = e.shape(&f.ty, &[]);
+                        if let Some(d) = e.dropper(&sh) {
+                            out.push_str(&format!("\t{d}({src}._{i})\n"));
+                        }
+                    }
+                }
+                Fields::Unit => {}
+            }
+            out
+        };
+        let mut body = String::new();
+        match &def.kind {
+            Kind::Struct(Fields::Tuple(fs)) if fs.len() == 1 => {
+                let inner = self.shape(&fs[0].ty, &[]);
+                let it = self.odin(&inner);
+                if let Some(d) = self.dropper(&inner) {
+                    body.push_str(&format!("\t{d}(cast({it})x)\n"));
+                }
+            }
+            Kind::Struct(fs) => body.push_str(&field_lines(self, fs, "x")),
+            Kind::Enum(vs) => {
+                let mut cases = String::new();
+                for v in vs {
+                    let lines = field_lines(self, &v.fields, "y");
+                    if !lines.is_empty() {
+                        cases.push_str(&format!("\tcase {name}_{}:\n{}", v.name, lines.replace('\t', "\t\t")));
+                    }
+                }
+                if !cases.is_empty() {
+                    body.push_str(&format!("\t#partial switch y in x {{\n{cases}\t}}\n"));
+                }
+            }
+        }
+        let _ = writeln!(self.clone_out, "drop_{name} :: proc(x: {name}) {{\n{body}}}\n");
     }
 }
 

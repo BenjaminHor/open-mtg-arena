@@ -36,7 +36,7 @@ pvec_at :: proc(v: PVec($T), i: int) -> ^T {
 @(private)
 pvec_own_chunk :: proc(v: ^PVec($T), c: int, clone: proc(x: T) -> T) -> ^PChunk(T) {
 	p := v.chunks[c]
-	if shared_count(p)^ > 1 {
+	if must_copy(p) {
 		q := shared_new(PChunk(T))
 		q.n = p.n
 		for k in 0 ..< p.n do q.items[k] = clone(p.items[k])
@@ -82,4 +82,14 @@ pvec_clone :: proc(v: PVec($T)) -> PVec(T) {
 		out.chunks[i] = c
 	}
 	return out
+}
+
+// Drop (Rust's, for the counts): this vector lets go of its chunks; a chunk nobody else holds drops its elements
+// with `drop` (nil when they hold no counts). Memory stays with its arena.
+pvec_drop :: proc(v: PVec($T), drop: proc(x: T)) {
+	for c in v.chunks {
+		n := shared_count(c)
+		n^ -= 1
+		if n^ == 0 && drop != nil do for k in 0 ..< c.n do drop(c.items[k])
+	}
 }

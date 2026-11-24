@@ -15217,3 +15217,6445 @@ clone_CopyEntryPendingCounters :: proc(x: CopyEntryPendingCounters) -> CopyEntry
 	return out
 }
 
+drop_CardExportEntry :: proc(x: CardExportEntry) {
+	drop_CardFace(x.face)
+}
+
+drp_dyn_Player :: proc(x: [dynamic]Player) {
+	for item in x do drop_Player(item)
+}
+
+drp_ptr_GraveyardPermissionLatch :: proc(x: ^GraveyardPermissionLatch) {
+	if x != nil do drop_GraveyardPermissionLatch(x^)
+}
+
+drp_PVec_ObjectId :: proc(x: PVec(ObjectId)) {
+	pvec_drop(x, nil)
+}
+
+drp_PVec_StackEntry :: proc(x: PVec(StackEntry)) {
+	pvec_drop(x, drop_StackEntry)
+}
+
+drp_opt_CombatState :: proc(x: Maybe(CombatState)) {
+	if y, ok := x.?; ok do drop_CombatState(y)
+}
+
+drp_opt_StackResolutionSession :: proc(x: Maybe(StackResolutionSession)) {
+	if y, ok := x.?; ok do drop_StackResolutionSession(y)
+}
+
+drp_opt_PendingReplacement :: proc(x: Maybe(PendingReplacement)) {
+	if y, ok := x.?; ok do drop_PendingReplacement(y)
+}
+
+drp_ptr_PendingCombatLifelink :: proc(x: ^PendingCombatLifelink) {
+	if x != nil do drop_PendingCombatLifelink(x^)
+}
+
+drp_map_ObjectId_LiminalEntry :: proc(x: map[ObjectId]LiminalEntry) {
+	for key, val in x {
+		drop_LiminalEntry(val)
+	}
+}
+
+drp_opt_PendingLiminalEntryResume :: proc(x: Maybe(PendingLiminalEntryResume)) {
+	if y, ok := x.?; ok do drop_PendingLiminalEntryResume(y)
+}
+
+drp_opt_EnteringAuraAuthority :: proc(x: Maybe(EnteringAuraAuthority)) {
+	if y, ok := x.?; ok do drop_EnteringAuraAuthority(y)
+}
+
+drp_dyn_ParkedEntry :: proc(x: [dynamic]ParkedEntry) {
+	for item in x do drop_ParkedEntry(item)
+}
+
+drp_dyn_GameEvent :: proc(x: [dynamic]GameEvent) {
+	for item in x do drop_GameEvent(item)
+}
+
+drp_shared_dyn_t2_StaticGateKey_bool :: proc(x: ^[dynamic]Tuple2(StaticGateKey, bool)) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_ptr_PlayTrace :: proc(x: ^PlayTrace) {
+	if x != nil do drop_PlayTrace(x^)
+}
+
+drp_ptr_LifeSafetyProbe :: proc(x: ^LifeSafetyProbe) {
+	if x != nil do drop_LifeSafetyProbe(x^)
+}
+
+drp_PVec_TransientContinuousEffect :: proc(x: PVec(TransientContinuousEffect)) {
+	pvec_drop(x, drop_TransientContinuousEffect)
+}
+
+drp_shared_map_ObjectId_ObjectAttribution :: proc(x: ^map[ObjectId]ObjectAttribution) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_shared_dyn_ObjectId :: proc(x: ^[dynamic]ObjectId) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_ptr_PendingTrigger :: proc(x: ^PendingTrigger) {
+	if x != nil do drop_PendingTrigger(x^)
+}
+
+drp_dyn_PendingTriggerContext :: proc(x: [dynamic]PendingTriggerContext) {
+	for item in x do drop_PendingTriggerContext(item)
+}
+
+drp_opt_PendingTriggerOrder :: proc(x: Maybe(PendingTriggerOrder)) {
+	if y, ok := x.?; ok do drop_PendingTriggerOrder(y)
+}
+
+drp_dyn_ConsumedTriggerEventOccurrence :: proc(x: [dynamic]ConsumedTriggerEventOccurrence) {
+	for item in x do drop_ConsumedTriggerEventOccurrence(item)
+}
+
+drp_dyn_DelayedTrigger :: proc(x: [dynamic]DelayedTrigger) {
+	for item in x do drop_DelayedTrigger(item)
+}
+
+drp_shared_map_TrackedSetId_dyn_ObjectId :: proc(x: ^map[TrackedSetId][dynamic]ObjectId) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_dyn_ZoneChangeRecord :: proc(x: [dynamic]ZoneChangeRecord) {
+	for item in x do drop_ZoneChangeRecord(item)
+}
+
+drp_map_ReturnResultId_dyn_ZoneChangeRecord :: proc(x: map[ReturnResultId][dynamic]ZoneChangeRecord) {
+	for key, val in x {
+		drp_dyn_ZoneChangeRecord(val)
+	}
+}
+
+drp_map_ReturnResultOccurrenceId_map_ReturnResultId_dyn_ZoneChangeRecord :: proc(x: map[ReturnResultOccurrenceId]map[ReturnResultId][dynamic]ZoneChangeRecord) {
+	for key, val in x {
+		drp_map_ReturnResultId_dyn_ZoneChangeRecord(val)
+	}
+}
+
+drp_shared_map_ObjectId_ThisWayCause :: proc(x: ^map[ObjectId]ThisWayCause) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_map_TrackedSetId_ptr_map_ObjectId_ThisWayCause :: proc(x: map[TrackedSetId]^map[ObjectId]ThisWayCause) {
+	for key, val in x {
+		drp_shared_map_ObjectId_ThisWayCause(val)
+	}
+}
+
+drp_shared_map_TrackedSetId_ptr_map_ObjectId_ThisWayCause :: proc(x: ^map[TrackedSetId]^map[ObjectId]ThisWayCause) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_TrackedSetId_ptr_map_ObjectId_ThisWayCause(x^)
+}
+
+drp_shared_map_ObjectId_TrackedMemberOrigin :: proc(x: ^map[ObjectId]TrackedMemberOrigin) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_map_TrackedSetId_ptr_map_ObjectId_TrackedMemberOrigin :: proc(x: map[TrackedSetId]^map[ObjectId]TrackedMemberOrigin) {
+	for key, val in x {
+		drp_shared_map_ObjectId_TrackedMemberOrigin(val)
+	}
+}
+
+drp_shared_map_TrackedSetId_ptr_map_ObjectId_TrackedMemberOrigin :: proc(x: ^map[TrackedSetId]^map[ObjectId]TrackedMemberOrigin) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_TrackedSetId_ptr_map_ObjectId_TrackedMemberOrigin(x^)
+}
+
+drp_dyn_PendingCombatPhaseSkip :: proc(x: [dynamic]PendingCombatPhaseSkip) {
+	for item in x do drop_PendingCombatPhaseSkip(item)
+}
+
+drp_dyn_ExtraPhase :: proc(x: [dynamic]ExtraPhase) {
+	for item in x do drop_ExtraPhase(item)
+}
+
+drp_opt_TargetFilter :: proc(x: Maybe(TargetFilter)) {
+	if y, ok := x.?; ok do drop_TargetFilter(y)
+}
+
+drp_dyn_PersistentAxisMaterialization :: proc(x: [dynamic]PersistentAxisMaterialization) {
+	for item in x do drop_PersistentAxisMaterialization(item)
+}
+
+drp_map_PlayerId_dyn_PersistentAxisMaterialization :: proc(x: map[PlayerId][dynamic]PersistentAxisMaterialization) {
+	for key, val in x {
+		drp_dyn_PersistentAxisMaterialization(val)
+	}
+}
+
+drp_dyn_PlayerDeckPool :: proc(x: [dynamic]PlayerDeckPool) {
+	for item in x do drop_PlayerDeckPool(item)
+}
+
+drp_shared_dyn_t2_AbilityUsageKey_u32 :: proc(x: ^[dynamic]Tuple2(AbilityUsageKey, u32)) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_shared_dyn_t2_t2_AbilityUsageKey_u64_u32 :: proc(x: ^[dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32)) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_shared_dyn_t2_t2_ObjectId_int_u32 :: proc(x: ^[dynamic]Tuple2(Tuple2(ObjectId, int), u32)) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_PVec_AbilityActivationRecord :: proc(x: PVec(AbilityActivationRecord)) {
+	pvec_drop(x, drop_AbilityActivationRecord)
+}
+
+drp_map_PlayerId_PVec_AbilityActivationRecord :: proc(x: map[PlayerId]PVec(AbilityActivationRecord)) {
+	for key, val in x {
+		drp_PVec_AbilityActivationRecord(val)
+	}
+}
+
+drp_ptr_map_PlayerId_PVec_AbilityActivationRecord :: proc(x: ^map[PlayerId]PVec(AbilityActivationRecord)) {
+	if x != nil do drp_map_PlayerId_PVec_AbilityActivationRecord(x^)
+}
+
+drp_PVec_SpellCastRecord :: proc(x: PVec(SpellCastRecord)) {
+	pvec_drop(x, drop_SpellCastRecord)
+}
+
+drp_map_PlayerId_PVec_SpellCastRecord :: proc(x: map[PlayerId]PVec(SpellCastRecord)) {
+	for key, val in x {
+		drp_PVec_SpellCastRecord(val)
+	}
+}
+
+drp_PVec_CyclingRecord :: proc(x: PVec(CyclingRecord)) {
+	pvec_drop(x, nil)
+}
+
+drp_map_PlayerId_PVec_CyclingRecord :: proc(x: map[PlayerId]PVec(CyclingRecord)) {
+	for key, val in x {
+		drp_PVec_CyclingRecord(val)
+	}
+}
+
+drp_PVec_LandPlayRecord :: proc(x: PVec(LandPlayRecord)) {
+	pvec_drop(x, nil)
+}
+
+drp_map_PlayerId_PVec_LandPlayRecord :: proc(x: map[PlayerId]PVec(LandPlayRecord)) {
+	for key, val in x {
+		drp_PVec_LandPlayRecord(val)
+	}
+}
+
+drp_dyn_AttackDeclarationRecord :: proc(x: [dynamic]AttackDeclarationRecord) {
+	for item in x do drop_AttackDeclarationRecord(item)
+}
+
+drp_PVec_ZoneChangeRecord :: proc(x: PVec(ZoneChangeRecord)) {
+	pvec_drop(x, drop_ZoneChangeRecord)
+}
+
+drp_PVec_CounterAddedRecord :: proc(x: PVec(CounterAddedRecord)) {
+	pvec_drop(x, drop_CounterAddedRecord)
+}
+
+drp_shared_dyn_t3_TriggerDefinitionRef_u32_int :: proc(x: ^[dynamic]Tuple3(TriggerDefinitionRef, u32, int)) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_PVec_BattlefieldEntryRecord :: proc(x: PVec(BattlefieldEntryRecord)) {
+	pvec_drop(x, drop_BattlefieldEntryRecord)
+}
+
+drp_PVec_DamageRecord :: proc(x: PVec(DamageRecord)) {
+	pvec_drop(x, drop_DamageRecord)
+}
+
+drp_PVec_ExploitRecord :: proc(x: PVec(ExploitRecord)) {
+	pvec_drop(x, nil)
+}
+
+drp_shared_dyn_t2_PlayerId_string :: proc(x: ^[dynamic]Tuple2(PlayerId, string)) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_dyn_PendingSpellCostReduction :: proc(x: [dynamic]PendingSpellCostReduction) {
+	for item in x do drop_PendingSpellCostReduction(item)
+}
+
+drp_dyn_PendingNextSpellModifier :: proc(x: [dynamic]PendingNextSpellModifier) {
+	for item in x do drop_PendingNextSpellModifier(item)
+}
+
+drp_ptr_ResolutionStack :: proc(x: ^ResolutionStack) {
+	if x != nil do drop_ResolutionStack(x^)
+}
+
+drp_ptr_ResolutionPaymentTransaction :: proc(x: ^ResolutionPaymentTransaction) {
+	if x != nil do drop_ResolutionPaymentTransaction(x^)
+}
+
+drp_shared_SpellCastReversal :: proc(x: ^SpellCastReversal) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_opt_PendingPlayerScopeTail :: proc(x: Maybe(PendingPlayerScopeTail)) {
+	if y, ok := x.?; ok do drop_PendingPlayerScopeTail(y)
+}
+
+drp_opt_PendingPlayerScopeSacrificeChoice :: proc(x: Maybe(PendingPlayerScopeSacrificeChoice)) {
+	if y, ok := x.?; ok do drop_PendingPlayerScopeSacrificeChoice(y)
+}
+
+drp_opt_PendingPlayerScopeChoice :: proc(x: Maybe(PendingPlayerScopeChoice)) {
+	if y, ok := x.?; ok do drop_PendingPlayerScopeChoice(y)
+}
+
+drp_ptr_PendingPlayerScopeUnlessPayment :: proc(x: ^PendingPlayerScopeUnlessPayment) {
+	if x != nil do drop_PendingPlayerScopeUnlessPayment(x^)
+}
+
+drp_ptr_PendingSimultaneousUnless :: proc(x: ^PendingSimultaneousUnless) {
+	if x != nil do drop_PendingSimultaneousUnless(x^)
+}
+
+drp_ptr_PendingPlayerScopeUnlessPunishment :: proc(x: ^PendingPlayerScopeUnlessPunishment) {
+	if x != nil do drop_PendingPlayerScopeUnlessPunishment(x^)
+}
+
+drp_ptr_PendingDiscardBatch :: proc(x: ^PendingDiscardBatch) {
+	if x != nil do drop_PendingDiscardBatch(x^)
+}
+
+drp_ptr_PendingMassLibraryOrderChoice :: proc(x: ^PendingMassLibraryOrderChoice) {
+	if x != nil do drop_PendingMassLibraryOrderChoice(x^)
+}
+
+drp_opt_PendingScopedLibrarySearch :: proc(x: Maybe(PendingScopedLibrarySearch)) {
+	if y, ok := x.?; ok do drop_PendingScopedLibrarySearch(y)
+}
+
+drp_opt_LibrarySearchDeliveryResume :: proc(x: Maybe(LibrarySearchDeliveryResume)) {
+	if y, ok := x.?; ok do drop_LibrarySearchDeliveryResume(y)
+}
+
+drp_ptr_PendingDieRollInstruction :: proc(x: ^PendingDieRollInstruction) {
+	if x != nil do drop_PendingDieRollInstruction(x^)
+}
+
+drp_dyn_ReplacementAutoChoiceRecord :: proc(x: [dynamic]ReplacementAutoChoiceRecord) {
+	for item in x do drop_ReplacementAutoChoiceRecord(item)
+}
+
+drp_opt_ReplacementAutoChoiceTail :: proc(x: Maybe(ReplacementAutoChoiceTail)) {
+	if y, ok := x.?; ok do drop_ReplacementAutoChoiceTail(y)
+}
+
+drp_dyn_PendingBeginGameAbility :: proc(x: [dynamic]PendingBeginGameAbility) {
+	for item in x do drop_PendingBeginGameAbility(item)
+}
+
+drp_opt_ChoiceValue :: proc(x: Maybe(ChoiceValue)) {
+	if y, ok := x.?; ok do drop_ChoiceValue(y)
+}
+
+drp_opt_ChosenDamageSource :: proc(x: Maybe(ChosenDamageSource)) {
+	if y, ok := x.?; ok do drop_ChosenDamageSource(y)
+}
+
+drp_shared_dyn_string :: proc(x: ^[dynamic]string) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_map_string_CardFace :: proc(x: map[string]CardFace) {
+	for key, val in x {
+		drop_CardFace(val)
+	}
+}
+
+drp_shared_map_string_CardFace :: proc(x: ^map[string]CardFace) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_string_CardFace(x^)
+}
+
+drp_shared_map_string_MeldPairRecord :: proc(x: ^map[string]MeldPairRecord) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_opt_CardDbHandle :: proc(x: Maybe(CardDbHandle)) {
+	if y, ok := x.?; ok do drop_CardDbHandle(y)
+}
+
+drp_shared_BoosterShelf :: proc(x: ^BoosterShelf) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drop_BoosterShelf(x^)
+}
+
+drp_PVec_t2_PlayerId_u32 :: proc(x: PVec(Tuple2(PlayerId, u32))) {
+	pvec_drop(x, nil)
+}
+
+drp_opt_ClauseMinimumSnapshot :: proc(x: Maybe(ClauseMinimumSnapshot)) {
+	if y, ok := x.?; ok do drop_ClauseMinimumSnapshot(y)
+}
+
+drp_dyn_EpicEffect :: proc(x: [dynamic]EpicEffect) {
+	for item in x do drop_EpicEffect(item)
+}
+
+drp_PVec_ResolvedAbility :: proc(x: PVec(ResolvedAbility)) {
+	pvec_drop(x, drop_ResolvedAbility)
+}
+
+drp_ptr_PVec_ResolvedAbility :: proc(x: ^PVec(ResolvedAbility)) {
+	if x != nil do drp_PVec_ResolvedAbility(x^)
+}
+
+drp_dyn_GameRestriction :: proc(x: [dynamic]GameRestriction) {
+	for item in x do drop_GameRestriction(item)
+}
+
+drp_dyn_ReplacementDefinition :: proc(x: [dynamic]ReplacementDefinition) {
+	for item in x do drop_ReplacementDefinition(item)
+}
+
+drp_opt_PhaseTransitionProgress :: proc(x: Maybe(PhaseTransitionProgress)) {
+	if y, ok := x.?; ok do drop_PhaseTransitionProgress(y)
+}
+
+drp_opt_GameEvent :: proc(x: Maybe(GameEvent)) {
+	if y, ok := x.?; ok do drop_GameEvent(y)
+}
+
+drp_opt_StackEntry :: proc(x: Maybe(StackEntry)) {
+	if y, ok := x.?; ok do drop_StackEntry(y)
+}
+
+drp_map_ObjectId_dyn_GameEvent :: proc(x: map[ObjectId][dynamic]GameEvent) {
+	for key, val in x {
+		drp_dyn_GameEvent(val)
+	}
+}
+
+drp_map_ObjectId_LKISnapshot :: proc(x: map[ObjectId]LKISnapshot) {
+	for key, val in x {
+		drop_LKISnapshot(val)
+	}
+}
+
+drp_shared_map_ObjectId_LKISnapshot :: proc(x: ^map[ObjectId]LKISnapshot) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_ObjectId_LKISnapshot(x^)
+}
+
+drp_map_ObjectId_CopiableValues :: proc(x: map[ObjectId]CopiableValues) {
+	for key, val in x {
+		drop_CopiableValues(val)
+	}
+}
+
+drp_shared_map_ObjectId_CopiableValues :: proc(x: ^map[ObjectId]CopiableValues) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_ObjectId_CopiableValues(x^)
+}
+
+drp_map_u64_LKISnapshot :: proc(x: map[u64]LKISnapshot) {
+	for key, val in x {
+		drop_LKISnapshot(val)
+	}
+}
+
+drp_shared_map_u64_LKISnapshot :: proc(x: ^map[u64]LKISnapshot) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_u64_LKISnapshot(x^)
+}
+
+drp_map_ObjectId_ptr_map_u64_LKISnapshot :: proc(x: map[ObjectId]^map[u64]LKISnapshot) {
+	for key, val in x {
+		drp_shared_map_u64_LKISnapshot(val)
+	}
+}
+
+drp_shared_map_ObjectId_ptr_map_u64_LKISnapshot :: proc(x: ^map[ObjectId]^map[u64]LKISnapshot) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_ObjectId_ptr_map_u64_LKISnapshot(x^)
+}
+
+drp_map_u64_CopiableValues :: proc(x: map[u64]CopiableValues) {
+	for key, val in x {
+		drop_CopiableValues(val)
+	}
+}
+
+drp_shared_map_u64_CopiableValues :: proc(x: ^map[u64]CopiableValues) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_u64_CopiableValues(x^)
+}
+
+drp_map_ObjectId_ptr_map_u64_CopiableValues :: proc(x: map[ObjectId]^map[u64]CopiableValues) {
+	for key, val in x {
+		drp_shared_map_u64_CopiableValues(val)
+	}
+}
+
+drp_shared_map_ObjectId_ptr_map_u64_CopiableValues :: proc(x: ^map[ObjectId]^map[u64]CopiableValues) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_ObjectId_ptr_map_u64_CopiableValues(x^)
+}
+
+drp_map_u64_DepartedStackSpell :: proc(x: map[u64]DepartedStackSpell) {
+	for key, val in x {
+		drop_DepartedStackSpell(val)
+	}
+}
+
+drp_shared_map_u64_DepartedStackSpell :: proc(x: ^map[u64]DepartedStackSpell) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_u64_DepartedStackSpell(x^)
+}
+
+drp_map_ObjectId_ptr_map_u64_DepartedStackSpell :: proc(x: map[ObjectId]^map[u64]DepartedStackSpell) {
+	for key, val in x {
+		drp_shared_map_u64_DepartedStackSpell(val)
+	}
+}
+
+drp_shared_map_ObjectId_ptr_map_u64_DepartedStackSpell :: proc(x: ^map[ObjectId]^map[u64]DepartedStackSpell) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_ObjectId_ptr_map_u64_DepartedStackSpell(x^)
+}
+
+drp_map_ObjectId_StackEntry :: proc(x: map[ObjectId]StackEntry) {
+	for key, val in x {
+		drop_StackEntry(val)
+	}
+}
+
+drp_shared_map_ObjectId_StackEntry :: proc(x: ^map[ObjectId]StackEntry) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_ObjectId_StackEntry(x^)
+}
+
+drp_opt_PendingCostMoveResume :: proc(x: Maybe(PendingCostMoveResume)) {
+	if y, ok := x.?; ok do drop_PendingCostMoveResume(y)
+}
+
+drp_opt_DeferredLifeCostResume :: proc(x: Maybe(DeferredLifeCostResume)) {
+	if y, ok := x.?; ok do drop_DeferredLifeCostResume(y)
+}
+
+drp_ptr_TriggeredManaResume :: proc(x: ^TriggeredManaResume) {
+	if x != nil do drop_TriggeredManaResume(x^)
+}
+
+drp_ptr_PendingDiscardForCostResume :: proc(x: ^PendingDiscardForCostResume) {
+	if x != nil do drop_PendingDiscardForCostResume(x^)
+}
+
+drp_ptr_PendingCast :: proc(x: ^PendingCast) {
+	if x != nil do drop_PendingCast(x^)
+}
+
+drp_opt_InFlightSpellTriggerCarrier :: proc(x: Maybe(InFlightSpellTriggerCarrier)) {
+	if y, ok := x.?; ok do drop_InFlightSpellTriggerCarrier(y)
+}
+
+drp_ptr_DamageBatchLedger :: proc(x: ^DamageBatchLedger) {
+	if x != nil do drop_DamageBatchLedger(x^)
+}
+
+drop_GameState :: proc(x: GameState) {
+	drp_dyn_Player(x.players)
+	drop_ObjectMap(x.objects)
+	drop_ResolvedRulesJournal(x.resolved_rules_journal)
+	drop_PreEntryBoardCache(x.pre_entry_board_cache)
+	drp_ptr_GraveyardPermissionLatch(x.active_graveyard_permission_latch)
+	drp_PVec_ObjectId(x.battlefield)
+	drp_PVec_StackEntry(x.stack)
+	drp_PVec_ObjectId(x.exile)
+	drp_PVec_ObjectId(x.command_zone)
+	drp_opt_CombatState(x.combat)
+	drop_WaitingFor(x.waiting_for)
+	drp_opt_StackResolutionSession(x.stack_resolution_session)
+	drp_opt_PendingReplacement(x.pending_replacement)
+	drp_ptr_PendingCombatLifelink(x.pending_combat_lifelink)
+	drp_map_ObjectId_LiminalEntry(x.liminal_entries)
+	drp_opt_PendingLiminalEntryResume(x.pending_liminal_entry_resume)
+	drp_opt_EnteringAuraAuthority(x.entering_aura_authority)
+	drp_dyn_ParkedEntry(x.deferred_entry_events)
+	drp_dyn_GameEvent(x.unsettled_entry_batch_events)
+	drp_shared_dyn_t2_StaticGateKey_bool(x.static_gate_truth)
+	drop_TriggerIndex(x.trigger_index)
+	drop_ReplacementIndex(x.replacement_index)
+	drop_StaticSourceIndex(x.static_source_index)
+	drp_ptr_PlayTrace(x.play_trace)
+	drop_PrecastShortcutRuntime(x.precast_shortcut_runtime)
+	drp_ptr_LifeSafetyProbe(x.life_safety_probe)
+	drp_PVec_TransientContinuousEffect(x.transient_continuous_effects)
+	drp_shared_map_ObjectId_ObjectAttribution(x.attribution)
+	drp_shared_dyn_ObjectId(x.remote_type_layer_recipients)
+	drp_ptr_PendingTrigger(x.pending_trigger)
+	drp_dyn_GameEvent(x.pending_trigger_event_batch)
+	drp_dyn_PendingTriggerContext(x.deferred_triggers)
+	drp_opt_PendingTriggerOrder(x.pending_trigger_order)
+	drp_dyn_ConsumedTriggerEventOccurrence(x.consumed_before_priority_trigger_events)
+	drp_dyn_DelayedTrigger(x.delayed_triggers)
+	drp_shared_map_TrackedSetId_dyn_ObjectId(x.tracked_object_sets)
+	drp_map_ReturnResultOccurrenceId_map_ReturnResultId_dyn_ZoneChangeRecord(x.return_result_frames)
+	drp_shared_map_TrackedSetId_ptr_map_ObjectId_ThisWayCause(x.tracked_set_member_causes)
+	drp_shared_map_TrackedSetId_ptr_map_ObjectId_TrackedMemberOrigin(x.tracked_set_member_origins)
+	drp_dyn_PendingCombatPhaseSkip(x.pending_combat_phase_skips)
+	drp_dyn_ExtraPhase(x.extra_phases)
+	drp_opt_TargetFilter(x.current_combat_attacker_restriction)
+	drp_map_PlayerId_dyn_PersistentAxisMaterialization(x.pending_unbounded_materialization)
+	drp_dyn_PlayerDeckPool(x.deck_pools)
+	drp_shared_dyn_t2_AbilityUsageKey_u32(x.activated_abilities_this_turn)
+	drp_shared_dyn_t2_AbilityUsageKey_u32(x.activated_abilities_this_game)
+	drp_shared_dyn_t2_t2_AbilityUsageKey_u64_u32(x.departed_activated_abilities_this_turn)
+	drp_shared_dyn_t2_t2_AbilityUsageKey_u64_u32(x.departed_activated_abilities_this_game)
+	drp_dyn_GameEvent(x.pending_attack_trigger_events)
+	drp_shared_dyn_t2_t2_ObjectId_int_u32(x.ability_resolutions_this_turn)
+	drp_ptr_map_PlayerId_PVec_AbilityActivationRecord(x.abilities_activated_this_turn_by_player)
+	drp_map_PlayerId_PVec_SpellCastRecord(x.spells_cast_this_game_by_player)
+	drp_map_PlayerId_PVec_CyclingRecord(x.cycles_completed_this_game_by_player)
+	drp_map_PlayerId_PVec_SpellCastRecord(x.spells_cast_this_turn_by_player)
+	drp_map_PlayerId_PVec_LandPlayRecord(x.lands_played_this_turn_by_player)
+	drp_dyn_AttackDeclarationRecord(x.attacker_declarations_this_turn)
+	drp_PVec_ZoneChangeRecord(x.created_tokens_this_turn)
+	drp_PVec_CounterAddedRecord(x.counter_added_this_turn)
+	drp_PVec_ZoneChangeRecord(x.sacrificed_permanents_this_turn)
+	drp_PVec_ZoneChangeRecord(x.zone_changes_this_turn)
+	drop_BattlefieldEntryObservations(x.battlefield_entry_observations)
+	drp_shared_dyn_t3_TriggerDefinitionRef_u32_int(x.batched_zone_change_trigger_fired)
+	drp_PVec_BattlefieldEntryRecord(x.battlefield_entries_this_turn)
+	drp_PVec_DamageRecord(x.damage_dealt_this_turn)
+	drp_PVec_ExploitRecord(x.creatures_exploited_this_turn)
+	drp_shared_dyn_t2_PlayerId_string(x.creature_types_dealt_combat_damage_this_turn)
+	drp_dyn_PendingSpellCostReduction(x.pending_spell_cost_reductions)
+	drp_dyn_PendingNextSpellModifier(x.pending_next_spell_modifiers)
+	drp_ptr_ResolutionStack(x.resolution_stack)
+	drp_ptr_ResolutionPaymentTransaction(x.payment_transaction)
+	drp_shared_SpellCastReversal(x.spell_cast_reversal)
+	drp_opt_PendingPlayerScopeTail(x.resolving_player_scope_tail)
+	drp_opt_PendingPlayerScopeSacrificeChoice(x.pending_player_scope_sacrifice_choice)
+	drp_opt_PendingPlayerScopeChoice(x.pending_player_scope_choice)
+	drp_ptr_PendingPlayerScopeUnlessPayment(x.pending_player_scope_unless_payment)
+	drp_ptr_PendingSimultaneousUnless(x.pending_simultaneous_unless)
+	drp_ptr_PendingPlayerScopeUnlessPunishment(x.pending_player_scope_unless_punishment)
+	drp_ptr_PendingDiscardBatch(x.pending_discard_batch)
+	drp_ptr_PendingMassLibraryOrderChoice(x.pending_mass_library_order_choice)
+	drp_opt_PendingScopedLibrarySearch(x.pending_scoped_library_search)
+	drp_opt_LibrarySearchDeliveryResume(x.pending_library_search_delivery)
+	drp_ptr_PendingDieRollInstruction(x.pending_die_roll_instruction)
+	drp_dyn_ReplacementAutoChoiceRecord(x.replacement_auto_choices)
+	drp_opt_ReplacementAutoChoiceTail(x.replacement_auto_choice_tail)
+	drp_dyn_PendingBeginGameAbility(x.pending_begin_game_abilities)
+	drp_opt_ChoiceValue(x.last_named_choice)
+	drp_opt_ChosenDamageSource(x.last_chosen_damage_source)
+	drp_shared_dyn_string(x.all_card_names)
+	drp_shared_map_string_CardFace(x.card_face_registry)
+	drp_shared_map_string_MeldPairRecord(x.meld_pair_registry)
+	drp_opt_CardDbHandle(x.card_db)
+	drp_shared_BoosterShelf(x.booster_shelf)
+	drp_shared_dyn_string(x.booster_pack_pool)
+	drp_PVec_t2_PlayerId_u32(x.last_vote_ballots)
+	drp_opt_ClauseMinimumSnapshot(x.clause_minimum_snapshot)
+	drp_dyn_EpicEffect(x.epic_effects)
+	drp_ptr_PVec_ResolvedAbility(x.replacement_continuations)
+	drp_dyn_GameRestriction(x.restrictions)
+	drp_dyn_ReplacementDefinition(x.pending_damage_replacements)
+	drp_opt_PhaseTransitionProgress(x.pending_phase_transition_progress)
+	drp_opt_GameEvent(x.current_trigger_event)
+	drp_opt_StackEntry(x.resolving_stack_entry)
+	drp_dyn_GameEvent(x.current_trigger_events)
+	drp_map_ObjectId_dyn_GameEvent(x.stack_trigger_event_batches)
+	drp_shared_map_ObjectId_LKISnapshot(x.lki_cache)
+	drp_shared_map_ObjectId_CopiableValues(x.lki_copiable_values)
+	drp_shared_map_ObjectId_ptr_map_u64_LKISnapshot(x.lki_by_incarnation)
+	drp_shared_map_ObjectId_ptr_map_u64_CopiableValues(x.lki_copiable_values_by_incarnation)
+	drp_shared_map_ObjectId_ptr_map_u64_DepartedStackSpell(x.departed_stack_spells)
+	drp_shared_map_ObjectId_StackEntry(x.departed_activated_abilities)
+	drp_opt_PendingCostMoveResume(x.pending_cost_move_resume)
+	drp_opt_DeferredLifeCostResume(x.pending_deferred_life_cost_resume)
+	drp_ptr_TriggeredManaResume(x.pending_triggered_mana_resume)
+	drp_ptr_PendingDiscardForCostResume(x.pending_discard_for_cost)
+	drp_ptr_PendingCast(x.pending_cast)
+	drp_opt_InFlightSpellTriggerCarrier(x.in_flight_spell_trigger_carrier)
+	drp_PVec_ObjectId(x.planar_deck)
+	drp_PVec_ObjectId(x.scheme_deck)
+	drp_PVec_ObjectId(x.boss_deck)
+	drp_ptr_DamageBatchLedger(x.damage_batch_ledger)
+}
+
+drop_GameAction :: proc(x: GameAction) {
+	#partial switch y in x {
+	case GameAction_Debug:
+		drop_DebugAction(y._0)
+	}
+}
+
+drp_opt_ReplacementAutoChoiceKey :: proc(x: Maybe(ReplacementAutoChoiceKey)) {
+	if y, ok := x.?; ok do drop_ReplacementAutoChoiceKey(y)
+}
+
+drp_ptr_ResolvedAbility :: proc(x: ^ResolvedAbility) {
+	if x != nil do drop_ResolvedAbility(x^)
+}
+
+drp_ptr_EventObjectSnapshot :: proc(x: ^EventObjectSnapshot) {
+	if x != nil do drop_EventObjectSnapshot(x^)
+}
+
+drp_opt_LibraryPlacementContinuation :: proc(x: Maybe(LibraryPlacementContinuation)) {
+	if y, ok := x.?; ok do drop_LibraryPlacementContinuation(y)
+}
+
+drp_ptr_PendingManaAbility :: proc(x: ^PendingManaAbility) {
+	if x != nil do drop_PendingManaAbility(x^)
+}
+
+drp_dyn_OutsideGameChoiceEntry :: proc(x: [dynamic]OutsideGameChoiceEntry) {
+	for item in x do drop_OutsideGameChoiceEntry(item)
+}
+
+drp_dyn_AbilityDefinition :: proc(x: [dynamic]AbilityDefinition) {
+	for item in x do drop_AbilityDefinition(item)
+}
+
+drp_opt_ResolvingTriggerContext :: proc(x: Maybe(ResolvingTriggerContext)) {
+	if y, ok := x.?; ok do drop_ResolvingTriggerContext(y)
+}
+
+drp_opt_FaceDownProfile :: proc(x: Maybe(FaceDownProfile)) {
+	if y, ok := x.?; ok do drop_FaceDownProfile(y)
+}
+
+drp_ptr_WithEntryEffect :: proc(x: ^WithEntryEffect) {
+	if x != nil do drop_WithEntryEffect(x^)
+}
+
+drp_t3_TargetFilter_CounterType_QuantityExpr :: proc(x: Tuple3(TargetFilter, CounterType, QuantityExpr)) {
+	drop_TargetFilter(x._0)
+	drop_QuantityExpr(x._2)
+}
+
+drp_dyn_t3_TargetFilter_CounterType_QuantityExpr :: proc(x: [dynamic]Tuple3(TargetFilter, CounterType, QuantityExpr)) {
+	for item in x do drp_t3_TargetFilter_CounterType_QuantityExpr(item)
+}
+
+drp_opt_LibraryPosition :: proc(x: Maybe(LibraryPosition)) {
+	if y, ok := x.?; ok do drop_LibraryPosition(y)
+}
+
+drp_opt_Duration :: proc(x: Maybe(Duration)) {
+	if y, ok := x.?; ok do drop_Duration(y)
+}
+
+drp_dyn_TargetSelectionConstraint :: proc(x: [dynamic]TargetSelectionConstraint) {
+	for item in x do drop_TargetSelectionConstraint(item)
+}
+
+drp_opt_NamedChoiceSource :: proc(x: Maybe(NamedChoiceSource)) {
+	if y, ok := x.?; ok do drop_NamedChoiceSource(y)
+}
+
+drp_ptr_OpponentGuessOwner :: proc(x: ^OpponentGuessOwner) {
+	if x != nil do drop_OpponentGuessOwner(x^)
+}
+
+drp_opt_AbilityCost :: proc(x: Maybe(AbilityCost)) {
+	if y, ok := x.?; ok do drop_AbilityCost(y)
+}
+
+drp_dyn_CastingVariantChoiceOption :: proc(x: [dynamic]CastingVariantChoiceOption) {
+	for item in x do drop_CastingVariantChoiceOption(item)
+}
+
+drp_ptr_ActivationCostSnapshot :: proc(x: ^ActivationCostSnapshot) {
+	if x != nil do drop_ActivationCostSnapshot(x^)
+}
+
+drp_dyn_ResolutionOptionalPaymentOption :: proc(x: [dynamic]ResolutionOptionalPaymentOption) {
+	for item in x do drop_ResolutionOptionalPaymentOption(item)
+}
+
+drp_dyn_AbilityCost :: proc(x: [dynamic]AbilityCost) {
+	for item in x do drop_AbilityCost(item)
+}
+
+drp_dyn_dyn_AbilityCost :: proc(x: [dynamic][dynamic]AbilityCost) {
+	for item in x do drp_dyn_AbilityCost(item)
+}
+
+drp_ptr_CollectEvidenceResume :: proc(x: ^CollectEvidenceResume) {
+	if x != nil do drop_CollectEvidenceResume(x^)
+}
+
+drp_ptr_AbilityDefinition :: proc(x: ^AbilityDefinition) {
+	if x != nil do drop_AbilityDefinition(x^)
+}
+
+drp_dyn_ptr_AbilityDefinition :: proc(x: [dynamic]^AbilityDefinition) {
+	for item in x do drp_ptr_AbilityDefinition(item)
+}
+
+drp_t2_PlayerId_PVec_ObjectId :: proc(x: Tuple2(PlayerId, PVec(ObjectId))) {
+	drp_PVec_ObjectId(x._1)
+}
+
+drp_PVec_t2_PlayerId_PVec_ObjectId :: proc(x: PVec(Tuple2(PlayerId, PVec(ObjectId)))) {
+	pvec_drop(x, drp_t2_PlayerId_PVec_ObjectId)
+}
+
+drp_PVec_PileResult :: proc(x: PVec(PileResult)) {
+	pvec_drop(x, drop_PileResult)
+}
+
+drp_dyn_ContinuousModification :: proc(x: [dynamic]ContinuousModification) {
+	for item in x do drop_ContinuousModification(item)
+}
+
+drop_WaitingFor :: proc(x: WaitingFor) {
+	#partial switch y in x {
+	case WaitingFor_ChooseXValue:
+		drp_ptr_PendingCast(y.pending_cast)
+	case WaitingFor_TargetSelection:
+		drp_ptr_PendingCast(y.pending_cast)
+	case WaitingFor_ReplacementChoice:
+		drp_opt_ReplacementAutoChoiceKey(y.remember_identity)
+	case WaitingFor_ExploreChoice:
+		drp_ptr_ResolvedAbility(y.pending_effect)
+	case WaitingFor_ReturnAsAuraTarget:
+		drp_ptr_ResolvedAbility(y.pending_effect)
+	case WaitingFor_ChooseTokenHost:
+		drp_ptr_ResolvedAbility(y.pending_ability)
+	case WaitingFor_RevealUntilBottomOrder:
+		drp_ptr_EventObjectSnapshot(y.reveal_until_hit_snapshot)
+	case WaitingFor_DigRestSplitChoice:
+		drp_opt_LibraryPlacementContinuation(y.completion)
+	case WaitingFor_RevealChoice:
+		drop_TargetFilter(y.filter)
+		drp_ptr_PendingManaAbility(y.pending_mana_ability)
+	case WaitingFor_SearchChoice:
+		drop_SearchSelectionConstraint(y.constraint)
+	case WaitingFor_OutsideGameChoice:
+		drp_dyn_OutsideGameChoiceEntry(y.choices)
+	case WaitingFor_ChooseOneOfBranch:
+		drp_dyn_AbilityDefinition(y.branches)
+		drop_SpellContext(y.context_)
+		drp_ptr_ResolvedAbility(y.continuation)
+		drp_opt_ResolvingTriggerContext(y.trigger_context)
+	case WaitingFor_ConniveDiscard:
+		drop_ConniveSubject(y.conniver)
+	case WaitingFor_DiscardChoice:
+		drp_opt_TargetFilter(y.unless_filter)
+	case WaitingFor_EffectZoneChoice:
+		drp_opt_FaceDownProfile(y.face_down_profile)
+		drp_ptr_WithEntryEffect(y.with_entry_effect)
+		drp_dyn_t3_TargetFilter_CounterType_QuantityExpr(y.conditional_enter_with_counters)
+		drp_opt_LibraryPosition(y.library_position)
+		drp_opt_TargetFilter(y.enters_modified_if)
+		drp_opt_Duration(y.duration)
+	case WaitingFor_TriggerTargetSelection:
+		drp_opt_GameEvent(y.trigger_event)
+		drp_dyn_GameEvent(y.trigger_events)
+		drp_dyn_TargetSelectionConstraint(y.target_constraints)
+	case WaitingFor_NamedChoice:
+		drop_ChoiceType(y.choice_type)
+		drp_opt_NamedChoiceSource(y.source)
+	case WaitingFor_OpponentGuess:
+		drop_ChoiceType(y.choice_type)
+		drp_ptr_OpponentGuessOwner(y.owner)
+	case WaitingFor_DamageSourceChoice:
+		drop_TargetFilter(y.source_filter)
+	case WaitingFor_ModeChoice:
+		drop_ModalChoice(y.modal)
+		drp_ptr_PendingCast(y.pending_cast)
+	case WaitingFor_OptionalCostChoice:
+		drop_AdditionalCost(y.cost)
+		drp_ptr_PendingCast(y.pending_cast)
+	case WaitingFor_ChooseGiftRecipient:
+		drop_CastOpponentChoicePurpose(y.purpose)
+		drp_ptr_PendingCast(y.pending_cast)
+	case WaitingFor_SpliceOffer:
+		drp_ptr_PendingCast(y.pending_cast)
+	case WaitingFor_DefilerPayment:
+		drp_ptr_PendingCast(y.pending_cast)
+	case WaitingFor_OrderCostReductions:
+		drp_ptr_PendingCast(y.pending_cast)
+	case WaitingFor_CastOffer:
+		drop_CastOfferKind(y.kind)
+	case WaitingFor_AlternativeCastChoice:
+		drp_opt_AbilityCost(y.alternative_additional_cost)
+	case WaitingFor_CastingVariantChoice:
+		drp_dyn_CastingVariantChoiceOption(y.options)
+	case WaitingFor_MultiTargetSelection:
+		drp_ptr_ResolvedAbility(y.pending_ability)
+	case WaitingFor_AbilityModeChoice:
+		drop_ModalChoice(y.modal)
+		drp_dyn_AbilityDefinition(y.mode_abilities)
+		drp_opt_AbilityCost(y.ability_cost)
+		drp_ptr_ActivationCostSnapshot(y.activation_cost_snapshot)
+	case WaitingFor_ResolutionOptionalPaymentChoice:
+		drp_dyn_ResolutionOptionalPaymentOption(y.costs)
+	case WaitingFor_LoopShortcut:
+		drop_ConfirmedPeriod(y.period)
+	case WaitingFor_RespondToShortcut:
+		drop_ShortcutProposal(y.proposal)
+	case WaitingFor_UnlessPayment:
+		drop_AbilityCost(y.cost)
+		drp_ptr_ResolvedAbility(y.pending_effect)
+		drp_opt_GameEvent(y.trigger_event)
+	case WaitingFor_UnlessPaymentChooseCost:
+		drp_dyn_AbilityCost(y.costs)
+		drp_ptr_ResolvedAbility(y.pending_effect)
+		drp_opt_GameEvent(y.trigger_event)
+		drp_dyn_dyn_AbilityCost(y.remaining_choices)
+		drp_dyn_AbilityCost(y.chosen)
+	case WaitingFor_WardDiscardChoice:
+		drp_ptr_ResolvedAbility(y.pending_effect)
+		drp_opt_TargetFilter(y.filter)
+	case WaitingFor_WardSacrificeChoice:
+		drp_ptr_ResolvedAbility(y.pending_effect)
+		drp_opt_GameEvent(y.trigger_event)
+	case WaitingFor_UnlessBounceChoice:
+		drp_ptr_ResolvedAbility(y.pending_effect)
+	case WaitingFor_PayCost:
+		drop_PayCostKind(y.kind)
+		drop_CostResume(y.resume)
+	case WaitingFor_ActivationCostOneOfChoice:
+		drp_dyn_AbilityCost(y.costs)
+		drp_ptr_PendingCast(y.pending_cast)
+	case WaitingFor_CostTypeChoice:
+		drop_ChoiceType(y.choice_type)
+		drp_ptr_PendingCast(y.pending_cast)
+	case WaitingFor_BlightChoice:
+		drp_ptr_PendingCast(y.pending_cast)
+	case WaitingFor_PayManaAbilityMana:
+		drp_ptr_PendingManaAbility(y.pending_mana_ability)
+	case WaitingFor_ManaAbilityManaPayment:
+		drp_ptr_PendingManaAbility(y.pending_mana_ability)
+	case WaitingFor_ChooseManaColor:
+		drop_ManaChoiceContext(y.context_)
+	case WaitingFor_CollectEvidenceChoice:
+		drp_ptr_CollectEvidenceResume(y.resume)
+	case WaitingFor_HarmonizeTapChoice:
+		drp_ptr_PendingCast(y.pending_cast)
+	case WaitingFor_RepeatDecision:
+		drp_ptr_ResolvedAbility(y.ability)
+	case WaitingFor_TopOrBottomChoice:
+		drop_LibraryPosition(y.top_position)
+	case WaitingFor_ClashChooseOpponent:
+		drp_ptr_ResolvedAbility(y.ability)
+	case WaitingFor_ChooseFromZoneOpponentChooser:
+		drp_ptr_ResolvedAbility(y.ability)
+	case WaitingFor_ChooseAnnouncingOpponent:
+		drp_ptr_PendingCast(y.pending_cast)
+	case WaitingFor_VoteChoice:
+		drp_PVec_t2_PlayerId_u32(y.ballots)
+		drp_dyn_ptr_AbilityDefinition(y.per_choice_effect)
+		drp_PVec_ObjectId(y.candidate_objects)
+		drp_ptr_AbilityDefinition(y.outcome_template)
+	case WaitingFor_SeparatePilesChooseOpponent:
+		drp_PVec_ObjectId(y.eligible)
+		drp_ptr_AbilityDefinition(y.chosen_pile_effect)
+		drp_ptr_AbilityDefinition(y.unchosen_pile_effect)
+	case WaitingFor_SeparatePilesPartition:
+		drp_PVec_ObjectId(y.eligible)
+		drp_PVec_t2_PlayerId_PVec_ObjectId(y.remaining_subjects)
+		drp_PVec_PileResult(y.completed)
+		drp_ptr_AbilityDefinition(y.chosen_pile_effect)
+		drp_ptr_AbilityDefinition(y.unchosen_pile_effect)
+	case WaitingFor_SeparatePilesChoice:
+		drp_PVec_PileResult(y.pending)
+		drop_PileResult(y.current)
+		drp_ptr_AbilityDefinition(y.chosen_pile_effect)
+		drp_ptr_AbilityDefinition(y.unchosen_pile_effect)
+	case WaitingFor_ChooseObjectsSelection:
+		drp_opt_GameEvent(y.trigger_event)
+	case WaitingFor_CategoryChoice:
+		drop_TargetFilter(y.choose_filter)
+		drop_TargetFilter(y.sacrifice_filter)
+	case WaitingFor_EachPlayerCopyChosenSelection:
+		drop_TargetFilter(y.choose_filter)
+		drp_dyn_ContinuousModification(y.copy_modifications)
+		drp_opt_GameEvent(y.trigger_event)
+	case WaitingFor_KeepWithinTotalPowerChoice:
+		drop_TargetFilter(y.choose_filter)
+		drop_TargetFilter(y.sacrifice_filter)
+	case WaitingFor_KeepExactPermanentsChoice:
+		drop_TargetFilter(y.choose_filter)
+		drop_TargetFilter(y.sacrifice_filter)
+	case WaitingFor_DistributeAmong:
+		drop_DistributionScope(y.scope)
+	case WaitingFor_MoveCountersDistribution:
+		drp_ptr_ResolvedAbility(y.pending_effect)
+	case WaitingFor_RemoveCountersChoice:
+		drp_ptr_ResolvedAbility(y.pending_effect)
+	case WaitingFor_PayAmountChoice:
+		drp_ptr_PendingManaAbility(y.pending_mana_ability)
+	}
+}
+
+drp_dyn_LibrarySearchCardView :: proc(x: [dynamic]LibrarySearchCardView) {
+	for item in x do drop_LibrarySearchCardView(item)
+}
+
+drp_ptr_LKISnapshot :: proc(x: ^LKISnapshot) {
+	if x != nil do drop_LKISnapshot(x^)
+}
+
+drp_ptr_ZoneChangeRecord :: proc(x: ^ZoneChangeRecord) {
+	if x != nil do drop_ZoneChangeRecord(x^)
+}
+
+drp_ptr_CostPaidObjectSnapshot :: proc(x: ^CostPaidObjectSnapshot) {
+	if x != nil do drop_CostPaidObjectSnapshot(x^)
+}
+
+drp_ptr_TriggerSourceContext :: proc(x: ^TriggerSourceContext) {
+	if x != nil do drop_TriggerSourceContext(x^)
+}
+
+drop_GameEvent :: proc(x: GameEvent) {
+	#partial switch y in x {
+	case GameEvent_HiddenSearchViewed:
+		drp_dyn_LibrarySearchCardView(y.cards)
+	case GameEvent_AbilityActivated:
+		drp_ptr_LKISnapshot(y.departed_source_lki)
+		drop_BoundActivationCost(y.activation_cost)
+	case GameEvent_ZoneChanged:
+		drp_ptr_ZoneChangeRecord(y.record)
+	case GameEvent_CreatureEnlisted:
+		drp_ptr_CostPaidObjectSnapshot(y.tapped_snapshot)
+	case GameEvent_AbilityTriggered:
+		drp_dyn_GameEvent(y.causes)
+	case GameEvent_SagaChapterAbilityResolved:
+		drp_ptr_TriggerSourceContext(y.saga)
+	case GameEvent_EffectResolved:
+		drp_ptr_EventObjectSnapshot(y.subject)
+	case GameEvent_AttackersDeclared:
+		drp_dyn_AttackDeclarationRecord(y.declaration_records)
+	case GameEvent_CreatureExploited:
+		drp_ptr_ZoneChangeRecord(y.record)
+	}
+}
+
+drp_dyn_RecordedAction :: proc(x: [dynamic]RecordedAction) {
+	for item in x do drop_RecordedAction(item)
+}
+
+drop_ReplayLog :: proc(x: ReplayLog) {
+	drp_dyn_RecordedAction(x.actions)
+}
+
+drp_opt_PtValue :: proc(x: Maybe(PtValue)) {
+	if y, ok := x.?; ok do drop_PtValue(y)
+}
+
+drp_dyn_Keyword :: proc(x: [dynamic]Keyword) {
+	for item in x do drop_Keyword(item)
+}
+
+drp_dyn_TriggerDefinition :: proc(x: [dynamic]TriggerDefinition) {
+	for item in x do drop_TriggerDefinition(item)
+}
+
+drp_dyn_StaticDefinition :: proc(x: [dynamic]StaticDefinition) {
+	for item in x do drop_StaticDefinition(item)
+}
+
+drp_opt_CleaveVariant :: proc(x: Maybe(CleaveVariant)) {
+	if y, ok := x.?; ok do drop_CleaveVariant(y)
+}
+
+drp_opt_ModalChoice :: proc(x: Maybe(ModalChoice)) {
+	if y, ok := x.?; ok do drop_ModalChoice(y)
+}
+
+drp_opt_AdditionalCost :: proc(x: Maybe(AdditionalCost)) {
+	if y, ok := x.?; ok do drop_AdditionalCost(y)
+}
+
+drp_dyn_CastingRestriction :: proc(x: [dynamic]CastingRestriction) {
+	for item in x do drop_CastingRestriction(item)
+}
+
+drp_dyn_SpellCastingOption :: proc(x: [dynamic]SpellCastingOption) {
+	for item in x do drop_SpellCastingOption(item)
+}
+
+drp_opt_SolveCondition :: proc(x: Maybe(SolveCondition)) {
+	if y, ok := x.?; ok do drop_SolveCondition(y)
+}
+
+drop_CardFace :: proc(x: CardFace) {
+	drp_opt_PtValue(x.power)
+	drp_opt_PtValue(x.toughness)
+	drp_dyn_Keyword(x.keywords)
+	drp_dyn_AbilityDefinition(x.abilities)
+	drp_dyn_TriggerDefinition(x.triggers)
+	drp_dyn_StaticDefinition(x.static_abilities)
+	drp_dyn_ReplacementDefinition(x.replacements)
+	drp_opt_CleaveVariant(x.cleave_variant)
+	drp_opt_ModalChoice(x.modal)
+	drp_opt_AdditionalCost(x.additional_cost)
+	drp_dyn_CastingRestriction(x.casting_restrictions)
+	drp_dyn_SpellCastingOption(x.casting_options)
+	drp_opt_SolveCondition(x.solve_condition)
+}
+
+drop_PtValue :: proc(x: PtValue) {
+	#partial switch y in x {
+	case PtValue_Quantity:
+		drop_QuantityExpr(y._0)
+	}
+}
+
+drp_ptr_ActivationRestriction :: proc(x: ^ActivationRestriction) {
+	if x != nil do drop_ActivationRestriction(x^)
+}
+
+drop_Keyword :: proc(x: Keyword) {
+	#partial switch y in x {
+	case Keyword_Enchant:
+		drop_TargetFilter(y._0)
+	case Keyword_Bestow:
+		drop_BestowCost(y._0)
+	case Keyword_Embalm:
+		drop_EmbalmCost(y._0)
+	case Keyword_Eternalize:
+		drop_EternalizeCost(y._0)
+	case Keyword_Protection:
+		drop_ProtectionTarget(y._0)
+	case Keyword_Cycling:
+		drop_CyclingCost(y._0)
+	case Keyword_Flashback:
+		drop_FlashbackCost(y._0)
+	case Keyword_Ward:
+		drop_WardCost(y._0)
+	case Keyword_Crew:
+		drp_ptr_ActivationRestriction(y.once_per_turn)
+	case Keyword_Morph:
+		drop_MorphCost(y._0)
+	case Keyword_Emerge:
+		drop_EmergeCost(y._0)
+	case Keyword_Escape:
+		drop_EscapeCost(y._0)
+	case Keyword_Evoke:
+		drop_EvokeCost(y._0)
+	case Keyword_Disguise:
+		drop_DisguiseCost(y._0)
+	case Keyword_Blitz:
+		drop_BlitzCost(y._0)
+	case Keyword_Buyback:
+		drop_BuybackCost(y._0)
+	case Keyword_Echo:
+		drop_EchoCost(y._0)
+	case Keyword_Entwine:
+		drop_EntwineCost(y._0)
+	case Keyword_Craft:
+		drop_TargetFilter(y.materials)
+	case Keyword_Affinity:
+		drop_TypedFilter(y._0)
+	case Keyword_CumulativeUpkeep:
+		drop_AbilityCost(y._0)
+	case Keyword_Mobilize:
+		drop_QuantityExpr(y._0)
+	case Keyword_Firebending:
+		drop_QuantityExpr(y._0)
+	case Keyword_Escalate:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drp_ptr_Effect :: proc(x: ^Effect) {
+	if x != nil do drop_Effect(x^)
+}
+
+drp_t2_ReturnResultId_ReturnResultReadSpec :: proc(x: Tuple2(ReturnResultId, ReturnResultReadSpec)) {
+	drop_ReturnResultReadSpec(x._1)
+}
+
+drp_opt_t2_ReturnResultId_ReturnResultReadSpec :: proc(x: Maybe(Tuple2(ReturnResultId, ReturnResultReadSpec))) {
+	if y, ok := x.?; ok do drp_t2_ReturnResultId_ReturnResultReadSpec(y)
+}
+
+drp_dyn_ActivationRestriction :: proc(x: [dynamic]ActivationRestriction) {
+	for item in x do drop_ActivationRestriction(item)
+}
+
+drp_opt_PlayerFilter :: proc(x: Maybe(PlayerFilter)) {
+	if y, ok := x.?; ok do drop_PlayerFilter(y)
+}
+
+drp_opt_AbilityCondition :: proc(x: Maybe(AbilityCondition)) {
+	if y, ok := x.?; ok do drop_AbilityCondition(y)
+}
+
+drp_opt_MultiTargetSpec :: proc(x: Maybe(MultiTargetSpec)) {
+	if y, ok := x.?; ok do drop_MultiTargetSpec(y)
+}
+
+drp_opt_UnlessPayModifier :: proc(x: Maybe(UnlessPayModifier)) {
+	if y, ok := x.?; ok do drop_UnlessPayModifier(y)
+}
+
+drp_opt_QuantityExpr :: proc(x: Maybe(QuantityExpr)) {
+	if y, ok := x.?; ok do drop_QuantityExpr(y)
+}
+
+drp_opt_CostReduction :: proc(x: Maybe(CostReduction)) {
+	if y, ok := x.?; ok do drop_CostReduction(y)
+}
+
+drp_opt_RepeatContinuation :: proc(x: Maybe(RepeatContinuation)) {
+	if y, ok := x.?; ok do drop_RepeatContinuation(y)
+}
+
+drop_AbilityDefinition :: proc(x: AbilityDefinition) {
+	drp_ptr_Effect(x.effect)
+	drp_opt_t2_ReturnResultId_ReturnResultReadSpec(x.reads_return_result)
+	drp_opt_AbilityCost(x.cost)
+	drp_ptr_AbilityDefinition(x.sub_ability)
+	drp_ptr_AbilityDefinition(x.else_ability)
+	drp_opt_Duration(x.duration)
+	drp_dyn_ActivationRestriction(x.activation_restrictions)
+	drp_opt_PlayerFilter(x.activator_filter)
+	drp_opt_AbilityCondition(x.condition)
+	drp_opt_TargetFilter(x.optional_player)
+	drp_opt_MultiTargetSpec(x.multi_target)
+	drp_dyn_TargetSelectionConstraint(x.target_constraints)
+	drp_opt_UnlessPayModifier(x.unless_pay)
+	drp_opt_ModalChoice(x.modal)
+	drp_dyn_AbilityDefinition(x.mode_abilities)
+	drp_opt_QuantityExpr(x.repeat_for)
+	drp_opt_QuantityExpr(x.announced_x)
+	drp_opt_CostReduction(x.cost_reduction)
+	drp_opt_PlayerFilter(x.player_scope)
+	drp_opt_TargetFilter(x.target_chooser)
+	drp_opt_RepeatContinuation(x.repeat_until)
+}
+
+drp_dyn_ZoneChangeClause :: proc(x: [dynamic]ZoneChangeClause) {
+	for item in x do drop_ZoneChangeClause(item)
+}
+
+drp_opt_TriggerConstraint :: proc(x: Maybe(TriggerConstraint)) {
+	if y, ok := x.?; ok do drop_TriggerConstraint(y)
+}
+
+drp_opt_TriggerCondition :: proc(x: Maybe(TriggerCondition)) {
+	if y, ok := x.?; ok do drop_TriggerCondition(y)
+}
+
+drp_opt_StaticCondition :: proc(x: Maybe(StaticCondition)) {
+	if y, ok := x.?; ok do drop_StaticCondition(y)
+}
+
+drp_opt_BlockerCountThreshold :: proc(x: Maybe(BlockerCountThreshold)) {
+	if y, ok := x.?; ok do drop_BlockerCountThreshold(y)
+}
+
+drop_TriggerDefinition :: proc(x: TriggerDefinition) {
+	drp_ptr_AbilityDefinition(x.execute)
+	drp_opt_TargetFilter(x.valid_card)
+	drp_dyn_ZoneChangeClause(x.zone_change_clauses)
+	drp_opt_TargetFilter(x.valid_target)
+	drp_opt_TargetFilter(x.valid_subject_player)
+	drp_opt_TargetFilter(x.valid_source)
+	drp_opt_TriggerConstraint(x.constraint)
+	drp_opt_TriggerCondition(x.condition)
+	drp_opt_StaticCondition(x.attack_cost_condition)
+	drp_opt_UnlessPayModifier(x.unless_pay)
+	drp_opt_BlockerCountThreshold(x.blocker_count)
+}
+
+drp_opt_ParsedCondition :: proc(x: Maybe(ParsedCondition)) {
+	if y, ok := x.?; ok do drop_ParsedCondition(y)
+}
+
+drop_StaticDefinition :: proc(x: StaticDefinition) {
+	drop_StaticMode(x.mode)
+	drp_opt_TargetFilter(x.affected)
+	drp_dyn_ContinuousModification(x.modifications)
+	drp_opt_StaticCondition(x.condition)
+	drp_opt_ParsedCondition(x.per_player_condition)
+}
+
+drp_opt_ReplacementCondition :: proc(x: Maybe(ReplacementCondition)) {
+	if y, ok := x.?; ok do drop_ReplacementCondition(y)
+}
+
+drp_opt_DamageModification :: proc(x: Maybe(DamageModification)) {
+	if y, ok := x.?; ok do drop_DamageModification(y)
+}
+
+drp_ptr_TokenSpec :: proc(x: ^TokenSpec) {
+	if x != nil do drop_TokenSpec(x^)
+}
+
+drp_dyn_TokenSpec :: proc(x: [dynamic]TokenSpec) {
+	for item in x do drop_TokenSpec(item)
+}
+
+drp_opt_dyn_TokenSpec :: proc(x: Maybe([dynamic]TokenSpec)) {
+	if y, ok := x.?; ok do drp_dyn_TokenSpec(y)
+}
+
+drop_ReplacementDefinition :: proc(x: ReplacementDefinition) {
+	drp_ptr_AbilityDefinition(x.execute)
+	drop_ReplacementMode(x.mode)
+	drp_opt_TargetFilter(x.valid_card)
+	drp_opt_ReplacementCondition(x.condition)
+	drp_opt_DamageModification(x.damage_modification)
+	drp_opt_TargetFilter(x.damage_source_filter)
+	drp_opt_TargetFilter(x.redirect_target)
+	drp_ptr_TokenSpec(x.additional_token_spec)
+	drp_opt_dyn_TokenSpec(x.ensure_token_specs)
+	drp_opt_QuantityExpr(x.entry_payment_max)
+}
+
+drop_CleaveVariant :: proc(x: CleaveVariant) {
+	drp_dyn_AbilityDefinition(x.abilities)
+	drp_dyn_TriggerDefinition(x.triggers)
+	drp_dyn_StaticDefinition(x.static_abilities)
+	drp_dyn_ReplacementDefinition(x.replacements)
+}
+
+drp_dyn_ModalSelectionConstraint :: proc(x: [dynamic]ModalSelectionConstraint) {
+	for item in x do drop_ModalSelectionConstraint(item)
+}
+
+drp_ptr_AbilityCost :: proc(x: ^AbilityCost) {
+	if x != nil do drop_AbilityCost(x^)
+}
+
+drop_ModalChoice :: proc(x: ModalChoice) {
+	drp_dyn_ModalSelectionConstraint(x.constraints)
+	drp_ptr_AbilityCost(x.entwine_cost)
+	drop_PlayerFilter(x.chooser)
+	drp_opt_QuantityExpr(x.dynamic_max_choices)
+}
+
+drop_AdditionalCost :: proc(x: AdditionalCost) {
+	#partial switch y in x {
+	case AdditionalCost_Optional:
+		drop_AbilityCost(y.cost)
+	case AdditionalCost_Kicker:
+		drp_dyn_AbilityCost(y.costs)
+	case AdditionalCost_Choice:
+		drp_dyn_AbilityCost(y._0)
+	case AdditionalCost_Required:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drop_CastingRestriction :: proc(x: CastingRestriction) {
+	#partial switch y in x {
+	case CastingRestriction_RequiresCondition:
+		drp_opt_ParsedCondition(y.condition)
+	}
+}
+
+drop_SpellCastingOption :: proc(x: SpellCastingOption) {
+	drp_opt_AbilityCost(x.cost)
+	drp_opt_ParsedCondition(x.condition)
+}
+
+drop_SolveCondition :: proc(x: SolveCondition) {
+	#partial switch y in x {
+	case SolveCondition_ObjectCount:
+		drop_TargetFilter(y.filter)
+	case SolveCondition_Condition:
+		drop_StaticCondition(y.condition)
+	}
+}
+
+drp_opt_CompanionInfo :: proc(x: Maybe(CompanionInfo)) {
+	if y, ok := x.?; ok do drop_CompanionInfo(y)
+}
+
+drp_dyn_ChosenAttribute :: proc(x: [dynamic]ChosenAttribute) {
+	for item in x do drop_ChosenAttribute(item)
+}
+
+drop_Player :: proc(x: Player) {
+	drop_ManaPool(x.mana_pool)
+	drp_PVec_ObjectId(x.library)
+	drp_PVec_ObjectId(x.hand)
+	drp_PVec_ObjectId(x.graveyard)
+	drp_PVec_ObjectId(x.attraction_deck)
+	drp_PVec_ObjectId(x.contraption_deck)
+	drp_opt_CompanionInfo(x.companion)
+	drp_dyn_ChosenAttribute(x.chosen_attributes)
+}
+
+drp_PVec_ResolvedCommandJournalEntry :: proc(x: PVec(ResolvedCommandJournalEntry)) {
+	pvec_drop(x, drop_ResolvedCommandJournalEntry)
+}
+
+drp_PVec_SettlementNode :: proc(x: PVec(SettlementNode)) {
+	pvec_drop(x, nil)
+}
+
+drp_PVec_ProducedManaUnit :: proc(x: PVec(ProducedManaUnit)) {
+	pvec_drop(x, drop_ProducedManaUnit)
+}
+
+drp_PVec_SpentManaUnit :: proc(x: PVec(SpentManaUnit)) {
+	pvec_drop(x, drop_SpentManaUnit)
+}
+
+drop_ResolvedRulesJournal :: proc(x: ResolvedRulesJournal) {
+	drp_PVec_ResolvedCommandJournalEntry(x.entries)
+	drp_PVec_SettlementNode(x.nodes)
+	drp_PVec_ProducedManaUnit(x.produced_mana)
+	drp_PVec_SpentManaUnit(x.spent_mana)
+	drop_JournalIndex(x.index)
+}
+
+drp_opt_CachedBoard :: proc(x: Maybe(CachedBoard)) {
+	if y, ok := x.?; ok do drop_CachedBoard(y)
+}
+
+drp_shared_opt_CachedBoard :: proc(x: ^Maybe(CachedBoard)) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_opt_CachedBoard(x^)
+}
+
+drop_PreEntryBoardCache :: proc(x: PreEntryBoardCache) {
+	drp_shared_opt_CachedBoard(cast(^Maybe(CachedBoard))x)
+}
+
+drp_opt_CastExtraCost :: proc(x: Maybe(CastExtraCost)) {
+	if y, ok := x.?; ok do drop_CastExtraCost(y)
+}
+
+drop_GraveyardPermissionLatch :: proc(x: GraveyardPermissionLatch) {
+	drp_opt_CastExtraCost(x.extra_cost)
+	drop_PendingEntersModifications(x.enters_modifications)
+}
+
+drop_StackEntry :: proc(x: StackEntry) {
+	drop_StackEntryKind(x.kind)
+}
+
+drop_CombatState :: proc(x: CombatState) {
+	drp_dyn_GameEvent(x.pending_blocker_declaration_events)
+}
+
+drp_dyn_StackResolutionEntryFence :: proc(x: [dynamic]StackResolutionEntryFence) {
+	for item in x do drop_StackResolutionEntryFence(item)
+}
+
+drop_StackResolutionSession :: proc(x: StackResolutionSession) {
+	drp_dyn_StackResolutionEntryFence(x.entries)
+}
+
+drp_dyn_SettledDamageGuard :: proc(x: [dynamic]SettledDamageGuard) {
+	for item in x do drop_SettledDamageGuard(item)
+}
+
+drp_dyn_BoundSearchFoundCandidate :: proc(x: [dynamic]BoundSearchFoundCandidate) {
+	for item in x do drop_BoundSearchFoundCandidate(item)
+}
+
+drp_ptr_ProposedEvent :: proc(x: ^ProposedEvent) {
+	if x != nil do drop_ProposedEvent(x^)
+}
+
+drop_PendingReplacement :: proc(x: PendingReplacement) {
+	drop_ProposedEvent(x.proposed)
+	drp_dyn_SettledDamageGuard(x.settled_damage_guards)
+	drp_dyn_BoundSearchFoundCandidate(x.search_found_candidates)
+	drp_opt_Duration(x.exile_duration)
+	drp_opt_AbilityCost(x.may_cost_remaining)
+	drp_ptr_ProposedEvent(x.delivery_boundary)
+}
+
+drp_opt_PendingCombatDamageReplacement :: proc(x: Maybe(PendingCombatDamageReplacement)) {
+	if y, ok := x.?; ok do drop_PendingCombatDamageReplacement(y)
+}
+
+drp_opt_PendingCombatPhaseCRemnant :: proc(x: Maybe(PendingCombatPhaseCRemnant)) {
+	if y, ok := x.?; ok do drop_PendingCombatPhaseCRemnant(y)
+}
+
+drop_PendingCombatLifelink :: proc(x: PendingCombatLifelink) {
+	drp_dyn_GameEvent(x.batch_events)
+	drp_dyn_GameEvent(x.damage_to_players)
+	drp_opt_PendingCombatDamageReplacement(x.replacement)
+	drp_opt_PendingCombatPhaseCRemnant(x.phase_c_remnant)
+}
+
+drp_ptr_CopyTokenSpec :: proc(x: ^CopyTokenSpec) {
+	if x != nil do drop_CopyTokenSpec(x^)
+}
+
+drp_ptr_TokenCopySettlement :: proc(x: ^TokenCopySettlement) {
+	if x != nil do drop_TokenCopySettlement(x^)
+}
+
+drop_LiminalEntry :: proc(x: LiminalEntry) {
+	drop_LiminalEntrant(x.object)
+	drp_opt_Duration(x.sacrifice_at)
+	drp_ptr_CopyTokenSpec(x.copy_resume)
+	drp_ptr_TokenSpec(x.spec_resume)
+	drp_ptr_TokenCopySettlement(x.copy_settlement)
+}
+
+drop_PendingLiminalEntryResume :: proc(x: PendingLiminalEntryResume) {
+	#partial switch y in x {
+	case PendingLiminalEntryResume_Token:
+		drop_ProposedEvent(y.event)
+	}
+}
+
+drp_ptr_GameObject :: proc(x: ^GameObject) {
+	if x != nil do drop_GameObject(x^)
+}
+
+drop_EnteringAuraAuthority :: proc(x: EnteringAuraAuthority) {
+	drp_ptr_GameObject(x.entrant)
+}
+
+drop_ParkedEntry :: proc(x: ParkedEntry) {
+	drop_GameEvent(x.event)
+	drp_dyn_PendingTriggerContext(x.held_triggers)
+}
+
+drp_shared_dyn_t2_TriggerEventKey_dyn_ObjectId :: proc(x: ^[dynamic]Tuple2(TriggerEventKey, [dynamic]ObjectId)) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drop_TriggerIndex :: proc(x: TriggerIndex) {
+	drp_shared_dyn_t2_TriggerEventKey_dyn_ObjectId(x.by_key)
+}
+
+drp_PVec_ReplacementIndexEntry :: proc(x: PVec(ReplacementIndexEntry)) {
+	pvec_drop(x, nil)
+}
+
+drp_t2_ReplacementEvent_PVec_ReplacementIndexEntry :: proc(x: Tuple2(ReplacementEvent, PVec(ReplacementIndexEntry))) {
+	drp_PVec_ReplacementIndexEntry(x._1)
+}
+
+drp_dyn_t2_ReplacementEvent_PVec_ReplacementIndexEntry :: proc(x: [dynamic]Tuple2(ReplacementEvent, PVec(ReplacementIndexEntry))) {
+	for item in x do drp_t2_ReplacementEvent_PVec_ReplacementIndexEntry(item)
+}
+
+drp_shared_dyn_t2_ReplacementEvent_PVec_ReplacementIndexEntry :: proc(x: ^[dynamic]Tuple2(ReplacementEvent, PVec(ReplacementIndexEntry))) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_dyn_t2_ReplacementEvent_PVec_ReplacementIndexEntry(x^)
+}
+
+drop_ReplacementIndex :: proc(x: ReplacementIndex) {
+	drp_shared_dyn_t2_ReplacementEvent_PVec_ReplacementIndexEntry(x.by_event)
+}
+
+drop_StaticSourceIndex :: proc(x: StaticSourceIndex) {
+	drp_PVec_ObjectId(x.battlefield_sources)
+	drp_PVec_ObjectId(x.command_sources)
+}
+
+drp_PVec_TraceEntry :: proc(x: PVec(TraceEntry)) {
+	pvec_drop(x, drop_TraceEntry)
+}
+
+drp_PVec_NodeKey :: proc(x: PVec(NodeKey)) {
+	pvec_drop(x, drop_NodeKey)
+}
+
+drp_shared_map_int_int :: proc(x: ^map[int]int) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_shared_dyn_int :: proc(x: ^[dynamic]int) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_PVec_PendingRead :: proc(x: PVec(PendingRead)) {
+	pvec_drop(x, nil)
+}
+
+drp_PVec_NamedSpan :: proc(x: PVec(NamedSpan)) {
+	pvec_drop(x, nil)
+}
+
+drp_PVec_UndoPoint :: proc(x: PVec(UndoPoint)) {
+	pvec_drop(x, drop_UndoPoint)
+}
+
+drp_shared_map_int_t2_ObjectId_int :: proc(x: ^map[int]Tuple2(ObjectId, int)) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_PVec_CarriedSpan :: proc(x: PVec(CarriedSpan)) {
+	pvec_drop(x, drop_CarriedSpan)
+}
+
+drp_map_PlayerId_CarryingIndex :: proc(x: map[PlayerId]CarryingIndex) {
+	for key, val in x {
+		drop_CarryingIndex(val)
+	}
+}
+
+drp_shared_map_PlayerId_CarryingIndex :: proc(x: ^map[PlayerId]CarryingIndex) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_PlayerId_CarryingIndex(x^)
+}
+
+drp_t2_int_Witnessed :: proc(x: Tuple2(int, Witnessed)) {
+	drop_Witnessed(x._1)
+}
+
+drp_opt_t2_int_Witnessed :: proc(x: Maybe(Tuple2(int, Witnessed))) {
+	if y, ok := x.?; ok do drp_t2_int_Witnessed(y)
+}
+
+drp__2_opt_t2_int_Witnessed :: proc(x: [2]Maybe(Tuple2(int, Witnessed))) {
+	for item in x do drp_opt_t2_int_Witnessed(item)
+}
+
+drp_t2_opt_ObjectId_TraceEntry :: proc(x: Tuple2(Maybe(ObjectId), TraceEntry)) {
+	drop_TraceEntry(x._1)
+}
+
+drp_dyn_t2_opt_ObjectId_TraceEntry :: proc(x: [dynamic]Tuple2(Maybe(ObjectId), TraceEntry)) {
+	for item in x do drp_t2_opt_ObjectId_TraceEntry(item)
+}
+
+drp_opt_dyn_t2_opt_ObjectId_TraceEntry :: proc(x: Maybe([dynamic]Tuple2(Maybe(ObjectId), TraceEntry))) {
+	if y, ok := x.?; ok do drp_dyn_t2_opt_ObjectId_TraceEntry(y)
+}
+
+drp_shared_map_int_opt_TopOfStack :: proc(x: ^map[int]Maybe(TopOfStack)) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drop_PlayTrace :: proc(x: PlayTrace) {
+	drp_PVec_TraceEntry(x.entries)
+	drp_PVec_NodeKey(x.nodes)
+	drp_shared_map_int_int(x.last)
+	drp_shared_dyn_int(x.repeated)
+	drp_shared_dyn_int(x.optional_triggers)
+	drp_shared_dyn_int(x.consumed)
+	drp_shared_map_int_int(x.spent_from)
+	drp_PVec_PendingRead(x.pending_reads)
+	drp_PVec_NamedSpan(x.named)
+	drp_PVec_UndoPoint(x.undo)
+	drp_shared_map_int_t2_ObjectId_int(x.mana_ability_entries)
+	drp_PVec_CarriedSpan(x.carried)
+	drp_PVec_CarriedSpan(x.carried_named)
+	drp_shared_map_PlayerId_CarryingIndex(x.carrying)
+	drp__2_opt_t2_int_Witnessed(x.witnessed)
+	drp_opt_dyn_t2_opt_ObjectId_TraceEntry(x.held)
+	drp_shared_map_int_opt_TopOfStack(x.beneath)
+}
+
+drp_opt_PrecastShortcutOfferRuntime :: proc(x: Maybe(PrecastShortcutOfferRuntime)) {
+	if y, ok := x.?; ok do drop_PrecastShortcutOfferRuntime(y)
+}
+
+drop_PrecastShortcutRuntime :: proc(x: PrecastShortcutRuntime) {
+	drp_opt_PrecastShortcutOfferRuntime(x.offer)
+}
+
+drp_opt_ArmedLifeCostRoot :: proc(x: Maybe(ArmedLifeCostRoot)) {
+	if y, ok := x.?; ok do drop_ArmedLifeCostRoot(y)
+}
+
+drop_LifeSafetyProbe :: proc(x: LifeSafetyProbe) {
+	drp_opt_ArmedLifeCostRoot(x.armed_root)
+}
+
+drop_TransientContinuousEffect :: proc(x: TransientContinuousEffect) {
+	drop_Duration(x.duration)
+	drop_TargetFilter(x.affected)
+	drp_dyn_ContinuousModification(x.modifications)
+	drp_opt_StaticCondition(x.condition)
+	drp_ptr_TriggerSourceContext(x.duration_event_source)
+}
+
+drop_PendingTrigger :: proc(x: PendingTrigger) {
+	drp_opt_TriggerCondition(x.condition)
+	drp_ptr_ResolvedAbility(x.ability)
+	drp_dyn_TargetSelectionConstraint(x.target_constraints)
+	drp_opt_GameEvent(x.trigger_event)
+	drp_opt_ModalChoice(x.modal)
+	drp_dyn_AbilityDefinition(x.mode_abilities)
+}
+
+drop_PendingTriggerContext :: proc(x: PendingTriggerContext) {
+	drop_PendingTrigger(x.pending)
+	drp_dyn_GameEvent(x.trigger_events)
+	drp_dyn_GameEvent(x.causes)
+}
+
+drp_dyn_TriggerOrderGroup :: proc(x: [dynamic]TriggerOrderGroup) {
+	for item in x do drop_TriggerOrderGroup(item)
+}
+
+drp_ptr_WaitingFor :: proc(x: ^WaitingFor) {
+	if x != nil do drop_WaitingFor(x^)
+}
+
+drop_PendingTriggerOrder :: proc(x: PendingTriggerOrder) {
+	drp_dyn_TriggerOrderGroup(x.groups)
+	drp_ptr_WaitingFor(x.resume_after_ordering)
+}
+
+drop_ConsumedTriggerEventOccurrence :: proc(x: ConsumedTriggerEventOccurrence) {
+	drop_GameEvent(x.event)
+}
+
+drop_DelayedTrigger :: proc(x: DelayedTrigger) {
+	drop_DelayedTriggerCondition(x.condition)
+	drp_ptr_ResolvedAbility(x.ability)
+}
+
+drp_dyn_TriggerEntry :: proc(x: [dynamic]TriggerEntry) {
+	for item in x do drop_TriggerEntry(item)
+}
+
+drp_opt_TriggerSourceContext :: proc(x: Maybe(TriggerSourceContext)) {
+	if y, ok := x.?; ok do drop_TriggerSourceContext(y)
+}
+
+drop_ZoneChangeRecord :: proc(x: ZoneChangeRecord) {
+	drp_dyn_Keyword(x.keywords)
+	drp_dyn_TriggerEntry(x.trigger_definitions)
+	drp_opt_TriggerSourceContext(x.trigger_source_context)
+}
+
+drop_PendingCombatPhaseSkip :: proc(x: PendingCombatPhaseSkip) {
+	drp_opt_Duration(x.duration)
+}
+
+drop_ExtraPhase :: proc(x: ExtraPhase) {
+	drp_opt_TargetFilter(x.attacker_restriction)
+}
+
+drp_ptr_TargetFilter :: proc(x: ^TargetFilter) {
+	if x != nil do drop_TargetFilter(x^)
+}
+
+drp_dyn_TargetFilter :: proc(x: [dynamic]TargetFilter) {
+	for item in x do drop_TargetFilter(item)
+}
+
+drp_ptr_PlayerFilter :: proc(x: ^PlayerFilter) {
+	if x != nil do drop_PlayerFilter(x^)
+}
+
+drop_TargetFilter :: proc(x: TargetFilter) {
+	#partial switch y in x {
+	case TargetFilter_Typed:
+		drop_TypedFilter(y._0)
+	case TargetFilter_Not:
+		drp_ptr_TargetFilter(y.filter)
+	case TargetFilter_Or:
+		drp_dyn_TargetFilter(y.filters)
+	case TargetFilter_And:
+		drp_dyn_TargetFilter(y.filters)
+	case TargetFilter_PlayerMatching:
+		drp_ptr_PlayerFilter(y.player)
+	case TargetFilter_TrackedSetFiltered:
+		drp_ptr_TargetFilter(y.filter)
+	case TargetFilter_ChosenDamageSource:
+		drp_ptr_TargetFilter(y.filter)
+	}
+}
+
+drp_ptr_TokenGrowth :: proc(x: ^TokenGrowth) {
+	if x != nil do drop_TokenGrowth(x^)
+}
+
+drop_PersistentAxisMaterialization :: proc(x: PersistentAxisMaterialization) {
+	#partial switch y in x {
+	case PersistentAxisMaterialization_Tokens:
+		drp_ptr_TokenGrowth(y._0)
+	}
+}
+
+drp_dyn_DeckEntry :: proc(x: [dynamic]DeckEntry) {
+	for item in x do drop_DeckEntry(item)
+}
+
+drp_shared_dyn_DeckEntry :: proc(x: ^[dynamic]DeckEntry) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_dyn_DeckEntry(x^)
+}
+
+drop_PlayerDeckPool :: proc(x: PlayerDeckPool) {
+	drp_shared_dyn_DeckEntry(x.registered_main)
+	drp_shared_dyn_DeckEntry(x.registered_sideboard)
+	drp_shared_dyn_DeckEntry(x.current_main)
+	drp_shared_dyn_DeckEntry(x.current_sideboard)
+	drp_shared_dyn_DeckEntry(x.registered_companion)
+	drp_shared_dyn_DeckEntry(x.current_companion)
+	drp_shared_dyn_DeckEntry(x.registered_commander)
+	drp_shared_dyn_DeckEntry(x.current_commander)
+	drp_shared_dyn_DeckEntry(x.registered_signature_spell)
+	drp_shared_dyn_DeckEntry(x.current_signature_spell)
+	drp_shared_dyn_DeckEntry(x.registered_planar_deck)
+	drp_shared_dyn_DeckEntry(x.registered_scheme_deck)
+	drp_shared_dyn_DeckEntry(x.current_scheme_deck)
+}
+
+drp_dyn_ActivationTargetFact :: proc(x: [dynamic]ActivationTargetFact) {
+	for item in x do drop_ActivationTargetFact(item)
+}
+
+drop_AbilityActivationRecord :: proc(x: AbilityActivationRecord) {
+	drop_LKISnapshot(x.source_lki)
+	drop_BoundActivationCost(x.activation_cost)
+	drp_dyn_ActivationTargetFact(x.targets)
+}
+
+drop_SpellCastRecord :: proc(x: SpellCastRecord) {
+	drp_dyn_Keyword(x.keywords)
+}
+
+drop_AttackDeclarationRecord :: proc(x: AttackDeclarationRecord) {
+	drop_LKISnapshot(x.lki)
+}
+
+drop_CounterAddedRecord :: proc(x: CounterAddedRecord) {
+	drp_dyn_Keyword(x.keywords)
+}
+
+drp_shared_TriggerSourceContext :: proc(x: ^TriggerSourceContext) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drop_TriggerSourceContext(x^)
+}
+
+drp_map_int_ptr_TriggerSourceContext :: proc(x: map[int]^TriggerSourceContext) {
+	for key, val in x {
+		drp_shared_TriggerSourceContext(val)
+	}
+}
+
+drp_shared_map_int_ptr_TriggerSourceContext :: proc(x: ^map[int]^TriggerSourceContext) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_int_ptr_TriggerSourceContext(x^)
+}
+
+drop_BattlefieldEntryObservations :: proc(x: BattlefieldEntryObservations) {
+	drp_shared_map_int_ptr_TriggerSourceContext(cast(^map[int]^TriggerSourceContext)x)
+}
+
+drop_BattlefieldEntryRecord :: proc(x: BattlefieldEntryRecord) {
+	drp_dyn_Keyword(x.keywords)
+}
+
+drop_DamageRecord :: proc(x: DamageRecord) {
+	drp_dyn_Keyword(x.source_keywords)
+}
+
+drop_PendingSpellCostReduction :: proc(x: PendingSpellCostReduction) {
+	drp_opt_TargetFilter(x.spell_filter)
+}
+
+drop_PendingNextSpellModifier :: proc(x: PendingNextSpellModifier) {
+	drop_NextSpellModifier(x.modifier)
+	drp_opt_TargetFilter(x.spell_filter)
+}
+
+drop_ResolutionStack :: proc(x: ResolutionStack) {
+	drop_FrameVec(x.frames)
+}
+
+drp_dyn_ResolutionPaymentTranscriptEntry :: proc(x: [dynamic]ResolutionPaymentTranscriptEntry) {
+	for item in x do drop_ResolutionPaymentTranscriptEntry(item)
+}
+
+drp_ptr_PaymentRecoveryCheckpoint :: proc(x: ^PaymentRecoveryCheckpoint) {
+	if x != nil do drop_PaymentRecoveryCheckpoint(x^)
+}
+
+drop_ResolutionPaymentTransaction :: proc(x: ResolutionPaymentTransaction) {
+	drp_ptr_ResolvedAbility(x.root)
+	drp_dyn_ResolutionPaymentTranscriptEntry(x.transcript)
+	drop_WaitingFor(x.base_waiting_for)
+	drp_opt_ResolvingTriggerContext(x.resolving_trigger_context)
+	drp_ptr_PaymentRecoveryCheckpoint(x.recovered)
+}
+
+drop_PendingPlayerScopeTail :: proc(x: PendingPlayerScopeTail) {
+	drp_ptr_ResolvedAbility(x.after_scope)
+}
+
+drop_PendingPlayerScopeSacrificeChoice :: proc(x: PendingPlayerScopeSacrificeChoice) {
+	drp_ptr_ResolvedAbility(x.ability)
+	drop_PendingPlayerScopeSacrificeCompletion(x.completion)
+}
+
+drop_PendingPlayerScopeChoice :: proc(x: PendingPlayerScopeChoice) {
+	drp_ptr_ResolvedAbility(x.ability)
+}
+
+drop_PendingPlayerScopeUnlessPayment :: proc(x: PendingPlayerScopeUnlessPayment) {
+	drp_ptr_ResolvedAbility(x.pending_effect)
+	drop_AbilityCost(x.cost)
+}
+
+drop_PendingSimultaneousUnless :: proc(x: PendingSimultaneousUnless) {
+	drp_ptr_ResolvedAbility(x.ability)
+	drop_UnlessPayModifier(x.unless_pay)
+	drop_SimultaneousUnlessPhase(x.phase)
+	drp_opt_GameEvent(x.trigger_event)
+}
+
+drop_PendingPlayerScopeUnlessPunishment :: proc(x: PendingPlayerScopeUnlessPunishment) {
+	drp_ptr_ResolvedAbility(x.ability)
+	drp_opt_GameEvent(x.trigger_event)
+}
+
+drp_ptr_PendingDiscardFanOut :: proc(x: ^PendingDiscardFanOut) {
+	if x != nil do drop_PendingDiscardFanOut(x^)
+}
+
+drop_PendingDiscardBatch :: proc(x: PendingDiscardBatch) {
+	drp_ptr_PendingDiscardFanOut(x.fan_out)
+	drp_dyn_GameEvent(x.preceding_events)
+}
+
+drop_PendingMassLibraryOrderChoice :: proc(x: PendingMassLibraryOrderChoice) {
+	drop_LibraryPosition(x.library_position)
+	drp_opt_Duration(x.duration)
+}
+
+drop_PendingScopedLibrarySearch :: proc(x: PendingScopedLibrarySearch) {
+	drp_ptr_ResolvedAbility(x.ability)
+	drop_ScopedLibrarySearchPhase(x.phase)
+	drp_ptr_ResolvedAbility(x.after_scope)
+}
+
+drop_LibrarySearchDeliveryResume :: proc(x: LibrarySearchDeliveryResume) {
+	#partial switch y in x {
+	case LibrarySearchDeliveryResume_Scoped:
+		drp_ptr_ResolvedAbility(y.after_scope)
+	}
+}
+
+drp_dyn_DieResultBranch :: proc(x: [dynamic]DieResultBranch) {
+	for item in x do drop_DieResultBranch(item)
+}
+
+drp_opt_DieRollModifier :: proc(x: Maybe(DieRollModifier)) {
+	if y, ok := x.?; ok do drop_DieRollModifier(y)
+}
+
+drop_PendingDieRollInstruction :: proc(x: PendingDieRollInstruction) {
+	drp_dyn_DieResultBranch(x.results_table)
+	drp_opt_DieRollModifier(x.modifier)
+	drp_opt_ResolvingTriggerContext(x.trigger_context)
+}
+
+drop_ReplacementAutoChoiceRecord :: proc(x: ReplacementAutoChoiceRecord) {
+	drop_ReplacementAutoChoiceKey(x.key)
+}
+
+drp_dyn_ReplacementAutoChoiceIdentity :: proc(x: [dynamic]ReplacementAutoChoiceIdentity) {
+	for item in x do drop_ReplacementAutoChoiceIdentity(item)
+}
+
+drop_ReplacementAutoChoiceTail :: proc(x: ReplacementAutoChoiceTail) {
+	drp_dyn_ReplacementAutoChoiceIdentity(x.remaining)
+}
+
+drop_PendingBeginGameAbility :: proc(x: PendingBeginGameAbility) {
+	drp_ptr_ResolvedAbility(x.ability)
+}
+
+drop_ChoiceValue :: proc(x: ChoiceValue) {
+	#partial switch y in x {
+	case ChoiceValue_Keyword:
+		drop_Keyword(y._0)
+	}
+}
+
+drop_ChosenDamageSource :: proc(x: ChosenDamageSource) {
+	drop_TargetFilter(x.source_filter)
+}
+
+drp_shared_CardDatabase :: proc(x: ^CardDatabase) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drop_CardDatabase(x^)
+}
+
+drop_CardDbHandle :: proc(x: CardDbHandle) {
+	drp_shared_CardDatabase(cast(^CardDatabase)x)
+}
+
+drp_dyn_BoosterProduct :: proc(x: [dynamic]BoosterProduct) {
+	for item in x do drop_BoosterProduct(item)
+}
+
+drp_dyn_CardFace :: proc(x: [dynamic]CardFace) {
+	for item in x do drop_CardFace(item)
+}
+
+drop_BoosterShelf :: proc(x: BoosterShelf) {
+	#partial switch y in x {
+	case BoosterShelf_Products:
+		drp_dyn_BoosterProduct(y._0)
+	case BoosterShelf_Cube:
+		drp_dyn_CardFace(y._0)
+	}
+}
+
+drp_t2_QuantityRef_i32 :: proc(x: Tuple2(QuantityRef, i32)) {
+	drop_QuantityRef(x._0)
+}
+
+drp_dyn_t2_QuantityRef_i32 :: proc(x: [dynamic]Tuple2(QuantityRef, i32)) {
+	for item in x do drp_t2_QuantityRef_i32(item)
+}
+
+drop_ClauseMinimumSnapshot :: proc(x: ClauseMinimumSnapshot) {
+	drp_dyn_t2_QuantityRef_i32(x.entries)
+}
+
+drp_shared_ControlChangeInstructionCapture :: proc(x: ^ControlChangeInstructionCapture) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drop_ControlChangeInstructionCapture(x^)
+}
+
+drop_ControlChangeLink :: proc(x: ControlChangeLink) {
+	drp_shared_ControlChangeInstructionCapture(x.capture)
+}
+
+drp_dyn_TriggerSourceContext :: proc(x: [dynamic]TriggerSourceContext) {
+	for item in x do drop_TriggerSourceContext(item)
+}
+
+drp_shared_dyn_TriggerSourceContext :: proc(x: ^[dynamic]TriggerSourceContext) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_dyn_TriggerSourceContext(x^)
+}
+
+drp_dyn_LatchedTriggerDoubler :: proc(x: [dynamic]LatchedTriggerDoubler) {
+	for item in x do drop_LatchedTriggerDoubler(item)
+}
+
+drp_shared_dyn_LatchedTriggerDoubler :: proc(x: ^[dynamic]LatchedTriggerDoubler) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_dyn_LatchedTriggerDoubler(x^)
+}
+
+drop_ControlChangeObservation :: proc(x: ControlChangeObservation) {
+	drop_EventObjectSnapshot(x.subject)
+	drp_shared_dyn_TriggerSourceContext(x.watchers)
+	drp_shared_dyn_LatchedTriggerDoubler(x.doublers)
+	drp_shared_dyn_TriggerSourceContext(x.gain_watchers)
+	drp_shared_dyn_LatchedTriggerDoubler(x.gain_doublers)
+}
+
+drop_QueuedControlChange :: proc(x: QueuedControlChange) {
+	drop_GameEvent(x.event)
+}
+
+drop_EpicEffect :: proc(x: EpicEffect) {
+	drp_ptr_ResolvedAbility(x.spell)
+}
+
+drp_ptr_DelayedAbilityOrigin :: proc(x: ^DelayedAbilityOrigin) {
+	if x != nil do drop_DelayedAbilityOrigin(x^)
+}
+
+drp_ptr_AbilityActivationRecord :: proc(x: ^AbilityActivationRecord) {
+	if x != nil do drop_AbilityActivationRecord(x^)
+}
+
+drp_ptr_ResolvedCoinBranches :: proc(x: ^ResolvedCoinBranches) {
+	if x != nil do drop_ResolvedCoinBranches(x^)
+}
+
+drp_opt_CostPaidObjectSnapshot :: proc(x: Maybe(CostPaidObjectSnapshot)) {
+	if y, ok := x.?; ok do drop_CostPaidObjectSnapshot(y)
+}
+
+drp_dyn_CostPaidObjectRecord :: proc(x: [dynamic]CostPaidObjectRecord) {
+	for item in x do drop_CostPaidObjectRecord(item)
+}
+
+drop_ResolvedAbility :: proc(x: ResolvedAbility) {
+	drop_Effect(x.effect)
+	drp_opt_t2_ReturnResultId_ReturnResultReadSpec(x.reads_return_result)
+	drp_opt_TriggerSourceContext(x.trigger_source)
+	drp_ptr_DelayedAbilityOrigin(x.delayed_origin)
+	drp_opt_CostReduction(x.activation_cost_reduction)
+	drp_ptr_AbilityActivationRecord(x.activation_record)
+	drp_ptr_ResolvedAbility(x.sub_ability)
+	drp_ptr_ResolvedAbility(x.else_ability)
+	drp_ptr_ResolvedCoinBranches(x.coin_branches)
+	drp_opt_Duration(x.duration)
+	drp_opt_AbilityCondition(x.condition)
+	drop_SpellContext(x.context_)
+	drp_opt_TargetFilter(x.optional_player)
+	drp_opt_MultiTargetSpec(x.multi_target)
+	drp_dyn_TargetSelectionConstraint(x.target_constraints)
+	drp_opt_QuantityExpr(x.repeat_for)
+	drp_opt_QuantityExpr(x.announced_x)
+	drp_opt_UnlessPayModifier(x.unless_pay)
+	drp_opt_PlayerFilter(x.player_scope)
+	drp_opt_CostPaidObjectSnapshot(x.cost_paid_object)
+	drp_dyn_CostPaidObjectRecord(x.cost_paid_objects)
+	drp_opt_CostPaidObjectSnapshot(x.effect_context_object)
+	drp_opt_CostPaidObjectSnapshot(x.amassed_army_object)
+	drp_opt_TargetFilter(x.target_chooser)
+	drp_opt_RepeatContinuation(x.repeat_until)
+	drp_opt_ModalChoice(x.modal)
+	drp_dyn_AbilityDefinition(x.mode_abilities)
+}
+
+drop_GameRestriction :: proc(x: GameRestriction) {
+	#partial switch y in x {
+	case GameRestriction_ProhibitActivity:
+		drop_ProhibitedActivity(y.activity)
+	case GameRestriction_CantEnterBattlefieldFrom:
+		drop_TargetFilter(y.filter)
+	}
+}
+
+drp_opt_ExtraPhase :: proc(x: Maybe(ExtraPhase)) {
+	if y, ok := x.?; ok do drop_ExtraPhase(y)
+}
+
+drop_PhaseTransitionProgress :: proc(x: PhaseTransitionProgress) {
+	drp_opt_ExtraPhase(x.scheduled_begin)
+}
+
+drop_LKISnapshot :: proc(x: LKISnapshot) {
+	drp_dyn_Keyword(x.keywords)
+	drp_dyn_ChosenAttribute(x.chosen_attributes)
+}
+
+drp_shared_dyn_AbilityDefinition :: proc(x: ^[dynamic]AbilityDefinition) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_dyn_AbilityDefinition(x^)
+}
+
+drp_shared_dyn_TriggerDefinition :: proc(x: ^[dynamic]TriggerDefinition) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_dyn_TriggerDefinition(x^)
+}
+
+drp_shared_dyn_opt_TriggerPrintedOrigin :: proc(x: ^[dynamic]Maybe(TriggerPrintedOrigin)) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_shared_dyn_ReplacementDefinition :: proc(x: ^[dynamic]ReplacementDefinition) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_dyn_ReplacementDefinition(x^)
+}
+
+drp_shared_dyn_StaticDefinition :: proc(x: ^[dynamic]StaticDefinition) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_dyn_StaticDefinition(x^)
+}
+
+drp_shared_BackFaceData :: proc(x: ^BackFaceData) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drop_BackFaceData(x^)
+}
+
+drop_CopiableValues :: proc(x: CopiableValues) {
+	drp_dyn_Keyword(x.keywords)
+	drp_shared_dyn_AbilityDefinition(x.abilities)
+	drp_shared_dyn_TriggerDefinition(x.trigger_definitions)
+	drp_shared_dyn_opt_TriggerPrintedOrigin(x.trigger_printed_origins)
+	drp_shared_dyn_ReplacementDefinition(x.replacement_definitions)
+	drp_shared_dyn_StaticDefinition(x.static_definitions)
+	drp_shared_BackFaceData(x.prepare_face)
+}
+
+drop_DepartedStackSpell :: proc(x: DepartedStackSpell) {
+	drop_StackEntry(x.entry)
+	drp_ptr_GameObject(x.object)
+}
+
+drp_ptr_PendingReplacement :: proc(x: ^PendingReplacement) {
+	if x != nil do drop_PendingReplacement(x^)
+}
+
+drp_ptr_UnpaidCostSuffix :: proc(x: ^UnpaidCostSuffix) {
+	if x != nil do drop_UnpaidCostSuffix(x^)
+}
+
+drp_ptr_RandomDiscardUnlessPaymentResume :: proc(x: ^RandomDiscardUnlessPaymentResume) {
+	if x != nil do drop_RandomDiscardUnlessPaymentResume(x^)
+}
+
+drp_ptr_PlayerScopeUnlessSettlement :: proc(x: ^PlayerScopeUnlessSettlement) {
+	if x != nil do drop_PlayerScopeUnlessSettlement(x^)
+}
+
+drop_PendingCostMoveResume :: proc(x: PendingCostMoveResume) {
+	#partial switch y in x {
+	case PendingCostMoveResume_Cast:
+		drp_ptr_PendingCast(y.pending)
+		drop_PendingCostMoveCompletion(y.completion)
+		drp_dyn_GameEvent(y.deferred_cost_events)
+	case PendingCostMoveResume_SacrificeForCost:
+		drp_ptr_PendingCast(y.pending)
+		drop_PendingSacrificeCostCompletion(y.completion)
+		drp_dyn_GameEvent(y.deferred_cost_events)
+	case PendingCostMoveResume_WardSacrificePayment:
+		drp_ptr_ResolvedAbility(y.pending_effect)
+		drp_opt_GameEvent(y.trigger_event)
+	case PendingCostMoveResume_ReplacementMayCost:
+		drp_ptr_PendingReplacement(y.outer_replacement)
+	case PendingCostMoveResume_ReplacementMayCostInnerChoice:
+		drp_ptr_PendingReplacement(y.outer_replacement)
+	case PendingCostMoveResume_CollectEvidencePayment:
+		drp_ptr_CollectEvidenceResume(y.resume)
+	case PendingCostMoveResume_UnlessBouncePayment:
+		drp_ptr_ResolvedAbility(y.pending_effect)
+	case PendingCostMoveResume_ManaAbilityPayment:
+		drp_ptr_PendingManaAbility(y.pending)
+		drop_ManaAbilityCostCursor(y.cursor)
+	case PendingCostMoveResume_ActivationMillPayment:
+		drp_ptr_PendingCast(y.pending)
+	case PendingCostMoveResume_CounterCostRemovalPayment:
+		drp_ptr_PendingCast(y.pending)
+		drop_PendingCostMoveCompletion(y.completion)
+	case PendingCostMoveResume_LoyaltyActivation:
+		drp_ptr_ResolvedAbility(y.resolved)
+	case PendingCostMoveResume_CounterAdditionUnlessPayment:
+		drop_AbilityCost(y.cost)
+		drp_ptr_ResolvedAbility(y.pending_effect)
+		drp_opt_GameEvent(y.trigger_event)
+		drp_ptr_UnpaidCostSuffix(y.unpaid_suffix)
+	case PendingCostMoveResume_RandomDiscardUnlessPayment:
+		drp_ptr_RandomDiscardUnlessPaymentResume(y._0)
+	case PendingCostMoveResume_TurnFaceUpCostMove:
+		drp_ptr_AbilityCost(y.remaining_cost)
+		drp_dyn_GameEvent(y.deferred_cost_events)
+	case PendingCostMoveResume_PlayerScopeUnlessSettlement:
+		drp_ptr_PlayerScopeUnlessSettlement(y._0)
+	}
+}
+
+drp_ptr_ManaAbilityResume :: proc(x: ^ManaAbilityResume) {
+	if x != nil do drop_ManaAbilityResume(x^)
+}
+
+drop_DeferredLifeCostResume :: proc(x: DeferredLifeCostResume) {
+	#partial switch y in x {
+	case DeferredLifeCostResume_Cast:
+		drp_ptr_PendingCast(y.pending)
+	case DeferredLifeCostResume_PayAmount:
+		drp_ptr_PendingReplacement(y.pending_entry)
+	case DeferredLifeCostResume_ManaRoot:
+		drp_ptr_ManaAbilityResume(y.resume)
+	case DeferredLifeCostResume_TurnFaceUp:
+		drp_ptr_AbilityCost(y.remaining_cost)
+	}
+}
+
+drp_ptr_PendingTriggerContext :: proc(x: ^PendingTriggerContext) {
+	if x != nil do drop_PendingTriggerContext(x^)
+}
+
+drp_dyn_CollectedTriggerContextBatch :: proc(x: [dynamic]CollectedTriggerContextBatch) {
+	for item in x do drop_CollectedTriggerContextBatch(item)
+}
+
+drop_TriggeredManaResume :: proc(x: TriggeredManaResume) {
+	drp_ptr_PendingTriggerContext(x.current)
+	drp_dyn_PendingTriggerContext(x.accepted_tail)
+	drp_dyn_CollectedTriggerContextBatch(x.collected_batches)
+	drop_ManaTriggerFixedPointResume(x.outer_resume)
+}
+
+drp_ptr_RandomDiscardCostPick :: proc(x: ^RandomDiscardCostPick) {
+	if x != nil do drop_RandomDiscardCostPick(x^)
+}
+
+drop_PendingDiscardForCostResume :: proc(x: PendingDiscardForCostResume) {
+	#partial switch y in x {
+	case PendingDiscardForCostResume_Chosen:
+		drop_PendingCast(y.pending)
+	case PendingDiscardForCostResume_Random:
+		drop_PendingCast(y.pending)
+		drp_ptr_RandomDiscardCostPick(y.paused_pick)
+	}
+}
+
+drp_ptr_PrepaidSpellFinalization :: proc(x: ^PrepaidSpellFinalization) {
+	if x != nil do drop_PrepaidSpellFinalization(x^)
+}
+
+drp_opt_DeferredLifeGainCost :: proc(x: Maybe(DeferredLifeGainCost)) {
+	if y, ok := x.?; ok do drop_DeferredLifeGainCost(y)
+}
+
+drp_opt_Keyword :: proc(x: Maybe(Keyword)) {
+	if y, ok := x.?; ok do drop_Keyword(y)
+}
+
+drp_dyn_AdditionalCostInstance :: proc(x: [dynamic]AdditionalCostInstance) {
+	for item in x do drop_AdditionalCostInstance(item)
+}
+
+drp_dyn_DeferredSpellSacrifice :: proc(x: [dynamic]DeferredSpellSacrifice) {
+	for item in x do drop_DeferredSpellSacrifice(item)
+}
+
+drp_dyn_DeferredSpellTap :: proc(x: [dynamic]DeferredSpellTap) {
+	for item in x do drop_DeferredSpellTap(item)
+}
+
+drp_ptr_PendingActivationTriggerCollection :: proc(x: ^PendingActivationTriggerCollection) {
+	if x != nil do drop_PendingActivationTriggerCollection(x^)
+}
+
+drop_PendingCast :: proc(x: PendingCast) {
+	drp_ptr_ResolvedAbility(x.ability)
+	drp_ptr_ActivationCostSnapshot(x.activation_cost_snapshot)
+	drp_opt_AbilityCost(x.activation_cost)
+	drp_ptr_PrepaidSpellFinalization(x.prepaid_finalization)
+	drp_opt_DeferredLifeGainCost(x.deferred_life_gain_cost)
+	drp_dyn_TargetSelectionConstraint(x.target_constraints)
+	drp_opt_Keyword(x.alternative_cost_keyword)
+	drp_opt_AdditionalCost(x.additional_cost_flow)
+	drp_opt_AbilityCost(x.deferred_required_additional_cost)
+	drp_dyn_AdditionalCostInstance(x.additional_cost_queue)
+	drp_opt_ModalChoice(x.deferred_modal_choice)
+	drp_dyn_DeferredSpellSacrifice(x.deferred_sacrificed_permanents)
+	drp_dyn_DeferredSpellTap(x.deferred_tapped_permanents)
+	drp_ptr_PendingActivationTriggerCollection(x.activation_trigger_collection)
+}
+
+drop_InFlightSpellTriggerCarrier :: proc(x: InFlightSpellTriggerCarrier) {
+	drp_ptr_PendingActivationTriggerCollection(x.collection)
+}
+
+drp_dyn_HeldBatchRider :: proc(x: [dynamic]HeldBatchRider) {
+	for item in x do drop_HeldBatchRider(item)
+}
+
+drp_opt_dyn_HeldBatchRider :: proc(x: Maybe([dynamic]HeldBatchRider)) {
+	if y, ok := x.?; ok do drp_dyn_HeldBatchRider(y)
+}
+
+drop_DamageBatchLedger :: proc(x: DamageBatchLedger) {
+	drp_dyn_SettledDamageGuard(x.settled_guards)
+	drp_opt_dyn_HeldBatchRider(x.held_riders)
+}
+
+drp_dyn_ManaUnit :: proc(x: [dynamic]ManaUnit) {
+	for item in x do drop_ManaUnit(item)
+}
+
+drop_ManaPool :: proc(x: ManaPool) {
+	drp_dyn_ManaUnit(x.mana)
+}
+
+drop_CompanionInfo :: proc(x: CompanionInfo) {
+	drop_DeckEntry(x.card)
+}
+
+drp_ptr_LatchedCopiableSnapshot :: proc(x: ^LatchedCopiableSnapshot) {
+	if x != nil do drop_LatchedCopiableSnapshot(x^)
+}
+
+drop_ChosenAttribute :: proc(x: ChosenAttribute) {
+	#partial switch y in x {
+	case ChosenAttribute_Keyword:
+		drop_Keyword(y._0)
+	case ChosenAttribute_CopiableSnapshot:
+		drp_ptr_LatchedCopiableSnapshot(y._0)
+	}
+}
+
+drp_dyn_ManaSpellGrant :: proc(x: [dynamic]ManaSpellGrant) {
+	for item in x do drop_ManaSpellGrant(item)
+}
+
+drop_ManaUnit :: proc(x: ManaUnit) {
+	drp_dyn_ManaSpellGrant(x.grants)
+}
+
+drp_t2_ProtectionStartKey_ProtectionStartSnapshot :: proc(x: Tuple2(ProtectionStartKey, ProtectionStartSnapshot)) {
+	drop_ProtectionStartSnapshot(x._1)
+}
+
+drp_dyn_t2_ProtectionStartKey_ProtectionStartSnapshot :: proc(x: [dynamic]Tuple2(ProtectionStartKey, ProtectionStartSnapshot)) {
+	for item in x do drp_t2_ProtectionStartKey_ProtectionStartSnapshot(item)
+}
+
+drp_t2_t3_int_int_ObjectId_ProtectionStartSnapshot :: proc(x: Tuple2(Tuple3(int, int, ObjectId), ProtectionStartSnapshot)) {
+	drop_ProtectionStartSnapshot(x._1)
+}
+
+drp_dyn_t2_t3_int_int_ObjectId_ProtectionStartSnapshot :: proc(x: [dynamic]Tuple2(Tuple3(int, int, ObjectId), ProtectionStartSnapshot)) {
+	for item in x do drp_t2_t3_int_int_ObjectId_ProtectionStartSnapshot(item)
+}
+
+drp_dyn_ProtectionStartGrant :: proc(x: [dynamic]ProtectionStartGrant) {
+	for item in x do drop_ProtectionStartGrant(item)
+}
+
+drp_dyn_ProtectionProvenance :: proc(x: [dynamic]ProtectionProvenance) {
+	for item in x do drop_ProtectionProvenance(item)
+}
+
+drp_dyn_PerpetualModification :: proc(x: [dynamic]PerpetualModification) {
+	for item in x do drop_PerpetualModification(item)
+}
+
+drp_opt_BackFaceData :: proc(x: Maybe(BackFaceData)) {
+	if y, ok := x.?; ok do drop_BackFaceData(y)
+}
+
+drp_map_ManaColor_BackFaceData :: proc(x: map[ManaColor]BackFaceData) {
+	for key, val in x {
+		drop_BackFaceData(val)
+	}
+}
+
+drp_opt_map_ManaColor_BackFaceData :: proc(x: Maybe(map[ManaColor]BackFaceData)) {
+	if y, ok := x.?; ok do drp_map_ManaColor_BackFaceData(y)
+}
+
+drp_opt_CleaveFormState :: proc(x: Maybe(CleaveFormState)) {
+	if y, ok := x.?; ok do drop_CleaveFormState(y)
+}
+
+drp_dyn_CastingPermission :: proc(x: [dynamic]CastingPermission) {
+	for item in x do drop_CastingPermission(item)
+}
+
+drp_opt_CaseState :: proc(x: Maybe(CaseState)) {
+	if y, ok := x.?; ok do drop_CaseState(y)
+}
+
+drp_opt_ExiledSpellRider :: proc(x: Maybe(ExiledSpellRider)) {
+	if y, ok := x.?; ok do drop_ExiledSpellRider(y)
+}
+
+drp_dyn_ManaSpentSourceSnapshot :: proc(x: [dynamic]ManaSpentSourceSnapshot) {
+	for item in x do drop_ManaSpentSourceSnapshot(item)
+}
+
+drop_GameObject :: proc(x: GameObject) {
+	drp_dyn_t2_ProtectionStartKey_ProtectionStartSnapshot(x.protection_start_snapshots)
+	drp_dyn_t2_t3_int_int_ObjectId_ProtectionStartSnapshot(x.legacy_protection_start_exempt_attachments)
+	drp_dyn_ProtectionStartGrant(x.protection_start_grants)
+	drp_dyn_ProtectionProvenance(x.protection_provenance)
+	drp_dyn_PerpetualModification(x.perpetual_mods)
+	drp_dyn_Keyword(x.keywords)
+	drp_shared_dyn_AbilityDefinition(x.abilities)
+	drp_opt_CleaveVariant(x.cleave_variant)
+	drp_opt_BackFaceData(x.back_face)
+	drp_opt_BackFaceData(x.double_faced_token_alternative)
+	drp_opt_map_ManaColor_BackFaceData(x.specialize_faces)
+	drp_dyn_Keyword(x.base_keywords)
+	drp_shared_dyn_AbilityDefinition(x.base_abilities)
+	drp_shared_dyn_TriggerDefinition(x.base_trigger_definitions)
+	drp_shared_dyn_ReplacementDefinition(x.base_replacement_definitions)
+	drp_shared_dyn_StaticDefinition(x.base_static_definitions)
+	drp_opt_CostPaidObjectSnapshot(x.cast_cost_paid_object)
+	drp_opt_CleaveFormState(x.cleave_form)
+	drp_opt_ModalChoice(x.modal)
+	drp_opt_AdditionalCost(x.additional_cost)
+	drp_dyn_CastingRestriction(x.casting_restrictions)
+	drp_dyn_SpellCastingOption(x.casting_options)
+	drp_dyn_CastingPermission(x.casting_permissions)
+	drp_dyn_ChosenAttribute(x.chosen_attributes)
+	drp_opt_CaseState(x.case_state)
+	drp_shared_BackFaceData(x.copied_prepare_face)
+	drp_dyn_Keyword(x.cast_spell_keywords)
+	drp_opt_ExiledSpellRider(x.exile_from_stack_rider)
+	drp_dyn_ManaSpentSourceSnapshot(x.mana_spent_source_snapshots)
+}
+
+drp_opt_ResolvedRulesCommand :: proc(x: Maybe(ResolvedRulesCommand)) {
+	if y, ok := x.?; ok do drop_ResolvedRulesCommand(y)
+}
+
+drop_ResolvedCommandJournalEntry :: proc(x: ResolvedCommandJournalEntry) {
+	drp_opt_ResolvedRulesCommand(x.command)
+}
+
+drop_ProducedManaUnit :: proc(x: ProducedManaUnit) {
+	drop_ManaUnit(x.unit)
+}
+
+drop_SpentManaUnit :: proc(x: SpentManaUnit) {
+	drop_ManaUnit(x.unit)
+}
+
+drp_shared_dyn_t2_RulesExecutionNodeRef_int :: proc(x: ^[dynamic]Tuple2(RulesExecutionNodeRef, int)) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_shared_map_ManaPipId_int :: proc(x: ^map[ManaPipId]int) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_shared_map_ObjectId_int :: proc(x: ^map[ObjectId]int) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drp_PVec_int :: proc(x: PVec(int)) {
+	pvec_drop(x, nil)
+}
+
+drp_map_DelayedTriggerToken_PVec_int :: proc(x: map[DelayedTriggerToken]PVec(int)) {
+	for key, val in x {
+		drp_PVec_int(val)
+	}
+}
+
+drp_shared_map_DelayedTriggerToken_PVec_int :: proc(x: ^map[DelayedTriggerToken]PVec(int)) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_DelayedTriggerToken_PVec_int(x^)
+}
+
+drp_map_DelayedTriggerInstanceId_PVec_int :: proc(x: map[DelayedTriggerInstanceId]PVec(int)) {
+	for key, val in x {
+		drp_PVec_int(val)
+	}
+}
+
+drp_shared_map_DelayedTriggerInstanceId_PVec_int :: proc(x: ^map[DelayedTriggerInstanceId]PVec(int)) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drp_map_DelayedTriggerInstanceId_PVec_int(x^)
+}
+
+drp_shared_dyn_PlayerLeaveMove :: proc(x: ^[dynamic]PlayerLeaveMove) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+}
+
+drop_JournalIndex :: proc(x: JournalIndex) {
+	drp_shared_dyn_t2_RulesExecutionNodeRef_int(x.nodes)
+	drp_shared_map_ManaPipId_int(x.produced)
+	drp_shared_map_ManaPipId_int(x.spent)
+	drp_shared_map_ObjectId_int(x.latest_producer)
+	drp_shared_map_DelayedTriggerToken_PVec_int(x.delayed_by_token)
+	drp_shared_map_DelayedTriggerInstanceId_PVec_int(x.delayed_by_instance)
+	drp_shared_dyn_PlayerLeaveMove(x.player_leave_moves)
+}
+
+drp_ptr_GameState :: proc(x: ^GameState) {
+	if x != nil do drop_GameState(x^)
+}
+
+drop_CachedBoard :: proc(x: CachedBoard) {
+	drp_ptr_GameState(x.board)
+	drop_ObjectMap(x.original_objects)
+	drop_ObjectMap(x.projected_objects)
+}
+
+drop_CastExtraCost :: proc(x: CastExtraCost) {
+	drop_AbilityCost(x.cost)
+}
+
+drop_PendingEntersModifications :: proc(x: PendingEntersModifications) {
+	drp_dyn_ContinuousModification(x.modifications)
+	drp_opt_TargetFilter(x.cast_filter)
+}
+
+drp_opt_ChoiceType :: proc(x: Maybe(ChoiceType)) {
+	if y, ok := x.?; ok do drop_ChoiceType(y)
+}
+
+drop_AbilityCost :: proc(x: AbilityCost) {
+	#partial switch y in x {
+	case AbilityCost_ManaDynamic:
+		drop_QuantityExpr(y.quantity)
+	case AbilityCost_Sacrifice:
+		drop_SacrificeCost(y._0)
+	case AbilityCost_PayLife:
+		drop_QuantityExpr(y.amount)
+	case AbilityCost_Discard:
+		drop_QuantityExpr(y.count)
+		drp_opt_TargetFilter(y.filter)
+	case AbilityCost_Exile:
+		drp_opt_TargetFilter(y.filter)
+	case AbilityCost_ExileMaterials:
+		drop_TargetFilter(y.materials)
+	case AbilityCost_ExileWithAggregate:
+		drop_TargetFilter(y.filter)
+	case AbilityCost_TapCreatures:
+		drop_TargetFilter(y.filter)
+	case AbilityCost_RemoveCounter:
+		drp_opt_TargetFilter(y.target)
+	case AbilityCost_PayEnergy:
+		drop_QuantityExpr(y.amount)
+	case AbilityCost_PaySpeed:
+		drop_QuantityExpr(y.amount)
+	case AbilityCost_ReturnToHand:
+		drp_opt_TargetFilter(y.filter)
+	case AbilityCost_UnattachFrom:
+		drop_TargetFilter(y.filter)
+	case AbilityCost_Reveal:
+		drop_QuantityExpr(y.count)
+		drp_opt_TargetFilter(y.filter)
+	case AbilityCost_Behold:
+		drop_TargetFilter(y.filter)
+		drp_opt_ChoiceType(y.type_choice)
+	case AbilityCost_Composite:
+		drp_dyn_AbilityCost(y.costs)
+	case AbilityCost_OneOf:
+		drp_dyn_AbilityCost(y.costs)
+	case AbilityCost_EffectCost:
+		drp_ptr_Effect(y.effect)
+	case AbilityCost_PerCounter:
+		drop_TargetFilter(y.target)
+		drp_ptr_AbilityCost(y.base)
+	}
+}
+
+drp_ptr_QuantityExpr :: proc(x: ^QuantityExpr) {
+	if x != nil do drop_QuantityExpr(x^)
+}
+
+drp_dyn_QuantityExpr :: proc(x: [dynamic]QuantityExpr) {
+	for item in x do drop_QuantityExpr(item)
+}
+
+drop_QuantityExpr :: proc(x: QuantityExpr) {
+	#partial switch y in x {
+	case QuantityExpr_Ref:
+		drop_QuantityRef(y.qty)
+	case QuantityExpr_DivideRounded:
+		drp_ptr_QuantityExpr(y.inner)
+	case QuantityExpr_Offset:
+		drp_ptr_QuantityExpr(y.inner)
+	case QuantityExpr_ClampMin:
+		drp_ptr_QuantityExpr(y.inner)
+	case QuantityExpr_Multiply:
+		drp_ptr_QuantityExpr(y.inner)
+	case QuantityExpr_Sum:
+		drp_dyn_QuantityExpr(y.exprs)
+	case QuantityExpr_UpTo:
+		drp_ptr_QuantityExpr(y.max)
+	case QuantityExpr_Power:
+		drp_ptr_QuantityExpr(y.exponent)
+	case QuantityExpr_Difference:
+		drp_ptr_QuantityExpr(y.left)
+		drp_ptr_QuantityExpr(y.right)
+	case QuantityExpr_Max:
+		drp_dyn_QuantityExpr(y.exprs)
+	}
+}
+
+drop_SacrificeCost :: proc(x: SacrificeCost) {
+	drop_TargetFilter(x.target)
+}
+
+drop_ChoiceType :: proc(x: ChoiceType) {
+	#partial switch y in x {
+	case ChoiceType_Opponent:
+		drp_ptr_PlayerFilter(y.restriction)
+	case ChoiceType_Keyword:
+		drp_dyn_Keyword(y.options)
+	}
+}
+
+drp_opt_CounterSourceRider :: proc(x: Maybe(CounterSourceRider)) {
+	if y, ok := x.?; ok do drop_CounterSourceRider(y)
+}
+
+drp_opt_SpellStackToGraveyardReplacement :: proc(x: Maybe(SpellStackToGraveyardReplacement)) {
+	if y, ok := x.?; ok do drop_SpellStackToGraveyardReplacement(y)
+}
+
+drp_t2_CounterType_QuantityExpr :: proc(x: Tuple2(CounterType, QuantityExpr)) {
+	drop_QuantityExpr(x._1)
+}
+
+drp_dyn_t2_CounterType_QuantityExpr :: proc(x: [dynamic]Tuple2(CounterType, QuantityExpr)) {
+	for item in x do drp_t2_CounterType_QuantityExpr(item)
+}
+
+drp_opt_ChosenCounterCountCondition :: proc(x: Maybe(ChosenCounterCountCondition)) {
+	if y, ok := x.?; ok do drop_ChosenCounterCountCondition(y)
+}
+
+drp_opt_ManaTargetRole :: proc(x: Maybe(ManaTargetRole)) {
+	if y, ok := x.?; ok do drop_ManaTargetRole(y)
+}
+
+drp_ptr_GuessSubject :: proc(x: ^GuessSubject) {
+	if x != nil do drop_GuessSubject(x^)
+}
+
+drp_ptr_ReplacementDefinition :: proc(x: ^ReplacementDefinition) {
+	if x != nil do drop_ReplacementDefinition(x^)
+}
+
+drp_ptr_TriggerDefinition :: proc(x: ^TriggerDefinition) {
+	if x != nil do drop_TriggerDefinition(x^)
+}
+
+drp_opt_CastPermissionConstraint :: proc(x: Maybe(CastPermissionConstraint)) {
+	if y, ok := x.?; ok do drop_CastPermissionConstraint(y)
+}
+
+drp_opt_KeeperConstraint :: proc(x: Maybe(KeeperConstraint)) {
+	if y, ok := x.?; ok do drop_KeeperConstraint(y)
+}
+
+drp_opt_KeeperCounterMark :: proc(x: Maybe(KeeperCounterMark)) {
+	if y, ok := x.?; ok do drop_KeeperCounterMark(y)
+}
+
+drp_t2_ptr_TargetFilter_Zone :: proc(x: Tuple2(^TargetFilter, Zone)) {
+	drp_ptr_TargetFilter(x._0)
+}
+
+drp_opt_t2_ptr_TargetFilter_Zone :: proc(x: Maybe(Tuple2(^TargetFilter, Zone))) {
+	if y, ok := x.?; ok do drp_t2_ptr_TargetFilter_Zone(y)
+}
+
+drp_dyn_ConjureCard :: proc(x: [dynamic]ConjureCard) {
+	for item in x do drop_ConjureCard(item)
+}
+
+drop_Effect :: proc(x: Effect) {
+	#partial switch y in x {
+	case Effect_StartYourEngines:
+		drop_PlayerFilter(y.player_scope)
+	case Effect_ChangeSpeed:
+		drop_PlayerFilter(y.player_scope)
+		drop_QuantityExpr(y.amount)
+	case Effect_DealDamage:
+		drop_QuantityExpr(y.amount)
+		drop_TargetFilter(y.target)
+	case Effect_EachDealsDamageEqualToPower:
+		drop_TargetFilter(y.sources)
+		drop_TargetFilter(y.recipient)
+		drp_opt_TargetFilter(y.extra_source)
+	case Effect_EachSourceDealsDamage:
+		drop_TargetFilter(y.sources)
+		drop_QuantityExpr(y.amount)
+		drop_EachDamageRecipient(y.recipient)
+	case Effect_Draw:
+		drop_QuantityExpr(y.count)
+		drop_TargetFilter(y.target)
+	case Effect_Pump:
+		drop_PtValue(y.power)
+		drop_PtValue(y.toughness)
+		drop_TargetFilter(y.target)
+	case Effect_PairWith:
+		drop_TargetFilter(y.target)
+	case Effect_Destroy:
+		drop_TargetFilter(y.target)
+	case Effect_Regenerate:
+		drop_TargetFilter(y.target)
+	case Effect_RemoveAllDamage:
+		drop_TargetFilter(y.target)
+	case Effect_Counter:
+		drop_TargetFilter(y.target)
+		drp_opt_CounterSourceRider(y.source_rider)
+		drp_opt_SpellStackToGraveyardReplacement(y.countered_spell_zone)
+	case Effect_CounterAll:
+		drop_TargetFilter(y.target)
+	case Effect_Token:
+		drop_PtValue(y.power)
+		drop_PtValue(y.toughness)
+		drp_dyn_Keyword(y.keywords)
+		drop_QuantityExpr(y.count)
+		drop_TargetFilter(y.owner)
+		drp_opt_TargetFilter(y.attach_to)
+		drop_TokenAttackDestination(y.attack_destination)
+		drp_dyn_StaticDefinition(y.static_abilities)
+		drp_dyn_t2_CounterType_QuantityExpr(y.enter_with_counters)
+	case Effect_GainLife:
+		drop_QuantityExpr(y.amount)
+		drop_TargetFilter(y.player)
+	case Effect_LoseLife:
+		drop_QuantityExpr(y.amount)
+		drp_opt_TargetFilter(y.target)
+	case Effect_SetTapState:
+		drop_TargetFilter(y.target)
+	case Effect_RemoveCounter:
+		drop_QuantityExpr(y.count)
+		drop_TargetFilter(y.target)
+	case Effect_Sacrifice:
+		drop_TargetFilter(y.target)
+		drop_QuantityExpr(y.count)
+	case Effect_DiscardCard:
+		drop_TargetFilter(y.target)
+	case Effect_Mill:
+		drop_QuantityExpr(y.count)
+		drop_TargetFilter(y.target)
+		drop_LibraryPosition(y.position)
+	case Effect_Scry:
+		drop_QuantityExpr(y.count)
+		drop_TargetFilter(y.target)
+	case Effect_PumpAll:
+		drop_PtValue(y.power)
+		drop_PtValue(y.toughness)
+		drop_TargetFilter(y.target)
+	case Effect_DamageAll:
+		drop_QuantityExpr(y.amount)
+		drop_TargetFilter(y.target)
+		drp_opt_PlayerFilter(y.player_filter)
+	case Effect_DamageEachPlayer:
+		drop_QuantityExpr(y.amount)
+		drop_PlayerFilter(y.player_filter)
+	case Effect_DestroyAll:
+		drop_TargetFilter(y.target)
+	case Effect_ChangeZone:
+		drop_LibraryInstructionActor(y.actor)
+		drop_TargetFilter(y.target)
+		drp_dyn_t2_CounterType_QuantityExpr(y.enter_with_counters)
+		drp_dyn_t3_TargetFilter_CounterType_QuantityExpr(y.conditional_enter_with_counters)
+		drp_opt_FaceDownProfile(y.face_down_profile)
+		drp_opt_TargetFilter(y.enters_modified_if)
+	case Effect_ChangeZoneAll:
+		drop_LibraryInstructionActor(y.actor)
+		drop_TargetFilter(y.target)
+		drp_dyn_t2_CounterType_QuantityExpr(y.enter_with_counters)
+		drp_opt_FaceDownProfile(y.face_down_profile)
+		drp_opt_LibraryPosition(y.library_position)
+	case Effect_Dig:
+		drop_TargetFilter(y.player)
+		drop_QuantityExpr(y.count)
+		drp_opt_QuantityExpr(y.keep_count_expr)
+		drop_TargetFilter(y.filter)
+		drp_opt_QuantityExpr(y.rest_split_top_count)
+	case Effect_GainControl:
+		drop_TargetFilter(y.target)
+	case Effect_GainControlAll:
+		drop_TargetFilter(y.target)
+	case Effect_ControlNextTurn:
+		drop_TargetFilter(y.target)
+	case Effect_Attach:
+		drop_TargetFilter(y.attachment)
+		drop_TargetFilter(y.target)
+		drop_AttachSelection(y.selection)
+	case Effect_UnattachAll:
+		drop_TargetFilter(y.attachment)
+		drop_TargetFilter(y.target)
+	case Effect_Surveil:
+		drop_QuantityExpr(y.count)
+		drop_TargetFilter(y.target)
+	case Effect_Fight:
+		drop_TargetFilter(y.target)
+		drop_TargetFilter(y.subject)
+	case Effect_Bounce:
+		drop_TargetFilter(y.target)
+	case Effect_BounceAll:
+		drop_TargetFilter(y.target)
+		drp_opt_QuantityExpr(y.count)
+	case Effect_ExploreAll:
+		drop_TargetFilter(y.filter)
+	case Effect_BecomeMonarch:
+		drop_TargetFilter(y.target)
+	case Effect_ProliferateTarget:
+		drop_TargetFilter(y.target)
+	case Effect_ExileTopCardContest:
+		drp_ptr_AbilityDefinition(y.winner_effect)
+	case Effect_Behold:
+		drop_TargetFilter(y.filter)
+	case Effect_Vote:
+		drp_dyn_ptr_AbilityDefinition(y.per_choice_effect)
+		drop_VoteSubject(y.subject)
+	case Effect_SeparateIntoPiles:
+		drop_TargetFilter(y.object_filter)
+		drp_ptr_AbilityDefinition(y.chosen_pile_effect)
+		drp_ptr_AbilityDefinition(y.unchosen_pile_effect)
+	case Effect_SwitchPT:
+		drop_TargetFilter(y.target)
+	case Effect_CopySpell:
+		drop_TargetFilter(y.target)
+		drp_dyn_ContinuousModification(y.additional_modifications)
+	case Effect_CastCopyOfCard:
+		drop_TargetFilter(y.target)
+		drp_opt_QuantityExpr(y.count)
+	case Effect_CopyTokenOf:
+		drop_TargetFilter(y.target)
+		drop_TargetFilter(y.owner)
+		drp_opt_TargetFilter(y.source_filter)
+		drop_TokenAttackDestination(y.attack_destination)
+		drop_QuantityExpr(y.count)
+		drp_dyn_Keyword(y.extra_keywords)
+		drp_dyn_ContinuousModification(y.additional_modifications)
+	case Effect_CreateTokenCopyFromPool:
+		drop_TargetFilter(y.owner)
+		drop_TargetFilter(y.type_filter)
+		drop_QuantityExpr(y.mv_bound)
+		drop_QuantityExpr(y.count)
+	case Effect_CombineHost:
+		drp_ptr_TargetFilter(y.host)
+	case Effect_ChooseAugmentAndCombineWithHost:
+		drp_ptr_TargetFilter(y.filter)
+		drp_ptr_TargetFilter(y.host)
+	case Effect_Meld:
+		drop_TargetFilter(y.source_filter)
+		drop_TargetFilter(y.partner_filter)
+	case Effect_ExileHaunting:
+		drop_TargetFilter(y.target)
+	case Effect_HideawayConceal:
+		drop_TargetFilter(y.target)
+	case Effect_CopyTokenBlockingAttacker:
+		drop_TargetFilter(y.source_filter)
+		drop_TargetFilter(y.owner)
+	case Effect_BecomeCopy:
+		drop_TargetFilter(y.target)
+		drop_CopyRecipient(y.recipient)
+		drp_opt_Duration(y.duration)
+		drp_dyn_ContinuousModification(y.additional_modifications)
+	case Effect_ChoosePermanent:
+		drop_TargetFilter(y.filter)
+	case Effect_GainActivatedAbilitiesOfTarget:
+		drop_TargetFilter(y.target)
+		drop_TargetFilter(y.recipient)
+		drp_opt_Duration(y.duration)
+	case Effect_ChooseCard:
+		drop_TargetFilter(y.target)
+	case Effect_PutCounter:
+		drop_QuantityExpr(y.count)
+		drop_TargetFilter(y.target)
+	case Effect_ChooseCounterKind:
+		drop_TargetFilter(y.target)
+	case Effect_PutChosenCounter:
+		drop_TargetFilter(y.target)
+		drop_QuantityExpr(y.count)
+		drp_opt_ChosenCounterCountCondition(y.target_condition)
+	case Effect_PutCounterAll:
+		drop_QuantityExpr(y.count)
+		drop_TargetFilter(y.target)
+	case Effect_MultiplyCounter:
+		drop_TargetFilter(y.target)
+	case Effect_ChooseCounterAdjustment:
+		drop_QuantityExpr(y.count)
+		drop_TargetFilter(y.target)
+	case Effect_DoublePT:
+		drop_TargetFilter(y.target)
+	case Effect_DoublePTAll:
+		drop_TargetFilter(y.target)
+	case Effect_MoveCounters:
+		drop_TargetFilter(y.source)
+		drp_opt_QuantityExpr(y.count)
+		drop_TargetFilter(y.target)
+	case Effect_ReproduceEventCounters:
+		drop_TargetFilter(y.target)
+	case Effect_Animate:
+		drp_opt_PtValue(y.power)
+		drp_opt_PtValue(y.toughness)
+		drop_TargetFilter(y.target)
+		drp_dyn_Keyword(y.keywords)
+	case Effect_ReturnAsAura:
+		drop_TargetFilter(y.enchant_filter)
+		drp_dyn_ContinuousModification(y.grants)
+	case Effect_GenericEffect:
+		drp_dyn_StaticDefinition(y.static_abilities)
+		drp_opt_Duration(y.duration)
+		drp_opt_TargetFilter(y.target)
+	case Effect_Mana:
+		drop_ManaProduction(y.produced)
+		drp_dyn_ManaSpellGrant(y.grants)
+		drp_opt_ManaTargetRole(y.target)
+	case Effect_Discard:
+		drop_QuantityExpr(y.count)
+		drop_TargetFilter(y.target)
+		drp_opt_TargetFilter(y.unless_filter)
+		drp_opt_TargetFilter(y.filter)
+	case Effect_Shuffle:
+		drop_TargetFilter(y.target)
+	case Effect_Transform:
+		drop_TargetFilter(y.target)
+	case Effect_FlipPermanent:
+		drop_TargetFilter(y.target)
+	case Effect_SearchLibrary:
+		drop_TargetFilter(y.filter)
+		drop_QuantityExpr(y.count)
+		drp_opt_TargetFilter(y.target_player)
+		drop_SearchSelectionConstraint(y.selection_constraint)
+	case Effect_SearchOutsideGame:
+		drop_TargetFilter(y.filter)
+		drop_QuantityExpr(y.count)
+	case Effect_OpenBoosterPack:
+		drop_TargetFilter(y.filter)
+		drop_QuantityExpr(y.count)
+	case Effect_RevealHand:
+		drop_TargetFilter(y.target)
+		drop_TargetFilter(y.card_filter)
+		drp_opt_QuantityExpr(y.count)
+	case Effect_RevealFromHand:
+		drop_TargetFilter(y.filter)
+		drp_ptr_AbilityDefinition(y.on_decline)
+	case Effect_Reveal:
+		drop_TargetFilter(y.target)
+	case Effect_RevealChosenNumbers:
+		drop_PlayerFilter(y.players)
+	case Effect_RevealTop:
+		drop_TargetFilter(y.player)
+	case Effect_ExileTop:
+		drop_TargetFilter(y.player)
+		drop_QuantityExpr(y.count)
+		drop_LibraryPosition(y.position)
+		drop_LibraryInstructionActor(y.actor)
+	case Effect_ExileFaceDownPile:
+		drop_TargetFilter(y.object)
+		drop_TargetFilter(y.player)
+		drop_QuantityExpr(y.count)
+	case Effect_TargetOnly:
+		drop_TargetFilter(y.target)
+	case Effect_Choose:
+		drop_ChoiceType(y.choice_type)
+	case Effect_OpponentGuess:
+		drp_ptr_GuessSubject(y.subject)
+	case Effect_ChooseDamageSource:
+		drop_TargetFilter(y.source_filter)
+	case Effect_Suspect:
+		drop_TargetFilter(y.target)
+	case Effect_Unsuspect:
+		drop_TargetFilter(y.target)
+	case Effect_Connive:
+		drop_TargetFilter(y.target)
+		drop_QuantityExpr(y.count)
+	case Effect_PhaseOut:
+		drop_TargetFilter(y.target)
+	case Effect_PhaseIn:
+		drop_TargetFilter(y.target)
+	case Effect_ForceBlock:
+		drop_TargetFilter(y.target)
+		drop_Duration(y.duration)
+	case Effect_ForceAttack:
+		drop_TargetFilter(y.target)
+		drop_TargetFilter(y.required_defender)
+		drop_Duration(y.duration)
+	case Effect_BecomePrepared:
+		drop_TargetFilter(y.target)
+	case Effect_BecomeUnprepared:
+		drop_TargetFilter(y.target)
+	case Effect_BecomeSaddled:
+		drop_TargetFilter(y.target)
+	case Effect_CreateDelayedTrigger:
+		drop_DelayedTriggerCondition(y.condition)
+		drp_ptr_AbilityDefinition(y.effect)
+	case Effect_AddTargetReplacement:
+		drp_ptr_ReplacementDefinition(y.replacement)
+		drop_TargetFilter(y.target)
+	case Effect_AddRestriction:
+		drop_GameRestriction(y.restriction)
+	case Effect_ReduceNextSpellCost:
+		drp_opt_TargetFilter(y.spell_filter)
+	case Effect_GrantNextSpellAbility:
+		drop_NextSpellModifier(y.modifier)
+		drp_opt_TargetFilter(y.spell_filter)
+	case Effect_AddPendingETBCounters:
+		drop_QuantityExpr(y.count)
+	case Effect_AddPendingEntersModifications:
+		drop_PendingEntersModifications(y.rider)
+	case Effect_CreateEmblem:
+		drp_dyn_StaticDefinition(y.statics)
+		drp_dyn_TriggerDefinition(y.triggers)
+	case Effect_CreateBoon:
+		drop_TargetFilter(y.recipient)
+		drp_ptr_TriggerDefinition(y.trigger)
+	case Effect_NoteNumber:
+		drop_QuantityExpr(y.value)
+	case Effect_PayCost:
+		drop_AbilityCost(y.cost)
+		drp_opt_QuantityExpr(y.scale)
+		drop_TargetFilter(y.payer)
+	case Effect_CastFromZone:
+		drop_TargetFilter(y.target)
+		drp_opt_AbilityCost(y.alt_ability_cost)
+		drp_opt_CastPermissionConstraint(y.constraint)
+		drp_opt_Duration(y.duration)
+	case Effect_FreeCastFromZones:
+		drop_TargetFilter(y.filter)
+		drp_opt_SpellStackToGraveyardReplacement(y.graveyard_replacement)
+	case Effect_ExileResolvingSpellInsteadOfGraveyard:
+		drp_opt_ExiledSpellRider(y.on_exile)
+	case Effect_PreventDamage:
+		drp_opt_QuantityExpr(y.amount_dynamic)
+		drop_TargetFilter(y.target)
+		drp_opt_TargetFilter(y.damage_source_filter)
+		drp_opt_Duration(y.prevention_duration)
+	case Effect_CreateDamageReplacement:
+		drp_opt_TargetFilter(y.source_filter)
+		drp_opt_DamageModification(y.modification)
+		drp_opt_TargetFilter(y.redirect_object_filter)
+		drp_opt_TargetFilter(y.recipient_object_filter)
+	case Effect_CreateDrawReplacement:
+		drp_ptr_AbilityDefinition(y.replacement_effect)
+	case Effect_CreatePlaneswalkReplacement:
+		drp_ptr_Effect(y.replacement_effect)
+	case Effect_LoseTheGame:
+		drp_opt_TargetFilter(y.target)
+	case Effect_WinTheGame:
+		drp_opt_TargetFilter(y.target)
+	case Effect_RollDie:
+		drop_QuantityExpr(y.count)
+		drp_dyn_DieResultBranch(y.results)
+		drp_opt_DieRollModifier(y.modifier)
+	case Effect_FlipCoins:
+		drop_CoinFlipRun(y.flips)
+		drp_ptr_AbilityDefinition(y.win_effect)
+		drp_ptr_AbilityDefinition(y.lose_effect)
+		drop_TargetFilter(y.flipper)
+	case Effect_ArrangePlanarDeckTop:
+		drop_QuantityExpr(y.count)
+		drop_QuantityExpr(y.keep_on_top)
+	case Effect_AssembleContraptions:
+		drop_QuantityExpr(y.count)
+	case Effect_CrankContraptions:
+		drop_TargetFilter(y.target)
+	case Effect_ReassembleContraption:
+		drop_TargetFilter(y.target)
+	case Effect_AssembleContraptionOnSprocket:
+		drop_TargetFilter(y.target)
+	case Effect_ReassembleContraptionOnSprocket:
+		drop_TargetFilter(y.target)
+	case Effect_PutSticker:
+		drop_TargetFilter(y.target)
+		drop_QuantityExpr(y.count)
+		drp_opt_QuantityExpr(y.max_ticket_cost)
+	case Effect_ApplySticker:
+		drop_TargetFilter(y.target)
+	case Effect_GrantCastingPermission:
+		drop_CastingPermission(y.permission)
+		drop_TargetFilter(y.target)
+	case Effect_ChooseFromZone:
+		drp_opt_TargetFilter(y.filter)
+	case Effect_RememberCard:
+		drop_TargetFilter(y.target)
+	case Effect_ForEachCategory:
+		drop_ForEachCategoryAction(y.action)
+	case Effect_ChooseObjectsIntoTrackedSet:
+		drop_TargetFilter(y.chooser)
+		drop_TargetFilter(y.filter)
+	case Effect_ChooseAndSacrificeRest:
+		drop_TargetFilter(y.choose_filter)
+		drop_TargetFilter(y.sacrifice_filter)
+		drp_opt_QuantityExpr(y.total_power_cap)
+		drp_opt_KeeperConstraint(y.keeper_constraint)
+		drp_opt_KeeperCounterMark(y.keeper_counter)
+	case Effect_EachPlayerCopyChosen:
+		drop_TargetFilter(y.choose_filter)
+		drp_dyn_ContinuousModification(y.copy_modifications)
+	case Effect_Exploit:
+		drop_TargetFilter(y.target)
+	case Effect_GainEnergy:
+		drop_QuantityExpr(y.amount)
+	case Effect_GivePlayerCounter:
+		drop_QuantityExpr(y.count)
+		drop_TargetFilter(y.target)
+	case Effect_LoseAllPlayerCounters:
+		drop_TargetFilter(y.target)
+	case Effect_ExileFromTopUntil:
+		drop_TargetFilter(y.player)
+		drop_UntilCondition(y.until)
+	case Effect_RevealUntil:
+		drop_TargetFilter(y.player)
+		drop_TargetFilter(y.filter)
+		drop_QuantityExpr(y.count)
+		drp_opt_t2_ptr_TargetFilter_Zone(y.kept_destination_if)
+	case Effect_Discover:
+		drop_QuantityExpr(y.mana_value_limit)
+		drop_TargetFilter(y.player)
+	case Effect_PhysicalContest:
+		drop_TargetFilter(y.contestant)
+	case Effect_Heist:
+		drop_TargetFilter(y.target)
+	case Effect_PutAtLibraryPosition:
+		drop_TargetFilter(y.target)
+		drop_QuantityExpr(y.count)
+		drop_LibraryPosition(y.position)
+		drp_opt_TargetFilter(y.arranger)
+	case Effect_ChooseDrawnThisTurnPayOrTopdeck:
+		drop_QuantityExpr(y.count)
+		drop_QuantityExpr(y.life_payment)
+		drop_TargetFilter(y.player)
+	case Effect_PutOnTopOrBottom:
+		drop_TargetFilter(y.target)
+		drop_TargetFilter(y.chooser)
+		drop_LibraryPosition(y.top_position)
+	case Effect_Goad:
+		drop_TargetFilter(y.target)
+	case Effect_GoadAll:
+		drop_TargetFilter(y.target)
+	case Effect_Detain:
+		drop_TargetFilter(y.target)
+	case Effect_SetRoomDoorLock:
+		drop_TargetFilter(y.target)
+	case Effect_ExchangeControl:
+		drop_TargetFilter(y.target_a)
+		drop_TargetFilter(y.target_b)
+	case Effect_ChangeTargets:
+		drop_TargetFilter(y.target)
+		drp_opt_TargetFilter(y.forced_to)
+	case Effect_Manifest:
+		drop_TargetFilter(y.target)
+		drop_QuantityExpr(y.count)
+		drp_opt_TargetFilter(y.object_source)
+		drp_opt_FaceDownProfile(y.profile)
+	case Effect_Cloak:
+		drop_TargetFilter(y.target)
+		drop_QuantityExpr(y.count)
+		drp_opt_TargetFilter(y.object_source)
+	case Effect_TurnFaceUp:
+		drop_TargetFilter(y.target)
+	case Effect_TurnFaceDown:
+		drop_TargetFilter(y.target)
+		drp_opt_FaceDownProfile(y.profile)
+	case Effect_ExtraTurn:
+		drop_TargetFilter(y.target)
+		drop_QuantityExpr(y.count)
+	case Effect_GrantExtraLoyaltyActivations:
+		drop_QuantityExpr(y.amount)
+		drop_TargetFilter(y.target)
+	case Effect_SkipNextTurn:
+		drop_TargetFilter(y.target)
+		drop_QuantityExpr(y.count)
+	case Effect_SkipNextStep:
+		drop_TargetFilter(y.target)
+		drop_QuantityExpr(y.count)
+	case Effect_AdditionalPhase:
+		drop_ExtraPhaseRecipient(y.recipient)
+		drop_QuantityExpr(y.count)
+		drp_opt_TargetFilter(y.attacker_restriction)
+	case Effect_Double:
+		drop_TargetFilter(y.target)
+	case Effect_Incubate:
+		drop_QuantityExpr(y.count)
+	case Effect_Amass:
+		drop_QuantityExpr(y.count)
+		drop_TargetFilter(y.player)
+	case Effect_EmpowerJace:
+		drop_QuantityExpr(y.count)
+	case Effect_Monstrosity:
+		drop_QuantityExpr(y.count)
+	case Effect_Renown:
+		drop_QuantityExpr(y.count)
+	case Effect_Bolster:
+		drop_QuantityExpr(y.count)
+	case Effect_Adapt:
+		drop_QuantityExpr(y.count)
+	case Effect_Endure:
+		drop_QuantityExpr(y.amount)
+		drop_TargetFilter(y.subject)
+	case Effect_BlightEffect:
+		drop_TargetFilter(y.player)
+	case Effect_Seek:
+		drop_TargetFilter(y.filter)
+		drop_QuantityExpr(y.count)
+	case Effect_SetLifeTotal:
+		drop_TargetFilter(y.target)
+		drop_QuantityExpr(y.amount)
+	case Effect_ExchangeLifeWithStat:
+		drop_TargetFilter(y.player)
+	case Effect_ExchangeLifeTotals:
+		drop_TargetFilter(y.player_a)
+		drop_TargetFilter(y.player_b)
+	case Effect_GiveControl:
+		drop_TargetFilter(y.target)
+		drop_TargetFilter(y.recipient)
+	case Effect_RemoveFromCombat:
+		drop_TargetFilter(y.target)
+	case Effect_BecomeBlocked:
+		drop_TargetFilter(y.target)
+	case Effect_Conjure:
+		drp_dyn_ConjureCard(y.cards)
+		drp_opt_LibraryPosition(y.library_position)
+		drp_opt_PlayerFilter(y.library_players)
+	case Effect_CreateCardCopyByName:
+		drop_QuantityExpr(y.count)
+	case Effect_ApplyPerpetual:
+		drop_TargetFilter(y.target)
+		drop_PerpetualModification(y.modification)
+	case Effect_Intensify:
+		drop_QuantityExpr(y.amount)
+	case Effect_ChooseOneOf:
+		drop_PlayerFilter(y.chooser)
+		drp_dyn_AbilityDefinition(y.branches)
+	}
+}
+
+drop_StackEntryKind :: proc(x: StackEntryKind) {
+	#partial switch y in x {
+	case StackEntryKind_Spell:
+		drp_ptr_ResolvedAbility(y.ability)
+	case StackEntryKind_ActivatedAbility:
+		drp_ptr_ResolvedAbility(y.ability)
+	case StackEntryKind_TriggeredAbility:
+		drp_ptr_ResolvedAbility(y.ability)
+		drp_opt_TriggerCondition(y.condition)
+		drp_opt_GameEvent(y.trigger_event)
+	}
+}
+
+drp_dyn_TriggerCondition :: proc(x: [dynamic]TriggerCondition) {
+	for item in x do drop_TriggerCondition(item)
+}
+
+drp_ptr_TriggerCondition :: proc(x: ^TriggerCondition) {
+	if x != nil do drop_TriggerCondition(x^)
+}
+
+drop_TriggerCondition :: proc(x: TriggerCondition) {
+	#partial switch y in x {
+	case TriggerCondition_ControlsType:
+		drop_TargetFilter(y.filter)
+	case TriggerCondition_DuringPlayersTurn:
+		drop_PlayerFilter(y.player)
+	case TriggerCondition_MinCoAttackers:
+		drp_opt_TargetFilter(y.filter)
+	case TriggerCondition_DealtDamageThisTurnBySource:
+		drop_TargetFilter(y.source)
+	case TriggerCondition_ControlCount:
+		drop_TargetFilter(y.filter)
+	case TriggerCondition_ControlsNone:
+		drop_TargetFilter(y.filter)
+	case TriggerCondition_CastSpellThisTurn:
+		drp_opt_TargetFilter(y.filter)
+	case TriggerCondition_QuantityComparison:
+		drop_QuantityExpr(y.lhs)
+		drop_QuantityExpr(y.rhs)
+	case TriggerCondition_QuantityQuality:
+		drop_QuantityExpr(y.quantity)
+	case TriggerCondition_DefendingPlayerControlsNone:
+		drop_TargetFilter(y.filter)
+	case TriggerCondition_ZoneChangeObjectMatchesFilter:
+		drop_TargetFilter(y.filter)
+	case TriggerCondition_SourceMatchesFilter:
+		drop_TargetFilter(y.filter)
+	case TriggerCondition_EventDamageSourceMatchesFilter:
+		drop_TargetFilter(y.filter)
+	case TriggerCondition_EventObjectMatchesFilter:
+		drop_TargetFilter(y.filter)
+	case TriggerCondition_AttackersDeclaredCount:
+		drop_AttackersDeclaredCountSubject(y.subject)
+	case TriggerCondition_TriggeringSpellTargetsFilter:
+		drop_TargetFilter(y.filter)
+	case TriggerCondition_TriggeringSpellMatchesFilter:
+		drop_TargetFilter(y.filter)
+	case TriggerCondition_And:
+		drp_dyn_TriggerCondition(y.conditions)
+	case TriggerCondition_Or:
+		drp_dyn_TriggerCondition(y.conditions)
+	case TriggerCondition_Not:
+		drp_ptr_TriggerCondition(y.condition)
+	case TriggerCondition_EventTime:
+		drp_ptr_TriggerCondition(y.condition)
+	}
+}
+
+drop_ReplacementAutoChoiceKey :: proc(x: ReplacementAutoChoiceKey) {
+	drp_dyn_ReplacementAutoChoiceIdentity(x.candidates)
+}
+
+drop_EventObjectSnapshot :: proc(x: EventObjectSnapshot) {
+	drp_dyn_Keyword(x.keywords)
+}
+
+drp_ptr_BatchCompletion :: proc(x: ^BatchCompletion) {
+	if x != nil do drop_BatchCompletion(x^)
+}
+
+drop_LibraryPlacementContinuation :: proc(x: LibraryPlacementContinuation) {
+	#partial switch y in x {
+	case LibraryPlacementContinuation_Requests:
+		drp_ptr_BatchCompletion(y._0)
+	}
+}
+
+drp_opt_AbilityDefinition :: proc(x: Maybe(AbilityDefinition)) {
+	if y, ok := x.?; ok do drop_AbilityDefinition(y)
+}
+
+drp_opt_ManaAbilityResume :: proc(x: Maybe(ManaAbilityResume)) {
+	if y, ok := x.?; ok do drop_ManaAbilityResume(y)
+}
+
+drop_PendingManaAbility :: proc(x: PendingManaAbility) {
+	drp_opt_AbilityDefinition(x.ability_snapshot)
+	drop_ManaAbilityResume(x.resume)
+	drp_opt_ManaAbilityResume(x.cost_move_resume)
+	drp_opt_CostPaidObjectSnapshot(x.cost_paid_object)
+}
+
+drop_SearchSelectionConstraint :: proc(x: SearchSelectionConstraint) {
+	#partial switch y in x {
+	case SearchSelectionConstraint_MatchEachFilter:
+		drp_dyn_TargetFilter(y.filters)
+	}
+}
+
+drop_OutsideGameChoiceEntry :: proc(x: OutsideGameChoiceEntry) {
+	drop_OutsideGameChoiceSource(x.source)
+}
+
+drp_ptr_ParkedDamageBatch :: proc(x: ^ParkedDamageBatch) {
+	if x != nil do drop_ParkedDamageBatch(x^)
+}
+
+drp_ptr_GameEvent :: proc(x: ^GameEvent) {
+	if x != nil do drop_GameEvent(x^)
+}
+
+drp_ptr_DiscardedCardResult :: proc(x: ^DiscardedCardResult) {
+	if x != nil do drop_DiscardedCardResult(x^)
+}
+
+drp_opt_GraveyardPermissionLatch :: proc(x: Maybe(GraveyardPermissionLatch)) {
+	if y, ok := x.?; ok do drop_GraveyardPermissionLatch(y)
+}
+
+drop_SpellContext :: proc(x: SpellContext) {
+	drp_ptr_ParkedDamageBatch(x.parked_damage_batch)
+	drp_ptr_GameEvent(x.creation_lookback_event)
+	drp_ptr_DiscardedCardResult(x.direct_discard_result)
+	drp_opt_GraveyardPermissionLatch(x.graveyard_permission_latch)
+}
+
+drop_ResolvingTriggerContext :: proc(x: ResolvingTriggerContext) {
+	drp_opt_GameEvent(x.event)
+	drp_dyn_GameEvent(x.events)
+}
+
+drop_ConniveSubject :: proc(x: ConniveSubject) {
+	drop_EventObjectSnapshot(x.snapshot)
+}
+
+drp_opt_WardCost :: proc(x: Maybe(WardCost)) {
+	if y, ok := x.?; ok do drop_WardCost(y)
+}
+
+drop_FaceDownProfile :: proc(x: FaceDownProfile) {
+	drp_opt_WardCost(x.ward)
+}
+
+drop_WithEntryEffect :: proc(x: WithEntryEffect) {
+	drp_dyn_ContinuousModification(x.modifications)
+}
+
+drop_LibraryPosition :: proc(x: LibraryPosition) {
+	#partial switch y in x {
+	case LibraryPosition_BeneathTop:
+		drop_QuantityExpr(y.depth)
+	case LibraryPosition_RandomWithinTop:
+		drop_QuantityExpr(y.n)
+	}
+}
+
+drop_Duration :: proc(x: Duration) {
+	#partial switch y in x {
+	case Duration_ForAsLongAs:
+		drop_StaticCondition(y.condition)
+	case Duration_UntilEvent:
+		drp_ptr_TriggerDefinition(y.event)
+	}
+}
+
+drop_TargetSelectionConstraint :: proc(x: TargetSelectionConstraint) {
+	#partial switch y in x {
+	case TargetSelectionConstraint_TotalManaValue:
+		drop_QuantityExpr(y.value)
+	}
+}
+
+drop_NamedChoiceSource :: proc(x: NamedChoiceSource) {
+	drp_opt_TriggerSourceContext(x.context_)
+}
+
+drp_opt_ChosenAttribute :: proc(x: Maybe(ChosenAttribute)) {
+	if y, ok := x.?; ok do drop_ChosenAttribute(y)
+}
+
+drop_OpponentGuessOwner :: proc(x: OpponentGuessOwner) {
+	drop_TriggerSourceContext(x.context_)
+	drp_opt_ChosenAttribute(x.committed_choice)
+}
+
+drop_CastOpponentChoicePurpose :: proc(x: CastOpponentChoicePurpose) {
+	#partial switch y in x {
+	case CastOpponentChoicePurpose_EffectCost:
+		drp_ptr_AbilityCost(y.cost)
+	}
+}
+
+drop_CastOfferKind :: proc(x: CastOfferKind) {
+	#partial switch y in x {
+	case CastOfferKind_FreeCastWindow:
+		drop_ResolutionCastFacePolicy(y.face_policy)
+		drp_opt_SpellStackToGraveyardReplacement(y.graveyard_replacement)
+		drop_PendingEntersModifications(y.enters_with_modifications)
+	case CastOfferKind_GraveyardPaidCast:
+		drp_opt_SpellStackToGraveyardReplacement(y.graveyard_replacement)
+		drop_PendingEntersModifications(y.enters_with_modifications)
+		drop_ResolutionCastCleanup(y.cleanup)
+	}
+}
+
+drp_opt_CastAuthorityChoice :: proc(x: Maybe(CastAuthorityChoice)) {
+	if y, ok := x.?; ok do drop_CastAuthorityChoice(y)
+}
+
+drop_CastingVariantChoiceOption :: proc(x: CastingVariantChoiceOption) {
+	drp_opt_AbilityCost(x.additional_cost)
+	drp_opt_CastAuthorityChoice(x.authority)
+	drp_opt_Keyword(x.alternative_cost_keyword)
+}
+
+drop_ActivationCostSnapshot :: proc(x: ActivationCostSnapshot) {
+	drop_AbilityCost(x.base_cost)
+}
+
+drop_ResolutionOptionalPaymentOption :: proc(x: ResolutionOptionalPaymentOption) {
+	drop_AbilityCost(x.cost)
+}
+
+drp_dyn_PeriodItem :: proc(x: [dynamic]PeriodItem) {
+	for item in x do drop_PeriodItem(item)
+}
+
+drop_ConfirmedPeriod :: proc(x: ConfirmedPeriod) {
+	drp_dyn_PeriodItem(x.items)
+	drop_AnswerReceipts(x.receipts)
+}
+
+drop_ShortcutProposal :: proc(x: ShortcutProposal) {
+	drop_ConfirmedPeriod(x.period)
+}
+
+drop_PayCostKind :: proc(x: PayCostKind) {
+	#partial switch y in x {
+	case PayCostKind_ExileMaterials:
+		drop_TargetFilter(y.materials)
+	case PayCostKind_ExilePermanent:
+		drp_opt_TargetFilter(y.filter)
+	case PayCostKind_UnattachFrom:
+		drop_TargetFilter(y.filter)
+	case PayCostKind_ExileAggregate:
+		drop_TargetFilter(y.filter)
+	}
+}
+
+drop_CostResume :: proc(x: CostResume) {
+	#partial switch y in x {
+	case CostResume_Spell:
+		drp_ptr_PendingCast(y.spell)
+	case CostResume_SpellCost:
+		drp_ptr_PendingCast(y.spell)
+		drp_ptr_AbilityCost(y.cost)
+	case CostResume_ManaAbility:
+		drp_ptr_PendingManaAbility(y.mana_ability)
+	case CostResume_TeamTapPayment:
+		drp_ptr_TargetFilter(y.filter)
+		drp_ptr_ResolvedAbility(y.ability)
+	case CostResume_TurnFaceUp:
+		drp_ptr_AbilityCost(y.remaining_cost)
+	}
+}
+
+drop_ManaChoiceContext :: proc(x: ManaChoiceContext) {
+	#partial switch y in x {
+	case ManaChoiceContext_ManaAbility:
+		drp_ptr_PendingManaAbility(y._0)
+	case ManaChoiceContext_ResolvingEffect:
+		drp_ptr_ResolvedAbility(y._0)
+	}
+}
+
+drop_CollectEvidenceResume :: proc(x: CollectEvidenceResume) {
+	#partial switch y in x {
+	case CollectEvidenceResume_Casting:
+		drp_ptr_PendingCast(y.pending_cast)
+	case CollectEvidenceResume_Effect:
+		drp_ptr_ResolvedAbility(y.pending_ability)
+	case CollectEvidenceResume_ManaAbility:
+		drp_ptr_PendingManaAbility(y.pending_mana_ability)
+	}
+}
+
+drop_PileResult :: proc(x: PileResult) {
+	drp_PVec_ObjectId(x.pile_a)
+	drp_PVec_ObjectId(x.pile_b)
+}
+
+drp_ptr_CopiableValues :: proc(x: ^CopiableValues) {
+	if x != nil do drop_CopiableValues(x^)
+}
+
+drp_opt_ActivationRestriction :: proc(x: Maybe(ActivationRestriction)) {
+	if y, ok := x.?; ok do drop_ActivationRestriction(y)
+}
+
+drp_ptr_StaticDefinition :: proc(x: ^StaticDefinition) {
+	if x != nil do drop_StaticDefinition(x^)
+}
+
+drop_ContinuousModification :: proc(x: ContinuousModification) {
+	#partial switch y in x {
+	case ContinuousModification_CopyValues:
+		drp_ptr_CopiableValues(y.values)
+	case ContinuousModification_AddKeyword:
+		drop_Keyword(y.keyword)
+	case ContinuousModification_RemoveKeyword:
+		drop_Keyword(y.keyword)
+	case ContinuousModification_GrantAbility:
+		drp_ptr_AbilityDefinition(y.definition)
+	case ContinuousModification_GrantAllActivatedAbilitiesOf:
+		drop_TargetFilter(y.source)
+		drp_opt_ActivationRestriction(y.cap)
+	case ContinuousModification_GrantAllTriggeredAbilitiesOf:
+		drop_TargetFilter(y.source)
+	case ContinuousModification_GrantTrigger:
+		drp_ptr_TriggerDefinition(y.trigger)
+	case ContinuousModification_GrantReplacement:
+		drp_ptr_ReplacementDefinition(y.replacement)
+	case ContinuousModification_SetDynamicPower:
+		drop_QuantityExpr(y.value)
+	case ContinuousModification_SetDynamicToughness:
+		drop_QuantityExpr(y.value)
+	case ContinuousModification_SetPowerDynamic:
+		drop_QuantityExpr(y.value)
+	case ContinuousModification_SetToughnessDynamic:
+		drop_QuantityExpr(y.value)
+	case ContinuousModification_AddDynamicPower:
+		drop_QuantityExpr(y.value)
+	case ContinuousModification_AddDynamicToughness:
+		drop_QuantityExpr(y.value)
+	case ContinuousModification_AddDynamicKeyword:
+		drop_QuantityExpr(y.value)
+	case ContinuousModification_AddStaticMode:
+		drop_StaticMode(y.mode)
+	case ContinuousModification_GrantStaticAbility:
+		drp_ptr_StaticDefinition(y.definition)
+	case ContinuousModification_AddCounterOnEnter:
+		drop_QuantityExpr(y.count)
+	}
+}
+
+drop_DistributionScope :: proc(x: DistributionScope) {
+	#partial switch y in x {
+	case DistributionScope_ResolutionCandidates:
+		drp_ptr_ResolvedAbility(y.pending_effect)
+	}
+}
+
+drop_StackResolutionEntryFence :: proc(x: StackResolutionEntryFence) {
+	drop_StackResolutionEntryProvenance(x.provenance)
+}
+
+drp_ptr_LibraryPosition :: proc(x: ^LibraryPosition) {
+	if x != nil do drop_LibraryPosition(x^)
+}
+
+drp_ptr_EnterWithGrants :: proc(x: ^EnterWithGrants) {
+	if x != nil do drop_EnterWithGrants(x^)
+}
+
+drp_ptr_FaceDownProfile :: proc(x: ^FaceDownProfile) {
+	if x != nil do drop_FaceDownProfile(x^)
+}
+
+drp_ptr_EntryChoices :: proc(x: ^EntryChoices) {
+	if x != nil do drop_EntryChoices(x^)
+}
+
+drp_dyn_TokenBatch :: proc(x: [dynamic]TokenBatch) {
+	for item in x do drop_TokenBatch(item)
+}
+
+drop_ProposedEvent :: proc(x: ProposedEvent) {
+	#partial switch y in x {
+	case ProposedEvent_ZoneChange:
+		drp_ptr_LibraryPosition(y.library_placement)
+		drp_ptr_EnterWithGrants(y.enter_with_grants)
+		drp_ptr_FaceDownProfile(y.face_down_profile)
+		drp_ptr_CopyTokenSpec(y.enter_as_copy)
+		drp_ptr_EntryChoices(y.enter_with_choices)
+		drp_ptr_WithEntryEffect(y.with_entry_effect)
+	case ProposedEvent_SearchFound:
+		drop_SearchFoundDisposition(y.disposition)
+	case ProposedEvent_Connive:
+		drp_ptr_EventObjectSnapshot(y.subject)
+	case ProposedEvent_CreateToken:
+		drp_ptr_TokenSpec(y.spec)
+		drp_ptr_CopyTokenSpec(y.copy)
+		drp_dyn_TokenBatch(y.appended)
+	case ProposedEvent_TokenEntry:
+		drp_ptr_EntryChoices(y.enter_with_choices)
+	}
+}
+
+drop_SettledDamageGuard :: proc(x: SettledDamageGuard) {
+	drop_ReplacementCondition(x.condition)
+}
+
+drop_BoundSearchFoundCandidate :: proc(x: BoundSearchFoundCandidate) {
+	drop_BoundSearchFoundDisposition(x.disposition)
+}
+
+drp_dyn_EnterWithGrant :: proc(x: [dynamic]EnterWithGrant) {
+	for item in x do drop_EnterWithGrant(item)
+}
+
+drop_EnterWithGrants :: proc(x: EnterWithGrants) {
+	drp_dyn_EnterWithGrant(cast([dynamic]EnterWithGrant)x)
+}
+
+drp_opt_CopiedDoubleFaces :: proc(x: Maybe(CopiedDoubleFaces)) {
+	if y, ok := x.?; ok do drop_CopiedDoubleFaces(y)
+}
+
+drop_CopyTokenSpec :: proc(x: CopyTokenSpec) {
+	drp_ptr_CopiableValues(x.values)
+	drp_dyn_Keyword(x.extra_keywords)
+	drp_dyn_ContinuousModification(x.additional_modifications)
+	drp_opt_Duration(x.sacrifice_at)
+	drp_opt_CopiedDoubleFaces(x.double_faced)
+}
+
+drop_EntryChoices :: proc(x: EntryChoices) {
+	drp_dyn_ChosenAttribute(cast([dynamic]ChosenAttribute)x)
+}
+
+drop_SearchFoundDisposition :: proc(x: SearchFoundDisposition) {
+	#partial switch y in x {
+	case SearchFoundDisposition_Modified:
+		drop_BoundSearchFoundDisposition(y._0)
+	}
+}
+
+drop_TokenSpec :: proc(x: TokenSpec) {
+	drop_TokenCharacteristics(x.characteristics)
+	drp_dyn_StaticDefinition(x.static_abilities)
+	drp_opt_Duration(x.sacrifice_at)
+}
+
+drop_TokenBatch :: proc(x: TokenBatch) {
+	drp_ptr_TokenSpec(x.spec)
+	drp_ptr_CopyTokenSpec(x.copy)
+}
+
+drp_dyn_PendingCombatLegProgress :: proc(x: [dynamic]PendingCombatLegProgress) {
+	for item in x do drop_PendingCombatLegProgress(item)
+}
+
+drop_PendingCombatDamageReplacement :: proc(x: PendingCombatDamageReplacement) {
+	drp_dyn_PendingCombatLegProgress(x.resolved)
+	drp_dyn_SettledDamageGuard(x.settled_guards)
+}
+
+drp_dyn_PendingCombatLeg :: proc(x: [dynamic]PendingCombatLeg) {
+	for item in x do drop_PendingCombatLeg(item)
+}
+
+drop_PendingCombatPhaseCRemnant :: proc(x: PendingCombatPhaseCRemnant) {
+	drp_dyn_PendingCombatLeg(x.remaining)
+}
+
+drop_LiminalEntrant :: proc(x: LiminalEntrant) {
+	#partial switch y in x {
+	case LiminalEntrant_Token:
+		drop_TokenProjection(y._0)
+	case LiminalEntrant_Card:
+		drop_GameObject(y._0)
+	}
+}
+
+drop_TokenCopySettlement :: proc(x: TokenCopySettlement) {
+	drop_ResolvedAbility(x.ability)
+	drp_dyn_ContinuousModification(x.held_exceptions)
+	drop_LiminalEntrant(x.original)
+	drp_ptr_CopiableValues(x.copy_values)
+}
+
+drop_TokenProjection :: proc(x: TokenProjection) {
+	drop_GameObject(cast(GameObject)x)
+}
+
+drop_ProtectionStartSnapshot :: proc(x: ProtectionStartSnapshot) {
+	drop_ProtectionTarget(x.resolved_quality)
+}
+
+drop_ProtectionStartGrant :: proc(x: ProtectionStartGrant) {
+	drop_ProtectionTarget(x.resolved_quality)
+}
+
+drop_ProtectionProvenance :: proc(x: ProtectionProvenance) {
+	drop_ProtectionTarget(x.quality)
+}
+
+drp_dyn_PerpetualGrantModification :: proc(x: [dynamic]PerpetualGrantModification) {
+	for item in x do drop_PerpetualGrantModification(item)
+}
+
+drop_PerpetualModification :: proc(x: PerpetualModification) {
+	#partial switch y in x {
+	case PerpetualModification_ModifyPowerToughness:
+		drop_QuantityExpr(y.power)
+		drop_QuantityExpr(y.toughness)
+		drp_dyn_Keyword(y.keywords)
+	case PerpetualModification_GrantKeywords:
+		drp_dyn_Keyword(y.keywords)
+	case PerpetualModification_Become:
+		drp_dyn_Keyword(y.keywords)
+	case PerpetualModification_GrantAbility:
+		drp_dyn_PerpetualGrantModification(y.modifications)
+	}
+}
+
+drop_TriggerEntry :: proc(x: TriggerEntry) {
+	drop_TriggerDefinition(x.definition)
+}
+
+drop_BackFaceData :: proc(x: BackFaceData) {
+	drp_dyn_Keyword(x.keywords)
+	drp_dyn_AbilityDefinition(x.abilities)
+	drp_opt_ModalChoice(x.modal)
+	drp_opt_AdditionalCost(x.additional_cost)
+	drp_dyn_CastingRestriction(x.casting_restrictions)
+	drp_dyn_SpellCastingOption(x.casting_options)
+}
+
+drop_CostPaidObjectSnapshot :: proc(x: CostPaidObjectSnapshot) {
+	drop_LKISnapshot(x.lki)
+}
+
+drop_CleaveFormState :: proc(x: CleaveFormState) {
+	drp_shared_dyn_AbilityDefinition(x.abilities)
+	drp_shared_dyn_AbilityDefinition(x.base_abilities)
+	drp_shared_dyn_TriggerDefinition(x.base_triggers)
+	drp_shared_dyn_StaticDefinition(x.base_statics)
+	drp_shared_dyn_ReplacementDefinition(x.base_replacements)
+}
+
+drp_opt_ResolutionCastCleanup :: proc(x: Maybe(ResolutionCastCleanup)) {
+	if y, ok := x.?; ok do drop_ResolutionCastCleanup(y)
+}
+
+drop_CastingPermission :: proc(x: CastingPermission) {
+	#partial switch y in x {
+	case CastingPermission_ExileWithAltCost:
+		drp_opt_CastPermissionConstraint(y.constraint)
+		drp_opt_ResolutionCastCleanup(y.resolution_cleanup)
+		drp_opt_Duration(y.duration)
+		drp_opt_SpellStackToGraveyardReplacement(y.graveyard_replacement)
+		drop_PendingEntersModifications(y.enters_with_modifications)
+	case CastingPermission_PlayFromExile:
+		drop_Duration(y.duration)
+		drp_opt_TargetFilter(y.card_filter)
+		drp_opt_AbilityCost(y.alt_ability_cost)
+	case CastingPermission_ExileWithAltAbilityCost:
+		drop_AbilityCost(y.cost)
+		drp_opt_CastPermissionConstraint(y.constraint)
+		drp_opt_Duration(y.duration)
+	}
+}
+
+drop_CaseState :: proc(x: CaseState) {
+	drop_SolveCondition(x.solve_condition)
+}
+
+drop_ExiledSpellRider :: proc(x: ExiledSpellRider) {
+	#partial switch y in x {
+	case ExiledSpellRider_ReturnTo:
+		drop_DelayedTriggerCondition(y.timing)
+	}
+}
+
+drop_ManaSpentSourceSnapshot :: proc(x: ManaSpentSourceSnapshot) {
+	drop_LKISnapshot(x.lki)
+}
+
+drp_opt_LibrarySearchCardFaceView :: proc(x: Maybe(LibrarySearchCardFaceView)) {
+	if y, ok := x.?; ok do drop_LibrarySearchCardFaceView(y)
+}
+
+drop_LibrarySearchCardView :: proc(x: LibrarySearchCardView) {
+	drop_LibrarySearchCardFaceView(x.current_face)
+	drop_LibrarySearchCardFaceView(x.front_face)
+	drp_opt_LibrarySearchCardFaceView(x.back_face)
+}
+
+drop_BoundActivationCost :: proc(x: BoundActivationCost) {
+	#partial switch y in x {
+	case BoundActivationCost_Cost:
+		drp_ptr_AbilityCost(y._0)
+	}
+}
+
+drop_TriggerSourceContext :: proc(x: TriggerSourceContext) {
+	drop_LKISnapshot(x.lki)
+	drp_opt_CaseState(x.case_state)
+	drp_dyn_TriggerEntry(x.trigger_entries)
+	drp_dyn_Keyword(x.cast_spell_keywords)
+	drp_dyn_ManaSpentSourceSnapshot(x.mana_spent_source_snapshots)
+	drp_opt_CostPaidObjectSnapshot(x.cast_cost_paid_object)
+}
+
+drop_TraceEntry :: proc(x: TraceEntry) {
+	drop_EntryKind(x.kind)
+}
+
+drop_NodeKey :: proc(x: NodeKey) {
+	#partial switch y in x {
+	case NodeKey_Activated:
+		drp_ptr_AbilityDefinition(y._0)
+	case NodeKey_Delayed:
+		drp_ptr_DelayedAbilityOrigin(y._0)
+	}
+}
+
+drop_UndoPoint :: proc(x: UndoPoint) {
+	drp_ptr_PlayTrace(x.before)
+}
+
+drop_CarriedSpan :: proc(x: CarriedSpan) {
+	drop_NodeKey(x.key)
+	drop_PlayTrace(x.trace)
+}
+
+drp_t2_NodeKey_PeriodReach :: proc(x: Tuple2(NodeKey, PeriodReach)) {
+	drop_NodeKey(x._0)
+}
+
+drp_dyn_t2_NodeKey_PeriodReach :: proc(x: [dynamic]Tuple2(NodeKey, PeriodReach)) {
+	for item in x do drp_t2_NodeKey_PeriodReach(item)
+}
+
+drop_CarryingIndex :: proc(x: CarryingIndex) {
+	drp_dyn_t2_NodeKey_PeriodReach(x.keys)
+}
+
+drp_ptr_ConfirmedPeriod :: proc(x: ^ConfirmedPeriod) {
+	if x != nil do drop_ConfirmedPeriod(x^)
+}
+
+drop_Witnessed :: proc(x: Witnessed) {
+	#partial switch y in x {
+	case Witnessed_Offered:
+		drp_ptr_ConfirmedPeriod(y.period)
+	}
+}
+
+drp_dyn_PrecastShortcutReplayStep :: proc(x: [dynamic]PrecastShortcutReplayStep) {
+	for item in x do drop_PrecastShortcutReplayStep(item)
+}
+
+drop_PrecastShortcutOfferRuntime :: proc(x: PrecastShortcutOfferRuntime) {
+	drp_dyn_PrecastShortcutReplayStep(x.transcript)
+}
+
+drop_PrecastShortcutReplayStep :: proc(x: PrecastShortcutReplayStep) {
+	drop_GameAction(x.action)
+}
+
+drp_ptr_DefilerPaymentWitness :: proc(x: ^DefilerPaymentWitness) {
+	if x != nil do drop_DefilerPaymentWitness(x^)
+}
+
+drp_ptr_OptionalAdditionalCostWitness :: proc(x: ^OptionalAdditionalCostWitness) {
+	if x != nil do drop_OptionalAdditionalCostWitness(x^)
+}
+
+drop_ArmedLifeCostRoot :: proc(x: ArmedLifeCostRoot) {
+	#partial switch y in x {
+	case ArmedLifeCostRoot_DefilerPayment:
+		drp_ptr_DefilerPaymentWitness(y._0)
+	case ArmedLifeCostRoot_OptionalAdditionalCost:
+		drp_ptr_OptionalAdditionalCostWitness(y._0)
+	}
+}
+
+drop_DefilerPaymentWitness :: proc(x: DefilerPaymentWitness) {
+	drop_PendingCast(x.pending_cast)
+	drop_CandidateAction(x.candidate)
+}
+
+drop_OptionalAdditionalCostWitness :: proc(x: OptionalAdditionalCostWitness) {
+	drop_AdditionalCost(x.cost)
+	drop_PendingCast(x.pending_cast)
+	drop_CandidateAction(x.candidate)
+	drop_AbilityCost(x.materialized_cost)
+}
+
+drp_dyn_StaticCondition :: proc(x: [dynamic]StaticCondition) {
+	for item in x do drop_StaticCondition(item)
+}
+
+drp_ptr_StaticCondition :: proc(x: ^StaticCondition) {
+	if x != nil do drop_StaticCondition(x^)
+}
+
+drop_StaticCondition :: proc(x: StaticCondition) {
+	#partial switch y in x {
+	case StaticCondition_IsPresent:
+		drp_opt_TargetFilter(y.filter)
+	case StaticCondition_QuantityComparison:
+		drop_QuantityExpr(y.lhs)
+		drop_QuantityExpr(y.rhs)
+	case StaticCondition_QuantityQuality:
+		drop_QuantityExpr(y.quantity)
+	case StaticCondition_And:
+		drp_dyn_StaticCondition(y.conditions)
+	case StaticCondition_Or:
+		drp_dyn_StaticCondition(y.conditions)
+	case StaticCondition_Not:
+		drp_ptr_StaticCondition(y.condition)
+	case StaticCondition_DefendingPlayerControls:
+		drop_TargetFilter(y.filter)
+	case StaticCondition_UnlessPay:
+		drop_UnlessPayScaling(y.scaling)
+	case StaticCondition_SourceMatchesFilter:
+		drop_TargetFilter(y.filter)
+	case StaticCondition_TopOfLibraryMatches:
+		drop_TargetFilter(y.filter)
+	case StaticCondition_RecipientMatchesFilter:
+		drop_TargetFilter(y.filter)
+	}
+}
+
+drp_ptr_QuantityRef :: proc(x: ^QuantityRef) {
+	if x != nil do drop_QuantityRef(x^)
+}
+
+drp_dyn_PlayerFilter :: proc(x: [dynamic]PlayerFilter) {
+	for item in x do drop_PlayerFilter(item)
+}
+
+drop_PlayerFilter :: proc(x: PlayerFilter) {
+	#partial switch y in x {
+	case PlayerFilter_OpponentDealtDamage:
+		drp_ptr_TargetFilter(y.source)
+	case PlayerFilter_AllExcept:
+		drp_ptr_PlayerFilter(y.exclude)
+	case PlayerFilter_ControlsCount:
+		drop_TargetFilter(y.filter)
+		drp_ptr_QuantityExpr(y.count)
+	case PlayerFilter_PlayerAttribute:
+		drp_ptr_QuantityRef(y.attr)
+		drp_ptr_QuantityExpr(y.value)
+	case PlayerFilter_AnyOf:
+		drp_dyn_PlayerFilter(y.filters)
+	case PlayerFilter_TrackedSetPossessor:
+		drop_TargetFilter(y.filter)
+	}
+}
+
+drop_AttackersDeclaredCountSubject :: proc(x: AttackersDeclaredCountSubject) {
+	#partial switch y in x {
+	case AttackersDeclaredCountSubject_Controller:
+		drp_opt_TargetFilter(y.filter)
+	case AttackersDeclaredCountSubject_AttackTarget:
+		drp_opt_TargetFilter(y.filter)
+	}
+}
+
+drp_dyn_FilterProp :: proc(x: [dynamic]FilterProp) {
+	for item in x do drop_FilterProp(item)
+}
+
+drop_TypedFilter :: proc(x: TypedFilter) {
+	drp_dyn_FilterProp(x.properties)
+}
+
+drp_ptr_FilterProp :: proc(x: ^FilterProp) {
+	if x != nil do drop_FilterProp(x^)
+}
+
+drop_FilterProp :: proc(x: FilterProp) {
+	#partial switch y in x {
+	case FilterProp_ControllerMatches:
+		drp_ptr_PlayerFilter(y.player)
+	case FilterProp_WithKeyword:
+		drop_Keyword(y.value)
+	case FilterProp_WithoutKeyword:
+		drop_Keyword(y.value)
+	case FilterProp_CanEnchant:
+		drp_ptr_TargetFilter(y.target)
+	case FilterProp_Counters:
+		drop_QuantityExpr(y.count)
+	case FilterProp_Cmc:
+		drop_QuantityExpr(y.value)
+	case FilterProp_AttachedTo:
+		drop_AttachmentReferent(y.to)
+	case FilterProp_PtComparison:
+		drop_QuantityExpr(y.value)
+	case FilterProp_AnyOf:
+		drp_dyn_FilterProp(y.props)
+	case FilterProp_Not:
+		drp_ptr_FilterProp(y.prop)
+	case FilterProp_DifferentNameFrom:
+		drp_ptr_TargetFilter(y.filter)
+	case FilterProp_DistinctFrom:
+		drp_ptr_TargetFilter(y.reference)
+	case FilterProp_SharesQuality:
+		drp_ptr_TargetFilter(y.reference)
+	case FilterProp_DealtDamageThisTurn:
+		drp_opt_PlayerFilter(y.recipient)
+	case FilterProp_TargetsOnly:
+		drp_ptr_TargetFilter(y.filter)
+	case FilterProp_Targets:
+		drp_ptr_TargetFilter(y.filter)
+	}
+}
+
+drop_TriggerOrderGroup :: proc(x: TriggerOrderGroup) {
+	drp_dyn_PendingTriggerContext(x.triggers)
+}
+
+drop_DelayedTriggerCondition :: proc(x: DelayedTriggerCondition) {
+	#partial switch y in x {
+	case DelayedTriggerCondition_WhenDies:
+		drop_TargetFilter(y.filter)
+	case DelayedTriggerCondition_WhenLeavesPlayFiltered:
+		drop_TargetFilter(y.filter)
+	case DelayedTriggerCondition_WhenEntersBattlefield:
+		drop_TargetFilter(y.filter)
+	case DelayedTriggerCondition_WhenDiesOrExiled:
+		drop_TargetFilter(y.filter)
+	case DelayedTriggerCondition_WheneverEvent:
+		drp_ptr_TriggerDefinition(y.trigger)
+	case DelayedTriggerCondition_WhenNextEvent:
+		drp_ptr_TriggerDefinition(y.trigger)
+		drp_ptr_TriggerDefinition(y.or_trigger)
+	}
+}
+
+drop_TokenGrowth :: proc(x: TokenGrowth) {
+	drp_ptr_CopiableValues(x.profile)
+}
+
+drop_DeckEntry :: proc(x: DeckEntry) {
+	drop_CardFace(x.card)
+}
+
+drop_ActivationTargetFact :: proc(x: ActivationTargetFact) {
+	#partial switch y in x {
+	case ActivationTargetFact_Object:
+		drp_ptr_LKISnapshot(y.lki)
+	}
+}
+
+drop_NextSpellModifier :: proc(x: NextSpellModifier) {
+	#partial switch y in x {
+	case NextSpellModifier_HasKeyword:
+		drop_Keyword(y.keyword)
+	}
+}
+
+drop_BestowCost :: proc(x: BestowCost) {
+	#partial switch y in x {
+	case BestowCost_NonMana:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drop_EmbalmCost :: proc(x: EmbalmCost) {
+	#partial switch y in x {
+	case EmbalmCost_NonMana:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drop_EternalizeCost :: proc(x: EternalizeCost) {
+	#partial switch y in x {
+	case EternalizeCost_NonMana:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drop_ProtectionTarget :: proc(x: ProtectionTarget) {
+	#partial switch y in x {
+	case ProtectionTarget_Filter:
+		drop_TargetFilter(y._0)
+	}
+}
+
+drop_CyclingCost :: proc(x: CyclingCost) {
+	#partial switch y in x {
+	case CyclingCost_NonMana:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drop_FlashbackCost :: proc(x: FlashbackCost) {
+	#partial switch y in x {
+	case FlashbackCost_NonMana:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drp_dyn_WardCost :: proc(x: [dynamic]WardCost) {
+	for item in x do drop_WardCost(item)
+}
+
+drop_WardCost :: proc(x: WardCost) {
+	#partial switch y in x {
+	case WardCost_Discard:
+		drp_opt_TargetFilter(y.filter)
+	case WardCost_Sacrifice:
+		drop_TargetFilter(y.filter)
+	case WardCost_Compound:
+		drp_dyn_WardCost(y._0)
+	}
+}
+
+drop_ActivationRestriction :: proc(x: ActivationRestriction) {
+	#partial switch y in x {
+	case ActivationRestriction_RequiresCondition:
+		drp_opt_ParsedCondition(y.condition)
+	}
+}
+
+drop_MorphCost :: proc(x: MorphCost) {
+	#partial switch y in x {
+	case MorphCost_NonMana:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drop_EmergeCost :: proc(x: EmergeCost) {
+	drop_TargetFilter(x.sacrifice_filter)
+}
+
+drop_EscapeCost :: proc(x: EscapeCost) {
+	#partial switch y in x {
+	case EscapeCost_NonMana:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drop_EvokeCost :: proc(x: EvokeCost) {
+	#partial switch y in x {
+	case EvokeCost_NonMana:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drp_ptr_CostReduction :: proc(x: ^CostReduction) {
+	if x != nil do drop_CostReduction(x^)
+}
+
+drop_DisguiseCost :: proc(x: DisguiseCost) {
+	#partial switch y in x {
+	case DisguiseCost_Reduced:
+		drp_ptr_CostReduction(y.reduction)
+	}
+}
+
+drop_BlitzCost :: proc(x: BlitzCost) {
+	#partial switch y in x {
+	case BlitzCost_NonMana:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drop_BuybackCost :: proc(x: BuybackCost) {
+	#partial switch y in x {
+	case BuybackCost_NonMana:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drop_EchoCost :: proc(x: EchoCost) {
+	#partial switch y in x {
+	case EchoCost_NonMana:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drop_EntwineCost :: proc(x: EntwineCost) {
+	#partial switch y in x {
+	case EntwineCost_NonMana:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drp_dyn_ResolutionFrame :: proc(x: [dynamic]ResolutionFrame) {
+	for item in x do drop_ResolutionFrame(item)
+}
+
+drop_FrameVec :: proc(x: FrameVec) {
+	drp_dyn_ResolutionFrame(x.frames)
+}
+
+drp_ptr_ChangeZoneFrame :: proc(x: ^ChangeZoneFrame) {
+	if x != nil do drop_ChangeZoneFrame(x^)
+}
+
+drp_ptr_PendingBatchDeliveries :: proc(x: ^PendingBatchDeliveries) {
+	if x != nil do drop_PendingBatchDeliveries(x^)
+}
+
+drp_ptr_PendingDebugCardEntries :: proc(x: ^PendingDebugCardEntries) {
+	if x != nil do drop_PendingDebugCardEntries(x^)
+}
+
+drp_ptr_PendingDieRoll :: proc(x: ^PendingDieRoll) {
+	if x != nil do drop_PendingDieRoll(x^)
+}
+
+drp_ptr_DiscardFrame :: proc(x: ^DiscardFrame) {
+	if x != nil do drop_DiscardFrame(x^)
+}
+
+drop_ResolutionFrame :: proc(x: ResolutionFrame) {
+	#partial switch y in x {
+	case ResolutionFrame_AbilityContinuation:
+		drop_AbilityContinuationFrame(y._0)
+	case ResolutionFrame_RepeatFor:
+		drop_PendingRepeatIteration(y._0)
+	case ResolutionFrame_RepeatUntil:
+		drop_PendingRepeatUntil(y._0)
+	case ResolutionFrame_RepeatedOptionalPayment:
+		drop_RepeatedOptionalPaymentFrame(y._0)
+	case ResolutionFrame_ChangeZone:
+		drp_ptr_ChangeZoneFrame(y._0)
+	case ResolutionFrame_BatchDelivery:
+		drp_ptr_PendingBatchDeliveries(y._0)
+	case ResolutionFrame_CounterAdditions:
+		drop_PendingCounterAdditionQueue(y._0)
+	case ResolutionFrame_CopyToken:
+		drop_PendingCopyTokenResolution(y._0)
+	case ResolutionFrame_DebugCardEntries:
+		drp_ptr_PendingDebugCardEntries(y._0)
+	case ResolutionFrame_EachPlayerCopyChosen:
+		drop_PendingEachPlayerCopyChosen(y._0)
+	case ResolutionFrame_ChooseOneOf:
+		drop_PendingChooseOneOf(y._0)
+	case ResolutionFrame_VoteBallot:
+		drop_PendingVoteBallotIteration(y._0)
+	case ResolutionFrame_PerPlayerZoneChoice:
+		drop_PendingPerPlayerZoneChoice(y._0)
+	case ResolutionFrame_PerCategoryZoneChoice:
+		drop_PerCategoryZoneChoiceFrame(y._0)
+	case ResolutionFrame_OptionalEffect:
+		drop_OptionalEffectFrame(y._0)
+	case ResolutionFrame_CoinFlip:
+		drop_PendingCoinFlip(y._0)
+	case ResolutionFrame_DieRoll:
+		drp_ptr_PendingDieRoll(y._0)
+	case ResolutionFrame_MultiDraw:
+		drop_MultiDrawFrame(y._0)
+	case ResolutionFrame_Discard:
+		drp_ptr_DiscardFrame(y._0)
+	case ResolutionFrame_ConniveReentry:
+		drop_PendingConniveReentry(y._0)
+	case ResolutionFrame_LifeTotalAssignment:
+		drop_PendingLifeTotalAssignment(y._0)
+	case ResolutionFrame_PostReplacement:
+		drop_PostReplacementDrainStack(y._0)
+	}
+}
+
+drop_ResolutionPaymentTranscriptEntry :: proc(x: ResolutionPaymentTranscriptEntry) {
+	drop_GameAction(x.action)
+}
+
+drop_PaymentRecoveryCheckpoint :: proc(x: PaymentRecoveryCheckpoint) {
+	drp_ptr_GameState(x.state)
+	drp_dyn_GameEvent(x.events)
+}
+
+drp_dyn_PendingSacrificeDelivery :: proc(x: [dynamic]PendingSacrificeDelivery) {
+	for item in x do drop_PendingSacrificeDelivery(item)
+}
+
+drop_PendingPlayerScopeSacrificeCompletion :: proc(x: PendingPlayerScopeSacrificeCompletion) {
+	drp_dyn_GameEvent(x.deferred_events)
+	drp_dyn_PendingSacrificeDelivery(x.pending_deliveries)
+}
+
+drop_UnlessPayModifier :: proc(x: UnlessPayModifier) {
+	drop_AbilityCost(x.cost)
+	drop_TargetFilter(x.payer)
+}
+
+drop_SimultaneousUnlessPhase :: proc(x: SimultaneousUnlessPhase) {
+	#partial switch y in x {
+	case SimultaneousUnlessPhase_Delivering:
+		drop_SimultaneousUnlessDelivery(y._0)
+	}
+}
+
+drop_PendingDiscardFanOut :: proc(x: PendingDiscardFanOut) {
+	drp_ptr_ResolvedAbility(x.scoped_template)
+	drp_ptr_ResolvedAbility(x.outer)
+}
+
+drop_QuantityRef :: proc(x: QuantityRef) {
+	#partial switch y in x {
+	case QuantityRef_ObjectCount:
+		drop_TargetFilter(y.filter)
+	case QuantityRef_ObjectCountDistinct:
+		drop_TargetFilter(y.filter)
+	case QuantityRef_ObjectCountBySharedQuality:
+		drop_TargetFilter(y.filter)
+	case QuantityRef_PlayerCount:
+		drop_PlayerFilter(y.filter)
+	case QuantityRef_CountersOnObjects:
+		drop_TargetFilter(y.filter)
+	case QuantityRef_TargetObjectManaValue:
+		drp_ptr_TargetFilter(y.filter)
+	case QuantityRef_PropertyAggregate:
+		drop_PropertyAggregate(y._0)
+	case QuantityRef_ControlledByEachPlayer:
+		drop_TargetFilter(y.filter)
+	case QuantityRef_DistinctCardTypes:
+		drop_CardTypeSetSource(y.source)
+	case QuantityRef_SharedCardTypes:
+		drop_CardTypeSetSource(y.source)
+	case QuantityRef_DistinctSubtypes:
+		drop_CardTypeSetSource(y.source)
+	case QuantityRef_ZoneCardCount:
+		drp_opt_TargetFilter(y.filter)
+	case QuantityRef_FilteredTrackedSetSize:
+		drp_ptr_TargetFilter(y.filter)
+	case QuantityRef_EventContextPlayerCount:
+		drop_PlayerFilter(y.filter)
+	case QuantityRef_SpellsCast:
+		drp_opt_TargetFilter(y.filter)
+	case QuantityRef_SpellsCastBeforeTriggeringSpell:
+		drp_opt_TargetFilter(y.filter)
+	case QuantityRef_EnteredThisTurn:
+		drop_TargetFilter(y.filter)
+	case QuantityRef_SacrificedThisTurn:
+		drop_TargetFilter(y.filter)
+	case QuantityRef_BattlefieldEntriesThisTurn:
+		drop_TargetFilter(y.filter)
+	case QuantityRef_ZoneChangeCountThisTurn:
+		drop_TargetFilter(y.filter)
+	case QuantityRef_ZoneChangeAggregateThisTurn:
+		drop_TargetFilter(y.filter)
+	case QuantityRef_DamageDealtThisTurn:
+		drp_ptr_TargetFilter(y.source)
+		drp_ptr_TargetFilter(y.target)
+	case QuantityRef_AttackedThisTurn:
+		drp_opt_TargetFilter(y.filter)
+	case QuantityRef_SpellsCastThisGame:
+		drp_opt_TargetFilter(y.filter)
+	case QuantityRef_CounterAddedThisTurn:
+		drop_TargetFilter(y.target)
+	case QuantityRef_TokensCreatedThisTurn:
+		drop_TargetFilter(y.filter)
+	case QuantityRef_ManaSpentToCast:
+		drop_CastManaSpentMetric(y.metric)
+	case QuantityRef_DistinctColorsAmong:
+		drop_CardTypeSetSource(y.source)
+	case QuantityRef_DistinctCounterKindsAmong:
+		drop_TargetFilter(y.filter)
+	}
+}
+
+drop_PropertyAggregate :: proc(x: PropertyAggregate) {
+	drop_CardTypeSetSource(x.source)
+}
+
+drop_CardTypeSetSource :: proc(x: CardTypeSetSource) {
+	#partial switch y in x {
+	case CardTypeSetSource_Objects:
+		drop_TargetFilter(y.filter)
+	case CardTypeSetSource_TrackedSet:
+		drp_opt_TargetFilter(y.filter)
+	case CardTypeSetSource_TurnJournal:
+		drp_opt_TargetFilter(y.filter)
+	case CardTypeSetSource_AnyOf:
+		drop_UnionSources(y.sources)
+	}
+}
+
+drop_CastManaSpentMetric :: proc(x: CastManaSpentMetric) {
+	#partial switch y in x {
+	case CastManaSpentMetric_FromSource:
+		drop_TargetFilter(y.source_filter)
+	}
+}
+
+drp_dyn_PreparedScopedLibrarySearchChoice :: proc(x: [dynamic]PreparedScopedLibrarySearchChoice) {
+	for item in x do drop_PreparedScopedLibrarySearchChoice(item)
+}
+
+drp_dyn_FrozenScopedSearchFoundDisposition :: proc(x: [dynamic]FrozenScopedSearchFoundDisposition) {
+	for item in x do drop_FrozenScopedSearchFoundDisposition(item)
+}
+
+drop_ScopedLibrarySearchPhase :: proc(x: ScopedLibrarySearchPhase) {
+	#partial switch y in x {
+	case ScopedLibrarySearchPhase_CollectSelections:
+		drp_dyn_PreparedScopedLibrarySearchChoice(y.prepared_choices)
+		drp_dyn_FrozenScopedSearchFoundDisposition(y.frozen_dispositions)
+	}
+}
+
+drop_DieResultBranch :: proc(x: DieResultBranch) {
+	drp_ptr_AbilityDefinition(x.effect)
+}
+
+drop_DieRollModifier :: proc(x: DieRollModifier) {
+	#partial switch y in x {
+	case DieRollModifier_Add:
+		drop_QuantityExpr(y.value)
+	case DieRollModifier_Subtract:
+		drop_QuantityExpr(y.value)
+	}
+}
+
+drop_ReplacementAutoChoiceIdentity :: proc(x: ReplacementAutoChoiceIdentity) {
+	#partial switch y in x {
+	case ReplacementAutoChoiceIdentity_Definition:
+		drp_ptr_ReplacementDefinition(y.definition)
+		drp_ptr_ResolvedAbility(y.rider)
+	}
+}
+
+drp_map_string_CardRules :: proc(x: map[string]CardRules) {
+	for key, val in x {
+		drop_CardRules(val)
+	}
+}
+
+drop_CardDatabase :: proc(x: CardDatabase) {
+	drp_map_string_CardRules(x.cards)
+	drop_FaceIndex(x.face_index)
+}
+
+drop_ReturnResultReadSpec :: proc(x: ReturnResultReadSpec) {
+	drop_TargetFilter(x.noun)
+}
+
+drop_DelayedAbilityOrigin :: proc(x: DelayedAbilityOrigin) {
+	drop_DelayedTriggerCondition(x.condition)
+	drop_Effect(x.effect)
+}
+
+drop_CostReduction :: proc(x: CostReduction) {
+	drop_QuantityExpr(x.count)
+	drp_opt_ParsedCondition(x.condition)
+}
+
+drp_opt_ResolvedAbility :: proc(x: Maybe(ResolvedAbility)) {
+	if y, ok := x.?; ok do drop_ResolvedAbility(y)
+}
+
+drop_ResolvedCoinBranches :: proc(x: ResolvedCoinBranches) {
+	drp_opt_ResolvedAbility(x.won)
+	drp_opt_ResolvedAbility(x.lost)
+}
+
+drp_opt_FilterProp :: proc(x: Maybe(FilterProp)) {
+	if y, ok := x.?; ok do drop_FilterProp(y)
+}
+
+drp_ptr_AbilityCondition :: proc(x: ^AbilityCondition) {
+	if x != nil do drop_AbilityCondition(x^)
+}
+
+drp_dyn_AbilityCondition :: proc(x: [dynamic]AbilityCondition) {
+	for item in x do drop_AbilityCondition(item)
+}
+
+drop_AbilityCondition :: proc(x: AbilityCondition) {
+	#partial switch y in x {
+	case AbilityCondition_RevealedHasCardType:
+		drp_opt_FilterProp(y.additional_filter)
+		drp_ptr_TargetFilter(y.subtype_filter)
+	case AbilityCondition_ObjectsShareQuality:
+		drop_TargetFilter(y.subject)
+		drop_TargetFilter(y.reference)
+	case AbilityCondition_TargetSharesNameWithOtherExiledThisWay:
+		drop_TargetFilter(y.target)
+	case AbilityCondition_QuantityCheck:
+		drop_QuantityExpr(y.lhs)
+		drop_QuantityExpr(y.rhs)
+	case AbilityCondition_QuantityQuality:
+		drop_QuantityExpr(y.quantity)
+	case AbilityCondition_PreviousEffectAmount:
+		drop_QuantityExpr(y.rhs)
+	case AbilityCondition_DiscardedCardMatchesFilter:
+		drop_TargetFilter(y.filter)
+	case AbilityCondition_TargetHasKeywordInstead:
+		drop_Keyword(y.keyword)
+	case AbilityCondition_TargetMatchesFilter:
+		drop_TargetFilter(y.filter)
+	case AbilityCondition_TriggeringSpellTargetsFilter:
+		drop_TargetFilter(y.filter)
+	case AbilityCondition_SourceMatchesFilter:
+		drop_TargetFilter(y.filter)
+	case AbilityCondition_PostReplacementDamageSourceMatchesFilter:
+		drop_TargetFilter(y.filter)
+	case AbilityCondition_ZoneChangeObjectMatchesFilter:
+		drop_TargetFilter(y.filter)
+	case AbilityCondition_ControllerControlsMatching:
+		drop_TargetFilter(y.filter)
+	case AbilityCondition_ControllerControlledMatchingAsCast:
+		drop_TargetFilter(y.filter)
+	case AbilityCondition_ZoneChangedThisWay:
+		drop_TargetFilter(y.filter)
+	case AbilityCondition_CostPaidObjectMatchesFilter:
+		drop_TargetFilter(y.filter)
+	case AbilityCondition_ConditionInstead:
+		drp_ptr_AbilityCondition(y.inner)
+	case AbilityCondition_And:
+		drp_dyn_AbilityCondition(y.conditions)
+	case AbilityCondition_Or:
+		drp_dyn_AbilityCondition(y.conditions)
+	case AbilityCondition_Not:
+		drp_ptr_AbilityCondition(y.condition)
+	case AbilityCondition_SourceLacksKeyword:
+		drop_Keyword(y.keyword)
+	case AbilityCondition_ScopedPlayerMatches:
+		drop_PlayerFilter(y.filter)
+	}
+}
+
+drop_MultiTargetSpec :: proc(x: MultiTargetSpec) {
+	drop_QuantityExpr(x.min)
+	drp_opt_QuantityExpr(x.max)
+}
+
+drop_CostPaidObjectRecord :: proc(x: CostPaidObjectRecord) {
+	#partial switch y in x {
+	case CostPaidObjectRecord_Captured:
+		drop_CostPaidObjectSnapshot(y._0)
+	}
+}
+
+drop_RepeatContinuation :: proc(x: RepeatContinuation) {
+	#partial switch y in x {
+	case RepeatContinuation_WhileCondition:
+		drp_ptr_AbilityCondition(y.condition)
+	}
+}
+
+drp__2_ptr_TargetFilter :: proc(x: [2]^TargetFilter) {
+	for item in x do drp_ptr_TargetFilter(item)
+}
+
+drop_EachDamageRecipient :: proc(x: EachDamageRecipient) {
+	#partial switch y in x {
+	case EachDamageRecipient_Shared:
+		drop_TargetFilter(y._0)
+	case EachDamageRecipient_OtherBatchSource:
+		drp__2_ptr_TargetFilter(y.source_filters)
+	}
+}
+
+drp_ptr_Duration :: proc(x: ^Duration) {
+	if x != nil do drop_Duration(x^)
+}
+
+drop_CounterSourceRider :: proc(x: CounterSourceRider) {
+	#partial switch y in x {
+	case CounterSourceRider_LosesAbilities:
+		drp_ptr_StaticDefinition(y.static_def)
+		drp_ptr_TargetFilter(y.source_filter)
+		drp_ptr_Duration(y.duration)
+	}
+}
+
+drop_SpellStackToGraveyardReplacement :: proc(x: SpellStackToGraveyardReplacement) {
+	#partial switch y in x {
+	case SpellStackToGraveyardReplacement_Library:
+		drop_LibraryPosition(y.position)
+	}
+}
+
+drop_TokenAttackDestination :: proc(x: TokenAttackDestination) {
+	#partial switch y in x {
+	case TokenAttackDestination_EachPlayer:
+		drop_PlayerFilter(y.filter)
+	}
+}
+
+drop_LibraryInstructionActor :: proc(x: LibraryInstructionActor) {
+	#partial switch y in x {
+	case LibraryInstructionActor_Player:
+		drop_TargetFilter(y.player)
+	}
+}
+
+drop_AttachSelection :: proc(x: AttachSelection) {
+	#partial switch y in x {
+	case AttachSelection_AtResolution:
+		drop_AttachCardinality(y.count)
+	}
+}
+
+drop_VoteSubject :: proc(x: VoteSubject) {
+	#partial switch y in x {
+	case VoteSubject_Objects:
+		drop_TargetFilter(y.candidate_filter)
+		drp_ptr_AbilityDefinition(y.outcome_template)
+	}
+}
+
+drop_CopyRecipient :: proc(x: CopyRecipient) {
+	#partial switch y in x {
+	case CopyRecipient_Target:
+		drop_TargetFilter(y._0)
+	case CopyRecipient_Untargeted:
+		drop_TargetFilter(y._0)
+	}
+}
+
+drop_ChosenCounterCountCondition :: proc(x: ChosenCounterCountCondition) {
+	drop_QuantityExpr(x.rhs)
+}
+
+drop_ManaProduction :: proc(x: ManaProduction) {
+	#partial switch y in x {
+	case ManaProduction_Colorless:
+		drop_QuantityExpr(y.count)
+	case ManaProduction_AnyOneColor:
+		drop_QuantityExpr(y.count)
+	case ManaProduction_AnyCombination:
+		drop_QuantityExpr(y.count)
+	case ManaProduction_ChosenColor:
+		drop_QuantityExpr(y.count)
+	case ManaProduction_NotedType:
+		drop_QuantityExpr(y.count)
+	case ManaProduction_OpponentLandColors:
+		drop_QuantityExpr(y.count)
+	case ManaProduction_AnyCombinationOfObjectColors:
+		drop_QuantityExpr(y.count)
+	case ManaProduction_AnyTypeProduceableBy:
+		drop_QuantityExpr(y.count)
+		drop_TargetFilter(y.land_filter)
+	case ManaProduction_AnyInCommandersColorIdentity:
+		drop_QuantityExpr(y.count)
+	case ManaProduction_DistinctColorsAmongPermanents:
+		drop_TargetFilter(y.filter)
+	case ManaProduction_AnyOneColorAmongPermanents:
+		drop_QuantityExpr(y.count)
+		drop_TargetFilter(y.filter)
+	}
+}
+
+drop_ManaSpellGrant :: proc(x: ManaSpellGrant) {
+	#partial switch y in x {
+	case ManaSpellGrant_CantBeCountered:
+		drop_TargetFilter(y.filter)
+	case ManaSpellGrant_EntersWithCounters:
+		drop_TargetFilter(y.filter)
+		drop_QuantityExpr(y.count)
+	case ManaSpellGrant_AddKeywordUntilEndOfTurn:
+		drop_Keyword(y.keyword)
+		drp_ptr_Duration(y.duration)
+	case ManaSpellGrant_TriggerOnSpend:
+		drop_TargetFilter(y.filter)
+		drp_ptr_AbilityDefinition(y.ability)
+	}
+}
+
+drop_ManaTargetRole :: proc(x: ManaTargetRole) {
+	#partial switch y in x {
+	case ManaTargetRole_Recipient:
+		drop_TargetFilter(y.recipient)
+	case ManaTargetRole_CountSource:
+		drop_TargetFilter(y.count_source)
+	case ManaTargetRole_Both:
+		drop_TargetFilter(y.recipient)
+		drop_TargetFilter(y.count_source)
+	}
+}
+
+drop_GuessSubject :: proc(x: GuessSubject) {
+	#partial switch y in x {
+	case GuessSubject_CommittedChoice:
+		drop_ChoiceType(y.choice_type)
+	case GuessSubject_Proposition:
+		drop_QuantityExpr(y.lhs)
+		drop_QuantityExpr(y.rhs)
+	}
+}
+
+drop_CastPermissionConstraint :: proc(x: CastPermissionConstraint) {
+	#partial switch y in x {
+	case CastPermissionConstraint_ManaValue:
+		drop_QuantityExpr(y.value)
+	}
+}
+
+drop_DamageModification :: proc(x: DamageModification) {
+	#partial switch y in x {
+	case DamageModification_Plus:
+		drop_QuantityExpr(y.value)
+	case DamageModification_PreventionMinus:
+		drop_PreventionFormula(y.value)
+	}
+}
+
+drop_CoinFlipRun :: proc(x: CoinFlipRun) {
+	#partial switch y in x {
+	case CoinFlipRun_Exactly:
+		drop_QuantityExpr(y.count)
+	}
+}
+
+drop_ForEachCategoryAction :: proc(x: ForEachCategoryAction) {
+	#partial switch y in x {
+	case ForEachCategoryAction_PutCounter:
+		drop_TargetFilter(y.target)
+		drop_QuantityExpr(y.count)
+	}
+}
+
+drop_KeeperConstraint :: proc(x: KeeperConstraint) {
+	#partial switch y in x {
+	case KeeperConstraint_ExactCount:
+		drop_QuantityExpr(y.count)
+	}
+}
+
+drop_KeeperCounterMark :: proc(x: KeeperCounterMark) {
+	drop_QuantityExpr(x.count)
+}
+
+drop_UntilCondition :: proc(x: UntilCondition) {
+	#partial switch y in x {
+	case UntilCondition_NextMatches:
+		drop_TargetFilter(y.filter)
+		drop_QuantityExpr(y.count)
+	case UntilCondition_CumulativeThreshold:
+		drop_QuantityExpr(y.threshold)
+	}
+}
+
+drop_ExtraPhaseRecipient :: proc(x: ExtraPhaseRecipient) {
+	#partial switch y in x {
+	case ExtraPhaseRecipient_TargetedPlayer:
+		drop_TargetFilter(y._0)
+	}
+}
+
+drop_ConjureCard :: proc(x: ConjureCard) {
+	drop_ConjureSource(x.source)
+	drop_QuantityExpr(x.count)
+}
+
+drop_ProhibitedActivity :: proc(x: ProhibitedActivity) {
+	#partial switch y in x {
+	case ProhibitedActivity_CastSpells:
+		drp_opt_TargetFilter(y.spell_filter)
+	case ProhibitedActivity_PlayLands:
+		drp_opt_TargetFilter(y.land_filter)
+	}
+}
+
+drop_ReplacementMode :: proc(x: ReplacementMode) {
+	#partial switch y in x {
+	case ReplacementMode_Optional:
+		drp_ptr_AbilityDefinition(y.decline)
+	case ReplacementMode_MayCost:
+		drop_AbilityCost(y.cost)
+		drp_ptr_AbilityDefinition(y.decline)
+	}
+}
+
+drp_dyn_ReplacementCondition :: proc(x: [dynamic]ReplacementCondition) {
+	for item in x do drop_ReplacementCondition(item)
+}
+
+drop_ReplacementCondition :: proc(x: ReplacementCondition) {
+	#partial switch y in x {
+	case ReplacementCondition_And:
+		drp_dyn_ReplacementCondition(y.conditions)
+	case ReplacementCondition_UnlessControlsOtherLeq:
+		drop_TypedFilter(y.filter)
+	case ReplacementCondition_UnlessControlsMatching:
+		drop_TargetFilter(y.filter)
+	case ReplacementCondition_UnlessControlsCountMatching:
+		drop_TargetFilter(y.filter)
+	case ReplacementCondition_UnlessQuantity:
+		drop_QuantityExpr(y.lhs)
+		drop_QuantityExpr(y.rhs)
+	case ReplacementCondition_OnlyIfQuantity:
+		drop_QuantityExpr(y.lhs)
+		drop_QuantityExpr(y.rhs)
+	case ReplacementCondition_DealtDamageThisTurnBySource:
+		drop_TargetFilter(y.source)
+	case ReplacementCondition_IfControlsMatching:
+		drop_TargetFilter(y.filter)
+	case ReplacementCondition_OnlyIfStatic:
+		drp_ptr_StaticCondition(y.condition)
+	}
+}
+
+drp_ptr_FinalizePrePaymentChecks :: proc(x: ^FinalizePrePaymentChecks) {
+	if x != nil do drop_FinalizePrePaymentChecks(x^)
+}
+
+drop_PendingCostMoveCompletion :: proc(x: PendingCostMoveCompletion) {
+	#partial switch y in x {
+	case PendingCostMoveCompletion_CompleteSelectedReturnToHand:
+		drp_opt_AbilityCost(y.automatic_remaining)
+	case PendingCostMoveCompletion_FinalizeCast:
+		drp_ptr_WaitingFor(y.resolution_success_waiting_for)
+	case PendingCostMoveCompletion_FinalizeDelvedCast:
+		drp_ptr_FinalizePrePaymentChecks(y.pre_payment_checks)
+	}
+}
+
+drp_ptr_OptionalEffectFrame :: proc(x: ^OptionalEffectFrame) {
+	if x != nil do drop_OptionalEffectFrame(x^)
+}
+
+drop_PendingSacrificeCostCompletion :: proc(x: PendingSacrificeCostCompletion) {
+	#partial switch y in x {
+	case PendingSacrificeCostCompletion_FinalizeSpell:
+		drp_ptr_FinalizePrePaymentChecks(y.pre_payment_checks)
+	case PendingSacrificeCostCompletion_ResolutionOptionalPayment:
+		drp_ptr_OptionalEffectFrame(y.frame)
+	}
+}
+
+drp_ptr_ManaAbilityCostParent :: proc(x: ^ManaAbilityCostParent) {
+	if x != nil do drop_ManaAbilityCostParent(x^)
+}
+
+drop_ManaAbilityCostCursor :: proc(x: ManaAbilityCostCursor) {
+	drp_dyn_AbilityCost(x.remaining)
+	drp_dyn_GameEvent(x.deferred_cost_events)
+	drp_ptr_ManaAbilityCostParent(x.parent)
+}
+
+drop_UnpaidCostSuffix :: proc(x: UnpaidCostSuffix) {
+	drop_UnpaidCostRemainder(x.remainder)
+}
+
+drop_RandomDiscardUnlessPaymentResume :: proc(x: RandomDiscardUnlessPaymentResume) {
+	drp_ptr_ResolvedAbility(x.pending_effect)
+	drp_opt_GameEvent(x.trigger_event)
+}
+
+drop_PlayerScopeUnlessSettlement :: proc(x: PlayerScopeUnlessSettlement) {
+	drp_ptr_ResolvedAbility(x.punishment)
+	drp_opt_GameEvent(x.trigger_event)
+}
+
+drop_ManaAbilityResume :: proc(x: ManaAbilityResume) {
+	#partial switch y in x {
+	case ManaAbilityResume_UnlessPayment:
+		drp_ptr_AbilityCost(y.cost)
+		drp_ptr_ResolvedAbility(y.pending_effect)
+		drp_opt_GameEvent(y.trigger_event)
+	case ManaAbilityResume_EffectPayCost:
+		drp_ptr_ResolvedAbility(y.ability)
+		drp_ptr_AbilityCost(y.cost)
+	case ManaAbilityResume_ManaAbilityManaPayment:
+		drp_ptr_PendingManaAbility(y.pending_mana_ability)
+	}
+}
+
+drop_CollectedTriggerContextBatch :: proc(x: CollectedTriggerContextBatch) {
+	drp_dyn_PendingTriggerContext(x.contexts)
+	drp_dyn_GameEvent(x.delayed_events)
+	drp_dyn_ConsumedTriggerEventOccurrence(x.delayed_consumed)
+}
+
+drp_ptr_ManaColorChoiceResume :: proc(x: ^ManaColorChoiceResume) {
+	if x != nil do drop_ManaColorChoiceResume(x^)
+}
+
+drop_ManaTriggerFixedPointResume :: proc(x: ManaTriggerFixedPointResume) {
+	#partial switch y in x {
+	case ManaTriggerFixedPointResume_Root:
+		drp_ptr_ManaAbilityResume(y.resume)
+	case ManaTriggerFixedPointResume_ColorChoice:
+		drp_ptr_ManaColorChoiceResume(y._0)
+	}
+}
+
+drop_RandomDiscardCostPick :: proc(x: RandomDiscardCostPick) {
+	drop_CostPaidObjectSnapshot(x.snapshot)
+}
+
+drop_PrepaidSpellFinalization :: proc(x: PrepaidSpellFinalization) {
+	drp_ptr_FinalizePrePaymentChecks(x.pre_payment_checks)
+}
+
+drop_DeferredLifeGainCost :: proc(x: DeferredLifeGainCost) {
+	#partial switch y in x {
+	case DeferredLifeGainCost_Unpaid:
+		drp_ptr_AbilityCost(y.cost)
+	case DeferredLifeGainCost_Owed:
+		drop_StagedLifeGains(y.staged)
+	}
+}
+
+drop_AdditionalCostInstance :: proc(x: AdditionalCostInstance) {
+	drop_AdditionalCost(x.cost)
+}
+
+drop_DeferredSpellSacrifice :: proc(x: DeferredSpellSacrifice) {
+	#partial switch y in x {
+	case DeferredSpellSacrifice_Selected:
+		drop_TargetFilter(y.filter)
+	case DeferredSpellSacrifice_All:
+		drop_TargetFilter(y.filter)
+	}
+}
+
+drop_DeferredSpellTap :: proc(x: DeferredSpellTap) {
+	drop_AbilityCost(x.cost)
+}
+
+drp_dyn_TriggerCollectionOperation :: proc(x: [dynamic]TriggerCollectionOperation) {
+	for item in x do drop_TriggerCollectionOperation(item)
+}
+
+drop_PendingActivationTriggerCollection :: proc(x: PendingActivationTriggerCollection) {
+	drop_TriggerCollectionOverlay(x.overlay)
+	drp_dyn_TriggerCollectionOperation(x.operation_journal)
+	drp_dyn_PendingTriggerContext(x.pending_contexts)
+}
+
+drop_HeldBatchRider :: proc(x: HeldBatchRider) {
+	drop_PostReplacementDrain(x.drain)
+}
+
+drop_DebugAction :: proc(x: DebugAction) {
+	#partial switch y in x {
+	case DebugAction_MoveToZone:
+		drp_opt_LibraryPosition(y.library_position)
+	case DebugAction_GrantKeyword:
+		drop_Keyword(y.keyword)
+	case DebugAction_RemoveKeyword:
+		drop_Keyword(y.keyword)
+	case DebugAction_CreateToken:
+		drop_DebugTokenRequest(y.request)
+	}
+}
+
+drop_DebugTokenRequest :: proc(x: DebugTokenRequest) {
+	#partial switch y in x {
+	case DebugTokenRequest_Custom:
+		drop_TokenCharacteristics(y.characteristics)
+	}
+}
+
+drp_opt_dyn_ZoneChangeRecord :: proc(x: Maybe([dynamic]ZoneChangeRecord)) {
+	if y, ok := x.?; ok do drp_dyn_ZoneChangeRecord(y)
+}
+
+drp_opt_ChangeZoneSettled :: proc(x: Maybe(ChangeZoneSettled)) {
+	if y, ok := x.?; ok do drop_ChangeZoneSettled(y)
+}
+
+drop_BatchCompletion :: proc(x: BatchCompletion) {
+	#partial switch y in x {
+	case BatchCompletion_RecordInstructionZoneResult:
+		drp_opt_dyn_ZoneChangeRecord(y.settled_records)
+	case BatchCompletion_CastFromZoneExileDeliveryComplete:
+		drp_ptr_ResolvedAbility(y.ability)
+	case BatchCompletion_TopCardContestRoundComplete:
+		drp_ptr_ResolvedAbility(y.ability)
+	case BatchCompletion_EffectZonePutAtLibraryPositionComplete:
+		drop_LibraryPosition(y.library_position)
+	case BatchCompletion_ForEachCategoryExileComplete:
+		drp_ptr_ResolvedAbility(y.ability)
+		drp_dyn_TargetFilter(y.remaining_member_filters)
+	case BatchCompletion_RevealRestPile:
+		drp_ptr_EventObjectSnapshot(y.reveal_until_hit_snapshot)
+	case BatchCompletion_LibrarySearchDeliverySettled:
+		drop_LibrarySearchDeliveryResume(y.resume)
+	case BatchCompletion_SearchPartitionPrimaryDelivered:
+		drop_LibrarySearchDeliveryResume(y.resume)
+	case BatchCompletion_MilledDeliveryComplete:
+		drop_LibraryPosition(y.position)
+	case BatchCompletion_DestroyPopulationSettled:
+		drp_ptr_ResolvedAbility(y.ability)
+	case BatchCompletion_ChangeZonePopulationSettled:
+		drp_opt_ChangeZoneSettled(y.settled)
+	}
+}
+
+drp_ptr_CardFace :: proc(x: ^CardFace) {
+	if x != nil do drop_CardFace(x^)
+}
+
+drop_OutsideGameChoiceSource :: proc(x: OutsideGameChoiceSource) {
+	#partial switch y in x {
+	case OutsideGameChoiceSource_Sideboard:
+		drop_CardFace(y.card)
+	case OutsideGameChoiceSource_BoosterPack:
+		drp_ptr_CardFace(y.card)
+	case OutsideGameChoiceSource_Companion:
+		drp_ptr_CardFace(y.card)
+	}
+}
+
+drop_ParkedDamageBatch :: proc(x: ParkedDamageBatch) {
+	drp_dyn_HeldBatchRider(x.held)
+}
+
+drop_DiscardedCardResult :: proc(x: DiscardedCardResult) {
+	drop_LKISnapshot(x.lki)
+}
+
+drop_ModalSelectionConstraint :: proc(x: ModalSelectionConstraint) {
+	#partial switch y in x {
+	case ModalSelectionConstraint_ConditionalMaxChoices:
+		drop_ModalSelectionCondition(y.condition)
+	}
+}
+
+drop_ResolutionCastFacePolicy :: proc(x: ResolutionCastFacePolicy) {
+	drop_TargetFilter(x.filter)
+	drp_opt_CastPermissionConstraint(x.constraint)
+}
+
+drop_ResolutionCastCleanup :: proc(x: ResolutionCastCleanup) {
+	drop_ResolutionCastFacePolicy(x.face_policy)
+	drop_ResolutionCastSuccessAction(x.success_action)
+}
+
+drop_CastAuthorityChoice :: proc(x: CastAuthorityChoice) {
+	drp_opt_CastExtraCost(x.extra_cost)
+}
+
+drop_PeriodItem :: proc(x: PeriodItem) {
+	drop_GameAction(x.action)
+}
+
+drp_dyn_ShortenRun :: proc(x: [dynamic]ShortenRun) {
+	for item in x do drop_ShortenRun(item)
+}
+
+drop_AnswerReceipts :: proc(x: AnswerReceipts) {
+	drp_dyn_ShortenRun(x.shortened)
+}
+
+drp_opt_QuantityRef :: proc(x: Maybe(QuantityRef)) {
+	if y, ok := x.?; ok do drop_QuantityRef(y)
+}
+
+drop_StaticMode :: proc(x: StaticMode) {
+	#partial switch y in x {
+	case StaticMode_CantBeActivated:
+		drop_TargetFilter(y.source_filter)
+	case StaticMode_CastWithKeyword:
+		drop_Keyword(y.keyword)
+	case StaticMode_CastWithAlternativeCost:
+		drop_AbilityCost(y.cost)
+	case StaticMode_AlternativeKeywordCost:
+		drop_AbilityCost(y.cost)
+	case StaticMode_ModifyCost:
+		drp_opt_TargetFilter(y.spell_filter)
+		drp_opt_QuantityRef(y.dynamic_count)
+	case StaticMode_ImposeAdditionalCost:
+		drop_AbilityCost(y.cost)
+		drp_opt_TargetFilter(y.spell_filter)
+	case StaticMode_ReduceAbilityCost:
+		drp_opt_QuantityRef(y.dynamic_count)
+		drp_opt_PlayerFilter(y.activator)
+		drp_opt_TargetFilter(y.targets)
+	case StaticMode_CantPayCost:
+		drop_CostPaymentProhibition(y.cost)
+	case StaticMode_PlayerProtection:
+		drop_ProtectionTarget(y._0)
+	case StaticMode_MustAttackDefender:
+		drop_RequiredDefender(y.defender)
+	case StaticMode_GraveyardCastPermission:
+		drp_opt_CastExtraCost(y.extra_cost)
+		drop_PendingEntersModifications(y.enters_modifications)
+	case StaticMode_TopOfLibraryCastPermission:
+		drp_opt_AbilityCost(y.alt_cost)
+	case StaticMode_ExileCastPermission:
+		drp_opt_CastExtraCost(y.extra_cost)
+	case StaticMode_PerTurnCastLimit:
+		drp_opt_TargetFilter(y.spell_filter)
+	case StaticMode_SuppressTriggers:
+		drop_TargetFilter(y.source_filter)
+		drp_opt_TargetFilter(y.trigger_source_filter)
+	case StaticMode_CantBeBlockedExceptBy:
+		drop_BlockExceptionKind(y.kind)
+	case StaticMode_CantBeBlockedBy:
+		drop_TargetFilter(y.filter)
+	case StaticMode_AttachmentRestriction:
+		drop_TargetFilter(y.filter)
+	case StaticMode_MustBeBlocked:
+		drp_opt_TargetFilter(y.by)
+	case StaticMode_MustBeBlockedByAll:
+		drp_opt_TargetFilter(y.blockers)
+	case StaticMode_BlockRestriction:
+		drop_TargetFilter(y.filter)
+	case StaticMode_MaximumHandSize:
+		drop_HandSizeModification(y.modification)
+	case StaticMode_CantHaveKeyword:
+		drop_Keyword(y.keyword)
+	case StaticMode_SpendManaAsAnyColor:
+		drp_opt_TargetFilter(y.spell_filter)
+		drp_opt_TargetFilter(y.activation_source_filter)
+	case StaticMode_MaxUntapPerType:
+		drop_TargetFilter(y.filter)
+	}
+}
+
+drop_ShortenRun :: proc(x: ShortenRun) {
+	drop_RunNext(x.next)
+}
+
+drop_LibrarySearchCardFaceView :: proc(x: LibrarySearchCardFaceView) {
+	drp_dyn_Keyword(x.keywords)
+}
+
+drop_RecordedAction :: proc(x: RecordedAction) {
+	drop_GameAction(x.action)
+}
+
+drop_ZoneChangeClause :: proc(x: ZoneChangeClause) {
+	drp_opt_TargetFilter(x.valid_card)
+}
+
+drop_TriggerConstraint :: proc(x: TriggerConstraint) {
+	#partial switch y in x {
+	case TriggerConstraint_NthSpellThisTurn:
+		drp_opt_TargetFilter(y.filter)
+	}
+}
+
+drop_BlockerCountThreshold :: proc(x: BlockerCountThreshold) {
+	drp_opt_TargetFilter(x.blocker)
+}
+
+drp_dyn_ParsedCondition :: proc(x: [dynamic]ParsedCondition) {
+	for item in x do drop_ParsedCondition(item)
+}
+
+drp_ptr_ParsedCondition :: proc(x: ^ParsedCondition) {
+	if x != nil do drop_ParsedCondition(x^)
+}
+
+drop_ParsedCondition :: proc(x: ParsedCondition) {
+	#partial switch y in x {
+	case ParsedCondition_SourceLacksKeyword:
+		drop_Keyword(y.keyword)
+	case ParsedCondition_QuantityVsEachOpponent:
+		drop_QuantityRef(y.lhs)
+		drop_QuantityRef(y.rhs)
+	case ParsedCondition_QuantityComparison:
+		drop_QuantityExpr(y.lhs)
+		drop_QuantityExpr(y.rhs)
+	case ParsedCondition_ControlsCreatureWithKeyword:
+		drop_Keyword(y.keyword)
+	case ParsedCondition_YouAttackedWithAtLeast:
+		drp_opt_TargetFilter(y.filter)
+	case ParsedCondition_YouCastSpellThisTurn:
+		drp_opt_TargetFilter(y.filter)
+	case ParsedCondition_BattlefieldEntriesThisTurn:
+		drop_TargetFilter(y.filter)
+	case ParsedCondition_PlayerCountAtLeast:
+		drop_PlayerFilter(y.filter)
+	case ParsedCondition_SpellTargetsFilter:
+		drop_TargetFilter(y.filter)
+	case ParsedCondition_And:
+		drp_dyn_ParsedCondition(y.conditions)
+	case ParsedCondition_Or:
+		drp_dyn_ParsedCondition(y.conditions)
+	case ParsedCondition_Not:
+		drp_ptr_ParsedCondition(y.condition)
+	}
+}
+
+drop_CostPaymentProhibition :: proc(x: CostPaymentProhibition) {
+	#partial switch y in x {
+	case CostPaymentProhibition_Sacrifice:
+		drop_TargetFilter(y.filter)
+	}
+}
+
+drop_RequiredDefender :: proc(x: RequiredDefender) {
+	#partial switch y in x {
+	case RequiredDefender_Matching:
+		drop_PlayerFilter(y.filter)
+	}
+}
+
+drop_BlockExceptionKind :: proc(x: BlockExceptionKind) {
+	#partial switch y in x {
+	case BlockExceptionKind_Quality:
+		drop_TargetFilter(y._0)
+	}
+}
+
+drop_HandSizeModification :: proc(x: HandSizeModification) {
+	#partial switch y in x {
+	case HandSizeModification_EqualTo:
+		drop_QuantityExpr(y._0)
+	}
+}
+
+drop_UnlessPayScaling :: proc(x: UnlessPayScaling) {
+	#partial switch y in x {
+	case UnlessPayScaling_PerQuantityRef:
+		drop_QuantityRef(y.quantity)
+	case UnlessPayScaling_PerAffectedAndQuantityRef:
+		drop_QuantityRef(y.quantity)
+	case UnlessPayScaling_PerAffectedWithRef:
+		drop_QuantityRef(y.quantity)
+	}
+}
+
+drop_PreventionFormula :: proc(x: PreventionFormula) {
+	#partial switch y in x {
+	case PreventionFormula_Quantity:
+		drop_QuantityExpr(y.quantity)
+	}
+}
+
+drop_TokenCharacteristics :: proc(x: TokenCharacteristics) {
+	drp_dyn_Keyword(x.keywords)
+}
+
+drop_ModalSelectionCondition :: proc(x: ModalSelectionCondition) {
+	#partial switch y in x {
+	case ModalSelectionCondition_Static:
+		drop_StaticCondition(y.condition)
+	}
+}
+
+drop_LatchedCopiableSnapshot :: proc(x: LatchedCopiableSnapshot) {
+	drop_CopiableValues(x.values)
+}
+
+drp_ptr_ResolvedDelayedTriggerCommand :: proc(x: ^ResolvedDelayedTriggerCommand) {
+	if x != nil do drop_ResolvedDelayedTriggerCommand(x^)
+}
+
+drp_ptr_ResolvedContinuousEffectEdit :: proc(x: ^ResolvedContinuousEffectEdit) {
+	if x != nil do drop_ResolvedContinuousEffectEdit(x^)
+}
+
+drp_ptr_ResolvedTokenCreationCommand :: proc(x: ^ResolvedTokenCreationCommand) {
+	if x != nil do drop_ResolvedTokenCreationCommand(x^)
+}
+
+drp_ptr_ResolvedZoneChangeCommand :: proc(x: ^ResolvedZoneChangeCommand) {
+	if x != nil do drop_ResolvedZoneChangeCommand(x^)
+}
+
+drp_ptr_ResolvedFrameTransitionCommand :: proc(x: ^ResolvedFrameTransitionCommand) {
+	if x != nil do drop_ResolvedFrameTransitionCommand(x^)
+}
+
+drp_ptr_ResolvedStackPushCommand :: proc(x: ^ResolvedStackPushCommand) {
+	if x != nil do drop_ResolvedStackPushCommand(x^)
+}
+
+drp_ptr_ResolvedStackEntryFinalizeCommand :: proc(x: ^ResolvedStackEntryFinalizeCommand) {
+	if x != nil do drop_ResolvedStackEntryFinalizeCommand(x^)
+}
+
+drp_ptr_ResolvedUncommittedTriggerRemovalCommand :: proc(x: ^ResolvedUncommittedTriggerRemovalCommand) {
+	if x != nil do drop_ResolvedUncommittedTriggerRemovalCommand(x^)
+}
+
+drp_ptr_ResolvedStackRemovalCommand :: proc(x: ^ResolvedStackRemovalCommand) {
+	if x != nil do drop_ResolvedStackRemovalCommand(x^)
+}
+
+drop_ResolvedRulesCommand :: proc(x: ResolvedRulesCommand) {
+	#partial switch y in x {
+	case ResolvedRulesCommand_ManaInsert:
+		drop_ResolvedManaInsertCommand(y._0)
+	case ResolvedRulesCommand_ManaSpend:
+		drop_ResolvedManaSpendCommand(y._0)
+	case ResolvedRulesCommand_DelayedTriggerInstall:
+		drp_ptr_ResolvedDelayedTriggerCommand(y._0)
+	case ResolvedRulesCommand_ContinuousEffect:
+		drp_ptr_ResolvedContinuousEffectEdit(y._0)
+	case ResolvedRulesCommand_TokenCreation:
+		drp_ptr_ResolvedTokenCreationCommand(y._0)
+	case ResolvedRulesCommand_LedgerEdit:
+		drop_ResolvedLedgerEditCommand(y._0)
+	case ResolvedRulesCommand_ZoneChange:
+		drp_ptr_ResolvedZoneChangeCommand(y._0)
+	case ResolvedRulesCommand_FrameTransition:
+		drp_ptr_ResolvedFrameTransitionCommand(y._0)
+	case ResolvedRulesCommand_TriggerCollection:
+		drop_ResolvedTriggerCollectionCommand(y._0)
+	case ResolvedRulesCommand_StackPush:
+		drp_ptr_ResolvedStackPushCommand(y._0)
+	case ResolvedRulesCommand_StackEntryFinalize:
+		drp_ptr_ResolvedStackEntryFinalizeCommand(y._0)
+	case ResolvedRulesCommand_UncommittedTriggerRemoval:
+		drp_ptr_ResolvedUncommittedTriggerRemovalCommand(y._0)
+	case ResolvedRulesCommand_StackRemoval:
+		drp_ptr_ResolvedStackRemovalCommand(y._0)
+	}
+}
+
+drop_ResolvedManaInsertCommand :: proc(x: ResolvedManaInsertCommand) {
+	drop_ManaUnit(x.unit)
+}
+
+drp_dyn_ResolvedManaSpentUnit :: proc(x: [dynamic]ResolvedManaSpentUnit) {
+	for item in x do drop_ResolvedManaSpentUnit(item)
+}
+
+drop_ResolvedManaSpendCommand :: proc(x: ResolvedManaSpendCommand) {
+	drp_dyn_ResolvedManaSpentUnit(x.units)
+}
+
+drop_ResolvedDelayedTriggerCommand :: proc(x: ResolvedDelayedTriggerCommand) {
+	drop_DelayedTrigger(x.trigger)
+}
+
+drop_ResolvedContinuousEffectEdit :: proc(x: ResolvedContinuousEffectEdit) {
+	#partial switch y in x {
+	case ResolvedContinuousEffectEdit_Install:
+		drop_ResolvedContinuousEffectCommand(y._0)
+	case ResolvedContinuousEffectEdit_Retire:
+		drop_ResolvedContinuousEffectRetirementCommand(y._0)
+	}
+}
+
+drop_ResolvedTokenCreationCommand :: proc(x: ResolvedTokenCreationCommand) {
+	drop_ResolvedTokenBody(x.body)
+	drp_dyn_ChosenAttribute(x.entry_choices)
+}
+
+drop_ResolvedLedgerEditCommand :: proc(x: ResolvedLedgerEditCommand) {
+	drop_ResolvedLedgerEdit(x.edit)
+}
+
+drop_ResolvedZoneChangeCommand :: proc(x: ResolvedZoneChangeCommand) {
+	drop_ZoneChangeRecord(x.zone_change_record)
+}
+
+drop_ResolvedFrameTransitionCommand :: proc(x: ResolvedFrameTransitionCommand) {
+	drop_ResolvedFrameTransition(x.transition)
+}
+
+drop_ResolvedTriggerCollectionCommand :: proc(x: ResolvedTriggerCollectionCommand) {
+	drop_ResolvedTriggerCollection(x.collection)
+}
+
+drp_ptr_StackEntry :: proc(x: ^StackEntry) {
+	if x != nil do drop_StackEntry(x^)
+}
+
+drop_ResolvedStackPushCommand :: proc(x: ResolvedStackPushCommand) {
+	drp_ptr_StackEntry(x.entry)
+}
+
+drp_ptr_StackEntryKind :: proc(x: ^StackEntryKind) {
+	if x != nil do drop_StackEntryKind(x^)
+}
+
+drop_ResolvedStackEntryFinalizeCommand :: proc(x: ResolvedStackEntryFinalizeCommand) {
+	drp_ptr_StackEntryKind(x.expected_old_kind)
+	drp_ptr_StackEntryKind(x.resulting_kind)
+}
+
+drop_ResolvedUncommittedTriggerRemovalCommand :: proc(x: ResolvedUncommittedTriggerRemovalCommand) {
+	drp_ptr_StackEntry(x.removed)
+}
+
+drop_ResolvedStackRemovalCommand :: proc(x: ResolvedStackRemovalCommand) {
+	drp_ptr_StackEntry(x.entry)
+}
+
+drp_ptr_TriggeredAbilityProvenance :: proc(x: ^TriggeredAbilityProvenance) {
+	if x != nil do drop_TriggeredAbilityProvenance(x^)
+}
+
+drop_StackResolutionEntryProvenance :: proc(x: StackResolutionEntryProvenance) {
+	#partial switch y in x {
+	case StackResolutionEntryProvenance_Spell:
+		drp_ptr_ResolvedAbility(y.ability)
+	case StackResolutionEntryProvenance_ActivatedAbility:
+		drp_ptr_ResolvedAbility(y.ability)
+	case StackResolutionEntryProvenance_TriggeredAbility:
+		drp_ptr_TriggeredAbilityProvenance(y._0)
+	}
+}
+
+drop_TriggeredAbilityProvenance :: proc(x: TriggeredAbilityProvenance) {
+	drp_ptr_ResolvedAbility(x.ability)
+	drp_opt_TriggerCondition(x.condition)
+	drp_opt_GameEvent(x.trigger_event)
+}
+
+drop_BoundSearchFoundDisposition :: proc(x: BoundSearchFoundDisposition) {
+	drop_LibraryInstructionActor(x.actor)
+}
+
+drp_opt_ProposedEvent :: proc(x: Maybe(ProposedEvent)) {
+	if y, ok := x.?; ok do drop_ProposedEvent(y)
+}
+
+drp_ptr_PendingCombatLegChoice :: proc(x: ^PendingCombatLegChoice) {
+	if x != nil do drop_PendingCombatLegChoice(x^)
+}
+
+drop_PendingCombatLegProgress :: proc(x: PendingCombatLegProgress) {
+	#partial switch y in x {
+	case PendingCombatLegProgress_Unstarted:
+		drop_ProposedEvent(y._0)
+	case PendingCombatLegProgress_Settled:
+		drp_opt_ProposedEvent(y._0)
+	case PendingCombatLegProgress_AwaitingChoice:
+		drp_ptr_PendingCombatLegChoice(y.parked)
+	case PendingCombatLegProgress_AwaitingContinuation:
+		drp_opt_ProposedEvent(y.survivor)
+	}
+}
+
+drop_PendingCombatLeg :: proc(x: PendingCombatLeg) {
+	drp_opt_ProposedEvent(x.survivor)
+}
+
+drp_ptr_BackFaceData :: proc(x: ^BackFaceData) {
+	if x != nil do drop_BackFaceData(x^)
+}
+
+drop_CopiedDoubleFaces :: proc(x: CopiedDoubleFaces) {
+	drp_ptr_BackFaceData(x.hidden)
+}
+
+drop_EntryKind :: proc(x: EntryKind) {
+	#partial switch y in x {
+	case EntryKind_Play:
+		drop_GameAction(y.action)
+	case EntryKind_Answer:
+		drop_GameAction(y.action)
+	}
+}
+
+drp_opt_PostReplacementDrain :: proc(x: Maybe(PostReplacementDrain)) {
+	if y, ok := x.?; ok do drop_PostReplacementDrain(y)
+}
+
+drop_PendingSacrificeDelivery :: proc(x: PendingSacrificeDelivery) {
+	drop_PendingSacrificeMove(x.sacrifice)
+	drp_opt_PostReplacementDrain(x.rider)
+}
+
+drop_SimultaneousUnlessDelivery :: proc(x: SimultaneousUnlessDelivery) {
+	drp_dyn_GameEvent(x.held_events)
+}
+
+drop_PreparedScopedLibrarySearchChoice :: proc(x: PreparedScopedLibrarySearchChoice) {
+	drop_TargetFilter(x.filter)
+	drop_SearchSelectionConstraint(x.constraint)
+}
+
+drop_FrozenScopedSearchFoundDisposition :: proc(x: FrozenScopedSearchFoundDisposition) {
+	drop_SearchFoundDisposition(x.disposition)
+}
+
+drop_BoosterProduct :: proc(x: BoosterProduct) {
+	drp_dyn_CardFace(x.commons)
+	drp_dyn_CardFace(x.uncommons)
+	drp_dyn_CardFace(x.rares)
+	drp_dyn_CardFace(x.mythics)
+}
+
+drp_dyn_EventObjectSnapshot :: proc(x: [dynamic]EventObjectSnapshot) {
+	for item in x do drop_EventObjectSnapshot(item)
+}
+
+drop_ControlChangeInstructionCapture :: proc(x: ControlChangeInstructionCapture) {
+	drp_shared_dyn_TriggerSourceContext(x.watchers)
+	drp_shared_dyn_LatchedTriggerDoubler(x.doublers)
+	drp_dyn_EventObjectSnapshot(x.subjects)
+}
+
+drop_LatchedTriggerDoubler :: proc(x: LatchedTriggerDoubler) {
+	drop_TriggerSourceContext(x.source)
+	drp_opt_TargetFilter(x.affected)
+}
+
+drp_opt_WaitingFor :: proc(x: Maybe(WaitingFor)) {
+	if y, ok := x.?; ok do drop_WaitingFor(y)
+}
+
+drop_FinalizePrePaymentChecks :: proc(x: FinalizePrePaymentChecks) {
+	drp_opt_WaitingFor(x.early_waiting_for)
+	drp_opt_WaitingFor(x.resolution_success_waiting_for)
+	drop_PendingEntersModifications(x.cast_this_way_enters_mods)
+}
+
+drop_OptionalEffectFrame :: proc(x: OptionalEffectFrame) {
+	drp_ptr_ResolvedAbility(x.ability)
+	drp_opt_GameEvent(x.trigger_event)
+	drp_dyn_GameEvent(x.trigger_events)
+}
+
+drp_ptr_ManaAbilityCostCursor :: proc(x: ^ManaAbilityCostCursor) {
+	if x != nil do drop_ManaAbilityCostCursor(x^)
+}
+
+drop_ManaAbilityCostParent :: proc(x: ManaAbilityCostParent) {
+	drp_ptr_PendingManaAbility(x.pending)
+	drp_ptr_ManaAbilityCostCursor(x.cursor)
+}
+
+drop_UnpaidCostRemainder :: proc(x: UnpaidCostRemainder) {
+	#partial switch y in x {
+	case UnpaidCostRemainder_Legs:
+		drop_AbilityCost(y._0)
+	}
+}
+
+drop_ManaColorChoiceResume :: proc(x: ManaColorChoiceResume) {
+	drop_ManaChoiceContext(x.context_)
+}
+
+drp_dyn_StagedLifeGainSubstitute :: proc(x: [dynamic]StagedLifeGainSubstitute) {
+	for item in x do drop_StagedLifeGainSubstitute(item)
+}
+
+drop_StagedLifeGains :: proc(x: StagedLifeGains) {
+	drp_dyn_StagedLifeGainSubstitute(x.substitutes)
+}
+
+drp_opt_VirtualTargetingSource :: proc(x: Maybe(VirtualTargetingSource)) {
+	if y, ok := x.?; ok do drop_VirtualTargetingSource(y)
+}
+
+drop_TriggerCollectionOverlay :: proc(x: TriggerCollectionOverlay) {
+	drp_opt_VirtualTargetingSource(x.virtual_targeting_source)
+}
+
+drp_ptr_opt_TriggerSourceContext :: proc(x: ^Maybe(TriggerSourceContext)) {
+	if x != nil do drp_opt_TriggerSourceContext(x^)
+}
+
+drop_TriggerCollectionOperation :: proc(x: TriggerCollectionOperation) {
+	#partial switch y in x {
+	case TriggerCollectionOperation_PrepareEventBatch:
+		drp_dyn_GameEvent(y.events)
+	case TriggerCollectionOperation_ObserveEventBatch:
+		drp_dyn_GameEvent(y.events)
+	case TriggerCollectionOperation_RecordTriggerFired:
+		drp_opt_TriggerConstraint(y.constraint)
+		drp_ptr_opt_TriggerSourceContext(y.source_context)
+		drop_GameEvent(y.event)
+	}
+}
+
+drop_VirtualTargetingSource :: proc(x: VirtualTargetingSource) {
+	drp_ptr_ResolvedAbility(x.ability)
+}
+
+drop_PostReplacementDrain :: proc(x: PostReplacementDrain) {
+	drop_DrainStatus(x.status)
+}
+
+drop_DrainStatus :: proc(x: DrainStatus) {
+	#partial switch y in x {
+	case DrainStatus_Ready:
+		drop_PostReplacementContinuation(y._0)
+	}
+}
+
+drop_PostReplacementContinuation :: proc(x: PostReplacementContinuation) {
+	#partial switch y in x {
+	case PostReplacementContinuation_Template:
+		drp_ptr_AbilityDefinition(y._0)
+	case PostReplacementContinuation_Resolved:
+		drp_ptr_ResolvedAbility(y._0)
+	}
+}
+
+drop_PerpetualGrantModification :: proc(x: PerpetualGrantModification) {
+	#partial switch y in x {
+	case PerpetualGrantModification_AddKeyword:
+		drop_Keyword(y.keyword)
+	case PerpetualGrantModification_AddStaticMode:
+		drop_StaticMode(y.mode)
+	case PerpetualGrantModification_GrantAbility:
+		drp_ptr_AbilityDefinition(y.definition)
+	case PerpetualGrantModification_GrantTrigger:
+		drp_ptr_TriggerDefinition(y.trigger)
+	}
+}
+
+drop_AttachCardinality :: proc(x: AttachCardinality) {
+	#partial switch y in x {
+	case AttachCardinality_UpTo:
+		drop_QuantityExpr(y._0)
+	}
+}
+
+drop_ConjureSource :: proc(x: ConjureSource) {
+	#partial switch y in x {
+	case ConjureSource_Duplicate:
+		drop_TargetFilter(y.duplicate_of)
+	}
+}
+
+drop_ChangeZoneSettled :: proc(x: ChangeZoneSettled) {
+	drp_dyn_ZoneChangeRecord(x.records)
+}
+
+drp_ptr_ResolutionCastFacePolicy :: proc(x: ^ResolutionCastFacePolicy) {
+	if x != nil do drop_ResolutionCastFacePolicy(x^)
+}
+
+drop_ResolutionCastSuccessAction :: proc(x: ResolutionCastSuccessAction) {
+	#partial switch y in x {
+	case ResolutionCastSuccessAction_FreeCastOfferRemaining:
+		drp_ptr_ResolutionCastFacePolicy(y.face_policy)
+		drp_opt_SpellStackToGraveyardReplacement(y.graveyard_replacement)
+		drop_PendingEntersModifications(y.enters_with_modifications)
+	}
+}
+
+drop_EnterWithGrant :: proc(x: EnterWithGrant) {
+	drop_AbilityDefinition(x.grant)
+}
+
+drop_PendingCombatLegChoice :: proc(x: PendingCombatLegChoice) {
+	drop_PendingReplacement(x.pending)
+	drp_opt_ReplacementAutoChoiceTail(x.auto_choice_tail)
+}
+
+drop_CandidateAction :: proc(x: CandidateAction) {
+	drop_GameAction(x.action)
+}
+
+drop_AttachmentReferent :: proc(x: AttachmentReferent) {
+	#partial switch y in x {
+	case AttachmentReferent_Host:
+		drp_ptr_TargetFilter(y.filter)
+	}
+}
+
+drop_AbilityContinuationFrame :: proc(x: AbilityContinuationFrame) {
+	drop_PendingContinuation(x.pending)
+	drp_opt_ResolvingTriggerContext(x.choose_zone_trigger_context)
+}
+
+drop_PendingRepeatIteration :: proc(x: PendingRepeatIteration) {
+	drp_ptr_ResolvedAbility(x.ability)
+}
+
+drop_PendingRepeatUntil :: proc(x: PendingRepeatUntil) {
+	drp_ptr_ResolvedAbility(x.ability)
+}
+
+drp_ptr_PendingRepeatedOptionalPayment :: proc(x: ^PendingRepeatedOptionalPayment) {
+	if x != nil do drop_PendingRepeatedOptionalPayment(x^)
+}
+
+drop_RepeatedOptionalPaymentFrame :: proc(x: RepeatedOptionalPaymentFrame) {
+	drp_ptr_PendingRepeatedOptionalPayment(x.pending)
+}
+
+drp_opt_PendingChangeZoneIteration :: proc(x: Maybe(PendingChangeZoneIteration)) {
+	if y, ok := x.?; ok do drop_PendingChangeZoneIteration(y)
+}
+
+drop_ChangeZoneFrame :: proc(x: ChangeZoneFrame) {
+	drp_opt_PendingChangeZoneIteration(x.pending)
+}
+
+drp_opt_PendingComponentDeliveryParent :: proc(x: Maybe(PendingComponentDeliveryParent)) {
+	if y, ok := x.?; ok do drop_PendingComponentDeliveryParent(y)
+}
+
+drp_opt_PendingZoneChangeDelivery :: proc(x: Maybe(PendingZoneChangeDelivery)) {
+	if y, ok := x.?; ok do drop_PendingZoneChangeDelivery(y)
+}
+
+drp_opt_BatchCompletion :: proc(x: Maybe(BatchCompletion)) {
+	if y, ok := x.?; ok do drop_BatchCompletion(y)
+}
+
+drp_dyn_PendingBatchZoneMoveRequest :: proc(x: [dynamic]PendingBatchZoneMoveRequest) {
+	for item in x do drop_PendingBatchZoneMoveRequest(item)
+}
+
+drp_opt_StagedBatchDelivery :: proc(x: Maybe(StagedBatchDelivery)) {
+	if y, ok := x.?; ok do drop_StagedBatchDelivery(y)
+}
+
+drop_PendingBatchDeliveries :: proc(x: PendingBatchDeliveries) {
+	drp_opt_PendingComponentDeliveryParent(x.component_delivery_parent)
+	drop_LogicalZoneChangeGroup(x.logical_zone_change_group)
+	drp_opt_PendingZoneChangeDelivery(x.paused_current)
+	drp_opt_LibraryPosition(x.library_placement)
+	drp_opt_BatchCompletion(x.completion)
+	drp_dyn_PendingBatchZoneMoveRequest(x.requests)
+	drp_dyn_GameEvent(x.deferred_events)
+	drp_opt_StagedBatchDelivery(x.staged)
+}
+
+drp_opt_PendingEffectResolved :: proc(x: Maybe(PendingEffectResolved)) {
+	if y, ok := x.?; ok do drop_PendingEffectResolved(y)
+}
+
+drop_PendingCounterAdditionQueue :: proc(x: PendingCounterAdditionQueue) {
+	drp_opt_PendingEffectResolved(x.completion)
+}
+
+drp_dyn_PendingCopyTokenBatch :: proc(x: [dynamic]PendingCopyTokenBatch) {
+	for item in x do drop_PendingCopyTokenBatch(item)
+}
+
+drop_PendingCopyTokenResolution :: proc(x: PendingCopyTokenResolution) {
+	drp_dyn_PendingCopyTokenBatch(x.remaining)
+}
+
+drop_PendingDebugCardEntries :: proc(x: PendingDebugCardEntries) {
+	drop_DebugCardEntrySource(x.source)
+}
+
+drop_PendingEachPlayerCopyChosen :: proc(x: PendingEachPlayerCopyChosen) {
+	drop_TargetFilter(x.choose_filter)
+	drp_dyn_ContinuousModification(x.copy_modifications)
+	drp_opt_GameEvent(x.trigger_event)
+}
+
+drp_ptr_SpellContext :: proc(x: ^SpellContext) {
+	if x != nil do drop_SpellContext(x^)
+}
+
+drop_PendingChooseOneOf :: proc(x: PendingChooseOneOf) {
+	drp_dyn_AbilityDefinition(x.branches)
+	drp_ptr_SpellContext(x.context_)
+	drp_ptr_ResolvedAbility(x.continuation)
+	drp_opt_ResolvingTriggerContext(x.trigger_context)
+}
+
+drop_PendingVoteBallotIteration :: proc(x: PendingVoteBallotIteration) {
+	drp_ptr_AbilityDefinition(x.ability_template)
+}
+
+drop_PendingPerPlayerZoneChoice :: proc(x: PendingPerPlayerZoneChoice) {
+	drp_ptr_ResolvedAbility(x.ability)
+}
+
+drop_PerCategoryZoneChoiceFrame :: proc(x: PerCategoryZoneChoiceFrame) {
+	drop_PendingPerCategoryZoneChoice(x.pending)
+}
+
+drop_PendingCoinFlip :: proc(x: PendingCoinFlip) {
+	drp_ptr_ResolvedAbility(x.win_effect)
+	drp_ptr_ResolvedAbility(x.lose_effect)
+	drp_opt_ResolvingTriggerContext(x.trigger_context)
+}
+
+drop_PendingDieRoll :: proc(x: PendingDieRoll) {
+	drp_dyn_DieResultBranch(x.results_table)
+	drp_opt_DieRollModifier(x.modifier)
+	drp_opt_ResolvingTriggerContext(x.trigger_context)
+}
+
+drp_opt_PendingConniveReentry :: proc(x: Maybe(PendingConniveReentry)) {
+	if y, ok := x.?; ok do drop_PendingConniveReentry(y)
+}
+
+drop_MultiDrawFrame :: proc(x: MultiDrawFrame) {
+	drop_DrawSequenceStack(x.draw_sequences)
+	drp_opt_PendingConniveReentry(x.connive_reentry)
+}
+
+drp_dyn_DiscardedCardResult :: proc(x: [dynamic]DiscardedCardResult) {
+	for item in x do drop_DiscardedCardResult(item)
+}
+
+drop_DiscardFrame :: proc(x: DiscardFrame) {
+	drp_dyn_DiscardedCardResult(x.results)
+}
+
+drop_PendingConniveReentry :: proc(x: PendingConniveReentry) {
+	drop_ConniveSubject(x.conniver)
+}
+
+drop_PendingLifeTotalAssignment :: proc(x: PendingLifeTotalAssignment) {
+	drp_opt_PendingEffectResolved(x.completion)
+}
+
+drp_dyn_PostReplacementDrain :: proc(x: [dynamic]PostReplacementDrain) {
+	for item in x do drop_PostReplacementDrain(item)
+}
+
+drop_PostReplacementDrainStack :: proc(x: PostReplacementDrainStack) {
+	drp_dyn_PostReplacementDrain(x.drains)
+}
+
+drp_opt_PendingAttachmentChoice :: proc(x: Maybe(PendingAttachmentChoice)) {
+	if y, ok := x.?; ok do drop_PendingAttachmentChoice(y)
+}
+
+drp_opt_PendingAttachmentRemainder :: proc(x: Maybe(PendingAttachmentRemainder)) {
+	if y, ok := x.?; ok do drop_PendingAttachmentRemainder(y)
+}
+
+drop_PendingContinuation :: proc(x: PendingContinuation) {
+	drp_ptr_ResolvedAbility(x.chain)
+	drp_opt_ResolvingTriggerContext(x.trigger_context)
+	drp_opt_PendingAttachmentChoice(x.attachment_choice)
+	drp_opt_PendingAttachmentRemainder(x.attachment_remainder)
+	drp_opt_PendingPlayerScopeTail(x.player_scope_tail)
+}
+
+drop_PendingAttachmentChoice :: proc(x: PendingAttachmentChoice) {
+	drp_ptr_ResolvedAbility(x.operation)
+}
+
+drop_PendingAttachmentRemainder :: proc(x: PendingAttachmentRemainder) {
+	drp_ptr_ResolvedAbility(x.producer)
+}
+
+drop_PendingRepeatedOptionalPayment :: proc(x: PendingRepeatedOptionalPayment) {
+	drp_ptr_ResolvedAbility(x.payment_unit)
+	drp_ptr_ResolvedAbility(x.reflexive)
+}
+
+drop_PendingChangeZoneIteration :: proc(x: PendingChangeZoneIteration) {
+	drop_LogicalZoneChangeGroup(x.logical_zone_change_group)
+	drp_opt_PendingZoneChangeDelivery(x.paused_current)
+	drp_opt_Duration(x.duration)
+	drp_opt_FaceDownProfile(x.face_down_profile)
+	drp_ptr_WithEntryEffect(x.with_entry_effect)
+	drp_opt_LibraryPosition(x.library_placement)
+}
+
+drp_dyn_opt_TriggerSourceContext :: proc(x: [dynamic]Maybe(TriggerSourceContext)) {
+	for item in x do drp_opt_TriggerSourceContext(item)
+}
+
+drp_dyn_LogicalZoneChangeOccurrence :: proc(x: [dynamic]LogicalZoneChangeOccurrence) {
+	for item in x do drop_LogicalZoneChangeOccurrence(item)
+}
+
+drp_dyn_LatchedBatchedTrigger :: proc(x: [dynamic]LatchedBatchedTrigger) {
+	for item in x do drop_LatchedBatchedTrigger(item)
+}
+
+drp_dyn_LatchedSuppressTrigger :: proc(x: [dynamic]LatchedSuppressTrigger) {
+	for item in x do drop_LatchedSuppressTrigger(item)
+}
+
+drop_LogicalZoneChangeGroup :: proc(x: LogicalZoneChangeGroup) {
+	drp_dyn_opt_TriggerSourceContext(x.post_event_member_contexts)
+	drp_dyn_LogicalZoneChangeOccurrence(x.all_origin_occurrences)
+	drp_dyn_LatchedBatchedTrigger(x.immediately_before_batched_triggers)
+	drp_dyn_LatchedSuppressTrigger(x.immediately_before_suppress_triggers)
+	drp_dyn_LatchedBatchedTrigger(x.immediately_after_batched_triggers)
+	drp_dyn_LatchedSuppressTrigger(x.immediately_after_suppress_triggers)
+	drp_dyn_LatchedBatchedTrigger(x.departed_owner_after_batched_triggers)
+	drp_dyn_LatchedSuppressTrigger(x.departed_owner_after_suppress_triggers)
+}
+
+drop_PendingZoneChangeDelivery :: proc(x: PendingZoneChangeDelivery) {
+	drop_ProposedEvent(x.expected_event)
+	drp_dyn_GameEvent(x.delivery_events)
+}
+
+drop_LogicalZoneChangeOccurrence :: proc(x: LogicalZoneChangeOccurrence) {
+	drop_GameEvent(x.event)
+}
+
+drp_dyn_LatchedTriggerObservation :: proc(x: [dynamic]LatchedTriggerObservation) {
+	for item in x do drop_LatchedTriggerObservation(item)
+}
+
+drop_LatchedBatchedTrigger :: proc(x: LatchedBatchedTrigger) {
+	drop_TriggerDefinition(x.definition)
+	drp_dyn_LatchedTriggerObservation(x.observations)
+}
+
+drop_LatchedSuppressTrigger :: proc(x: LatchedSuppressTrigger) {
+	drop_TriggerSourceContext(x.source_context)
+	drop_TargetFilter(x.source_filter)
+	drp_opt_TargetFilter(x.trigger_source_filter)
+}
+
+drp_dyn_StagedLibraryArrangement :: proc(x: [dynamic]StagedLibraryArrangement) {
+	for item in x do drop_StagedLibraryArrangement(item)
+}
+
+drop_PendingComponentDeliveryParent :: proc(x: PendingComponentDeliveryParent) {
+	drop_ProposedEvent(x.expected_event)
+	drp_dyn_StagedLibraryArrangement(x.inherited_arrangements)
+}
+
+drop_PendingBatchZoneMoveRequest :: proc(x: PendingBatchZoneMoveRequest) {
+	drp_opt_FaceDownProfile(x.face_down_profile)
+	drp_ptr_WithEntryEffect(x.with_entry_effect)
+	drp_opt_LibraryPosition(x.library_placement)
+	drp_opt_Duration(x.exile_duration)
+}
+
+drp_dyn_StagedBatchMember :: proc(x: [dynamic]StagedBatchMember) {
+	for item in x do drop_StagedBatchMember(item)
+}
+
+drop_StagedBatchDelivery :: proc(x: StagedBatchDelivery) {
+	drp_dyn_StagedBatchMember(x.members)
+	drp_dyn_StagedLibraryArrangement(x.arrangements)
+}
+
+drop_StagedLibraryArrangement :: proc(x: StagedLibraryArrangement) {
+	drop_LibraryPosition(x.position)
+}
+
+drp_dyn_PendingCounterPostAction :: proc(x: [dynamic]PendingCounterPostAction) {
+	for item in x do drop_PendingCounterPostAction(item)
+}
+
+drop_PendingEffectResolved :: proc(x: PendingEffectResolved) {
+	drp_dyn_PendingCounterPostAction(x.post_actions)
+}
+
+drop_PendingCopyTokenBatch :: proc(x: PendingCopyTokenBatch) {
+	drp_ptr_CopyTokenSpec(x.copy)
+}
+
+drop_DebugCardEntrySource :: proc(x: DebugCardEntrySource) {
+	drop_CardFace(x.face)
+	drp_opt_BackFaceData(x.back_face)
+	drop_OutsideGameFaces(x.outside_game_faces)
+}
+
+drop_OutsideGameFaces :: proc(x: OutsideGameFaces) {
+	drp_dyn_CardFace(x.paper)
+	drp_dyn_CardFace(x.digital)
+}
+
+drop_PendingPerCategoryZoneChoice :: proc(x: PendingPerCategoryZoneChoice) {
+	drp_ptr_ResolvedAbility(x.ability)
+	drp_dyn_TargetFilter(x.remaining_member_filters)
+}
+
+drp_dyn_DrawSequenceFrame :: proc(x: [dynamic]DrawSequenceFrame) {
+	for item in x do drop_DrawSequenceFrame(item)
+}
+
+drop_DrawSequenceStack :: proc(x: DrawSequenceStack) {
+	drp_dyn_DrawSequenceFrame(x.frames)
+}
+
+drop_DrawSequenceFrame :: proc(x: DrawSequenceFrame) {
+	drop_DrawSequenceOrigin(x.origin)
+}
+
+drop_PendingSacrificeMove :: proc(x: PendingSacrificeMove) {
+	#partial switch y in x {
+	case PendingSacrificeMove_Sacrifice:
+		drop_ProposedEvent(y.zone_event)
+	case PendingSacrificeMove_DirectMove:
+		drop_ProposedEvent(y.zone_event)
+	}
+}
+
+drp_dyn_CardTypeSetSource :: proc(x: [dynamic]CardTypeSetSource) {
+	for item in x do drop_CardTypeSetSource(item)
+}
+
+drop_UnionSources :: proc(x: UnionSources) {
+	drp_dyn_CardTypeSetSource(cast([dynamic]CardTypeSetSource)x)
+}
+
+drop_CardRules :: proc(x: CardRules) {
+	drop_CardLayout(x.layout)
+}
+
+drp_map_string_FaceSlot :: proc(x: map[string]FaceSlot) {
+	for key, val in x {
+		drop_FaceSlot(val)
+	}
+}
+
+drop_FaceIndex :: proc(x: FaceIndex) {
+	drp_map_string_FaceSlot(cast(map[string]FaceSlot)x)
+}
+
+drop_CardLayout :: proc(x: CardLayout) {
+	#partial switch y in x {
+	case CardLayout_Single:
+		drop_CardFace(y._0)
+	case CardLayout_Split:
+		drop_CardFace(y._0)
+		drop_CardFace(y._1)
+	case CardLayout_Flip:
+		drop_CardFace(y._0)
+		drop_CardFace(y._1)
+	case CardLayout_Transform:
+		drop_CardFace(y._0)
+		drop_CardFace(y._1)
+	case CardLayout_Meld:
+		drop_CardFace(y._0)
+		drop_CardFace(y._1)
+	case CardLayout_Adventure:
+		drop_CardFace(y._0)
+		drop_CardFace(y._1)
+	case CardLayout_Modal:
+		drop_CardFace(y._0)
+		drop_CardFace(y._1)
+	case CardLayout_Omen:
+		drop_CardFace(y._0)
+		drop_CardFace(y._1)
+	case CardLayout_Prepare:
+		drop_CardFace(y._0)
+		drop_CardFace(y._1)
+	case CardLayout_Specialize:
+		drop_CardFace(y._0)
+		drp_dyn_CardFace(y._1)
+	}
+}
+
+drop_FaceSlot :: proc(x: FaceSlot) {
+	#partial switch y in x {
+	case FaceSlot_Typed:
+		drop_CardFace(y._0)
+	}
+}
+
+drop_StagedLifeGainSubstitute :: proc(x: StagedLifeGainSubstitute) {
+	drop_PostReplacementDrain(x.drain)
+}
+
+drp_shared_RunFrontier :: proc(x: ^RunFrontier) {
+	if x == nil do return
+	c := shared_count(x)
+	c^ -= 1
+	if c^ == 0 do drop_RunFrontier(x^)
+}
+
+drop_RunNext :: proc(x: RunNext) {
+	#partial switch y in x {
+	case RunNext_From:
+		drp_shared_RunFrontier(y._0)
+	}
+}
+
+drp_t2_ObjectId_ptr_ResolvedAbility :: proc(x: Tuple2(ObjectId, ^ResolvedAbility)) {
+	drp_ptr_ResolvedAbility(x._1)
+}
+
+drp_t2_t2_ObjectId_ptr_ResolvedAbility_int :: proc(x: Tuple2(Tuple2(ObjectId, ^ResolvedAbility), int)) {
+	drp_t2_ObjectId_ptr_ResolvedAbility(x._0)
+}
+
+drp_dyn_t2_t2_ObjectId_ptr_ResolvedAbility_int :: proc(x: [dynamic]Tuple2(Tuple2(ObjectId, ^ResolvedAbility), int)) {
+	for item in x do drp_t2_t2_ObjectId_ptr_ResolvedAbility_int(item)
+}
+
+drp_dyn_dyn_t2_t2_ObjectId_ptr_ResolvedAbility_int :: proc(x: [dynamic][dynamic]Tuple2(Tuple2(ObjectId, ^ResolvedAbility), int)) {
+	for item in x do drp_dyn_t2_t2_ObjectId_ptr_ResolvedAbility_int(item)
+}
+
+drop_RunFrontier :: proc(x: RunFrontier) {
+	drop_GameState(x.state)
+	drp_dyn_dyn_t2_t2_ObjectId_ptr_ResolvedAbility_int(x.related)
+}
+
+drop_ResolvedManaSpentUnit :: proc(x: ResolvedManaSpentUnit) {
+	drop_ManaUnit(x.unit)
+}
+
+drop_ResolvedContinuousEffectCommand :: proc(x: ResolvedContinuousEffectCommand) {
+	drop_TransientContinuousEffect(x.effect)
+}
+
+drp_dyn_TransientContinuousEffect :: proc(x: [dynamic]TransientContinuousEffect) {
+	for item in x do drop_TransientContinuousEffect(item)
+}
+
+drop_ResolvedContinuousEffectRetirementCommand :: proc(x: ResolvedContinuousEffectRetirementCommand) {
+	drp_dyn_TransientContinuousEffect(x.effects)
+}
+
+drop_ResolvedTokenBody :: proc(x: ResolvedTokenBody) {
+	#partial switch y in x {
+	case ResolvedTokenBody_Spec:
+		drp_ptr_TokenSpec(y.spec)
+	case ResolvedTokenBody_Copy:
+		drp_ptr_CopyTokenSpec(y.copy)
+		drop_ResolvedCopyBodyModifications(y.modifications)
+	}
+}
+
+drop_ResolvedCopyBodyModifications :: proc(x: ResolvedCopyBodyModifications) {
+	#partial switch y in x {
+	case ResolvedCopyBodyModifications_Folded:
+		drp_dyn_ContinuousModification(y.modifications)
+	case ResolvedCopyBodyModifications_DeferredToUnjournaledSeam:
+		drp_dyn_ContinuousModification(y.modifications)
+	}
+}
+
+drop_ResolvedLedgerEdit :: proc(x: ResolvedLedgerEdit) {
+	#partial switch y in x {
+	case ResolvedLedgerEdit_SpellCast:
+		drop_SpellCastRecord(y.record)
+	case ResolvedLedgerEdit_AbilityActivated:
+		drp_ptr_AbilityActivationRecord(y.record)
+	}
+}
+
+drop_ResolvedFrameTransition :: proc(x: ResolvedFrameTransition) {
+	#partial switch y in x {
+	case ResolvedFrameTransition_Push:
+		drop_ResolutionFrame(y.frame)
+	case ResolvedFrameTransition_InsertParentOfActive:
+		drop_ResolutionFrame(y.frame)
+	case ResolvedFrameTransition_ParkBeneathLivePrompt:
+		drop_ResolutionFrame(y.frame)
+	case ResolvedFrameTransition_ReplaceActive:
+		drop_ResolutionFrame(y.frame)
+	}
+}
+
+drop_ResolvedTriggerCollection :: proc(x: ResolvedTriggerCollection) {
+	#partial switch y in x {
+	case ResolvedTriggerCollection_DeferPending:
+		drp_dyn_PendingTriggerContext(y.contexts)
+	case ResolvedTriggerCollection_ConsumeBeforePriority:
+		drp_dyn_ConsumedTriggerEventOccurrence(y.occurrences)
+	}
+}
+
+drp_opt_StagedMemberOutcome :: proc(x: Maybe(StagedMemberOutcome)) {
+	if y, ok := x.?; ok do drop_StagedMemberOutcome(y)
+}
+
+drp_opt_PostReplacementDrainStack :: proc(x: Maybe(PostReplacementDrainStack)) {
+	if y, ok := x.?; ok do drop_PostReplacementDrainStack(y)
+}
+
+drp_ptr_HeldReplacementDecision :: proc(x: ^HeldReplacementDecision) {
+	if x != nil do drop_HeldReplacementDecision(x^)
+}
+
+drop_StagedBatchMember :: proc(x: StagedBatchMember) {
+	drop_PendingBatchZoneMoveRequest(x.request)
+	drp_opt_ProposedEvent(x.approved_event)
+	drp_opt_StagedMemberOutcome(x.pending_outcome)
+	drp_opt_PostReplacementDrainStack(x.approved_post_replacement)
+	drp_ptr_HeldReplacementDecision(x.held_decision)
+}
+
+drp_ptr_PendingTokenEventDelivery :: proc(x: ^PendingTokenEventDelivery) {
+	if x != nil do drop_PendingTokenEventDelivery(x^)
+}
+
+drp_ptr_CopyTokenEntryTail :: proc(x: ^CopyTokenEntryTail) {
+	if x != nil do drop_CopyTokenEntryTail(x^)
+}
+
+drop_PendingCounterPostAction :: proc(x: PendingCounterPostAction) {
+	#partial switch y in x {
+	case PendingCounterPostAction_ContinueAmassAfterTokenCreation:
+		drp_ptr_ResolvedAbility(y.ability)
+	case PendingCounterPostAction_FinalizeAmass:
+		drp_ptr_ResolvedAbility(y.ability)
+	case PendingCounterPostAction_FinalizeTokenEntry:
+		drp_opt_Duration(y.sacrifice_at)
+	case PendingCounterPostAction_ContinueTokenCreation:
+		drp_ptr_TokenSpec(y.spec)
+	case PendingCounterPostAction_ContinueTokenEventDelivery:
+		drp_ptr_PendingTokenEventDelivery(y.delivery)
+	case PendingCounterPostAction_ContinueCopyTokenCreation:
+		drp_ptr_CopyTokenSpec(y.copy)
+	case PendingCounterPostAction_ApplyCopyTokenModificationsAndFinalize:
+		drp_dyn_ContinuousModification(y.remaining_modifications)
+	case PendingCounterPostAction_ContinueCopyTokenEntryAfterAuraHost:
+		drp_ptr_CopyTokenEntryTail(y.tail)
+	case PendingCounterPostAction_ContinueNonLiminalCopyTokenAfterEntryPayment:
+		drp_ptr_CopyTokenEntryTail(y.tail)
+	case PendingCounterPostAction_FinalizeCommittedLiminalTokenEntry:
+		drp_opt_Duration(y.sacrifice_at)
+	case PendingCounterPostAction_ContinueLiminalCopyTokenBatch:
+		drp_ptr_CopyTokenSpec(y.copy)
+	case PendingCounterPostAction_FinishCopyTargetChoiceEntry:
+		drop_CopyEntryResumeStage(y.resume_stage)
+	case PendingCounterPostAction_ContinueZoneDeliveryTail:
+		drp_opt_Duration(y.duration)
+	case PendingCounterPostAction_ContinuePlayerScopeSacrifice:
+		drop_TargetFilter(y.sacrifice_filter)
+	}
+}
+
+drop_LatchedTriggerObservation :: proc(x: LatchedTriggerObservation) {
+	drop_TriggerSourceContext(x.source_context)
+}
+
+drop_StagedMemberOutcome :: proc(x: StagedMemberOutcome) {
+	#partial switch y in x {
+	case StagedMemberOutcome_Approved:
+		drop_ProposedEvent(y._0)
+	}
+}
+
+drop_HeldReplacementDecision :: proc(x: HeldReplacementDecision) {
+	drop_PendingReplacement(x.pending)
+	drop_HeldDecisionPrompt(x.prompt)
+	drp_opt_PendingZoneChangeDelivery(x.boundary)
+	drp_opt_PostReplacementDrainStack(x.drain)
+}
+
+drp_dyn_PositionedTokenBatch :: proc(x: [dynamic]PositionedTokenBatch) {
+	for item in x do drop_PositionedTokenBatch(item)
+}
+
+drop_PendingTokenEventDelivery :: proc(x: PendingTokenEventDelivery) {
+	drp_dyn_PositionedTokenBatch(x.remaining)
+}
+
+drop_CopyTokenEntryTail :: proc(x: CopyTokenEntryTail) {
+	drp_ptr_CopyTokenSpec(x.copy)
+}
+
+drp_ptr_CopyEntryPendingCounters :: proc(x: ^CopyEntryPendingCounters) {
+	if x != nil do drop_CopyEntryPendingCounters(x^)
+}
+
+drop_CopyEntryResumeStage :: proc(x: CopyEntryResumeStage) {
+	#partial switch y in x {
+	case CopyEntryResumeStage_BeforeCounters:
+		drp_ptr_CopyEntryPendingCounters(y._0)
+	}
+}
+
+drp_ptr_ConniveSubject :: proc(x: ^ConniveSubject) {
+	if x != nil do drop_ConniveSubject(x^)
+}
+
+drop_DrawSequenceOrigin :: proc(x: DrawSequenceOrigin) {
+	#partial switch y in x {
+	case DrawSequenceOrigin_ConniveTail:
+		drp_ptr_ConniveSubject(y.conniver)
+	}
+}
+
+drop_HeldDecisionPrompt :: proc(x: HeldDecisionPrompt) {
+	#partial switch y in x {
+	case HeldDecisionPrompt_Raised:
+		drp_ptr_WaitingFor(y._0)
+	}
+}
+
+drop_PositionedTokenBatch :: proc(x: PositionedTokenBatch) {
+	drop_TokenBatch(x.batch)
+}
+
+drp_opt_dyn_ContinuousModification :: proc(x: Maybe([dynamic]ContinuousModification)) {
+	if y, ok := x.?; ok do drp_dyn_ContinuousModification(y)
+}
+
+drop_CopyEntryPendingCounters :: proc(x: CopyEntryPendingCounters) {
+	drp_opt_dyn_ContinuousModification(x.exceptions)
+}
+

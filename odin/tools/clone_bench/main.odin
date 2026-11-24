@@ -19,6 +19,7 @@ import "core:fmt"
 import "core:mem"
 import "core:mem/virtual"
 import "core:os"
+import "base:runtime"
 import "core:strconv"
 import "core:strings"
 import "core:time"
@@ -38,6 +39,7 @@ lookup :: #force_inline proc(m: types.ObjectMap, id: types.ObjectId) -> ^types.G
 
 Totals :: struct {
 	clone, write, clone_virtual, write_virtual, stale, lookup, get_copy: f64,
+	clone_drop, write_drop, exact: f64,
 	bytes, allocs: int,
 }
 
@@ -139,6 +141,45 @@ main :: proc() {
 			}
 		}
 
+		// With Rust's drop (generated drop_GameState): clone+drop and clone+write+drop, as clone-bench times them; and
+		// the stale pattern again with the clone dropped, so counts are exact and the parent's writes copy nothing.
+		when !OLD_LAYOUT do if true {
+			alloc := mem.arena_allocator(&plain)
+			context.allocator = alloc
+			start := time.now()
+			for _ in 0 ..< REPS do types.drop_GameState(types.clone_GameState(state))
+			t.clone_drop += f64(time.duration_nanoseconds(time.since(start))) / REPS
+			free_all(alloc)
+
+			start = time.now()
+			for r in 0 ..< REPS {
+				sim := types.clone_GameState(state)
+				if obj, ok := types.ObjectMap_get_mut(&sim.objects, ids[r % len(ids)]).?; ok do obj.tapped = !obj.tapped
+				types.drop_GameState(sim)
+			}
+			t.write_drop += f64(time.duration_nanoseconds(time.since(start))) / REPS
+			free_all(alloc)
+
+			// A parent nothing else holds (decoded afresh), so the rounds start from exact counts.
+			parent: types.GameState
+			{
+				context.allocator = runtime.heap_allocator()
+				if !types.decode_GameState(sv, &parent) do os.exit(1)
+			}
+			journal := &parent.resolved_rules_journal.entries
+			start = time.now()
+			for r in 0 ..< REPS {
+				types.drop_GameState(types.clone_GameState(parent))
+				if journal.len > 0 {
+					entry := types.clone_ResolvedCommandJournalEntry(types.pvec_get(journal^, journal.len - 1))
+					types.pvec_push(journal, entry, types.clone_ResolvedCommandJournalEntry)
+				}
+				if obj, ok := types.ObjectMap_get_mut(&parent.objects, ids[r % len(ids)]).?; ok do obj.tapped = !obj.tapped
+			}
+			t.exact += f64(time.duration_nanoseconds(time.since(start))) / REPS
+			free_all(alloc)
+		}
+
 		// Stale counts: the parent is written after each discarded clone.
 		{
 			alloc := mem.arena_allocator(&plain)
@@ -175,6 +216,9 @@ main :: proc() {
 	fmt.printf("%v states (avg %v objects), %v KB in %v allocations per clone\n", states, objects / max(states, 1), t.bytes / max(states, 1) / 1024, t.allocs / max(states, 1))
 	fmt.printf("plain arena:   clone %.0f ns, clone+write one object %.0f ns\n", t.clone / n, t.write / n)
 	fmt.printf("virtual arena: clone %.0f ns, clone+write one object %.0f ns\n", t.clone_virtual / n, t.write_virtual / n)
+	when !OLD_LAYOUT {
+		fmt.printf("with drop:     clone+drop %.0f ns, clone+write one object+drop %.0f ns; exact counts (clone+drop, then the parent appends and writes) %.0f ns a round\n", t.clone_drop / n, t.write_drop / n, t.exact / n)
+	}
 	fmt.printf("stale counts (discarded clone, then the parent appends to its journal and writes one object): %.0f ns a round\n", t.stale / n)
 	fmt.printf("lookup by id: %.1f ns (ObjectMap_get's Maybe(GameObject) copy: %.1f ns)\n", t.lookup / n, t.get_copy / n)
 	fmt.printf("clone mismatches %v\n", mismatches)

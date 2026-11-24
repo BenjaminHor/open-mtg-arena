@@ -290,9 +290,19 @@ shared_retain :: proc(p: ^$T) {
 	if p != nil do shared_count(p)^ += 1
 }
 
+// The oracle for counts (docs/odin-port.md, "State layout"): with `-define:COW_ORACLE=true` every copy-on-write
+// copies, shared or not. A run must come out the same with and without it; a difference means a count was too low
+// somewhere and a write reached data another state holds.
+COW_ORACLE :: #config(COW_ORACLE, false)
+
+// Whether a write through this shared allocation must copy it first.
+must_copy :: #force_inline proc "contextless" (p: rawptr) -> bool {
+	return COW_ORACLE || (^int)(uintptr(p) - size_of(int))^ > 1
+}
+
 // Arc::make_mut: a pointer only this holder has, copying the value (with `clone`) when it is shared.
 make_mut :: proc(p: ^^$T, clone: proc(x: T) -> T) -> ^T {
-	if shared_count(p^)^ > 1 {
+	if must_copy(p^) {
 		shared_count(p^)^ -= 1
 		p^ = shared_from(clone(p^^))
 	}

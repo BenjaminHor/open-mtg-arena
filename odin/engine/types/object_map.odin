@@ -57,7 +57,7 @@ object_node_own :: proc(p: ^^ObjectNode) -> ^ObjectNode {
 		p^ = n
 		return n
 	}
-	if shared_count(n)^ > 1 {
+	if must_copy(n) {
 		c := shared_new(ObjectNode)
 		c.slots = n.slots
 		for s in c.slots do if s != nil do shared_count((^u8)(s))^ += 1
@@ -211,6 +211,29 @@ clone_ObjectMap :: proc(x: ObjectMap) -> ObjectMap {
 	shared_retain(x.root)
 	shared_retain(x.order)
 	return x
+}
+
+// Rust's Drop, for the counts: lets go of the trie and the order list. A node nobody else holds lets go of its
+// children, and an object nobody else holds drops what it holds (drop_GameObject).
+drop_ObjectMap :: proc(x: ObjectMap) {
+	release :: proc(n: ^ObjectNode, h: uint) {
+		c := shared_count(n)
+		c^ -= 1
+		if c^ != 0 do return
+		for s in n.slots {
+			if s == nil do continue
+			if h > 0 {
+				release((^ObjectNode)(s), h - 1)
+			} else {
+				o := (^GameObject)(s)
+				oc := shared_count(o)
+				oc^ -= 1
+				if oc^ == 0 do drop_GameObject(o^)
+			}
+		}
+	}
+	if x.root != nil do release(x.root, x.height)
+	if x.order != nil do shared_count(x.order)^ -= 1
 }
 
 // The map as Rust's `Deserialize` reads it: an object keyed by the id's decimal string.

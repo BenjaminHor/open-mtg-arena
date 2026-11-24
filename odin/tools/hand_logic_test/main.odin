@@ -54,6 +54,7 @@ main :: proc() {
 	fmt.println("ok: ObjectMap iterates in the Rust order (", len(got), "ids )")
 	check_get_mut_copies_on_write()
 	check_insert_remove_on_clones()
+	check_drop_gives_counts_back()
 }
 
 fail :: proc(msg: ..any) {
@@ -110,4 +111,22 @@ check_insert_remove_on_clones :: proc() {
 	if !had_big || !replaced.tapped do fail("FAIL: insert didn't return the replaced object")
 	for id in types.ObjectMap_keys(copy) do if types.object_map_lookup(copy, id) == nil do fail("FAIL: an ordered id has no object", id)
 	fmt.println("ok: ObjectMap insert and remove on a clone leave the original alone")
+}
+
+// drop_ObjectMap (Rust's Drop): a clone that dies gives its counts back, so the original's next write copies nothing,
+// as in Rust where the clone's drop leaves the Arcs unique again. A clone that had written keeps the original intact.
+check_drop_gives_counts_back :: proc() {
+	original: types.ObjectMap
+	for id in 1 ..= types.ObjectId(130) do types.ObjectMap_insert(&original, id, types.GameObject{})
+	before := types.object_map_lookup(original, 70)
+	for _ in 0 ..< 3 {
+		c := types.clone_ObjectMap(original)
+		w, _ := types.ObjectMap_get_mut(&c, 70).?
+		w.tapped = true
+		types.drop_ObjectMap(c)
+	}
+	root := original.root
+	p, _ := types.ObjectMap_get_mut(&original, 70).?
+	if p != before || original.root != root || p.tapped do fail("FAIL: a write after dropped clones copied, or saw a clone's write")
+	fmt.println("ok: dropping a clone gives its counts back")
 }
