@@ -108,7 +108,11 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     translated, a fresh log of 5,161 calls): 955 procedures exercised, 593 pass, 23 pass touching unlogged state,
     0 unexplained failures, 0 crashes, 338 reach only untranslated code.** Then `&mut` results (`MutRef`, an Odin
     pointer: `get_mut`, `last_mut`, functions returning `&mut T` / `Option<&mut T>`), with a hand-written
-    `ObjectMap_get_mut` that copies on write like `Arc::make_mut`: 7,049 of 15,918 functions (44.3%), executed 45.2%. Next blockers
+    `ObjectMap_get_mut` that copies on write like `Arc::make_mut` (tested in `hand_logic_test`), generic functions
+    monomorphized per call site, a plain binding of a Box field binding the box (as Rust does), and Box values read
+    where their contents are wanted: 7,241 of 15,918 functions (45.5%), executed 45.9%. Next blockers (executed): type
+    parameters whose callers aren't translated yet (88), closure-parameter callees (87, translated as instances
+    through their callers), the type-check tail (80), closures/combinators of untyped values (~107). Next blockers
     (executed): generic functions (196), iterating non-Vec collections (maps, sets, PVec, ranges: ~260), `get` on
     maps (78), `matches!` with field conditions (70), statement macros (66). Translator now: value
     `if`/`match`/block initializers (each branch assigns), empty collections typed by their later use, Option/Result
