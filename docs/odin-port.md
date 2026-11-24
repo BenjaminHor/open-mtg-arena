@@ -167,6 +167,32 @@ procedure; the 62 hand-written ones get hand-written Odin codecs that the genera
   Odin state needs cheap snapshots (persistent or copy-on-write collections, or undo logs) before logic is
   translated; measured against Rust (status.md, "Plan before the logic port").
 
+## State layout: mirror Rust's sharing (proposal, 2026-11-24)
+
+Measured: ~55 full `GameState` clones per action, 5.5M copy-on-write object writes in nine games. Where Rust's clone
+is cheap and where it isn't, field by field:
+- **Shared** (`Arc<T>`): every object in `objects` (`Arc<GameObject>`), each object's ability, trigger, static and
+  replacement lists (`Arc<Vec<…>>`, the parsed card AST), a few large state parts. A clone bumps a count; a write
+  goes through `Arc::make_mut` (copy only if shared).
+- **Copied** (everything else): plain fields, `Vec`s and maps, `deck_pools` included (≈165 KB of JSON, copied on every
+  clone today), and the `im` collections, which are persistent in Rust (O(1) clone) but small apart from `objects`
+  and the rules journal (up to ~1k entries).
+
+Proposal: the Odin model mirrors that exactly, and the translator follows it mechanically.
+1. `Arc<T>` becomes a reference-counted shared pointer (`Shared(T)`: pointer + count); `Box<T>` stays an owned `^T`.
+   The model currently maps both to `^T`; odingen tells them apart.
+2. odingen generates `clone_<T>` for every model type: copies owned data, shares `Shared` pointers (count + 1).
+   `.clone()` translates to it; `Arc::make_mut(&mut x)` to `make_mut(&x)` (copy if count > 1).
+3. ObjectMap is an array of (id, `Shared(GameObject)`) kept in D-182's order; its clone copies ~100–300 pointers.
+4. Memory: everything a game action allocates comes from a per-action arena. A state that outlives the action (the
+   new current state) is deep-copied once into the next generation's arena, then the old arena is freed whole: one
+   ~0.5 MB copy per action instead of tracking every drop, which Odin has no RAII for. Counts only decide whether a
+   write must copy; a state clone the translator can see die at scope end (`let mut sim = state.clone()`, the 55 per
+   action) releases its counts there, so counts stay exact on the hot path. Elsewhere a stale count only causes an
+   extra copy, never a wrong result.
+5. Checked by a benchmark before the translator depends on it: clone + a typical write pattern on recorded states,
+   Odin vs Rust, within 2x of Rust or the design changes.
+
 ## Toolchain note: a compiler patch (2026-11-24)
 
 The pinned Odin (dev-2026-11a) is built with `odin/toolchain/0001-memoize-nested-size-align.patch`, which memoizes
