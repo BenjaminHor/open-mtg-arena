@@ -57,6 +57,8 @@ declare_attackers :: proc(g: ^Game, attacks: []types.Tuple2(types.ObjectId, type
 		append(&combat.attackers, types.AttackerInfo{object_id = a._0, defending_player = defender, attack_target = a._1})
 		append(&g.events, Event{kind = .Attack, object = a._0, controller = o.controller}) // CR 508.3a
 	}
+	// CR 508.3d: "whenever you attack" triggers if one or more creatures were declared as attackers.
+	if len(attacks) > 0 do append(&g.events, Event{kind = .You_Attack, controller = s.active_player})
 	s.combat = combat
 	// CR 508.2: the active player gets priority, attackers or not (508.8 skips the later combat steps).
 	give_priority(g, s.active_player)

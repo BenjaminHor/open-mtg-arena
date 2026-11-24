@@ -1086,3 +1086,25 @@ treasure_and_food_tokens :: proc(t: ^testing.T) {
 	game.apply(g2, 1, types.GameAction_PassPriority{})
 	testing.expect(t, game.player(&g2.state, 0).life == 23 && food.zone != .Battlefield, "3 life, Food sacrificed")
 }
+
+@(test)
+whenever_you_attack :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 508.3d: "Whenever you attack" triggers once if one or more creatures its controller controls are declared
+	// as attackers. Battlesong Berserker: target creature you control gets +1/+0 and gains menace.
+	g := new_game()
+	berserker := add(t, g, "Battlesong Berserker", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	add(t, g, "Battlesong Berserker", 1, .Battlefield) // the opponent's: not its controller attacking
+	game.begin_step(g, .DeclareAttackers)
+	attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{bears.id, types.AttackTarget_Player{1}}}
+	testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
+	if _, asked := g.state.waiting_for.(types.WaitingFor_TriggerTargetSelection); asked {
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	}
+	testing.expect(t, types.pvec_len(g.state.stack) == 1, "one trigger: its controller attacked")
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, bears.power.? == 3 && game.keyword_in(bears, types.Keyword_Menace{}), "+1/+0 and menace")
+	_ = berserker
+}

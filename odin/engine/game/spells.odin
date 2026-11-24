@@ -797,7 +797,7 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 	for t in face.triggers do if !trigger_supported(t) {
 		// For a kind of trigger the engine handles, what's missing is its effect or a condition on it.
 		#partial switch _ in t.mode {
-		case types.TriggerMode_ChangesZone, types.TriggerMode_Phase, types.TriggerMode_Attacks:
+		case types.TriggerMode_ChangesZone, types.TriggerMode_Phase, types.TriggerMode_Attacks, types.TriggerMode_YouAttack:
 			if t.execute != nil && !ability_supported(t.execute^) do ability_gaps(&out, t.execute^, "trigger")
 			else do append(&out, name("trigger condition:", t.mode))
 		case:

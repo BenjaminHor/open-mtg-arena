@@ -13,6 +13,7 @@ Event_Kind :: enum {
 	Attack,
 	Spell_Cast,
 	Damage,
+	You_Attack, // a player attacked with one or more creatures (CR 508.3d)
 }
 
 // Something that happened that an ability may trigger on (CR 603.2).
@@ -75,6 +76,9 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		f, has := t.valid_card.?
 		_, self := f.(types.TargetFilter_SelfRef)
 		return has && self && t.attack_target_filter == nil
+	case types.TriggerMode_YouAttack:
+		// "Whenever you attack": the plain form (CR 508.3d).
+		return t.valid_card == nil && t.attack_target_filter == nil
 	case types.TriggerMode_DamageDone:
 		// "Whenever [this / a creature you control] deals [combat] damage to [a player / an opponent / a creature]".
 		if t.damage_kind == .NoncombatOnly || t.damage_amount != nil do return false
@@ -259,6 +263,13 @@ collect_triggers :: proc(g: ^Game) {
 					}
 					if v, has := t.valid_target.?; has && !damage_recipient_matches(s, v, e.target, w) do continue
 					add_trigger(g, w.id, w.controller, t)
+				}
+			}
+		case .You_Attack:
+			for o in permanents_of(s, e.controller) {
+				for &entry in trigger_definitions(o) {
+					t := &entry.definition
+					if _, yours := t.mode.(types.TriggerMode_YouAttack); yours && trigger_supported(t^) && turn_constraint_met(s, t^, o.controller) do add_trigger(g, o.id, o.controller, t)
 				}
 			}
 		case .Attack:
