@@ -43,6 +43,7 @@ import types "eng:types"
 Outcome :: enum {
 	Pass,
 	Differs,      // the state or the RNG position differs from the recording
+	PassPairOrder, // equal once pair lists are sorted: a map held as a pair list whose order follows Rust's hashing
 	ReducerError, // the reducer rejected an action the Rust engine accepted
 	Stub,         // reached an untranslated procedure
 	Undecodable,  // the recorded state or action doesn't decode
@@ -131,9 +132,42 @@ run_step :: proc(prev, line: json.Value, prev_word_pos: u128) -> (Outcome, strin
 	strip_derived(&want)
 	strip_derived(&got)
 	path := strings.builder_make()
-	if !json.equal(want, got, &path) do return .Differs, fmt.tprintf("state at %v", strings.to_string(path))
 	if got_pos != want_pos do return .Differs, fmt.tprintf("rng word position %v, recorded %v", got_pos, want_pos)
-	return .Pass, ""
+	if json.equal(want, got) do return .Pass, ""
+	// Maps whose keys Odin can't hash (HashMap<CounterType, u32>, ...) are pair lists in the model; the translation
+	// appends new keys while Rust writes them in its hashing order, so the same entries can come in another order.
+	// Sorted, they compare as the maps they are. A Vec of pairs whose order matters would pass here too, so these
+	// steps are counted apart (docs/status.md, Known issues).
+	sort_pair_lists(&want)
+	sort_pair_lists(&got)
+	if json.equal(want, got, &path) do return .PassPairOrder, ""
+	return .Differs, fmt.tprintf("state at %v", strings.to_string(path))
+}
+
+// Sorts, at every depth, the arrays whose items are all two-element arrays (pair lists), by their JSON text.
+sort_pair_lists :: proc(v: ^json.Value) {
+	#partial switch v.kind {
+	case .Object:
+		for &m in v.members do sort_pair_lists(&m.value)
+	case .Array:
+		pairs := len(v.items) > 1
+		for &item in v.items {
+			sort_pair_lists(&item)
+			if item.kind != .Array || len(item.items) != 2 do pairs = false
+		}
+		if !pairs do return
+		Keyed :: struct { text: string, value: json.Value }
+		keyed := make([]Keyed, len(v.items))
+		for item, i in v.items {
+			b := strings.builder_make()
+			json.write_value(&b, item)
+			keyed[i] = {strings.to_string(b), item}
+		}
+		slice.sort_by(keyed, proc(a, b: Keyed) -> bool { return a.text < b.text })
+		items := make([]json.Value, len(keyed))
+		for k, i in keyed do items[i] = k.value
+		v.items = items
+	}
 }
 
 Step_Result :: struct {
@@ -302,12 +336,12 @@ main :: proc() {
 			tag := action_label(action_v)
 			switch r.outcome {
 			case .Stub: fmt.printf("step %4d  %-28v stub %v\n", step, tag, r.stubs[0])
-			case .Pass: fmt.printf("step %4d  %-28v pass\n", step, tag)
+			case .Pass, .PassPairOrder: fmt.printf("step %4d  %-28v %v\n", step, tag, r.outcome)
 			case .Differs, .ReducerError, .Undecodable, .Crash, .Timeout:
 				fmt.printf("step %4d  %-28v %v: %v\n", step, tag, r.outcome, r.detail)
 			}
 		}
-		if r.outcome != .Pass && first_stop < 0 {
+		if r.outcome != .Pass && r.outcome != .PassPairOrder && first_stop < 0 {
 			first_stop = step
 			first_stop_line = describe(where_, r, persistent)
 		}
@@ -331,8 +365,8 @@ main :: proc() {
 	for k in blockers do delete_key(&reached, k)
 
 	fmt.printf("replay %v: %v steps replayed, %v host settlements skipped\n", path, replayed, settlements)
-	fmt.printf("  pass %v, differ %v, reducer error %v, stub %v, undecodable %v, crash %v, timeout %v\n",
-		counts[.Pass], counts[.Differs], counts[.ReducerError], counts[.Stub], counts[.Undecodable], counts[.Crash], counts[.Timeout])
+	fmt.printf("  pass %v (%v more with pair lists in another order), differ %v, reducer error %v, stub %v, undecodable %v, crash %v, timeout %v\n",
+		counts[.Pass], counts[.PassPairOrder], counts[.Differs], counts[.ReducerError], counts[.Stub], counts[.Undecodable], counts[.Crash], counts[.Timeout])
 	if first_stop >= 0 do fmt.printf("first step that doesn't pass: %v\n", first_stop_line)
 	else do fmt.println("every replayed step passes")
 	if first_diff >= 0 do fmt.printf("first difference: %v\n", first_diff_line)

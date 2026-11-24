@@ -368,6 +368,9 @@ each such failure is part of the check.
    `AiDecisionContract`; any other action goes to `apply_interaction(actor, semantic_owner, action)`.
 3. It compares the result with the recorded state as JSON (the first differing path, ignoring the derived fields
    gamestate_roundtrip ignores) and the RNG position with the recorded one. A rejected action is a failure too.
+   Maps whose keys Odin can't hash are pair lists in the model and may come in another order than Rust's hashing
+   writes them: a state equal only once pair lists are sorted counts apart ("pair lists in another order"), since a
+   Vec of pairs whose order matters would pass that way too.
 4. In a `-define:VECTOR=true` build a stub reports itself and returns a zero value. A step that meets a stub is
    judged by its first stub. The step goes on with the zero value, which shows the stubs met after it; those are
    indicative only.
