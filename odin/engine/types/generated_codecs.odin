@@ -52523,7 +52523,7 @@ decode_TargetEffectDetail :: proc(v: json.Value, out: ^TargetEffectDetail) -> bo
 	switch tv.text {
 	case "None": when COVERAGE do cov_hit("TargetEffectDetail::None"); out^ = TargetEffectDetail_None{}
 	case "Destination": when COVERAGE do cov_hit("TargetEffectDetail::Destination"); tmp: TargetEffectDetail_Destination; if !decode_Zone(json.Value{kind = .String, text = other_member_key(v, "type")}, &tmp._0) do return fail("TargetEffectDetail::Destination"); out^ = tmp
-	case "Modification": when COVERAGE do cov_hit("TargetEffectDetail::Modification"); tmp: TargetEffectDetail_Modification; if !decode_PtDirection(json.without_first(v, "type"), &tmp._0) do return fail("TargetEffectDetail::Modification"); out^ = tmp
+	case "Modification": when COVERAGE do cov_hit("TargetEffectDetail::Modification"); tmp: TargetEffectDetail_Modification; if !decode_PtDirection(v, &tmp._0) do return fail("TargetEffectDetail::Modification"); out^ = tmp
 	case: return fail("TargetEffectDetail: unknown variant")
 	}
 	return true
@@ -62689,7 +62689,7 @@ encode_AssignedDamageRecipient :: proc(b: ^strings.Builder, x: AssignedDamageRec
 decode_PtDirection :: proc(v: json.Value, out: ^PtDirection) -> bool {
 	when COVERAGE do cov_hit("PtDirection")
 	if v.kind != .Object do return fail("PtDirection: not an object")
-	tv, found := json.get(v, "type")
+	tv, found := json.get(v, "direction")
 	if !found || tv.kind != .String do return fail("PtDirection: no tag")
 	str := tv.text
 	switch str {
@@ -62713,7 +62713,7 @@ encode_PtDirection_members :: proc(b: ^strings.Builder, x: PtDirection, first: ^
 		.Increase = "Increase",
 		.Decrease = "Decrease",
 	}
-	member(b, first, "type"); json.write_string(b, NAMES[x])
+	member(b, first, "direction"); json.write_string(b, NAMES[x])
 }
 
 decode_EventCounterHistoryEntry :: proc(v: json.Value, out: ^EventCounterHistoryEntry) -> bool {

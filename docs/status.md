@@ -2699,6 +2699,12 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `players::is_opponent`, which delegates to `topology::is_opponent`, called itself (now resolved by module path or
   the caller's file, ambiguous calls and shared procedure names refused); (4) `Some(Vec::new())`, `Some(None)` and
   `Err(Default::default())` became untyped `{}`/`nil`, which Odin reads as None/no error (now typed explicitly).
+- Fixed (2026-11-24, D-184): PtDirection's tag is now `direction`, so a pump's slot detail reads
+  `{"type":"Modification","direction":"Increase"}`; TargetEffectDetail reads through a wire enum (`serde(from)`) that
+  also takes the form saved games already hold (`{"type":"Increase"}`, after the client's `JSON.parse`) as a
+  Modification. Test: `paused_pump_target_prompt_round_trips_through_json_values` (ability_utils.rs) round-trips a
+  state paused on a pump's target prompt through `serde_json::Value` and loads the legacy form. The Odin model was
+  regenerated. The original report:
 - (2026-11-24, found by the Odin port) A game state whose WaitingFor holds a target slot with
   `TargetEffectDetail::Modification(..)` can't round-trip through `serde_json::Value`: serde writes `"type"` twice
   (`{"type":"Modification","type":"Increase"}`, an internally tagged enum inside another with the same tag) and a

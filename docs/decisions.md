@@ -2938,4 +2938,8 @@ owner's answer to the D-089 open question, option (a))
 - The fix renames one of the two tags (or adjacently tags the inner enum), with a migration that reads the old form
   in Rust's save loading, a test that a paused P/T-pump state round-trips through `serde_json::Value`, and the Odin
   model regenerated (D-181: the model reads only today's form).
+- Done (2026-11-24): PtDirection's tag is `direction` (`{"type":"Modification","direction":"Increase"}`). The
+  migration reads what saved games hold: the client stored states after `JSON.parse`, so an old pump slot reads
+  `{"type":"Increase"}`, which a wire enum behind `serde(from)` maps to `Modification(Increase)`. odingen ignores
+  `from` (it generates codecs for the written form). Test: `paused_pump_target_prompt_round_trips_through_json_values`.
 
