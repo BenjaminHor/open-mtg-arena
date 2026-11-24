@@ -305,6 +305,18 @@ same functions on inputs taken from the card data and recorded states and prints
 that compares (the O-0 vector pattern, per batch). Functions the translator can't handle stay listed, with the
 construct that stopped them.
 
+**Whole-function translator, first version (2026-11-24).** `odin/tools/odingen/src/body.rs` translates a function
+to an Odin procedure: signatures (`&mut T` as `^T`, `Self`), `let` (typed from the initializer), `if`/`if let Some`,
+`match` on enums (bindings per variant), `for` over ranges and `Vec`s, `while`/`loop`, `return`, assignments, tail
+expressions, calls to engine functions as `Owner_method(...)`, `.clone()` as the generated clone. Functions it can't
+translate yet become stubs with their real signature (calling one panics, naming the construct that stopped it), so
+everything translated type-checks against the model. `odingen translate-report crates <dir> [filter]` writes
+`translated.odin` (and the logic's extra types) and ranks the blockers. First numbers: phase-ast 515/1,169
+functions (44%), the whole engine 3,010/15,923 (18.9%); the translated code type-checks (phase-ast cleanly; engine-wide
+a handful of errors left). Top blockers engine-wide: untyped `let` (2,176), `Result` returns (1,900), `.iter()`
+(934), `let else` (914), nested items (483), generic functions (430). Not yet checked against Rust's results (the
+vector printer is next); none of it is committed as engine code until it is.
+
 ## Decided (D-179)
 
 1. The Rust card-text parser stays as an offline build tool; only the engine is ported.

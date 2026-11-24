@@ -3,6 +3,7 @@
 //! `odingen report <crates-dir>` lists what the generator sees: serialized types, name collisions, hand-written serde
 //! impls and the type names fields use that nothing defines.
 
+mod body;
 mod census;
 mod emit;
 mod translate;
@@ -125,6 +126,11 @@ fn report(roots: &[PathBuf]) {
     }
 }
 
+thread_local! {
+    /// Set by `translate-report`: after generating, translate the functions of files matching this filter.
+    static TRANSLATE_REPORT: std::cell::RefCell<Option<Option<String>>> = const { std::cell::RefCell::new(None) };
+}
+
 const DEFAULT_ROOTS: &[&str] = &["CardExportEntry", "GameState", "GameAction", "WaitingFor", "GameEvent", "ReplayLog"];
 
 fn main() {
@@ -138,6 +144,15 @@ fn main() {
             let crates = PathBuf::from(&args[2]);
             let reg = model::scan(&[crates.join("phase-ast/src"), crates.join("engine/src")]);
             census::census(&reg, args.get(3).map(String::as_str));
+        }
+        Some("translate-report") => {
+            // Generates the model (as `gen` does, into the given directory), then tries every function of the
+            // files matching the filter and writes the translated ones to <out-dir>/translated.odin.
+            let crates = PathBuf::from(&args[2]);
+            let out_dir = PathBuf::from(&args[3]);
+            let filter = args.get(4).cloned();
+            TRANSLATE_REPORT.with(|t| *t.borrow_mut() = Some(filter));
+            generate(&[crates.join("phase-ast/src"), crates.join("engine/src")], &out_dir, DEFAULT_ROOTS);
         }
         Some("gen") => {
             let crates = PathBuf::from(&args[2]);
@@ -295,6 +310,20 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
     println!("defaults and skip predicates: {} translated, {} to write by hand", e.default_reqs.len() + e.skip_reqs.len() - failed.len(), failed.len());
     for f in &failed {
         println!("  hand: {f}");
+    }
+    if let Some(filter) = TRANSLATE_REPORT.with(|t| t.borrow().clone()) {
+        // Every non-generic engine type, so translated logic finds the types saves never hold.
+        let all: Vec<String> = reg
+            .types
+            .iter()
+            .filter(|(_, d)| d[0].generics.is_empty())
+            .map(|(n, _)| n.clone())
+            .collect();
+        let before = e.types_out.len();
+        e.emit_more(&all);
+        let more_types = e.types_out[before..].to_string();
+        std::fs::write(out_dir.join("generated_types_logic.odin"), format!("{HEADER}import \"../json\"\nimport \"../rng\"\n\n_ :: json\n_ :: rng\n\n{more_types}")).unwrap();
+        body::report(&mut e, filter.as_deref(), Some(&out_dir.join("translated.odin")));
     }
     for (n, users) in &e.unknown_shapes {
         println!("  unknown type {n} (in {})", users.iter().cloned().collect::<Vec<_>>().join(", "));

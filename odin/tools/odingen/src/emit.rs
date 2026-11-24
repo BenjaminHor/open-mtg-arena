@@ -976,6 +976,19 @@ impl<'a> Emitter<'a> {
         for r in roots {
             self.require(r);
         }
+        self.drain();
+    }
+
+    /// Emits more types (and what they use) after `run`: types only, no codecs unless already serialized. The
+    /// logic's types that saves never hold (translate-report).
+    pub fn emit_more(&mut self, names: &[String]) {
+        for n in names {
+            self.require(n);
+        }
+        self.drain();
+    }
+
+    fn drain(&mut self) {
         while let Some(name) = self.queue.pop_front() {
             if self.emitted.contains(&name) {
                 continue;
@@ -1889,4 +1902,8 @@ impl<'a> Emitter<'a> {
         }
         let _ = writeln!(self.clone_out, "clone_{name} :: proc(x: {name}) -> {name} {{\n{body}}}\n");
     }
+}
+
+pub fn shape_names_pub(s: &Shape, out: &mut Vec<String>) {
+    shape_names(s, out)
 }

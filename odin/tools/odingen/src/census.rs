@@ -42,7 +42,7 @@ impl<'ast> Visit<'ast> for Features {
             Macro(m) => {
                 let name = m.mac.path.segments.last().map(|s| s.ident.to_string()).unwrap_or_default();
                 self.0.insert(format!("macro {name}!"));
-                "macro"
+                return syn::visit::visit_expr(self, e);
             }
             Match(_) => "match",
             MethodCall(mc) => {
@@ -52,7 +52,7 @@ impl<'ast> Visit<'ast> for Features {
                 if !self.1.contains(&m) {
                     self.0.insert(format!("method .{m}()"));
                 }
-                "method call"
+                return syn::visit::visit_expr(self, e);
             }
             Paren(_) => "paren",
             Path(_) => "path",

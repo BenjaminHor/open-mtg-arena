@@ -298,3 +298,11 @@ make_mut :: proc(p: ^^$T, clone: proc(x: T) -> T) -> ^T {
 	}
 	return p^
 }
+
+Tuple5 :: struct($A, $B, $C, $D, $E: typeid) {
+	_0: A,
+	_1: B,
+	_2: C,
+	_3: D,
+	_4: E,
+}

@@ -21,6 +21,18 @@ pub struct Tx<'a, 'b> {
     pub self_ty: Option<String>,
     /// Inlining depth (calls to single-expression functions are translated in place).
     pub depth: u32,
+    /// Whole-function translation (body.rs): calls to engine functions stay calls to their translated procedures
+    /// (`Owner_method`), and `.clone()` clones. Off for the serde defaults and skip predicates, which inline.
+    pub calls: bool,
+}
+
+/// The Odin procedure a translated engine function becomes: `Owner_method` for methods and associated
+/// functions, the bare name for free functions.
+pub fn proc_name(owner: Option<&str>, name: &str) -> String {
+    match owner {
+        Some(o) => format!("{o}_{name}"),
+        None => name.to_string(),
+    }
 }
 
 fn path_segs(p: &syn::Path) -> Vec<String> {
@@ -32,10 +44,28 @@ fn lit(l: &Lit) -> R<String> {
         Lit::Int(i) => i.base10_digits().to_string(),
         Lit::Float(f) => f.base10_digits().to_string(),
         Lit::Bool(b) => b.value.to_string(),
-        Lit::Str(s) => format!("{:?}", s.value()),
+        Lit::Str(s) => odin_string(&s.value()),
         Lit::Char(c) => format!("'{}'", c.value()),
         other => return Err(format!("literal {}", quote::quote!(#other))),
     })
+}
+
+/// An Odin string literal (Rust's `{:?}` writes `\u{..}` escapes, which Odin doesn't read).
+pub fn odin_string(v: &str) -> String {
+    let mut out = String::from("\"");
+    for c in v.chars() {
+        match c {
+            '"' => out.push_str("\\\""),
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            '\t' => out.push_str("\\t"),
+            '\r' => out.push_str("\\r"),
+            c if (c as u32) < 0x20 => out.push_str(&format!("\\x{:02x}", c as u32)),
+            c => out.push(c),
+        }
+    }
+    out.push('"');
+    out
 }
 
 impl<'a, 'b> Tx<'a, 'b> {
@@ -350,6 +380,12 @@ impl<'a, 'b> Tx<'a, 'b> {
                     }
                 }
                 let owner = self.owner_of(&segs);
+                if self.calls {
+                    if let Some(f) = self.e.reg.fns.get(&(owner.clone(), last.clone())).and_then(|v| v.first()).cloned() {
+                        return self.call_with_sig(&proc_name(owner.as_deref(), &last), &f, None, &args);
+                    }
+                    return Err(format!("call {}", segs.join("::")));
+                }
                 if let Some(v) = self.inline_call(owner, &last, None, &args, want) {
                     return v;
                 }
@@ -480,10 +516,31 @@ impl<'a, 'b> Tx<'a, 'b> {
                     }
                     "is_none" => Ok(format!("({recv} == nil)")),
                     "is_some" => Ok(format!("({recv} != nil)")),
+                    "clone" if self.calls => Ok(match self.e.cloner(&recv_shape) {
+                        Some(c) => format!("{c}({recv})"),
+                        None => recv,
+                    }),
+                    // In whole-function translation a conversion is the value itself only between equal types
+                    // (`String::to_owned`, `x.into()` to its own type); others (`IntoStaticStr`, Display) differ.
+                    "into" | "to_owned" | "to_string" if self.calls => {
+                        if &recv_shape == want || (matches!(recv_shape, Shape::Str) && matches!(want, Shape::Str)) {
+                            Ok(recv)
+                        } else {
+                            Err(format!("conversion .{}()", mc.method))
+                        }
+                    }
                     "clone" | "into" | "to_owned" | "to_string" => Ok(recv),
                     m => {
                         let owner = match &recv_shape { Shape::Named(n, _) => Some(n.clone()), _ => None };
                         let args: Vec<&Expr> = mc.args.iter().collect();
+                        if self.calls {
+                            if let Some(o) = owner.as_ref() {
+                                if let Some(f) = self.e.reg.fns.get(&(Some(o.clone()), m.to_string())).and_then(|v| v.first()).cloned() {
+                                    return self.call_with_sig(&proc_name(Some(o), m), &f, Some(recv), &args);
+                                }
+                            }
+                            return Err(format!("method .{m}()"));
+                        }
                         match owner.and_then(|o| self.inline_call(Some(o), m, Some((recv.clone(), recv_shape.clone())), &args, want)) {
                             Some(v) => v,
                             None => Err(format!("method {m}")),
@@ -518,8 +575,82 @@ impl<'a, 'b> Tx<'a, 'b> {
                     _ => None,
                 }
             }
+            Expr::MethodCall(mc) if self.calls => {
+                let recv = match self.shape_of(&mc.receiver)? {
+                    Shape::Ptr(inner, _) => *inner,
+                    s => s,
+                };
+                let Shape::Named(o, _) = recv else { return None };
+                let f = self.e.reg.fns.get(&(Some(o.clone()), mc.method.to_string())).and_then(|v| v.first()).cloned()?;
+                self.return_shape(&f, Some(&o))
+            }
+            Expr::Call(c) if self.calls => {
+                let Expr::Path(fp) = &*c.func else { return None };
+                let segs = path_segs(&fp.path);
+                let owner = self.owner_of(&segs);
+                let f = self.e.reg.fns.get(&(owner.clone(), segs.last()?.clone())).and_then(|v| v.first()).cloned()?;
+                self.return_shape(&f, owner.as_deref())
+            }
+            Expr::Lit(l) => match &l.lit {
+                Lit::Bool(_) => Some(Shape::Bool),
+                Lit::Str(_) => Some(Shape::Str),
+                Lit::Int(_) => Some(Shape::Int("int")),
+                _ => None,
+            },
             _ => None,
         }
+    }
+
+    pub fn shape_of_pub(&mut self, ex: &Expr) -> Option<Shape> {
+        self.shape_of(ex)
+    }
+
+    pub fn enum_variants_pub(&self, name: &str) -> Option<(bool, Vec<crate::model::Variant>)> {
+        self.enum_variants(name)
+    }
+
+    pub fn named_fields_pub(&self, ty: &str, variant: Option<&str>) -> Option<Fields> {
+        self.named_fields(ty, variant)
+    }
+
+    /// The shape an engine function returns (`Self` is its owner).
+    pub fn return_shape(&mut self, f: &FnDef, owner: Option<&str>) -> Option<Shape> {
+        match &f.sig.output {
+            syn::ReturnType::Default => Some(Shape::Unit),
+            syn::ReturnType::Type(_, t) => {
+                let s = self.e.shape(t, &[]);
+                Some(match s {
+                    Shape::Named(ref n, _) if n == "Self" => Shape::Named(owner?.to_string(), vec![]),
+                    s => s,
+                })
+            }
+        }
+    }
+
+    /// A call to a translated engine function: arguments shaped by its parameters, `&mut` ones by pointer.
+    pub fn call_with_sig(&mut self, name: &str, f: &FnDef, recv: Option<String>, args: &[&Expr]) -> R<String> {
+        if !f.sig.generics.params.is_empty() {
+            return Err("call to a generic function".into());
+        }
+        let mut parts = Vec::new();
+        let mut ai = 0;
+        for input in &f.sig.inputs {
+            match input {
+                syn::FnArg::Receiver(rc) => {
+                    let r = recv.clone().ok_or("method called without a receiver")?;
+                    parts.push(if rc.mutability.is_some() && rc.reference.is_some() { format!("&{r}") } else { r });
+                }
+                syn::FnArg::Typed(pt) => {
+                    let a = args.get(ai).ok_or("argument count")?;
+                    ai += 1;
+                    let sh = self.e.shape(&pt.ty, &[]);
+                    let v = self.expr(a, &sh)?;
+                    let by_mut_ref = matches!(&*pt.ty, syn::Type::Reference(r) if r.mutability.is_some());
+                    parts.push(if by_mut_ref { format!("&{v}") } else { v });
+                }
+            }
+        }
+        Ok(format!("{name}({})", parts.join(", ")))
     }
 
     /// `matches!(subject, pattern)` as statements returning the result.
@@ -663,7 +794,7 @@ pub fn defaults_and_skips(e: &mut Emitter) -> (String, Vec<String>) {
             let odin_ty = e.odin(&shape);
             let result = (|| -> R<String> {
                 let body = single_expr(&f.block).ok_or("not a single expression")?;
-                let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: f.self_ty.clone(), depth: 0 };
+                let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: f.self_ty.clone(), depth: 0, calls: false };
                 if is_default {
                     let v = tx.expr(body, &shape)?;
                     Ok(format!("{proc_name} :: proc() -> {odin_ty} {{\n\treturn {v}\n}}\n"))
@@ -716,7 +847,7 @@ pub fn defaults_and_skips(e: &mut Emitter) -> (String, Vec<String>) {
         let shape = Shape::Named(ty.clone(), vec![]);
         let res = (|| -> R<String> {
             let body = single_expr(&f.block).ok_or("not a single expression")?;
-            let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: Some(ty.clone()), depth: 0 };
+            let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: Some(ty.clone()), depth: 0, calls: false };
             tx.expr(body, &shape)
         })();
         match res {
