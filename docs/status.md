@@ -438,6 +438,24 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
       didn't either. Both fixed: they ran here in about a minute, and pages.yml now runs them. (The per-language art
       maps, gen-scryfall-locale-images.sh, aren't generated: a missing one falls back to English art.)
       Checked after a rebuild: the same match shows card art and portraits, no failed request, no page error.
+    - Rebrand done (25c14de, 2026-11-24), driven by `scripts/check-brand.sh` (explicit tokens, case-sensitive since
+      "Phasers" is a card, never bare "phase", path-like `types/phase.rs` excluded). CI runs it over the client's
+      sources and data/; pages.yml over the whole built site, WASM and generated data included, before upload. Done:
+      name everywhere on screen and in all nine languages, manifest, title, loading shell; new logo and icons from
+      `client/public/icons/logo.svg` (our earlier two-card mark) and a plain house for the Home tab (theirs was a gear
+      with a sparkle, like their logo); repo and "report an issue" links point here; the "Try Preview" badge,
+      config.js, their data host's cache rules and dev-proxy hosts removed; What's New holds one entry of ours
+      (`client/public/changelog.json`, written by hand from now on); starter decks' author; the two engine strings
+      that ship in the WASM; 40 upstream-only scripts deleted (hosting, bots, releases, PR analytics, SSL, Tauri,
+      lobby). Also restored what the strip removed with the feeds: the "Data provided by" credit under MTGGoldfish
+      and TopDeck.gg decks and the original MyDecks tests. Client: type-check, lint (0 errors), 7,404 unit tests.
+    - Deferred on purpose (advisor, 2026-11-24): renaming the crates (phase-ai, phase-parser, phase-ast, phase-llm:
+      about 540 files, a cold engine rebuild) and the ~250 engine files whose comments link upstream issues or say
+      "phase.rs". None of it reaches the app, and the Odin port replaces that code. Also left: docs/engine/ (their
+      docs, kept as they came), internal names such as the `phase-deck:` storage keys, `PHASE_` env names and the
+      `__PHASE_CONFIG__`-era comments, and the version number (0.131.0, theirs).
+    - Proving the release WASM on GitHub's runner: pages.yml temporarily also builds on this branch (deploy only
+      from main); remove the branch from its `on.push` before merging.
     - Also found: starting a game threw "reading 'startsWith'" (from the import, not the strip): activeGameChange.ts
       dispatches a plain `Event("storage")` with no key, and the AI deck catalog's listener assumed a StorageEvent.
       Fixed to ignore non-StorageEvents; test in aiDeckCatalog.test.ts.
