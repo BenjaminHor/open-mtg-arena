@@ -909,7 +909,18 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let m = mc.method.to_string();
                 let Some(recv) = self.shape_of(&mc.receiver) else {
                     // An untyped receiver (an iterator chain): methods whose result doesn't depend on it.
+                    let n_args = mc.args.len();
                     return match m.as_str() {
+                        // Terminals of a chain: their result follows from the chain's item.
+                        "collect" if n_args == 0 => self.chain_item_shape(&mc.receiver).map(|i| Shape::Vec(Box::new(i))),
+                        "find" | "next" | "last" | "max_by_key" | "min_by_key" | "max_by" | "min_by" | "max" | "min" => {
+                            self.chain_item_shape(&mc.receiver).map(|i| Shape::Option(Box::new(i)))
+                        }
+                        "find_map" if n_args == 1 => {
+                            let item = self.chain_item_shape(&mc.receiver)?;
+                            let c = Self::closure_of(&mc.args[0]).ok()?;
+                            self.closure_shape(&c, "_", &item).filter(|s| matches!(s, Shape::Option(_)))
+                        }
                         "len" | "count" => Some(Shape::Int("int")),
                         "is_empty" | "is_some" | "is_none" | "contains" | "contains_key" | "any" | "all" | "is_some_and"
                         | "is_none_or" => Some(Shape::Bool),
@@ -1889,12 +1900,13 @@ impl<'a, 'b> Tx<'a, 'b> {
     fn chain_item_shape(&mut self, e: &Expr) -> Option<Shape> {
         match e {
             Expr::MethodCall(m) => match m.method.to_string().as_str() {
-                "iter" | "into_iter" | "copied" | "cloned" if m.args.is_empty() => match self.shape_of(&m.receiver)? {
-                    Shape::Vec(i) | Shape::PVec(i) | Shape::Array(i, _) => Some(*i),
-                    Shape::Ptr(p, _) => match *p {
+                "iter" | "into_iter" | "copied" | "cloned" if m.args.is_empty() => match self.shape_of(&m.receiver) {
+                    Some(Shape::Vec(i) | Shape::PVec(i) | Shape::Array(i, _)) => Some(*i),
+                    Some(Shape::Ptr(p, _)) => match *p {
                         Shape::Vec(i) => Some(*i),
                         _ => None,
                     },
+                    // An adapter's receiver is itself a chain (`v.iter().copied()`).
                     _ => self.chain_item_shape(&m.receiver),
                 },
                 "filter" => self.chain_item_shape(&m.receiver),
@@ -2048,6 +2060,12 @@ impl<'a, 'b> Tx<'a, 'b> {
         }
         let body = match &*c.body {
             Expr::Block(b) if b.block.stmts.len() == 1 && !has_try(&c.body) => match &b.block.stmts[0] {
+                // `{ if let .. { Some(x) } else { None } }`: the branches' values, by a dry run.
+                Stmt::Expr(e @ (Expr::If(_) | Expr::Match(_)), None) if self.shape_of(e).is_none() => {
+                    let r = crate::body::infer_block_shape(self, &b.block);
+                    self.unbind(saved);
+                    return r;
+                }
                 Stmt::Expr(e, None) => e.clone(),
                 _ => {
                     self.unbind(saved);
