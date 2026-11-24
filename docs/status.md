@@ -2861,7 +2861,7 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   change the plan. Keep translator internals, percentages and per-fix detail in this file and the commits.
 
 ## Known issues
-- (2026-11-24, Odin engine, rules-judge review of 9ab9548..7429070) Being fixed now: (1) "sacrifice this" and
+- (2026-11-24, Odin engine, rules-judge review of 9ab9548..7429070) Fixed, with tests: (1) "sacrifice this" and
   "exile this" acted on the new object after a blink (CR 400.7); (2) a blinked token came back (CR 111.8) and
   exiled tokens never ceased to exist (CR 704.5d); (3) accepting an impossible "you may" counted as "if you do"
   (CR 608.2d); (4) a Treasure could pay mana and be sacrificed for the same spell's additional cost (CR 601.2h);

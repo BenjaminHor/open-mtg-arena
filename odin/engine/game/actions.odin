@@ -341,13 +341,11 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 	case types.WaitingFor_OptionalCostChoice:
 		append(&out, types.GameAction_DecideOptionalCost{index = 0}, types.GameAction_DecideOptionalCost{index = 1})
 	case types.WaitingFor_ModeChoice:
-		if w.modal.min_choices == 1 {
-			for i in 0 ..< w.modal.mode_count do if !slice.contains(w.unavailable_modes[:], i) {
-				one: [dynamic]int
-				append(&one, i)
-				append(&out, types.GameAction_SelectModes{indices = one})
-			}
-		}
+		// Every allowed set of modes (CR 700.2a), in printed order, from the minimum to the maximum number.
+		available := make([dynamic]int, context.temp_allocator)
+		for i in 0 ..< w.modal.mode_count do if !slice.contains(w.unavailable_modes[:], i) do append(&available, i)
+		mode_sets(&out, available[:], 0, make([dynamic]int, context.temp_allocator), w.modal.min_choices, w.modal.max_choices)
+		append(&out, types.GameAction_CancelCast{})
 	case types.WaitingFor_OptionalEffectChoice:
 		append(&out, types.GameAction_DecideOptionalEffect{accept = true})
 		append(&out, types.GameAction_DecideOptionalEffect{accept = false})
@@ -385,4 +383,20 @@ castable_zone_ids :: proc(s: ^types.GameState, p: types.PlayerId) -> [dynamic]ty
 	for id in ids_of(s.command_zone) do if object(s, id).owner == p do append(&out, id)
 	for id in ids_of(player(s, p).graveyard) do if flashback_castable(object(s, id), p) do append(&out, id) // CR 702.34a
 	return out
+}
+
+@(private = "file")
+mode_sets :: proc(out: ^[dynamic]types.GameAction, available: []int, from: int, chosen: [dynamic]int, least, most: int) {
+	if len(chosen) >= least {
+		set: [dynamic]int
+		append(&set, ..chosen[:])
+		append(out, types.GameAction_SelectModes{indices = set})
+	}
+	if len(chosen) == most do return
+	for i in from ..< len(available) {
+		next := make([dynamic]int, context.temp_allocator)
+		append(&next, ..chosen[:])
+		append(&next, available[i])
+		mode_sets(out, available, i + 1, next, least, most)
+	}
 }

@@ -173,3 +173,28 @@ zone_of_ref :: proc(z: types.ZoneRef) -> types.Zone {
 	}
 	return .Graveyard
 }
+
+// Whether an amount reads a target ("target creature's power"), which filters have no access to.
+quantity_reads_target :: proc(q: types.QuantityExpr) -> bool {
+	#partial switch x in q {
+	case types.QuantityExpr_Offset:
+		return x.inner != nil && quantity_reads_target(x.inner^)
+	case types.QuantityExpr_Multiply:
+		return x.inner != nil && quantity_reads_target(x.inner^)
+	case types.QuantityExpr_ClampMin:
+		return x.inner != nil && quantity_reads_target(x.inner^)
+	case types.QuantityExpr_Ref:
+		#partial switch r in x.qty {
+		case types.QuantityRef_Power:
+			_, t := r.scope.(types.ObjectScope_Target)
+			return t
+		case types.QuantityRef_Toughness:
+			_, t := r.scope.(types.ObjectScope_Target)
+			return t
+		case types.QuantityRef_ObjectManaValue:
+			_, t := r.scope.(types.ObjectScope_Target)
+			return t
+		}
+	}
+	return false
+}

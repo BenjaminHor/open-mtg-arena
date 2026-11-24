@@ -66,6 +66,8 @@ zone_list :: proc(s: ^types.GameState, zone: types.Zone, owner: types.PlayerId) 
 move_object :: proc(g: ^Game, id: types.ObjectId, to: types.Zone) {
 	s := &g.state
 	o := object(s, id)
+	// CR 111.8: a token that has left the battlefield can't move to another zone or come back.
+	if o.is_token && o.zone != .Battlefield do return
 	if o.zone != .Stack {
 		if list := zone_list(s, o.zone, o.owner); list != nil do remove_id(list, id)
 	}

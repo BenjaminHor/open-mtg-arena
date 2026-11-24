@@ -1509,3 +1509,79 @@ flashback_from_the_graveyard :: proc(t: ^testing.T) {
 	game.apply(g, 1, types.GameAction_PassPriority{})
 	testing.expect(t, types.pvec_len(pl.library) == library - 1 && twice.zone == .Exile, "drew, then exiled")
 }
+
+@(test)
+review_two_regressions :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 400.7: Ball Lightning's end-step "sacrifice it" doesn't touch the new object Cloudshift returns.
+	{
+		g := new_game()
+		add(t, g, "Plains", 0, .Battlefield)
+		ball := add(t, g, "Ball Lightning", 0, .Battlefield)
+		shift := add(t, g, "Cloudshift", 0, .Hand)
+		game.begin_step(g, .End)
+		testing.expect(t, types.pvec_len(g.state.stack) == 1, "the sacrifice trigger")
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shift.id}))
+		if _, asked := g.state.waiting_for.(types.WaitingFor_TargetSelection); asked {
+			game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{ball.id}})
+		}
+		for types.pvec_len(g.state.stack) > 0 do game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+		testing.expect(t, ball.zone == .Battlefield, "the returned Ball Lightning stays")
+	}
+	// CR 111.8, 704.5d: a token exiled by Cloudshift doesn't come back.
+	{
+		g := new_game()
+		add(t, g, "Plains", 0, .Battlefield)
+		e: types.Effect_Token
+		e.name = "Soldier"
+		append(&e.types, "Creature", "Soldier")
+		e.power = types.PtValue_Fixed{1}
+		e.toughness = types.PtValue_Fixed{1}
+		game.create_token(g, e, 0)
+		ids := game.ids_of(g.state.battlefield)
+		soldier := game.object(&g.state, ids[len(ids) - 1])
+		shift := add(t, g, "Cloudshift", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shift.id}))
+		if _, asked := g.state.waiting_for.(types.WaitingFor_TargetSelection); asked {
+			game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{soldier.id}})
+		}
+		game.apply(g, 0, types.GameAction_PassPriority{})
+		game.apply(g, 1, types.GameAction_PassPriority{})
+		testing.expect(t, soldier.zone != .Battlefield, "the token didn't return")
+	}
+	// CR 608.2d: with an empty hand, Common Iguana's "you may discard" can't be chosen: no draw.
+	{
+		g := new_game()
+		for _ in 0 ..< 2 do add(t, g, "Mountain", 0, .Battlefield)
+		iguana := add(t, g, "Common Iguana", 0, .Hand)
+		pl := game.player(&g.state, 0)
+		for types.pvec_len(pl.hand) > 1 do game.move_object(g, types.pvec_get(pl.hand, 0) if types.pvec_get(pl.hand, 0) != iguana.id else types.pvec_get(pl.hand, 1), .Library)
+		library := types.pvec_len(pl.library)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = iguana.id}))
+		for i := 0; i < 8; i += 1 {
+			if _, asked := g.state.waiting_for.(types.WaitingFor_OptionalEffectChoice); asked {
+				game.apply(g, 0, types.GameAction_DecideOptionalEffect{accept = true})
+			} else do game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+		}
+		testing.expect(t, types.pvec_len(pl.library) == library, "nothing drawn")
+	}
+	// CR 601.2h: one Treasure can't both pay {R} and be sacrificed for Kuldotha Rebirth's additional cost.
+	{
+		g := new_game()
+		e: types.Effect_Token
+		e.name = "Treasure"
+		append(&e.types, "Artifact", "Treasure")
+		e.power = types.PtValue_Fixed{0}
+		e.toughness = types.PtValue_Fixed{0}
+		game.create_token(g, e, 0)
+		rebirth := add(t, g, "Kuldotha Rebirth", 0, .Hand)
+		if game.card_supported(&card(t, "Kuldotha Rebirth").face) {
+			testing.expect(t, !game.castable(&g.state, 0, rebirth, g.card_db), "only the Treasure: not castable")
+			add(t, g, "Mountain", 0, .Battlefield)
+			testing.expect(t, game.castable(&g.state, 0, rebirth, g.card_db), "Treasure plus a Mountain: castable")
+		}
+	}
+	// Support gate: a comparison against a target's amount (Fell the Mighty), and a channel cost reduction.
+	testing.expect(t, !game.card_supported(&card(t, "Fell the Mighty").face), "Fell the Mighty: target's power")
+	testing.expect(t, !game.card_supported(&card(t, "Eiganjo, Seat of the Empire").face), "channel cost reduction")
+}

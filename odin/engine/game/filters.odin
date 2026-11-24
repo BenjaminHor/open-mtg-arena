@@ -48,9 +48,10 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 	case types.FilterProp_WithoutKeyword:
 		return keyword_supported(x.value)
 	case types.FilterProp_Cmc:
-		return quantity_supported(x.value)
+		return quantity_supported(x.value) && !quantity_reads_target(x.value)
 	case types.FilterProp_PtComparison:
-		return quantity_supported(x.value) && x.stat != .TotalPowerToughness
+		// "Power greater than target creature's power" would need the target: not read here.
+		return quantity_supported(x.value) && !quantity_reads_target(x.value) && x.stat != .TotalPowerToughness
 	}
 	return false
 }

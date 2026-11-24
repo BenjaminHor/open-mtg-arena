@@ -118,10 +118,10 @@ can_tap_for_cost :: proc(o: ^types.GameObject) -> bool {
 	return true
 }
 
-mana_sources :: proc(s: ^types.GameState, p: types.PlayerId, exclude: types.ObjectId = 0, worst: Mana_Rider = .None) -> [dynamic]Mana_Source {
+mana_sources :: proc(s: ^types.GameState, p: types.PlayerId, exclude: types.ObjectId = 0, worst: Mana_Rider = .None, others: []types.ObjectId = nil) -> [dynamic]Mana_Source {
 	out := make([dynamic]Mana_Source, context.temp_allocator)
 	for o in permanents_of(s, p) {
-		if o.id == exclude || !can_tap_for_cost(o) || o.abilities == nil do continue
+		if o.id == exclude || slice.contains(others, o.id) || !can_tap_for_cost(o) || o.abilities == nil do continue
 		// CR 605.3a: any of its mana abilities; each costs {T}, so one per tap. Only those whose rider is no worse
 		// than `worst`.
 		src := Mana_Source{object = o, options = make([dynamic]Mana_Option, context.temp_allocator)}
@@ -166,9 +166,10 @@ shard_payers :: proc(shard: types.ManaCostShard) -> (payers: bit_set[types.ManaT
 // sources is tried (CR 601.2h: a cost is payable if any assignment pays it), preferring lands and other noncreature
 // sources so creatures stay free to attack and block; the generic part comes from what's left. CR 118.6: an object
 // with no mana cost can't be cast by paying one.
-plan_payment :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0) -> (taps: [dynamic]^types.GameObject, ok: bool) {
+// `exclude` and `others`: permanents that can't pay, because they pay another part of the cost (CR 601.2h).
+plan_payment :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0, others: []types.ObjectId = nil) -> (taps: [dynamic]^types.GameObject, ok: bool) {
 	taps = make([dynamic]^types.GameObject, context.temp_allocator)
-	plan, payable := plan_mana_taps(s, p, cost, exclude)
+	plan, payable := plan_mana_taps(s, p, cost, exclude, others)
 	for t in plan do append(&taps, t.object)
 	return taps, payable
 }
@@ -181,7 +182,7 @@ Mana_Tap :: struct {
 
 // CR 601.2g-h: which permanents to tap, and with which abilities, to pay the cost. Abilities without a rider are
 // tried first, then those that deal damage or cost life, then those that sacrifice the source.
-plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0) -> (taps: [dynamic]Mana_Tap, ok: bool) {
+plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0, others: []types.ObjectId = nil) -> (taps: [dynamic]Mana_Tap, ok: bool) {
 	taps = make([dynamic]Mana_Tap, context.temp_allocator)
 	c, is_cost := cost.(types.ManaCost_Cost)
 	if !is_cost do return taps, false
@@ -193,7 +194,7 @@ plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaC
 	}
 	for worst in Mana_Rider {
 		if worst == .Life do continue // tried together with Damage
-		sources := mana_sources(s, p, exclude, .Life if worst == .Damage else worst)
+		sources := mana_sources(s, p, exclude, .Life if worst == .Damage else worst, others)
 		// Preference order: noncreatures first, then sources that make fewer kinds of mana.
 		slice.sort_by(sources[:], proc(a, b: Mana_Source) -> bool {
 			ac, bc := is_type(a.object, .Creature), is_type(b.object, .Creature)
@@ -231,8 +232,8 @@ plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaC
 
 // Pays a mana cost: taps the planned permanents, then carries out their abilities' riders (CR 605.3b: a mana
 // ability resolves at once): damage to the player, life paid, the source sacrificed.
-pay_mana :: proc(g: ^Game, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0) -> bool {
-	taps, ok := plan_mana_taps(&g.state, p, cost, exclude)
+pay_mana :: proc(g: ^Game, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0, others: []types.ObjectId = nil) -> bool {
+	taps, ok := plan_mana_taps(&g.state, p, cost, exclude, others)
 	if !ok do return false
 	for t in taps do t.object.tapped = true
 	for t in taps {

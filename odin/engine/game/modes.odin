@@ -1,6 +1,6 @@
 // Modal spells (CR 700.2): "Choose one —" and the like. Each mode is one of the card's spell abilities; the
 // player chooses the mode(s) as they cast it (CR 601.2b, 700.2a), targets are chosen only for the chosen modes
-// (CR 700.2c), and the chosen modes are carried out in the order printed (CR 700.2d).
+// (CR 700.2c), and the chosen modes are carried out in the order written (CR 608.2c).
 package game
 
 import "core:slice"
@@ -83,7 +83,7 @@ select_modes :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_ModeChoice
 	for i in indices do if i < 0 || i >= w.modal.mode_count || slice.contains(w.unavailable_modes[:], i) do return false
 	g.pending.modes = make([dynamic]int)
 	append(&g.pending.modes, ..indices)
-	slice.sort(g.pending.modes[:]) // CR 700.2d: carried out in printed order
+	slice.sort(g.pending.modes[:]) // CR 608.2c: carried out in the order written
 	g.pending.modes_chosen = true
 	continue_casting(g, p) // then kicker, X, targets (CR 601.2b-c)
 	return true

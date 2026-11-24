@@ -92,13 +92,13 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 	if id, ok := target_object(target); ok do affected = object(s, id)
 	#partial switch x in e {
 	case types.Effect_PutCounter:
-		if is_self(x.target) do affected = object(s, source)
+		if is_self(x.target) do affected = same_source(g, source)
 		if affected == nil || affected.zone != .Battlefield do return
 		n, _ := fixed_quantity(x.count)
 		add_counters(affected, x.counter_type, u32(n))
 		apply_continuous_effects(g)
 	case types.Effect_SetTapState:
-		if is_self(x.target) do affected = object(s, source)
+		if is_self(x.target) do affected = same_source(g, source)
 		if affected == nil || affected.zone != .Battlefield do return
 		affected.tapped = x.state == .Tap
 	case types.Effect_Mill:

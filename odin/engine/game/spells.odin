@@ -656,7 +656,7 @@ decline_target :: proc(g: ^Game, p: types.PlayerId) -> bool {
 finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []types.TargetRef) {
 	s := &g.state
 	o := object(s, id)
-	pay_mana(g, p, spell_cost(s, o, p)) // CR 605.3: the mana abilities are activated while paying
+	pay_mana(g, p, spell_cost(s, o, p), 0, g.pending.cost_objects[:]) // CR 605.3, 601.2h
 	pay_additional_cost(g, p, o)
 	from := o.zone // where it was cast from: flashback's exile reads it (CR 702.34a)
 	if o.zone == .Command {
@@ -669,7 +669,7 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	chain := chosen_mode_chain(o, g.pending.modes[:]) if is_modal(o) else spell_ability(o)
 	resolved := resolved_tree(s, chain, targets, g.pending.counts[:], p, id)
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = id, controller = p, kind = types.StackEntryKind_Spell{card_id = o.card_id, ability = resolved}}, copy_entry)
-	record_spell_cast(s, p, o)
+	record_spell_cast(s, p, o, from)
 	append(&g.events, Event{kind = .Spell_Cast, object = id, controller = p}) // CR 601.2i
 	s.priority_passes = nil
 	give_priority(g, p)
@@ -752,7 +752,7 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 	case types.Effect_Pump:
 		pumped: ^types.GameObject
 		if id, ok := target_object(target); ok do pumped = object(s, id)
-		else if is_self(x.target) do pumped = object(s, source)
+		else if is_self(x.target) do pumped = same_source(g, source)
 		// "This creature gets +N/+N": only while it's still the same object on the battlefield (CR 400.7).
 		if pumped != nil && pumped.zone == .Battlefield do pump(g, pumped, x.power.(types.PtValue_Fixed)._0, x.toughness.(types.PtValue_Fixed)._0)
 	case types.Effect_LoseLife:
@@ -1082,11 +1082,11 @@ ability_condition_holds :: proc(s: ^types.GameState, c: types.AbilityCondition, 
 }
 
 // The spells each player has cast this turn ("your second spell each turn"), kept in the state.
-record_spell_cast :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject) {
+record_spell_cast :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, from: types.Zone) {
 	s.spells_cast_this_turn += 1
 	if s.spells_cast_this_turn_by_player == nil do s.spells_cast_this_turn_by_player = make(map[types.PlayerId]types.PVec(types.SpellCastRecord))
 	list := s.spells_cast_this_turn_by_player[p]
-	rec := types.SpellCastRecord{name = o.name, mana_value = u32(object_mana_value(o)), spell_object_id = o.id, from_zone = .Hand}
+	rec := types.SpellCastRecord{name = o.name, mana_value = u32(object_mana_value(o)), spell_object_id = o.id, from_zone = from}
 	types.pvec_push(&list, rec, proc(x: types.SpellCastRecord) -> types.SpellCastRecord {return x})
 	s.spells_cast_this_turn_by_player[p] = list
 }
@@ -1187,9 +1187,9 @@ additional_cost_payable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^type
 	cost, has := spell_additional_cost(o)
 	if !has do return true
 	if c, chooses := object_cost_of(s, p, o, cost); chooses {
-		n := 0
-		for id in c.choices do if id != o.id do n += 1
-		if n < c.count do return false
+		others := make([dynamic]types.ObjectId, context.temp_allocator)
+		for id in c.choices do if id != o.id do append(&others, id)
+		if !cost_objects_leave_mana(s, p, others[:], c.count, spell_cost(s, o, p), 0) do return false
 	}
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
 	cost_parts_of(cost, &parts)

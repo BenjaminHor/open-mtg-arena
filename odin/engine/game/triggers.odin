@@ -703,7 +703,7 @@ remove_departed_tokens :: proc(g: ^Game) -> bool {
 	s := &g.state
 	removed := false
 	for &p in s.players {
-		for list in ([?]^types.PVec(types.ObjectId){&p.hand, &p.graveyard, &p.library}) {
+		for list in ([?]^types.PVec(types.ObjectId){&p.hand, &p.graveyard, &p.library, &s.exile}) {
 			keep := make([dynamic]types.ObjectId, context.temp_allocator)
 			gone := false
 			for id in ids_of(list^) {

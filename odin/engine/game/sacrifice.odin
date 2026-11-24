@@ -23,7 +23,7 @@ do_sacrifice :: proc(g: ^Game, x: types.Effect_Sacrifice, controller: types.Play
 	n, _ := fixed_quantity(x.count)
 	if is_self(x.target) {
 		// "Sacrifice this": only while it's still the same permanent, under this player's control.
-		if o := object(s, source); o != nil && o.zone == .Battlefield && o.controller == controller do move_object(g, source, .Graveyard)
+		if o := same_source(g, source); o != nil && o.zone == .Battlefield && o.controller == controller do move_object(g, source, .Graveyard)
 		return false
 	}
 	typed := x.target.(types.TargetFilter_Typed)._0

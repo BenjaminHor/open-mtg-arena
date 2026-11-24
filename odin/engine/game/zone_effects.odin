@@ -104,7 +104,7 @@ do_change_zone :: proc(g: ^Game, x: types.Effect_ChangeZone, controller: types.P
 	s := &g.state
 	moved: ^types.GameObject
 	if id, ok := target_object(target); ok do moved = object(s, id)
-	else if is_self(x.target) do moved = object(s, source)
+	else if is_self(x.target) do moved = same_source(g, source)
 	if moved == nil do return
 	if origin, has := x.origin.?; has && moved.zone != origin do return // it left that zone: nothing to move
 	if is_self(x.target) && moved.zone == .Stack do return

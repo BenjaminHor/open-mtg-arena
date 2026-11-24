@@ -19,6 +19,7 @@ Resolution :: struct {
 	answer:       Maybe(bool),
 	performed:    bool, // whether the latest "you may" instruction was done: "if you do" (CR 608.2c)
 	found:        [dynamic]types.ObjectId, // the cards a library search found: "those cards" next
+	source_incarnation: Maybe(u64), // the source as the ability was put on the stack: "this" means that object
 	scope_node:   ^types.ResolvedAbility, // an instruction carried out for each player in a scope...
 	scope:        [dynamic]types.PlayerId, // ...for these players...
 	scope_next:   int, // ...of which this is the next
@@ -35,6 +36,7 @@ resolved_tree :: proc(s: ^types.GameState, a: ^types.AbilityDefinition, targets:
 		node := new(types.ResolvedAbility)
 		node.source_id = source
 		node.controller = controller
+		if src := object(s, source); src != nil do node.source_incarnation = src.incarnation
 		if x.effect != nil do node.effect = x.effect^
 		node.duration = x.duration
 		node.condition = x.condition
@@ -83,6 +85,7 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 		}
 	}
 	g.resolution = Resolution{active = true, next = top, controller = controller, source = source, spell = spell, stack_id = stack_id}
+	g.resolution.source_incarnation = top.source_incarnation
 	g.resolution.last_targets = make([dynamic]types.TargetRef)
 	g.resolution.all_targets = make([dynamic]types.TargetRef)
 	g.resolution.found = make([dynamic]types.ObjectId)
@@ -126,7 +129,8 @@ continue_resolution :: proc(g: ^Game) -> bool {
 		if sub := x.sub_ability; sub != nil && is_instead(sub) && condition_holds_now(r, s, sub.condition.?) {
 			continue // replaced by the next instruction ("... instead", CR 608.2c); its targets stay for "it"
 		}
-		if c, has := x.condition.?; has && !condition_holds_now(r, s, c) {
+		resuming_scope := r.scope_node == x // a scoped instruction already under way: its condition was checked
+		if c, has := x.condition.?; has && !resuming_scope && !condition_holds_now(r, s, c) {
 			// CR 608.2c: the instruction doesn't happen, nor what depends on it; the next independent instruction
 			// still does.
 			for r.next != nil && r.next.sub_link != .SequentialSibling do r.next = r.next.sub_ability
@@ -143,6 +147,11 @@ continue_resolution :: proc(g: ^Game) -> bool {
 					for r.next != nil && r.next.sub_link != .SequentialSibling && !reads_outcome(r.next) do r.next = r.next.sub_ability
 					continue
 				}
+			} else if !optional_possible(g, x, r.controller, r.source) {
+				// CR 608.2d: an impossible option can't be chosen; it's as if declined ("if you don't").
+				r.performed = false
+				for r.next != nil && r.next.sub_link != .SequentialSibling && !reads_outcome(r.next) do r.next = r.next.sub_ability
+				continue
 			} else {
 				r.next, r.asked = x, x // carried out once answered
 				s.priority_player = r.controller
@@ -405,4 +414,32 @@ is_instead :: proc(n: ^types.ResolvedAbility) -> bool {
 		return true
 	}
 	return false
+}
+
+// "This permanent" in an ability: its source, only while it's still the object it was when the ability went on the
+// stack (CR 400.7: a permanent that changed zones is a new object, even if it came back).
+same_source :: proc(g: ^Game, source: types.ObjectId) -> ^types.GameObject {
+	o := object(&g.state, source)
+	if o == nil do return nil
+	if inc, has := g.resolution.source_incarnation.?; g.resolution.active && has && o.incarnation != inc do return nil
+	return o
+}
+
+// Whether a "you may" instruction could be carried out (CR 608.2d): something to discard, something to sacrifice.
+optional_possible :: proc(g: ^Game, x: ^types.ResolvedAbility, controller: types.PlayerId, source: types.ObjectId) -> bool {
+	s := &g.state
+	#partial switch e in x.effect {
+	case types.Effect_Discard:
+		return types.pvec_len(player(s, controller).hand) > 0
+	case types.Effect_Sacrifice:
+		if is_self(e.target) {
+			o := same_source(g, source)
+			return o != nil && o.zone == .Battlefield && o.controller == controller
+		}
+		typed, ok := e.target.(types.TargetFilter_Typed)
+		if !ok do return false
+		for o in permanents_of(s, controller) do if object_matches(s, o, typed._0, controller, source) do return true
+		return false
+	}
+	return true
 }
