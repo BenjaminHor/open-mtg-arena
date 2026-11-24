@@ -1930,3 +1930,23 @@ pub fn infer_block_shape(tx: &mut Tx, block: &Block) -> Option<Shape> {
     tx.pre = outer;
     shape
 }
+
+/// A generic function translated for concrete types (monomorphized): its type parameters substituted.
+pub fn translate_generic_instance(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, iname: &str, binding: &BTreeMap<String, Shape>) -> R<String> {
+    let mut g = f.clone();
+    g.sig.generics.params = f.sig.generics.params.iter().filter(|p| !matches!(p, syn::GenericParam::Type(t) if binding.contains_key(&t.ident.to_string()))).cloned().collect();
+    g.sig.generics.where_clause = None;
+    let saved_subst = e.subst.clone();
+    for (k, v) in binding {
+        e.subst.insert(k.clone(), v.clone());
+    }
+    let saved_closures = crate::closures::CLOSURES.with(|c| std::mem::take(&mut *c.borrow_mut()));
+    let saved_file = crate::translate::CURRENT_FILE.with(|c| c.borrow().clone());
+    let saved_touch = crate::translate::TOUCHES_UNLOGGED.with(|t| t.get());
+    let r = translate_fn_with(e, owner, name, &g, Some(iname), &[]);
+    crate::closures::CLOSURES.with(|c| *c.borrow_mut() = saved_closures);
+    crate::translate::CURRENT_FILE.with(|c| *c.borrow_mut() = saved_file);
+    crate::translate::TOUCHES_UNLOGGED.with(|t| t.set(saved_touch));
+    e.subst = saved_subst;
+    r.map(|t| t.code)
+}

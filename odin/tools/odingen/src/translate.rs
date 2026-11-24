@@ -1105,6 +1105,61 @@ impl<'a, 'b> Tx<'a, 'b> {
         Ok(if matches!(want, Shape::Unit) && !matches!(out, Shape::Unit) && !r.is_empty() { format!("_ = {r}") } else { r })
     }
 
+    /// A call of a generic function: its type parameters inferred from the arguments' shapes (and the wanted
+    /// result), and a call of the instance translated with them substituted (monomorphization).
+    fn call_generic(&mut self, name: &str, f: &FnDef, recv: Option<String>, args: &[&Expr], tparams: &[String]) -> R<String> {
+        let has_recv = f.sig.inputs.iter().any(|i| matches!(i, syn::FnArg::Receiver(_)));
+        let shift = usize::from(has_recv && recv.is_none());
+        let mut binding: BTreeMap<String, Shape> = BTreeMap::new();
+        let typed: Vec<&syn::PatType> = f.sig.inputs.iter().filter_map(|i| if let syn::FnArg::Typed(t) = i { Some(t) } else { None }).collect();
+        for (pt, a) in typed.iter().zip(args.iter().skip(shift)) {
+            if let Some(sh) = self.shape_of(a) {
+                unify(&pt.ty, &sh, tparams, &mut binding);
+            }
+        }
+        if let Some(missing) = tparams.iter().find(|t| !binding.contains_key(*t)) {
+            return Err(format!("generic call with an uninferred type ({missing})"));
+        }
+        if binding.values().any(|s| matches!(s, Shape::Unknown(_) | Shape::Param(_))) {
+            return Err("generic call with an unknown type".into());
+        }
+        let key: Vec<String> = binding.iter().map(|(k, v)| format!("{k}={}", self.e.odin(v))).collect();
+        let iname = crate::closures::instance_key(name, &key).replace("__cl", "__g");
+        let known = crate::closures::INSTANCES.with(|i| i.borrow().0.get(&iname).cloned());
+        match known {
+            Some(v) if v.starts_with('!') => return Err(format!("generic instance: {}", &v[1..])),
+            Some(_) => {}
+            None => {
+                let depth = crate::closures::DEPTH.with(|d| d.get());
+                if depth >= 6 {
+                    return Err("generic instances nested too deep".into());
+                }
+                crate::closures::INSTANCES.with(|i| i.borrow_mut().0.insert(iname.clone(), iname.clone()));
+                crate::closures::DEPTH.with(|d| d.set(depth + 1));
+                let made = crate::body::translate_generic_instance(self.e, f.self_ty.as_deref(), &f.sig.ident.to_string(), f, &iname, &binding);
+                crate::closures::DEPTH.with(|d| d.set(depth));
+                match made {
+                    Ok(code) => crate::closures::INSTANCES.with(|i| i.borrow_mut().1.push((iname.clone(), code))),
+                    Err(e) => {
+                        crate::closures::INSTANCES.with(|i| i.borrow_mut().0.insert(iname.clone(), format!("!{e}")));
+                        return Err(format!("generic instance: {e}"));
+                    }
+                }
+            }
+        }
+        // The call itself, with the parameters' types substituted.
+        let mut g = f.clone();
+        g.sig.generics.params = f.sig.generics.params.iter().filter(|p| matches!(p, syn::GenericParam::Lifetime(_))).cloned().collect();
+        g.sig.generics.where_clause = None;
+        let saved = self.e.subst.clone();
+        for (k, v) in &binding {
+            self.e.subst.insert(k.clone(), v.clone());
+        }
+        let r = self.call_with_sig(&iname, &g, recv, args);
+        self.e.subst = saved;
+        r
+    }
+
     /// A call passing closures to `f`: a call of the instance of `f` made for those closures (closures.rs).
     fn call_instance(&mut self, name: &str, f: &FnDef, recv: Option<String>, args: &[&Expr], cps: &[(usize, Vec<syn::Type>, Option<syn::Type>)]) -> R<String> {
         use crate::closures::{ClosureInfo, ClosureOrName};
@@ -1380,6 +1435,11 @@ impl<'a, 'b> Tx<'a, 'b> {
         let cps = crate::closures::closure_params(f);
         if !cps.is_empty() {
             return self.call_instance(name, f, recv, args, &cps);
+        }
+        // A generic function (not written by hand): an instance for the call's types.
+        let tparams: Vec<String> = f.sig.generics.type_params().map(|t| t.ident.to_string()).collect();
+        if !tparams.is_empty() && !HAND.with(|h| h.borrow().contains(name)) {
+            return self.call_generic(name, f, recv, args, &tparams);
         }
         // A generic function is callable only written by hand, its parameters typed by the call's arguments.
         let hand_generic = crate::body::generic_kind(&f.sig).is_some();
@@ -2318,4 +2378,51 @@ fn has_try(e: &Expr) -> bool {
     let mut v = V(false);
     syn::visit::visit_expr(&mut v, e);
     v.0
+}
+
+/// Binds the type parameters a Rust type mentions to the parts of a shape at the same place (`&[T]` against a Vec
+/// of X binds T = X).
+fn unify(ty: &syn::Type, sh: &Shape, tparams: &[String], out: &mut BTreeMap<String, Shape>) {
+    match ty {
+        syn::Type::Reference(r) => unify(&r.elem, sh, tparams, out),
+        syn::Type::Paren(p) => unify(&p.elem, sh, tparams, out),
+        syn::Type::Slice(s) => {
+            if let Shape::Vec(i) | Shape::PVec(i) = sh {
+                unify(&s.elem, i, tparams, out);
+            }
+        }
+        syn::Type::Tuple(t) => {
+            if let Shape::Tuple(es) = sh {
+                for (e, s) in t.elems.iter().zip(es) {
+                    unify(e, s, tparams, out);
+                }
+            }
+        }
+        syn::Type::Path(p) => {
+            let Some(seg) = p.path.segments.last() else { return };
+            let name = seg.ident.to_string();
+            if p.path.segments.len() == 1 && tparams.contains(&name) && seg.arguments.is_empty() {
+                if !matches!(sh, Shape::Unit) {
+                    out.entry(name).or_insert_with(|| sh.clone());
+                }
+                return;
+            }
+            let syn::PathArguments::AngleBracketed(a) = &seg.arguments else { return };
+            let inner: Vec<&syn::Type> = a.args.iter().filter_map(|g| if let syn::GenericArgument::Type(t) = g { Some(t) } else { None }).collect();
+            match (name.as_str(), sh, inner.as_slice()) {
+                ("Vec" | "VecDeque", Shape::Vec(i), [t]) | ("Vector", Shape::PVec(i), [t]) | ("Option", Shape::Option(i), [t]) => unify(t, i, tparams, out),
+                ("Box" | "Arc" | "Rc", Shape::Ptr(i, _), [t]) => unify(t, i, tparams, out),
+                ("Result", Shape::Result(v, e), [t, u]) => {
+                    unify(t, v, tparams, out);
+                    unify(u, e, tparams, out);
+                }
+                ("HashMap" | "BTreeMap" | "FxHashMap", Shape::Map(k, v), [t, u]) => {
+                    unify(t, k, tparams, out);
+                    unify(u, v, tparams, out);
+                }
+                _ => {}
+            }
+        }
+        _ => {}
+    }
 }
