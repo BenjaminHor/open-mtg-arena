@@ -23,6 +23,11 @@ Other music, sound effects and battlefield art in client/public/ came with the
 phase.rs code without a recorded source; they are distributed here under the same
 terms as that code. Write to the maintainers if you hold rights in any of them.
 
+This project includes deck lists from the following sources (snapshots, not
+updated): MTGGoldfish (https://www.mtggoldfish.com) metagame decks for Standard,
+Pioneer, Modern, Legacy, Vintage, Pauper and Commander, and TopDeck.gg
+(https://topdeck.gg) cEDH tournament decks (client/public/feeds/).
+
 This project uses card data from the following sources:
 
 MTGJSON (https://mtgjson.com/)

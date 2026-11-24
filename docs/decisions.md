@@ -2852,4 +2852,9 @@ owner's answer to the D-089 open question, option (a))
 - Order: finish the import (D-177) to a build the owner can play on the live site; then the Rust to Odin port, as
   its own milestones, planned first and approved by the owner, done safely (every ported piece checked against the
   Rust engine on the same games) and quickly. The LLM opponent and the single-player RPG or roguelike are on hold.
+- The owner (2026-11-24), on hearing the AI had no 60-card decks once the scraped feeds went: "Then can we get the
+  scraped tournament decks back?" So the eight metagame deck files (MTGGoldfish Standard, Pioneer, Modern, Legacy,
+  Vintage, Pauper, Commander; TopDeck.gg cEDH) come back as they were at import: static snapshots bundled with the
+  app, which no longer refresh (the scraper and its daily job stay removed). The starter decks' feed gets back its
+  original "no format" (the strip had labelled it Standard, which they aren't legal in).
 

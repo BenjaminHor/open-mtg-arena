@@ -32,6 +32,8 @@ export interface FeedSource {
   format?: string;
   type: "bundled";
   url: string;
+  /** Where the decks came from, credited where the feed is shown. */
+  attribution?: { name: string; url: string };
 }
 
 export interface FeedSubscription {
