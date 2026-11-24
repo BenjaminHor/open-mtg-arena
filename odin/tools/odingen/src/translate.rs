@@ -776,15 +776,15 @@ impl<'a, 'b> Tx<'a, 'b> {
                 match (m.as_str(), &recv, args.len()) {
                     ("map", Shape::Option(i), 1) => {
                         let c = Self::closure_of(args[0]).ok()?;
-                        return self.closure_shape(c, "_", i).map(|s| Shape::Option(Box::new(s)));
+                        return self.closure_shape(&c, "_", i).map(|s| Shape::Option(Box::new(s)));
                     }
                     ("and_then", Shape::Option(i), 1) => {
                         let c = Self::closure_of(args[0]).ok()?;
-                        return self.closure_shape(c, "_", i).filter(|s| matches!(s, Shape::Option(_)));
+                        return self.closure_shape(&c, "_", i).filter(|s| matches!(s, Shape::Option(_)));
                     }
                     ("filter" | "or" | "or_else" | "take" | "xor", Shape::Option(_), _) => return Some(recv.clone()),
                     ("map_or", Shape::Option(i), 2) => {
-                        return self.shape_of(args[0]).or_else(|| Self::closure_of(args[1]).ok().and_then(|c| self.closure_shape(c, "_", i)));
+                        return self.shape_of(args[0]).or_else(|| Self::closure_of(args[1]).ok().and_then(|c| self.closure_shape(&c, "_", i)));
                     }
                     ("ok_or", Shape::Option(i), 1) => return Some(Shape::Result(i.clone(), Box::new(self.shape_of(args[0])?))),
                     ("ok_or_else", Shape::Option(i), 1) => {
@@ -794,7 +794,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                     }
                     ("map_err", Shape::Result(v, e), 1) => {
                         let c = Self::closure_of(args[0]).ok()?;
-                        return Some(Shape::Result(v.clone(), Box::new(self.closure_shape(c, "_", e)?)));
+                        return Some(Shape::Result(v.clone(), Box::new(self.closure_shape(&c, "_", e)?)));
                     }
                     ("ok", Shape::Result(v, _), 0) => return Some(Shape::Option(v.clone())),
                     ("unwrap" | "expect", Shape::Result(v, _), _) => return Some((**v).clone()),
@@ -979,7 +979,16 @@ impl<'a, 'b> Tx<'a, 'b> {
         for input in &f.sig.inputs {
             match input {
                 syn::FnArg::Receiver(rc) => {
-                    let r = recv.clone().ok_or("method called without a receiver")?;
+                    // `Type::method(x, ..)` (and `.map(Type::method)`): the first argument is the receiver.
+                    let r = match recv.clone() {
+                        Some(r) => r,
+                        None => {
+                            let a = args.get(ai).ok_or("method called without a receiver")?;
+                            ai += 1;
+                            let owner = f.self_ty.clone().ok_or("receiver of a free function")?;
+                            self.expr(a, &Shape::Named(owner, vec![]))?
+                        }
+                    };
                     parts.push(if rc.mutability.is_some() && rc.reference.is_some() { format!("&{r}") } else { r });
                 }
                 syn::FnArg::Typed(pt) => {
@@ -1227,10 +1236,10 @@ impl syn::parse::Parse for MatchesArgs {
 // with each closure's body inlined; the chain's value is a temporary. Only expression-bodied closures and a
 // collection at the chain's start (a `Vec`, an `im::Vector`, a range) for now.
 
-enum Stage<'e> {
-    Filter(&'e syn::ExprClosure),
-    Map(&'e syn::ExprClosure),
-    FilterMap(&'e syn::ExprClosure),
+enum Stage {
+    Filter(syn::ExprClosure),
+    Map(syn::ExprClosure),
+    FilterMap(syn::ExprClosure),
     Pass, // copied(), cloned(), iter(), into_iter()
 }
 
@@ -1254,10 +1263,14 @@ impl<'a, 'b> Tx<'a, 'b> {
         }
     }
 
-    fn closure_of(a: &Expr) -> R<&syn::ExprClosure> {
+    /// An adapter's one-argument closure; a function path `f` (`.map(ObjectId::from)`) is the closure `|x| f(x)`.
+    fn closure_of(a: &Expr) -> R<syn::ExprClosure> {
         match a {
-            Expr::Closure(c) if c.inputs.len() == 1 => Ok(c),
-            _ => Err("iterator adapter without a one-argument closure".into()),
+            Expr::Closure(c) if c.inputs.len() == 1 => Ok(c.clone()),
+            Expr::Path(p) if p.qself.is_none() => Ok(syn::parse_quote!(|path_arg_| #p(path_arg_))),
+            Expr::Closure(c) => Err(format!("iterator adapter with a {}-argument closure", c.inputs.len())),
+            Expr::Path(_) => Err("iterator adapter with a function path".into()),
+            _ => Err("iterator adapter with a non-closure argument".into()),
         }
     }
 
@@ -1424,30 +1437,30 @@ impl<'a, 'b> Tx<'a, 'b> {
             }
             "any" => {
                 let c = Self::closure_of(args.first().ok_or("any")?)?;
-                let cond = self.closure_in(&mut body, c, &cur, &cur_shape, &Shape::Bool)?;
+                let cond = self.closure_in(&mut body, &c, &cur, &cur_shape, &Shape::Bool)?;
                 (format!("{res} := false"), format!("if {cond} {{ {res} = true; break }}"), res.clone())
             }
             "all" => {
                 let c = Self::closure_of(args.first().ok_or("all")?)?;
-                let cond = self.closure_in(&mut body, c, &cur, &cur_shape, &Shape::Bool)?;
+                let cond = self.closure_in(&mut body, &c, &cur, &cur_shape, &Shape::Bool)?;
                 (format!("{res} := true"), format!("if !({cond}) {{ {res} = false; break }}"), res.clone())
             }
             "find" => {
                 let c = Self::closure_of(args.first().ok_or("find")?)?;
-                let cond = self.closure_in(&mut body, c, &cur, &cur_shape, &Shape::Bool)?;
+                let cond = self.closure_in(&mut body, &c, &cur, &cur_shape, &Shape::Bool)?;
                 let ty = self.e.odin(&cur_shape);
                 (format!("{res}: Maybe({ty})"), format!("if {cond} {{ {res} = {cur}; break }}"), res.clone())
             }
             "find_map" => {
                 let c = Self::closure_of(args.first().ok_or("find_map")?)?;
-                let out_shape = self.closure_shape(c, &cur, &cur_shape).ok_or("find_map closure of an untyped value")?;
-                let v = self.closure_in(&mut body, c, &cur, &cur_shape, &out_shape)?;
+                let out_shape = self.closure_shape(&c, &cur, &cur_shape).ok_or("find_map closure of an untyped value")?;
+                let v = self.closure_in(&mut body, &c, &cur, &cur_shape, &out_shape)?;
                 let ty = self.e.odin(&out_shape);
                 (format!("{res}: {ty}"), format!("if fm_ := {v}; fm_ != nil {{ {res} = fm_; break }}"), res.clone())
             }
             "position" => {
                 let c = Self::closure_of(args.first().ok_or("position")?)?;
-                let cond = self.closure_in(&mut body, c, &cur, &cur_shape, &Shape::Bool)?;
+                let cond = self.closure_in(&mut body, &c, &cur, &cur_shape, &Shape::Bool)?;
                 (format!("{res}: Maybe(int); p{n}_ := 0"), format!("if {cond} {{ {res} = p{n}_; break }}; p{n}_ += 1"), res.clone())
             }
             "count" if args.is_empty() => (format!("{res} := 0"), format!("{res} += 1"), res.clone()),
@@ -1529,7 +1542,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                         "filter" => Shape::Bool,
                         _ => out.clone(),
                     };
-                    let val = self.closure_in(&mut body, c, &v, i, &inner_want)?;
+                    let val = self.closure_in(&mut body, &c, &v, i, &inner_want)?;
                     let init = if m == "map_or" {
                         let d = self.expr(args[0], &out)?;
                         format!("{r}: {} = {d}", self.e.odin(&out))
@@ -1573,7 +1586,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                     let n = self.next_temp();
                     let (t, r, x) = (format!("o{n}_"), format!("r{n}_"), format!("e{n}_"));
                     let mut body = Vec::new();
-                    let val = self.closure_in(&mut body, c, &x, e, &e2)?;
+                    let val = self.closure_in(&mut body, &c, &x, e, &e2)?;
                     self.pre.push(format!("{t} := {recv}"));
                     self.pre.push(format!("{r}: {}", self.e.odin(&out)));
                     self.pre.push(format!("{r}.ok = {t}.ok"));
@@ -1635,7 +1648,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                     let c = Self::closure_of(args[0])?;
                     self.temps += 1;
                     let t = format!("o{}_", self.temps);
-                    let cond = self.closure_expr(c, &format!("{t}.?"), i, &Shape::Bool)?;
+                    let cond = self.closure_expr(&c, &format!("{t}.?"), i, &Shape::Bool)?;
                     self.pre.push(format!("{t} := {recv}"));
                     if m == "is_some_and" {
                         format!("({t} != nil && ({cond}))")
