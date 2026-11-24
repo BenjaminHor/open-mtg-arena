@@ -2943,3 +2943,16 @@ owner's answer to the D-089 open question, option (a))
   `{"type":"Increase"}`, which a wire enum behind `serde(from)` maps to `Modification(Increase)`. odingen ignores
   `from` (it generates codecs for the written form). Test: `paused_pump_target_prompt_round_trips_through_json_values`.
 
+
+**D-185: Parallel sessions for the Odin port's independent streams (owner, 2026-11-24)** · 2026-11-24 · accepted
+- Owner (2026-11-24), asked whether the port could be parallelized: "yeah, start those sibling sessions if you
+  think they're worthwhile".
+- The translator (odingen's translate.rs/body.rs) stays in the main session: its fixes interact, and one 15 GB
+  container fits one patched-engine build at a time. Separate cloud sessions, each with its own container and branch,
+  take the streams that touch other files:
+  1. D-183: the census of runtime card-text parse calls, then moving them into the card data (Rust engine side).
+  2. Odin performance: the state layout and copy speed (Odin's copies measured 4-8x Rust's), with a benchmark.
+  3. O-2: the replay harness that steps a recorded game through the translated engine and reports the first
+     untranslated or differing step.
+- Each opens its own pull request and merges on green CI (D-027), merging main first. The main session reviews
+  their reports and keeps docs/status.md current.
