@@ -14,6 +14,14 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
   ability stickers, Champion types, protection subtype words), all with inputs fixed at build time. Those five now
   read a table oracle-gen writes into card-data.json (`__engine_parses__`, D-186); the Odin model has
   `EngineParses`. Next: the deck-building parses and coverage tooling (census rows 6-7), outside play.
+  **Paused (2026-11-24, owner pause on the Odin port) at:** the engine change is committed and pushed but not yet
+  verified. oracle-gen with it ran cleanly (10 room texts, 477 token rules texts, 96 sticker faces, 8 Champion
+  types, 93 protection qualities), and the cards' bytes equal the old export's (the table is appended after them).
+  Not yet done: build the new record-games and `cmp` a red-vs-green seed-1 recording (400 steps) against the
+  original-code recorder run on the same card data minus `__engine_parses__` (a gen run refreshes
+  oracle-subtypes.json, so the baseline must use card data from the same vocabulary); `cargo test -p phase-engine`
+  on engine_parses, dungeon, sticker, token, champion and protection tests; the Odin card-data round trip on the
+  new export (the model type-checks); then merge main and open the PR.
 - **Odin port, the session goal (D-180):** remove all Rust from the engine, replace it with Odin, near-zero
   regressions in functionality and performance. Plan: docs/odin-port.md. O-0 done (go). Now O-1: generate the Odin
   data model and JSON codecs from the Rust types. odingen pass 1 (collect + report) done; design in odin-port.md
