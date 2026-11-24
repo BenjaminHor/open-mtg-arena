@@ -2920,3 +2920,22 @@ owner's answer to the D-089 open question, option (a))
   wasm32 build of the same test before shadow mode relies on it. Until then, shadow comparison runs natively only.
 - Not covered: two ids with equal 32-bit hashes (im keeps them in a collision node, in insertion order); none
   exist below 2^32 ids in practice, but the Odin map asserts it.
+
+**D-183: Runtime card-text parses move into the card data (owner, 2026-11-24)** · 2026-11-24 · accepted
+- The Rust engine parses card text during play: tokens' rules text (`catalog_rules_text_abilities`,
+  game/effects/token.rs) and parser helpers used by triggers, layers and combat. So D-179's "the parser stays Rust,
+  as a build tool" didn't hold as the code stands.
+- Owner (2026-11-24, "yes" to the recommendation): precompute every parse the engine does at runtime into the card
+  data at build time (oracle-gen), so the Odin engine never parses. Rejected: porting the parser (~174k lines) and
+  keeping a small Rust parser beside the Odin engine (against D-180).
+- First step: a census of the runtime parse calls (which texts reach them in play), then their results keyed in the
+  card data. The Rust engine is changed the same way first, so the recordings stay the reference.
+
+**D-184: Fix the saved-game "type" clash, changing its wire form (owner, 2026-11-24)** · 2026-11-24 · accepted
+- `TargetEffectDetail::Modification(..)` (an internally tagged enum inside another with the same tag) serializes
+  `"type"` twice, so a state paused on a P/T-pump target prompt doesn't survive the client's `JSON.parse`
+  (docs/status.md, Known issues). Owner (2026-11-24): fix it, accepting the wire-format change.
+- The fix renames one of the two tags (or adjacently tags the inner enum), with a migration that reads the old form
+  in Rust's save loading, a test that a paused P/T-pump state round-trips through `serde_json::Value`, and the Odin
+  model regenerated (D-181: the model reads only today's form).
+

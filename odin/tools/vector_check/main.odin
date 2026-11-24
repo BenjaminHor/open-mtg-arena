@@ -150,6 +150,18 @@ main :: proc() {
 		tallies[name] = t
 	}
 
+	// Failures already understood (explained.txt beside this file, or -explained:<file>).
+	explained := make(map[string]string)
+	explained_path := "odin/tools/vector_check/explained.txt"
+	for a in os.args[2:] do if strings.has_prefix(a, "-explained:") do explained_path = a[len("-explained:"):]
+	if text, err := os.read_entire_file_from_path(explained_path, context.allocator); err == nil {
+		for line in strings.split_lines(string(text)) {
+			if len(line) == 0 || line[0] == '#' do continue
+			if i := strings.index(line, ": "); i > 0 do explained[line[:i]] = line[i + 2:]
+		}
+	}
+	explained_n := 0
+
 	names := make([dynamic]string)
 	for k in tallies do append(&names, k)
 	slice.sort(names[:])
@@ -168,14 +180,26 @@ main :: proc() {
 		}
 		if t.counts[.Fail] > 0 do worst = .Fail
 		else if t.counts[.Undecodable] > 0 do worst = .Undecodable
-		else if t.counts[.Pass] == 0 && t.counts[.Stub] > 0 do worst = .Stub
-		else if t.counts[.Pass] == 0 do worst = .Unlogged
+		else if t.counts[.Pass] > 0 do worst = .Pass
+		else if t.counts[.PassUnloggedState] > 0 do worst = .PassUnloggedState
+		else if t.counts[.PassNothingCompared] > 0 do worst = .PassNothingCompared
+		else if t.counts[.Stub] > 0 do worst = .Stub
+		else do worst = .Unlogged
 		fns[worst] += 1
+		if worst == .Fail {
+			if why, ok := explained[k]; ok {
+				explained_n += 1
+				fns[.Fail] -= 1
+				fmt.printf("Explained %v: %v\n", k, why)
+				continue
+			}
+		}
 		if worst == .Fail || worst == .Undecodable {
 			fmt.printf("%v %v (pass %v, fail %v, stub %v): %v\n", worst, k, t.counts[.Pass], t.counts[.Fail], t.counts[.Stub], t.first_why)
 		}
 	}
 	fmt.printf("\n%v calls checked over %v procedures\n", n, len(names))
-	fmt.printf("procedures: pass %v, fail %v, crash %v, undecodable %v, only stubs reached %v, unlogged %v\n", fns[.Pass], fns[.Fail], crash_fns, fns[.Undecodable], fns[.Stub], fns[.Unlogged])
+	fmt.printf("explained failures %v\n", explained_n)
+	fmt.printf("procedures: pass %v (and %v touching unlogged state, %v with nothing to compare), fail %v, crash %v, undecodable %v, only stubs reached %v, unlogged %v\n", fns[.Pass], fns[.PassUnloggedState], fns[.PassNothingCompared], fns[.Fail], crash_fns, fns[.Undecodable], fns[.Stub], fns[.Unlogged])
 	fmt.printf("calls: pass %v, fail %v, crash %v, undecodable %v, stub %v, unlogged %v\n", totals[.Pass], totals[.Fail], crash_calls, totals[.Undecodable], totals[.Stub], totals[.Unlogged])
 }

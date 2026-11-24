@@ -270,6 +270,22 @@ struct and union sizes/alignments inside the compiler's recursion. Without it th
 type-check its declarations (exponential re-walking of nested by-value types); with it, 6 s. To offer upstream; until
 then every build of the toolchain (here, CI) applies it.
 
+Extended (2026-11-24, when the translated logic made the check slow again): the memo now also covers named types (on
+their base type). The compute step resolves a named type to its base, so the first patch only caught anonymous structs
+and unions, and a checker count showed 110 million alignment computations. The second hotspot was Odin's escape
+analysis (a diagnostic pass: with `-no-escape-analysis`, returning a local's address is still an error and code
+generation doesn't change), superlinear in long procedures with loops. The translate loop and the vector check pass
+`-no-escape-analysis`.
+
+| Translation (model, 6,469 translated procedures, typed stubs, 92k-line harness; ~460k lines) | type check | debug build | `-o:speed` |
+| --- | --- | --- | --- |
+| first patch | 96 s | 184 s | 406 s |
+| named-type memo | 57 s | 70 s | |
+| named-type memo, `-no-escape-analysis` | 1.0 s | 11 s | 225 s (LLVM) |
+
+The model alone now type-checks in 1.2 s (was 6.6 s). For comparison, the Rust engine crate takes about 20 minutes to
+build from scratch, and its full-LTO wasm release needs more than 15 GB.
+
 ## How the engine logic gets ported: a translator (2026-11-24)
 
 The engine is ~723k lines of production Rust (plus the AI's ~84k). Rewriting that by hand with "near zero

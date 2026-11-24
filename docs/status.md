@@ -25,6 +25,10 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     align.patch` against dev-2026-11a (to offer upstream). Now: type check 6.6 s, debug build 9.7 s, `-o:speed`
     build 44 s (LLVM optimization 37 s). Generated code also calls procedures directly (no overload groups) and
     generic types are monomorphized.
+    **Build times with the translated logic (2026-11-24):** the translation (~460k lines with the test harness) had
+    pushed the type check to 96 s; a second compiler fix (memoizing named types too) and `-no-escape-analysis` for
+    development builds bring it to 1.0 s, a debug build to 11 s, `-o:speed` to 225 s (LLVM). docs/odin-port.md,
+    "Toolchain note".
   - Game-state model sized (2026-11-24): roots GameState, GameAction, WaitingFor, GameEvent, ReplayLog (+ card data)
     reach 1,410 types, 1,310 of them serialized (the rest are runtime caches behind `#[serde(skip)]`, type only). odingen
     reads GameState through its `declare_game_state!` macro. Left to write by hand before it compiles: 23 codecs
@@ -93,14 +97,29 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     executed blocker (294 callers). **The pattern compiler** (odin/tools/odingen/src/pattern.rs) then took patterns
     off the blocker list: nested, tuple, slice, literal and range patterns, `@` bindings, guards, or-patterns, matches
     on non-enums, `let`/`let else`/`if let`/`for` patterns (with `.enumerate()`), and matches through a mutable
-    reference, which bind pointers into the subject. Plain arithmetic is translated too. Now 5,025 of 15,922 (31.6%)
-    overall, 32.1% of executed functions. Next blockers (executed): generic functions (196), iterator adapters with
-    other closures (174), out-of-model local types (142), nested items (134). Translator now: value
+    reference, which bind pointers into the subject. Plain arithmetic is translated too; adapters take function paths
+    (`.map(ObjectId::from)`); `&&`/`||` operands needing statements are evaluated inside an `if`; `Self` and `Vec<_>`
+    in locals and chain terminals (`find`, `collect`, ...) are typed. Now 5,726 of 15,922 (36.0%) overall, 36.3% of
+    executed functions. **Vector check after
+    the pattern compiler: 717 procedures exercised, 442 pass, 0 unexplained failures, 0 crashes, 274 reach only
+    untranslated code** (odin/tools/vector_check/explained.txt lists the one understood failure). Later count
+    (6,564 translated, same log): 439 pass with real comparisons, 23 more pass but touch `#[serde(skip)]` state the log
+    can't carry (reported apart), 0 unexplained failures, 252 reach only untranslated code. **With closures (6,591
+    translated, a fresh log of 5,161 calls): 955 procedures exercised, 593 pass, 23 pass touching unlogged state,
+    0 unexplained failures, 0 crashes, 338 reach only untranslated code.** Then `&mut` results (`MutRef`, an Odin
+    pointer: `get_mut`, `last_mut`, functions returning `&mut T` / `Option<&mut T>`), with a hand-written
+    `ObjectMap_get_mut` that copies on write like `Arc::make_mut` (tested in `hand_logic_test`), generic functions
+    monomorphized per call site, a plain binding of a Box field binding the box (as Rust does), and Box values read
+    where their contents are wanted: 7,241 of 15,918 functions (45.5%), executed 45.9%. Next blockers (executed): type
+    parameters whose callers aren't translated yet (88), closure-parameter callees (87, translated as instances
+    through their callers), the type-check tail (80), closures/combinators of untyped values (~107). Next blockers
+    (executed): generic functions (196), iterating non-Vec collections (maps, sets, PVec, ranges: ~260), `get` on
+    maps (78), `matches!` with field conditions (70), statement macros (66). Translator now: value
     `if`/`match`/block initializers (each branch assigns), empty collections typed by their later use, Option/Result
     combinators, labelled loops. Next blockers: generic calls/functions (~1,280), nested items (527), patterns (let
     457, let-else 423, for 236, or-with-bindings 221, if-let 173, nested 147), match on non-enums (432), mutable
     reference bindings (320, refused on purpose until patterns bind pointers). docs/odin-port.md has the plan.
-    **O-0/O-1 in review: PR #117** (2026-11-24), with the Odin CI workflow; merge on green (D-027). A code review
+    **O-0/O-1 merged: PR #117** (2026-11-24, squash, Odin CI green), with the Odin CI workflow. A code review
     of odingen, the recorder and the workflow (2026-11-24) led to: the recorder steps one AI action per line and
     records contest settlements, the submitter and semantic owner, and the RNG position; skipped fields get their
     defaults when read; integers compare exactly; the state-dump hook is removed (test dumps belong in the test
@@ -2564,11 +2583,8 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions
-- (2026-11-24, Odin port) The Rust engine parses card text during play (tokens' rules text, and parser helpers
-  used by triggers, layers and combat), so "the parser stays Rust as a build tool" (D-179) doesn't hold as is.
-  Options: (a) precompute every runtime parse into the card data at build time (oracle-gen), so the Odin engine
-  never parses; (b) port the parser to Odin too (≈174k lines); (c) keep a small Rust parser beside the Odin engine
-  (contradicts D-180's "no Rust in the engine"). Recommended: (a), checked by a census of the runtime parse calls.
+- Settled (2026-11-24, D-183): runtime card-text parses are precomputed into the card data; the Odin engine
+  never parses. Settled (2026-11-24, D-184): fix the saved-game `"type"` clash, changing that wire form.
 
 - Settled (2026-11-23, D-178): after the import is playable, the Rust to Odin port comes next, planned first; the
   LLM opponent and the RPG are on hold.

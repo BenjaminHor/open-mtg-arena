@@ -3,7 +3,9 @@
 //! doesn't handle is refused with the construct that stopped it, which `odingen translate-report` ranks; nothing is
 //! guessed.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
+
+use quote::ToTokens;
 use std::fmt::Write;
 
 use syn::{Block, Expr, FnArg, Pat, ReturnType, Stmt};
@@ -17,10 +19,17 @@ type R<T> = Result<T, String>;
 pub struct Translated {
     pub name: String,
     pub code: String,
+    /// Reads or writes a field the Rust engine doesn't serialize (directly; callees are checked on their own).
+    pub touches_unlogged: bool,
 }
 
 /// The Odin signature of a function (`(params) -> ret`), and the Rust `mut` parameters needing a local copy.
 fn signature(tx: &mut Tx, owner: Option<&str>, f: &FnDef) -> R<(String, Shape, Vec<String>)> {
+    signature_with(tx, owner, f, &[])
+}
+
+/// The signature with extra parameters at the end (a closure instance's captures).
+fn signature_with(tx: &mut Tx, owner: Option<&str>, f: &FnDef, extra: &[String]) -> R<(String, Shape, Vec<String>)> {
     let mut params = Vec::new();
     let mut mut_params = Vec::new();
     for input in &f.sig.inputs {
@@ -56,13 +65,21 @@ fn signature(tx: &mut Tx, owner: Option<&str>, f: &FnDef) -> R<(String, Shape, V
             }
         }
     }
-    if matches!(&f.sig.output, ReturnType::Type(_, t) if returns_mut_ref(t)) {
+    // `&mut T` / `Option<&mut T>` results are pointers into the caller's data (MutRef); other borrowed-mutable
+    // results (in tuples, iterators) aren't handled.
+    let mut_ret = match &f.sig.output {
+        ReturnType::Type(_, t) => tx.mut_ref_result(t, owner),
+        ReturnType::Default => None,
+    };
+    if mut_ret.is_none() && matches!(&f.sig.output, ReturnType::Type(_, t) if returns_mut_ref(t)) {
         return Err("returns a mutable reference".into());
     }
     let ret = match &f.sig.output {
+        _ if mut_ret.is_some() => mut_ret.clone().unwrap(),
         ReturnType::Default => Shape::Unit,
         ReturnType::Type(_, t) => self_shape(tx, t, owner).map_err(|e| format!("return {e}"))?,
     };
+    params.extend(extra.iter().cloned());
     let ret_ty = if matches!(ret, Shape::Unit) { String::new() } else { format!(" -> {}", tx.e.odin(&ret)) };
     Ok((format!("({}){ret_ty}", params.join(", ")), ret, mut_params))
 }
@@ -70,7 +87,7 @@ fn signature(tx: &mut Tx, owner: Option<&str>, f: &FnDef) -> R<(String, Shape, V
 /// A stand-in for a function not translated yet, with its real signature, so translated callers type-check;
 /// calling it stops the program, naming the function.
 pub fn stub_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, why: &str) -> R<Translated> {
-    if !f.sig.generics.params.is_empty() || owner.and_then(|o| e.def(o)).is_some_and(|d| !d.generics.is_empty()) {
+    if generic_kind(&f.sig).is_some() || owner.and_then(|o| e.def(o)).is_some_and(|d| !d.generics.is_empty()) {
         return Err("generic function".into());
     }
     let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: owner.map(str::to_string), depth: 0, calls: true, pre: Vec::new(), fn_ret: Shape::Unit, temps: 0 };
@@ -79,6 +96,7 @@ pub fn stub_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, why:
     let msg = crate::translate::odin_string(&format!("not translated yet: {pname} ({why})"));
     let zero = if matches!(ret, Shape::Unit) { "return".to_string() } else { format!("z_: {}; return z_", tx.e.odin(&ret)) };
     Ok(Translated {
+        touches_unlogged: false,
         name: pname.clone(),
         code: format!("{pname} :: proc{sig} {{\n\twhen VECTOR {{\n\t\tvector_stub_hit = {:?}\n\t\tif vector_on_stub != nil do vector_on_stub(vector_stub_hit)\n\t\t{zero}\n\t}}\n\tpanic({msg})\n}}\n", pname),
     })
@@ -120,15 +138,29 @@ thread_local! {
 }
 
 pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef) -> R<Translated> {
-    if DENY.with(|d| d.contains(&proc_name_for(owner, name, f))) {
+    // A fresh procedure: no closures in scope, no instances being made around it.
+    let saved = crate::closures::CLOSURES.with(|c| std::mem::take(&mut *c.borrow_mut()));
+    let r = translate_fn_with(e, owner, name, f, None, &[]);
+    crate::closures::CLOSURES.with(|c| *c.borrow_mut() = saved);
+    r
+}
+
+/// A function translated under another procedure name (a closure instance), with extra parameters at the end.
+fn translate_fn_with(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, pname_override: Option<&str>, extra: &[String]) -> R<Translated> {
+    if pname_override.is_some_and(|p| DENY.with(|d| d.contains(p))) {
+        return Err("translation rejected by the Odin type check".into());
+    }
+    if DENY.with(|d| d.contains(&proc_name_for(owner, name, f))) && pname_override.is_none() {
         return Err("translation rejected by the Odin type check".into());
     }
     if crate::translate::COLLIDING.with(|c| c.borrow().contains(&proc_name_for(owner, name, f))) {
         return Err("procedure name shared by two functions".into());
     }
     crate::translate::CURRENT_FILE.with(|c| *c.borrow_mut() = Some(f.file.clone()));
-    if !f.sig.generics.params.is_empty() {
-        return Err("generic function".into());
+    crate::translate::TOUCHES_UNLOGGED.with(|t| t.set(false));
+    // Lifetime parameters don't exist in Odin; type and const parameters need monomorphizing (not done yet).
+    if let Some(k) = generic_kind(&f.sig) {
+        return Err(format!("generic function: {k}"));
     }
     if owner.and_then(|o| e.def(o)).is_some_and(|d| !d.generics.is_empty()) {
         return Err("method of a generic type".into());
@@ -137,9 +169,23 @@ pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef)
         return Err("async or unsafe function".into());
     }
     let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: owner.map(str::to_string), depth: 0, calls: true, pre: Vec::new(), fn_ret: Shape::Unit, temps: 0 };
-    let (sig, ret, mut_params) = signature(&mut tx, owner, f)?;
+    let (sig, ret, mut_params) = signature_with(&mut tx, owner, f, extra)?;
     tx.fn_ret = ret.clone();
-    let pname = proc_name_for(owner, name, f);
+    // Immutable parameters can't be pointed to: closures capture them by value (closures.rs).
+    let by_value: BTreeSet<String> = tx
+        .vars
+        .values()
+        .map(|(o, _)| o.clone())
+        .filter(|o| !o.ends_with('^') && !mut_params.contains(o))
+        .chain(extra.iter().filter(|p| !p.contains(": ^")).filter_map(|p| p.split(':').next().map(|x| x.trim().to_string())))
+        .collect();
+    let saved_by_value = crate::closures::BY_VALUE.with(|b| std::mem::replace(&mut *b.borrow_mut(), by_value));
+    // `Self` in the body's types (`let x: Self`, `Vec<Self>`) is the impl's type.
+    let saved_subst = tx.e.subst.clone();
+    if let Some(o) = owner {
+        tx.e.subst.insert("Self".into(), Shape::Named(o.to_string(), vec![]));
+    }
+    let pname = pname_override.map(str::to_string).unwrap_or_else(|| proc_name_for(owner, name, f));
     let mut b = Body { tx: &mut tx, out: String::new(), indent: 1, ret, declared: Default::default(), target: None, loops: Vec::new() };
     for (_, (odin, _)) in b.tx.vars.clone() {
         b.declared.insert(odin.trim_end_matches('^').to_string());
@@ -148,9 +194,14 @@ pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef)
     for p in &mut_params {
         b.line(&format!("{p} := {p}"));
     }
-    b.block(&f.block, true)?;
-    let code = format!("{pname} :: proc{sig} {{\n{}}}\n", b.out);
-    Ok(Translated { name: pname, code })
+    let r = b.block(&f.block, true);
+    let out = std::mem::take(&mut b.out);
+    tx.e.subst = saved_subst;
+    crate::closures::BY_VALUE.with(|b| *b.borrow_mut() = saved_by_value);
+    r?;
+    let code = format!("{pname} :: proc{sig} {{\n{out}}}\n");
+    let touches_unlogged = crate::translate::TOUCHES_UNLOGGED.with(|t| t.get());
+    Ok(Translated { name: pname, code, touches_unlogged })
 }
 
 /// A type's shape, with `Self` (also `&Self`, `Option<Self>`, `Vec<Self>`) as the impl's type.
@@ -203,8 +254,21 @@ impl Body<'_, '_, '_> {
                     self.tail_expr(e)?
                 }
                 Stmt::Expr(e, _) => self.stmt_expr(e)?,
-                Stmt::Item(_) => return Err("item inside a function".into()),
-                Stmt::Macro(_) => return Err("statement macro".into()),
+                // A `use` inside a body changes nothing here: calls resolve by module path or file on their own.
+                Stmt::Item(syn::Item::Use(_)) => {}
+                Stmt::Item(it) => {
+                    let kind = match it {
+                        syn::Item::Fn(_) => "fn",
+                        syn::Item::Const(_) => "const",
+                        syn::Item::Struct(_) | syn::Item::Enum(_) => "type",
+                        syn::Item::Impl(_) => "impl",
+                        syn::Item::Static(_) => "static",
+                        syn::Item::Macro(_) => "macro",
+                        _ => "other",
+                    };
+                    return Err(format!("item inside a function: {kind}"));
+                }
+                Stmt::Macro(m) => self.stmt_macro(&m.mac)?,
             }
         }
         Ok(())
@@ -342,6 +406,16 @@ impl Body<'_, '_, '_> {
         };
         let name = pi.ident.to_string();
         let init = l.init.as_ref().ok_or("let without a value")?;
+        // `let f = |x| ..;`: remembered, not emitted; calls of f inline it (closures.rs). Without `move`, Rust's
+        // borrows keep its captures unchanged while it lives, so reading them at each call is exact.
+        if let (None, Expr::Closure(c)) = (ty, &*init.expr) {
+            if c.capture.is_some() {
+                return Err("move closure in a let".into());
+            }
+            let env = crate::closures::captures(self.tx, c);
+            crate::closures::register(&name, crate::closures::ClosureInfo { closure: c.clone(), env, args: None, ret: None, scope: crate::closures::scope_now() });
+            return Ok(());
+        }
         if pi.by_ref.is_some() || self.mut_ref_source(&init.expr) {
             return Err("binding to a mutable reference".into());
         }
@@ -349,7 +423,7 @@ impl Body<'_, '_, '_> {
         let check = |tx: &mut Tx, sh: Shape| -> R<Shape> {
             // A local's type must be one Odin knows (not a lifetime-generic or out-of-model type).
             if shape_unknown(&sh) {
-                return Err("let of a type outside the model".into());
+                return Err(format!("let of a type outside the model: {sh:?}").chars().take(90).collect());
             }
             let mut names = Vec::new();
             crate::emit::shape_names_pub(&sh, &mut names);
@@ -359,7 +433,9 @@ impl Body<'_, '_, '_> {
             }
         };
         let sh = match ty {
-            Some(t) => self.tx.e.shape(t, &[]),
+            Some(t) if !shape_unknown(&self.tx.e.shape(t, &[])) => self.tx.e.shape(t, &[]),
+            // A partial annotation (`Vec<_>`): the value's own shape.
+            Some(_) => self.shape_of(&init.expr).ok_or("let with a partial type of an untyped value")?,
             None => match self.shape_of(&init.expr) {
                 Some(s) => Some(s),
                 None if control => self.infer_tail_shape(&init.expr),
@@ -368,6 +444,17 @@ impl Body<'_, '_, '_> {
             .ok_or_else(|| format!("let of an untyped value: {}", expr_kind(&init.expr)))?,
         };
         let sh = check(self.tx, sh)?;
+        // A `&mut` result (`let o = state.objects.get_mut(&id).unwrap()`): a pointer, used through as `o^`, like a
+        // `&mut` parameter, so writes land in place and matches through it bind pointers.
+        if let Shape::MutRef(inner) = &sh {
+            if !control {
+                let v = self.tx.expr(&init.expr, &sh)?;
+                let ident = self.fresh(&local_ident(&name));
+                self.line(&format!("{ident}: {} = {v}", self.tx.e.odin(&sh)));
+                self.tx.vars.insert(name, (format!("{ident}^"), (**inner).clone()));
+                return Ok(());
+            }
+        }
         if control {
             // `let x = if/match/{..}`: declare x, then each branch's value assigns it.
             let ident = self.fresh(&local_ident(&name));
@@ -475,13 +562,27 @@ impl Body<'_, '_, '_> {
                 _ => break,
             }
         }
-        if self.mut_ref_source(e) {
+        // A pointer-valued subject (`get_mut(..)`, a `&mut`-returning call): the pointer goes in a temporary and the
+        // pattern compiler matches through it (MutRef), binding pointers.
+        let pointer_valued = matches!(self.shape_of(e), Some(Shape::MutRef(_))) || matches!(self.shape_of(e), Some(Shape::Option(ref i)) if matches!(**i, Shape::MutRef(_)));
+        if self.mut_ref_source(e) && !pointer_valued {
             if !is_place(e) {
                 return Err("pattern on a mutable reference that isn't a place".into());
             }
             mode = Mode::Mut;
         }
-        let sh = self.shape_of(e).ok_or("pattern on an untyped value")?;
+        // An `if`/`match`/block subject: computed into a temporary, each branch assigning it.
+        if matches!(e, Expr::If(_) | Expr::Match(_) | Expr::Block(_)) {
+            let sh = self.infer_tail_shape(e).ok_or("pattern on an untyped if/match")?;
+            let tmp = self.fresh("ms");
+            self.line(&format!("{tmp}: {}", self.tx.e.odin(&sh)));
+            let saved = self.target.replace(Target { ident: tmp.clone(), shape: Some(sh.clone()), weak: false, infer: false });
+            let r = self.tail_expr(e);
+            self.target = saved;
+            r?;
+            return Ok((tmp, sh, mode));
+        }
+        let sh = self.shape_of(e).ok_or_else(|| format!("pattern on an untyped value: {}", expr_kind(e)))?;
         let v = self.tx.expr(e, &sh)?;
         if is_place(e) {
             return Ok((v, sh, mode));
@@ -678,7 +779,33 @@ impl Body<'_, '_, '_> {
             }
             Expr::MethodCall(_) | Expr::Call(_) => {
                 let v = self.tx.expr(e, &Shape::Unit)?;
-                self.line(&v);
+                if v.is_empty() {
+                    return Ok(());
+                }
+                // A value left by a library method (`set.insert(x)` → a temporary) or a translated call whose result
+                // Rust drops: Odin wants it used.
+                let is_value = v.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') || v.starts_with('(');
+                let returns_value = match e {
+                    Expr::MethodCall(_) | Expr::Call(_) => self.shape_of(e).is_some_and(|s| !matches!(s, Shape::Unit)),
+                    _ => false,
+                };
+                if is_value || (returns_value && !v.starts_with("_ =")) {
+                    self.line(&format!("_ = {v}"));
+                } else {
+                    self.line(&v);
+                }
+                Ok(())
+            }
+            Expr::Macro(m) => self.stmt_macro(&m.mac),
+            // `f()?;`: the check and early return happen; the value is dropped.
+            Expr::Try(_) => {
+                let sh = self.shape_of(e).ok_or("? statement on an untyped value")?;
+                let v = self.tx.expr(e, &sh)?;
+                if matches!(sh, Shape::Unit) {
+                    self.line(&format!("_ = {v}"));
+                } else {
+                    self.line(&format!("_ = {v}"));
+                }
                 Ok(())
             }
             other => Err(format!("statement {}", kind(other))),
@@ -824,6 +951,7 @@ impl Body<'_, '_, '_> {
             self.line(&format!("#partial switch v_ in {subject} {{"));
         }
         let mut has_default = false;
+        let mut default_emitted = false;
         for arm in &m.arms {
             if arm.guard.is_some() {
                 return Err("match guard".into());
@@ -890,6 +1018,11 @@ impl Body<'_, '_, '_> {
                 return Err("or-pattern with bindings".into());
             }
             if labels.is_empty() {
+                if default_emitted {
+                    // A second catch-all (a binding after a wildcard) can never be reached.
+                    continue;
+                }
+                default_emitted = true;
                 self.line("case:");
             } else {
                 self.line(&format!("case {}:", labels.join(", ")));
@@ -985,7 +1118,7 @@ impl Body<'_, '_, '_> {
         let sh = self.shape_of(coll).ok_or("for over an untyped collection")?;
         let elem = match &sh {
             Shape::Vec(i) => (**i).clone(),
-            _ => return Err("for over a non-Vec collection".into()),
+            other => return Err(format!("for over a non-Vec collection: {}", shape_kind(other))),
         };
         if mode == Mode::Mut && !is_place(coll) {
             return Err("mutable iteration over something that isn't a place".into());
@@ -994,6 +1127,10 @@ impl Body<'_, '_, '_> {
         let item = self.fresh("it");
         let idx = self.fresh("ix");
         let label = self.open_loop(fl.label.as_ref());
+        crate::closures::BY_VALUE.with(|bv| {
+            bv.borrow_mut().insert(item.clone());
+            bv.borrow_mut().insert(idx.clone());
+        });
         let amp = if mode == Mode::Mut { "&" } else { "" };
         self.line(&format!("{label}: for {amp}{item}, {idx} in {c} {{"));
         self.indent += 1;
@@ -1026,6 +1163,41 @@ impl Body<'_, '_, '_> {
         self.line("}");
         self.loops.pop();
         Ok(())
+    }
+
+    /// A macro used as a statement. Logging and debug assertions are left out (they don't change the game; the
+    /// shipped Rust build compiles debug assertions out too); `assert!` is an Odin assert; `panic!`-like macros panic.
+    fn stmt_macro(&mut self, mac: &syn::Macro) -> R<()> {
+        let name = mac.path.segments.last().map(|s| s.ident.to_string()).unwrap_or_default();
+        match name.as_str() {
+            "debug_assert" | "debug_assert_eq" | "debug_assert_ne" | "trace" | "debug" | "info" | "warn" | "error"
+            | "eprintln" | "println" | "eprint" | "print" | "dbg" => Ok(()),
+            "assert" => {
+                let args = mac.parse_body_with(syn::punctuated::Punctuated::<Expr, syn::Token![,]>::parse_terminated).map_err(|_| "assert! arguments")?;
+                let cond = args.first().ok_or("assert! without a condition")?;
+                let c = self.tx.expr(cond, &Shape::Bool)?;
+                self.line(&format!("assert({c})"));
+                Ok(())
+            }
+            "assert_eq" | "assert_ne" => {
+                let args = mac.parse_body_with(syn::punctuated::Punctuated::<Expr, syn::Token![,]>::parse_terminated).map_err(|_| "assert_eq! arguments")?;
+                let (a, b) = (args.get(0).ok_or("assert_eq!")?, args.get(1).ok_or("assert_eq!")?);
+                let sh = self.shape_of(a).or_else(|| self.shape_of(b)).ok_or("assert_eq! of untyped values")?;
+                if !self.tx.comparable_pub(&sh) {
+                    return Err("assert_eq! on a type Odin can't compare".into());
+                }
+                let (x, y) = (self.tx.expr(a, &sh)?, self.tx.expr(b, &sh)?);
+                let op = if name == "assert_eq" { "==" } else { "!=" };
+                self.line(&format!("assert({x} {op} {y})"));
+                Ok(())
+            }
+            "panic" | "unreachable" | "todo" | "unimplemented" => {
+                let msg = crate::translate::odin_string(&format!("{name}! in translated code"));
+                self.line(&format!("panic({msg})"));
+                Ok(())
+            }
+            other => Err(format!("statement macro {other}!")),
+        }
     }
 
     /// A new loop: its Odin label, pushed on the loop stack (the caller pops it).
@@ -1061,6 +1233,7 @@ impl Body<'_, '_, '_> {
             let (a, b) = (self.tx.expr(a, &sh)?, self.tx.expr(b, &sh)?);
             let op = if matches!(rg.limits, syn::RangeLimits::Closed(_)) { "..=" } else { "..<" };
             let label = self.open_loop(fl.label.as_ref());
+            crate::closures::BY_VALUE.with(|bv| bv.borrow_mut().insert(ident.clone()));
             self.line(&format!("{label}: for {ident} in {a} {op} {b} {{"));
             let saved = self.tx.vars.insert(name.clone(), (ident, sh));
             self.indent += 1;
@@ -1083,10 +1256,11 @@ impl Body<'_, '_, '_> {
         let sh = self.shape_of(coll).ok_or("for over an untyped collection")?;
         let elem = match &sh {
             Shape::Vec(i) => (**i).clone(),
-            _ => return Err("for over a non-Vec collection".into()),
+            other => return Err(format!("for over a non-Vec collection: {}", shape_kind(other))),
         };
         let c = self.tx.expr(coll, &sh)?;
         let label = self.open_loop(fl.label.as_ref());
+        crate::closures::BY_VALUE.with(|bv| bv.borrow_mut().insert(ident.clone()));
         self.line(&format!("{label}: for {ident} in {c} {{"));
         let saved = self.tx.vars.insert(name.clone(), (ident, elem));
         self.indent += 1;
@@ -1175,8 +1349,9 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
         }
     }
     crate::translate::COLLIDING.with(|c| *c.borrow_mut() = by_name.into_iter().filter(|(_, n)| *n > 1).map(|(k, _)| k).collect());
+    crate::closures::INSTANCES.with(|i| *i.borrow_mut() = Default::default());
     let mut ok = Vec::new();
-    let mut done: Vec<(String, Option<String>, String, FnDef)> = Vec::new();
+    let mut done: Vec<(String, Option<String>, String, FnDef, bool)> = Vec::new();
     let mut stubs = Vec::new();
     let mut reasons: BTreeMap<String, usize> = BTreeMap::new();
     // ODINGEN_EXECUTED: "file:line" of each function a profiled run executed (from an lcov report): the blockers
@@ -1200,7 +1375,7 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
         match translate_fn(e, owner.as_deref(), name, d) {
             Ok(t) => {
                 ex_ok += ex as usize;
-                done.push((t.name.clone(), owner.clone(), name.clone(), d.clone()));
+                done.push((t.name.clone(), owner.clone(), name.clone(), d.clone(), t.touches_unlogged));
                 ok.push(t)
             }
             Err(r) => {
@@ -1209,6 +1384,12 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
                 }
                 if ex {
                     *ex_reasons.entry(r.clone()).or_default() += 1;
+                }
+                // ODINGEN_WHY=<text>: name the functions refused for a reason containing it (debugging the translator).
+                if let Ok(w) = std::env::var("ODINGEN_WHY") {
+                    if r.contains(&w) {
+                        eprintln!("why: {} ({}) {}", proc_name_for(owner.as_deref(), name, d), d.file.display(), r);
+                    }
                 }
                 *reasons.entry(r).or_default() += 1
             }
@@ -1238,6 +1419,15 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
                 code.push('\n');
             }
         }
+        // Closure instances (closures.rs), made while translating their callers.
+        let instances = crate::closures::INSTANCES.with(|i| std::mem::take(&mut i.borrow_mut().1));
+        println!("closure instances: {}", instances.len());
+        for (n, c) in instances {
+            if seen.insert(n) {
+                code.push_str(&c);
+                code.push('\n');
+            }
+        }
         std::fs::write(path, code).unwrap();
         // The vector harness: a case per translated procedure whose parameters and result have codecs.
         let helpers_before = e.helpers_out.len();
@@ -1245,13 +1435,13 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
         let mut procs = String::new();
         let mut named = std::collections::BTreeSet::new();
         let mut n_cases = 0;
-        for (pname, owner, name, d) in &done {
+        for (pname, owner, name, d, unlogged) in &done {
             if !named.insert(pname.clone()) {
                 continue;
             }
             // One procedure per case: in a single procedure every case's locals (game states among them) would
             // share one stack frame, which overflows.
-            if let Some(c) = harness_case(e, owner.as_deref(), name, d, pname, codecs) {
+            if let Some(c) = harness_case(e, owner.as_deref(), name, d, pname, codecs, *unlogged) {
                 cases.push_str(&format!("\tcase {pname:?}:\n\t\treturn vc_{pname}(file, args, ret, after, why)\n"));
                 procs.push_str(&format!("vc_{pname} :: proc(file: string, args: []json.Value, ret: json.Value, after: []json.Value, why: ^strings.Builder) -> Vector_Outcome {{\n{c}}}\n\n"));
                 n_cases += 1;
@@ -1268,6 +1458,8 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
 
 const VECTOR_RUNTIME: &str = r#"Vector_Outcome :: enum {
 	Pass,
+	PassNothingCompared, // nothing to compare: no result and no `&mut` argument
+	PassUnloggedState,   // equal, but the procedure touches `#[serde(skip)]` state the log doesn't carry
 	Fail,
 	Stub,        // reached a procedure not translated yet
 	Undecodable, // an argument the model can't decode
@@ -1331,7 +1523,7 @@ vector_same :: proc(b: ^strings.Builder, want: json.Value, why: ^strings.Builder
 
 /// One case of the vector harness: decode the logged arguments, call the procedure, compare its result and its
 /// `&mut` arguments afterwards with the logged ones. None when some parameter or the result has no codec.
-fn harness_case(e: &mut Emitter, owner: Option<&str>, _name: &str, f: &FnDef, pname: &str, codecs: &std::collections::BTreeSet<String>) -> Option<String> {
+fn harness_case(e: &mut Emitter, owner: Option<&str>, _name: &str, f: &FnDef, pname: &str, codecs: &std::collections::BTreeSet<String>, unlogged: bool) -> Option<String> {
     let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: owner.map(str::to_string), depth: 0, calls: true, pre: Vec::new(), fn_ret: Shape::Unit, temps: 0 };
     let has_codec = |s: &Shape| {
         let mut names = Vec::new();
@@ -1347,6 +1539,10 @@ fn harness_case(e: &mut Emitter, owner: Option<&str>, _name: &str, f: &FnDef, pn
                 params.push((sh, matches!(&*pt.ty, syn::Type::Reference(r) if r.mutability.is_some())));
             }
         }
+    }
+    // A borrowed result (`&mut T`, a pointer here) is never logged by the Rust side.
+    if matches!(&f.sig.output, ReturnType::Type(_, t) if t.to_token_stream().to_string().contains('&')) {
+        return None;
     }
     let ret = match &f.sig.output {
         ReturnType::Default => Shape::Unit,
@@ -1384,7 +1580,11 @@ fn harness_case(e: &mut Emitter, owner: Option<&str>, _name: &str, f: &FnDef, pn
         c.push_str(&format!("\t\tif len(after) > {k} {{\n\t\t\tb := strings.builder_make(context.temp_allocator)\n\t\t\t{enc}(&b, a{i})\n\t\t\tsame = vector_same(&b, after[{k}], why, \"argument {i} after\") && same\n\t\t}}\n"));
         k += 1;
     }
-    c.push_str("\t\treturn .Pass if same else .Fail\n");
+    // A pass means less when nothing was compared (no result, no `&mut` argument) or when the procedure touches
+    // state the log doesn't carry.
+    let compared = !matches!(ret, Shape::Unit) || params.iter().any(|(_, m)| *m);
+    let pass = if !compared { ".PassNothingCompared" } else if unlogged { ".PassUnloggedState" } else { ".Pass" };
+    c.push_str(&format!("\t\treturn {pass} if same else .Fail\n"));
     Some(c)
 }
 
@@ -1604,4 +1804,149 @@ fn shape_unknown(s: &Shape) -> bool {
         Shape::Named(_, a) => a.iter().any(shape_unknown),
         _ => false,
     }
+}
+
+/// A shape's kind in a few words, for the translate report.
+pub fn shape_kind(s: &Shape) -> String {
+    match s {
+        Shape::Named(n, _) => format!("Named {n}"),
+        Shape::Ptr(i, _) => format!("Ptr<{}>", shape_kind(i)),
+        Shape::Map(..) => "Map".into(),
+        Shape::PVec(_) => "PVec".into(),
+        Shape::Option(_) => "Option".into(),
+        Shape::Vec(_) => "Vec".into(),
+        Shape::Array(..) => "Array".into(),
+        Shape::Str => "Str".into(),
+        other => format!("{other:?}").chars().take(20).collect(),
+    }
+}
+
+/// What makes a signature generic beyond lifetimes: None when only lifetimes.
+pub fn generic_kind(sig: &syn::Signature) -> Option<&'static str> {
+    use quote::ToTokens;
+    let mut kind = None;
+    for p in &sig.generics.params {
+        match p {
+            syn::GenericParam::Lifetime(_) => {}
+            syn::GenericParam::Const(_) => kind = Some("const parameter"),
+            syn::GenericParam::Type(t) => {
+                let b = t.bounds.to_token_stream().to_string();
+                let w = sig.generics.where_clause.to_token_stream().to_string();
+                kind = Some(if b.contains("Fn") || w.contains("Fn") { "closure parameter" } else { "type parameter" });
+            }
+        }
+    }
+    // `impl Iterator<Item = T>` / `impl IntoIterator<Item = T>` parameters are Vecs (translated logic materializes
+    // iterators); other `impl Trait` parameters need monomorphizing.
+    for i in &sig.inputs {
+        let FnArg::Typed(t) = i else { continue };
+        let ty = t.ty.to_token_stream().to_string();
+        if !ty.contains("impl ") {
+            continue;
+        }
+        let iterator = (ty.contains("Iterator <") || ty.contains("Iterator<")) && ty.contains("Item") && !ty.contains("Fn");
+        if !iterator && kind.is_none() {
+            kind = Some(if ty.contains("Fn") { "closure parameter" } else { "impl Trait argument" });
+        }
+    }
+    kind
+}
+
+/// A closure instance of `f` (closures.rs): its closure parameters dropped (calls of them inline the closures),
+/// generic closure types gone with them, the captures as extra parameters.
+pub fn translate_instance(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, iname: &str, closures: &[(usize, crate::closures::ClosureInfo)], cap_params: &[String]) -> R<String> {
+    let skip: BTreeSet<usize> = closures.iter().map(|c| c.0).collect();
+    let mut g = f.clone();
+    let mut map = BTreeMap::new();
+    let mut ti = 0;
+    let mut closure_types = BTreeSet::new();
+    g.sig.inputs = f
+        .sig
+        .inputs
+        .iter()
+        .filter(|inp| match inp {
+            FnArg::Receiver(_) => true,
+            FnArg::Typed(pt) => {
+                let this = ti;
+                ti += 1;
+                if skip.contains(&this) {
+                    if let Pat::Ident(pi) = &*pt.pat {
+                        let info = closures.iter().find(|c| c.0 == this).map(|c| c.1.clone()).expect("closure");
+                        map.insert(pi.ident.to_string(), info);
+                    }
+                    closure_types.insert(pt.ty.to_token_stream().to_string().trim_start_matches("& mut ").trim_start_matches("& ").to_string());
+                    false
+                } else {
+                    true
+                }
+            }
+        })
+        .cloned()
+        .collect();
+    // Type parameters that were the closures' types go; any other makes it a generic function still.
+    g.sig.generics.params = f.sig.generics.params.iter().filter(|p| !matches!(p, syn::GenericParam::Type(t) if closure_types.contains(&t.ident.to_string()))).cloned().collect();
+    g.sig.generics.where_clause = None;
+    let saved_closures = crate::closures::CLOSURES.with(|c| std::mem::replace(&mut *c.borrow_mut(), map));
+    let saved_file = crate::translate::CURRENT_FILE.with(|c| c.borrow().clone());
+    let saved_touch = crate::translate::TOUCHES_UNLOGGED.with(|t| t.get());
+    let r = translate_fn_with(e, owner, name, &g, Some(iname), cap_params);
+    crate::closures::CLOSURES.with(|c| *c.borrow_mut() = saved_closures);
+    crate::translate::CURRENT_FILE.with(|c| *c.borrow_mut() = saved_file);
+    crate::translate::TOUCHES_UNLOGGED.with(|t| t.set(saved_touch));
+    r.map(|t| t.code)
+}
+
+/// A closure body with statements, inlined where its value is needed: a block assigning a result (none for unit).
+pub fn inline_block(tx: &mut Tx, block: &Block, shape: &Shape) -> R<String> {
+    let unit = matches!(shape, Shape::Unit);
+    tx.temps += 1;
+    let res = format!("cr{}_", tx.temps);
+    let outer = std::mem::take(&mut tx.pre);
+    let target = if unit { None } else { Some(Target { ident: res.clone(), shape: Some(shape.clone()), weak: false, infer: false }) };
+    let mut b = Body { tx, out: String::new(), indent: 1, ret: Shape::Unit, declared: Default::default(), target, loops: Vec::new() };
+    let r = b.block(block, !unit);
+    let code = std::mem::take(&mut b.out);
+    let tx = b.tx;
+    tx.pre = outer;
+    r?;
+    if !unit {
+        tx.pre.push(format!("{res}: {}", tx.e.odin(shape)));
+    }
+    tx.pre.push(format!("{{\n{code}}}"));
+    Ok(if unit { String::new() } else { res })
+}
+
+/// The shape of a block's value, by a dry run of its statements (nothing is kept).
+pub fn infer_block_shape(tx: &mut Tx, block: &Block) -> Option<Shape> {
+    let (vars, temps) = (tx.vars.clone(), tx.temps);
+    let outer = std::mem::take(&mut tx.pre);
+    let target = Some(Target { ident: String::new(), shape: None, weak: false, infer: true });
+    let mut b = Body { tx, out: String::new(), indent: 1, ret: Shape::Unit, declared: Default::default(), target, loops: Vec::new() };
+    let _ = b.block(block, true);
+    let shape = b.target.take().and_then(|t| t.shape);
+    let tx = b.tx;
+    tx.vars = vars;
+    tx.temps = temps;
+    tx.pre = outer;
+    shape
+}
+
+/// A generic function translated for concrete types (monomorphized): its type parameters substituted.
+pub fn translate_generic_instance(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, iname: &str, binding: &BTreeMap<String, Shape>) -> R<String> {
+    let mut g = f.clone();
+    g.sig.generics.params = f.sig.generics.params.iter().filter(|p| !matches!(p, syn::GenericParam::Type(t) if binding.contains_key(&t.ident.to_string()))).cloned().collect();
+    g.sig.generics.where_clause = None;
+    let saved_subst = e.subst.clone();
+    for (k, v) in binding {
+        e.subst.insert(k.clone(), v.clone());
+    }
+    let saved_closures = crate::closures::CLOSURES.with(|c| std::mem::take(&mut *c.borrow_mut()));
+    let saved_file = crate::translate::CURRENT_FILE.with(|c| c.borrow().clone());
+    let saved_touch = crate::translate::TOUCHES_UNLOGGED.with(|t| t.get());
+    let r = translate_fn_with(e, owner, name, &g, Some(iname), &[]);
+    crate::closures::CLOSURES.with(|c| *c.borrow_mut() = saved_closures);
+    crate::translate::CURRENT_FILE.with(|c| *c.borrow_mut() = saved_file);
+    crate::translate::TOUCHES_UNLOGGED.with(|t| t.set(saved_touch));
+    e.subst = saved_subst;
+    r.map(|t| t.code)
 }

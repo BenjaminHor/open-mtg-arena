@@ -50,8 +50,23 @@ fn temp(tx: &mut Tx, base: &str) -> String {
 
 fn pat_into(tx: &mut Tx, pat: &Pat, s: &str, shape: &Shape, mode: Mode, c: &mut PatCode) -> R<()> {
     // A shared or owned pointer (Box/Arc) is matched through.
+    // A Box/Arc is matched through, unless the pattern just binds it: a plain binding is the box itself, as in Rust.
     if let Shape::Ptr(inner, _) = shape {
-        return pat_into(tx, pat, &format!("{s}^"), inner, mode, c);
+        let binds_whole = matches!(pat, Pat::Ident(pi) if pi.subpat.is_none() && !(pi.ident == "None" || pi.ident.to_string().starts_with(char::is_uppercase)))
+            || matches!(pat, Pat::Wild(_));
+        if !binds_whole {
+            return pat_into(tx, pat, &format!("{s}^"), inner, mode, c);
+        }
+    }
+    // Through a `&mut` result: the pointee, in Mut mode (bindings point into it).
+    if let Shape::MutRef(inner) = shape {
+        if matches!(pat, Pat::Ident(pi) if pi.subpat.is_none() && pi.by_ref.is_none()) {
+            // A plain binding of the pointer itself: used as `x^`.
+            let Pat::Ident(pi) = pat else { unreachable!() };
+            c.binds.push((pi.ident.to_string(), s.to_string(), (**inner).clone(), true));
+            return Ok(());
+        }
+        return pat_into(tx, pat, &format!("{s}^"), inner, Mode::Mut, c);
     }
     match pat {
         Pat::Wild(_) | Pat::Rest(_) => Ok(()),

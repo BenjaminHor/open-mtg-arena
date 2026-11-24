@@ -75,6 +75,9 @@ jobs:
       - name: Hand-written codec edge cases
         run: odin run odin/tools/hand_codecs_test -out:hand_codecs_test
 
+      - name: Hand-written logic against the Rust order (D-182)
+        run: odin run odin/tools/hand_logic_test -out:hand_logic_test
+
       # MTGJSON's files change weekly at most; the script refreshes them once a week (UTC), as in Pages.
       - name: Week for the MTGJSON cache
         id: week
