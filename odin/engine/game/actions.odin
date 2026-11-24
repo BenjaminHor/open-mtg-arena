@@ -36,6 +36,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_SurveilChoice:
 		return w.player, true
+	case types.WaitingFor_PayCost:
+		return w.player, true
 	}
 	return 0, false
 }
@@ -145,6 +147,16 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_SurveilChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		return ok && answer_scry(g, p, w.cards[:], a.cards[:], true)
+	case types.WaitingFor_PayCost:
+		#partial switch a in action {
+		case types.GameAction_SelectCards:
+			return answer_cost_choice(g, p, w, a.cards[:])
+		case types.GameAction_CancelCast:
+			// CR 602.2 / 601.2: an activation that can't be finished is undone.
+			g.pending = {}
+			give_priority(g, p)
+			return true
+		}
 	case types.WaitingFor_DiscardToHandSize:
 		a, ok := action.(types.GameAction_SelectCards)
 		if !ok || len(a.cards) != w.count || has_duplicates(a.cards[:]) do return false

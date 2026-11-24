@@ -67,7 +67,9 @@ spell_ability_supported :: proc(a: types.AbilityDefinition) -> bool {
 
 // An ability this engine can carry out: each effect in its chain supported, with no conditions or choices beyond
 // targets and (for triggered abilities, CR 603.5) whether to do it at all.
-ability_supported :: proc(a: types.AbilityDefinition) -> bool {
+// `after_target`: an earlier instruction of the same ability chose a target, which "it" or "that creature" can
+// refer to.
+ability_supported :: proc(a: types.AbilityDefinition, after_target := false) -> bool {
 	if a.effect == nil || a.condition != nil || a.optional_targeting || a.modal != nil do return false
 	// "Each player draws", "an opponent draws", "for each creature chosen": scopes and groups not carried out yet.
 	// (Declaring a group is harmless while nothing reads it; reading one isn't supported.)
@@ -76,7 +78,9 @@ ability_supported :: proc(a: types.AbilityDefinition) -> bool {
 	if a.multi_target != nil || a.distribute != nil || a.repeat_for != nil || a.unless_pay != nil do return false
 	if a.else_ability != nil do return false
 	if !effect_supported(a.effect^, a.duration) do return false
-	if a.sub_ability != nil do return a.sub_ability.optional == a.optional && ability_supported(a.sub_ability^)
+	if refers_to_parent_target(a.effect^) && !after_target do return false
+	_, targets := effect_target(a.effect^)
+	if a.sub_ability != nil do return a.sub_ability.optional == a.optional && ability_supported(a.sub_ability^, after_target || targets)
 	return true
 }
 
@@ -99,11 +103,11 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		_, you := t.(types.TargetFilter_Controller)
 		return fixed && (!has || you)
 	case types.Effect_Token:
-		fixed := quantity_supported(x.count)
-		_, pf := x.power.(types.PtValue_Fixed)
-		_, tf := x.toughness.(types.PtValue_Fixed)
 		_, you := x.owner.(types.TargetFilter_Controller)
-		return fixed && pf && tf && you && x.attach_to == nil && !x.enters_attacking && len(x.static_abilities) == 0 && len(x.enter_with_counters) == 0
+		for st in x.static_abilities do if !static_supported(st) && !static_mode_supported(st) do return false
+		for k in x.keywords do if !keyword_supported(k) do return false
+		return quantity_supported(x.count) && pt_supported(x.power) && pt_supported(x.toughness) && you && x.attach_to == nil &&
+			!x.enters_attacking && len(x.enter_with_counters) == 0
 	case types.Effect_Draw:
 		fixed := quantity_supported(x.count)
 		_, you := x.target.(types.TargetFilter_Controller)
@@ -148,6 +152,8 @@ filter_supported :: proc(f: types.TargetFilter) -> bool {
 	#partial switch x in f {
 	case types.TargetFilter_Any, types.TargetFilter_Player, types.TargetFilter_Opponent:
 		return true
+	case types.TargetFilter_ParentTarget:
+		return true // only after an instruction that chose a target (ability_supported)
 	case types.TargetFilter_Typed:
 		return typed_supported(x._0)
 	}
@@ -159,6 +165,28 @@ filter_supported :: proc(f: types.TargetFilter) -> bool {
 // The target an effect asks for, if it targets (CR 115.1: the word "target"; here, a filter naming what can be
 // chosen rather than "this" or "you").
 effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
+	f := effect_target_filter(e)
+	#partial switch _ in f {
+	case types.TargetFilter_Any, types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_Typed:
+		return f, true
+	}
+	return nil, false
+}
+
+// Whether an instruction acts on "it" or "that creature": the target an earlier instruction chose (CR 608.2c).
+refers_to_parent_target :: proc(e: types.Effect) -> bool {
+	if _, parent := effect_target_filter(e).(types.TargetFilter_ParentTarget); parent do return true
+	if x, generic := e.(types.Effect_GenericEffect); generic && x.target == nil {
+		for st in x.static_abilities {
+			aff, _ := st.affected.?
+			if _, parent := aff.(types.TargetFilter_ParentTarget); parent do return true
+		}
+	}
+	return false
+}
+
+// The object or player an effect names, whether chosen as a target or not ("you", "this", "it").
+effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 	f: types.TargetFilter
 	#partial switch x in e {
 	case types.Effect_DealDamage:
@@ -183,14 +211,8 @@ effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
 		f = x.target
 	case types.Effect_Discard:
 		f = x.target
-	case:
-		return nil, false
 	}
-	#partial switch _ in f {
-	case types.TargetFilter_Any, types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_Typed:
-		return f, true
-	}
-	return nil, false
+	return f
 }
 
 is_controller :: proc(f: types.TargetFilter) -> bool {
@@ -359,6 +381,8 @@ Pending_Cast :: struct {
 	object:        types.ObjectId,
 	targets:       [dynamic]types.TargetRef,
 	ability_index: int, // an activated ability being activated, or -1 for a spell being cast
+	cost_objects:  [dynamic]types.ObjectId, // the permanents to sacrifice or cards to discard for the cost, once chosen
+	cost_chosen:   bool,
 }
 
 // The ability whose targets are being chosen: the spell's, or the activated ability's.
@@ -409,8 +433,11 @@ choose_target :: proc(g: ^Game, p: types.PlayerId, t: types.TargetRef) -> bool {
 		ask_target(g, p)
 		return true
 	}
-	if g.pending.ability_index >= 0 do finish_activation(g, p, g.pending.object, g.pending.ability_index, g.pending.targets[:])
-	else do finish_cast(g, p, g.pending.object, g.pending.targets[:])
+	if g.pending.ability_index >= 0 {
+		pay_activation(g, p)
+		return true
+	}
+	finish_cast(g, p, g.pending.object, g.pending.targets[:])
 	g.pending = {}
 	return true
 }
@@ -533,7 +560,7 @@ do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.Playe
 		add_temp_effect(g, x, controller, source, targeted)
 	case types.Effect_Token:
 		n := amount(g, x.count, controller, source, target)
-		for _ in 0 ..< n do create_token(g, x, controller)
+		for _ in 0 ..< n do create_token(g, x, controller, source)
 	case types.Effect_Draw:
 		n := amount(g, x.count, controller, source, target)
 		for _ in 0 ..< n do draw_card(s, player(s, controller))
@@ -631,7 +658,7 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 			append(&out, name("trigger:", t.mode))
 		}
 	}
-	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) do append(&out, name("static:", st.mode))
+	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) do append(&out, static_gap(st))
 	for r in face.replacements do if !replacement_supported(r) do append(&out, name("replacement:", r.event))
 	if face.additional_cost != nil do append(&out, "additional cost")
 	if face.modal != nil do append(&out, "modal")
@@ -654,6 +681,20 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 	return out
 }
 
+// The specific part of a static ability that isn't supported, for the coverage report.
+static_gap :: proc(st: types.StaticDefinition) -> string {
+	variant :: proc(v: any) -> string {
+		full := fmt.tprintf("%v", reflect.union_variant_typeid(v))
+		if i := strings.last_index_byte(full, '_'); i >= 0 do full = full[i + 1:]
+		return full
+	}
+	if _, continuous := st.mode.(types.StaticMode_Continuous); !continuous do return strings.concatenate({"static:", variant(st.mode)}, context.temp_allocator)
+	if c, has := st.condition.?; has && !condition_supported(c) do return strings.concatenate({"static condition:", variant(c)}, context.temp_allocator)
+	for m in st.modifications do if !modification_supported(m) do return strings.concatenate({"static change:", variant(m)}, context.temp_allocator)
+	if a, has := st.affected.?; has && !affected_supported(a) do return strings.concatenate({"static affects:", variant(a)}, context.temp_allocator)
+	return "static:Continuous (other)"
+}
+
 @(private = "file")
 ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: string) {
 	if a.condition != nil do append(out, "spell:condition")
@@ -664,7 +705,37 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 	if a.effect != nil && !effect_supported(a.effect^, a.duration) {
 		full := fmt.tprintf("%v", reflect.union_variant_typeid(a.effect^))
 		if i := strings.last_index_byte(full, '_'); i >= 0 do full = full[i + 1:]
-		append(out, strings.concatenate({"effect:", full}, context.temp_allocator))
+		detail := ""
+		#partial switch e in a.effect^ {
+		case types.Effect_GenericEffect:
+			if t, has := e.target.?; has && !(is_self(t) || filter_supported(t)) do detail = fmt.tprintf(" (target %v)", reflect.union_variant_typeid(t))
+			for st in e.static_abilities {
+				if detail != "" do break
+				if st.condition != nil {
+					detail = " (condition)"
+					break
+				}
+				if _, c := st.mode.(types.StaticMode_Continuous); !c && rule_modes(st.mode) == {} {
+					detail = fmt.tprintf(" (mode %v)", reflect.union_variant_typeid(st.mode))
+					break
+				}
+				for m in st.modifications do if !modification_supported(m) {
+					detail = fmt.tprintf(" (%v)", reflect.union_variant_typeid(m))
+					break
+				}
+				if aff, has := st.affected.?; detail == "" && has {
+					#partial switch _ in aff {
+					case types.TargetFilter_ParentTarget, types.TargetFilter_SelfRef:
+					case:
+						if !mass_filter_supported(aff) do detail = fmt.tprintf(" (affects %v)", reflect.union_variant_typeid(aff))
+					}
+				}
+			}
+			if d, has := e.duration.?; detail == "" do detail = fmt.tprintf(" (duration %v)", reflect.union_variant_typeid(d) if has else nil)
+		case types.Effect_Mana:
+			detail = fmt.tprintf(" (%v)", reflect.union_variant_typeid(e.produced))
+		}
+		append(out, strings.concatenate({"effect:", full, detail}, context.temp_allocator))
 	}
 	if a.sub_ability != nil do ability_gaps(out, a.sub_ability^, prefix)
 }
@@ -724,5 +795,16 @@ amount :: proc(g: ^Game, q: types.QuantityExpr, controller: types.PlayerId, sour
 has_own_flash_rule :: proc(o: ^types.GameObject) -> bool {
 	if o.static_definitions == nil do return false
 	for &st in o.static_definitions^ do if .Flash in rule_modes(st.mode) && static_mode_supported(st) do return true
+	return false
+}
+
+// A token's power or toughness: a number, or an amount worked out as it's created ("an X/X token").
+pt_supported :: proc(v: types.PtValue) -> bool {
+	#partial switch x in v {
+	case types.PtValue_Fixed:
+		return true
+	case types.PtValue_Quantity:
+		return quantity_supported(x._0)
+	}
 	return false
 }

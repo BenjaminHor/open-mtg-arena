@@ -24,6 +24,21 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		for e in w.pending do if e.player == p do return types.GameAction_SelectCards{cards = worst_cards(g, p, int(e.count))}, true
 	case types.WaitingFor_DiscardToHandSize:
 		return types.GameAction_SelectCards{cards = worst_cards(g, p, w.count)}, true
+	case types.WaitingFor_PayCost:
+		// The least valuable: tokens first, then the lowest mana value.
+		Ranked :: struct {
+			id:    types.ObjectId,
+			score: int,
+		}
+		ranked := make([dynamic]Ranked, context.temp_allocator)
+		for id in w.choices {
+			o := object(s, id)
+			append(&ranked, Ranked{id, -1 if o.is_token else mana_value(o.mana_cost)})
+		}
+		slice.sort_by(ranked[:], proc(a, b: Ranked) -> bool {return a.score < b.score || (a.score == b.score && a.id < b.id)})
+		out := make([dynamic]types.ObjectId, context.temp_allocator)
+		for r in ranked[:min(w.count, len(ranked))] do append(&out, r.id)
+		return types.GameAction_SelectCards{cards = out}, true
 	case types.WaitingFor_TargetSelection:
 		return types.GameAction_ChooseTarget{target = best_target(g, p, w.selection.current_legal_targets[:])}, true
 	case types.WaitingFor_TriggerTargetSelection:
@@ -113,7 +128,15 @@ worth_casting :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool
 	for x := a; x != nil; x = x.sub_ability {
 		if x.effect == nil do continue
 		#partial switch e in x.effect^ {
-		case types.Effect_Pump, types.Effect_GenericEffect:
+		case types.Effect_GenericEffect:
+			if !generic_helps(e) {
+				// "Target creature can't block this turn": before its own attack.
+				if s.active_player != p || s.phase != .PreCombatMain || types.pvec_len(s.stack) != 0 do return false
+				continue
+			}
+			c, in_combat := s.combat.?
+			if !in_combat || s.active_player != p || len(c.attackers) == 0 do return false
+		case types.Effect_Pump:
 			// A pump spell during its own combat, on an attacker.
 			c, in_combat := s.combat.?
 			if !in_combat || s.active_player != p || len(c.attackers) == 0 do return false
@@ -141,7 +164,9 @@ chosen_target :: proc(g: ^Game, p: types.PlayerId, legal: []types.TargetRef, a: 
 			tg, _ := e.toughness.(types.PtValue_Fixed)
 			helps = pw._0 + tg._0 >= 0
 			if !helps do damage = int(-tg._0)
-		case types.Effect_GenericEffect, types.Effect_Attach:
+		case types.Effect_GenericEffect:
+			helps = generic_helps(e)
+		case types.Effect_Attach:
 			helps = true
 		case types.Effect_ChangeZone:
 			// Getting a card back is good for its owner; exiling or bouncing a permanent is aimed at an opponent's.
@@ -378,4 +403,23 @@ aura_target :: proc(g: ^Game, p: types.PlayerId, aura: ^types.GameObject, legal:
 		if score > best_score do best, best_score = t, score
 	}
 	return best
+}
+
+// Whether an effect granting abilities or rules is meant for the player's own creatures: "can't be blocked" and
+// "+2/+2 and flying" are; "can't block", "doesn't untap" and "-2/-0" are aimed at an opponent's.
+generic_helps :: proc(e: types.Effect_GenericEffect) -> bool {
+	for st in e.static_abilities {
+		if rule_modes(st.mode) & {.Cant_Block, .Cant_Attack, .Cant_Untap, .Must_Attack} != {} do return false
+		for m in st.modifications {
+			#partial switch x in m {
+			case types.ContinuousModification_AddPower:
+				if x.value < 0 do return false
+			case types.ContinuousModification_AddToughness:
+				if x.value < 0 do return false
+			case types.ContinuousModification_AddStaticMode:
+				if rule_modes(x.mode) & {.Cant_Block, .Cant_Attack, .Cant_Untap, .Must_Attack} != {} do return false
+			}
+		}
+	}
+	return true
 }

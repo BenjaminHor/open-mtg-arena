@@ -546,3 +546,83 @@ look_at_three_take_one :: proc(t: ^testing.T) {
 	testing.expect(t, game.object(&g.state, w.cards[1]).zone == .Hand, "the pick is in hand")
 	testing.expect(t, types.pvec_len(pl.library) == n - 1 && types.pvec_get(pl.library, 0) == w.cards[0], "the rest on the bottom")
 }
+
+@(test)
+that_creature_cant_block_this_turn :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 608.2c: "that creature" in Mugging's second sentence is the first sentence's target; CR 611.2a: "this
+	// turn" ends with the turn, and the creature can block again afterwards.
+	g := new_game()
+	add(t, g, "Mountain", 0, .Battlefield)
+	mugging := add(t, g, "Mugging", 0, .Hand) // {R}: 2 damage to target creature; that creature can't block this turn
+	giant := add(t, g, "Hill Giant", 1, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = mugging.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{giant.id}}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, giant.damage_marked == 2, "2 damage dealt")
+	testing.expect(t, !game.can_block(g, giant, bears), "the Giant can't block this turn")
+	testing.expect(t, game.can_block(g, add(t, g, "Grizzly Bears", 1, .Battlefield), bears), "other creatures still can")
+	game.end_until_end_of_turn_effects(g)
+	testing.expect(t, game.can_block(g, giant, bears), "next turn it can block again")
+}
+
+@(test)
+it_gains_hexproof :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 608.2c: "Put a +1/+1 counter on target creature you control. It gains hexproof": both on the target.
+	g := new_game()
+	add(t, g, "Forest", 0, .Battlefield)
+	veil := add(t, g, "Snakeskin Veil", 0, .Hand)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	other := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = veil.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, bears.power.? == 3, "the counter")
+	testing.expect(t, game.keyword_in(bears, types.Keyword_Hexproof{}), "hexproof on the target")
+	testing.expect(t, !game.keyword_in(other, types.Keyword_Hexproof{}), "and only on it")
+}
+
+@(test)
+sacrifice_a_creature_as_a_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 602.2b, 601.2h: the player chooses what to sacrifice as they pay the cost; CR 701.21a: only a permanent
+	// they control. Nantuko Husk can sacrifice itself, since it's a creature too.
+	g := new_game()
+	husk := add(t, g, "Nantuko Husk", 0, .Battlefield) // Sacrifice a creature: +2/+2 until end of turn
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = husk.id, ability_index = 0}))
+	w, asked := g.state.waiting_for.(types.WaitingFor_PayCost)
+	testing.expect(t, asked && w.count == 1, "asked what to sacrifice")
+	if !asked do return
+	testing.expect(t, len(w.choices) == 2, "its controller's two creatures")
+	for id in w.choices do testing.expect(t, id != theirs.id, "not the opponent's")
+	wrong: [dynamic]types.ObjectId
+	append(&wrong, theirs.id)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_SelectCards{cards = wrong}), "the opponent's creature isn't a choice")
+	chosen: [dynamic]types.ObjectId
+	append(&chosen, bears.id)
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen}))
+	testing.expect(t, bears.zone == .Graveyard, "sacrificed as the cost is paid")
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, husk.zone == .Battlefield && husk.power.? == 4 && husk.toughness.? == 4, "then the ability resolves on the Husk")
+}
+
+@(test)
+discard_a_card_as_a_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 602.2b, 601.2h: "Discard a card" is paid from the hand; with an empty hand it can't be paid (CR 602.2b
+	// via 601.2h: a cost that can't be paid can't be activated).
+	g := new_game()
+	mongrel := add(t, g, "Wild Mongrel", 0, .Battlefield) // Discard a card: +1/+1 and becomes the color of your choice
+	hand := game.player(&g.state, 0).hand
+	for types.pvec_len(hand) > 0 do game.move_object(g, types.pvec_get(hand, 0), .Library)
+	testing.expect(t, !game.can_activate(g, 0, mongrel, 0), "nothing to discard")
+	add(t, g, "Forest", 0, .Hand)
+	testing.expect(t, game.can_activate(g, 0, mongrel, 0), "a card to discard")
+}

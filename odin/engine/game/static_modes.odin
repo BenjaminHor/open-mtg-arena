@@ -86,6 +86,7 @@ has_rule :: proc(g: ^Game, o: ^types.GameObject, mode: Rule_Mode) -> bool {
 		for &st in o.static_definitions^ do if .Flash in rule_modes(st.mode) && static_mode_supported(st) do return true
 	}
 	for t in g.temp_effects do if t.object == o.id && t.incarnation == o.incarnation {
+		if mode in t.modes do return true
 		for m in t.modifications do if add, ok := m.(types.ContinuousModification_AddStaticMode); ok && mode in rule_modes(add.mode) do return true
 	}
 	return false

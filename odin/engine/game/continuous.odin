@@ -246,6 +246,7 @@ Temp_Effect :: struct {
 	incarnation:   u64,
 	modifications: []types.ContinuousModification,
 	permanent:     bool, // lasts for the game (CR 611.2a) rather than until end of turn
+	modes:         bit_set[Rule_Mode], // a rule it states for the object: "can't block this turn" (CR 611.2)
 }
 
 generic_effect_supported :: proc(e: types.Effect_GenericEffect) -> bool {
@@ -259,7 +260,12 @@ generic_effect_supported :: proc(e: types.Effect_GenericEffect) -> bool {
 	if t, targets := e.target.?; targets && !(is_self(t) || filter_supported(t)) do return false
 	if len(e.static_abilities) == 0 do return false
 	for st in e.static_abilities {
-		if _, continuous := st.mode.(types.StaticMode_Continuous); !continuous || st.condition != nil do return false
+		if st.condition != nil do return false
+		if _, continuous := st.mode.(types.StaticMode_Continuous); !continuous {
+			// "Target creature can't block this turn": a rule for one object (CR 611.2), not for players.
+			modes := rule_modes(st.mode)
+			if modes == {} || modes & (PLAYER_MODES | {.Flash, .Cant_Be_Countered}) != {} do return false
+		}
 		affected, ok := st.affected.?
 		if !ok do return false
 		#partial switch _ in affected {
@@ -294,7 +300,7 @@ add_temp_effect :: proc(g: ^Game, e: types.Effect_GenericEffect, controller: typ
 			append(&objects, ..affected_permanents(s, affected, controller, source)[:])
 		}
 		for o in objects do if o.zone == .Battlefield {
-			append(&g.temp_effects, Temp_Effect{object = o.id, incarnation = o.incarnation, modifications = mods[:], permanent = permanent})
+			append(&g.temp_effects, Temp_Effect{object = o.id, incarnation = o.incarnation, modifications = mods[:], permanent = permanent, modes = rule_modes(st.mode)})
 		}
 	}
 	apply_continuous_effects(g)

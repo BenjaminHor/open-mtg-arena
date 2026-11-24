@@ -443,7 +443,7 @@ decide_optional :: proc(g: ^Game, p: types.PlayerId, accept: bool) -> bool {
 // ---- Tokens (CR 111) ----------------------------------------------------------------------------------------
 
 // CR 111.1-111.4: a token is created with the characteristics the effect gives it, under its creator's control.
-create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId) {
+create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId, source: types.ObjectId = 0) {
 	s := &g.state
 	o := new(types.GameObject)
 	o.id = types.ObjectId(s.next_object_id)
@@ -461,8 +461,21 @@ create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId
 	append(&o.card_types.supertypes, ..e.supertypes[:])
 	append(&o.color, ..e.colors[:])
 	append(&o.keywords, ..e.keywords[:])
-	if p, ok := e.power.(types.PtValue_Fixed); ok do o.power = p._0
-	if t, ok := e.toughness.(types.PtValue_Fixed); ok do o.toughness = t._0
+	pt :: proc(s: ^types.GameState, v: types.PtValue, controller: types.PlayerId, source: types.ObjectId) -> Maybe(i32) {
+		#partial switch x in v {
+		case types.PtValue_Fixed:
+			return x._0
+		case types.PtValue_Quantity:
+			return i32(quantity_value(s, x._0, controller, source, 0))
+		}
+		return nil
+	}
+	o.power = pt(s, e.power, controller, source)
+	o.toughness = pt(s, e.toughness, controller, source)
+	statics := new([dynamic]types.StaticDefinition)
+	append(statics, ..e.static_abilities[:])
+	o.static_definitions = types.Definitions_StaticDefinition(statics)
+	o.base_static_definitions = statics
 	o.layer_base_power, o.layer_base_toughness = o.power, o.toughness
 	o.tapped = e.tapped
 	abilities := new([dynamic]types.AbilityDefinition)

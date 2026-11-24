@@ -15,6 +15,7 @@ Resolution :: struct {
 	slot:       int, // the next target slot
 	spell:      types.ObjectId, // an instant or sorcery to put into the graveyard at the end (CR 608.2n), or 0
 	stack_id:   types.ObjectId, // an ability's stack object, or 0
+	last_target: Maybe(types.TargetRef), // the most recent instruction's target, which "it" in the next refers to
 }
 
 // Starts resolving: checks targets (CR 608.2b) and carries out the instructions. False while a player chooses.
@@ -29,7 +30,7 @@ start_resolution :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: type
 		legal[i] = true
 		any_legal = true
 	}
-	g.resolution = Resolution{true, a, controller, source, targets, legal, 0, spell, stack_id}
+	g.resolution = Resolution{true, a, controller, source, targets, legal, 0, spell, stack_id, nil}
 	// CR 608.2b: with every target illegal, the spell or ability does nothing.
 	if !any_legal do g.resolution.next = nil
 	return continue_resolution(g)
@@ -46,7 +47,13 @@ continue_resolution :: proc(g: ^Game) -> bool {
 		if _, targets_one := effect_target(x.effect^); targets_one {
 			if r.slot < len(r.targets) && r.legal[r.slot] do target = r.targets[r.slot]
 			r.slot += 1
+			r.last_target = target
 			if target == nil do continue // CR 608.2b: an illegal target is unaffected
+		} else if refers_to_parent_target(x.effect^) {
+			// "Untap target creature. It gains flying": "it" is the previous instruction's target, and an illegal
+			// one is unaffected by the rest too (CR 608.2b).
+			target = r.last_target
+			if target == nil do continue
 		}
 		if do_effect(g, x, r.controller, r.source, target) do return false // waiting for a choice
 	}

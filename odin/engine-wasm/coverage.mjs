@@ -2,7 +2,7 @@
 // supports, next to the Rust engine's count (client/public/coverage-data.json). "Fully supports" is the engine's own
 // check (card_supported in odin/engine/game/spells.odin): every ability and keyword is one it can carry out.
 // The pool list is fetched from Scryfall's search API once into data/scryfall/arena-paper-names.json (not committed).
-// Usage: node odin/engine-wasm/coverage.mjs [--list-missing N]
+// Usage: node odin/engine-wasm/coverage.mjs [--list-missing N] [--examples "<gap>"]
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 const root = new URL("../../", import.meta.url).pathname;
@@ -55,3 +55,11 @@ for (const [name, list] of Object.entries(gaps)) {
 const top = (m, n) => [...m].sort((a, b) => b[1] - a[1]).slice(0, n).map(([k, v]) => `  ${String(v).padStart(5)}  ${k}`).join("\n");
 console.log(`\nmissing pieces, by cards they block:\n${top(blocks, 30)}`);
 console.log(`\nthe only missing piece, by cards it would add:\n${top(only, 30)}`);
+
+// --examples "<gap>": cards for which that gap is the only thing missing, to look at next.
+const ex = process.argv.indexOf("--examples");
+if (ex > 0) {
+  const want = process.argv[ex + 1];
+  const names = Object.entries(gaps).filter(([n, l]) => rust.get(n) && new Set(l).size === 1 && l[0] === want).map(([n]) => n);
+  console.log(`\n${want}: ${names.slice(0, 40).join(" | ")}`);
+}
