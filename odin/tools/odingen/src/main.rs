@@ -152,13 +152,26 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
         w.name = "OracleGenCardExportEntry".into();
         reg.types.insert(w.name.clone(), vec![w]);
     }
+    // ManaPool's runtime form (entries by shape, a slot index) is a cache over its wire form, the units in pool
+    // order (`from/into = "ManaPoolWire"`); the Odin model holds the wire form and the ported logic works on it.
+    if let Some(mut w) = reg.types.get("ManaPoolWire").map(|d| d[0].clone()) {
+        w.name = "ManaPool".into();
+        reg.types.insert("ManaPool".into(), vec![w]);
+    }
+    // ObjectMap serializes exactly as its inner map (`impl Serialize`: `self.inner.serialize`).
+    if let Some(d) = reg.types.get_mut("ObjectMap") {
+        d[0].serde.transparent = true;
+        d[0].derives.extend(["Serialize".to_string(), "Deserialize".to_string()]);
+    }
     // Types whose serialized form isn't derived get hand-written Odin codecs.
     let hand: BTreeSet<String> = reg
         .types
         .iter()
         .filter(|(_, defs)| {
             let d = defs.iter().find(|d| d.derives_serialize() || d.derives_deserialize()).unwrap_or(&defs[0]);
-            !d.derives_serialize()
+            // `into` conversions are hand-written too (SearchFoundVisibility writes a bool). `from`-only types write
+            // the derived form and read it plus legacy forms; the generated decoder reads the derived form.
+            !d.derives_serialize() || d.serde.into.is_some()
         })
         .map(|(n, _)| n.clone())
         .collect();
@@ -178,12 +191,30 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
     e.computed.insert("AbilityDefinition".into());
     e.ignore_into.insert("ZoneOwner".into());
     e.codec_as.insert("CardExportEntry".into(), "OracleGenCardExportEntry".into());
+    // ResolvedRulesJournal writes ResolvedRulesJournalWire (the same fields less the runtime `index`, which reading
+    // rebuilds).
+    e.hand.remove("ResolvedRulesJournal");
+    e.codec_as.insert("ResolvedRulesJournal".into(), "ResolvedRulesJournalWire".into());
+    // What each hand-written codec (hand_codecs.odin) calls through generated codecs.
+    for (t, deps) in [
+        ("CostPaidObjectRecord", &["CostPaidObjectSnapshot", "ObjectId"][..]),
+        ("PendingCoinFlip", &["ObjectId", "PlayerId", "ResolvedAbility", "ResolvedCoinBranches", "PendingCoinFlipKind", "TargetRef", "FlipBranchContext", "ResolvingTriggerContext"][..]),
+        ("LiminalEntrant", &["GameObject"][..]),
+        ("PeriodSignature", &["PeriodicDelta"][..]),
+        ("GameFormat", &["CustomFormatId"][..]),
+        ("SacrificeCost", &["SacrificeRequirement"][..]),
+        ("ChoiceType", &["NameDistinctness", "NumberDistinctness", "CardPredicateChoice", "PlayerChoiceDistinctness"][..]),
+    ] {
+        e.hand_deps.insert(t.into(), deps.iter().map(|d| d.to_string()).collect());
+    }
+    // PeriodSignature's hand codec writes its period's members flattened (SignatureWire).
+    e.flattened.insert("PeriodicDelta".into());
     e.run(roots);
     std::fs::create_dir_all(out_dir).unwrap();
-    let types = format!("{HEADER}import \"../json\"\n\n_ :: json\n\n{}", e.types_out);
+    let types = format!("{HEADER}import \"../json\"\nimport \"../rng\"\n\n_ :: json\n_ :: rng\n\n{}", e.types_out);
     std::fs::write(out_dir.join("generated_types.odin"), types).unwrap();
     let codecs = format!(
-        "{HEADER}import \"core:strings\"\nimport \"../json\"\n\n_ :: strings\n\n{}\n{}",
+        "{HEADER}import \"core:slice\"\nimport \"core:strings\"\nimport \"../json\"\n\n_ :: slice\n_ :: strings\n\n{}\n{}",
         e.codec_out,
         e.helpers_out,
     );

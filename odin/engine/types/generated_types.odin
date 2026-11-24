@@ -3,8 +3,10 @@
 package types
 
 import "../json"
+import "../rng"
 
 _ :: json
+_ :: rng
 
 CardExportEntry :: struct {
 	face: CardFace,
@@ -14,6 +16,3041 @@ CardExportEntry :: struct {
 	printings: [dynamic]string,
 	rulings: [dynamic]Ruling,
 	bracket_signals: BracketSignals,
+}
+
+GameState :: struct {
+	turn_number: u32,
+	active_player: PlayerId,
+	phase: Phase,
+	players: [dynamic]Player,
+	priority_player: PlayerId,
+	turn_decision_controller: Maybe(PlayerId),
+	turn_decision_control_timestamp: Maybe(u64),
+	active_full_turn_control: Maybe(ActivePlayerControl),
+	active_combat_phase_control: Maybe(ActivePlayerControl),
+	active_library_searches: ActiveLibrarySearches,
+	active_search_decision_controls: ActiveSearchDecisionControls,
+	objects: ObjectMap,
+	next_object_id: u64,
+	next_delayed_trigger_token: u64,
+	next_delayed_trigger_instance: u64,
+	next_resolution_cast_offer_id: u64,
+	next_logical_zone_change_group_id: u64,
+	next_pip_id: u64,
+	next_spell_announcement: u64,
+	resolved_rules_journal: ResolvedRulesJournal,
+	ability_onset_record: AbilityOnsetRecord,
+	active_payment_pins: [dynamic]ManaPipId,
+	active_rules_execution_node: Maybe(RulesExecutionNodeRef),
+	active_simultaneous_entrants: [dynamic]ObjectId,
+	pre_entry_board_cache: PreEntryBoardCache,
+	active_copy_token_resolution_tokens: Maybe([dynamic]ObjectId),
+	active_casting_permission_index: Maybe(CastingPermissionIndex),
+	active_graveyard_permission_latch: ^GraveyardPermissionLatch,
+	active_paid_resolution_offer_tail: Maybe(ResolutionCastOfferId),
+	active_spend_only_on_x_count: Maybe(Tuple2(ObjectId, u32)),
+	ingress_life_window: Maybe(IngressLifeWindow),
+	released_entry_rows: [dynamic]int,
+	replacement_quantity_overflow: Maybe(ReplacementQuantityOverflow),
+	active_auto_tap_row_policy: Maybe(AutoTapRowPolicy),
+	battlefield: [dynamic]ObjectId,
+	stack: [dynamic]StackEntry,
+	stack_paid_facts: map[ObjectId]StackPaidSnapshot,
+	exile: [dynamic]ObjectId,
+	command_zone: [dynamic]ObjectId,
+	rng_seed: u64,
+	rng_word_pos: u128,
+	rng: GameRng,
+	combat: Maybe(CombatState),
+	waiting_for: WaitingFor,
+	game_end: Maybe(GameEnd),
+	next_resolve_all_consent_epoch: u64,
+	viewer_projection: Maybe(PlayerId),
+	resolve_all_consent_run: Maybe(ResolveAllConsentRun),
+	stack_resolution_session: Maybe(StackResolutionSession),
+	interaction_session_id: Maybe(InteractionSessionId),
+	interaction_generation: u64,
+	next_interaction_serial: string,
+	active_interaction_slots: [dynamic]ActiveInteractionSlot,
+	has_pending_cast: bool,
+	allows_cancel_cast: bool,
+	lands_played_this_turn: u8,
+	max_lands_per_turn: u8,
+	priority_pass_count: u8,
+	pending_replacement: Maybe(PendingReplacement),
+	pending_combat_lifelink: ^PendingCombatLifelink,
+	liminal_entries: map[ObjectId]LiminalEntry,
+	pending_liminal_entry_resume: Maybe(PendingLiminalEntryResume),
+	entering_aura_authority: Maybe(EnteringAuraAuthority),
+	replacement_may_cost_paused: bool,
+	staged_population_parent: Maybe(StagedPopulationParent),
+	post_replacement_token_choice_applied: Maybe([dynamic]AppliedReplacementKey),
+	post_replacement_token_substitution_count: Maybe(i32),
+	deferred_entry_events: [dynamic]ParkedEntry,
+	unsettled_entry_batch_events: [dynamic]GameEvent,
+	pending_token_battlefield_entry: Maybe(PendingTokenBattlefieldEntry),
+	layers_dirty: LayersDirty,
+	layers_read_current_step: bool,
+	static_gate_truth: [dynamic]Tuple2(StaticGateKey, bool),
+	trigger_index: TriggerIndex,
+	replacement_index: ReplacementIndex,
+	static_source_index: StaticSourceIndex,
+	static_mode_presence: StaticModePresence,
+	loop_decision_tally: LoopDecisionTally,
+	play_trace: ^PlayTrace,
+	precast_shortcut_runtime: PrecastShortcutRuntime,
+	life_safety_probe: ^LifeSafetyProbe,
+	next_timestamp: u64,
+	public_state_dirty: PublicStateDirty,
+	state_revision: u64,
+	transient_continuous_effects: [dynamic]TransientContinuousEffect,
+	next_continuous_effect_id: u64,
+	next_end_effect_group_id: u64,
+	attribution: map[ObjectId]ObjectAttribution,
+	remote_type_layer_recipients: [dynamic]ObjectId,
+	day_night: Maybe(DayNight),
+	spells_cast_this_turn: u8,
+	most_spells_cast_by_one_previous_active_player: Maybe(u32),
+	cancelled_casts: [dynamic]ObjectId,
+	pending_activations: [dynamic]AbilityUsageKey,
+	pending_trigger: ^PendingTrigger,
+	pending_trigger_firing: Maybe(TriggerFiring),
+	pending_trigger_event_batch: [dynamic]GameEvent,
+	pending_trigger_entry: Maybe(ObjectId),
+	deferred_triggers: [dynamic]PendingTriggerContext,
+	pending_trigger_order: Maybe(PendingTriggerOrder),
+	consumed_before_priority_trigger_events: [dynamic]ConsumedTriggerEventOccurrence,
+	exile_links: [dynamic]ExileLink,
+	paradigm_primed: [dynamic]ParadigmPrime,
+	delayed_triggers: [dynamic]DelayedTrigger,
+	tracked_object_sets: map[TrackedSetId][dynamic]ObjectId,
+	next_tracked_set_id: u64,
+	chain_tracked_set_id: Maybe(TrackedSetId),
+	return_result_frames: map[ReturnResultOccurrenceId]map[ReturnResultId][dynamic]ZoneChangeRecord,
+	active_return_result_occurrence: Maybe(ReturnResultOccurrenceId),
+	next_return_result_occurrence_id: u64,
+	resolving_modal_instruction: Maybe(int),
+	tracked_set_member_causes: map[TrackedSetId]map[ObjectId]ThisWayCause,
+	tracked_set_member_origins: map[TrackedSetId]map[ObjectId]TrackedMemberOrigin,
+	tracked_set_participants: map[TrackedSetId][dynamic]Tuple2(PlayerId, ThisWayCause),
+	commander_cast_count: map[ObjectId]u32,
+	commander_cast_owners: map[ObjectId]PlayerId,
+	commander_declined_zone_return: [dynamic]ObjectId,
+	objects_that_dealt_damage: [dynamic]ObjectId,
+	extra_turns: [dynamic]ExtraTurn,
+	extra_turn_sequence_anchor: Maybe(PlayerId),
+	turns_to_skip: [dynamic]u32,
+	steps_to_skip: [dynamic]map[Phase]u32,
+	pending_combat_phase_skips: [dynamic]PendingCombatPhaseSkip,
+	combat_phase_skip_next_turn: [dynamic]CombatPhaseSkipState,
+	scheduled_turn_controls: [dynamic]ScheduledTurnControl,
+	extra_phases: [dynamic]ExtraPhase,
+	extra_phase_resume: [dynamic]InsertedPhaseResume,
+	next_extra_phase_id: u64,
+	last_added_phase_ids: [dynamic]ExtraPhaseId,
+	next_extra_turn_id: u64,
+	last_granted_extra_turn_ids: [dynamic]ExtraTurnId,
+	current_extra_turn: Maybe(ExtraTurnId),
+	turn_direction: TurnDirection,
+	current_combat_attacker_restriction: Maybe(TargetFilter),
+	current_combat_attacker_restriction_source: Maybe(ObjectId),
+	seat_order: [dynamic]PlayerId,
+	format_config: FormatConfig,
+	eliminated_players: [dynamic]PlayerId,
+	commander_damage: [dynamic]CommanderDamageEntry,
+	priority_passes: [dynamic]PlayerId,
+	auto_pass: map[PlayerId]AutoPassMode,
+	phase_stops: map[PlayerId][dynamic]PhaseStop,
+	priority_passing_modes: map[PlayerId]PriorityPassingMode,
+	lands_tapped_for_mana: map[PlayerId][dynamic]ObjectId,
+	prepaid_mulligan_bottoms: map[PlayerId]u8,
+	debug_mode: bool,
+	debug_permitted: [dynamic]PlayerId,
+	debug_infinite_mana: [dynamic]PlayerId,
+	unbounded_resources: map[PlayerId][dynamic]ResourceAxis,
+	unbounded_rising: map[PlayerId][dynamic]ResourceAxis,
+	unbounded_loop_pile: map[PlayerId][dynamic]ObjectId,
+	unbounded_counter_targets: map[PlayerId][dynamic]Tuple2(ObjectId, CounterType),
+	pending_unbounded_materialization: map[PlayerId][dynamic]PersistentAxisMaterialization,
+	pending_materialization_count: map[PlayerId]u32,
+	unimplemented_oracle_ids: [dynamic]string,
+	pending_trigger_abandons: [dynamic]string,
+	loop_detection: LoopDetectionMode,
+	match_config: MatchConfig,
+	match_phase: MatchPhase,
+	match_score: MatchScore,
+	match_forfeit_result: Maybe(MatchForfeitResult),
+	game_number: u8,
+	current_starting_player: PlayerId,
+	next_game_chooser: Maybe(PlayerId),
+	deck_pools: [dynamic]PlayerDeckPool,
+	outside_game_cards_brought_in: [dynamic]OutsideGameCardUse,
+	sideboard_submitted: [dynamic]PlayerId,
+	triggers_fired_this_turn: [dynamic]TriggerDefinitionRef,
+	trigger_fire_counts_this_turn: [dynamic]Tuple2(TriggerDefinitionRef, u32),
+	triggers_fired_this_turn_per_opponent: [dynamic]Tuple2(TriggerDefinitionRef, PlayerId),
+	trigger_indicated_actions_this_turn: ^[dynamic]Tuple2(TriggerDefinitionRef, PlayerId),
+	triggers_fired_this_game: [dynamic]TriggerDefinitionRef,
+	triggered_abilities_added_mana_this_turn: [dynamic]Tuple2(TriggerDefinitionRef, PlayerId),
+	activated_abilities_this_turn: [dynamic]Tuple2(AbilityUsageKey, u32),
+	activated_abilities_this_game: [dynamic]Tuple2(AbilityUsageKey, u32),
+	departed_activated_abilities_this_turn: [dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32),
+	departed_activated_abilities_this_game: [dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32),
+	crew_activated_this_turn: [dynamic]ObjectIncarnationRef,
+	crew_resolved_this_turn: [dynamic]ObjectIncarnationRef,
+	crew_history_this_turn: [dynamic]CrewHistoryPair,
+	creatures_fought_this_turn: [dynamic]ObjectIncarnationRef,
+	loyalty_abilities_activated_this_turn: map[PlayerId]u32,
+	extra_loyalty_activations_this_turn: map[PlayerId]u32,
+	exerted_this_turn: [dynamic]ObjectId,
+	object_tap_count_this_turn: map[ObjectId]u32,
+	object_counter_placement_count_this_turn: map[ObjectId]u32,
+	pending_attack_trigger_events: [dynamic]GameEvent,
+	ability_resolutions_this_turn: [dynamic]Tuple2(Tuple2(ObjectId, int), u32),
+	graveyard_cast_permissions_used: [dynamic]ObjectId,
+	graveyard_cast_permissions_used_per_type: [dynamic]Tuple2(ObjectId, CoreType),
+	pending_permanent_type_slot: Maybe(Tuple2(ObjectId, CoreType)),
+	hand_cast_free_permissions_used: [dynamic]ObjectId,
+	alt_cost_grant_permissions_used: [dynamic]ObjectId,
+	abilities_activated_this_turn_by_player: ^map[PlayerId][dynamic]AbilityActivationRecord,
+	exile_play_permissions_used: [dynamic]ObjectId,
+	exile_play_single_use_consumed: [dynamic]TrackedSetId,
+	exile_cast_permissions_used: [dynamic]ObjectId,
+	top_of_library_cast_permissions_used: [dynamic]ObjectId,
+	cards_exiled_with_source_this_turn: map[ObjectId][dynamic]ObjectId,
+	first_card_drawn_this_turn: map[PlayerId]ObjectId,
+	cards_drawn_this_turn: map[PlayerId][dynamic]ObjectId,
+	pending_miracle_offers: [dynamic]MiracleOffer,
+	pending_paradigm_remaining_offers: Maybe(PendingParadigmRemainingOffers),
+	spells_cast_this_game: map[PlayerId]u32,
+	spells_cast_this_game_by_player: map[PlayerId][dynamic]SpellCastRecord,
+	cycles_completed_this_game_by_player: map[PlayerId][dynamic]CyclingRecord,
+	spells_cast_this_turn_by_player: map[PlayerId][dynamic]SpellCastRecord,
+	lands_played_this_turn_by_player: map[PlayerId][dynamic]LandPlayRecord,
+	players_who_searched_library_this_turn: [dynamic]PlayerId,
+	player_actions_this_turn: [dynamic]Tuple2(PlayerId, PlayerActionKind),
+	players_attacked_this_step: [dynamic]PlayerId,
+	players_attacked_this_turn: [dynamic]PlayerId,
+	attacking_creatures_this_turn: map[PlayerId]u32,
+	attacked_defenders_this_turn: map[PlayerId][dynamic]PlayerId,
+	attacked_players_directly_this_turn: map[PlayerId][dynamic]PlayerId,
+	attacked_defenders_last_turn: ^map[PlayerId][dynamic]PlayerId,
+	creature_attacked_defenders_this_turn: map[ObjectId][dynamic]PlayerId,
+	creature_blocked_attackers_this_turn: [dynamic]BlockHistoryPair,
+	steps_started_this_turn: StepTally,
+	creatures_attacked_this_turn: [dynamic]ObjectId,
+	attacker_declarations_this_turn: [dynamic]AttackDeclarationRecord,
+	creatures_blocked_this_turn: [dynamic]ObjectId,
+	players_who_created_token_this_turn: [dynamic]PlayerId,
+	players_who_flipped_coins_this_turn: [dynamic]PlayerId,
+	created_tokens_this_turn: [dynamic]ZoneChangeRecord,
+	counter_added_this_turn: [dynamic]CounterAddedRecord,
+	players_who_discarded_card_this_turn: [dynamic]PlayerId,
+	cards_discarded_this_turn_by_player: map[PlayerId]u32,
+	players_who_sacrificed_artifact_this_turn: [dynamic]PlayerId,
+	sacrificed_permanents_this_turn: [dynamic]ZoneChangeRecord,
+	zone_changes_this_turn: [dynamic]ZoneChangeRecord,
+	battlefield_entry_observations: BattlefieldEntryObservations,
+	instruction_boundary_marks: [dynamic]int,
+	batched_zone_change_trigger_fired: [dynamic]Tuple3(TriggerDefinitionRef, u32, int),
+	battlefield_entries_this_turn: [dynamic]BattlefieldEntryRecord,
+	damage_dealt_this_turn: [dynamic]DamageRecord,
+	creatures_exploited_this_turn: [dynamic]ExploitRecord,
+	assassin_or_commander_dealt_combat_damage_this_turn: [dynamic]PlayerId,
+	creature_types_dealt_combat_damage_this_turn: [dynamic]Tuple2(PlayerId, string),
+	mana_spent_on_spells_this_turn: map[PlayerId]u32,
+	pending_spell_cost_reductions: [dynamic]PendingSpellCostReduction,
+	pending_next_spell_modifiers: [dynamic]PendingNextSpellModifier,
+	pending_etb_counters: [dynamic]Tuple3(ObjectId, CounterType, u32),
+	modal_modes_chosen_this_turn: [dynamic]Tuple2(ObjectIncarnationRef, int),
+	modal_modes_chosen_this_game: [dynamic]Tuple2(ObjectIncarnationRef, int),
+	revealed_cards: [dynamic]ObjectId,
+	public_revealed_cards: ^[dynamic]ObjectId,
+	stack_bound_reveals: ^map[ObjectId][dynamic]ObjectIncarnationRef,
+	product_knowledge_state: ^ProductKnowledgeState,
+	resolution_stack: ^ResolutionStack,
+	payment_transaction: ^ResolutionPaymentTransaction,
+	spell_cast_reversal: ^SpellCastReversal,
+	payment_transaction_replay: bool,
+	payment_transaction_just_handled: bool,
+	resolving_continuation_attach_host: Maybe(AttachTarget),
+	resolving_head_payment_origin: ResolutionPaymentOrigin,
+	resolving_player_scope_tail: Maybe(PendingPlayerScopeTail),
+	resolving_created_token_seats: Maybe(CreatedTokenSeatsHandoff),
+	instruction_scopes: [dynamic]OpenInstruction,
+	last_closed_instruction: Maybe(ClosedInstruction),
+	merged_card_component_route: Maybe(MergedCardComponentRoute),
+	leaving_game_departure: Maybe(LeavingGameDeparture),
+	resolution_coin_flip: Maybe(ResolutionCoinFlip),
+	repeat_process_requested: Maybe(RepeatProcessRequest),
+	pending_player_scope_sacrifice_choice: Maybe(PendingPlayerScopeSacrificeChoice),
+	pending_player_scope_choice: Maybe(PendingPlayerScopeChoice),
+	pending_player_scope_unless_payment: ^PendingPlayerScopeUnlessPayment,
+	pending_simultaneous_unless: ^PendingSimultaneousUnless,
+	pending_player_scope_unless_punishment: ^PendingPlayerScopeUnlessPunishment,
+	pending_discard_batch: ^PendingDiscardBatch,
+	pending_hero_event: ^PendingHeroEvent,
+	pending_horde_reveal: ^PendingHordeReveal,
+	pending_damage_post_loss: ^PendingDamagePostLoss,
+	pending_damage_post_counter: ^PendingDamagePostCounter,
+	pending_single_discard: ^PendingSingleDiscard,
+	pending_exile_from_top_until: ^PendingExileFromTopUntil,
+	pending_mass_library_order_choice: ^PendingMassLibraryOrderChoice,
+	pending_scoped_library_search: Maybe(PendingScopedLibrarySearch),
+	pending_library_search_delivery: Maybe(LibrarySearchDeliveryResume),
+	completed_hidden_search_audiences: [dynamic]HiddenSearchAudience,
+	pending_search_found_batch: Maybe(PendingSearchFoundBatch),
+	pending_die_roll_instruction: ^PendingDieRollInstruction,
+	may_trigger_auto_choices: [dynamic]MayTriggerAutoChoiceRecord,
+	un_actions: ^UnActionState,
+	replacement_auto_choices: [dynamic]ReplacementAutoChoiceRecord,
+	replacement_auto_choice_tail: Maybe(ReplacementAutoChoiceTail),
+	decision_templates: [dynamic]DecisionTemplate,
+	priority_yields: [dynamic]PriorityYield,
+	pending_begin_game_abilities: [dynamic]PendingBeginGameAbility,
+	resolving_begin_game_abilities: bool,
+	last_named_choice: Maybe(ChoiceValue),
+	chosen_counter_kind_this_resolution: Maybe(CounterType),
+	chosen_color_this_resolution: Maybe(ManaColor),
+	named_color_this_resolution: Maybe(ManaColor),
+	named_label_this_resolution: Maybe(string),
+	named_card_name_this_resolution: Maybe(string),
+	placed_sticker_this_resolution: Maybe(AppliedSticker),
+	noted_numbers_this_resolution: [dynamic]Tuple2(PlayerId, i32),
+	last_chosen_damage_source: Maybe(ChosenDamageSource),
+	all_creature_types: [dynamic]string,
+	all_card_names: ^[dynamic]string,
+	card_face_registry: ^map[string]CardFace,
+	meld_pair_registry: ^map[string]MeldPairRecord,
+	card_db: Maybe(CardDbHandle),
+	booster_shelf: ^BoosterShelf,
+	booster_pack_pool: ^[dynamic]string,
+	log_player_names: [dynamic]string,
+	last_created_token_ids: [dynamic]ObjectId,
+	last_revealed_ids: [dynamic]ObjectId,
+	revealed_publications: u64,
+	last_parent_target_missing_reason: Maybe(ParentTargetMissingReason),
+	private_look_ids: [dynamic]ObjectId,
+	private_look_player: Maybe(PlayerId),
+	last_zone_changed_ids: [dynamic]ObjectId,
+	exile_rider_countered_ids: [dynamic]ObjectId,
+	last_vote_ballots: [dynamic]Tuple2(PlayerId, u32),
+	player_actions_this_way: [dynamic]Tuple2(PlayerId, PlayerActionKind),
+	last_effect_amount: Maybe(i32),
+	last_effect_excess_amount: Maybe(i32),
+	die_result_this_resolution: Maybe(i32),
+	die_result_publication: Maybe(Maybe(i32)),
+	last_effect_count: Maybe(i32),
+	last_effect_counts_by_player: map[PlayerId]i32,
+	clause_minimum_snapshot: Maybe(ClauseMinimumSnapshot),
+	control_change_captures: LazyBoxedMap_u64_ControlChangeLink,
+	next_control_change_capture_id: u64,
+	control_change_observations: LazyBoxedMap_u64_ControlChangeObservation,
+	next_control_change_observation_id: u64,
+	layer_control_changes: LazyBoxedVec_QueuedControlChange,
+	announced_control_changes: LazyBoxedVec_t2_ObjectIncarnationRef_PlayerId,
+	exiled_from_hand_this_resolution: u32,
+	monarch: Maybe(PlayerId),
+	city_blessing: [dynamic]PlayerId,
+	enduring_story: ^[dynamic]PlayerId,
+	epic_effects: [dynamic]EpicEffect,
+	replacement_continuations: ^[dynamic]ResolvedAbility,
+	restrictions: [dynamic]GameRestriction,
+	pending_damage_replacements: [dynamic]ReplacementDefinition,
+	pending_step_end_mana_handlers: [dynamic]StepEndManaScanEntry,
+	pending_phase_transition_progress: Maybe(PhaseTransitionProgress),
+	deferred_step_trigger_resume: Maybe(Phase),
+	step_entry_resume: Maybe(StepEntryResume),
+	pending_team_draw_step: [dynamic]PlayerId,
+	pending_untap_declines: [dynamic]ObjectId,
+	current_trigger_event: Maybe(GameEvent),
+	current_trigger_match_count: Maybe(u32),
+	resolving_stack_entry: Maybe(StackEntry),
+	resolving_trigger_firing: Maybe(TriggerFiring),
+	resolving_spell_final_part: Maybe(OwedSpellFinalPart),
+	resolving_stack_object: Maybe(ObjectIncarnationRef),
+	pending_resolution_completion: Maybe(PendingResolutionCompletion),
+	announced_source_x: Maybe(Tuple2(ObjectId, u32)),
+	turn_up_paid_cost_source: Maybe(Tuple2(ObjectId, TurnUpCostSource)),
+	resolution_source_relatch: Maybe(ResolutionSourceRelatch),
+	current_trigger_events: [dynamic]GameEvent,
+	last_discover_value: Maybe(i32),
+	stack_trigger_event_batches: map[ObjectId][dynamic]GameEvent,
+	stack_trigger_firings: map[ObjectId]TriggerFiring,
+	lki_cache: map[ObjectId]LKISnapshot,
+	lki_copiable_values: map[ObjectId]CopiableValues,
+	lki_by_incarnation: map[ObjectId]map[u64]LKISnapshot,
+	lki_copiable_values_by_incarnation: map[ObjectId]map[u64]CopiableValues,
+	departed_stack_spells: map[ObjectId]map[u64]DepartedStackSpell,
+	departed_activated_abilities: map[ObjectId]StackEntry,
+	linked_exile_lki: map[ObjectId][dynamic]LinkedExileLki,
+	cost_payment_failed_flag: bool,
+	pending_taps_for_mana_overrides: [dynamic]Tuple2(TriggerDefinitionRef, ProductionOverride),
+	current_triggered_mana_override: Maybe(ProductionOverride),
+	pending_cost_move_resume: Maybe(PendingCostMoveResume),
+	pending_deferred_life_cost_resume: Maybe(DeferredLifeCostResume),
+	pending_triggered_mana_resume: ^TriggeredManaResume,
+	pending_trigger_construction_priority_recipient: Maybe(PlayerId),
+	active_accepted_triggered_mana_node: Maybe(RulesExecutionNodeRef),
+	mana_subresolution_depth: u32,
+	trigger_construction_finisher_ran_this_action: bool,
+	pending_discard_for_cost: ^PendingDiscardForCostResume,
+	pending_cast: ^PendingCast,
+	legacy_unrouted_pending_casts: [dynamic]ObjectId,
+	in_flight_spell_trigger_carrier: Maybe(InFlightSpellTriggerCarrier),
+	announcement_event_scope: AnnouncementEventScope,
+	ring_level: map[PlayerId]u8,
+	ring_bearer: map[PlayerId]Maybe(ObjectId),
+	dungeon_progress: map[PlayerId]DungeonProgress,
+	planar_deck: [dynamic]ObjectId,
+	planar_controller: Maybe(PlayerId),
+	planar_die_actions_this_turn: map[PlayerId]u32,
+	scheme_deck: [dynamic]ObjectId,
+	archenemy: Maybe(PlayerId),
+	horde_wave_remaining: u32,
+	horde_wave_nontokens_remaining: u32,
+	horde_turn_index: u32,
+	horde_postcombat_activation_queue: [dynamic]ObjectId,
+	horde_seats: [dynamic]PlayerId,
+	active_horde_index: int,
+	boss_deck: [dynamic]ObjectId,
+	boss_stage: u8,
+	baxter_set_aside: [dynamic]ObjectId,
+	initiative: Maybe(PlayerId),
+	combat_prevention_tally: Maybe([dynamic]Tuple2(Tuple2(AppliedReplacementKey, TargetRef), i32)),
+	damage_batch_ledger: ^DamageBatchLedger,
+	damage_event_losses: Maybe(EventLosses),
+}
+
+GameAction_PassPriority :: struct {
+}
+GameAction_ChooseMeldPair :: struct {
+	source_id: ObjectId,
+	partner_id: ObjectId,
+}
+GameAction_ChooseEntryAttackTarget :: struct {
+	target: AttackTarget,
+}
+GameAction_PlayLand :: struct {
+	object_id: ObjectId,
+	card_id: CardId,
+}
+GameAction_CastSpell :: struct {
+	object_id: ObjectId,
+	card_id: CardId,
+	targets: [dynamic]ObjectId,
+	payment_mode: CastPaymentMode,
+}
+GameAction_Foretell :: struct {
+	object_id: ObjectId,
+	card_id: CardId,
+}
+GameAction_ActivateAbility :: struct {
+	source_id: ObjectId,
+	ability_index: int,
+	payment_mode: CastPaymentMode,
+}
+GameAction_DeclareAttackers :: struct {
+	attacks: [dynamic]Tuple2(ObjectId, AttackTarget),
+	bands: [dynamic][dynamic]ObjectId,
+}
+GameAction_DeclareBlockers :: struct {
+	assignments: [dynamic]Tuple2(ObjectId, ObjectId),
+}
+GameAction_ChooseUntap :: struct {
+	object_id: ObjectId,
+	untap: bool,
+}
+GameAction_ChooseExert :: struct {
+	exert: bool,
+}
+GameAction_ChooseEnlist :: struct {
+	target: Maybe(ObjectId),
+}
+GameAction_ChooseClashOpponent :: struct {
+	opponent: PlayerId,
+}
+GameAction_ChooseZoneOpponentChooser :: struct {
+	opponent: PlayerId,
+}
+GameAction_ChoosePileOpponent :: struct {
+	opponent: PlayerId,
+}
+GameAction_ChooseAnnouncingOpponent :: struct {
+	opponent: PlayerId,
+}
+GameAction_ChooseGiftRecipient :: struct {
+	opponent: PlayerId,
+}
+GameAction_ChooseAssistPlayer :: struct {
+	player: Maybe(PlayerId),
+}
+GameAction_CommitAssistPayment :: struct {
+	generic: u32,
+}
+GameAction_MulliganDecision :: struct {
+	choice: MulliganChoice,
+}
+GameAction_ReorderHand :: struct {
+	order: [dynamic]ObjectId,
+}
+GameAction_TapLandForMana :: struct {
+	selection: ManaSourceSelection,
+}
+GameAction_ActivateManaSource :: struct {
+	selection: ManaSourceSelection,
+}
+GameAction_BackToManaPayment :: struct {
+}
+GameAction_UntapLandForMana :: struct {
+	object_id: ObjectId,
+}
+GameAction_SpendPoolMana :: struct {
+	pip_id: ManaPipId,
+}
+GameAction_UnspendPoolMana :: struct {
+	pip_id: ManaPipId,
+}
+GameAction_SelectCards :: struct {
+	cards: [dynamic]ObjectId,
+}
+GameAction_ChooseRemoveCounterCostDistribution :: struct {
+	distribution: [dynamic]CounterCostChoice,
+}
+GameAction_SelectCoinFlips :: struct {
+	keep_indices: [dynamic]int,
+}
+GameAction_SelectDieRolls :: struct {
+	ignore_indices: [dynamic]int,
+}
+GameAction_ChooseOutsideGameCards :: struct {
+	selections: [dynamic]OutsideGameSelection,
+}
+GameAction_SelectTargets :: struct {
+	targets: [dynamic]TargetRef,
+}
+GameAction_ChooseTarget :: struct {
+	target: Maybe(TargetRef),
+}
+GameAction_ChooseReplacement :: struct {
+	index: int,
+}
+GameAction_ChooseReplacementAndRemember :: struct {
+	choice: ReplacementAutoChoice,
+}
+GameAction_SetReplacementAutoChoice :: struct {
+	selector: Maybe(ReplacementAutoChoiceId),
+}
+GameAction_ChooseEntryController :: struct {
+	opponent: PlayerId,
+}
+GameAction_OrderTriggers :: struct {
+	order: [dynamic]int,
+}
+GameAction_OrderCostReductions :: struct {
+	order: [dynamic]int,
+	hybrid_announcement: [dynamic]ManaCostShard,
+}
+GameAction_CancelCast :: struct {
+}
+GameAction_Equip :: struct {
+	equipment_id: ObjectId,
+	target_id: ObjectId,
+}
+GameAction_CrewVehicle :: struct {
+	vehicle_id: ObjectId,
+	creature_ids: [dynamic]ObjectId,
+}
+GameAction_ActivateStation :: struct {
+	spacecraft_id: ObjectId,
+	creature_id: Maybe(ObjectId),
+}
+GameAction_SaddleMount :: struct {
+	mount_id: ObjectId,
+	creature_ids: [dynamic]ObjectId,
+}
+GameAction_Transform :: struct {
+	object_id: ObjectId,
+}
+GameAction_PlayFaceDown :: struct {
+	object_id: ObjectId,
+	card_id: CardId,
+}
+GameAction_TurnFaceUp :: struct {
+	object_id: ObjectId,
+	x_: u32,
+}
+GameAction_SubmitSideboard :: struct {
+	main: [dynamic]DeckCardCount,
+	sideboard: [dynamic]DeckCardCount,
+}
+GameAction_ChoosePlayDraw :: struct {
+	play_first: bool,
+}
+GameAction_ChooseStartingPlayer :: struct {
+	player: PlayerId,
+}
+GameAction_ChooseOption :: struct {
+	choice: string,
+}
+GameAction_SubmitVoteCandidate :: struct {
+	candidate_index: u32,
+}
+GameAction_SubmitSpellbookDraft :: struct {
+	card: string,
+}
+GameAction_SubmitPilePartition :: struct {
+	pile_a: [dynamic]ObjectId,
+}
+GameAction_ChoosePile :: struct {
+	pile: PileSide,
+}
+GameAction_ChooseBranch :: struct {
+	index: int,
+}
+GameAction_SubmitLifeRedistribution :: struct {
+	option_index: int,
+}
+GameAction_ChooseDamageSource :: struct {
+	source: ObjectId,
+}
+GameAction_SelectModes :: struct {
+	indices: [dynamic]int,
+}
+GameAction_DecideOptionalCost :: struct {
+	index: int,
+}
+GameAction_ChooseAdventureFace :: struct {
+	creature: bool,
+}
+GameAction_ChooseModalFace :: struct {
+	back_face: bool,
+}
+GameAction_ChooseAlternativeCast :: struct {
+	choice: AlternativeCastDecision,
+}
+GameAction_ChooseCastingVariant :: struct {
+	index: int,
+}
+GameAction_KeepAllCopyTargets :: struct {
+}
+GameAction_ChoosePermanentTypeSlot :: struct {
+	slot: CoreType,
+}
+GameAction_ActivateNinjutsu :: struct {
+	ninjutsu_object_id: ObjectId,
+	creature_to_return: ObjectId,
+}
+GameAction_CastSpellAsSneak :: struct {
+	hand_object: ObjectId,
+	card_id: CardId,
+	creature_to_return: ObjectId,
+	payment_mode: CastPaymentMode,
+}
+GameAction_CastSpellAsWebSlinging :: struct {
+	hand_object: ObjectId,
+	card_id: CardId,
+	creature_to_return: ObjectId,
+	payment_mode: CastPaymentMode,
+}
+GameAction_CastSpellForFree :: struct {
+	object_id: ObjectId,
+	card_id: CardId,
+	source_id: ObjectId,
+	payment_mode: CastPaymentMode,
+}
+GameAction_CastSpellAsMiracle :: struct {
+	object_id: ObjectId,
+	card_id: CardId,
+	payment_mode: CastPaymentMode,
+}
+GameAction_CastSpellAsMadness :: struct {
+	object_id: ObjectId,
+	card_id: CardId,
+	payment_mode: CastPaymentMode,
+}
+GameAction_DecideOptionalEffect :: struct {
+	accept: bool,
+}
+GameAction_ChooseResolutionOptionalPaymentBranch :: struct {
+	choice: ResolutionOptionalPaymentChoice,
+}
+GameAction_RespondToSpliceOffer :: struct {
+	card: Maybe(ObjectId),
+}
+GameAction_DecideOptionalEffectAndRemember :: struct {
+	choice: AutoMayChoice,
+	scope: MayTriggerAutoChoiceScope,
+}
+GameAction_PayUnlessCost :: struct {
+	pay: bool,
+}
+GameAction_ChooseUnlessCostBranch :: struct {
+	choice: UnlessCostBranch,
+}
+GameAction_ChooseActivationCostBranch :: struct {
+	index: int,
+}
+GameAction_PayCombatTax :: struct {
+	accept: bool,
+}
+GameAction_ChooseRingBearer :: struct {
+	target: ObjectId,
+}
+GameAction_ChoosePair :: struct {
+	partner: Maybe(ObjectId),
+}
+GameAction_ChooseDungeon :: struct {
+	dungeon: DungeonId,
+}
+GameAction_ChooseDungeonRoom :: struct {
+	room_index: u8,
+}
+GameAction_UnlockRoomDoor :: struct {
+	object_id: ObjectId,
+	door: RoomDoor,
+}
+GameAction_RollPlanarDie :: struct {
+}
+GameAction_ChooseRoomDoor :: struct {
+	object_id: ObjectId,
+	op: DoorLockOp,
+	door: RoomDoor,
+}
+GameAction_TapForConvoke :: struct {
+	object_id: ObjectId,
+	mana_type: ManaType,
+}
+GameAction_HarmonizeTap :: struct {
+	creature_id: Maybe(ObjectId),
+}
+GameAction_ChooseSecretAgendaNames :: struct {
+	names: [dynamic]string,
+}
+GameAction_DeclareCompanion :: struct {
+	choice: CompanionDeclaration,
+}
+GameAction_CompanionToHand :: struct {
+}
+GameAction_DiscoverChoice :: struct {
+	choice: CastChoice,
+}
+GameAction_GraveyardPaidCastChoice :: struct {
+	choice: CastChoice,
+}
+GameAction_CascadeChoice :: struct {
+	choice: CastChoice,
+}
+GameAction_RippleChoice :: struct {
+	choice: CastChoice,
+}
+GameAction_FreeCastWindowChoice :: struct {
+	selection: Maybe(ObjectId),
+}
+GameAction_ChooseTopOrBottom :: struct {
+	top: bool,
+}
+GameAction_ChooseMutateMergeSide :: struct {
+	side: MergeSide,
+}
+GameAction_CipherEncode :: struct {
+	creature: Maybe(ObjectId),
+}
+GameAction_ChooseLegend :: struct {
+	keep: ObjectId,
+}
+GameAction_ChooseBattleProtector :: struct {
+	protector: PlayerId,
+}
+GameAction_SetAutoPass :: struct {
+	mode: AutoPassRequest,
+}
+GameAction_CancelAutoPass :: struct {
+}
+GameAction_SetPhaseStops :: struct {
+	stops: [dynamic]PhaseStop,
+}
+GameAction_SetPriorityPassingMode :: struct {
+	mode: PriorityPassingMode,
+}
+GameAction_SetPriorityYield :: struct {
+	op: PriorityYieldOp,
+}
+GameAction_SetMayTriggerAutoChoice :: struct {
+	op: MayTriggerAutoChoiceOp,
+}
+GameAction_UnAction :: struct {
+	action: UnAction,
+}
+GameAction_SetTriggerOrderTemplate :: struct {
+	op: TriggerOrderTemplateOp,
+}
+GameAction_AssignCombatDamage :: struct {
+	mode: CombatDamageAssignmentMode,
+	assignments: [dynamic]Tuple2(ObjectId, u32),
+	trample_damage: u32,
+	controller_damage: u32,
+}
+GameAction_AssignBlockerDamage :: struct {
+	assignments: [dynamic]Tuple2(ObjectId, u32),
+}
+GameAction_DistributeAmong :: struct {
+	distribution: [dynamic]Tuple2(TargetRef, u32),
+}
+GameAction_ChooseCounterMoveDistribution :: struct {
+	selections: [dynamic]CounterMoveChoice,
+}
+GameAction_ChooseCountersToRemove :: struct {
+	selections: [dynamic]CounterRemoveChoice,
+}
+GameAction_SubmitPayAmount :: struct {
+	amount: u32,
+}
+GameAction_RetargetSpell :: struct {
+	new_targets: [dynamic]Maybe(TargetRef),
+}
+GameAction_LearnDecision :: struct {
+	choice: LearnOption,
+}
+GameAction_SelectCategoryPermanents :: struct {
+	choices: [dynamic]Maybe(ObjectId),
+}
+GameAction_ChooseKeptCreatures :: struct {
+	kept: [dynamic]ObjectId,
+}
+GameAction_ChooseKeptPermanents :: struct {
+	kept: [dynamic]ObjectId,
+}
+GameAction_ChooseX :: struct {
+	value: u32,
+}
+GameAction_SubmitPhyrexianChoices :: struct {
+	choices: [dynamic]ShardChoice,
+}
+GameAction_ChooseManaColor :: struct {
+	choice: ManaChoice,
+	count: u32,
+}
+GameAction_PayManaAbilityMana :: struct {
+	payment: [dynamic]ManaType,
+}
+GameAction_CastPreparedCopy :: struct {
+	source: ObjectId,
+}
+GameAction_ChooseSpecializeColor :: struct {
+	color: ManaColor,
+}
+GameAction_CastParadigmCopy :: struct {
+	source: ObjectId,
+}
+GameAction_PassParadigmOffer :: struct {
+}
+GameAction_Debug :: struct {
+	_0: DebugAction,
+}
+GameAction_GrantDebugPermission :: struct {
+	player_id: PlayerId,
+}
+GameAction_RevokeDebugPermission :: struct {
+	player_id: PlayerId,
+}
+GameAction_Concede :: struct {
+	player_id: PlayerId,
+}
+GameAction_DeclareShortcut :: struct {
+	count: IterationCount,
+	template: Maybe(DecisionTemplate),
+}
+GameAction_RespondToShortcut :: struct {
+	response: ShortcutResponse,
+}
+GameAction_DeclineShortcut :: struct {
+}
+GameAction_PrecastCopyShortcut :: struct {
+	epoch: u64,
+	response: PrecastCopyShortcutResponse,
+}
+GameAction_EndContinuousEffect :: struct {
+	group: EndEffectGroupId,
+	source_name: string,
+	cost: ManaCost,
+}
+GameAction_BeginResolveAll :: struct {
+	max_resolutions: u32,
+	scope: ResolveAllScope,
+}
+GameAction_RespondResolveAllConsent :: struct {
+	epoch: u64,
+	decision: ResolveAllConsentDecision,
+}
+GameAction_RevokeResolveAllConsent :: struct {
+	epoch: u64,
+	representative: PlayerId,
+}
+GameAction :: union {
+	GameAction_PassPriority,
+	GameAction_ChooseMeldPair,
+	GameAction_ChooseEntryAttackTarget,
+	GameAction_PlayLand,
+	GameAction_CastSpell,
+	GameAction_Foretell,
+	GameAction_ActivateAbility,
+	GameAction_DeclareAttackers,
+	GameAction_DeclareBlockers,
+	GameAction_ChooseUntap,
+	GameAction_ChooseExert,
+	GameAction_ChooseEnlist,
+	GameAction_ChooseClashOpponent,
+	GameAction_ChooseZoneOpponentChooser,
+	GameAction_ChoosePileOpponent,
+	GameAction_ChooseAnnouncingOpponent,
+	GameAction_ChooseGiftRecipient,
+	GameAction_ChooseAssistPlayer,
+	GameAction_CommitAssistPayment,
+	GameAction_MulliganDecision,
+	GameAction_ReorderHand,
+	GameAction_TapLandForMana,
+	GameAction_ActivateManaSource,
+	GameAction_BackToManaPayment,
+	GameAction_UntapLandForMana,
+	GameAction_SpendPoolMana,
+	GameAction_UnspendPoolMana,
+	GameAction_SelectCards,
+	GameAction_ChooseRemoveCounterCostDistribution,
+	GameAction_SelectCoinFlips,
+	GameAction_SelectDieRolls,
+	GameAction_ChooseOutsideGameCards,
+	GameAction_SelectTargets,
+	GameAction_ChooseTarget,
+	GameAction_ChooseReplacement,
+	GameAction_ChooseReplacementAndRemember,
+	GameAction_SetReplacementAutoChoice,
+	GameAction_ChooseEntryController,
+	GameAction_OrderTriggers,
+	GameAction_OrderCostReductions,
+	GameAction_CancelCast,
+	GameAction_Equip,
+	GameAction_CrewVehicle,
+	GameAction_ActivateStation,
+	GameAction_SaddleMount,
+	GameAction_Transform,
+	GameAction_PlayFaceDown,
+	GameAction_TurnFaceUp,
+	GameAction_SubmitSideboard,
+	GameAction_ChoosePlayDraw,
+	GameAction_ChooseStartingPlayer,
+	GameAction_ChooseOption,
+	GameAction_SubmitVoteCandidate,
+	GameAction_SubmitSpellbookDraft,
+	GameAction_SubmitPilePartition,
+	GameAction_ChoosePile,
+	GameAction_ChooseBranch,
+	GameAction_SubmitLifeRedistribution,
+	GameAction_ChooseDamageSource,
+	GameAction_SelectModes,
+	GameAction_DecideOptionalCost,
+	GameAction_ChooseAdventureFace,
+	GameAction_ChooseModalFace,
+	GameAction_ChooseAlternativeCast,
+	GameAction_ChooseCastingVariant,
+	GameAction_KeepAllCopyTargets,
+	GameAction_ChoosePermanentTypeSlot,
+	GameAction_ActivateNinjutsu,
+	GameAction_CastSpellAsSneak,
+	GameAction_CastSpellAsWebSlinging,
+	GameAction_CastSpellForFree,
+	GameAction_CastSpellAsMiracle,
+	GameAction_CastSpellAsMadness,
+	GameAction_DecideOptionalEffect,
+	GameAction_ChooseResolutionOptionalPaymentBranch,
+	GameAction_RespondToSpliceOffer,
+	GameAction_DecideOptionalEffectAndRemember,
+	GameAction_PayUnlessCost,
+	GameAction_ChooseUnlessCostBranch,
+	GameAction_ChooseActivationCostBranch,
+	GameAction_PayCombatTax,
+	GameAction_ChooseRingBearer,
+	GameAction_ChoosePair,
+	GameAction_ChooseDungeon,
+	GameAction_ChooseDungeonRoom,
+	GameAction_UnlockRoomDoor,
+	GameAction_RollPlanarDie,
+	GameAction_ChooseRoomDoor,
+	GameAction_TapForConvoke,
+	GameAction_HarmonizeTap,
+	GameAction_ChooseSecretAgendaNames,
+	GameAction_DeclareCompanion,
+	GameAction_CompanionToHand,
+	GameAction_DiscoverChoice,
+	GameAction_GraveyardPaidCastChoice,
+	GameAction_CascadeChoice,
+	GameAction_RippleChoice,
+	GameAction_FreeCastWindowChoice,
+	GameAction_ChooseTopOrBottom,
+	GameAction_ChooseMutateMergeSide,
+	GameAction_CipherEncode,
+	GameAction_ChooseLegend,
+	GameAction_ChooseBattleProtector,
+	GameAction_SetAutoPass,
+	GameAction_CancelAutoPass,
+	GameAction_SetPhaseStops,
+	GameAction_SetPriorityPassingMode,
+	GameAction_SetPriorityYield,
+	GameAction_SetMayTriggerAutoChoice,
+	GameAction_UnAction,
+	GameAction_SetTriggerOrderTemplate,
+	GameAction_AssignCombatDamage,
+	GameAction_AssignBlockerDamage,
+	GameAction_DistributeAmong,
+	GameAction_ChooseCounterMoveDistribution,
+	GameAction_ChooseCountersToRemove,
+	GameAction_SubmitPayAmount,
+	GameAction_RetargetSpell,
+	GameAction_LearnDecision,
+	GameAction_SelectCategoryPermanents,
+	GameAction_ChooseKeptCreatures,
+	GameAction_ChooseKeptPermanents,
+	GameAction_ChooseX,
+	GameAction_SubmitPhyrexianChoices,
+	GameAction_ChooseManaColor,
+	GameAction_PayManaAbilityMana,
+	GameAction_CastPreparedCopy,
+	GameAction_ChooseSpecializeColor,
+	GameAction_CastParadigmCopy,
+	GameAction_PassParadigmOffer,
+	GameAction_Debug,
+	GameAction_GrantDebugPermission,
+	GameAction_RevokeDebugPermission,
+	GameAction_Concede,
+	GameAction_DeclareShortcut,
+	GameAction_RespondToShortcut,
+	GameAction_DeclineShortcut,
+	GameAction_PrecastCopyShortcut,
+	GameAction_EndContinuousEffect,
+	GameAction_BeginResolveAll,
+	GameAction_RespondResolveAllConsent,
+	GameAction_RevokeResolveAllConsent,
+}
+
+WaitingFor_Priority :: struct {
+	player: PlayerId,
+}
+WaitingFor_ResolveAllConsent :: struct {
+	epoch: u64,
+	representative: PlayerId,
+}
+WaitingFor_ResolveAllReady :: struct {
+	epoch: u64,
+}
+WaitingFor_MeldPairChoice :: struct {
+	player: PlayerId,
+	choices: [dynamic]MeldSelection,
+}
+WaitingFor_MeldAttackTargetChoice :: struct {
+	player: PlayerId,
+	context_: MeldSelection,
+	valid_targets: [dynamic]AttackTarget,
+}
+WaitingFor_EntryAttackTargetChoice :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	valid_targets: [dynamic]AttackTarget,
+}
+WaitingFor_MulliganDecision :: struct {
+	pending: [dynamic]MulliganDecisionEntry,
+	free_first_mulligan: bool,
+	declared: [dynamic]MulliganDeclaration,
+}
+WaitingFor_OpeningHandBottomCards :: struct {
+	pending: [dynamic]MulliganBottomEntry,
+	reason: OpeningHandBottomReason,
+}
+WaitingFor_ManaPayment :: struct {
+	player: PlayerId,
+	convoke_mode: Maybe(ConvokeMode),
+}
+WaitingFor_ManaSourceSelection :: struct {
+	player: PlayerId,
+	options: [dynamic]ManaSourceSelection,
+	convoke_mode: Maybe(ConvokeMode),
+}
+WaitingFor_AssistChoosePlayer :: struct {
+	player: PlayerId,
+	candidates: [dynamic]PlayerId,
+	max_generic: u32,
+	convoke_mode: Maybe(ConvokeMode),
+}
+WaitingFor_AssistPayment :: struct {
+	caster: PlayerId,
+	chosen: PlayerId,
+	max_generic: u32,
+	convoke_mode: Maybe(ConvokeMode),
+}
+WaitingFor_ChooseXValue :: struct {
+	player: PlayerId,
+	min: u32,
+	max: u32,
+	pending_cast: ^PendingCast,
+	convoke_mode: Maybe(ConvokeMode),
+	x_cost_previews: [dynamic]Tuple2(u32, ManaCost),
+}
+WaitingFor_TargetSelection :: struct {
+	player: PlayerId,
+	pending_cast: ^PendingCast,
+	target_slots: [dynamic]TargetSelectionSlot,
+	mode_labels: [dynamic]Maybe(string),
+	selection: TargetSelectionProgress,
+}
+WaitingFor_DeclareAttackers :: struct {
+	player: PlayerId,
+	valid_attacker_ids: [dynamic]ObjectId,
+	valid_attack_targets: [dynamic]AttackTarget,
+	valid_attack_targets_by_attacker: Maybe(map[ObjectId][dynamic]AttackTarget),
+	attacker_constraints: map[ObjectId]CombatRequirement,
+}
+WaitingFor_DeclareBlockers :: struct {
+	player: PlayerId,
+	valid_blocker_ids: [dynamic]ObjectId,
+	valid_block_targets: map[ObjectId][dynamic]ObjectId,
+	block_requirements: map[ObjectId]BlockRequirement,
+	blocker_constraints: map[ObjectId]CombatRequirement,
+	must_be_blocked_targets: map[ObjectId][dynamic]ObjectId,
+	block_capacities: map[ObjectId]Maybe(u32),
+}
+WaitingFor_UntapChoice :: struct {
+	player: PlayerId,
+	candidates: [dynamic]ObjectId,
+	chosen_not_to_untap: [dynamic]ObjectId,
+	progress: UntapStepProgress,
+}
+WaitingFor_ChooseUntapSubset :: struct {
+	player: PlayerId,
+	group: [dynamic]ObjectId,
+	max: int,
+	progress: UntapStepProgress,
+}
+WaitingFor_ExertChoice :: struct {
+	player: PlayerId,
+	attacker: ObjectId,
+	permission: TriggerDefinitionRef,
+	remaining: [dynamic]PendingAttackExert,
+}
+WaitingFor_EnlistChoice :: struct {
+	player: PlayerId,
+	attacker: ObjectId,
+	eligible: [dynamic]ObjectId,
+	remaining: [dynamic]ObjectId,
+}
+WaitingFor_GameOver :: struct {
+	winner: Maybe(PlayerId),
+}
+WaitingFor_ReplacementChoice :: struct {
+	player: PlayerId,
+	candidate_count: int,
+	candidates: [dynamic]ReplacementCandidateSummary,
+	kind: ReplacementChoiceKind,
+	last_applied_decides: bool,
+	remember_identity: Maybe(ReplacementAutoChoiceKey),
+}
+WaitingFor_ReplacementDecisionOrder :: struct {
+	player: PlayerId,
+	objects: [dynamic]ObjectId,
+}
+WaitingFor_EntryControllerChoice :: struct {
+	player: PlayerId,
+	candidates: [dynamic]PlayerId,
+}
+WaitingFor_OrderTriggers :: struct {
+	player: PlayerId,
+	triggers: [dynamic]PendingTriggerSummary,
+}
+WaitingFor_CopyTargetChoice :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	valid_targets: [dynamic]ObjectId,
+	max_mana_value: Maybe(u32),
+	purpose: CopyTargetPurpose,
+}
+WaitingFor_ExploreChoice :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	choosable: [dynamic]ObjectId,
+	remaining: [dynamic]ObjectId,
+	pending_effect: ^ResolvedAbility,
+}
+WaitingFor_ReturnAsAuraTarget :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	returned_id: ObjectId,
+	legal_targets: [dynamic]TargetRef,
+	pending_effect: ^ResolvedAbility,
+}
+WaitingFor_ChooseTokenHost :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	legal_targets: [dynamic]TargetRef,
+	pending_ability: ^ResolvedAbility,
+}
+WaitingFor_EquipTarget :: struct {
+	player: PlayerId,
+	equipment_id: ObjectId,
+	valid_targets: [dynamic]ObjectId,
+}
+WaitingFor_CrewVehicle :: struct {
+	player: PlayerId,
+	vehicle_id: ObjectId,
+	crew_power: u32,
+	eligible_creatures: [dynamic]ObjectId,
+	contributions: [dynamic]i32,
+}
+WaitingFor_StationTarget :: struct {
+	player: PlayerId,
+	spacecraft_id: ObjectId,
+	eligible_creatures: [dynamic]ObjectId,
+}
+WaitingFor_SaddleMount :: struct {
+	player: PlayerId,
+	mount_id: ObjectId,
+	saddle_power: u32,
+	eligible_creatures: [dynamic]ObjectId,
+	contributions: [dynamic]i32,
+}
+WaitingFor_ScryChoice :: struct {
+	player: PlayerId,
+	cards: [dynamic]ObjectId,
+}
+WaitingFor_RippleRevealChoice :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	count: u32,
+}
+WaitingFor_RippleBottomOrder :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	cards: [dynamic]ObjectId,
+	final_cast: Maybe(ObjectId),
+}
+WaitingFor_RevealUntilBottomOrder :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	cards: [dynamic]ObjectId,
+	clear_markers: [dynamic]ObjectId,
+	emit_reveal_until_resolved: Maybe(ObjectId),
+	reveal_until_hit_snapshot: ^EventObjectSnapshot,
+}
+WaitingFor_DigBottomOrder :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	cards: [dynamic]ObjectId,
+}
+WaitingFor_ArrangePlanarDeckTopChoice :: struct {
+	player: PlayerId,
+	cards: [dynamic]ObjectId,
+	keep_on_top: int,
+}
+WaitingFor_RedistributeLifeTotals :: struct {
+	player: PlayerId,
+	options: [dynamic]LifeRedistributionOption,
+}
+WaitingFor_CoinFlipKeepChoice :: struct {
+	player: PlayerId,
+	results: [dynamic]bool,
+	keep_count: int,
+}
+WaitingFor_DieKeepChoice :: struct {
+	player: PlayerId,
+	results: [dynamic]u8,
+	ignorable_indices: [dynamic]int,
+	ignore_count: int,
+}
+WaitingFor_DigChoice :: struct {
+	player: PlayerId,
+	library_owner: PlayerId,
+	cards: [dynamic]ObjectId,
+	keep_count: int,
+	up_to: bool,
+	selectable_cards: [dynamic]ObjectId,
+	kept_destination: Maybe(Zone),
+	rest_destination: Maybe(Zone),
+	rest_remainder: DigRestRemainder,
+	rest_split_top_count: Maybe(int),
+	rest_order: DigRestOrder,
+	source_id: Maybe(ObjectId),
+	enter_tapped: bool,
+	enters_attacking: bool,
+}
+WaitingFor_DigRestSplitChoice :: struct {
+	player: PlayerId,
+	library_owner: PlayerId,
+	cards: [dynamic]ObjectId,
+	top_count: int,
+	bottom_count: int,
+	scope: DigRestSplitScope,
+	source_id: Maybe(ObjectId),
+	completion: Maybe(LibraryPlacementContinuation),
+}
+WaitingFor_SurveilChoice :: struct {
+	player: PlayerId,
+	cards: [dynamic]ObjectId,
+}
+WaitingFor_RevealChoice :: struct {
+	player: PlayerId,
+	cards: [dynamic]ObjectId,
+	filter: TargetFilter,
+	optional: bool,
+	decline_runs_continuation: bool,
+	cardinality: ObjectSelectionCardinality,
+	pending_mana_ability: ^PendingManaAbility,
+}
+WaitingFor_SearchChoice :: struct {
+	player: PlayerId,
+	library_owner: Maybe(PlayerId),
+	cards: [dynamic]ObjectId,
+	count: int,
+	reveal: bool,
+	up_to: bool,
+	allows_partial_find: bool,
+	constraint: SearchSelectionConstraint,
+	ordering_hint: SearchOrderingHint,
+	split: Maybe(SearchDestinationSplit),
+}
+WaitingFor_SearchPartitionChoice :: struct {
+	player: PlayerId,
+	cards: [dynamic]ObjectId,
+	primary_destination: Zone,
+	primary_count: u32,
+	primary_enter_tapped: EtbTapState,
+	rest_destination: Zone,
+	source_id: ObjectId,
+}
+WaitingFor_OutsideGameChoice :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	choices: [dynamic]OutsideGameChoiceEntry,
+	count: int,
+	reveal: bool,
+	up_to: bool,
+	destination: Zone,
+}
+WaitingFor_ChooseFromZoneChoice :: struct {
+	player: PlayerId,
+	cards: [dynamic]ObjectId,
+	count: int,
+	up_to: bool,
+	constraint: Maybe(ChooseFromZoneConstraint),
+	source_id: ObjectId,
+	reciprocal_role: Maybe(ReciprocalZoneChoiceRole),
+}
+WaitingFor_BeholdChoice :: struct {
+	player: PlayerId,
+	choices: [dynamic]ObjectId,
+}
+WaitingFor_EmpowerJaceChoice :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	choices: [dynamic]ObjectId,
+	count: u32,
+}
+WaitingFor_MemberOrderChoice :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	choices: [dynamic]ObjectId,
+	purpose: MemberOrderPurpose,
+}
+WaitingFor_ChooseOneOfBranch :: struct {
+	player: PlayerId,
+	controller: PlayerId,
+	source_id: ObjectId,
+	branches: [dynamic]AbilityDefinition,
+	branch_descriptions: [dynamic]string,
+	parent_occurrences: ParentTargetOccurrences,
+	context_: SpellContext,
+	continuation: ^ResolvedAbility,
+	replacement_applied: [dynamic]AppliedReplacementKey,
+	remaining_players: [dynamic]PlayerId,
+	trigger_context: Maybe(ResolvingTriggerContext),
+}
+WaitingFor_ConniveDiscard :: struct {
+	player: PlayerId,
+	conniver: ConniveSubject,
+	source_id: ObjectId,
+	cards: [dynamic]ObjectId,
+	count: int,
+}
+WaitingFor_DiscardChoice :: struct {
+	player: PlayerId,
+	count: int,
+	cards: [dynamic]ObjectId,
+	source_id: ObjectId,
+	effect_kind: EffectKind,
+	up_to: bool,
+	unless_filter: Maybe(TargetFilter),
+	discard_frame: Maybe(DiscardFrameId),
+}
+WaitingFor_HeroEventChoice :: struct {
+	player: PlayerId,
+	event: HeroEventKind,
+	event_id: ObjectId,
+	cards: [dynamic]ObjectId,
+	count: int,
+	up_to: bool,
+	min: int,
+	remaining_heroes: [dynamic]PlayerId,
+	answers: [dynamic]HeroEventAnswer,
+	copies_pending: u32,
+	fired_baxters: [dynamic]ObjectId,
+}
+WaitingFor_EffectZoneChoice :: struct {
+	player: PlayerId,
+	cards: [dynamic]ObjectId,
+	count: int,
+	min_count: int,
+	up_to: bool,
+	source_id: ObjectId,
+	effect_kind: EffectKind,
+	zone: Zone,
+	destination: Maybe(Zone),
+	enter_tapped: EtbTapState,
+	enter_transformed: bool,
+	enters_under_player: Maybe(PlayerId),
+	enters_attacking: bool,
+	owner_library: bool,
+	track_exiled_by_source: bool,
+	face_down_in_exile: ExileConcealment,
+	face_down_profile: Maybe(FaceDownProfile),
+	with_entry_effect: ^WithEntryEffect,
+	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
+	conditional_enter_with_counters: [dynamic]Tuple3(TargetFilter, CounterType, QuantityExpr),
+	count_param: u32,
+	library_position: Maybe(LibraryPosition),
+	library_shuffle: LibraryShuffleMode,
+	mass_library_order: Maybe(MassLibraryOrderBatch),
+	is_cost_payment: bool,
+	enters_modified_if: Maybe(TargetFilter),
+	duration: Maybe(Duration),
+	performed_by: Maybe(PlayerId),
+	privacy_zones: Maybe([dynamic]Zone),
+}
+WaitingFor_DrawnThisTurnTopdeckChoice :: struct {
+	player: PlayerId,
+	cards: [dynamic]ObjectId,
+	count: int,
+	min_count: int,
+	life_payment: u32,
+	source_id: ObjectId,
+}
+WaitingFor_LearnChoice :: struct {
+	player: PlayerId,
+	hand_cards: [dynamic]ObjectId,
+}
+WaitingFor_ManifestDreadChoice :: struct {
+	player: PlayerId,
+	cards: [dynamic]ObjectId,
+	source_id: ObjectId,
+}
+WaitingFor_TriggerTargetSelection :: struct {
+	player: PlayerId,
+	trigger_controller: Maybe(PlayerId),
+	trigger_event: Maybe(GameEvent),
+	trigger_events: [dynamic]GameEvent,
+	target_slots: [dynamic]TargetSelectionSlot,
+	mode_labels: [dynamic]Maybe(string),
+	target_constraints: [dynamic]TargetSelectionConstraint,
+	selection: TargetSelectionProgress,
+	source_id: Maybe(ObjectId),
+	description: Maybe(string),
+}
+WaitingFor_BetweenGamesSideboard :: struct {
+	player: PlayerId,
+	game_number: u8,
+	score: MatchScore,
+	min_main_deck_size: u32,
+	max_sideboard_size: Maybe(u32),
+}
+WaitingFor_BetweenGamesChoosePlayDraw :: struct {
+	player: PlayerId,
+	game_number: u8,
+	score: MatchScore,
+}
+WaitingFor_ChooseStartingPlayer :: struct {
+	player: PlayerId,
+	candidates: [dynamic]PlayerId,
+}
+WaitingFor_NamedChoice :: struct {
+	player: PlayerId,
+	choice_type: ChoiceType,
+	options: [dynamic]string,
+	source: Maybe(NamedChoiceSource),
+	persist_player: Maybe(PlayerId),
+	free_entry: Maybe(FreeEntry),
+	decision_subject_id: Maybe(ObjectId),
+}
+WaitingFor_OpponentGuess :: struct {
+	player: PlayerId,
+	options: [dynamic]string,
+	choice_type: ChoiceType,
+	source: OpponentGuessSource,
+	owner: ^OpponentGuessOwner,
+	proposition_truth: Maybe(bool),
+}
+WaitingFor_SpellbookDraft :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	options: [dynamic]string,
+	destination: Zone,
+	tapped: bool,
+}
+WaitingFor_DamageSourceChoice :: struct {
+	player: PlayerId,
+	source_filter: TargetFilter,
+	options: [dynamic]ObjectId,
+}
+WaitingFor_ModeChoice :: struct {
+	player: PlayerId,
+	modal: ModalChoice,
+	pending_cast: ^PendingCast,
+	unavailable_modes: [dynamic]int,
+}
+WaitingFor_DiscardToHandSize :: struct {
+	player: PlayerId,
+	count: int,
+	cards: [dynamic]ObjectId,
+}
+WaitingFor_OptionalCostChoice :: struct {
+	player: PlayerId,
+	cost: AdditionalCost,
+	times_kicked: u32,
+	origin: AdditionalCostOrigin,
+	gift_kind: Maybe(GiftKind),
+	pending_cast: ^PendingCast,
+}
+WaitingFor_ChooseGiftRecipient :: struct {
+	player: PlayerId,
+	candidates: [dynamic]PlayerId,
+	gift_kind: Maybe(GiftKind),
+	purpose: CastOpponentChoicePurpose,
+	pending_cast: ^PendingCast,
+}
+WaitingFor_SpliceOffer :: struct {
+	player: PlayerId,
+	pending_cast: ^PendingCast,
+	eligible: [dynamic]ObjectId,
+}
+WaitingFor_DefilerPayment :: struct {
+	player: PlayerId,
+	life_cost: u32,
+	mana_reduction: ManaCost,
+	reach: CostReductionReach,
+	pending_cast: ^PendingCast,
+}
+WaitingFor_OrderCostReductions :: struct {
+	player: PlayerId,
+	reductions: [dynamic]CostReductionEntry,
+	hybrid_symbols: [dynamic]ManaCostShard,
+	outcomes: [dynamic]CostReductionOutcome,
+	pending_cast: ^PendingCast,
+}
+WaitingFor_CastOffer :: struct {
+	player: PlayerId,
+	kind: CastOfferKind,
+}
+WaitingFor_ModalFaceChoice :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	card_id: CardId,
+	payment_mode: CastPaymentMode,
+	resolution_additional_cost: Maybe(ManaCost),
+}
+WaitingFor_AlternativeCastChoice :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	card_id: CardId,
+	payment_mode: CastPaymentMode,
+	keyword: AlternativeCastKeyword,
+	normal_cost: ManaCost,
+	alternative_cost: Maybe(ManaCost),
+	alternative_additional_cost: Maybe(AbilityCost),
+	alternative_additional_cost_description: Maybe(AlternativeAdditionalCostDescription),
+}
+WaitingFor_MutateMergeChoice :: struct {
+	player: PlayerId,
+	merging_id: ObjectId,
+	target_id: ObjectId,
+}
+WaitingFor_CipherEncodeChoice :: struct {
+	player: PlayerId,
+	card_id: ObjectId,
+	creatures: [dynamic]ObjectId,
+}
+WaitingFor_CastingVariantChoice :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	card_id: CardId,
+	payment_mode: CastPaymentMode,
+	options: [dynamic]CastingVariantChoiceOption,
+}
+WaitingFor_ChoosePermanentTypeSlot :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	card_id: CardId,
+	source: ObjectId,
+	payment_mode: CastPaymentMode,
+	available_slots: [dynamic]CoreType,
+	permission: Maybe(AnnouncedGraveyardPermission),
+}
+WaitingFor_MultiTargetSelection :: struct {
+	player: PlayerId,
+	legal_targets: [dynamic]ObjectId,
+	min_targets: int,
+	max_targets: int,
+	pending_ability: ^ResolvedAbility,
+}
+WaitingFor_AbilityModeChoice :: struct {
+	player: PlayerId,
+	modal: ModalChoice,
+	source_id: ObjectId,
+	mode_abilities: [dynamic]AbilityDefinition,
+	is_activated: bool,
+	ability_index: Maybe(int),
+	ability_cost: Maybe(AbilityCost),
+	activation_cost_snapshot: ^ActivationCostSnapshot,
+	activation_payment_mode: CastPaymentMode,
+	unavailable_modes: [dynamic]int,
+}
+WaitingFor_OptionalEffectChoice :: struct {
+	player: PlayerId,
+	decision_subject_id: Maybe(ObjectId),
+	source_id: ObjectId,
+	description: Maybe(string),
+	may_trigger_key: Maybe(MayTriggerAutoChoiceKey),
+	same_card_may_trigger_choice_available: bool,
+}
+WaitingFor_ResolutionOptionalPaymentChoice :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	costs: [dynamic]ResolutionOptionalPaymentOption,
+}
+WaitingFor_PairChoice :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	choices: [dynamic]ObjectId,
+}
+WaitingFor_TributeChoice :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	count: u32,
+}
+WaitingFor_MiracleReveal :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	cost: ManaCost,
+}
+WaitingFor_OpponentMayChoice :: struct {
+	player: PlayerId,
+	decision_subject_id: Maybe(ObjectId),
+	source_id: ObjectId,
+	description: Maybe(string),
+	remaining: [dynamic]PlayerId,
+}
+WaitingFor_LoopShortcut :: struct {
+	proposer: PlayerId,
+	predicted_winner: Maybe(PlayerId),
+	certificate: LoopCertificate,
+	schema: ShortcutDecisionSchema,
+	declaration: Maybe(DecisionTemplate),
+	counted_take: CountedTake,
+	period: ConfirmedPeriod,
+}
+WaitingFor_RespondToShortcut :: struct {
+	player: PlayerId,
+	remaining_players: [dynamic]PlayerId,
+	proposal: ShortcutProposal,
+}
+WaitingFor_PrecastCopyShortcutOffer :: struct {
+	proposer: PlayerId,
+	epoch: u64,
+	route_count: u8,
+}
+WaitingFor_RespondToPrecastCopyShortcut :: struct {
+	player: PlayerId,
+	epoch: u64,
+	breakpoint_ids: [dynamic]u64,
+	remaining_players: [dynamic]PlayerId,
+}
+WaitingFor_UnlessPayment :: struct {
+	player: PlayerId,
+	repeat: Maybe(u32),
+	cost: AbilityCost,
+	pending_effect: ^ResolvedAbility,
+	trigger_event: Maybe(GameEvent),
+	effect_description: Maybe(string),
+	remaining: [dynamic]PlayerId,
+	affected_object: Maybe(ObjectId),
+}
+WaitingFor_UnlessPaymentChooseCost :: struct {
+	player: PlayerId,
+	costs: [dynamic]AbilityCost,
+	pending_effect: ^ResolvedAbility,
+	trigger_event: Maybe(GameEvent),
+	effect_description: Maybe(string),
+	remaining_choices: [dynamic][dynamic]AbilityCost,
+	chosen: [dynamic]AbilityCost,
+	affected_object: Maybe(ObjectId),
+}
+WaitingFor_WardDiscardChoice :: struct {
+	player: PlayerId,
+	cards: [dynamic]ObjectId,
+	pending_effect: ^ResolvedAbility,
+	remaining: u32,
+	filter: Maybe(TargetFilter),
+}
+WaitingFor_WardSacrificeChoice :: struct {
+	player: PlayerId,
+	permanents: [dynamic]ObjectId,
+	pending_effect: ^ResolvedAbility,
+	remaining: u32,
+	min_total_power: Maybe(i32),
+	trigger_event: Maybe(GameEvent),
+}
+WaitingFor_UnlessBounceChoice :: struct {
+	player: PlayerId,
+	permanents: [dynamic]ObjectId,
+	pending_effect: ^ResolvedAbility,
+	remaining: u32,
+}
+WaitingFor_ChooseRingBearer :: struct {
+	player: PlayerId,
+	candidates: [dynamic]ObjectId,
+}
+WaitingFor_ChooseRoomDoor :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	options: [dynamic]Tuple2(DoorLockOp, RoomDoor),
+}
+WaitingFor_ChooseDungeon :: struct {
+	player: PlayerId,
+	options: [dynamic]DungeonPreview,
+}
+WaitingFor_ChooseDungeonRoom :: struct {
+	player: PlayerId,
+	dungeon: DungeonId,
+	dungeon_name: string,
+	options: [dynamic]RoomPreview,
+}
+WaitingFor_SpecializeColor :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	options: [dynamic]ManaColor,
+}
+WaitingFor_PayCost :: struct {
+	player: PlayerId,
+	kind: PayCostKind,
+	choices: [dynamic]ObjectId,
+	count: int,
+	min_count: int,
+	resume: CostResume,
+}
+WaitingFor_ActivationCostOneOfChoice :: struct {
+	player: PlayerId,
+	costs: [dynamic]AbilityCost,
+	pending_cast: ^PendingCast,
+}
+WaitingFor_CostTypeChoice :: struct {
+	player: PlayerId,
+	choice_type: ChoiceType,
+	options: [dynamic]string,
+	pending_cast: ^PendingCast,
+}
+WaitingFor_BlightChoice :: struct {
+	player: PlayerId,
+	counters: u32,
+	creatures: [dynamic]ObjectId,
+	pending_cast: ^PendingCast,
+}
+WaitingFor_PayManaAbilityMana :: struct {
+	player: PlayerId,
+	options: [dynamic][dynamic]ManaType,
+	pending_mana_ability: ^PendingManaAbility,
+}
+WaitingFor_ManaAbilityManaPayment :: struct {
+	player: PlayerId,
+	pending_mana_ability: ^PendingManaAbility,
+}
+WaitingFor_ChooseManaColor :: struct {
+	player: PlayerId,
+	choice: ManaChoicePrompt,
+	context_: ManaChoiceContext,
+}
+WaitingFor_CollectEvidenceChoice :: struct {
+	player: PlayerId,
+	minimum_mana_value: u32,
+	cards: [dynamic]ObjectId,
+	resume: ^CollectEvidenceResume,
+}
+WaitingFor_HarmonizeTapChoice :: struct {
+	player: PlayerId,
+	eligible_creatures: [dynamic]ObjectId,
+	pending_cast: ^PendingCast,
+}
+WaitingFor_RevealUntilKeptChoice :: struct {
+	player: PlayerId,
+	hit_card: ObjectId,
+	source_id: ObjectId,
+	accept_zone: Zone,
+	decline_zone: Zone,
+	enter_tapped: EtbTapState,
+	enters_attacking: bool,
+	revealed_misses: [dynamic]ObjectId,
+	rest_destination: Zone,
+	rest_order: DigRestOrder,
+}
+WaitingFor_RepeatDecision :: struct {
+	player: PlayerId,
+	ability: ^ResolvedAbility,
+}
+WaitingFor_TopOrBottomChoice :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	top_position: LibraryPosition,
+}
+WaitingFor_PopulateChoice :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	valid_tokens: [dynamic]ObjectId,
+}
+WaitingFor_ClashChooseOpponent :: struct {
+	player: PlayerId,
+	candidates: [dynamic]PlayerId,
+	ability: ^ResolvedAbility,
+}
+WaitingFor_ChooseFromZoneOpponentChooser :: struct {
+	player: PlayerId,
+	candidates: [dynamic]PlayerId,
+	ability: ^ResolvedAbility,
+	purpose: ZoneOpponentChooserPurpose,
+}
+WaitingFor_ChooseAnnouncingOpponent :: struct {
+	player: PlayerId,
+	candidates: [dynamic]PlayerId,
+	choice_index: int,
+	choice_count: int,
+	target_type: Maybe(CoreType),
+	pending_cast: ^PendingCast,
+}
+WaitingFor_ClashCardPlacement :: struct {
+	player: PlayerId,
+	card: ObjectId,
+	remaining: [dynamic]Tuple2(PlayerId, ObjectId),
+	bottom_cards: [dynamic]ObjectId,
+}
+WaitingFor_PhysicalContest :: struct {
+	contest: ^ContestState,
+	source_id: ObjectId,
+}
+WaitingFor_VoteChoice :: struct {
+	player: PlayerId,
+	remaining_votes: u32,
+	options: [dynamic]string,
+	option_labels: [dynamic]string,
+	remaining_voters: [dynamic]Tuple2(PlayerId, u32),
+	tallies: [dynamic]u32,
+	ballots: [dynamic]Tuple2(PlayerId, u32),
+	per_choice_effect: [dynamic]^AbilityDefinition,
+	controller: PlayerId,
+	source_id: ObjectId,
+	actor: VoteActor,
+	tally_mode: VoteTally,
+	candidate_objects: [dynamic]ObjectId,
+	outcome_template: ^AbilityDefinition,
+	visibility: VoteVisibility,
+	chain_root_targets: [dynamic]TargetRef,
+}
+WaitingFor_SeparatePilesChooseOpponent :: struct {
+	player: PlayerId,
+	candidates: [dynamic]PlayerId,
+	eligible: [dynamic]ObjectId,
+	chooser: PlayerId,
+	chosen_pile_effect: ^AbilityDefinition,
+	unchosen_pile_effect: ^AbilityDefinition,
+	source_id: ObjectId,
+	pile_source: PileSource,
+}
+WaitingFor_SeparatePilesPartition :: struct {
+	player: PlayerId,
+	eligible: [dynamic]ObjectId,
+	remaining_subjects: [dynamic]Tuple2(PlayerId, [dynamic]ObjectId),
+	completed: [dynamic]PileResult,
+	chooser: PlayerId,
+	chosen_pile_effect: ^AbilityDefinition,
+	unchosen_pile_effect: ^AbilityDefinition,
+	source_id: ObjectId,
+	pile_source: PileSource,
+}
+WaitingFor_SeparatePilesChoice :: struct {
+	player: PlayerId,
+	pending: [dynamic]PileResult,
+	current: PileResult,
+	chosen_pile_effect: ^AbilityDefinition,
+	unchosen_pile_effect: ^AbilityDefinition,
+	source_id: ObjectId,
+	pile_source: PileSource,
+}
+WaitingFor_SecretAgendaChoice :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	name_count: u8,
+}
+WaitingFor_CompanionReveal :: struct {
+	player: PlayerId,
+	eligible_companions: [dynamic]CompanionRevealChoice,
+}
+WaitingFor_ChooseLegend :: struct {
+	player: PlayerId,
+	legend_name: string,
+	candidates: [dynamic]ObjectId,
+}
+WaitingFor_CommanderZoneChoice :: struct {
+	player: PlayerId,
+	commander_id: ObjectId,
+	current_zone: Zone,
+}
+WaitingFor_BattleProtectorChoice :: struct {
+	player: PlayerId,
+	battle_id: ObjectId,
+	candidates: [dynamic]PlayerId,
+}
+WaitingFor_ProliferateChoice :: struct {
+	player: PlayerId,
+	eligible: [dynamic]TargetRef,
+}
+WaitingFor_TimeTravelChoice :: struct {
+	player: PlayerId,
+	eligible: [dynamic]TargetRef,
+	phase: TimeTravelPhase,
+}
+WaitingFor_ChooseObjectsSelection :: struct {
+	player: PlayerId,
+	eligible: [dynamic]TargetRef,
+	min: u32,
+	max: Maybe(u32),
+	trigger_event: Maybe(GameEvent),
+}
+WaitingFor_CategoryChoice :: struct {
+	player: PlayerId,
+	target_player: PlayerId,
+	categories: [dynamic]CoreType,
+	chooser_scope: CategoryChooserScope,
+	choose_filter: TargetFilter,
+	sacrifice_filter: TargetFilter,
+	source_controller: PlayerId,
+	eligible_per_category: [dynamic][dynamic]ObjectId,
+	source_id: ObjectId,
+	remaining_players: [dynamic]PlayerId,
+	all_kept: [dynamic]ObjectId,
+	scoped_players: [dynamic]PlayerId,
+}
+WaitingFor_EachPlayerCopyChosenSelection :: struct {
+	player: PlayerId,
+	eligible: [dynamic]TargetRef,
+	min: u32,
+	max: u32,
+	choose_filter: TargetFilter,
+	copy_modifications: [dynamic]ContinuousModification,
+	scale: Maybe(CopyScale),
+	choose_scope: CopyChooseScope,
+	source_id: ObjectId,
+	source_controller: PlayerId,
+	remaining_players: [dynamic]PlayerId,
+	all_choices: [dynamic]CopyChosenSelection,
+	scoped_players: [dynamic]PlayerId,
+	trigger_event: Maybe(GameEvent),
+}
+WaitingFor_KeepWithinTotalPowerChoice :: struct {
+	player: PlayerId,
+	target_player: PlayerId,
+	eligible: [dynamic]ObjectId,
+	cap: i32,
+	choose_filter: TargetFilter,
+	sacrifice_filter: TargetFilter,
+	chooser_scope: CategoryChooserScope,
+	source_id: ObjectId,
+	source_controller: PlayerId,
+	remaining_players: [dynamic]PlayerId,
+	all_kept: [dynamic]ObjectId,
+	scoped_players: [dynamic]PlayerId,
+}
+WaitingFor_KeepExactPermanentsChoice :: struct {
+	player: PlayerId,
+	target_player: PlayerId,
+	eligible: [dynamic]ObjectId,
+	required_count: int,
+	keeper_counter: Maybe(Tuple2(CounterType, u32)),
+	choose_filter: TargetFilter,
+	sacrifice_filter: TargetFilter,
+	chooser_scope: CategoryChooserScope,
+	source_id: ObjectId,
+	source_controller: PlayerId,
+	remaining_players: [dynamic]PlayerId,
+	all_kept: [dynamic]ObjectId,
+	scoped_players: [dynamic]PlayerId,
+}
+WaitingFor_CopyRetarget :: struct {
+	player: PlayerId,
+	controller: Maybe(PlayerId),
+	copy_id: ObjectId,
+	target_slots: [dynamic]CopyTargetSlot,
+	effect_kind: EffectKind,
+	effect_source_id: Maybe(ObjectId),
+	current_slot: int,
+	paradigm_remaining_offers: Maybe([dynamic]ObjectId),
+	mode: Maybe(CopyChoiceMode),
+	picks: Maybe([dynamic]Maybe(TargetRef)),
+	can_keep_rest: bool,
+	announcer_election: Maybe(AnnouncerElection),
+}
+WaitingFor_AssignCombatDamage :: struct {
+	player: PlayerId,
+	attacker_id: ObjectId,
+	total_damage: u32,
+	blockers: [dynamic]DamageSlot,
+	assignment_modes: [dynamic]CombatDamageAssignmentMode,
+	trample: Maybe(TrampleKind),
+	defending_player: PlayerId,
+	attack_target: AttackTarget,
+	pw_loyalty: Maybe(u32),
+	pw_controller: Maybe(PlayerId),
+}
+WaitingFor_AssignBlockerDamage :: struct {
+	player: PlayerId,
+	blocker_id: ObjectId,
+	total_damage: u32,
+	attackers: [dynamic]ObjectId,
+}
+WaitingFor_DistributeAmong :: struct {
+	player: PlayerId,
+	total: u32,
+	targets: [dynamic]TargetRef,
+	unit: DistributionUnit,
+	scope: DistributionScope,
+}
+WaitingFor_MoveCountersDistribution :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	counter_type: Maybe(CounterType),
+	available: [dynamic]Tuple2(CounterType, u32),
+	destinations: [dynamic]ObjectId,
+	pending_effect: ^ResolvedAbility,
+}
+WaitingFor_RemoveCountersChoice :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	counter_type: Maybe(CounterType),
+	available: [dynamic]Tuple2(CounterType, u32),
+	max_total: Maybe(u32),
+	pending_effect: ^ResolvedAbility,
+}
+WaitingFor_PayAmountChoice :: struct {
+	player: PlayerId,
+	resource: PayableResource,
+	min: u32,
+	max: u32,
+	accumulated: u32,
+	source_id: ObjectId,
+	pending_mana_ability: ^PendingManaAbility,
+}
+WaitingFor_RetargetChoice :: struct {
+	player: PlayerId,
+	stack_entry_index: int,
+	scope: RetargetScope,
+	current_targets: [dynamic]TargetRef,
+	slots: [dynamic]RetargetSlotAddress,
+	slot_pools: [dynamic][dynamic]TargetRef,
+	keep_is_distinct: [dynamic]bool,
+	legal_new_targets: [dynamic]TargetRef,
+}
+WaitingFor_CombatTaxPayment :: struct {
+	player: PlayerId,
+	context_: CombatTaxContext,
+	total_cost: ManaCost,
+	per_creature: [dynamic]Tuple2(ObjectId, ManaCost),
+	pending: CombatTaxPending,
+}
+WaitingFor_PhyrexianPayment :: struct {
+	player: PlayerId,
+	spell_object: ObjectId,
+	shards: [dynamic]PhyrexianShard,
+}
+WaitingFor :: union {
+	WaitingFor_Priority,
+	WaitingFor_ResolveAllConsent,
+	WaitingFor_ResolveAllReady,
+	WaitingFor_MeldPairChoice,
+	WaitingFor_MeldAttackTargetChoice,
+	WaitingFor_EntryAttackTargetChoice,
+	WaitingFor_MulliganDecision,
+	WaitingFor_OpeningHandBottomCards,
+	WaitingFor_ManaPayment,
+	WaitingFor_ManaSourceSelection,
+	WaitingFor_AssistChoosePlayer,
+	WaitingFor_AssistPayment,
+	WaitingFor_ChooseXValue,
+	WaitingFor_TargetSelection,
+	WaitingFor_DeclareAttackers,
+	WaitingFor_DeclareBlockers,
+	WaitingFor_UntapChoice,
+	WaitingFor_ChooseUntapSubset,
+	WaitingFor_ExertChoice,
+	WaitingFor_EnlistChoice,
+	WaitingFor_GameOver,
+	WaitingFor_ReplacementChoice,
+	WaitingFor_ReplacementDecisionOrder,
+	WaitingFor_EntryControllerChoice,
+	WaitingFor_OrderTriggers,
+	WaitingFor_CopyTargetChoice,
+	WaitingFor_ExploreChoice,
+	WaitingFor_ReturnAsAuraTarget,
+	WaitingFor_ChooseTokenHost,
+	WaitingFor_EquipTarget,
+	WaitingFor_CrewVehicle,
+	WaitingFor_StationTarget,
+	WaitingFor_SaddleMount,
+	WaitingFor_ScryChoice,
+	WaitingFor_RippleRevealChoice,
+	WaitingFor_RippleBottomOrder,
+	WaitingFor_RevealUntilBottomOrder,
+	WaitingFor_DigBottomOrder,
+	WaitingFor_ArrangePlanarDeckTopChoice,
+	WaitingFor_RedistributeLifeTotals,
+	WaitingFor_CoinFlipKeepChoice,
+	WaitingFor_DieKeepChoice,
+	WaitingFor_DigChoice,
+	WaitingFor_DigRestSplitChoice,
+	WaitingFor_SurveilChoice,
+	WaitingFor_RevealChoice,
+	WaitingFor_SearchChoice,
+	WaitingFor_SearchPartitionChoice,
+	WaitingFor_OutsideGameChoice,
+	WaitingFor_ChooseFromZoneChoice,
+	WaitingFor_BeholdChoice,
+	WaitingFor_EmpowerJaceChoice,
+	WaitingFor_MemberOrderChoice,
+	WaitingFor_ChooseOneOfBranch,
+	WaitingFor_ConniveDiscard,
+	WaitingFor_DiscardChoice,
+	WaitingFor_HeroEventChoice,
+	WaitingFor_EffectZoneChoice,
+	WaitingFor_DrawnThisTurnTopdeckChoice,
+	WaitingFor_LearnChoice,
+	WaitingFor_ManifestDreadChoice,
+	WaitingFor_TriggerTargetSelection,
+	WaitingFor_BetweenGamesSideboard,
+	WaitingFor_BetweenGamesChoosePlayDraw,
+	WaitingFor_ChooseStartingPlayer,
+	WaitingFor_NamedChoice,
+	WaitingFor_OpponentGuess,
+	WaitingFor_SpellbookDraft,
+	WaitingFor_DamageSourceChoice,
+	WaitingFor_ModeChoice,
+	WaitingFor_DiscardToHandSize,
+	WaitingFor_OptionalCostChoice,
+	WaitingFor_ChooseGiftRecipient,
+	WaitingFor_SpliceOffer,
+	WaitingFor_DefilerPayment,
+	WaitingFor_OrderCostReductions,
+	WaitingFor_CastOffer,
+	WaitingFor_ModalFaceChoice,
+	WaitingFor_AlternativeCastChoice,
+	WaitingFor_MutateMergeChoice,
+	WaitingFor_CipherEncodeChoice,
+	WaitingFor_CastingVariantChoice,
+	WaitingFor_ChoosePermanentTypeSlot,
+	WaitingFor_MultiTargetSelection,
+	WaitingFor_AbilityModeChoice,
+	WaitingFor_OptionalEffectChoice,
+	WaitingFor_ResolutionOptionalPaymentChoice,
+	WaitingFor_PairChoice,
+	WaitingFor_TributeChoice,
+	WaitingFor_MiracleReveal,
+	WaitingFor_OpponentMayChoice,
+	WaitingFor_LoopShortcut,
+	WaitingFor_RespondToShortcut,
+	WaitingFor_PrecastCopyShortcutOffer,
+	WaitingFor_RespondToPrecastCopyShortcut,
+	WaitingFor_UnlessPayment,
+	WaitingFor_UnlessPaymentChooseCost,
+	WaitingFor_WardDiscardChoice,
+	WaitingFor_WardSacrificeChoice,
+	WaitingFor_UnlessBounceChoice,
+	WaitingFor_ChooseRingBearer,
+	WaitingFor_ChooseRoomDoor,
+	WaitingFor_ChooseDungeon,
+	WaitingFor_ChooseDungeonRoom,
+	WaitingFor_SpecializeColor,
+	WaitingFor_PayCost,
+	WaitingFor_ActivationCostOneOfChoice,
+	WaitingFor_CostTypeChoice,
+	WaitingFor_BlightChoice,
+	WaitingFor_PayManaAbilityMana,
+	WaitingFor_ManaAbilityManaPayment,
+	WaitingFor_ChooseManaColor,
+	WaitingFor_CollectEvidenceChoice,
+	WaitingFor_HarmonizeTapChoice,
+	WaitingFor_RevealUntilKeptChoice,
+	WaitingFor_RepeatDecision,
+	WaitingFor_TopOrBottomChoice,
+	WaitingFor_PopulateChoice,
+	WaitingFor_ClashChooseOpponent,
+	WaitingFor_ChooseFromZoneOpponentChooser,
+	WaitingFor_ChooseAnnouncingOpponent,
+	WaitingFor_ClashCardPlacement,
+	WaitingFor_PhysicalContest,
+	WaitingFor_VoteChoice,
+	WaitingFor_SeparatePilesChooseOpponent,
+	WaitingFor_SeparatePilesPartition,
+	WaitingFor_SeparatePilesChoice,
+	WaitingFor_SecretAgendaChoice,
+	WaitingFor_CompanionReveal,
+	WaitingFor_ChooseLegend,
+	WaitingFor_CommanderZoneChoice,
+	WaitingFor_BattleProtectorChoice,
+	WaitingFor_ProliferateChoice,
+	WaitingFor_TimeTravelChoice,
+	WaitingFor_ChooseObjectsSelection,
+	WaitingFor_CategoryChoice,
+	WaitingFor_EachPlayerCopyChosenSelection,
+	WaitingFor_KeepWithinTotalPowerChoice,
+	WaitingFor_KeepExactPermanentsChoice,
+	WaitingFor_CopyRetarget,
+	WaitingFor_AssignCombatDamage,
+	WaitingFor_AssignBlockerDamage,
+	WaitingFor_DistributeAmong,
+	WaitingFor_MoveCountersDistribution,
+	WaitingFor_RemoveCountersChoice,
+	WaitingFor_PayAmountChoice,
+	WaitingFor_RetargetChoice,
+	WaitingFor_CombatTaxPayment,
+	WaitingFor_PhyrexianPayment,
+}
+
+GameEvent_GameStarted :: struct {
+}
+GameEvent_HiddenSearchViewed :: struct {
+	searcher: PlayerId,
+	cards: [dynamic]LibrarySearchCardView,
+	audience: [dynamic]PlayerId,
+}
+GameEvent_TurnStarted :: struct {
+	player_id: PlayerId,
+	turn_number: u32,
+}
+GameEvent_ExtraTurnCreated :: struct {
+	player_id: PlayerId,
+	anchor: PlayerId,
+}
+GameEvent_PhaseChanged :: struct {
+	phase: Phase,
+}
+GameEvent_PhaseChangedFor :: struct {
+	phase: Phase,
+	player: PlayerId,
+}
+GameEvent_PriorityPassed :: struct {
+	player_id: PlayerId,
+}
+GameEvent_SpellCast :: struct {
+	card_id: CardId,
+	controller: PlayerId,
+	object_id: ObjectId,
+	cast_mana_value: Maybe(u32),
+}
+GameEvent_Mutated :: struct {
+	merged_id: ObjectId,
+	merging_id: ObjectId,
+	controller: PlayerId,
+}
+GameEvent_Augmented :: struct {
+	merged_id: ObjectId,
+	augmenting_id: ObjectId,
+	controller: PlayerId,
+}
+GameEvent_Melded :: struct {
+	object_id: ObjectId,
+	partner_id: ObjectId,
+	controller: PlayerId,
+}
+GameEvent_SpellCopied :: struct {
+	card_id: CardId,
+	controller: PlayerId,
+	object_id: ObjectId,
+	original_id: ObjectId,
+}
+GameEvent_XValueChosen :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	value: u32,
+}
+GameEvent_AbilityActivated :: struct {
+	player_id: PlayerId,
+	source_id: ObjectId,
+	kind: ActivatedAbilityKind,
+	departed_source_lki: ^LKISnapshot,
+	trigger_state: ActivationTriggerState,
+	stack_entry: Maybe(ObjectId),
+	activation_cost: BoundActivationCost,
+}
+GameEvent_ZoneChanged :: struct {
+	object_id: ObjectId,
+	from: Maybe(Zone),
+	to: Zone,
+	record: ^ZoneChangeRecord,
+}
+GameEvent_LifeChanged :: struct {
+	player_id: PlayerId,
+	amount: i32,
+	new_total: LifeTotalReading,
+}
+GameEvent_ManaAdded :: struct {
+	player_id: PlayerId,
+	mana_type: ManaType,
+	source_id: ObjectId,
+	tap_state: ManaTapState,
+}
+GameEvent_TappedForMana :: struct {
+	player_id: PlayerId,
+	source_id: ObjectId,
+	produced: [dynamic]ManaType,
+	tap_state: ManaTapState,
+}
+GameEvent_ManaAbilityProduced :: struct {
+	player_id: PlayerId,
+	source_id: ObjectId,
+	produced: [dynamic]ManaType,
+	trigger_state: ManaAbilityTriggerState,
+}
+GameEvent_ManaPoolEmptied :: struct {
+	player_id: PlayerId,
+	source_id: ObjectId,
+	color: ManaType,
+}
+GameEvent_ManaBurn :: struct {
+	player_id: PlayerId,
+	amount: u32,
+}
+GameEvent_ManaRecolored :: struct {
+	player_id: PlayerId,
+	from: ManaType,
+	to: ManaType,
+}
+GameEvent_PermanentTapped :: struct {
+	object_id: ObjectId,
+	caused_by: Maybe(ObjectId),
+	incarnation: Maybe(u64),
+}
+GameEvent_CreatureExerted :: struct {
+	object_id: ObjectId,
+	player: Maybe(PlayerId),
+	origin: ExertOrigin,
+	attack_permission: Maybe(TriggerDefinitionRef),
+}
+GameEvent_CreatureEnlisted :: struct {
+	attacker: ObjectId,
+	tapped: ObjectId,
+	tapped_snapshot: ^CostPaidObjectSnapshot,
+}
+GameEvent_ArmyAmassed :: struct {
+	object_id: ObjectId,
+	source_id: ObjectId,
+	controller: PlayerId,
+}
+GameEvent_Foretold :: struct {
+	player_id: PlayerId,
+	object_id: ObjectId,
+}
+GameEvent_BecameForetold :: struct {
+	object_id: ObjectId,
+}
+GameEvent_PlayerLost :: struct {
+	player_id: PlayerId,
+	reasons: [dynamic]LossReason,
+}
+GameEvent_MulliganStarted :: struct {
+}
+GameEvent_CardsDrawn :: struct {
+	player_id: PlayerId,
+	count: u32,
+}
+GameEvent_CardDrawn :: struct {
+	player_id: PlayerId,
+	object_id: ObjectId,
+	nth_in_turn: u32,
+	nth_in_step: u32,
+}
+GameEvent_PermanentUntapped :: struct {
+	object_id: ObjectId,
+}
+GameEvent_PermanentPhasedOut :: struct {
+	object_id: ObjectId,
+	indirect: bool,
+}
+GameEvent_PermanentPhasedIn :: struct {
+	object_id: ObjectId,
+}
+GameEvent_PlayerPhasedOut :: struct {
+	player_id: PlayerId,
+}
+GameEvent_PlayerPhasedIn :: struct {
+	player_id: PlayerId,
+}
+GameEvent_LandPlayed :: struct {
+	object_id: ObjectId,
+	player_id: PlayerId,
+	from_zone: Zone,
+}
+GameEvent_StackPushed :: struct {
+	object_id: ObjectId,
+}
+GameEvent_AbilityTriggered :: struct {
+	stack_entry: Maybe(ObjectId),
+	source_id: ObjectId,
+	controller: PlayerId,
+	origin: TriggeredAbilityOrigin,
+	causes: [dynamic]GameEvent,
+}
+GameEvent_StackResolved :: struct {
+	object_id: ObjectId,
+}
+GameEvent_Discarded :: struct {
+	player_id: PlayerId,
+	object_id: ObjectId,
+	source_id: Maybe(ObjectId),
+}
+GameEvent_Milled :: struct {
+	player_id: PlayerId,
+	object_id: ObjectId,
+	to: Zone,
+}
+GameEvent_DamageCleared :: struct {
+	object_id: ObjectId,
+}
+GameEvent_GameOver :: struct {
+	winner: Maybe(PlayerId),
+}
+GameEvent_ResolutionHalted :: struct {
+	involved: [dynamic]ObjectId,
+}
+GameEvent_ShortcutRepetition :: struct {
+	controller: PlayerId,
+	repetition: u32,
+}
+GameEvent_DamageDealt :: struct {
+	source_id: ObjectId,
+	target: TargetRef,
+	amount: u32,
+	is_combat: bool,
+	excess: u32,
+	source_incarnation: Maybe(u64),
+}
+GameEvent_DamagePrevented :: struct {
+	source_id: ObjectId,
+	target: TargetRef,
+	amount: u32,
+}
+GameEvent_SpellCountered :: struct {
+	object_id: ObjectId,
+	countered_by: ObjectId,
+	countered_by_controller: PlayerId,
+}
+GameEvent_CounterAdded :: struct {
+	object_id: ObjectId,
+	counter_type: CounterType,
+	count: u32,
+	actor: PlayerId,
+}
+GameEvent_SagaChapterAbilityResolved :: struct {
+	saga: ^TriggerSourceContext,
+	controller: PlayerId,
+	chapter: u32,
+	final_chapter: u32,
+}
+GameEvent_ObjectIntensified :: struct {
+	object_id: ObjectId,
+	amount: u32,
+}
+GameEvent_Evolved :: struct {
+	object_id: ObjectId,
+}
+GameEvent_UnTellPerformed :: struct {
+	player: PlayerId,
+	tell: UnTell,
+}
+GameEvent_PhraseSaid :: struct {
+	player: PlayerId,
+	phrase: string,
+}
+GameEvent_GotchaSaid :: struct {
+	player: PlayerId,
+	source: ObjectIdentityBinding,
+	returns: ObjectIdentityBinding,
+}
+GameEvent_ObjectTouched :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+}
+GameEvent_CounterRemoved :: struct {
+	object_id: ObjectId,
+	counter_type: CounterType,
+	count: u32,
+	instruction_lead: Maybe(InstructionLead),
+}
+GameEvent_TokenCreated :: struct {
+	object_id: ObjectId,
+	name: string,
+	source_id: ObjectId,
+}
+GameEvent_ObjectConjured :: struct {
+	object_id: ObjectId,
+	name: string,
+}
+GameEvent_CardCopyCreated :: struct {
+	object_id: ObjectId,
+	name: string,
+}
+GameEvent_CreatureDestroyed :: struct {
+	object_id: ObjectId,
+	source_id: Maybe(ObjectId),
+}
+GameEvent_PermanentSacrificed :: struct {
+	object_id: ObjectId,
+	player_id: PlayerId,
+}
+GameEvent_ControllerChanged :: struct {
+	object_id: ObjectId,
+	old_controller: PlayerId,
+	new_controller: PlayerId,
+	evidence: ControlChangeEvidence,
+}
+GameEvent_EffectResolved :: struct {
+	kind: EffectKind,
+	source_id: ObjectId,
+	subject: ^EventObjectSnapshot,
+}
+GameEvent_Attached :: struct {
+	attachment_id: ObjectId,
+	target: TargetRef,
+}
+GameEvent_Unattached :: struct {
+	attachment_id: ObjectId,
+	old_target: TargetRef,
+}
+GameEvent_ContinuousEffectEnded :: struct {
+	group: EndEffectGroupId,
+	source_id: ObjectId,
+	player: PlayerId,
+}
+GameEvent_AttackersDeclared :: struct {
+	attacker_ids: [dynamic]ObjectId,
+	defending_player: PlayerId,
+	attacks: [dynamic]Tuple2(ObjectId, AttackTarget),
+	declaration_records: [dynamic]AttackDeclarationRecord,
+}
+GameEvent_BlockersDeclared :: struct {
+	assignments: [dynamic]Tuple2(ObjectId, ObjectId),
+}
+GameEvent_AttackerBecameBlocked :: struct {
+	attacker: ObjectId,
+	attacker_incarnation: Maybe(u64),
+}
+GameEvent_AttackerBecameBlockedByFilteredBlocker :: struct {
+	attacker: ObjectId,
+	blocker: ObjectId,
+}
+GameEvent_CombatTaxPaid :: struct {
+	player: PlayerId,
+	total_mana_value: u32,
+}
+GameEvent_CombatTaxDeclined :: struct {
+	player: PlayerId,
+	dropped: [dynamic]ObjectId,
+}
+GameEvent_BecomesTarget :: struct {
+	target: TargetRef,
+	source_id: ObjectId,
+	source_controller: PlayerId,
+	targeter: Maybe(Targeter),
+}
+GameEvent_VehicleCrewed :: struct {
+	vehicle_id: ObjectId,
+	creatures: [dynamic]ObjectId,
+}
+GameEvent_Stationed :: struct {
+	spacecraft_id: ObjectId,
+	creature_id: ObjectId,
+	counters_added: u32,
+}
+GameEvent_Saddled :: struct {
+	mount_id: ObjectId,
+	creatures: [dynamic]ObjectId,
+}
+GameEvent_ReplacementApplied :: struct {
+	source_id: ObjectId,
+	event_type: string,
+}
+GameEvent_Transformed :: struct {
+	object_id: ObjectId,
+}
+GameEvent_Flipped :: struct {
+	object_id: ObjectId,
+}
+GameEvent_Specialized :: struct {
+	object_id: ObjectId,
+	color: ManaColor,
+}
+GameEvent_DayNightChanged :: struct {
+	new_state: string,
+	previous: Maybe(DayNight),
+}
+GameEvent_TurnedFaceUp :: struct {
+	object_id: ObjectId,
+}
+GameEvent_TurnedFaceDown :: struct {
+	object_id: ObjectId,
+}
+GameEvent_CardsRevealed :: struct {
+	player: PlayerId,
+	card_ids: [dynamic]ObjectId,
+	card_names: [dynamic]string,
+	occurrences: [dynamic]ObjectIncarnationRef,
+}
+GameEvent_ChosenNumbersRevealed :: struct {
+	numbers: [dynamic]Tuple2(PlayerId, u32),
+}
+GameEvent_CombatDamageDealtToPlayer :: struct {
+	player_id: PlayerId,
+	source_amounts: [dynamic]Tuple2(ObjectId, u32),
+	total_damage: u32,
+	source_incarnations: [dynamic]ObjectIncarnationRef,
+}
+GameEvent_PlayerEliminated :: struct {
+	player_id: PlayerId,
+}
+GameEvent_CrimeCommitted :: struct {
+	player_id: PlayerId,
+}
+GameEvent_Cycled :: struct {
+	player_id: PlayerId,
+	object_id: ObjectId,
+}
+GameEvent_PlayerPerformedAction :: struct {
+	player_id: PlayerId,
+	action: PlayerActionKind,
+	look_count: Maybe(u32),
+	scry_bottom_count: Maybe(u32),
+	scry_top_count: Maybe(u32),
+}
+GameEvent_CardPredicateGuessMade :: struct {
+	player_id: PlayerId,
+	source_id: Maybe(ObjectId),
+	choice: string,
+}
+GameEvent_CardNamed :: struct {
+	player_id: PlayerId,
+	source_id: Maybe(ObjectId),
+	name: string,
+}
+GameEvent_Regenerated :: struct {
+	object_id: ObjectId,
+}
+GameEvent_CreatureSuspected :: struct {
+	object_id: ObjectId,
+}
+GameEvent_CreatureNoLongerSuspected :: struct {
+	object_id: ObjectId,
+}
+GameEvent_Detained :: struct {
+	object_id: ObjectId,
+}
+GameEvent_BecamePrepared :: struct {
+	object_id: ObjectId,
+}
+GameEvent_BecameUnprepared :: struct {
+	object_id: ObjectId,
+}
+GameEvent_CaseSolved :: struct {
+	object_id: ObjectId,
+}
+GameEvent_ClassLevelGained :: struct {
+	object_id: ObjectId,
+	level: u8,
+}
+GameEvent_MonarchChanged :: struct {
+	player_id: PlayerId,
+}
+GameEvent_CityBlessingGained :: struct {
+	player_id: PlayerId,
+}
+GameEvent_EnduringStoryGained :: struct {
+	player_id: PlayerId,
+}
+GameEvent_DieRolled :: struct {
+	player_id: PlayerId,
+	sides: u8,
+	result: Maybe(u8),
+	pre_entry_source: Maybe(ObjectId),
+}
+GameEvent_DieRollIgnored :: struct {
+	player_id: PlayerId,
+	sides: u8,
+	result: u8,
+}
+GameEvent_StartingPlayerContest :: struct {
+	rounds: [dynamic]ContestRound,
+	winner: PlayerId,
+}
+GameEvent_CoinFlipped :: struct {
+	player_id: PlayerId,
+	won: bool,
+}
+GameEvent_RingTemptsYou :: struct {
+	player_id: PlayerId,
+	chosen_bearer: Maybe(ObjectId),
+}
+GameEvent_RoomEntered :: struct {
+	player_id: PlayerId,
+	dungeon: DungeonId,
+	room_index: u8,
+	room_name: string,
+}
+GameEvent_RoomDoorUnlocked :: struct {
+	player_id: PlayerId,
+	object_id: ObjectId,
+	door: RoomDoor,
+	fully_unlocked: bool,
+}
+GameEvent_BecomesPlotted :: struct {
+	object_id: ObjectId,
+	player_id: PlayerId,
+}
+GameEvent_DungeonCompleted :: struct {
+	player_id: PlayerId,
+	dungeon: DungeonId,
+}
+GameEvent_Planeswalked :: struct {
+	player_id: PlayerId,
+	from: Maybe(ObjectId),
+	to: Maybe(ObjectId),
+}
+GameEvent_ChaosEnsued :: struct {
+	plane_id: ObjectId,
+}
+GameEvent_PlanarDieRolled :: struct {
+	player_id: PlayerId,
+	face: PlanarDieFace,
+}
+GameEvent_SchemeSetInMotion :: struct {
+	player_id: PlayerId,
+	scheme_id: ObjectId,
+}
+GameEvent_SchemeAbandoned :: struct {
+	player_id: PlayerId,
+	scheme_id: ObjectId,
+}
+GameEvent_InitiativeTaken :: struct {
+	player_id: PlayerId,
+}
+GameEvent_AttractionOpened :: struct {
+	player_id: PlayerId,
+	object_id: ObjectId,
+}
+GameEvent_ContraptionAssembled :: struct {
+	player_id: PlayerId,
+	object_id: ObjectId,
+	sprocket: u8,
+}
+GameEvent_StickerPlaced :: struct {
+	player_id: PlayerId,
+	object_id: ObjectId,
+	kind: StickerKind,
+}
+GameEvent_AttractionsRolledToVisit :: struct {
+	player_id: PlayerId,
+	rolls: [dynamic]u8,
+}
+GameEvent_AttractionVisited :: struct {
+	player_id: PlayerId,
+	roll: u8,
+	attraction_id: ObjectId,
+}
+GameEvent_ContraptionCranked :: struct {
+	player_id: PlayerId,
+	sprocket: u8,
+	contraption_id: ObjectId,
+}
+GameEvent_Firebend :: struct {
+	source_id: ObjectId,
+	controller: PlayerId,
+}
+GameEvent_Airbend :: struct {
+	source_id: ObjectId,
+	controller: PlayerId,
+}
+GameEvent_Earthbend :: struct {
+	source_id: ObjectId,
+	controller: PlayerId,
+}
+GameEvent_Waterbend :: struct {
+	source_id: ObjectId,
+	controller: PlayerId,
+}
+GameEvent_CompanionRevealed :: struct {
+	player: PlayerId,
+	card_name: string,
+}
+GameEvent_CompanionMovedToHand :: struct {
+	player: PlayerId,
+	card_name: string,
+}
+GameEvent_NinjutsuActivated :: struct {
+	player_id: PlayerId,
+	source_id: ObjectId,
+}
+GameEvent_KeywordAbilityActivated :: struct {
+	ability_tag: AbilityTag,
+	player_id: PlayerId,
+	source_id: ObjectId,
+	is_mana_ability: bool,
+}
+GameEvent_CreatureExploited :: struct {
+	exploiter: ObjectId,
+	exploiter_incarnation: Maybe(u64),
+	sacrificed: ObjectId,
+	record: ^ZoneChangeRecord,
+}
+GameEvent_EnergyChanged :: struct {
+	player: PlayerId,
+	delta: i32,
+}
+GameEvent_SpeedChanged :: struct {
+	player: PlayerId,
+	old_speed: Maybe(u8),
+	new_speed: Maybe(u8),
+}
+GameEvent_PlayerCounterChanged :: struct {
+	player: PlayerId,
+	counter_kind: PlayerCounterKind,
+	delta: i32,
+}
+GameEvent_ManaExpended :: struct {
+	player_id: PlayerId,
+	amount_spent: u32,
+	new_cumulative: u32,
+}
+GameEvent_PhysicalContestStarted :: struct {
+	kind: ContestKind,
+	participants: [2]PlayerId,
+}
+GameEvent_PhysicalContestResolved :: struct {
+	kind: ContestKind,
+	participants: [2]PlayerId,
+	result: ContestResult,
+}
+GameEvent_Clash :: struct {
+	controller: PlayerId,
+	opponent: PlayerId,
+	controller_mana_value: Maybe(u32),
+	opponent_mana_value: Maybe(u32),
+	result: ClashResult,
+}
+GameEvent_VoteCast :: struct {
+	voter: PlayerId,
+	choice: string,
+	source_id: ObjectId,
+}
+GameEvent_VoteResolved :: struct {
+	source_id: ObjectId,
+	tallies: [dynamic]Tuple2(string, u32),
+}
+GameEvent_PowerToughnessChanged :: struct {
+	object_id: ObjectId,
+	power: i32,
+	toughness: i32,
+	power_delta: i32,
+	toughness_delta: i32,
+}
+GameEvent_CascadeMissed :: struct {
+	controller: PlayerId,
+	source_id: ObjectId,
+	exiled_count: u32,
+}
+GameEvent_DebugActionUsed :: struct {
+	player_id: PlayerId,
+	description: string,
+}
+GameEvent_DebugPermissionGranted :: struct {
+	host: PlayerId,
+	player_id: PlayerId,
+}
+GameEvent_DebugPermissionRevoked :: struct {
+	host: PlayerId,
+	player_id: PlayerId,
+}
+GameEvent :: union {
+	GameEvent_GameStarted,
+	GameEvent_HiddenSearchViewed,
+	GameEvent_TurnStarted,
+	GameEvent_ExtraTurnCreated,
+	GameEvent_PhaseChanged,
+	GameEvent_PhaseChangedFor,
+	GameEvent_PriorityPassed,
+	GameEvent_SpellCast,
+	GameEvent_Mutated,
+	GameEvent_Augmented,
+	GameEvent_Melded,
+	GameEvent_SpellCopied,
+	GameEvent_XValueChosen,
+	GameEvent_AbilityActivated,
+	GameEvent_ZoneChanged,
+	GameEvent_LifeChanged,
+	GameEvent_ManaAdded,
+	GameEvent_TappedForMana,
+	GameEvent_ManaAbilityProduced,
+	GameEvent_ManaPoolEmptied,
+	GameEvent_ManaBurn,
+	GameEvent_ManaRecolored,
+	GameEvent_PermanentTapped,
+	GameEvent_CreatureExerted,
+	GameEvent_CreatureEnlisted,
+	GameEvent_ArmyAmassed,
+	GameEvent_Foretold,
+	GameEvent_BecameForetold,
+	GameEvent_PlayerLost,
+	GameEvent_MulliganStarted,
+	GameEvent_CardsDrawn,
+	GameEvent_CardDrawn,
+	GameEvent_PermanentUntapped,
+	GameEvent_PermanentPhasedOut,
+	GameEvent_PermanentPhasedIn,
+	GameEvent_PlayerPhasedOut,
+	GameEvent_PlayerPhasedIn,
+	GameEvent_LandPlayed,
+	GameEvent_StackPushed,
+	GameEvent_AbilityTriggered,
+	GameEvent_StackResolved,
+	GameEvent_Discarded,
+	GameEvent_Milled,
+	GameEvent_DamageCleared,
+	GameEvent_GameOver,
+	GameEvent_ResolutionHalted,
+	GameEvent_ShortcutRepetition,
+	GameEvent_DamageDealt,
+	GameEvent_DamagePrevented,
+	GameEvent_SpellCountered,
+	GameEvent_CounterAdded,
+	GameEvent_SagaChapterAbilityResolved,
+	GameEvent_ObjectIntensified,
+	GameEvent_Evolved,
+	GameEvent_UnTellPerformed,
+	GameEvent_PhraseSaid,
+	GameEvent_GotchaSaid,
+	GameEvent_ObjectTouched,
+	GameEvent_CounterRemoved,
+	GameEvent_TokenCreated,
+	GameEvent_ObjectConjured,
+	GameEvent_CardCopyCreated,
+	GameEvent_CreatureDestroyed,
+	GameEvent_PermanentSacrificed,
+	GameEvent_ControllerChanged,
+	GameEvent_EffectResolved,
+	GameEvent_Attached,
+	GameEvent_Unattached,
+	GameEvent_ContinuousEffectEnded,
+	GameEvent_AttackersDeclared,
+	GameEvent_BlockersDeclared,
+	GameEvent_AttackerBecameBlocked,
+	GameEvent_AttackerBecameBlockedByFilteredBlocker,
+	GameEvent_CombatTaxPaid,
+	GameEvent_CombatTaxDeclined,
+	GameEvent_BecomesTarget,
+	GameEvent_VehicleCrewed,
+	GameEvent_Stationed,
+	GameEvent_Saddled,
+	GameEvent_ReplacementApplied,
+	GameEvent_Transformed,
+	GameEvent_Flipped,
+	GameEvent_Specialized,
+	GameEvent_DayNightChanged,
+	GameEvent_TurnedFaceUp,
+	GameEvent_TurnedFaceDown,
+	GameEvent_CardsRevealed,
+	GameEvent_ChosenNumbersRevealed,
+	GameEvent_CombatDamageDealtToPlayer,
+	GameEvent_PlayerEliminated,
+	GameEvent_CrimeCommitted,
+	GameEvent_Cycled,
+	GameEvent_PlayerPerformedAction,
+	GameEvent_CardPredicateGuessMade,
+	GameEvent_CardNamed,
+	GameEvent_Regenerated,
+	GameEvent_CreatureSuspected,
+	GameEvent_CreatureNoLongerSuspected,
+	GameEvent_Detained,
+	GameEvent_BecamePrepared,
+	GameEvent_BecameUnprepared,
+	GameEvent_CaseSolved,
+	GameEvent_ClassLevelGained,
+	GameEvent_MonarchChanged,
+	GameEvent_CityBlessingGained,
+	GameEvent_EnduringStoryGained,
+	GameEvent_DieRolled,
+	GameEvent_DieRollIgnored,
+	GameEvent_StartingPlayerContest,
+	GameEvent_CoinFlipped,
+	GameEvent_RingTemptsYou,
+	GameEvent_RoomEntered,
+	GameEvent_RoomDoorUnlocked,
+	GameEvent_BecomesPlotted,
+	GameEvent_DungeonCompleted,
+	GameEvent_Planeswalked,
+	GameEvent_ChaosEnsued,
+	GameEvent_PlanarDieRolled,
+	GameEvent_SchemeSetInMotion,
+	GameEvent_SchemeAbandoned,
+	GameEvent_InitiativeTaken,
+	GameEvent_AttractionOpened,
+	GameEvent_ContraptionAssembled,
+	GameEvent_StickerPlaced,
+	GameEvent_AttractionsRolledToVisit,
+	GameEvent_AttractionVisited,
+	GameEvent_ContraptionCranked,
+	GameEvent_Firebend,
+	GameEvent_Airbend,
+	GameEvent_Earthbend,
+	GameEvent_Waterbend,
+	GameEvent_CompanionRevealed,
+	GameEvent_CompanionMovedToHand,
+	GameEvent_NinjutsuActivated,
+	GameEvent_KeywordAbilityActivated,
+	GameEvent_CreatureExploited,
+	GameEvent_EnergyChanged,
+	GameEvent_SpeedChanged,
+	GameEvent_PlayerCounterChanged,
+	GameEvent_ManaExpended,
+	GameEvent_PhysicalContestStarted,
+	GameEvent_PhysicalContestResolved,
+	GameEvent_Clash,
+	GameEvent_VoteCast,
+	GameEvent_VoteResolved,
+	GameEvent_PowerToughnessChanged,
+	GameEvent_CascadeMissed,
+	GameEvent_DebugActionUsed,
+	GameEvent_DebugPermissionGranted,
+	GameEvent_DebugPermissionRevoked,
+}
+
+ReplayLog :: struct {
+	format_version: Maybe(u32),
+	header: ReplayHeader,
+	actions: [dynamic]RecordedAction,
+	resolve_all_boundaries: [dynamic]RecordedResolveAll,
 }
 
 CardFace :: struct {
@@ -65,6 +3102,3035 @@ BracketSignals :: struct {
 	efficient_tutor: bool,
 }
 
+PlayerId :: distinct u8
+
+Phase :: enum u16 {
+	Untap,
+	Upkeep,
+	Draw,
+	PreCombatMain,
+	BeginCombat,
+	DeclareAttackers,
+	DeclareBlockers,
+	CombatDamage,
+	EndCombat,
+	PostCombatMain,
+	End,
+	Cleanup,
+}
+
+Player :: struct {
+	id: PlayerId,
+	life: i32,
+	has_no_life_total: bool,
+	mana_pool: ManaPool,
+	library: [dynamic]ObjectId,
+	hand: [dynamic]ObjectId,
+	graveyard: [dynamic]ObjectId,
+	attraction_deck: [dynamic]ObjectId,
+	contraption_deck: [dynamic]ObjectId,
+	contraption_crank_sprocket: u8,
+	sticker_sheets: [dynamic]string,
+	has_drawn_this_turn: bool,
+	lands_played_this_turn: u8,
+	poison_counters: u32,
+	energy: u32,
+	life_gained_this_turn: u32,
+	life_lost_this_turn: u32,
+	energy_paid_or_lost_this_turn: u32,
+	life_lost_last_turn: u32,
+	spells_cast_last_turn: u32,
+	descended_this_turn: bool,
+	cards_drawn_this_turn: u32,
+	cards_drawn_last_turn: u32,
+	opponent_spells_cast_since_own_last_turn: u32,
+	cards_drawn_this_step: u32,
+	speed: Maybe(u8),
+	speed_trigger_used_this_turn: bool,
+	crimes_committed_this_turn: u32,
+	drew_from_empty_library: bool,
+	turns_taken: u32,
+	starting_deck_size: u32,
+	is_eliminated: bool,
+	bending_types_this_turn: [dynamic]BendingType,
+	player_counters: map[PlayerCounterKind]u32,
+	status: PlayerStatus,
+	companion: Maybe(CompanionInfo),
+	noted_number: Maybe(i32),
+	chosen_attributes: [dynamic]ChosenAttribute,
+	can_look_at_top_of_library: bool,
+	commander_color_identity: [dynamic]ManaColor,
+}
+
+ActivePlayerControl :: struct {
+	controller: PlayerId,
+	timestamp: u64,
+}
+
+ActiveLibrarySearches :: distinct map[PlayerId]ActiveLibrarySearch
+
+ActiveSearchDecisionControls :: distinct map[PlayerId]ActiveSearchDecisionControl
+
+ObjectMap :: struct {
+	inner: map[ObjectId]^GameObject,
+}
+
+ResolvedRulesJournal :: struct {
+	next_command_ordinal: u64,
+	next_settlement_node_ordinal: u64,
+	entries: [dynamic]ResolvedCommandJournalEntry,
+	nodes: [dynamic]SettlementNode,
+	produced_mana: [dynamic]ProducedManaUnit,
+	spent_mana: [dynamic]SpentManaUnit,
+	index: JournalIndex,
+}
+
+AbilityOnsetRecord :: enum u16 {
+	Unrecorded,
+	Recorded,
+}
+
+ManaPipId :: distinct u64
+
+RulesExecutionNodeRef_Proposal :: struct {
+	_0: ResolvedCommandOrdinal,
+}
+RulesExecutionNodeRef_ActivatedMana :: struct {
+	_0: SettlementNodeOrdinal,
+}
+RulesExecutionNodeRef_TriggeredMana :: struct {
+	_0: SettlementNodeOrdinal,
+}
+RulesExecutionNodeRef_Payment :: struct {
+	_0: SettlementNodeOrdinal,
+}
+RulesExecutionNodeRef_PlayerLeave :: struct {
+	_0: ResolvedCommandOrdinal,
+}
+RulesExecutionNodeRef :: union {
+	RulesExecutionNodeRef_Proposal,
+	RulesExecutionNodeRef_ActivatedMana,
+	RulesExecutionNodeRef_TriggeredMana,
+	RulesExecutionNodeRef_Payment,
+	RulesExecutionNodeRef_PlayerLeave,
+}
+
+ObjectId :: distinct u64
+
+PreEntryBoardCache :: distinct ^Maybe(CachedBoard)
+
+CastingPermissionIndex :: distinct int
+
+GraveyardPermissionLatch :: struct {
+	permission: GraveyardPermissionId,
+	extra_cost: Maybe(CastExtraCost),
+	enters_with_counter: Maybe(CounterType),
+	enter_tapped: EtbTapState,
+	cast_limit: PermissionCastLimit,
+	mana_spend_permission: Maybe(ManaSpendPermission),
+	enters_modifications: PendingEntersModifications,
+}
+
+ResolutionCastOfferId :: distinct u64
+
+IngressLifeWindow :: struct {
+	failed_player: Maybe(PlayerId),
+}
+
+ReplacementQuantityOverflow :: struct {
+	source: ObjectId,
+}
+
+AutoTapRowPolicy :: enum u16 {
+	Choose,
+	WithoutAvoidableDrawbacks,
+	AllRows,
+}
+
+StackEntry :: struct {
+	id: ObjectId,
+	source_id: ObjectId,
+	controller: PlayerId,
+	kind: StackEntryKind,
+}
+
+StackPaidSnapshot :: struct {
+	actual_mana_spent: u32,
+	x_value: Maybe(u32),
+	distinct_colors_spent: u32,
+	kickers_paid: int,
+	additional_cost_payment_count: u32,
+	additional_cost_payments: [dynamic]AdditionalCostInstancePayment,
+	additional_cost_paid: bool,
+	casting_variant: CastingVariant,
+	cast_transformed: bool,
+	convoked_creatures: int,
+}
+
+GameRng :: struct {
+	generator: rng.Chacha20,
+	outcome_draws: u64,
+}
+
+CombatState :: struct {
+	attackers: [dynamic]AttackerInfo,
+	attacked_permanents: map[ObjectId]ObjectIncarnationRef,
+	attacked_permanent_kinds: map[ObjectId]AttackedPermanentKinds,
+	blocker_assignments: map[ObjectId][dynamic]ObjectId,
+	blocker_to_attacker: map[ObjectId][dynamic]ObjectId,
+	blockers_declared_by: [dynamic]PlayerId,
+	pending_blocker_declaration_events: [dynamic]GameEvent,
+	attacked_defenders_this_combat: map[PlayerId][dynamic]PlayerId,
+	creature_attacked_defenders_this_combat: map[ObjectId][dynamic]PlayerId,
+	attacking_incarnations_this_combat: [dynamic]ObjectIncarnationRef,
+	creature_blocked_attackers_this_combat: [dynamic]BlockHistoryPair,
+	removed_attackers_this_combat: [dynamic]ObjectId,
+	damage_assignments: map[ObjectId][dynamic]DamageAssignment,
+	first_strike_done: bool,
+	first_strike_participants: Maybe([dynamic]ObjectId),
+	damage_step_index: Maybe(int),
+	pending_damage: [dynamic]Tuple2(ObjectId, DamageAssignment),
+	regular_damage_done: bool,
+}
+
+GameEnd :: struct {
+	winner: Maybe(PlayerId),
+}
+
+ResolveAllConsentRun :: struct {
+	epoch: u64,
+	max_resolutions: StackResolutionBudget,
+	priority_snapshot: ResolveAllPrioritySnapshot,
+	scope: ResolveAllScope,
+	participants: [dynamic]ResolveAllConsentParticipant,
+	auto_pass_baseline: Maybe(map[PlayerId]AutoPassMode),
+}
+
+StackResolutionSession :: struct {
+	entries: [dynamic]StackResolutionEntryFence,
+	cursor: int,
+	representatives: [dynamic]PlayerId,
+	verified_pass_representatives: [dynamic]PlayerId,
+	budget: StackResolutionBudget,
+	policy: StackResolutionPolicy,
+	auto_pass_overlay: StackResolutionAutoPassOverlay,
+}
+
+InteractionSessionId :: distinct string
+
+ActiveInteractionSlot :: struct {
+	semantic_owner: u8,
+	slot_kind: InteractionSlotKind,
+	interaction_id: InteractionId,
+}
+
+PendingReplacement :: struct {
+	proposed: ProposedEvent,
+	settled_damage_guards: [dynamic]SettledDamageGuard,
+	sacrifice_provenance: Maybe(PendingSacrificeProvenance),
+	candidates: [dynamic]ReplacementId,
+	ordering_peers: [dynamic]ReplacementId,
+	search_found_candidates: [dynamic]BoundSearchFoundCandidate,
+	depth: u16,
+	is_optional: bool,
+	choice_player: Maybe(PlayerId),
+	exile_controller: Maybe(PlayerId),
+	exile_duration: Maybe(Duration),
+	exile_tracking: ZoneDeliveryExileTracking,
+	excess_recipient: Maybe(ExcessRecipient),
+	lifelink_bonus: u32,
+	source_incarnation: Maybe(u64),
+	may_cost_paid: bool,
+	may_cost_remaining: Maybe(AbilityCost),
+	delivery_boundary: ^ProposedEvent,
+	unrepresentable_life_change: UnrepresentablePolicy,
+}
+
+PendingCombatLifelink :: struct {
+	remaining: [dynamic]PendingLifelinkGain,
+	staged_gains: [dynamic]PendingLifelinkGain,
+	awaiting_staged_gain: bool,
+	batch_events: [dynamic]GameEvent,
+	damage_to_players: [dynamic]GameEvent,
+	prevention_tally: [dynamic]PreventedDamageEntry,
+	sub_step: CombatDamageSubStep,
+	replacement: Maybe(PendingCombatDamageReplacement),
+	phase_c_remnant: Maybe(PendingCombatPhaseCRemnant),
+}
+
+LiminalEntry :: struct {
+	object: LiminalEntrant,
+	name: string,
+	source_id: ObjectId,
+	controller: PlayerId,
+	enters_attacking: bool,
+	attack_destination: EntryAttackDestination,
+	attach_to: Maybe(AttachTarget),
+	sacrifice_at: Maybe(Duration),
+	remaining_count: u32,
+	created_ids: [dynamic]ObjectId,
+	copy_resume: ^CopyTokenSpec,
+	spec_resume: ^TokenSpec,
+	enter_tapped: EtbTapState,
+	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
+	kind: LiminalEntryKind,
+	replacement_applied: [dynamic]AppliedReplacementKey,
+	copy_settlement: ^TokenCopySettlement,
+}
+
+PendingLiminalEntryResume_Token :: struct {
+	source_id: ObjectId,
+	player: PlayerId,
+	event: ProposedEvent,
+}
+PendingLiminalEntryResume_Meld :: struct {
+	source_id: ObjectId,
+	player: PlayerId,
+	context_: MeldSelection,
+	attack_target: Maybe(AttackTarget),
+}
+PendingLiminalEntryResume :: union {
+	PendingLiminalEntryResume_Token,
+	PendingLiminalEntryResume_Meld,
+}
+
+EnteringAuraAuthority :: struct {
+	aura_id: ObjectId,
+	entrant: ^GameObject,
+}
+
+StagedPopulationParent :: struct {
+	group: LogicalZoneChangeGroupId,
+	batch_depth: ChildStackDepth,
+}
+
+AppliedReplacementKey_Object :: struct {
+	source: ObjectId,
+	index: u64,
+}
+AppliedReplacementKey_Floating :: struct {
+	index: u64,
+}
+AppliedReplacementKey_StepEndMana :: struct {
+	index: u64,
+}
+AppliedReplacementKey_EntryControllerChoice :: struct {
+	source: ObjectId,
+	index: u64,
+	controller: PlayerId,
+}
+AppliedReplacementKey_Protection :: struct {
+	quality: MatchedProtectionQuality,
+}
+AppliedReplacementKey :: union {
+	AppliedReplacementKey_Object,
+	AppliedReplacementKey_Floating,
+	AppliedReplacementKey_StepEndMana,
+	AppliedReplacementKey_EntryControllerChoice,
+	AppliedReplacementKey_Protection,
+}
+
+ParkedEntry :: struct {
+	event: GameEvent,
+	state: ParkedEntryState,
+	entry_attack: Maybe(EntryAttackDestination),
+	held_triggers: [dynamic]PendingTriggerContext,
+}
+
+PendingTokenBattlefieldEntry :: struct {
+	object_id: ObjectId,
+	name: string,
+	source_id: ObjectId,
+}
+
+LayersDirty_Clean :: struct {
+}
+LayersDirty_EnteredObjects :: struct {
+	_0: [dynamic]ObjectId,
+}
+LayersDirty_Full :: struct {
+}
+LayersDirty :: union {
+	LayersDirty_Clean,
+	LayersDirty_EnteredObjects,
+	LayersDirty_Full,
+}
+
+StaticGateKey :: struct {
+	source: ObjectId,
+	def_index: int,
+}
+
+TriggerIndex :: struct {
+	by_key: [dynamic]Tuple2(TriggerEventKey, [dynamic]ObjectId),
+	unclassified: [dynamic]ObjectId,
+	readiness: DerivedIndexReadiness,
+}
+
+ReplacementIndex :: struct {
+	initialized: bool,
+	dirty: bool,
+	pipeline_active: bool,
+	by_event: [dynamic]Tuple2(ReplacementEvent, [dynamic]ReplacementIndexEntry),
+}
+
+StaticSourceIndex :: struct {
+	battlefield_sources: [dynamic]ObjectId,
+	command_sources: [dynamic]ObjectId,
+}
+
+StaticModePresence :: distinct [StaticModeKind]bool
+
+LoopDecisionTally :: struct {
+	optional: u64,
+	decision: u64,
+	trigger_order: u64,
+	announced_target: u64,
+	resolution_set: u64,
+	replacement_order: u64,
+}
+
+PlayTrace :: struct {
+	window: WindowKey,
+	entries: [dynamic]TraceEntry,
+	nodes: [dynamic]NodeKey,
+	last: map[int]int,
+	repeated: [dynamic]int,
+	last_optional: Maybe(int),
+	last_play: Maybe(int),
+	optional_triggers: [dynamic]int,
+	consumed: [dynamic]int,
+	spent_from: map[int]int,
+	pending_reads: [dynamic]PendingRead,
+	named: [dynamic]NamedSpan,
+	unread: int,
+	offered: Maybe(Tuple2(NamedSpan, int)),
+	undo: [dynamic]UndoPoint,
+	reversed: [dynamic]Tuple2(ObjectId, int),
+	process_reversed: bool,
+	mana_ability_entries: map[int]Tuple2(ObjectId, int),
+	carried: [dynamic]CarriedSpan,
+	carried_named: [dynamic]CarriedSpan,
+	carrying: map[PlayerId]CarryingIndex,
+	witnessed: [2]Maybe(Tuple2(int, Witnessed)),
+	ordered: [2]Maybe(Tuple2(int, OptionProof)),
+	held: Maybe([dynamic]Tuple2(Maybe(ObjectId), TraceEntry)),
+	beneath: map[int]Maybe(TopOfStack),
+}
+
+PrecastShortcutRuntime :: struct {
+	next_epoch: u64,
+	offer: Maybe(PrecastShortcutOfferRuntime),
+	suppressed_cast: Maybe(ObjectId),
+	must_diverge: Maybe(PlayerId),
+	materializing: bool,
+}
+
+LifeSafetyProbe :: struct {
+	armed_root: Maybe(ArmedLifeCostRoot),
+	attempt: Maybe(AttemptState),
+	receipt: Maybe(LifeMutationReceipt),
+	carrier_observed: bool,
+	next_token: u64,
+}
+
+PublicStateDirty :: struct {
+	all_objects_dirty: bool,
+	dirty_objects: [dynamic]ObjectId,
+	all_players_dirty: bool,
+	dirty_players: [dynamic]PlayerId,
+	battlefield_display_dirty: bool,
+	mana_display_dirty: bool,
+}
+
+TransientContinuousEffect :: struct {
+	id: u64,
+	source_id: ObjectId,
+	controller: PlayerId,
+	timestamp: u64,
+	duration: Duration,
+	affected: TargetFilter,
+	affected_recipient: Maybe(ObjectIncarnationRef),
+	modifications: [dynamic]ContinuousModification,
+	condition: Maybe(StaticCondition),
+	duration_subject: Maybe(ObjectIncarnationRef),
+	duration_event_source: ^TriggerSourceContext,
+	end_permission: Maybe(EndEffectPermission),
+	granting_object: Maybe(ObjectIncarnationRef),
+	source_name: string,
+	bound_actor: Maybe(PlayerId),
+}
+
+ObjectAttribution :: struct {
+	by_layer: map[Layer][dynamic]EffectRef,
+}
+
+DayNight :: enum u16 {
+	Day,
+	Night,
+}
+
+AbilityUsageKey :: struct {
+	source: ObjectId,
+	provenance: Maybe(ObjectIncarnationRef),
+	description: Maybe(string),
+	fingerprint: string,
+	grant_chain: [dynamic]ObjectIncarnationRef,
+}
+
+PendingTrigger :: struct {
+	source_id: ObjectId,
+	controller: PlayerId,
+	condition: Maybe(TriggerCondition),
+	ability: ^ResolvedAbility,
+	timestamp: u32,
+	target_constraints: [dynamic]TargetSelectionConstraint,
+	distribute: Maybe(DistributionUnit),
+	trigger_event: Maybe(GameEvent),
+	modal: Maybe(ModalChoice),
+	mode_abilities: [dynamic]AbilityDefinition,
+	description: Maybe(string),
+	may_trigger_origin: Maybe(MayTriggerOrigin),
+	subject_match_count: Maybe(u32),
+	die_result: Maybe(i32),
+	provenance: Maybe(SyntheticTriggerProvenance),
+}
+
+TriggerFiring_Ordinary :: struct {
+}
+TriggerFiring_LegacyDelayed :: struct {
+}
+TriggerFiring_ReceiptEligible :: struct {
+	_0: DelayedTriggerOrigin,
+}
+TriggerFiring_UnknownLegacy :: struct {
+}
+TriggerFiring :: union {
+	TriggerFiring_Ordinary,
+	TriggerFiring_LegacyDelayed,
+	TriggerFiring_ReceiptEligible,
+	TriggerFiring_UnknownLegacy,
+}
+
+PendingTriggerContext :: struct {
+	pending: PendingTrigger,
+	trigger_events: [dynamic]GameEvent,
+	duration_events: [dynamic]DurationEvent,
+	dispatch_origin: PendingTriggerDispatchOrigin,
+	batch_origin: DeferredTriggerBatchOrigin,
+	firing: TriggerFiring,
+	causes: [dynamic]GameEvent,
+}
+
+PendingTriggerOrder :: struct {
+	groups: [dynamic]TriggerOrderGroup,
+	resume_after_ordering: ^WaitingFor,
+}
+
+ConsumedTriggerEventOccurrence :: struct {
+	event: GameEvent,
+	occurrence: int,
+	scope: ConsumedTriggerEventScope,
+}
+
+ExileLink :: struct {
+	exiled_id: ObjectId,
+	source_id: ObjectId,
+	kind: ExileLinkKind,
+}
+
+ParadigmPrime :: struct {
+	player: PlayerId,
+	card_name: string,
+}
+
+DelayedTrigger :: struct {
+	condition: DelayedTriggerCondition,
+	ability: ^ResolvedAbility,
+	controller: PlayerId,
+	source_id: ObjectId,
+	one_shot: bool,
+	kind: DelayedTriggerKind,
+	provenance: DelayedInstallIdentity,
+}
+
+TrackedSetId :: distinct u64
+
+ReturnResultOccurrenceId :: distinct u64
+
+ReturnResultId :: distinct u32
+
+ZoneChangeRecord :: struct {
+	object_id: ObjectId,
+	name: string,
+	core_types: [dynamic]CoreType,
+	subtypes: [dynamic]string,
+	supertypes: [dynamic]Supertype,
+	keywords: [dynamic]Keyword,
+	trigger_definitions: [dynamic]TriggerEntry,
+	trigger_source_context: Maybe(TriggerSourceContext),
+	power: Maybe(i32),
+	toughness: Maybe(i32),
+	base_power: Maybe(i32),
+	base_toughness: Maybe(i32),
+	colors: [dynamic]ManaColor,
+	mana_value: u32,
+	controller: PlayerId,
+	owner: PlayerId,
+	arrival: ArrivalIdentity,
+	from_zone: Maybe(Zone),
+	cast_from_zone: Maybe(Zone),
+	played_from_zone: Maybe(Zone),
+	to_zone: Zone,
+	attachments: [dynamic]AttachmentSnapshot,
+	linked_exile_snapshot: [dynamic]LinkedExileSnapshot,
+	is_token: bool,
+	combat_status: ZoneChangeCombatStatus,
+	block_pairs: [dynamic]BlockHistoryPair,
+	co_departed: [dynamic]ObjectId,
+	co_entered: [dynamic]ObjectId,
+	instruction_lead: Maybe(InstructionLead),
+	entered_incarnation: Maybe(u64),
+	attached_to: Maybe(AttachTarget),
+	turn_zone_change_index: int,
+	recorded_turn_number: u32,
+	is_suspected: bool,
+	was_prepared: bool,
+	departure: ZoneDeparture,
+}
+
+ThisWayCause :: enum u16 {
+	OwnerLibraryShuffleSubject,
+	Exiled,
+	Sacrificed,
+	Destroyed,
+	Milled,
+	Discarded,
+	Tapped,
+	Returned,
+	Bounced,
+	PutIntoGraveyard,
+	ControlGained,
+}
+
+TrackedMemberOrigin :: struct {
+	departed_from: Zone,
+	departure_incarnation: u64,
+}
+
+ExtraTurn :: struct {
+	player: PlayerId,
+	anchor: PlayerId,
+	id: ExtraTurnId,
+}
+
+PendingCombatPhaseSkip :: struct {
+	player: PlayerId,
+	duration: Maybe(Duration),
+}
+
+CombatPhaseSkipState :: struct {
+	pending: u32,
+	active: bool,
+}
+
+ScheduledTurnControl :: struct {
+	target_player: PlayerId,
+	controller: PlayerId,
+	timestamp: u64,
+	grant_extra_turn_after: bool,
+	window: ControlWindow,
+}
+
+ExtraPhase :: struct {
+	anchor: Phase,
+	segment: TurnSegment,
+	attacker_restriction: Maybe(TargetFilter),
+	attacker_restriction_source: Maybe(ObjectId),
+	id: ExtraPhaseId,
+}
+
+InsertedPhaseResume :: struct {
+	anchor: Phase,
+	segment: TurnSegment,
+	entry: ExtraPhaseId,
+}
+
+ExtraPhaseId :: distinct u64
+
+ExtraTurnId :: distinct u64
+
+TurnDirection :: enum u16 {
+	Normal,
+	Reversed,
+}
+
+TargetFilter_None :: struct {
+}
+TargetFilter_Any :: struct {
+}
+TargetFilter_Player :: struct {
+}
+TargetFilter_Controller :: struct {
+}
+TargetFilter_SourceController :: struct {
+}
+TargetFilter_ControllerAndControlledPermanents :: struct {
+	permanent_type: Maybe(CoreType),
+	source_scope: SourceExclusion,
+}
+TargetFilter_Opponent :: struct {
+}
+TargetFilter_SelfRef :: struct {
+}
+TargetFilter_GrantingObject :: struct {
+	bound: Maybe(ObjectIncarnationRef),
+}
+TargetFilter_SourceOrPaired :: struct {
+}
+TargetFilter_Typed :: struct {
+	_0: TypedFilter,
+}
+TargetFilter_Not :: struct {
+	filter: ^TargetFilter,
+}
+TargetFilter_Or :: struct {
+	filters: [dynamic]TargetFilter,
+}
+TargetFilter_And :: struct {
+	filters: [dynamic]TargetFilter,
+}
+TargetFilter_StackAbility :: struct {
+	controller: Maybe(ControllerRef),
+	tag: Maybe(AbilityTag),
+	kind: Maybe(StackAbilityKind),
+}
+TargetFilter_StackSpell :: struct {
+}
+TargetFilter_CastingSpell :: struct {
+}
+TargetFilter_SpecificObject :: struct {
+	id: ObjectId,
+}
+TargetFilter_SpecificPlayer :: struct {
+	id: PlayerId,
+}
+TargetFilter_PlayerWhoChoseLabel :: struct {
+	label: string,
+}
+TargetFilter_PlayerMatching :: struct {
+	player: ^PlayerFilter,
+}
+TargetFilter_Neighbor :: struct {
+	direction: SeatDirection,
+}
+TargetFilter_ScopedPlayer :: struct {
+}
+TargetFilter_AttachedTo :: struct {
+}
+TargetFilter_LastCreated :: struct {
+}
+TargetFilter_LastRevealed :: struct {
+}
+TargetFilter_LastZoneChanged :: struct {
+}
+TargetFilter_CostPaidObject :: struct {
+}
+TargetFilter_AmassedArmy :: struct {
+}
+TargetFilter_ChosenCard :: struct {
+}
+TargetFilter_TrackedSet :: struct {
+	id: TrackedSetId,
+}
+TargetFilter_TrackedSetFiltered :: struct {
+	id: TrackedSetId,
+	filter: ^TargetFilter,
+	caused_by: Maybe(ThisWayCause),
+}
+TargetFilter_ChoiceAssignment :: struct {
+	side: ChoiceAssignmentSide,
+}
+TargetFilter_ExiledBySource :: struct {
+}
+TargetFilter_ExiledCardByIndex :: struct {
+	index: u32,
+}
+TargetFilter_TriggeringSpellController :: struct {
+}
+TargetFilter_TriggeringSpellOwner :: struct {
+}
+TargetFilter_TriggeringPlayer :: struct {
+}
+TargetFilter_TriggeringSource :: struct {
+}
+TargetFilter_AttackedPlayerOrPlaneswalker :: struct {
+}
+TargetFilter_EventTarget :: struct {
+}
+TargetFilter_TriggeringSourceController :: struct {
+}
+TargetFilter_EventTargetController :: struct {
+}
+TargetFilter_ParentTarget :: struct {
+}
+TargetFilter_ParentTargetSlot :: struct {
+	index: int,
+}
+TargetFilter_DeclaredPlayer :: struct {
+	group: ChosenGroupId,
+}
+TargetFilter_ParentTargetController :: struct {
+}
+TargetFilter_ParentTargetOwner :: struct {
+}
+TargetFilter_AffectedObjectOwner :: struct {
+}
+TargetFilter_SourceChosenPlayer :: struct {
+}
+TargetFilter_OriginalController :: struct {
+}
+TargetFilter_OriginalSource :: struct {
+}
+TargetFilter_PostReplacementSourceController :: struct {
+}
+TargetFilter_PostReplacementDamageSource :: struct {
+}
+TargetFilter_PostReplacementDamageTarget :: struct {
+}
+TargetFilter_PostReplacementDamageTargetOwner :: struct {
+}
+TargetFilter_DefendingPlayer :: struct {
+}
+TargetFilter_HasChosenName :: struct {
+}
+TargetFilter_ChosenDamageSource :: struct {
+	filter: ^TargetFilter,
+}
+TargetFilter_Named :: struct {
+	name: string,
+}
+TargetFilter_Owner :: struct {
+}
+TargetFilter_AllPlayers :: struct {
+}
+TargetFilter :: union {
+	TargetFilter_None,
+	TargetFilter_Any,
+	TargetFilter_Player,
+	TargetFilter_Controller,
+	TargetFilter_SourceController,
+	TargetFilter_ControllerAndControlledPermanents,
+	TargetFilter_Opponent,
+	TargetFilter_SelfRef,
+	TargetFilter_GrantingObject,
+	TargetFilter_SourceOrPaired,
+	TargetFilter_Typed,
+	TargetFilter_Not,
+	TargetFilter_Or,
+	TargetFilter_And,
+	TargetFilter_StackAbility,
+	TargetFilter_StackSpell,
+	TargetFilter_CastingSpell,
+	TargetFilter_SpecificObject,
+	TargetFilter_SpecificPlayer,
+	TargetFilter_PlayerWhoChoseLabel,
+	TargetFilter_PlayerMatching,
+	TargetFilter_Neighbor,
+	TargetFilter_ScopedPlayer,
+	TargetFilter_AttachedTo,
+	TargetFilter_LastCreated,
+	TargetFilter_LastRevealed,
+	TargetFilter_LastZoneChanged,
+	TargetFilter_CostPaidObject,
+	TargetFilter_AmassedArmy,
+	TargetFilter_ChosenCard,
+	TargetFilter_TrackedSet,
+	TargetFilter_TrackedSetFiltered,
+	TargetFilter_ChoiceAssignment,
+	TargetFilter_ExiledBySource,
+	TargetFilter_ExiledCardByIndex,
+	TargetFilter_TriggeringSpellController,
+	TargetFilter_TriggeringSpellOwner,
+	TargetFilter_TriggeringPlayer,
+	TargetFilter_TriggeringSource,
+	TargetFilter_AttackedPlayerOrPlaneswalker,
+	TargetFilter_EventTarget,
+	TargetFilter_TriggeringSourceController,
+	TargetFilter_EventTargetController,
+	TargetFilter_ParentTarget,
+	TargetFilter_ParentTargetSlot,
+	TargetFilter_DeclaredPlayer,
+	TargetFilter_ParentTargetController,
+	TargetFilter_ParentTargetOwner,
+	TargetFilter_AffectedObjectOwner,
+	TargetFilter_SourceChosenPlayer,
+	TargetFilter_OriginalController,
+	TargetFilter_OriginalSource,
+	TargetFilter_PostReplacementSourceController,
+	TargetFilter_PostReplacementDamageSource,
+	TargetFilter_PostReplacementDamageTarget,
+	TargetFilter_PostReplacementDamageTargetOwner,
+	TargetFilter_DefendingPlayer,
+	TargetFilter_HasChosenName,
+	TargetFilter_ChosenDamageSource,
+	TargetFilter_Named,
+	TargetFilter_Owner,
+	TargetFilter_AllPlayers,
+}
+
+FormatConfig :: struct {
+	format: GameFormat,
+	starting_life: i32,
+	min_players: u8,
+	max_players: u8,
+	deck_size: DeckSizeRule,
+	deck_size_origin: DeckSizeOrigin,
+	singleton: bool,
+	command_zone: bool,
+	commander_damage_threshold: Maybe(u8),
+	poison_counter_threshold: Maybe(u8),
+	range_of_influence: ^RangeOfInfluenceConfig,
+	team_based: bool,
+	archenemy_player: Maybe(PlayerId),
+	uses_commander: bool,
+	supplies_fixed_deck: bool,
+	sideboard_policy: SideboardPolicy,
+	default_deck_copy_limit: DeckCopyLimit,
+	allow_debug_actions: bool,
+	horde_ruleset: Maybe(HordeRuleset),
+	custom_rules: ^CustomFormatRules,
+}
+
+CommanderDamageEntry :: struct {
+	player: PlayerId,
+	commander: ObjectId,
+	damage: u32,
+}
+
+AutoPassMode_UntilStackEmpty :: struct {
+	initial_stack_len: int,
+	policy: StackResolutionPolicy,
+}
+AutoPassMode_UntilTurnBoundary :: struct {
+	until: TurnBoundary,
+}
+AutoPassMode :: union {
+	AutoPassMode_UntilStackEmpty,
+	AutoPassMode_UntilTurnBoundary,
+}
+
+PhaseStop :: struct {
+	phase: Phase,
+	scope: PhaseStopScope,
+}
+
+PriorityPassingMode :: enum u16 {
+	Standard,
+	SkipLowUseWindows,
+	FullControl,
+}
+
+ResourceAxis_Mana :: struct {
+	_0: ManaType,
+}
+ResourceAxis_Life :: struct {
+	_0: PlayerId,
+}
+ResourceAxis_DamageDealt :: struct {
+	_0: PlayerId,
+}
+ResourceAxis_LibraryDelta :: struct {
+	_0: PlayerId,
+}
+ResourceAxis_Counter :: struct {
+	_0: CounterClass,
+	_1: ObjectClass,
+}
+ResourceAxis_Trigger :: struct {
+	_0: TriggerKind,
+}
+ResourceAxis_TokensCreated :: struct {
+}
+ResourceAxis_CardsDrawn :: struct {
+}
+ResourceAxis_Casts :: struct {
+}
+ResourceAxis_LandfallTriggers :: struct {
+}
+ResourceAxis_CombatPhases :: struct {
+}
+ResourceAxis_ExtraTurns :: struct {
+}
+ResourceAxis_DeathTriggers :: struct {
+}
+ResourceAxis_EtbTriggers :: struct {
+}
+ResourceAxis_LtbTriggers :: struct {
+}
+ResourceAxis_SacTriggers :: struct {
+}
+ResourceAxis_Poison :: struct {
+	_0: PlayerId,
+}
+ResourceAxis_Energy :: struct {
+	_0: PlayerId,
+}
+ResourceAxis :: union {
+	ResourceAxis_Mana,
+	ResourceAxis_Life,
+	ResourceAxis_DamageDealt,
+	ResourceAxis_LibraryDelta,
+	ResourceAxis_Counter,
+	ResourceAxis_Trigger,
+	ResourceAxis_TokensCreated,
+	ResourceAxis_CardsDrawn,
+	ResourceAxis_Casts,
+	ResourceAxis_LandfallTriggers,
+	ResourceAxis_CombatPhases,
+	ResourceAxis_ExtraTurns,
+	ResourceAxis_DeathTriggers,
+	ResourceAxis_EtbTriggers,
+	ResourceAxis_LtbTriggers,
+	ResourceAxis_SacTriggers,
+	ResourceAxis_Poison,
+	ResourceAxis_Energy,
+}
+
+CounterType_Plus1Plus1 :: struct {
+}
+CounterType_Minus1Minus1 :: struct {
+}
+CounterType_PowerToughness :: struct {
+	power: i32,
+	toughness: i32,
+}
+CounterType_Loyalty :: struct {
+}
+CounterType_Defense :: struct {
+}
+CounterType_Stun :: struct {
+}
+CounterType_Lore :: struct {
+}
+CounterType_Time :: struct {
+}
+CounterType_Fade :: struct {
+}
+CounterType_Age :: struct {
+}
+CounterType_Shield :: struct {
+}
+CounterType_Finality :: struct {
+}
+CounterType_Keyword :: struct {
+	_0: KeywordKind,
+}
+CounterType_Generic :: struct {
+	_0: string,
+}
+CounterType :: union {
+	CounterType_Plus1Plus1,
+	CounterType_Minus1Minus1,
+	CounterType_PowerToughness,
+	CounterType_Loyalty,
+	CounterType_Defense,
+	CounterType_Stun,
+	CounterType_Lore,
+	CounterType_Time,
+	CounterType_Fade,
+	CounterType_Age,
+	CounterType_Shield,
+	CounterType_Finality,
+	CounterType_Keyword,
+	CounterType_Generic,
+}
+
+PersistentAxisMaterialization_Tokens :: struct {
+	_0: ^TokenGrowth,
+}
+PersistentAxisMaterialization_Counters :: struct {
+	_0: [dynamic]CounterGrowth,
+}
+PersistentAxisMaterialization_Life :: struct {
+	player: PlayerId,
+	per_cycle_delta: u32,
+}
+PersistentAxisMaterialization :: union {
+	PersistentAxisMaterialization_Tokens,
+	PersistentAxisMaterialization_Counters,
+	PersistentAxisMaterialization_Life,
+}
+
+LoopDetectionMode :: enum u16 {
+	Off,
+	Interactive,
+}
+
+MatchConfig :: struct {
+	match_type: MatchType,
+	loop_detection: LoopDetectionMode,
+}
+
+MatchPhase :: enum u16 {
+	InGame,
+	BetweenGames,
+	Completed,
+}
+
+MatchScore :: struct {
+	p0_wins: u8,
+	p1_wins: u8,
+	draws: u8,
+}
+
+MatchForfeitResult :: struct {
+	winner: PlayerId,
+	forfeiting_player: PlayerId,
+	cause: MatchForfeitCause,
+}
+
+PlayerDeckPool :: struct {
+	player: PlayerId,
+	registered_main: ^[dynamic]DeckEntry,
+	registered_sideboard: ^[dynamic]DeckEntry,
+	current_main: ^[dynamic]DeckEntry,
+	current_sideboard: ^[dynamic]DeckEntry,
+	registered_companion: ^[dynamic]DeckEntry,
+	current_companion: ^[dynamic]DeckEntry,
+	registered_commander: ^[dynamic]DeckEntry,
+	current_commander: ^[dynamic]DeckEntry,
+	registered_signature_spell: ^[dynamic]DeckEntry,
+	current_signature_spell: ^[dynamic]DeckEntry,
+	registered_planar_deck: ^[dynamic]DeckEntry,
+	registered_scheme_deck: ^[dynamic]DeckEntry,
+	current_scheme_deck: ^[dynamic]DeckEntry,
+	bracket_tier: Maybe(CommanderBracketTier),
+	estimated_bracket_tier: Maybe(CommanderBracketTier),
+	printings: DisplayOnly_ptr_DeckPrintingRecord,
+}
+
+OutsideGameCardUse :: struct {
+	player: PlayerId,
+	sideboard_index: int,
+	count: u32,
+}
+
+TriggerDefinitionRef :: struct {
+	source: ObjectIncarnationRef,
+	occurrence: TriggerDefinitionOccurrenceRef,
+}
+
+ObjectIncarnationRef :: struct {
+	object_id: ObjectId,
+	incarnation: u64,
+}
+
+CrewHistoryPair :: struct {
+	vehicle: ObjectIncarnationRef,
+	crewer: ObjectIncarnationRef,
+}
+
+CoreType :: enum u16 {
+	Artifact,
+	Creature,
+	Enchantment,
+	Instant,
+	Land,
+	Planeswalker,
+	Sorcery,
+	Tribal,
+	Battle,
+	Kindred,
+	Dungeon,
+	Plane,
+	Phenomenon,
+	Scheme,
+	Conspiracy,
+	Boss,
+	Event,
+	Vanguard,
+}
+
+AbilityActivationRecord :: struct {
+	activator: PlayerId,
+	source: ObjectId,
+	source_lki: LKISnapshot,
+	source_zone: Zone,
+	ability_tag: Maybe(AbilityTag),
+	is_loyalty_ability: bool,
+	activation_cost: BoundActivationCost,
+	targets: [dynamic]ActivationTargetFact,
+}
+
+MiracleOffer :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	cost: ManaCost,
+}
+
+PendingParadigmRemainingOffers :: struct {
+	player: PlayerId,
+	offers: [dynamic]ObjectId,
+}
+
+SpellCastRecord :: struct {
+	name: string,
+	core_types: [dynamic]CoreType,
+	supertypes: [dynamic]Supertype,
+	subtypes: [dynamic]string,
+	keywords: [dynamic]Keyword,
+	colors: [dynamic]ManaColor,
+	mana_value: u32,
+	has_x_in_cost: bool,
+	has_adventure: bool,
+	from_zone: Zone,
+	from_outside_game: bool,
+	cast_variant: CastingVariant,
+	was_kicked: bool,
+	spell_object_id: Maybe(ObjectId),
+	prepared_copy_source: Maybe(ObjectId),
+}
+
+CyclingRecord :: struct {
+	name: string,
+	turn: u32,
+}
+
+LandPlayRecord :: struct {
+	from_zone: Zone,
+}
+
+PlayerActionKind :: enum u16 {
+	AcceptedOptionalEffect,
+	SearchedLibrary,
+	Scry,
+	Surveil,
+	CollectEvidence,
+	ShuffledLibrary,
+	Proliferate,
+	Investigate,
+	Forage,
+	Draw,
+}
+
+BlockHistoryPair :: struct {
+	blocker: ObjectIncarnationRef,
+	attacker: ObjectIncarnationRef,
+}
+
+StepTally :: distinct map[Phase]u32
+
+AttackDeclarationRecord :: struct {
+	object_id: ObjectId,
+	incarnation: Maybe(u64),
+	lki: LKISnapshot,
+	is_token: bool,
+	is_commander: bool,
+}
+
+CounterAddedRecord :: struct {
+	actor: PlayerId,
+	object_id: ObjectId,
+	incarnation: Maybe(u64),
+	counter_type: CounterType,
+	count: u32,
+	name: string,
+	core_types: [dynamic]CoreType,
+	subtypes: [dynamic]string,
+	supertypes: [dynamic]Supertype,
+	keywords: [dynamic]Keyword,
+	power: Maybe(i32),
+	toughness: Maybe(i32),
+	colors: [dynamic]ManaColor,
+	mana_value: u32,
+	controller: PlayerId,
+	owner: PlayerId,
+	counters: [dynamic]Tuple2(CounterType, u32),
+}
+
+BattlefieldEntryObservations :: distinct map[int]^TriggerSourceContext
+
+BattlefieldEntryRecord :: struct {
+	token_status: Maybe(EntryTokenStatus),
+	object_id: ObjectId,
+	name: string,
+	core_types: [dynamic]CoreType,
+	subtypes: [dynamic]string,
+	supertypes: [dynamic]Supertype,
+	colors: [dynamic]ManaColor,
+	keywords: [dynamic]Keyword,
+	controller: PlayerId,
+	face_state: FaceState,
+}
+
+DamageRecord :: struct {
+	source_id: ObjectId,
+	source_controller: PlayerId,
+	target: TargetRef,
+	target_controller: PlayerId,
+	target_incarnation: Maybe(u64),
+	source_incarnation: Maybe(u64),
+	amount: u32,
+	is_combat: bool,
+	source_name: string,
+	source_core_types: [dynamic]CoreType,
+	source_subtypes: [dynamic]string,
+	source_supertypes: [dynamic]Supertype,
+	source_keywords: [dynamic]Keyword,
+	source_power: Maybe(i32),
+	source_toughness: Maybe(i32),
+	source_colors: [dynamic]ManaColor,
+	source_mana_value: u32,
+	source_controller_snapshot: PlayerId,
+	source_owner: PlayerId,
+	source_zone: Zone,
+	excess: u32,
+}
+
+ExploitRecord :: struct {
+	exploiter: ObjectId,
+	exploiter_incarnation: Maybe(u64),
+	sacrificed: ObjectId,
+	sacrificed_incarnation: Maybe(u64),
+}
+
+PendingSpellCostReduction :: struct {
+	player: PlayerId,
+	amount: u32,
+	spell_filter: Maybe(TargetFilter),
+}
+
+PendingNextSpellModifier :: struct {
+	player: PlayerId,
+	modifier: NextSpellModifier,
+	spell_filter: Maybe(TargetFilter),
+	source_id: Maybe(ObjectId),
+}
+
+ProductKnowledgeState :: struct {
+	facts: [dynamic]ProductKnowledgeFact,
+	library_epochs: [dynamic]u64,
+	action_library_knowledge_generations: [dynamic]u64,
+	zone_change_library_knowledge_stamps: [dynamic]ZoneChangeLibraryKnowledgeStamp,
+}
+
+ResolutionStack :: struct {
+	frames: FrameVec,
+	next_draw_sequence_frame_id: u64,
+	next_discard_frame_id: u64,
+	last_post_replacement_frame_id: u64,
+}
+
+ResolutionPaymentTransaction :: struct {
+	wire_version: u32,
+	owner: PlayerId,
+	root: ^ResolvedAbility,
+	transcript: [dynamic]ResolutionPaymentTranscriptEntry,
+	base_waiting_for: WaitingFor,
+	resolving_trigger_context: Maybe(ResolvingTriggerContext),
+	recovered: ^PaymentRecoveryCheckpoint,
+}
+
+SpellCastReversal :: struct {
+	object_id: ObjectId,
+	player: PlayerId,
+	journal_start: int,
+	undo: [dynamic]SpellCastUndo,
+	comparison_undo: Maybe([dynamic]SpellCastUndo),
+	cost_mutations: bool,
+	library_undo_forbidden: bool,
+}
+
+AttachTarget_Object :: struct {
+	_0: ObjectId,
+}
+AttachTarget_Player :: struct {
+	_0: PlayerId,
+}
+AttachTarget :: union {
+	AttachTarget_Object,
+	AttachTarget_Player,
+}
+
+ResolutionPaymentOrigin :: enum u16 {
+	FreshChoice,
+	LatchedSuffix,
+}
+
+PendingPlayerScopeTail :: struct {
+	source_id: ObjectId,
+	after_scope: ^ResolvedAbility,
+	linked_exile_batch: [dynamic]ObjectIncarnationRef,
+	created_tokens: Maybe([dynamic]SeatCreatedTokens),
+	zone_changed_this_way: Maybe([dynamic]ObjectId),
+}
+
+CreatedTokenSeatsHandoff :: struct {
+	source_id: ObjectId,
+	seats: [dynamic]SeatCreatedTokens,
+}
+
+OpenInstruction :: struct {
+	start: int,
+	watch: InstructionWatch,
+}
+
+ClosedInstruction :: struct {
+	depth: int,
+	kind: EffectKind,
+	start: int,
+	end: int,
+}
+
+MergedCardComponentRoute :: struct {
+	default_dest: Zone,
+	card_dest: Zone,
+}
+
+LeavingGameDeparture :: struct {
+	object_id: ObjectId,
+	departure: ZoneDeparture,
+}
+
+ResolutionCoinFlip :: struct {
+	flipper: PlayerId,
+	result: CoinFlipResult,
+}
+
+RepeatProcessRequest :: struct {
+	source_id: ObjectId,
+}
+
+PendingPlayerScopeSacrificeChoice :: struct {
+	ability: ^ResolvedAbility,
+	remaining_players: [dynamic]PlayerId,
+	selections: [dynamic]Tuple2(PlayerId, [dynamic]ObjectId),
+	completion: PendingPlayerScopeSacrificeCompletion,
+	resolving_entry: Maybe(ObjectId),
+}
+
+PendingPlayerScopeChoice :: struct {
+	ability: ^ResolvedAbility,
+	remaining_players: [dynamic]PlayerId,
+	selections: [dynamic]Tuple2(PlayerId, ObjectIncarnationRef),
+}
+
+PendingPlayerScopeUnlessPayment :: struct {
+	pending_effect: ^ResolvedAbility,
+	remaining_players: [dynamic]PlayerId,
+	declining_players: [dynamic]PlayerId,
+	current_player: PlayerId,
+	cost: AbilityCost,
+	payments: [dynamic]PlayerScopeUnlessSelection,
+}
+
+PendingSimultaneousUnless :: struct {
+	ability: ^ResolvedAbility,
+	unless_pay: UnlessPayModifier,
+	instances: u32,
+	phase: SimultaneousUnlessPhase,
+	trigger_event: Maybe(GameEvent),
+	resolving_entry: Maybe(ObjectId),
+}
+
+PendingPlayerScopeUnlessPunishment :: struct {
+	ability: ^ResolvedAbility,
+	current_player: PlayerId,
+	remaining_players: [dynamic]PlayerId,
+	declining_players: [dynamic]PlayerId,
+	payments: [dynamic]PlayerScopeUnlessSelection,
+	current_picks: [dynamic]ObjectIncarnationRef,
+	trigger_event: Maybe(GameEvent),
+}
+
+PendingDiscardBatch :: struct {
+	player: PlayerId,
+	cursor: DiscardBatchCursor,
+	completion: PendingDiscardBatchCompletion,
+	source_id: ObjectId,
+	effect_kind: EffectKind,
+	paused_card: ObjectIncarnationRef,
+	discard_frame: Maybe(DiscardFrameId),
+	cause: DiscardCause,
+	fan_out: ^PendingDiscardFanOut,
+	preceding_events: [dynamic]GameEvent,
+}
+
+PendingHeroEvent :: struct {
+	event_id: ObjectId,
+	horde: PlayerId,
+	steps: [dynamic]HeroEventApplyStep,
+	copies_pending: u32,
+	departure_carry: HeroEventDepartureCarry,
+}
+
+PendingHordeReveal_NontokenCast :: struct {
+	card: ObjectId,
+	revealed_rarity: Maybe(Rarity),
+}
+PendingHordeReveal_EventDispatch :: struct {
+	card: ObjectId,
+	fired: [dynamic]ObjectId,
+}
+PendingHordeReveal_TokenCreation :: struct {
+	card: ObjectId,
+	before: [dynamic]ObjectId,
+	pinned: Maybe(TokenImageRef),
+	revealed_name: string,
+}
+PendingHordeReveal_AmassArmy :: struct {
+	card: ObjectId,
+}
+PendingHordeReveal :: union {
+	PendingHordeReveal_NontokenCast,
+	PendingHordeReveal_EventDispatch,
+	PendingHordeReveal_TokenCreation,
+	PendingHordeReveal_AmassArmy,
+}
+
+PendingDamagePostLoss :: struct {
+	source_id: ObjectId,
+	source_incarnation: Maybe(u64),
+	controller: PlayerId,
+	target: PlayerId,
+	actual_amount: u32,
+	has_lifelink: bool,
+	lifelink_bonus: u32,
+	stage: DamagePostLossStage,
+	is_combat: bool,
+	toxic_poison: u32,
+}
+
+PendingDamagePostCounter :: struct {
+	ctx: DamageContextSnapshot,
+	target: TargetRef,
+	actual_amount: u32,
+	excess: u32,
+	is_combat: bool,
+}
+
+PendingSingleDiscard :: struct {
+	paused_card: ObjectIncarnationRef,
+	player: PlayerId,
+	source_id: Maybe(ObjectId),
+}
+
+PendingExileFromTopUntil :: struct {
+	pending_card: ObjectId,
+	remaining: [dynamic]ObjectId,
+	linked_batch: [dynamic]ObjectIncarnationRef,
+	cumulative: i32,
+	hits: [dynamic]ObjectId,
+}
+
+PendingMassLibraryOrderChoice :: struct {
+	source_id: ObjectId,
+	library_position: LibraryPosition,
+	track_exiled_by_source: bool,
+	duration: Maybe(Duration),
+	remaining_batches: PendingMassLibraryOrderBatches,
+	arranged_batches: [dynamic]MassLibraryOrderBatch,
+	resolving_entry: Maybe(ObjectId),
+	arranger_election: Maybe(MassLibraryOrderBatch),
+}
+
+PendingScopedLibrarySearch :: struct {
+	ability: ^ResolvedAbility,
+	phase: ScopedLibrarySearchPhase,
+	after_scope: ^ResolvedAbility,
+}
+
+LibrarySearchDeliveryResume_Standard :: struct {
+	searcher: PlayerId,
+	hidden_search_audiences: [dynamic]HiddenSearchAudience,
+}
+LibrarySearchDeliveryResume_Scoped :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	search_keys: [dynamic]PlayerId,
+	grants: [dynamic]Tuple2(ObjectIncarnationRef, BoundSearchFoundGrant),
+	after_scope: ^ResolvedAbility,
+}
+LibrarySearchDeliveryResume :: union {
+	LibrarySearchDeliveryResume_Standard,
+	LibrarySearchDeliveryResume_Scoped,
+}
+
+HiddenSearchAudience :: struct {
+	identity: ObjectIncarnationRef,
+	audience: [dynamic]PlayerId,
+}
+
+PendingSearchFoundBatch :: struct {
+	searcher: PlayerId,
+	library_owner: Maybe(PlayerId),
+	remaining: [dynamic]ObjectIncarnationRef,
+	survivors: [dynamic]ObjectIncarnationRef,
+	current: Maybe(ObjectIncarnationRef),
+	continuation: PendingSearchFoundContinuation,
+	visibility: SearchFoundVisibility,
+}
+
+PendingDieRollInstruction :: struct {
+	source_id: ObjectId,
+	controller: PlayerId,
+	roller: PlayerId,
+	quantity_controller: Maybe(PlayerId),
+	scoped_player: Maybe(PlayerId),
+	targets: [dynamic]TargetRef,
+	results_table: [dynamic]DieResultBranch,
+	modifier: Maybe(DieRollModifier),
+	die_result: Maybe(i32),
+	trigger_context: Maybe(ResolvingTriggerContext),
+	continuation: DieRollContinuation,
+	chain_root_targets: [dynamic]TargetRef,
+	illegal_target_slots: [dynamic]int,
+	chain_root_target_pins: [dynamic]Maybe(ObjectIncarnationRef),
+	declared_capture: Maybe(CapturedDeclarationPayload),
+	local_target_pins: [dynamic]Maybe(ObjectIncarnationRef),
+	keyed_target_incarnations: [dynamic]ObjectIncarnationRef,
+	declared_player: Maybe(DeclaredPlayerTarget),
+}
+
+MayTriggerAutoChoiceRecord :: struct {
+	selector: MayTriggerAutoChoiceSelector,
+	choice: AutoMayChoice,
+}
+
+UnActionState :: struct {
+	enabled_players: [dynamic]PlayerId,
+	menu: [dynamic]UnTellKind,
+	gotcha_offers: [dynamic]GotchaOffer,
+	pending_offers: [dynamic]GotchaOffer,
+	touchable: [dynamic]ObjectIncarnationRef,
+	next_offer_id: u64,
+}
+
+ReplacementAutoChoiceRecord :: struct {
+	id: ReplacementAutoChoiceId,
+	key: ReplacementAutoChoiceKey,
+	choice: ReplacementAutoChoice,
+	descriptions: [dynamic]string,
+}
+
+ReplacementAutoChoiceTail :: struct {
+	player: PlayerId,
+	event: ReplacementEvent,
+	remaining: [dynamic]ReplacementAutoChoiceIdentity,
+}
+
+DecisionTemplate :: struct {
+	owner: PlayerId,
+	decisions: [dynamic]PinnedDecision,
+	replay: ReplayMode,
+	key: DecisionGroupKey,
+}
+
+PriorityYield :: struct {
+	player: PlayerId,
+	target: YieldTarget,
+}
+
+PendingBeginGameAbility :: struct {
+	ability: ^ResolvedAbility,
+}
+
+ChoiceValue_Color :: struct {
+	_0: ManaColor,
+}
+ChoiceValue_CreatureType :: struct {
+	_0: string,
+}
+ChoiceValue_BasicLandType :: struct {
+	_0: BasicLandType,
+}
+ChoiceValue_CardType :: struct {
+	_0: CoreType,
+}
+ChoiceValue_OddOrEven :: struct {
+	_0: Parity,
+}
+ChoiceValue_CardName :: struct {
+	_0: string,
+}
+ChoiceValue_Number :: struct {
+	_0: u32,
+}
+ChoiceValue_Label :: struct {
+	_0: string,
+}
+ChoiceValue_CardPredicate :: struct {
+	_0: CardPredicateChoice,
+}
+ChoiceValue_LandType :: struct {
+	_0: string,
+}
+ChoiceValue_Player :: struct {
+	_0: PlayerId,
+}
+ChoiceValue_TwoColors :: struct {
+	_0: [2]ManaColor,
+}
+ChoiceValue_Keyword :: struct {
+	_0: Keyword,
+}
+ChoiceValue_Counter :: struct {
+	_0: CounterType,
+}
+ChoiceValue :: union {
+	ChoiceValue_Color,
+	ChoiceValue_CreatureType,
+	ChoiceValue_BasicLandType,
+	ChoiceValue_CardType,
+	ChoiceValue_OddOrEven,
+	ChoiceValue_CardName,
+	ChoiceValue_Number,
+	ChoiceValue_Label,
+	ChoiceValue_CardPredicate,
+	ChoiceValue_LandType,
+	ChoiceValue_Player,
+	ChoiceValue_TwoColors,
+	ChoiceValue_Keyword,
+	ChoiceValue_Counter,
+}
+
+ManaColor :: enum u16 {
+	White,
+	Blue,
+	Black,
+	Red,
+	Green,
+}
+
+AppliedSticker_Name :: struct {
+	locator: StickerLocator,
+	text: string,
+	position: u8,
+	timestamp: u64,
+}
+AppliedSticker_Ability :: struct {
+	locator: StickerLocator,
+	ticket_cost: u8,
+	text: string,
+	timestamp: u64,
+}
+AppliedSticker_PowerToughness :: struct {
+	locator: StickerLocator,
+	ticket_cost: u8,
+	power: i32,
+	toughness: i32,
+	timestamp: u64,
+}
+AppliedSticker_Art :: struct {
+	locator: StickerLocator,
+	label: string,
+	timestamp: u64,
+}
+AppliedSticker :: union {
+	AppliedSticker_Name,
+	AppliedSticker_Ability,
+	AppliedSticker_PowerToughness,
+	AppliedSticker_Art,
+}
+
+ChosenDamageSource :: struct {
+	source_id: ObjectId,
+	source_filter: TargetFilter,
+}
+
+MeldPairRecord :: struct {
+	source: string,
+	partner: string,
+	result: string,
+}
+
+CardDbHandle :: distinct ^CardDatabase
+
+BoosterShelf_Products :: struct {
+	_0: [dynamic]BoosterProduct,
+}
+BoosterShelf_Cube :: struct {
+	_0: [dynamic]CardFace,
+}
+BoosterShelf :: union {
+	BoosterShelf_Products,
+	BoosterShelf_Cube,
+}
+
+ParentTargetMissingReason_Dig :: struct {
+}
+ParentTargetMissingReason_ChooseFromZone :: struct {
+}
+ParentTargetMissingReason_RevealHandChoice :: struct {
+}
+ParentTargetMissingReason_ExileTop :: struct {
+}
+ParentTargetMissingReason_RevealUntil :: struct {
+}
+ParentTargetMissingReason_SearchLibrary :: struct {
+}
+ParentTargetMissingReason_IllegalAnnouncement :: struct {
+	origin: TargetReadOrigin,
+}
+ParentTargetMissingReason :: union {
+	ParentTargetMissingReason_Dig,
+	ParentTargetMissingReason_ChooseFromZone,
+	ParentTargetMissingReason_RevealHandChoice,
+	ParentTargetMissingReason_ExileTop,
+	ParentTargetMissingReason_RevealUntil,
+	ParentTargetMissingReason_SearchLibrary,
+	ParentTargetMissingReason_IllegalAnnouncement,
+}
+
+ClauseMinimumSnapshot :: struct {
+	entries: [dynamic]Tuple2(QuantityRef, i32),
+}
+
+ControlChangeLink :: struct {
+	capture: ^ControlChangeInstructionCapture,
+	published: [dynamic]ObjectId,
+}
+
+LazyBoxedMap_u64_ControlChangeLink :: distinct ^map[u64]ControlChangeLink
+
+ControlChangeObservation :: struct {
+	subject: EventObjectSnapshot,
+	watchers: ^[dynamic]TriggerSourceContext,
+	doublers: ^[dynamic]LatchedTriggerDoubler,
+	gain_watchers: ^[dynamic]TriggerSourceContext,
+	gain_doublers: ^[dynamic]LatchedTriggerDoubler,
+}
+
+LazyBoxedMap_u64_ControlChangeObservation :: distinct ^map[u64]ControlChangeObservation
+
+QueuedControlChange :: struct {
+	subject: ObjectIncarnationRef,
+	event: GameEvent,
+}
+
+LazyBoxedVec_QueuedControlChange :: distinct ^[dynamic]QueuedControlChange
+
+LazyBoxedVec_t2_ObjectIncarnationRef_PlayerId :: distinct ^[dynamic]Tuple2(ObjectIncarnationRef, PlayerId)
+
+EpicEffect :: struct {
+	controller: PlayerId,
+	prototype_id: ObjectId,
+	spell: ^ResolvedAbility,
+}
+
+ResolvedAbility :: struct {
+	effect: Effect,
+	targets: [dynamic]TargetRef,
+	declares_chosen_group: Maybe(ChosenGroupId),
+	reads_chosen_group: Maybe(ChosenGroupId),
+	declares_return_result: Maybe(ReturnResultId),
+	reads_return_result: Maybe(Tuple2(ReturnResultId, ReturnResultReadSpec)),
+	source_id: ObjectId,
+	cast_occurrence: Maybe(CastOccurrence),
+	cycling_occurrence: Maybe(CyclingOccurrence),
+	source_incarnation: Maybe(u64),
+	announced_source_incarnation: Maybe(u64),
+	trigger_source: Maybe(TriggerSourceContext),
+	trigger_definition_ref: Maybe(TriggerDefinitionRef),
+	delayed_origin: ^DelayedAbilityOrigin,
+	force_block_attacker: Maybe(ObjectIncarnationRef),
+	target_incarnations: [dynamic]ObjectIncarnationRef,
+	target_pins: [dynamic]Maybe(ObjectIncarnationRef),
+	legacy_selected_target_incarnations: [dynamic]ObjectIncarnationRef,
+	chosen_target_slots: ChosenTargetSlots,
+	activation_cost_reduction: Maybe(CostReduction),
+	activation_record: ^AbilityActivationRecord,
+	announced_usage_key: ^AbilityUsageKey,
+	illegal_target_slots: [dynamic]int,
+	unjudged_target_slots: [dynamic]int,
+	illegal_local_target_slots: [dynamic]int,
+	declared_player_target_slots: [dynamic]DeclaredPlayerTargetSlot,
+	controller: PlayerId,
+	original_controller: Maybe(PlayerId),
+	scoped_player: Maybe(PlayerId),
+	kind: AbilityKind,
+	sub_ability: ^ResolvedAbility,
+	else_ability: ^ResolvedAbility,
+	coin_branches: ^ResolvedCoinBranches,
+	duration: Maybe(Duration),
+	condition: Maybe(AbilityCondition),
+	context_: SpellContext,
+	optional_targeting: bool,
+	optional: bool,
+	optional_player: Maybe(TargetFilter),
+	optional_for: Maybe(OpponentMayScope),
+	multi_target: Maybe(MultiTargetSpec),
+	target_constraints: [dynamic]TargetSelectionConstraint,
+	target_choice_timing: TargetChoiceTiming,
+	description: Maybe(string),
+	selected_mode_labels: [dynamic]string,
+	modal_instruction_ordinal: Maybe(int),
+	detached_remainder: DetachedRemainder,
+	repeat_for: Maybe(QuantityExpr),
+	repeat_timing: RepeatForTiming,
+	min_x_value: u32,
+	announced_x: Maybe(QuantityExpr),
+	cant_be_copied: bool,
+	illegal_targets_disposition: IllegalTargetsDisposition,
+	copy_count_status: CopyCountStatus,
+	forward_result: bool,
+	unless_pay: Maybe(UnlessPayModifier),
+	distribution: Maybe([dynamic]Tuple2(TargetRef, u32)),
+	distribute: Maybe(DistributionUnit),
+	player_scope: Maybe(PlayerFilter),
+	starting_with: Maybe(ControllerRef),
+	chosen_x: Maybe(u32),
+	cost_paid_object: Maybe(CostPaidObjectSnapshot),
+	noted_mana_payment: Maybe(NotedManaPayment),
+	cost_paid_objects: [dynamic]CostPaidObjectRecord,
+	effect_context_object: Maybe(CostPaidObjectSnapshot),
+	amassed_army_object: Maybe(CostPaidObjectSnapshot),
+	ability_index: Maybe(int),
+	may_trigger_origin: Maybe(MayTriggerOrigin),
+	target_selection_mode: TargetSelectionMode,
+	target_chooser: Maybe(TargetFilter),
+	chosen_players: [dynamic]PlayerId,
+	repeat_until: Maybe(RepeatContinuation),
+	replacement_applied: [dynamic]AppliedReplacementKey,
+	sub_link: SubAbilityLink,
+	target_reads: TargetReadOrigin,
+	entry_onset: ContinuousEffectOnset,
+	sibling_condition: SiblingCondition,
+	instruction_join: InstructionJoin,
+	modal: Maybe(ModalChoice),
+	mode_abilities: [dynamic]AbilityDefinition,
+	parent_target_missing_reason: Maybe(ParentTargetMissingReason),
+	control_change_instruction: Maybe(ControlChangeInstructionCarrier),
+}
+
+GameRestriction_DamagePreventionDisabled :: struct {
+	source: ObjectId,
+	expiry: RestrictionExpiry,
+	scope: Maybe(RestrictionScope),
+}
+GameRestriction_ProhibitActivity :: struct {
+	source: ObjectId,
+	affected_players: RestrictionPlayerScope,
+	expiry: RestrictionExpiry,
+	activity: ProhibitedActivity,
+}
+GameRestriction_CantEnterBattlefieldFrom :: struct {
+	source: ObjectId,
+	expiry: RestrictionExpiry,
+	filter: TargetFilter,
+}
+GameRestriction :: union {
+	GameRestriction_DamagePreventionDisabled,
+	GameRestriction_ProhibitActivity,
+	GameRestriction_CantEnterBattlefieldFrom,
+}
+
+ReplacementDefinition :: struct {
+	event: ReplacementEvent,
+	execute: ^AbilityDefinition,
+	runtime_execute: Maybe(ReplacementContinuationId),
+	mode: ReplacementMode,
+	choice_authority: ReplacementChoiceAuthority,
+	valid_card: Maybe(TargetFilter),
+	triggering_spell: Maybe(ObjectIncarnationRef),
+	description: Maybe(string),
+	condition: Maybe(ReplacementCondition),
+	destination_zone: Maybe(Zone),
+	active_zones: [dynamic]Zone,
+	damage_modification: Maybe(DamageModification),
+	damage_source_filter: Maybe(TargetFilter),
+	damage_target_filter: Maybe(DamageTargetFilter),
+	target_recipient_incarnation: Maybe(u64),
+	combat_scope: Maybe(CombatDamageScope),
+	draw_scope: Maybe(DrawReplacementScope),
+	die_ignore_rule: Maybe(DieRollIgnoreRule),
+	planeswalk_scope: Maybe(PlaneswalkReplacementScope),
+	shield_kind: ShieldKind,
+	quantity_modification: Maybe(QuantityModification),
+	token_owner_scope: Maybe(ControllerRef),
+	token_owner_redirect: Maybe(ControllerRef),
+	valid_player: Maybe(ReplacementPlayerScope),
+	consume_on_apply: bool,
+	is_consumed: bool,
+	expiry: Maybe(RestrictionExpiry),
+	redirect_target: Maybe(TargetFilter),
+	mana_modification: Maybe(ManaModification),
+	mana_replacement_scope: ManaReplacementScope,
+	additional_token_spec: ^TokenSpec,
+	ensure_token_specs: Maybe([dynamic]TokenSpec),
+	counter_match: Maybe(CounterMatch),
+	enters_under: Maybe(ControllerRef),
+	source_controller: Maybe(PlayerId),
+	source_object: Maybe(ObjectId),
+	origin: ReplacementOrigin,
+	counter_replacement_subject: CounterReplacementSubject,
+	granting_object: Maybe(ObjectIncarnationRef),
+	entry_payment_max: Maybe(QuantityExpr),
+}
+
+StepEndManaScanEntry :: struct {
+	source: ObjectId,
+	controller: PlayerId,
+	filter: Maybe(ManaColor),
+	action: StepEndManaAction,
+	description: string,
+}
+
+PhaseTransitionProgress :: struct {
+	remaining_players: [dynamic]PlayerId,
+	next_phase: Phase,
+	owed_life_loss: [dynamic]PendingEmptyPoolLifeLoss,
+	in_flight_life_loss: Maybe(PendingEmptyPoolLifeLoss),
+	previous_phase: Maybe(Phase),
+	entering_cleanup: bool,
+	drain_state: PhaseTransitionDrainState,
+	scheduled_begin: Maybe(ExtraPhase),
+}
+
+StepEntryResume :: enum u16 {
+	AfterSchemeAction,
+}
+
+OwedSpellFinalPart :: struct {
+	spell: ObjectId,
+}
+
+PendingResolutionCompletion :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	final_cast: Maybe(ObjectId),
+}
+
+TurnUpCostSource :: enum u16 {
+	Morph,
+	Megamorph,
+	Disguise,
+	ManifestManaCost,
+}
+
+ResolutionSourceRelatch :: struct {
+	object_id: ObjectId,
+	original_stamp: u64,
+	current_incarnation: u64,
+}
+
+LKISnapshot :: struct {
+	name: string,
+	token_image_ref: Maybe(TokenImageRef),
+	power: Maybe(i32),
+	toughness: Maybe(i32),
+	base_power: Maybe(i32),
+	base_toughness: Maybe(i32),
+	mana_value: u32,
+	controller: PlayerId,
+	owner: PlayerId,
+	card_types: [dynamic]CoreType,
+	subtypes: [dynamic]string,
+	supertypes: [dynamic]Supertype,
+	keywords: [dynamic]Keyword,
+	colors: [dynamic]ManaColor,
+	chosen_attributes: [dynamic]ChosenAttribute,
+	counters: [dynamic]Tuple2(CounterType, u32),
+	tapped: bool,
+	is_suspected: bool,
+	was_prepared: bool,
+	attachments: [dynamic]AttachmentSnapshot,
+	intensity: u32,
+}
+
+CopiableValues :: struct {
+	name: string,
+	mana_cost: ManaCost,
+	color: [dynamic]ManaColor,
+	card_types: CardType,
+	power: Maybe(i32),
+	toughness: Maybe(i32),
+	loyalty: Maybe(u32),
+	printed_loyalty: Maybe(PrintedLoyalty),
+	keywords: [dynamic]Keyword,
+	abilities: ^[dynamic]AbilityDefinition,
+	trigger_definitions: ^[dynamic]TriggerDefinition,
+	trigger_printed_origins: ^[dynamic]Maybe(TriggerPrintedOrigin),
+	replacement_definitions: ^[dynamic]ReplacementDefinition,
+	static_definitions: ^[dynamic]StaticDefinition,
+	room_halves: Maybe(RoomCopiableHalves),
+	prepare_face: ^BackFaceData,
+	name_origin: CopiedNameOrigin,
+}
+
+DepartedStackSpell :: struct {
+	entry: StackEntry,
+	object: ^GameObject,
+}
+
+LinkedExileLki :: struct {
+	departed: u64,
+	successor: u64,
+	snapshot: [dynamic]LinkedExileSnapshot,
+}
+
+ProductionOverride_SingleColor :: struct {
+	_0: ManaType,
+}
+ProductionOverride_Combination :: struct {
+	_0: [dynamic]ManaType,
+}
+ProductionOverride :: union {
+	ProductionOverride_SingleColor,
+	ProductionOverride_Combination,
+}
+
+PendingCostMoveResume_Cast :: struct {
+	player: PlayerId,
+	pending: ^PendingCast,
+	chosen: [dynamic]ObjectId,
+	paused_at_index: int,
+	destination: Zone,
+	completion: PendingCostMoveCompletion,
+	requested_cost_count: Maybe(u32),
+	deferred_cost_events: [dynamic]GameEvent,
+	departure_record_indices: [dynamic]int,
+}
+PendingCostMoveResume_SacrificeForCost :: struct {
+	player: PlayerId,
+	pending: ^PendingCast,
+	chosen: [dynamic]ObjectId,
+	paused_at_index: int,
+	completion: PendingSacrificeCostCompletion,
+	deferred_cost_events: [dynamic]GameEvent,
+	departure_record_indices: [dynamic]int,
+}
+PendingCostMoveResume_WardSacrificePayment :: struct {
+	player: PlayerId,
+	pending_effect: ^ResolvedAbility,
+	resume: WardSacrificePaymentResume,
+	trigger_event: Maybe(GameEvent),
+}
+PendingCostMoveResume_ReplacementMayCost :: struct {
+	source_id: ObjectId,
+	current: ObjectId,
+	remaining: [dynamic]ObjectId,
+	paid_count: i32,
+	outer_replacement: ^PendingReplacement,
+}
+PendingCostMoveResume_ReplacementMayCostInnerChoice :: struct {
+	outer_replacement: ^PendingReplacement,
+}
+PendingCostMoveResume_Foretell :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	cost: ManaCost,
+	turn_foretold: u32,
+}
+PendingCostMoveResume_CollectEvidencePayment :: struct {
+	player: PlayerId,
+	chosen: [dynamic]ObjectId,
+	paused_at_index: int,
+	resume: ^CollectEvidenceResume,
+}
+PendingCostMoveResume_UnlessBouncePayment :: struct {
+	player: PlayerId,
+	moved: ObjectId,
+	permanents: [dynamic]ObjectId,
+	pending_effect: ^ResolvedAbility,
+	remaining: u32,
+}
+PendingCostMoveResume_ManaAbilityPayment :: struct {
+	pending: ^PendingManaAbility,
+	cursor: ManaAbilityCostCursor,
+}
+PendingCostMoveResume_ActivationMillPayment :: struct {
+	player: PlayerId,
+	pending: ^PendingCast,
+}
+PendingCostMoveResume_CounterCostRemovalPayment :: struct {
+	player: PlayerId,
+	pending: ^PendingCast,
+	removal: ^PausedCounterCostRemoval,
+	cost_paid_object: Maybe(ObjectId),
+	completion: PendingCostMoveCompletion,
+}
+PendingCostMoveResume_LoyaltyActivation :: struct {
+	player: PlayerId,
+	pw_id: ObjectId,
+	resolved: ^ResolvedAbility,
+	ability_index: int,
+}
+PendingCostMoveResume_CounterAdditionUnlessPayment :: struct {
+	cost: AbilityCost,
+	pending_effect: ^ResolvedAbility,
+	trigger_event: Maybe(GameEvent),
+	effect_description: Maybe(string),
+	remaining: [dynamic]PlayerId,
+	unpaid_suffix: ^UnpaidCostSuffix,
+}
+PendingCostMoveResume_RandomDiscardUnlessPayment :: struct {
+	_0: ^RandomDiscardUnlessPaymentResume,
+}
+PendingCostMoveResume_TurnFaceUpCostMove :: struct {
+	player: PlayerId,
+	source: ObjectIncarnationRef,
+	cost_source: TurnUpCostSource,
+	move_kind: TurnFaceUpMoveKind,
+	chosen: [dynamic]ObjectId,
+	paused_at_index: int,
+	remaining_cost: ^AbilityCost,
+	deferred_cost_events: [dynamic]GameEvent,
+	departure_record_indices: [dynamic]int,
+}
+PendingCostMoveResume_PlayerScopeUnlessSettlement :: struct {
+	_0: ^PlayerScopeUnlessSettlement,
+}
+PendingCostMoveResume :: union {
+	PendingCostMoveResume_Cast,
+	PendingCostMoveResume_SacrificeForCost,
+	PendingCostMoveResume_WardSacrificePayment,
+	PendingCostMoveResume_ReplacementMayCost,
+	PendingCostMoveResume_ReplacementMayCostInnerChoice,
+	PendingCostMoveResume_Foretell,
+	PendingCostMoveResume_CollectEvidencePayment,
+	PendingCostMoveResume_UnlessBouncePayment,
+	PendingCostMoveResume_ManaAbilityPayment,
+	PendingCostMoveResume_ActivationMillPayment,
+	PendingCostMoveResume_CounterCostRemovalPayment,
+	PendingCostMoveResume_LoyaltyActivation,
+	PendingCostMoveResume_CounterAdditionUnlessPayment,
+	PendingCostMoveResume_RandomDiscardUnlessPayment,
+	PendingCostMoveResume_TurnFaceUpCostMove,
+	PendingCostMoveResume_PlayerScopeUnlessSettlement,
+}
+
+DeferredLifeCostResume_Cast :: struct {
+	player: PlayerId,
+	pending: ^PendingCast,
+	remaining_life_payments: [dynamic]u32,
+	resume_at_resolution_depth: int,
+}
+DeferredLifeCostResume_PayAmount :: struct {
+	player: PlayerId,
+	total: u32,
+	resume_at_resolution_depth: int,
+	pending_entry: ^PendingReplacement,
+}
+DeferredLifeCostResume_ManaRoot :: struct {
+	player: PlayerId,
+	resume: ^ManaAbilityResume,
+	remaining_life_payments: [dynamic]u32,
+	resume_at_resolution_depth: int,
+}
+DeferredLifeCostResume_TurnFaceUp :: struct {
+	player: PlayerId,
+	source: ObjectIncarnationRef,
+	cost_source: TurnUpCostSource,
+	resume_at_resolution_depth: int,
+	remaining_cost: ^AbilityCost,
+}
+DeferredLifeCostResume :: union {
+	DeferredLifeCostResume_Cast,
+	DeferredLifeCostResume_PayAmount,
+	DeferredLifeCostResume_ManaRoot,
+	DeferredLifeCostResume_TurnFaceUp,
+}
+
+TriggeredManaResume :: struct {
+	current: ^PendingTriggerContext,
+	current_override: Maybe(ProductionOverride),
+	rules_execution_node: RulesExecutionNodeRef,
+	accepted_tail: [dynamic]PendingTriggerContext,
+	collected_batches: [dynamic]CollectedTriggerContextBatch,
+	outer_resume: ManaTriggerFixedPointResume,
+	stage: TriggeredManaStage,
+}
+
+PendingDiscardForCostResume_Chosen :: struct {
+	player: PlayerId,
+	pending: PendingCast,
+	chosen: [dynamic]ObjectId,
+	paused_at_index: int,
+}
+PendingDiscardForCostResume_Random :: struct {
+	player: PlayerId,
+	pending: PendingCast,
+	remaining_eligible: [dynamic]ObjectId,
+	remaining_count: int,
+	paused_pick: ^RandomDiscardCostPick,
+}
+PendingDiscardForCostResume :: union {
+	PendingDiscardForCostResume_Chosen,
+	PendingDiscardForCostResume_Random,
+}
+
+PendingCast :: struct {
+	object_id: ObjectId,
+	card_id: CardId,
+	ability: ^ResolvedAbility,
+	cost: ManaCost,
+	prepaid_actual_mana_spent: Maybe(u32),
+	base_cost: Maybe(ManaCost),
+	declared_mana_additions: [dynamic]ManaCost,
+	accepted_cost_reductions: [dynamic]CostReductionEntry,
+	cost_reduction_election: Maybe(CostReductionElection),
+	activation_cost_snapshot: ^ActivationCostSnapshot,
+	activation_cost: Maybe(AbilityCost),
+	activation_cost_paused_on_draw: bool,
+	deferred_hand_discard_cost: Maybe(DeferredHandDiscardCost),
+	prepaid_finalization: ^PrepaidSpellFinalization,
+	deferred_life_gain_cost: Maybe(DeferredLifeGainCost),
+	activation_ability_index: Maybe(int),
+	pending_loyalty_activation_player: Maybe(PlayerId),
+	target_constraints: [dynamic]TargetSelectionConstraint,
+	crime_candidate: bool,
+	casting_variant: CastingVariant,
+	alternative_cost_keyword: Maybe(Keyword),
+	casting_permission_index: Maybe(CastingPermissionIndex),
+	cast_timing_permission: Maybe(CastTimingRoute),
+	distribute: Maybe(DistributionUnit),
+	origin_zone: Zone,
+	additional_cost_flow: Maybe(AdditionalCost),
+	deferred_required_additional_cost: Maybe(AbilityCost),
+	additional_cost_queue: [dynamic]AdditionalCostInstance,
+	additional_cost_source: SpellCostSource,
+	additional_cost_payment_mode: Maybe(ConvokeMode),
+	deferred_modal_choice: Maybe(ModalChoice),
+	deferred_target_selection: bool,
+	chosen_modes: [dynamic]int,
+	additional_cost_decided: bool,
+	keyword_queue_before_targets: bool,
+	alternative_cost_election: SpellAlternativeCostElection,
+	declared_kickers_to_pay: [dynamic]KickerVariant,
+	declined_kickers: [dynamic]KickerVariant,
+	convoked_creatures: [dynamic]ObjectId,
+	delved_cards: [dynamic]ObjectId,
+	deferred_sacrificed_permanents: [dynamic]DeferredSpellSacrifice,
+	deferred_tapped_permanents: [dynamic]DeferredSpellTap,
+	pinned_pool_units: [dynamic]ManaPipId,
+	cancel_restore_prepared_source: Maybe(ObjectId),
+	payment_mode: CastPaymentMode,
+	assist_state: AssistState,
+	activation_residual: ActivationResidual,
+	activation_target_selection: ActivationTargetSelection,
+	activation_cost_committed: bool,
+	alt_cost_grant_source: Maybe(ObjectId),
+	activation_trigger_collection: ^PendingActivationTriggerCollection,
+	activation_phyrexian_intent: Maybe(ActivationPhyrexianIntent),
+}
+
+InFlightSpellTriggerCarrier :: struct {
+	object_id: ObjectId,
+	collection: ^PendingActivationTriggerCollection,
+}
+
+AnnouncementEventScope_Unowned :: struct {
+}
+AnnouncementEventScope_From :: struct {
+	start: int,
+}
+AnnouncementEventScope :: union {
+	AnnouncementEventScope_Unowned,
+	AnnouncementEventScope_From,
+}
+
+DungeonProgress :: struct {
+	current_dungeon: Maybe(DungeonId),
+	current_room: u8,
+	completed: [dynamic]DungeonId,
+}
+
+TargetRef_Object :: struct {
+	_0: ObjectId,
+}
+TargetRef_Player :: struct {
+	_0: PlayerId,
+}
+TargetRef :: union {
+	TargetRef_Object,
+	TargetRef_Player,
+}
+
+DamageBatchLedger :: struct {
+	applications: [dynamic]Tuple2(AppliedReplacementKey, ObjectId),
+	settled_guards: [dynamic]SettledDamageGuard,
+	paused_rider: Maybe(PostReplacementFrameId),
+	held_riders: Maybe([dynamic]HeldBatchRider),
+	split_portions: [dynamic]SplitDamagePortion,
+}
+
+EventLosses_Recording :: struct {
+	_0: EventOutcomes,
+}
+EventLosses_Immediate :: struct {
+}
+EventLosses :: union {
+	EventLosses_Recording,
+	EventLosses_Immediate,
+}
+
+ActiveLibrarySearch :: struct {
+	searcher: PlayerId,
+	searched_zone_owner: PlayerId,
+	effective_library_owner: Maybe(PlayerId),
+	learned_audience: [dynamic]PlayerId,
+	looked_at: [dynamic]Tuple3(PlayerId, Zone, ObjectIncarnationRef),
+}
+
+ActiveSearchDecisionControl :: struct {
+	searcher: PlayerId,
+	searched_zone_owner: PlayerId,
+	authority: ActiveSearchDecisionAuthority,
+}
+
+ResolvedCommandJournalEntry :: struct {
+	ordinal: ResolvedCommandOrdinal,
+	node: RulesExecutionNodeRef,
+	command: Maybe(ResolvedRulesCommand),
+}
+
+SettlementNode :: struct {
+	ordinal: SettlementNodeOrdinal,
+	identity: RulesExecutionNodeRef,
+	kind: RulesExecutionNodeKind,
+	caused_by: Maybe(RulesExecutionNodeRef),
+	depends_on: [dynamic]RulesExecutionNodeRef,
+	bundle_parent: Maybe(RulesExecutionNodeRef),
+	produced_pips: [dynamic]ManaPipId,
+	spent_pips: [dynamic]ManaPipId,
+	journal_ordinals: [dynamic]ResolvedCommandOrdinal,
+}
+
+ProducedManaUnit :: struct {
+	unit: ManaUnit,
+	producer: RulesExecutionNodeRef,
+}
+
+SpentManaUnit :: struct {
+	unit: ManaUnit,
+	producer: RulesExecutionNodeRef,
+	payment: RulesExecutionNodeRef,
+	recipient: ManaPaymentRecipient,
+}
+
+JournalIndex :: struct {
+	nodes: [dynamic]Tuple2(RulesExecutionNodeRef, int),
+	produced: map[ManaPipId]int,
+	spent: map[ManaPipId]int,
+	latest_producer: map[ObjectId]int,
+	delayed_by_token: map[DelayedTriggerToken][dynamic]int,
+	delayed_by_instance: map[DelayedTriggerInstanceId][dynamic]int,
+	player_leave_moves: [dynamic]PlayerLeaveMove,
+}
+
+DelayedTriggerToken :: distinct u64
+
+DelayedTriggerInstanceId :: distinct u64
+
+PlayerLeaveMove :: struct {
+	object_id: ObjectId,
+	from: Zone,
+	to: Zone,
+	turn_zone_change_index: int,
+}
+
+MatchType :: enum u16 {
+	Bo1,
+	Bo3,
+}
+
+TriggerSourceContext :: struct {
+	identity: ObjectIdentityBinding,
+	lki: LKISnapshot,
+	card_id: CardId,
+	printed_ref: Maybe(PrintedCardRef),
+	printing: DisplayOnly_ptr_CardPrinting,
+	is_token: bool,
+	face_down: bool,
+	mana_cost: ManaCost,
+	transformed: bool,
+	transformed_permanent: bool,
+	is_renowned: bool,
+	is_saddled: bool,
+	echo_due: bool,
+	harnessed: bool,
+	saddled_by: [dynamic]ObjectId,
+	convoked_creatures: [dynamic]ObjectId,
+	case_state: Maybe(CaseState),
+	class_level: Maybe(u8),
+	trigger_entries: [dynamic]TriggerEntry,
+	timestamp: u64,
+	entered_battlefield_turn: Maybe(u32),
+	paired_with: Maybe(ObjectId),
+	pair_controller: Maybe(PlayerId),
+	attached_to: Maybe(AttachTarget),
+	attachments: [dynamic]AttachmentSnapshot,
+	linked_exile_snapshot: [dynamic]LinkedExileSnapshot,
+	cards_exiled_this_turn: [dynamic]ObjectId,
+	combat_status: ZoneChangeCombatStatus,
+	cast_from_zone: Maybe(Zone),
+	played_from_zone: Maybe(Zone),
+	entered_via_ability_source: Maybe(ObjectId),
+	cast_controller: Maybe(PlayerId),
+	phase_status: PhaseStatus,
+	cast_variant_paid: Maybe(Tuple2(CastVariantPaid, u32)),
+	cast_timing_permission: Maybe(Tuple2(CastTimingPermission, u32)),
+	cost_x_paid: Maybe(u32),
+	cast_spell_keywords: [dynamic]Keyword,
+	mana_spent_to_cast: bool,
+	colors_spent_to_cast: ColoredManaCount,
+	mana_spent_to_cast_amount: u32,
+	mana_spent_source_snapshots: [dynamic]ManaSpentSourceSnapshot,
+	kickers_paid: [dynamic]KickerVariant,
+	additional_cost_payment_count: u32,
+	additional_cost_payments: [dynamic]AdditionalCostInstancePayment,
+	cast_cost_paid_object: Maybe(CostPaidObjectSnapshot),
+	granting_object: Maybe(ObjectIncarnationRef),
+	subject_scope: SubjectIncarnationScope,
+}
+
+AttackTarget_Player :: struct {
+	_0: PlayerId,
+}
+AttackTarget_Planeswalker :: struct {
+	_0: ObjectId,
+}
+AttackTarget_Battle :: struct {
+	_0: ObjectId,
+}
+AttackTarget :: union {
+	AttackTarget_Player,
+	AttackTarget_Planeswalker,
+	AttackTarget_Battle,
+}
+
+CardId :: distinct u64
+
+CastPaymentMode :: enum u16 {
+	Auto,
+	AutoExceptSacrificialMana,
+	Manual,
+}
+
+MulliganChoice_Keep :: struct {
+}
+MulliganChoice_Mulligan :: struct {
+}
+MulliganChoice_UseSerumPowder :: struct {
+	object_id: ObjectId,
+}
+MulliganChoice_FreeReveal :: struct {
+}
+MulliganChoice :: union {
+	MulliganChoice_Keep,
+	MulliganChoice_Mulligan,
+	MulliganChoice_UseSerumPowder,
+	MulliganChoice_FreeReveal,
+}
+
+ManaSourceSelection :: struct {
+	source: ObjectIncarnationRef,
+	ability_index: Maybe(int),
+	mana_type: ManaType,
+	output: ManaSourceOutput,
+	atomic_combination: Maybe([dynamic]ManaType),
+	restrictions: [dynamic]ManaRestriction,
+	penalty: ManaSourcePenalty,
+	taps_for_mana: [dynamic]TapsForManaSelection,
+}
+
+CounterCostChoice :: struct {
+	object_id: ObjectId,
+	counter_type: CounterType,
+	count: u32,
+}
+
+OutsideGameSelection_Sideboard :: struct {
+	sideboard_index: int,
+}
+OutsideGameSelection_FaceUpExile :: struct {
+	object_id: ObjectId,
+}
+OutsideGameSelection_BoosterPack :: struct {
+	pack_slot: int,
+}
+OutsideGameSelection_Companion :: struct {
+}
+OutsideGameSelection :: union {
+	OutsideGameSelection_Sideboard,
+	OutsideGameSelection_FaceUpExile,
+	OutsideGameSelection_BoosterPack,
+	OutsideGameSelection_Companion,
+}
+
+ReplacementAutoChoice_Order :: struct {
+	order: [dynamic]int,
+}
+ReplacementAutoChoice_Optional :: struct {
+	index: int,
+}
+ReplacementAutoChoice :: union {
+	ReplacementAutoChoice_Order,
+	ReplacementAutoChoice_Optional,
+}
+
+ReplacementAutoChoiceId :: distinct string
+
+ManaCostShard :: enum u16 {
+	White,
+	Blue,
+	Black,
+	Red,
+	Green,
+	Colorless,
+	Snow,
+	X,
+	TwoOrMoreColorSource,
+	WhiteBlue,
+	WhiteBlack,
+	BlueBlack,
+	BlueRed,
+	BlackRed,
+	BlackGreen,
+	RedWhite,
+	RedGreen,
+	GreenWhite,
+	GreenBlue,
+	TwoWhite,
+	TwoBlue,
+	TwoBlack,
+	TwoRed,
+	TwoGreen,
+	PhyrexianWhite,
+	PhyrexianBlue,
+	PhyrexianBlack,
+	PhyrexianRed,
+	PhyrexianGreen,
+	PhyrexianWhiteBlue,
+	PhyrexianWhiteBlack,
+	PhyrexianBlueBlack,
+	PhyrexianBlueRed,
+	PhyrexianBlackRed,
+	PhyrexianBlackGreen,
+	PhyrexianRedWhite,
+	PhyrexianRedGreen,
+	PhyrexianGreenWhite,
+	PhyrexianGreenBlue,
+	ColorlessWhite,
+	ColorlessBlue,
+	ColorlessBlack,
+	ColorlessRed,
+	ColorlessGreen,
+}
+
+DeckCardCount :: struct {
+	name: string,
+	count: u32,
+}
+
+PileSide :: enum u16 {
+	A,
+	B,
+}
+
+AlternativeCastDecision :: enum u16 {
+	Normal,
+	Alternative,
+}
+
+ResolutionOptionalPaymentChoice_Decline :: struct {
+}
+ResolutionOptionalPaymentChoice_Pay :: struct {
+	index: int,
+}
+ResolutionOptionalPaymentChoice :: union {
+	ResolutionOptionalPaymentChoice_Decline,
+	ResolutionOptionalPaymentChoice_Pay,
+}
+
+AutoMayChoice :: enum u16 {
+	Accept,
+	Decline,
+}
+
+MayTriggerAutoChoiceScope :: enum u16 {
+	ExactInstance,
+	SameCard,
+}
+
+UnlessCostBranch_Decline :: struct {
+}
+UnlessCostBranch_Pay :: struct {
+	index: int,
+}
+UnlessCostBranch :: union {
+	UnlessCostBranch_Decline,
+	UnlessCostBranch_Pay,
+}
+
+DungeonId :: enum u16 {
+	LostMineOfPhandelver,
+	DungeonOfTheMadMage,
+	TombOfAnnihilation,
+	Undercity,
+	BaldursGateWilderness,
+}
+
+RoomDoor :: enum u16 {
+	Left,
+	Right,
+}
+
+DoorLockOp :: enum u16 {
+	Unlock,
+	Lock,
+	LockOrUnlock,
+}
+
+ManaType :: enum u16 {
+	White,
+	Blue,
+	Black,
+	Red,
+	Green,
+	Colorless,
+}
+
+CompanionDeclaration_Reveal :: struct {
+	_0: CompanionRevealChoice,
+}
+CompanionDeclaration_Decline :: struct {
+}
+CompanionDeclaration :: union {
+	CompanionDeclaration_Reveal,
+	CompanionDeclaration_Decline,
+}
+
+CastChoice :: enum u16 {
+	Cast,
+	Decline,
+}
+
+MergeSide :: enum u16 {
+	Top,
+	Bottom,
+}
+
+AutoPassRequest_UntilStackEmpty :: struct {
+}
+AutoPassRequest_UntilTurnBoundary :: struct {
+	until: TurnBoundary,
+}
+AutoPassRequest :: union {
+	AutoPassRequest_UntilStackEmpty,
+	AutoPassRequest_UntilTurnBoundary,
+}
+
+PriorityYieldOp_Add :: struct {
+	source_id: ObjectId,
+	scope: YieldScope,
+}
+PriorityYieldOp_Remove :: struct {
+	target: YieldTarget,
+}
+PriorityYieldOp_ClearAll :: struct {
+}
+PriorityYieldOp :: union {
+	PriorityYieldOp_Add,
+	PriorityYieldOp_Remove,
+	PriorityYieldOp_ClearAll,
+}
+
+MayTriggerAutoChoiceOp_Remove :: struct {
+	selector: MayTriggerAutoChoiceSelector,
+}
+MayTriggerAutoChoiceOp_ClearAll :: struct {
+}
+MayTriggerAutoChoiceOp :: union {
+	MayTriggerAutoChoiceOp_Remove,
+	MayTriggerAutoChoiceOp_ClearAll,
+}
+
+UnAction_SetEnabled :: struct {
+	enabled: bool,
+}
+UnAction_PerformTell :: struct {
+	tell: UnTell,
+}
+UnAction_SayGotcha :: struct {
+	source_id: ObjectId,
+	returns: ObjectId,
+}
+UnAction_TouchObject :: struct {
+	target: ObjectIncarnationRef,
+}
+UnAction :: union {
+	UnAction_SetEnabled,
+	UnAction_PerformTell,
+	UnAction_SayGotcha,
+	UnAction_TouchObject,
+}
+
+TriggerOrderTemplateOp :: enum u16 {
+	ClearAll,
+}
+
+CombatDamageAssignmentMode :: enum u16 {
+	Normal,
+	AsThoughUnblocked,
+}
+
+CounterMoveChoice :: struct {
+	destination_id: ObjectId,
+	counter_type: CounterType,
+	count: u32,
+}
+
+CounterRemoveChoice :: struct {
+	counter_type: CounterType,
+	count: u32,
+}
+
+LearnOption_Rummage :: struct {
+	card_id: ObjectId,
+}
+LearnOption_Skip :: struct {
+}
+LearnOption :: union {
+	LearnOption_Rummage,
+	LearnOption_Skip,
+}
+
+ShardChoice :: enum u16 {
+	PayMana,
+	PayLife,
+}
+
+ManaChoice_SingleColor :: struct {
+	_0: ManaType,
+}
+ManaChoice_Combination :: struct {
+	_0: [dynamic]ManaType,
+}
+ManaChoice :: union {
+	ManaChoice_SingleColor,
+	ManaChoice_Combination,
+}
+
+DebugAction_MoveToZone :: struct {
+	object_id: ObjectId,
+	to_zone: Zone,
+	library_position: Maybe(LibraryPosition),
+	simulate: bool,
+}
+DebugAction_CreateCard :: struct {
+	card_name: string,
+	owner: PlayerId,
+	zone: Zone,
+	count: u32,
+	attach_to: Maybe(AttachTarget),
+	run_etb: bool,
+	nonlegendary: bool,
+	creation_kind: DebugCardCreationKind,
+}
+DebugAction_RemoveObject :: struct {
+	object_id: ObjectId,
+}
+DebugAction_Sacrifice :: struct {
+	object_id: ObjectId,
+}
+DebugAction_DrawCards :: struct {
+	player_id: PlayerId,
+	count: u32,
+}
+DebugAction_Mill :: struct {
+	player_id: PlayerId,
+	count: u32,
+}
+DebugAction_Reveal :: struct {
+	player_id: PlayerId,
+	count: u32,
+}
+DebugAction_ShuffleLibrary :: struct {
+	player_id: PlayerId,
+}
+DebugAction_Proliferate :: struct {
+	player_id: PlayerId,
+}
+DebugAction_SetBasePowerToughness :: struct {
+	object_id: ObjectId,
+	power: Maybe(i32),
+	toughness: Maybe(i32),
+}
+DebugAction_ModifyCounters :: struct {
+	object_id: ObjectId,
+	counter_type: CounterType,
+	delta: i32,
+}
+DebugAction_SetTapped :: struct {
+	object_id: ObjectId,
+	tapped: bool,
+}
+DebugAction_SetPrepared :: struct {
+	object_id: ObjectId,
+	prepared: bool,
+}
+DebugAction_SetController :: struct {
+	object_id: ObjectId,
+	controller: PlayerId,
+}
+DebugAction_SetSummoningSickness :: struct {
+	object_id: ObjectId,
+	sick: bool,
+}
+DebugAction_SetFaceState :: struct {
+	object_id: ObjectId,
+	face_down: Maybe(bool),
+	transformed: Maybe(bool),
+	flipped: Maybe(bool),
+}
+DebugAction_Attach :: struct {
+	object_id: ObjectId,
+	target: AttachTarget,
+}
+DebugAction_Detach :: struct {
+	object_id: ObjectId,
+}
+DebugAction_GrantKeyword :: struct {
+	object_id: ObjectId,
+	keyword: Keyword,
+}
+DebugAction_RemoveKeyword :: struct {
+	object_id: ObjectId,
+	keyword: Keyword,
+}
+DebugAction_SetLife :: struct {
+	player_id: PlayerId,
+	life: i32,
+}
+DebugAction_GainLife :: struct {
+	player_id: PlayerId,
+	amount: u32,
+}
+DebugAction_LoseLife :: struct {
+	player_id: PlayerId,
+	amount: u32,
+}
+DebugAction_ModifyPlayerCounters :: struct {
+	player_id: PlayerId,
+	counter_kind: PlayerCounterKind,
+	delta: i32,
+}
+DebugAction_ModifyEnergy :: struct {
+	player_id: PlayerId,
+	delta: i32,
+}
+DebugAction_GivePlayerCounters :: struct {
+	player_id: PlayerId,
+	counter_kind: PlayerCounterKind,
+	count: u32,
+}
+DebugAction_GiveEnergy :: struct {
+	player_id: PlayerId,
+	count: u32,
+}
+DebugAction_AddMana :: struct {
+	player_id: PlayerId,
+	mana: [dynamic]ManaType,
+}
+DebugAction_SetInfiniteMana :: struct {
+	player_id: PlayerId,
+	enabled: bool,
+}
+DebugAction_SetPhase :: struct {
+	phase: Phase,
+	active_player: PlayerId,
+}
+DebugAction_RunStateBasedActions :: struct {
+}
+DebugAction_CreateToken :: struct {
+	request: DebugTokenRequest,
+	count: u32,
+	run_etb: bool,
+}
+DebugAction_CreateTokenCopy :: struct {
+	source_id: ObjectId,
+	owner: PlayerId,
+	count: u32,
+	nonlegendary: bool,
+}
+DebugAction :: union {
+	DebugAction_MoveToZone,
+	DebugAction_CreateCard,
+	DebugAction_RemoveObject,
+	DebugAction_Sacrifice,
+	DebugAction_DrawCards,
+	DebugAction_Mill,
+	DebugAction_Reveal,
+	DebugAction_ShuffleLibrary,
+	DebugAction_Proliferate,
+	DebugAction_SetBasePowerToughness,
+	DebugAction_ModifyCounters,
+	DebugAction_SetTapped,
+	DebugAction_SetPrepared,
+	DebugAction_SetController,
+	DebugAction_SetSummoningSickness,
+	DebugAction_SetFaceState,
+	DebugAction_Attach,
+	DebugAction_Detach,
+	DebugAction_GrantKeyword,
+	DebugAction_RemoveKeyword,
+	DebugAction_SetLife,
+	DebugAction_GainLife,
+	DebugAction_LoseLife,
+	DebugAction_ModifyPlayerCounters,
+	DebugAction_ModifyEnergy,
+	DebugAction_GivePlayerCounters,
+	DebugAction_GiveEnergy,
+	DebugAction_AddMana,
+	DebugAction_SetInfiniteMana,
+	DebugAction_SetPhase,
+	DebugAction_RunStateBasedActions,
+	DebugAction_CreateToken,
+	DebugAction_CreateTokenCopy,
+}
+
+IterationCount_Fixed :: struct {
+	_0: u32,
+}
+IterationCount_WithoutEnd :: struct {
+}
+IterationCount :: union {
+	IterationCount_Fixed,
+	IterationCount_WithoutEnd,
+}
+
+ShortcutResponse_Accept :: struct {
+}
+ShortcutResponse_Shorten :: struct {
+	at_iteration: u32,
+}
+ShortcutResponse :: union {
+	ShortcutResponse_Accept,
+	ShortcutResponse_Shorten,
+}
+
+PrecastCopyShortcutResponse_Propose :: struct {
+	route_id: u64,
+}
+PrecastCopyShortcutResponse_Decline :: struct {
+}
+PrecastCopyShortcutResponse_Accept :: struct {
+}
+PrecastCopyShortcutResponse_Shorten :: struct {
+	breakpoint_id: u64,
+}
+PrecastCopyShortcutResponse :: union {
+	PrecastCopyShortcutResponse_Propose,
+	PrecastCopyShortcutResponse_Decline,
+	PrecastCopyShortcutResponse_Accept,
+	PrecastCopyShortcutResponse_Shorten,
+}
+
+EndEffectGroupId :: distinct u64
+
 ManaCost_NoCost :: struct {
 }
 ManaCost_Cost :: struct {
@@ -84,6 +6150,2573 @@ ManaCost :: union {
 	ManaCost_SelfManaCost,
 	ManaCost_SelfManaValue,
 	ManaCost_SelfManaCostReduced,
+}
+
+ResolveAllScope :: enum u16 {
+	Own,
+	Shared,
+}
+
+ResolveAllConsentDecision :: enum u16 {
+	Grant,
+	Decline,
+}
+
+MeldSelection :: struct {
+	source_id: ObjectId,
+	partner_id: ObjectId,
+	controller: PlayerId,
+	expected_source: string,
+	expected_partner: string,
+	result: string,
+	entry: PermanentEntryMode,
+}
+
+MulliganDecisionEntry :: struct {
+	player: PlayerId,
+	mulligan_count: u8,
+	free_reveals_taken: u8,
+	phase: MulliganDecisionPhase,
+}
+
+MulliganDeclaration :: struct {
+	player: PlayerId,
+	mulligan_count: u8,
+	free_reveals_taken: u8,
+	kind: MulliganDeclarationKind,
+}
+
+MulliganBottomEntry :: struct {
+	player: PlayerId,
+	count: u8,
+}
+
+OpeningHandBottomReason :: enum u16 {
+	TinyLeadersMultiCommander,
+}
+
+ConvokeMode :: enum u16 {
+	Convoke,
+	Waterbend,
+	Improvise,
+	Delve,
+}
+
+TargetSelectionSlot :: struct {
+	legal_targets: [dynamic]TargetRef,
+	optional: bool,
+	chooser: Maybe(PlayerId),
+	effect_kind: EffectKind,
+	effect_detail: TargetEffectDetail,
+}
+
+TargetSelectionProgress :: struct {
+	current_slot: int,
+	selected_slots: [dynamic]Maybe(TargetRef),
+	current_legal_targets: [dynamic]TargetRef,
+}
+
+CombatRequirement_MustAttack :: struct {
+	defenders: [dynamic]AttackTarget,
+	sources: [dynamic]ObjectId,
+}
+CombatRequirement_MustBlock :: struct {
+	sources: [dynamic]ObjectId,
+	attackers: [dynamic]ObjectId,
+}
+CombatRequirement_CantAttack :: struct {
+	sources: [dynamic]ObjectId,
+}
+CombatRequirement_CantBlock :: struct {
+	sources: [dynamic]ObjectId,
+}
+CombatRequirement :: union {
+	CombatRequirement_MustAttack,
+	CombatRequirement_MustBlock,
+	CombatRequirement_CantAttack,
+	CombatRequirement_CantBlock,
+}
+
+BlockRequirement :: struct {
+	count: u32,
+	sources: [dynamic]ObjectId,
+}
+
+UntapStepProgress :: enum u16 {
+	BeforeTurnBasedActions,
+	AfterTurnBasedActions,
+}
+
+PendingAttackExert :: struct {
+	attacker: ObjectId,
+	permission: TriggerDefinitionRef,
+}
+
+ReplacementCandidateSummary :: struct {
+	source_id: ObjectId,
+	source_name: string,
+	description: string,
+}
+
+ReplacementChoiceKind :: enum u16 {
+	Order,
+	OptionalBranch,
+	SearchFoundDestination,
+}
+
+ReplacementAutoChoiceKey :: struct {
+	player: PlayerId,
+	event: ReplacementEvent,
+	kind: ReplacementChoiceKind,
+	candidates: [dynamic]ReplacementAutoChoiceIdentity,
+}
+
+PendingTriggerSummary :: struct {
+	source_id: ObjectId,
+	source_name: string,
+	description: string,
+}
+
+CopyTargetPurpose :: enum u16 {
+	BecomeCopy,
+	PersistChosenAttribute,
+	CopyTokenSource,
+}
+
+EventObjectSnapshot :: struct {
+	identity: ObjectIncarnationRef,
+	controller: PlayerId,
+	owner: PlayerId,
+	zone: Zone,
+	name: string,
+	core_types: [dynamic]CoreType,
+	subtypes: [dynamic]string,
+	supertypes: [dynamic]Supertype,
+	colors: [dynamic]ManaColor,
+	keywords: [dynamic]Keyword,
+	power: Maybe(i32),
+	toughness: Maybe(i32),
+	base_power: Maybe(i32),
+	base_toughness: Maybe(i32),
+	mana_value: u32,
+	counters: [dynamic]Tuple2(CounterType, u32),
+	is_token: bool,
+	is_commander: bool,
+	tapped: bool,
+	face_down: bool,
+	transformed: bool,
+	is_suspected: bool,
+	is_renowned: bool,
+	is_saddled: bool,
+	has_no_abilities: bool,
+	attachments: [dynamic]EventAttachmentSnapshot,
+	protector: Maybe(PlayerId),
+	combat: EventCombatSnapshot,
+	history: EventObjectHistorySnapshot,
+	relations: EventObjectRelationSnapshot,
+}
+
+LifeRedistributionOption :: struct {
+	assignment: [dynamic]Tuple2(PlayerId, i32),
+}
+
+Zone :: enum u16 {
+	Library,
+	Hand,
+	Battlefield,
+	Graveyard,
+	Stack,
+	Exile,
+	Command,
+}
+
+DigRestRemainder :: enum u16 {
+	Route,
+	StayInLibrary,
+}
+
+DigRestOrder :: enum u16 {
+	Preserve,
+	Random,
+	PlayerChoice,
+}
+
+DigRestSplitScope :: enum u16 {
+	PartitionAndOrder,
+	PartitionOnly,
+	OrderOnly,
+}
+
+LibraryPlacementContinuation_Requests :: struct {
+	_0: ^BatchCompletion,
+}
+LibraryPlacementContinuation_ApprovedBatch :: struct {
+	logical_group_id: LogicalZoneChangeGroupId,
+}
+LibraryPlacementContinuation :: union {
+	LibraryPlacementContinuation_Requests,
+	LibraryPlacementContinuation_ApprovedBatch,
+}
+
+ObjectSelectionCardinality_Exactly :: struct {
+	count: u32,
+}
+ObjectSelectionCardinality_AnyNumber :: struct {
+}
+ObjectSelectionCardinality :: union {
+	ObjectSelectionCardinality_Exactly,
+	ObjectSelectionCardinality_AnyNumber,
+}
+
+PendingManaAbility :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	ability_index: Maybe(int),
+	rules_execution_node: Maybe(RulesExecutionNodeRef),
+	ability_snapshot: Maybe(AbilityDefinition),
+	announced_source_incarnation: Maybe(u64),
+	announced_usage_key: Maybe(AbilityUsageKey),
+	color_override: Maybe(ProductionOverride),
+	selected_taps_for_mana: [dynamic]TapsForManaSelection,
+	resume: ManaAbilityResume,
+	cost_move_resume: Maybe(ManaAbilityResume),
+	chosen_tappers: Maybe([dynamic]ObjectId),
+	chosen_discards: [dynamic]ObjectId,
+	chosen_mana_payment: Maybe([dynamic]ManaType),
+	payment_mode: CastPaymentMode,
+	pinned_pool_units: [dynamic]ManaPipId,
+	chosen_counter_counts: [dynamic]u32,
+	chosen_x: Maybe(u32),
+	collected_evidence: [dynamic]ObjectId,
+	chosen_exiled: [dynamic]ObjectId,
+	chosen_sacrificed_battlefield: [dynamic]ObjectId,
+	cost_paid_object: Maybe(CostPaidObjectSnapshot),
+	cost_removed_counters: Maybe(u32),
+	batch_siblings: [dynamic]ObjectId,
+}
+
+SearchSelectionConstraint_None :: struct {
+}
+SearchSelectionConstraint_SharesQualities :: struct {
+	qualities: [dynamic]SharedQuality,
+	relation: SharedQualityRelation,
+}
+SearchSelectionConstraint_TotalManaValue :: struct {
+	comparator: Comparator,
+	value: i32,
+}
+SearchSelectionConstraint_MatchEachFilter :: struct {
+	filters: [dynamic]TargetFilter,
+}
+SearchSelectionConstraint :: union {
+	SearchSelectionConstraint_None,
+	SearchSelectionConstraint_SharesQualities,
+	SearchSelectionConstraint_TotalManaValue,
+	SearchSelectionConstraint_MatchEachFilter,
+}
+
+SearchOrderingHint :: enum u16 {
+	Unordered,
+	OrderedToLibraryTop,
+}
+
+SearchDestinationSplit :: struct {
+	primary_destination: Zone,
+	primary_count: u32,
+	primary_enter_tapped: EtbTapState,
+	rest_destination: Zone,
+}
+
+EtbTapState :: enum u16 {
+	Unspecified,
+	Tapped,
+	Untapped,
+}
+
+OutsideGameChoiceEntry :: struct {
+	source: OutsideGameChoiceSource,
+	count: u32,
+	name: string,
+}
+
+ChooseFromZoneConstraint_DistinctCardTypes :: struct {
+	categories: [dynamic]CoreType,
+}
+ChooseFromZoneConstraint_TotalManaValue :: struct {
+	comparator: Comparator,
+	value: i32,
+}
+ChooseFromZoneConstraint :: union {
+	ChooseFromZoneConstraint_DistinctCardTypes,
+	ChooseFromZoneConstraint_TotalManaValue,
+}
+
+ReciprocalZoneChoiceRole :: enum u16 {
+	Produce,
+	Consume,
+}
+
+MemberOrderPurpose :: enum u16 {
+	SpellCopies,
+	InstructionLoop,
+}
+
+AbilityDefinition :: struct {
+	kind: AbilityKind,
+	effect: ^Effect,
+	declares_chosen_group: Maybe(ChosenGroupId),
+	reads_chosen_group: Maybe(ChosenGroupId),
+	declares_return_result: Maybe(ReturnResultId),
+	reads_return_result: Maybe(Tuple2(ReturnResultId, ReturnResultReadSpec)),
+	cost: Maybe(AbilityCost),
+	sub_ability: ^AbilityDefinition,
+	else_ability: ^AbilityDefinition,
+	duration: Maybe(Duration),
+	description: Maybe(string),
+	target_prompt: Maybe(string),
+	activation_restrictions: [dynamic]ActivationRestriction,
+	activation_mana_payment_restriction: Maybe(ActivationManaPaymentRestriction),
+	activator_filter: Maybe(PlayerFilter),
+	activation_zone: Maybe(Zone),
+	ability_tag: Maybe(AbilityTag),
+	condition: Maybe(AbilityCondition),
+	optional_targeting: bool,
+	optional: bool,
+	optional_player: Maybe(TargetFilter),
+	optional_for: Maybe(OpponentMayScope),
+	multi_target: Maybe(MultiTargetSpec),
+	target_constraints: [dynamic]TargetSelectionConstraint,
+	target_choice_timing: TargetChoiceTiming,
+	distribute: Maybe(DistributionUnit),
+	unless_pay: Maybe(UnlessPayModifier),
+	modal: Maybe(ModalChoice),
+	mode_abilities: [dynamic]AbilityDefinition,
+	repeat_for: Maybe(QuantityExpr),
+	repeat_timing: RepeatForTiming,
+	min_x_value: u32,
+	announced_x: Maybe(QuantityExpr),
+	cant_be_copied: bool,
+	illegal_targets_disposition: IllegalTargetsDisposition,
+	cost_reduction: Maybe(CostReduction),
+	forward_result: bool,
+	player_scope: Maybe(PlayerFilter),
+	starting_with: Maybe(ControllerRef),
+	target_selection_mode: TargetSelectionMode,
+	target_chooser: Maybe(TargetFilter),
+	repeat_until: Maybe(RepeatContinuation),
+	sub_link: SubAbilityLink,
+	target_reads: TargetReadOrigin,
+	entry_onset: ContinuousEffectOnset,
+	iteration_kind_binding: Maybe(IterationKindBinding),
+	sibling_condition: SiblingCondition,
+	instruction_join: InstructionJoin,
+	unlowered_guard: Maybe(UnloweredGuard),
+	linked_exile_return: Maybe(LinkedExileReturn),
+	face_down_in_exile: ExileConcealment,
+	granting_object: Maybe(ObjectIncarnationRef),
+	grant_chain: [dynamic]ObjectIncarnationRef,
+}
+
+ParentTargetOccurrences :: struct {
+	targets: [dynamic]TargetRef,
+	pins: [dynamic]Maybe(ObjectIncarnationRef),
+}
+
+SpellContext :: struct {
+	settled_damage_guards: LazyBoxedVec_SettledDamageGuard,
+	parked_damage_batch: ^ParkedDamageBatch,
+	face_down_in_exile: ExileConcealment,
+	discard_cause: DiscardCause,
+	granting_object: Maybe(ObjectIncarnationRef),
+	creation_lookback_event: ^GameEvent,
+	outer_declared_players: [dynamic]Tuple2(ChosenGroupId, PlayerId),
+	creation_illegal_referents: [dynamic]ObjectIncarnationRef,
+	boon_captured_noted_number: Maybe(i32),
+	boon_trigger_batch_objects: [dynamic]ObjectIncarnationRef,
+	forwarded_result_context: ^ForwardedResultContext,
+	pending_forwarded_zone_result: Maybe(PendingForwardedZoneResult),
+	exile_until_batch: [dynamic]ObjectIncarnationRef,
+	duration_events: [dynamic]DurationEvent,
+	pay_cost_paid_life_amount: Maybe(u32),
+	cost_removed_counter_amount: Maybe(u32),
+	direct_discard_result: ^DiscardedCardResult,
+	parent_target_iteration_members: Maybe([dynamic]ObjectId),
+	prior_effect_result: Maybe(EffectResolutionResult),
+	announcing_opponent: Maybe(PlayerId),
+	gift_recipient: Maybe(PlayerId),
+	additional_cost_paid: bool,
+	alternative_mana_cost_paid: bool,
+	alt_cost_grant_source: Maybe(ObjectId),
+	graveyard_permission_authority: Maybe(CastingVariant),
+	graveyard_permission_latch: Maybe(GraveyardPermissionLatch),
+	additional_cost_payment_count: u32,
+	additional_cost_payments: [dynamic]AdditionalCostInstancePayment,
+	kickers_paid: [dynamic]KickerVariant,
+	chosen_modes: [dynamic]int,
+	optional_effect_performed: bool,
+	unperformed_compound_instruction: Maybe(EffectKind),
+	guess_outcome: Maybe(GuessOutcome),
+	accepting_player: Maybe(PlayerId),
+	cast_from_zone: Maybe(Zone),
+	cast_controller: Maybe(PlayerId),
+	cast_active_player: Maybe(PlayerId),
+	cast_phase: Maybe(Phase),
+	chain_root_targets: [dynamic]TargetRef,
+	coin_branch_slot_base: Maybe([dynamic]ChainStep),
+	controller_controlled_as_cast: LazyBoxedVec_TargetFilter,
+	ability_tag: Maybe(AbilityTag),
+	source_transformation_count: Maybe(u32),
+	attach_target_bindings: AttachTargetBindings,
+	target_damage_source: Maybe(TargetDamageSourceBinding),
+	triggering_spell: Maybe(ObjectIncarnationRef),
+	source_ability_provenance: Maybe(AbilityProvenance),
+	prior_player_choices: [dynamic]PlayerId,
+	object_player_assignment: [dynamic]ObjectPlayerAssignment,
+	pending_choice_member: Maybe(ObjectId),
+	phase_turn_player: Maybe(PlayerId),
+}
+
+ResolvingTriggerContext :: struct {
+	event: Maybe(GameEvent),
+	events: [dynamic]GameEvent,
+	match_count: Maybe(u32),
+	die_result: Maybe(i32),
+}
+
+ConniveSubject :: struct {
+	snapshot: EventObjectSnapshot,
+}
+
+EffectKind :: enum u16 {
+	StartYourEngines,
+	ChangeSpeed,
+	DealDamage,
+	ApplyPostReplacementDamage,
+	ResumeDamageBatch,
+	EachDealsDamageEqualToPower,
+	EachSourceDealsDamage,
+	Draw,
+	Pump,
+	PairWith,
+	Destroy,
+	Counter,
+	CounterAll,
+	Token,
+	GainLife,
+	LoseLife,
+	Tap,
+	Untap,
+	RemoveCounter,
+	Sacrifice,
+	DiscardCard,
+	Mill,
+	Scry,
+	PumpAll,
+	DamageAll,
+	DamageEachPlayer,
+	DestroyAll,
+	TapAll,
+	UntapAll,
+	ChangeZone,
+	ChangeZoneAll,
+	Dig,
+	GainControl,
+	GainControlAll,
+	ControlNextTurn,
+	Attach,
+	AttachAll,
+	UnattachAll,
+	Surveil,
+	Fight,
+	Bounce,
+	BounceAll,
+	Explore,
+	ExploreAll,
+	Investigate,
+	Tribute,
+	TimeTravel,
+	BecomeMonarch,
+	ChoosePermanent,
+	NoOp,
+	Proliferate,
+	ProliferateTarget,
+	Populate,
+	Clash,
+	ExileTopCardContest,
+	OpponentGuess,
+	Behold,
+	EndTheTurn,
+	EndCombatPhase,
+	Vote,
+	SeparateIntoPiles,
+	SwitchPT,
+	CopySpell,
+	EpicCopy,
+	CastCopyOfCard,
+	CopyTokenOf,
+	CreateTokenCopyFromPool,
+	Myriad,
+	Encore,
+	CombineHost,
+	ChooseAugmentAndCombineWithHost,
+	Meld,
+	ExileHaunting,
+	HideawayConceal,
+	BecomeCopy,
+	GainActivatedAbilitiesOfTarget,
+	ChooseCard,
+	PutCounter,
+	PutCounterAll,
+	MultiplyCounter,
+	DoublePT,
+	DoublePTAll,
+	MoveCounters,
+	ReproduceEventCounters,
+	Animate,
+	ReturnAsAura,
+	RegisterBending,
+	GenericEffect,
+	Cleanup,
+	Mana,
+	Discard,
+	Shuffle,
+	SearchLibrary,
+	SearchOutsideGame,
+	OpenBoosterPack,
+	ExileTop,
+	TargetOnly,
+	Choose,
+	ChooseDamageSource,
+	Suspect,
+	Unsuspect,
+	Connive,
+	PhaseOut,
+	PhaseIn,
+	ForceBlock,
+	ForceAttack,
+	SolveCase,
+	BecomePrepared,
+	BecomeUnprepared,
+	BecomeSaddled,
+	SetClassLevel,
+	CreateDelayedTrigger,
+	AddTargetReplacement,
+	AddRestriction,
+	ReduceNextSpellCost,
+	GrantNextSpellAbility,
+	AddPendingETBCounters,
+	AddPendingEntersModifications,
+	CreateEmblem,
+	CreateBoon,
+	PayCost,
+	CastFromZone,
+	FreeCastFromZones,
+	ExileResolvingSpellInsteadOfGraveyard,
+	PreventDamage,
+	CreateDamageReplacement,
+	CreateDrawReplacement,
+	CreatePlaneswalkReplacement,
+	Regenerate,
+	RemoveAllDamage,
+	LoseTheGame,
+	WinTheGame,
+	RollDie,
+	FlipCoins,
+	RingTemptsYou,
+	VentureIntoDungeon,
+	VentureInto,
+	TakeTheInitiative,
+	ArrangePlanarDeckTop,
+	Planeswalk,
+	AbandonScheme,
+	ChaosEnsues,
+	RedistributeLifeTotals,
+	ReverseTurnOrder,
+	OpenAttractions,
+	RollToVisitAttractions,
+	AssembleContraptions,
+	AssembleContraptionsFromRollDifference,
+	CrankContraptions,
+	ReassembleContraption,
+	AssembleContraptionOnSprocket,
+	ReassembleContraptionOnSprocket,
+	PutSticker,
+	ApplySticker,
+	ProcessRadCounters,
+	GrantCastingPermission,
+	ChooseFromZone,
+	RememberCard,
+	NoteManaSpent,
+	NoteNumber,
+	ChooseObjectsIntoTrackedSet,
+	ChooseCounterKind,
+	PutChosenCounter,
+	ChooseAndSacrificeRest,
+	EachPlayerCopyChosen,
+	Exploit,
+	GainEnergy,
+	GivePlayerCounter,
+	LoseAllPlayerCounters,
+	ExileFromTopUntil,
+	ExileFaceDownPile,
+	RevealUntil,
+	Discover,
+	PhysicalContest,
+	Heist,
+	HeistExile,
+	Cascade,
+	Ripple,
+	MiracleCast,
+	MadnessCast,
+	PutAtLibraryPosition,
+	ChooseDrawnThisTurnPayOrTopdeck,
+	PutOnTopOrBottom,
+	GiftDelivery,
+	Goad,
+	GoadAll,
+	Detain,
+	SetRoomDoorLock,
+	ExchangeControl,
+	ChangeTargets,
+	Incubate,
+	Amass,
+	EmpowerJace,
+	Monstrosity,
+	HordePlayCard,
+	Specialize,
+	Renown,
+	Bolster,
+	Adapt,
+	Manifest,
+	ManifestDread,
+	Cloak,
+	ExtraTurn,
+	GrantExtraLoyaltyActivations,
+	SkipNextTurn,
+	SkipNextStep,
+	AdditionalPhase,
+	Double,
+	ModifyAnnouncedX,
+	RuntimeHandled,
+	Learn,
+	Forage,
+	CompletePlayerAction,
+	Harness,
+	CollectEvidence,
+	Endure,
+	BlightEffect,
+	Seek,
+	SetLifeTotal,
+	ExchangeLifeWithStat,
+	ExchangeLifeTotals,
+	SetDayNight,
+	GiveControl,
+	RemoveFromCombat,
+	BecomeBlocked,
+	Conjure,
+	CreateCardCopyByName,
+	Intensify,
+	ApplyPerpetual,
+	DraftFromSpellbook,
+	ChooseOneOf,
+	ChooseCounterAdjustment,
+	FlipPermanent,
+	Unimplemented,
+	Equip,
+	Crew,
+	Station,
+	Saddle,
+	Reveal,
+	Transform,
+	TurnFaceUp,
+	TurnFaceDown,
+	DayTimeChange,
+}
+
+DiscardFrameId :: distinct u64
+
+HeroEventKind_ChromeOverload :: struct {
+}
+HeroEventKind_KrangStratagem :: struct {
+	remaining: int,
+}
+HeroEventKind_Smackdown :: struct {
+}
+HeroEventKind_RatKingRevolution :: struct {
+}
+HeroEventKind_SavantiCurse :: struct {
+}
+HeroEventKind_Infiltration :: struct {
+}
+HeroEventKind_VillainMayhem :: struct {
+}
+HeroEventKind :: union {
+	HeroEventKind_ChromeOverload,
+	HeroEventKind_KrangStratagem,
+	HeroEventKind_Smackdown,
+	HeroEventKind_RatKingRevolution,
+	HeroEventKind_SavantiCurse,
+	HeroEventKind_Infiltration,
+	HeroEventKind_VillainMayhem,
+}
+
+HeroEventAnswer :: struct {
+	hero: PlayerId,
+	cards: [dynamic]ObjectId,
+}
+
+ExileConcealment :: enum u16 {
+	Public,
+	FaceDown,
+}
+
+FaceDownProfile :: struct {
+	power: Maybe(i32),
+	toughness: Maybe(i32),
+	body: FaceDownBody,
+	extra_core_types: [dynamic]CoreType,
+	subtypes: [dynamic]string,
+	ward: Maybe(WardCost),
+	cause: FaceDownCause,
+}
+
+WithEntryEffect :: struct {
+	source_id: ObjectId,
+	controller: PlayerId,
+	modifications: [dynamic]ContinuousModification,
+}
+
+QuantityExpr_Ref :: struct {
+	qty: QuantityRef,
+}
+QuantityExpr_Fixed :: struct {
+	value: i32,
+}
+QuantityExpr_DivideRounded :: struct {
+	inner: ^QuantityExpr,
+	divisor: u32,
+	rounding: RoundingMode,
+}
+QuantityExpr_Offset :: struct {
+	inner: ^QuantityExpr,
+	offset: i32,
+}
+QuantityExpr_ClampMin :: struct {
+	inner: ^QuantityExpr,
+	minimum: i32,
+}
+QuantityExpr_Multiply :: struct {
+	factor: i32,
+	inner: ^QuantityExpr,
+}
+QuantityExpr_Sum :: struct {
+	exprs: [dynamic]QuantityExpr,
+}
+QuantityExpr_UpTo :: struct {
+	max: ^QuantityExpr,
+}
+QuantityExpr_Power :: struct {
+	base: i32,
+	exponent: ^QuantityExpr,
+}
+QuantityExpr_Difference :: struct {
+	left: ^QuantityExpr,
+	right: ^QuantityExpr,
+}
+QuantityExpr_Max :: struct {
+	exprs: [dynamic]QuantityExpr,
+}
+QuantityExpr :: union {
+	QuantityExpr_Ref,
+	QuantityExpr_Fixed,
+	QuantityExpr_DivideRounded,
+	QuantityExpr_Offset,
+	QuantityExpr_ClampMin,
+	QuantityExpr_Multiply,
+	QuantityExpr_Sum,
+	QuantityExpr_UpTo,
+	QuantityExpr_Power,
+	QuantityExpr_Difference,
+	QuantityExpr_Max,
+}
+
+LibraryPosition_Top :: struct {
+}
+LibraryPosition_Bottom :: struct {
+}
+LibraryPosition_NthFromTop :: struct {
+	n: u32,
+}
+LibraryPosition_BeneathTop :: struct {
+	depth: QuantityExpr,
+}
+LibraryPosition_RandomWithinTop :: struct {
+	n: QuantityExpr,
+}
+LibraryPosition :: union {
+	LibraryPosition_Top,
+	LibraryPosition_Bottom,
+	LibraryPosition_NthFromTop,
+	LibraryPosition_BeneathTop,
+	LibraryPosition_RandomWithinTop,
+}
+
+LibraryShuffleMode :: enum u16 {
+	PerObject,
+	TerminalShuffle,
+}
+
+MassLibraryOrderBatch :: struct {
+	owner: PlayerId,
+	arranger: Maybe(PlayerId),
+	members: [dynamic]MassLibraryOrderMember,
+}
+
+Duration_UntilEndOfTurn :: struct {
+}
+Duration_UntilEndOfCombat :: struct {
+}
+Duration_UntilNextTurnOf :: struct {
+	player: PlayerScope,
+}
+Duration_UntilEndOfNextTurnOf :: struct {
+	player: PlayerScope,
+}
+Duration_UntilHostLeavesPlay :: struct {
+}
+Duration_WhileHostOnBattlefield :: struct {
+}
+Duration_WhileControllingHost :: struct {
+}
+Duration_UntilNextStepOf :: struct {
+	step: Phase,
+	player: PlayerScope,
+}
+Duration_ForAsLongAs :: struct {
+	condition: StaticCondition,
+}
+Duration_UntilSourceExilesAnotherCard :: struct {
+}
+Duration_UntilOpponentBecomesMonarch :: struct {
+}
+Duration_UntilEvent :: struct {
+	event: ^TriggerDefinition,
+}
+Duration_Permanent :: struct {
+}
+Duration :: union {
+	Duration_UntilEndOfTurn,
+	Duration_UntilEndOfCombat,
+	Duration_UntilNextTurnOf,
+	Duration_UntilEndOfNextTurnOf,
+	Duration_UntilHostLeavesPlay,
+	Duration_WhileHostOnBattlefield,
+	Duration_WhileControllingHost,
+	Duration_UntilNextStepOf,
+	Duration_ForAsLongAs,
+	Duration_UntilSourceExilesAnotherCard,
+	Duration_UntilOpponentBecomesMonarch,
+	Duration_UntilEvent,
+	Duration_Permanent,
+}
+
+TargetSelectionConstraint_DifferentTargetPlayers :: struct {
+}
+TargetSelectionConstraint_DifferentObjectControllers :: struct {
+}
+TargetSelectionConstraint_SameZoneOwner :: struct {
+	zone: Zone,
+}
+TargetSelectionConstraint_TotalManaValue :: struct {
+	comparator: Comparator,
+	value: QuantityExpr,
+}
+TargetSelectionConstraint :: union {
+	TargetSelectionConstraint_DifferentTargetPlayers,
+	TargetSelectionConstraint_DifferentObjectControllers,
+	TargetSelectionConstraint_SameZoneOwner,
+	TargetSelectionConstraint_TotalManaValue,
+}
+
+ChoiceType_CreatureType :: struct {
+	options: [dynamic]string,
+}
+ChoiceType_Color :: struct {
+	excluded: [dynamic]ManaColor,
+}
+ChoiceType_OddOrEven :: struct {
+}
+ChoiceType_BasicLandType :: struct {
+}
+ChoiceType_CardType :: struct {
+	options: [dynamic]CoreType,
+}
+ChoiceType_CardName :: struct {
+	options: [dynamic]string,
+	distinctness: NameDistinctness,
+}
+ChoiceType_NumberRange :: struct {
+	min: u32,
+	max: Maybe(u32),
+	distinctness: NumberDistinctness,
+}
+ChoiceType_Labeled :: struct {
+	options: [dynamic]string,
+}
+ChoiceType_LandType :: struct {
+}
+ChoiceType_CardPredicate :: struct {
+	options: [dynamic]CardPredicateChoice,
+}
+ChoiceType_CardPredicateGuess :: struct {
+	options: [dynamic]CardPredicateChoice,
+}
+ChoiceType_Opponent :: struct {
+	restriction: ^PlayerFilter,
+	distinctness: PlayerChoiceDistinctness,
+}
+ChoiceType_Player :: struct {
+	distinctness: PlayerChoiceDistinctness,
+}
+ChoiceType_TwoColors :: struct {
+}
+ChoiceType_Word :: struct {
+}
+ChoiceType_Artist :: struct {
+}
+ChoiceType_Keyword :: struct {
+	options: [dynamic]Keyword,
+	count: int,
+}
+ChoiceType_CounterKind :: struct {
+	options: [dynamic]CounterType,
+}
+ChoiceType :: union {
+	ChoiceType_CreatureType,
+	ChoiceType_Color,
+	ChoiceType_OddOrEven,
+	ChoiceType_BasicLandType,
+	ChoiceType_CardType,
+	ChoiceType_CardName,
+	ChoiceType_NumberRange,
+	ChoiceType_Labeled,
+	ChoiceType_LandType,
+	ChoiceType_CardPredicate,
+	ChoiceType_CardPredicateGuess,
+	ChoiceType_Opponent,
+	ChoiceType_Player,
+	ChoiceType_TwoColors,
+	ChoiceType_Word,
+	ChoiceType_Artist,
+	ChoiceType_Keyword,
+	ChoiceType_CounterKind,
+}
+
+NamedChoiceSource :: struct {
+	prompt: PromptSourceBinding,
+	binding: NamedChoiceSourceBinding,
+	context_: Maybe(TriggerSourceContext),
+}
+
+FreeEntry_Number :: struct {
+	min: u32,
+	max: u32,
+}
+FreeEntry :: union {
+	FreeEntry_Number,
+}
+
+OpponentGuessSource :: struct {
+	prompt: PromptSourceBinding,
+}
+
+OpponentGuessOwner :: struct {
+	context_: TriggerSourceContext,
+	committed_choice: Maybe(ChosenAttribute),
+}
+
+ModalChoice :: struct {
+	min_choices: int,
+	max_choices: int,
+	mode_count: int,
+	mode_descriptions: [dynamic]string,
+	allow_repeat_modes: bool,
+	constraints: [dynamic]ModalSelectionConstraint,
+	mode_costs: [dynamic]ManaCost,
+	mode_pawprints: [dynamic]u8,
+	entwine_cost: ^AbilityCost,
+	chooser: PlayerFilter,
+	selection: TargetSelectionMode,
+	dynamic_max_choices: Maybe(QuantityExpr),
+}
+
+AdditionalCost_Optional :: struct {
+	cost: AbilityCost,
+	repeatability: AdditionalCostRepeatability,
+}
+AdditionalCost_Kicker :: struct {
+	costs: [dynamic]AbilityCost,
+	repeatability: AdditionalCostRepeatability,
+}
+AdditionalCost_Choice :: struct {
+	_0: [dynamic]AbilityCost,
+}
+AdditionalCost_Required :: struct {
+	_0: AbilityCost,
+}
+AdditionalCost :: union {
+	AdditionalCost_Optional,
+	AdditionalCost_Kicker,
+	AdditionalCost_Choice,
+	AdditionalCost_Required,
+}
+
+AdditionalCostOrigin :: enum u16 {
+	Kicker,
+	Casualty,
+	Offspring,
+	Squad,
+	Replicate,
+	Bargain,
+	Teamwork,
+	Gift,
+	Other,
+}
+
+GiftKind :: enum u16 {
+	Card,
+	Treasure,
+	Food,
+	TappedFish,
+	ExtraTurn,
+}
+
+CastOpponentChoicePurpose_Gift :: struct {
+}
+CastOpponentChoicePurpose_EffectCost :: struct {
+	cost: ^AbilityCost,
+}
+CastOpponentChoicePurpose :: union {
+	CastOpponentChoicePurpose_Gift,
+	CastOpponentChoicePurpose_EffectCost,
+}
+
+CostReductionReach :: enum u16 {
+	SpillsToGeneric,
+	ColoredManaOnly,
+}
+
+CostReductionEntry :: struct {
+	amount: ManaCost,
+	multiplier: u32,
+	reach: CostReductionReach,
+	provenance: ReductionProvenance,
+	display_name: string,
+	minimum_mana: u32,
+}
+
+CostReductionOutcome :: struct {
+	order: [dynamic]int,
+	hybrid_announcement: [dynamic]ManaCostShard,
+	locked_cost: ManaCost,
+}
+
+CastOfferKind_Adventure :: struct {
+	object_id: ObjectId,
+	card_id: CardId,
+	payment_mode: CastPaymentMode,
+}
+CastOfferKind_Miracle :: struct {
+	object_id: ObjectId,
+	cost: ManaCost,
+}
+CastOfferKind_Madness :: struct {
+	object_id: ObjectId,
+	cost: ManaCost,
+}
+CastOfferKind_Paradigm :: struct {
+	offers: [dynamic]ObjectId,
+}
+CastOfferKind_Cascade :: struct {
+	hit_card: ObjectId,
+	exiled_misses: [dynamic]ObjectId,
+	source_mv: u32,
+	source_id: ObjectId,
+}
+CastOfferKind_Discover :: struct {
+	hit_card: ObjectId,
+	exiled_misses: [dynamic]ObjectId,
+	source_id: ObjectId,
+	discover_value: u32,
+}
+CastOfferKind_Ripple :: struct {
+	hit_card: ObjectId,
+	remaining_hits: [dynamic]ObjectId,
+	revealed_misses: [dynamic]ObjectId,
+	source_id: ObjectId,
+}
+CastOfferKind_FreeCastWindow :: struct {
+	candidates: [dynamic]ObjectId,
+	remaining_casts: Maybe(u8),
+	remaining_mv_budget: Maybe(u32),
+	face_policy: ResolutionCastFacePolicy,
+	zones: [dynamic]Zone,
+	graveyard_replacement: Maybe(SpellStackToGraveyardReplacement),
+	member_pool: [dynamic]ObjectId,
+	enters_with_modifications: PendingEntersModifications,
+}
+CastOfferKind_GraveyardPaidCast :: struct {
+	hit_card: ObjectId,
+	mana_spend_permission: Maybe(ManaSpendPermission),
+	graveyard_replacement: Maybe(SpellStackToGraveyardReplacement),
+	enters_with_modifications: PendingEntersModifications,
+	cast_transformed: bool,
+	additional_cost: Maybe(ManaCost),
+	cleanup: ResolutionCastCleanup,
+}
+CastOfferKind :: union {
+	CastOfferKind_Adventure,
+	CastOfferKind_Miracle,
+	CastOfferKind_Madness,
+	CastOfferKind_Paradigm,
+	CastOfferKind_Cascade,
+	CastOfferKind_Discover,
+	CastOfferKind_Ripple,
+	CastOfferKind_FreeCastWindow,
+	CastOfferKind_GraveyardPaidCast,
+}
+
+AlternativeCastKeyword :: enum u16 {
+	Warp,
+	Evoke,
+	Emerge,
+	Dash,
+	Blitz,
+	Overload,
+	Bestow,
+	Awaken,
+	Cleave,
+	MoreThanMeetsTheEye,
+	Impending,
+	Prototype,
+	Mutate,
+	Spectacle,
+	Prowl,
+	FaceDown,
+	Surge,
+}
+
+AbilityCost_Mana :: struct {
+	cost: ManaCost,
+}
+AbilityCost_ManaDynamic :: struct {
+	quantity: QuantityExpr,
+}
+AbilityCost_Tap :: struct {
+}
+AbilityCost_Untap :: struct {
+}
+AbilityCost_Loyalty :: struct {
+	amount: i32,
+}
+AbilityCost_SayPhrase :: struct {
+	phrase: string,
+}
+AbilityCost_Sacrifice :: struct {
+	_0: SacrificeCost,
+}
+AbilityCost_PayLife :: struct {
+	amount: QuantityExpr,
+}
+AbilityCost_Discard :: struct {
+	count: QuantityExpr,
+	filter: Maybe(TargetFilter),
+	selection: CardSelectionMode,
+	self_scope: DiscardSelfScope,
+}
+AbilityCost_Exile :: struct {
+	count: u32,
+	zone: Maybe(Zone),
+	filter: Maybe(TargetFilter),
+}
+AbilityCost_ExileMaterials :: struct {
+	materials: TargetFilter,
+	count: CostObjectCount,
+}
+AbilityCost_CollectEvidence :: struct {
+	amount: u32,
+}
+AbilityCost_ExileWithAggregate :: struct {
+	filter: TargetFilter,
+	function: AggregateFunction,
+	property: ObjectProperty,
+	comparator: Comparator,
+	value: i32,
+	zone: Zone,
+}
+AbilityCost_TapCreatures :: struct {
+	requirement: TapCreaturesRequirement,
+	filter: TargetFilter,
+}
+AbilityCost_RemoveCounter :: struct {
+	count: u32,
+	counter_type: CounterMatch,
+	target: Maybe(TargetFilter),
+	selection: CounterCostSelection,
+}
+AbilityCost_PayEnergy :: struct {
+	amount: QuantityExpr,
+}
+AbilityCost_PaySpeed :: struct {
+	amount: QuantityExpr,
+}
+AbilityCost_ReturnToHand :: struct {
+	count: u32,
+	filter: Maybe(TargetFilter),
+	from_zone: Maybe(Zone),
+}
+AbilityCost_Unattach :: struct {
+}
+AbilityCost_UnattachFrom :: struct {
+	filter: TargetFilter,
+	count: u32,
+}
+AbilityCost_Mill :: struct {
+	count: u32,
+}
+AbilityCost_Exert :: struct {
+}
+AbilityCost_Blight :: struct {
+	count: u32,
+}
+AbilityCost_Reveal :: struct {
+	count: QuantityExpr,
+	filter: Maybe(TargetFilter),
+	shared_quality: Maybe(SharedQuality),
+}
+AbilityCost_Behold :: struct {
+	count: u32,
+	filter: TargetFilter,
+	action: BeholdCostAction,
+	type_choice: Maybe(ChoiceType),
+}
+AbilityCost_Composite :: struct {
+	costs: [dynamic]AbilityCost,
+}
+AbilityCost_OneOf :: struct {
+	costs: [dynamic]AbilityCost,
+}
+AbilityCost_Waterbend :: struct {
+	cost: ManaCost,
+}
+AbilityCost_NinjutsuFamily :: struct {
+	variant: NinjutsuVariant,
+	mana_cost: ManaCost,
+}
+AbilityCost_EffectCost :: struct {
+	effect: ^Effect,
+}
+AbilityCost_PerCounter :: struct {
+	counter: CounterType,
+	target: TargetFilter,
+	base: ^AbilityCost,
+}
+AbilityCost_KeywordCostOfCastSpell :: struct {
+	keyword: KeywordKind,
+}
+AbilityCost_GetPlayerCounters :: struct {
+	counter_kind: PlayerCounterKind,
+	count: u32,
+}
+AbilityCost_Unimplemented :: struct {
+	description: string,
+}
+AbilityCost :: union {
+	AbilityCost_Mana,
+	AbilityCost_ManaDynamic,
+	AbilityCost_Tap,
+	AbilityCost_Untap,
+	AbilityCost_Loyalty,
+	AbilityCost_SayPhrase,
+	AbilityCost_Sacrifice,
+	AbilityCost_PayLife,
+	AbilityCost_Discard,
+	AbilityCost_Exile,
+	AbilityCost_ExileMaterials,
+	AbilityCost_CollectEvidence,
+	AbilityCost_ExileWithAggregate,
+	AbilityCost_TapCreatures,
+	AbilityCost_RemoveCounter,
+	AbilityCost_PayEnergy,
+	AbilityCost_PaySpeed,
+	AbilityCost_ReturnToHand,
+	AbilityCost_Unattach,
+	AbilityCost_UnattachFrom,
+	AbilityCost_Mill,
+	AbilityCost_Exert,
+	AbilityCost_Blight,
+	AbilityCost_Reveal,
+	AbilityCost_Behold,
+	AbilityCost_Composite,
+	AbilityCost_OneOf,
+	AbilityCost_Waterbend,
+	AbilityCost_NinjutsuFamily,
+	AbilityCost_EffectCost,
+	AbilityCost_PerCounter,
+	AbilityCost_KeywordCostOfCastSpell,
+	AbilityCost_GetPlayerCounters,
+	AbilityCost_Unimplemented,
+}
+
+AlternativeAdditionalCostDescription_EmergeSacrifice :: struct {
+	quality: EmergeSacrificeQuality,
+}
+AlternativeAdditionalCostDescription :: union {
+	AlternativeAdditionalCostDescription_EmergeSacrifice,
+}
+
+CastingVariantChoiceOption :: struct {
+	variant: CastingVariant,
+	face: CastingVariantFace,
+	mana_cost: ManaCost,
+	additional_cost: Maybe(AbilityCost),
+	authority: Maybe(CastAuthorityChoice),
+	alternative_cost_keyword: Maybe(Keyword),
+}
+
+AnnouncedGraveyardPermission :: struct {
+	permission: GraveyardPermissionId,
+	grant_digest: GrantDigest,
+	slot_type: Maybe(CoreType),
+}
+
+ActivationCostSnapshot :: struct {
+	base_cost: AbilityCost,
+	raise_total: u32,
+	reductions: [dynamic]CostReductionEntry,
+	mana_carrier: ManaCarrier,
+	settlement_tail: Maybe(SettledTail),
+	lock: ActivationCostLock,
+}
+
+MayTriggerAutoChoiceKey :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	origin: MayTriggerOrigin,
+}
+
+ResolutionOptionalPaymentOption :: struct {
+	index: int,
+	cost: AbilityCost,
+}
+
+LoopCertificate :: struct {
+	unbounded: [dynamic]ResourceAxis,
+	rising: [dynamic]ResourceAxis,
+	win_kind: Maybe(WinKind),
+	win_kind_at: Maybe(u32),
+	mandatory: bool,
+	residual_board_delta: BoardDelta,
+	per_cycle: Maybe(PeriodSignature),
+}
+
+ShortcutDecisionSchema :: struct {
+	iteration_count: IterationCount,
+	repetition_bound: RepetitionBound,
+	deliverable_capacity: u32,
+	points: [dynamic]DecisionPoint,
+	convoke_tappable_count: int,
+	suggested_declaration: Maybe(DecisionTemplate),
+	leading_aims: [dynamic]Tuple2(DecisionSlot, PlayerId),
+}
+
+CountedTake_Performs :: struct {
+}
+CountedTake_Unperformable :: struct {
+	_0: UnperformableCause,
+}
+CountedTake :: union {
+	CountedTake_Performs,
+	CountedTake_Unperformable,
+}
+
+ConfirmedPeriod :: struct {
+	items: [dynamic]PeriodItem,
+	growth: CoveredGrowth,
+	reach: PeriodReach,
+	choices: [dynamic]PinnedDecision,
+	counted_by: CountedBy,
+	performance: Maybe(PeriodPerformance),
+	performed: [dynamic]PerformedReach,
+	recorded: Maybe(PerformedReach),
+	outcomes: Outcomes,
+	receipts: AnswerReceipts,
+}
+
+ShortcutProposal :: struct {
+	proposer: PlayerId,
+	predicted_winner: Maybe(PlayerId),
+	count: IterationCount,
+	unbounded: [dynamic]ResourceAxis,
+	rising: [dynamic]ResourceAxis,
+	win_kind: Maybe(WinKind),
+	win_kind_at: Maybe(u32),
+	template: Maybe(DecisionTemplate),
+	per_cycle: Maybe(PeriodSignature),
+	shortened_by: Maybe(PlayerId),
+	counted_take: CountedTake,
+	period: ConfirmedPeriod,
+	leading_aims: [dynamic]Tuple2(DecisionSlot, PlayerId),
+	published_declaration: Maybe(DecisionTemplate),
+}
+
+DungeonPreview :: struct {
+	dungeon: DungeonId,
+	name: string,
+	entry_room: RoomPreview,
+	card: DungeonCardView,
+	rooms: [dynamic]DungeonRoomNodeView,
+	room_count: u8,
+}
+
+RoomPreview :: struct {
+	index: u8,
+	name: string,
+	text: string,
+}
+
+PayCostKind_Discard :: struct {
+}
+PayCostKind_Reveal :: struct {
+	shared_quality: Maybe(SharedQuality),
+}
+PayCostKind_Sacrifice :: struct {
+}
+PayCostKind_ReturnToHand :: struct {
+}
+PayCostKind_ExileFromZone :: struct {
+	zone: ExileCostSourceZone,
+}
+PayCostKind_ExileMaterials :: struct {
+	materials: TargetFilter,
+}
+PayCostKind_ExilePermanent :: struct {
+	filter: Maybe(TargetFilter),
+}
+PayCostKind_ExileFromManaZone :: struct {
+	zone: Zone,
+}
+PayCostKind_UnattachFrom :: struct {
+	filter: TargetFilter,
+}
+PayCostKind_RemoveCounter :: struct {
+	counter_type: CounterMatch,
+	count: u32,
+	selection: CounterCostSelection,
+}
+PayCostKind_TapCreatures :: struct {
+	mode: TapCreaturesSelectionMode,
+}
+PayCostKind_Behold :: struct {
+	action: BeholdCostAction,
+}
+PayCostKind_ExileAggregate :: struct {
+	zone: Zone,
+	function: AggregateFunction,
+	property: ObjectProperty,
+	comparator: Comparator,
+	value: i32,
+	filter: TargetFilter,
+}
+PayCostKind :: union {
+	PayCostKind_Discard,
+	PayCostKind_Reveal,
+	PayCostKind_Sacrifice,
+	PayCostKind_ReturnToHand,
+	PayCostKind_ExileFromZone,
+	PayCostKind_ExileMaterials,
+	PayCostKind_ExilePermanent,
+	PayCostKind_ExileFromManaZone,
+	PayCostKind_UnattachFrom,
+	PayCostKind_RemoveCounter,
+	PayCostKind_TapCreatures,
+	PayCostKind_Behold,
+	PayCostKind_ExileAggregate,
+}
+
+CostResume_Spell :: struct {
+	spell: ^PendingCast,
+}
+CostResume_SpellCost :: struct {
+	spell: ^PendingCast,
+	cost: ^AbilityCost,
+	source: SpellCostSource,
+}
+CostResume_ManaAbility :: struct {
+	mana_ability: ^PendingManaAbility,
+}
+CostResume_Resolution :: struct {
+}
+CostResume_TeamTapPayment :: struct {
+	aggregate: TapCreaturesAggregate,
+	eligible: [dynamic]ObjectId,
+	selected: [dynamic]ObjectId,
+	remaining: [dynamic]PlayerId,
+	filter: ^TargetFilter,
+	ability: ^ResolvedAbility,
+}
+CostResume_TurnFaceUp :: struct {
+	source: ObjectIncarnationRef,
+	cost_source: TurnUpCostSource,
+	remaining_cost: ^AbilityCost,
+}
+CostResume :: union {
+	CostResume_Spell,
+	CostResume_SpellCost,
+	CostResume_ManaAbility,
+	CostResume_Resolution,
+	CostResume_TeamTapPayment,
+	CostResume_TurnFaceUp,
+}
+
+ManaChoicePrompt_SingleColor :: struct {
+	options: [dynamic]ManaType,
+}
+ManaChoicePrompt_Combination :: struct {
+	options: [dynamic][dynamic]ManaType,
+}
+ManaChoicePrompt_AnyCombination :: struct {
+	count: int,
+	options: [dynamic]ManaType,
+}
+ManaChoicePrompt :: union {
+	ManaChoicePrompt_SingleColor,
+	ManaChoicePrompt_Combination,
+	ManaChoicePrompt_AnyCombination,
+}
+
+ManaChoiceContext_ManaAbility :: struct {
+	_0: ^PendingManaAbility,
+}
+ManaChoiceContext_ResolvingEffect :: struct {
+	_0: ^ResolvedAbility,
+}
+ManaChoiceContext :: union {
+	ManaChoiceContext_ManaAbility,
+	ManaChoiceContext_ResolvingEffect,
+}
+
+CollectEvidenceResume_Casting :: struct {
+	pending_cast: ^PendingCast,
+	source: SpellCostSource,
+}
+CollectEvidenceResume_Effect :: struct {
+	pending_ability: ^ResolvedAbility,
+}
+CollectEvidenceResume_Resolution :: struct {
+	source_id: ObjectId,
+}
+CollectEvidenceResume_ManaAbility :: struct {
+	pending_mana_ability: ^PendingManaAbility,
+}
+CollectEvidenceResume :: union {
+	CollectEvidenceResume_Casting,
+	CollectEvidenceResume_Effect,
+	CollectEvidenceResume_Resolution,
+	CollectEvidenceResume_ManaAbility,
+}
+
+ZoneOpponentChooserPurpose :: enum u16 {
+	Ordinary,
+	BindReciprocalConsume,
+	PerPlayerChoiceOrder,
+	SubstituteChooser,
+	SubstituteArranger,
+}
+
+ContestState :: struct {
+	id: u64,
+	kind: ContestKind,
+	phase: ContestPhase,
+	config: ContestConfig,
+	contestants: [2]Contestant,
+	clock_ms: u64,
+	go_at_ms: Maybe(u64),
+	paused_since_ms: Maybe(u64),
+	result: Maybe(ContestResult),
+}
+
+VoteActor_SubjectActs :: struct {
+}
+VoteActor_Delegated :: struct {
+	_0: PlayerId,
+}
+VoteActor :: union {
+	VoteActor_SubjectActs,
+	VoteActor_Delegated,
+}
+
+VoteTally_PerVote :: struct {
+}
+VoteTally_TopVotes :: struct {
+	tie: TieResolution,
+}
+VoteTally :: union {
+	VoteTally_PerVote,
+	VoteTally_TopVotes,
+}
+
+VoteVisibility :: enum u16 {
+	Open,
+	Secret,
+}
+
+PileSource_Battlefield :: struct {
+}
+PileSource_RevealedFromLibraryTop :: struct {
+	count: u32,
+}
+PileSource_ExiledThisWay :: struct {
+}
+PileSource :: union {
+	PileSource_Battlefield,
+	PileSource_RevealedFromLibraryTop,
+	PileSource_ExiledThisWay,
+}
+
+PileResult :: struct {
+	subject: PlayerId,
+	pile_a: [dynamic]ObjectId,
+	pile_b: [dynamic]ObjectId,
+}
+
+CompanionRevealChoice :: struct {
+	name: string,
+	source: CompanionChoiceSource,
+}
+
+TimeTravelPhase :: enum u16 {
+	Remove,
+	Add,
+}
+
+CategoryChooserScope :: enum u16 {
+	EachPlayerSelf,
+	ControllerForAll,
+}
+
+ContinuousModification_CopyValues :: struct {
+	values: ^CopiableValues,
+	display: DisplayIdentity,
+}
+ContinuousModification_CopyChosen :: struct {
+}
+ContinuousModification_SetName :: struct {
+	name: string,
+}
+ContinuousModification_SetTextName :: struct {
+	name: string,
+}
+ContinuousModification_SubstituteTextWord :: struct {
+	substitution: TextSubstitutionSpec,
+}
+ContinuousModification_AddPower :: struct {
+	value: i32,
+}
+ContinuousModification_AddToughness :: struct {
+	value: i32,
+}
+ContinuousModification_SetPower :: struct {
+	value: i32,
+}
+ContinuousModification_SetToughness :: struct {
+	value: i32,
+}
+ContinuousModification_AddKeyword :: struct {
+	keyword: Keyword,
+}
+ContinuousModification_RemoveKeyword :: struct {
+	keyword: Keyword,
+}
+ContinuousModification_GrantAbility :: struct {
+	definition: ^AbilityDefinition,
+}
+ContinuousModification_GrantAllActivatedAbilitiesOf :: struct {
+	source: TargetFilter,
+	cap: Maybe(ActivationRestriction),
+	kind: Maybe(ActivatedAbilityKind),
+}
+ContinuousModification_GrantAllTriggeredAbilitiesOf :: struct {
+	source: TargetFilter,
+}
+ContinuousModification_GrantTrigger :: struct {
+	trigger: ^TriggerDefinition,
+}
+ContinuousModification_GrantReplacement :: struct {
+	replacement: ^ReplacementDefinition,
+}
+ContinuousModification_RemoveAllAbilities :: struct {
+}
+ContinuousModification_AddType :: struct {
+	core_type: CoreType,
+}
+ContinuousModification_RemoveType :: struct {
+	core_type: CoreType,
+}
+ContinuousModification_AddSubtype :: struct {
+	subtype: string,
+}
+ContinuousModification_RemoveSubtype :: struct {
+	subtype: string,
+}
+ContinuousModification_SetCardTypes :: struct {
+	core_types: [dynamic]CoreType,
+}
+ContinuousModification_RemoveAllSubtypes :: struct {
+	set: SubtypeSet,
+}
+ContinuousModification_SetDynamicPower :: struct {
+	value: QuantityExpr,
+}
+ContinuousModification_SetDynamicToughness :: struct {
+	value: QuantityExpr,
+}
+ContinuousModification_SetPowerDynamic :: struct {
+	value: QuantityExpr,
+}
+ContinuousModification_SetToughnessDynamic :: struct {
+	value: QuantityExpr,
+}
+ContinuousModification_AddDynamicPower :: struct {
+	value: QuantityExpr,
+}
+ContinuousModification_AddDynamicToughness :: struct {
+	value: QuantityExpr,
+}
+ContinuousModification_AddDynamicKeyword :: struct {
+	kind: DynamicKeywordKind,
+	value: QuantityExpr,
+}
+ContinuousModification_AddKeywordWithDerivedCost :: struct {
+	kind: CostBearingKeywordKind,
+	derivation: CostDerivation,
+}
+ContinuousModification_AddAllCreatureTypes :: struct {
+}
+ContinuousModification_AddAllBasicLandTypes :: struct {
+}
+ContinuousModification_AddAllLandTypes :: struct {
+}
+ContinuousModification_AddChosenSubtype :: struct {
+	kind: ChosenSubtypeKind,
+}
+ContinuousModification_AddChosenColor :: struct {
+	mode: ColorChangeMode,
+}
+ContinuousModification_RemoveChosenKeyword :: struct {
+}
+ContinuousModification_AddChosenKeyword :: struct {
+}
+ContinuousModification_SetColor :: struct {
+	colors: [dynamic]ManaColor,
+}
+ContinuousModification_AddColor :: struct {
+	color: ManaColor,
+}
+ContinuousModification_AddStaticMode :: struct {
+	mode: StaticMode,
+}
+ContinuousModification_GrantStaticAbility :: struct {
+	definition: ^StaticDefinition,
+}
+ContinuousModification_SwitchPowerToughness :: struct {
+}
+ContinuousModification_AssignDamageFromToughness :: struct {
+}
+ContinuousModification_AssignDamageAsThoughUnblocked :: struct {
+}
+ContinuousModification_AssignNoCombatDamage :: struct {
+}
+ContinuousModification_ChangeController :: struct {
+}
+ContinuousModification_ChangeControllerToDesignation :: struct {
+	designation: Designation,
+}
+ContinuousModification_SetBasicLandType :: struct {
+	land_type: BasicLandType,
+}
+ContinuousModification_SetChosenBasicLandType :: struct {
+}
+ContinuousModification_SetChosenName :: struct {
+}
+ContinuousModification_RetainPrintedTriggerFromSource :: struct {
+	source_trigger_index: int,
+}
+ContinuousModification_RetainPrintedAbilityFromSource :: struct {
+	source_ability_index: int,
+}
+ContinuousModification_RetainAllOtherAbilitiesFromSource :: struct {
+}
+ContinuousModification_AddSupertype :: struct {
+	supertype: Supertype,
+}
+ContinuousModification_RemoveSupertype :: struct {
+	supertype: Supertype,
+}
+ContinuousModification_AddCounterOnEnter :: struct {
+	counter_type: CounterType,
+	count: QuantityExpr,
+	if_type: Maybe(CoreType),
+}
+ContinuousModification_SetStartingLoyalty :: struct {
+	value: u32,
+}
+ContinuousModification_RemoveManaCost :: struct {
+}
+ContinuousModification :: union {
+	ContinuousModification_CopyValues,
+	ContinuousModification_CopyChosen,
+	ContinuousModification_SetName,
+	ContinuousModification_SetTextName,
+	ContinuousModification_SubstituteTextWord,
+	ContinuousModification_AddPower,
+	ContinuousModification_AddToughness,
+	ContinuousModification_SetPower,
+	ContinuousModification_SetToughness,
+	ContinuousModification_AddKeyword,
+	ContinuousModification_RemoveKeyword,
+	ContinuousModification_GrantAbility,
+	ContinuousModification_GrantAllActivatedAbilitiesOf,
+	ContinuousModification_GrantAllTriggeredAbilitiesOf,
+	ContinuousModification_GrantTrigger,
+	ContinuousModification_GrantReplacement,
+	ContinuousModification_RemoveAllAbilities,
+	ContinuousModification_AddType,
+	ContinuousModification_RemoveType,
+	ContinuousModification_AddSubtype,
+	ContinuousModification_RemoveSubtype,
+	ContinuousModification_SetCardTypes,
+	ContinuousModification_RemoveAllSubtypes,
+	ContinuousModification_SetDynamicPower,
+	ContinuousModification_SetDynamicToughness,
+	ContinuousModification_SetPowerDynamic,
+	ContinuousModification_SetToughnessDynamic,
+	ContinuousModification_AddDynamicPower,
+	ContinuousModification_AddDynamicToughness,
+	ContinuousModification_AddDynamicKeyword,
+	ContinuousModification_AddKeywordWithDerivedCost,
+	ContinuousModification_AddAllCreatureTypes,
+	ContinuousModification_AddAllBasicLandTypes,
+	ContinuousModification_AddAllLandTypes,
+	ContinuousModification_AddChosenSubtype,
+	ContinuousModification_AddChosenColor,
+	ContinuousModification_RemoveChosenKeyword,
+	ContinuousModification_AddChosenKeyword,
+	ContinuousModification_SetColor,
+	ContinuousModification_AddColor,
+	ContinuousModification_AddStaticMode,
+	ContinuousModification_GrantStaticAbility,
+	ContinuousModification_SwitchPowerToughness,
+	ContinuousModification_AssignDamageFromToughness,
+	ContinuousModification_AssignDamageAsThoughUnblocked,
+	ContinuousModification_AssignNoCombatDamage,
+	ContinuousModification_ChangeController,
+	ContinuousModification_ChangeControllerToDesignation,
+	ContinuousModification_SetBasicLandType,
+	ContinuousModification_SetChosenBasicLandType,
+	ContinuousModification_SetChosenName,
+	ContinuousModification_RetainPrintedTriggerFromSource,
+	ContinuousModification_RetainPrintedAbilityFromSource,
+	ContinuousModification_RetainAllOtherAbilitiesFromSource,
+	ContinuousModification_AddSupertype,
+	ContinuousModification_RemoveSupertype,
+	ContinuousModification_AddCounterOnEnter,
+	ContinuousModification_SetStartingLoyalty,
+	ContinuousModification_RemoveManaCost,
+}
+
+CopyScale :: struct {
+	counter_type: CounterType,
+	scale_property: ObjectProperty,
+}
+
+CopyChooseScope_Chooser :: struct {
+}
+CopyChooseScope_Neighbor :: struct {
+	direction: SeatDirection,
+}
+CopyChooseScope :: union {
+	CopyChooseScope_Chooser,
+	CopyChooseScope_Neighbor,
+}
+
+CopyChosenSelection :: struct {
+	player: PlayerId,
+	chosen: [dynamic]ObjectId,
+}
+
+CopyTargetSlot :: struct {
+	current: Maybe(TargetRef),
+	legal_alternatives: [dynamic]TargetRef,
+	address: Maybe(RetargetSlotAddress),
+	can_keep: bool,
+	can_decline: bool,
+}
+
+CopyChoiceMode :: enum u16 {
+	Retarget,
+	Announce,
+}
+
+AnnouncerElection :: struct {
+	candidates: [dynamic]PlayerId,
+	choice_index: int,
+	choice_count: int,
+	target_type: Maybe(CoreType),
+}
+
+DamageSlot :: struct {
+	blocker_id: ObjectId,
+	lethal_minimum: u32,
+}
+
+TrampleKind :: enum u16 {
+	Standard,
+	OverPlaneswalkers,
+}
+
+DistributionUnit_Damage :: struct {
+}
+DistributionUnit_EvenSplitDamage :: struct {
+}
+DistributionUnit_Counters :: struct {
+	_0: string,
+}
+DistributionUnit_Life :: struct {
+}
+DistributionUnit :: union {
+	DistributionUnit_Damage,
+	DistributionUnit_EvenSplitDamage,
+	DistributionUnit_Counters,
+	DistributionUnit_Life,
+}
+
+DistributionScope_AnnouncedTargets :: struct {
+}
+DistributionScope_ResolutionCandidates :: struct {
+	pending_effect: ^ResolvedAbility,
+}
+DistributionScope :: union {
+	DistributionScope_AnnouncedTargets,
+	DistributionScope_ResolutionCandidates,
+}
+
+PayableResource_Energy :: struct {
+}
+PayableResource_Mana :: struct {
+	base_cost: ManaCost,
+	composition: ManaAmountComposition,
+}
+PayableResource_Counters :: struct {
+}
+PayableResource_Life :: struct {
+}
+PayableResource_Speed :: struct {
+}
+PayableResource_LoopCollapse :: struct {
+	axis: LoopCollapseAxis,
+}
+PayableResource :: union {
+	PayableResource_Energy,
+	PayableResource_Mana,
+	PayableResource_Counters,
+	PayableResource_Life,
+	PayableResource_Speed,
+	PayableResource_LoopCollapse,
+}
+
+RetargetScope_Single :: struct {
+}
+RetargetScope_All :: struct {
+}
+RetargetScope_ForcedTo :: struct {
+	_0: TargetRef,
+}
+RetargetScope :: union {
+	RetargetScope_Single,
+	RetargetScope_All,
+	RetargetScope_ForcedTo,
+}
+
+RetargetSlotAddress :: struct {
+	path: [dynamic]ChainStep,
+	slot: int,
+}
+
+CombatTaxContext :: enum u16 {
+	Attacking,
+	Blocking,
+}
+
+CombatTaxPending_Attack :: struct {
+	attacks: [dynamic]Tuple2(ObjectIncarnationRef, AttackTarget),
+	bands: [dynamic][dynamic]ObjectIncarnationRef,
+}
+CombatTaxPending_Block :: struct {
+	assignments: [dynamic]Tuple2(ObjectIncarnationRef, ObjectIncarnationRef),
+}
+CombatTaxPending :: union {
+	CombatTaxPending_Attack,
+	CombatTaxPending_Block,
+}
+
+PhyrexianShard :: struct {
+	shard_index: int,
+	color: ManaColor,
+	options: ShardOptions,
+}
+
+SettledDamageGuard :: struct {
+	source: ObjectIncarnationRef,
+	condition: ReplacementCondition,
+	reading: DamageGuardReading,
+}
+
+LazyBoxedVec_SettledDamageGuard :: distinct ^[dynamic]SettledDamageGuard
+
+ParkedDamageBatch :: struct {
+	deferred: [dynamic]DeferredDamageChoice,
+	held: [dynamic]HeldBatchRider,
+	split: [dynamic]SplitDamagePortion,
+	outcomes: Maybe(EventOutcomes),
+	prevention_tally: [dynamic]PreventedDamageEntry,
+}
+
+DiscardCause :: enum u16 {
+	Effect,
+	Cost,
+}
+
+ChosenGroupId :: distinct u32
+
+ForwardedResultContext :: struct {
+	targets: [dynamic]TargetRef,
+	object_incarnations: [dynamic]ObjectIncarnationRef,
+	phase_population: bool,
+}
+
+PendingForwardedZoneResult :: struct {
+	producer: ObjectId,
+	selected: Maybe([dynamic]ObjectIncarnationRef),
+	group: Maybe(LogicalZoneChangeGroupId),
+}
+
+DurationEvent :: enum u16 {
+	SourceLeftBattlefield,
+	OpponentBecameMonarch,
+}
+
+DiscardedCardResult :: struct {
+	object_id: ObjectId,
+	lki: LKISnapshot,
+	final_zone: Zone,
+}
+
+EffectResolutionResult :: struct {
+	cause: ThisWayCause,
+	count: int,
+}
+
+CastingVariant_Normal :: struct {
+}
+CastingVariant_Adventure :: struct {
+}
+CastingVariant_Omen :: struct {
+}
+CastingVariant_Warp :: struct {
+}
+CastingVariant_Escape :: struct {
+}
+CastingVariant_Retrace :: struct {
+}
+CastingVariant_Harmonize :: struct {
+}
+CastingVariant_Mayhem :: struct {
+}
+CastingVariant_Flashback :: struct {
+}
+CastingVariant_Aftermath :: struct {
+}
+CastingVariant_Disturb :: struct {
+}
+CastingVariant_GraveyardPermission :: struct {
+	source: ObjectId,
+	frequency: CastFrequency,
+	slot_type: Maybe(CoreType),
+	graveyard_destination_replacement: Maybe(Zone),
+}
+CastingVariant_HandPermission :: struct {
+	source: ObjectId,
+	frequency: CastFrequency,
+}
+CastingVariant_ExilePermission :: struct {
+	source: ObjectId,
+	frequency: CastFrequency,
+}
+CastingVariant_Sneak :: struct {
+	returned_creature: ObjectId,
+	placement: Maybe(SneakPlacement),
+}
+CastingVariant_WebSlinging :: struct {
+	returned_creature: ObjectId,
+}
+CastingVariant_Miracle :: struct {
+}
+CastingVariant_Madness :: struct {
+}
+CastingVariant_Evoke :: struct {
+}
+CastingVariant_Emerge :: struct {
+}
+CastingVariant_Dash :: struct {
+}
+CastingVariant_Blitz :: struct {
+}
+CastingVariant_Spectacle :: struct {
+}
+CastingVariant_Suspend :: struct {
+}
+CastingVariant_Plot :: struct {
+}
+CastingVariant_Foretell :: struct {
+}
+CastingVariant_Overload :: struct {
+}
+CastingVariant_Bestow :: struct {
+}
+CastingVariant_Awaken :: struct {
+}
+CastingVariant_Cleave :: struct {
+}
+CastingVariant_MoreThanMeetsTheEye :: struct {
+}
+CastingVariant_Impending :: struct {
+}
+CastingVariant_Prototype :: struct {
+}
+CastingVariant_Mutate :: struct {
+}
+CastingVariant_Freerunning :: struct {
+}
+CastingVariant_Prowl :: struct {
+}
+CastingVariant_JumpStart :: struct {
+}
+CastingVariant_Fuse :: struct {
+}
+CastingVariant_Surge :: struct {
+}
+CastingVariant_FaceDown :: struct {
+}
+CastingVariant :: union {
+	CastingVariant_Normal,
+	CastingVariant_Adventure,
+	CastingVariant_Omen,
+	CastingVariant_Warp,
+	CastingVariant_Escape,
+	CastingVariant_Retrace,
+	CastingVariant_Harmonize,
+	CastingVariant_Mayhem,
+	CastingVariant_Flashback,
+	CastingVariant_Aftermath,
+	CastingVariant_Disturb,
+	CastingVariant_GraveyardPermission,
+	CastingVariant_HandPermission,
+	CastingVariant_ExilePermission,
+	CastingVariant_Sneak,
+	CastingVariant_WebSlinging,
+	CastingVariant_Miracle,
+	CastingVariant_Madness,
+	CastingVariant_Evoke,
+	CastingVariant_Emerge,
+	CastingVariant_Dash,
+	CastingVariant_Blitz,
+	CastingVariant_Spectacle,
+	CastingVariant_Suspend,
+	CastingVariant_Plot,
+	CastingVariant_Foretell,
+	CastingVariant_Overload,
+	CastingVariant_Bestow,
+	CastingVariant_Awaken,
+	CastingVariant_Cleave,
+	CastingVariant_MoreThanMeetsTheEye,
+	CastingVariant_Impending,
+	CastingVariant_Prototype,
+	CastingVariant_Mutate,
+	CastingVariant_Freerunning,
+	CastingVariant_Prowl,
+	CastingVariant_JumpStart,
+	CastingVariant_Fuse,
+	CastingVariant_Surge,
+	CastingVariant_FaceDown,
+}
+
+AdditionalCostInstancePayment :: struct {
+	origin: AdditionalCostOrigin,
+	origin_ordinal: u32,
+	count: u32,
+	grant_source: Maybe(ObjectId),
+}
+
+KickerVariant :: enum u16 {
+	First,
+	Second,
+}
+
+GuessOutcome :: enum u16 {
+	Correct,
+	Incorrect,
+}
+
+ChainStep_SubAbility :: struct {
+}
+ChainStep_ElseAbility :: struct {
+}
+ChainStep_CoinFlipBranch :: struct {
+	result: CoinFlipResult,
+}
+ChainStep :: union {
+	ChainStep_SubAbility,
+	ChainStep_ElseAbility,
+	ChainStep_CoinFlipBranch,
+}
+
+LazyBoxedVec_TargetFilter :: distinct ^[dynamic]TargetFilter
+
+AbilityTag :: enum u16 {
+	Boast,
+	Evolve,
+	Exhaust,
+	Outlast,
+	Cycling,
+	Backup,
+	PowerUp,
+	Equip,
+	Augment,
+}
+
+AttachTargetBindings :: struct {
+	inner: ^AttachTargetBindingsInner,
+}
+
+AttachTargetBindingsInner :: struct {
+	attachment_targets: [dynamic]ObjectIncarnationRef,
+	host_target: Maybe(ObjectIncarnationRef),
+	attachment_candidates: [dynamic]ObjectIncarnationRef,
+}
+
+TargetDamageSourceBinding :: enum u16 {
+	Bound,
+	Illegal,
+}
+
+AbilityProvenance_Characteristic :: struct {
+	_0: CharacteristicSetRef,
+}
+AbilityProvenance_Granted :: struct {
+}
+AbilityProvenance :: union {
+	AbilityProvenance_Characteristic,
+	AbilityProvenance_Granted,
+}
+
+ObjectPlayerAssignment :: struct {
+	object: ObjectId,
+	player: PlayerId,
+}
+
+PeriodItem :: struct {
+	seat: PlayerId,
+	action: GameAction,
+	play: Maybe(Tuple2(int, PromptClass)),
+	mandatory_answer: bool,
+	next_object_id: u64,
+	minted_since: u64,
+	cost_move: Maybe(CostMove),
+	point: Maybe(ChoicePoint),
+}
+
+CoveredGrowth :: enum u16 {
+	Mintable,
+	PerformedOnly,
+}
+
+PeriodReach :: enum u16 {
+	InStep,
+	Combat,
+	ExtraTurn,
+}
+
+PinnedDecision_Order :: struct {
+	slot: DecisionSlot,
+	pos: u8,
+}
+PinnedDecision_Targets :: struct {
+	slot: DecisionSlot,
+	targets: [dynamic]TargetPin,
+}
+PinnedDecision_Mode :: struct {
+	slot: DecisionSlot,
+	indices: [dynamic]int,
+}
+PinnedDecision_MayChoice :: struct {
+	slot: DecisionSlot,
+	take: MayChoiceOption,
+}
+PinnedDecision_UnlessBreak :: struct {
+	slot: DecisionSlot,
+	pay: UnlessPaymentOption,
+}
+PinnedDecision_ConvokeTaps :: struct {
+	slot: DecisionSlot,
+}
+PinnedDecision_ManaColor :: struct {
+	slot: DecisionSlot,
+	color: ManaColor,
+}
+PinnedDecision :: union {
+	PinnedDecision_Order,
+	PinnedDecision_Targets,
+	PinnedDecision_Mode,
+	PinnedDecision_MayChoice,
+	PinnedDecision_UnlessBreak,
+	PinnedDecision_ConvokeTaps,
+	PinnedDecision_ManaColor,
+}
+
+CountedBy_Threshold :: struct {
+}
+CountedBy_Replay :: struct {
+	departures: [dynamic]PredictedDeparture,
+}
+CountedBy :: union {
+	CountedBy_Threshold,
+	CountedBy_Replay,
+}
+
+PeriodPerformance :: enum u16 {
+	ManaAbilitiesOnly,
+	UsesTheStack,
+}
+
+PerformedReach :: struct {
+	decisions: [dynamic]PinnedDecision,
+	reach: u32,
+	ending: Maybe(Tuple2(WinKind, PlayerId)),
+	departures: [dynamic]PredictedDeparture,
+}
+
+Outcomes :: enum u16 {
+	Refused,
+	Admitted,
+}
+
+AnswerReceipts :: struct {
+	revision: u64,
+	declared: [dynamic]PerformedReach,
+	declared_spent: u32,
+	shortened: [dynamic]ShortenRun,
+}
+
+ShortenRun :: struct {
+	seat: PlayerId,
+	refused: [dynamic]bool,
+	next: RunNext,
+}
+
+LibrarySearchCardView :: struct {
+	owner: PlayerId,
+	zone: Zone,
+	identity: ObjectIncarnationRef,
+	card_id: CardId,
+	printing: DisplayOnly_ptr_CardPrinting,
+	current_face: LibrarySearchCardFaceView,
+	front_face: LibrarySearchCardFaceView,
+	back_face: Maybe(LibrarySearchCardFaceView),
+}
+
+ActivatedAbilityKind :: enum u16 {
+	Normal,
+	Loyalty,
+	Mana,
+}
+
+ActivationTriggerState_Pending :: struct {
+}
+ActivationTriggerState_CollectedAtActivation :: struct {
+	observers: ActivationObservers,
+}
+ActivationTriggerState :: union {
+	ActivationTriggerState_Pending,
+	ActivationTriggerState_CollectedAtActivation,
+}
+
+BoundActivationCost_Unknown :: struct {
+}
+BoundActivationCost_Costless :: struct {
+}
+BoundActivationCost_Cost :: struct {
+	_0: ^AbilityCost,
+}
+BoundActivationCost :: union {
+	BoundActivationCost_Unknown,
+	BoundActivationCost_Costless,
+	BoundActivationCost_Cost,
+}
+
+LifeTotalReading :: distinct Maybe(i32)
+
+ManaTapState :: enum u16 {
+	NotFromTap,
+	FromTap,
+	FromTapTriggersResolved,
+}
+
+ManaAbilityTriggerState :: enum u16 {
+	Pending,
+	InlineResolved,
+}
+
+ExertOrigin :: enum u16 {
+	AttackCost,
+	AbilityCost,
+}
+
+CostPaidObjectSnapshot :: struct {
+	object_id: ObjectId,
+	lki: LKISnapshot,
+	incarnation: u64,
+}
+
+LossReason :: enum u16 {
+	LifeTotal,
+	DrewFromEmptyLibrary,
+	Poison,
+	CommanderDamage,
+	Conceded,
+	EffectStatedLoss,
+	OpponentWon,
+}
+
+TriggeredAbilityOrigin :: enum u16 {
+	SourceAbility,
+	Delayed,
+}
+
+UnTell_Physical :: struct {
+	_0: PhysicalTell,
+}
+UnTell_Said :: struct {
+	text: string,
+}
+UnTell :: union {
+	UnTell_Physical,
+	UnTell_Said,
+}
+
+ObjectIdentityBinding :: struct {
+	reference: ObjectIncarnationRef,
+	expected_zone: Zone,
+}
+
+InstructionLead :: distinct int
+
+ControlChangeEvidence_Unrecorded :: struct {
+}
+ControlChangeEvidence_Observed :: struct {
+	_0: u64,
+}
+ControlChangeEvidence :: union {
+	ControlChangeEvidence_Unrecorded,
+	ControlChangeEvidence_Observed,
+}
+
+Targeter_Spell :: struct {
+	_0: SpellAnnouncement,
+}
+Targeter_Ability :: struct {
+	_0: StackAbilityKind,
+}
+Targeter :: union {
+	Targeter_Spell,
+	Targeter_Ability,
+}
+
+ContestRound :: struct {
+	rolls: [dynamic]Tuple2(PlayerId, u8),
+}
+
+PlanarDieFace :: enum u16 {
+	Planeswalk,
+	Chaos,
+	Blank,
+}
+
+StickerKind :: enum u16 {
+	Name,
+	Ability,
+	PowerToughness,
+	Art,
+}
+
+PlayerCounterKind :: enum u16 {
+	Poison,
+	Experience,
+	Rad,
+	Ticket,
+}
+
+ContestKind :: enum u16 {
+	Staring,
+	BreathHolding,
+}
+
+ContestResult_Outcome :: struct {
+	_0: ContestOutcome,
+}
+ContestResult_Cancelled :: struct {
+	_0: ContestCancelReason,
+}
+ContestResult :: union {
+	ContestResult_Outcome,
+	ContestResult_Cancelled,
+}
+
+ClashResult :: enum u16 {
+	Won,
+	Lost,
+	Tied,
+}
+
+ReplayHeader :: struct {
+	format_config: FormatConfig,
+	match_config: MatchConfig,
+	player_count: u8,
+	first_player: Maybe(u8),
+	seed: u64,
+	deck_data: Maybe(DeckList),
+}
+
+RecordedAction :: struct {
+	seq: u32,
+	actor: PlayerId,
+	action: GameAction,
+	kind: RecordedActionKind,
+}
+
+RecordedResolveAll :: struct {
+	after_action_count: u32,
+	requester: PlayerId,
 }
 
 CardType :: struct {
@@ -831,62 +9464,6 @@ Keyword :: union {
 	Keyword_Unknown,
 }
 
-AbilityDefinition :: struct {
-	kind: AbilityKind,
-	effect: ^Effect,
-	declares_chosen_group: Maybe(ChosenGroupId),
-	reads_chosen_group: Maybe(ChosenGroupId),
-	declares_return_result: Maybe(ReturnResultId),
-	reads_return_result: Maybe(Tuple2(ReturnResultId, ReturnResultReadSpec)),
-	cost: Maybe(AbilityCost),
-	sub_ability: ^AbilityDefinition,
-	else_ability: ^AbilityDefinition,
-	duration: Maybe(Duration),
-	description: Maybe(string),
-	target_prompt: Maybe(string),
-	activation_restrictions: [dynamic]ActivationRestriction,
-	activation_mana_payment_restriction: Maybe(ActivationManaPaymentRestriction),
-	activator_filter: Maybe(PlayerFilter),
-	activation_zone: Maybe(Zone),
-	ability_tag: Maybe(AbilityTag),
-	condition: Maybe(AbilityCondition),
-	optional_targeting: bool,
-	optional: bool,
-	optional_player: Maybe(TargetFilter),
-	optional_for: Maybe(OpponentMayScope),
-	multi_target: Maybe(MultiTargetSpec),
-	target_constraints: [dynamic]TargetSelectionConstraint,
-	target_choice_timing: TargetChoiceTiming,
-	distribute: Maybe(DistributionUnit),
-	unless_pay: Maybe(UnlessPayModifier),
-	modal: Maybe(ModalChoice),
-	mode_abilities: [dynamic]AbilityDefinition,
-	repeat_for: Maybe(QuantityExpr),
-	repeat_timing: RepeatForTiming,
-	min_x_value: u32,
-	announced_x: Maybe(QuantityExpr),
-	cant_be_copied: bool,
-	illegal_targets_disposition: IllegalTargetsDisposition,
-	cost_reduction: Maybe(CostReduction),
-	forward_result: bool,
-	player_scope: Maybe(PlayerFilter),
-	starting_with: Maybe(ControllerRef),
-	target_selection_mode: TargetSelectionMode,
-	target_chooser: Maybe(TargetFilter),
-	repeat_until: Maybe(RepeatContinuation),
-	sub_link: SubAbilityLink,
-	target_reads: TargetReadOrigin,
-	entry_onset: ContinuousEffectOnset,
-	iteration_kind_binding: Maybe(IterationKindBinding),
-	sibling_condition: SiblingCondition,
-	instruction_join: InstructionJoin,
-	unlowered_guard: Maybe(UnloweredGuard),
-	linked_exile_return: Maybe(LinkedExileReturn),
-	face_down_in_exile: ExileConcealment,
-	granting_object: Maybe(ObjectIncarnationRef),
-	grant_chain: [dynamic]ObjectIncarnationRef,
-}
-
 TriggerDefinition :: struct {
 	mode: TriggerMode,
 	execute: ^AbilityDefinition,
@@ -953,98 +9530,11 @@ StaticDefinition :: struct {
 	bound_actor: Maybe(ControllerRef),
 }
 
-ReplacementDefinition :: struct {
-	event: ReplacementEvent,
-	execute: ^AbilityDefinition,
-	runtime_execute: Maybe(ReplacementContinuationId),
-	mode: ReplacementMode,
-	choice_authority: ReplacementChoiceAuthority,
-	valid_card: Maybe(TargetFilter),
-	triggering_spell: Maybe(ObjectIncarnationRef),
-	description: Maybe(string),
-	condition: Maybe(ReplacementCondition),
-	destination_zone: Maybe(Zone),
-	active_zones: [dynamic]Zone,
-	damage_modification: Maybe(DamageModification),
-	damage_source_filter: Maybe(TargetFilter),
-	damage_target_filter: Maybe(DamageTargetFilter),
-	target_recipient_incarnation: Maybe(u64),
-	combat_scope: Maybe(CombatDamageScope),
-	draw_scope: Maybe(DrawReplacementScope),
-	die_ignore_rule: Maybe(DieRollIgnoreRule),
-	planeswalk_scope: Maybe(PlaneswalkReplacementScope),
-	shield_kind: ShieldKind,
-	quantity_modification: Maybe(QuantityModification),
-	token_owner_scope: Maybe(ControllerRef),
-	token_owner_redirect: Maybe(ControllerRef),
-	valid_player: Maybe(ReplacementPlayerScope),
-	consume_on_apply: bool,
-	is_consumed: bool,
-	expiry: Maybe(RestrictionExpiry),
-	redirect_target: Maybe(TargetFilter),
-	mana_modification: Maybe(ManaModification),
-	mana_replacement_scope: ManaReplacementScope,
-	additional_token_spec: ^TokenSpec,
-	ensure_token_specs: Maybe([dynamic]TokenSpec),
-	counter_match: Maybe(CounterMatch),
-	enters_under: Maybe(ControllerRef),
-	source_controller: Maybe(PlayerId),
-	source_object: Maybe(ObjectId),
-	origin: ReplacementOrigin,
-	counter_replacement_subject: CounterReplacementSubject,
-	granting_object: Maybe(ObjectIncarnationRef),
-	entry_payment_max: Maybe(QuantityExpr),
-}
-
 CleaveVariant :: struct {
 	abilities: [dynamic]AbilityDefinition,
 	triggers: [dynamic]TriggerDefinition,
 	static_abilities: [dynamic]StaticDefinition,
 	replacements: [dynamic]ReplacementDefinition,
-}
-
-ManaColor :: enum u16 {
-	White,
-	Blue,
-	Black,
-	Red,
-	Green,
-}
-
-ModalChoice :: struct {
-	min_choices: int,
-	max_choices: int,
-	mode_count: int,
-	mode_descriptions: [dynamic]string,
-	allow_repeat_modes: bool,
-	constraints: [dynamic]ModalSelectionConstraint,
-	mode_costs: [dynamic]ManaCost,
-	mode_pawprints: [dynamic]u8,
-	entwine_cost: ^AbilityCost,
-	chooser: PlayerFilter,
-	selection: TargetSelectionMode,
-	dynamic_max_choices: Maybe(QuantityExpr),
-}
-
-AdditionalCost_Optional :: struct {
-	cost: AbilityCost,
-	repeatability: AdditionalCostRepeatability,
-}
-AdditionalCost_Kicker :: struct {
-	costs: [dynamic]AbilityCost,
-	repeatability: AdditionalCostRepeatability,
-}
-AdditionalCost_Choice :: struct {
-	_0: [dynamic]AbilityCost,
-}
-AdditionalCost_Required :: struct {
-	_0: AbilityCost,
-}
-AdditionalCost :: union {
-	AdditionalCost_Optional,
-	AdditionalCost_Kicker,
-	AdditionalCost_Choice,
-	AdditionalCost_Required,
 }
 
 CastingRestriction_AsSorcery :: struct {
@@ -1219,51 +9709,2240 @@ MisparseClass :: enum u16 {
 	Other,
 }
 
-ManaCostShard :: enum u16 {
-	White,
-	Blue,
-	Black,
-	Red,
-	Green,
-	Colorless,
-	Snow,
-	X,
-	TwoOrMoreColorSource,
-	WhiteBlue,
-	WhiteBlack,
-	BlueBlack,
-	BlueRed,
-	BlackRed,
-	BlackGreen,
-	RedWhite,
-	RedGreen,
-	GreenWhite,
-	GreenBlue,
-	TwoWhite,
-	TwoBlue,
-	TwoBlack,
-	TwoRed,
-	TwoGreen,
-	PhyrexianWhite,
-	PhyrexianBlue,
-	PhyrexianBlack,
-	PhyrexianRed,
-	PhyrexianGreen,
-	PhyrexianWhiteBlue,
-	PhyrexianWhiteBlack,
-	PhyrexianBlueBlack,
-	PhyrexianBlueRed,
-	PhyrexianBlackRed,
-	PhyrexianBlackGreen,
-	PhyrexianRedWhite,
-	PhyrexianRedGreen,
-	PhyrexianGreenWhite,
-	PhyrexianGreenBlue,
-	ColorlessWhite,
-	ColorlessBlue,
-	ColorlessBlack,
-	ColorlessRed,
-	ColorlessGreen,
+ManaPool :: struct {
+	mana: [dynamic]ManaUnit,
+}
+
+BendingType :: enum u16 {
+	Fire,
+	Air,
+	Earth,
+	Water,
+}
+
+PlayerStatus :: enum u16 {
+	Active,
+	PhasedOut,
+}
+
+CompanionInfo :: struct {
+	card: DeckEntry,
+	used: bool,
+	printing: DisplayOnly_ptr_CardPrinting,
+}
+
+ChosenAttribute_Color :: struct {
+	_0: ManaColor,
+}
+ChosenAttribute_CreatureType :: struct {
+	_0: string,
+}
+ChosenAttribute_BasicLandType :: struct {
+	_0: BasicLandType,
+}
+ChosenAttribute_CardType :: struct {
+	_0: CoreType,
+}
+ChosenAttribute_OddOrEven :: struct {
+	_0: Parity,
+}
+ChosenAttribute_CardName :: struct {
+	_0: string,
+}
+ChosenAttribute_Number :: struct {
+	_0: u32,
+}
+ChosenAttribute_RevealedNumber :: struct {
+	_0: u32,
+}
+ChosenAttribute_Player :: struct {
+	_0: PlayerId,
+}
+ChosenAttribute_TwoColors :: struct {
+	_0: [2]ManaColor,
+}
+ChosenAttribute_TributeOutcome :: struct {
+	_0: TributeOutcome,
+}
+ChosenAttribute_Keyword :: struct {
+	_0: Keyword,
+}
+ChosenAttribute_Label :: struct {
+	_0: string,
+}
+ChosenAttribute_Card :: struct {
+	_0: ObjectIncarnationRef,
+}
+ChosenAttribute_Counter :: struct {
+	_0: CounterType,
+}
+ChosenAttribute_Direction :: struct {
+	_0: SeatDirection,
+}
+ChosenAttribute_CopiableSnapshot :: struct {
+	_0: ^LatchedCopiableSnapshot,
+}
+ChosenAttribute_NotedManaSpent :: struct {
+	_0: [dynamic]ManaType,
+}
+ChosenAttribute :: union {
+	ChosenAttribute_Color,
+	ChosenAttribute_CreatureType,
+	ChosenAttribute_BasicLandType,
+	ChosenAttribute_CardType,
+	ChosenAttribute_OddOrEven,
+	ChosenAttribute_CardName,
+	ChosenAttribute_Number,
+	ChosenAttribute_RevealedNumber,
+	ChosenAttribute_Player,
+	ChosenAttribute_TwoColors,
+	ChosenAttribute_TributeOutcome,
+	ChosenAttribute_Keyword,
+	ChosenAttribute_Label,
+	ChosenAttribute_Card,
+	ChosenAttribute_Counter,
+	ChosenAttribute_Direction,
+	ChosenAttribute_CopiableSnapshot,
+	ChosenAttribute_NotedManaSpent,
+}
+
+GameObject :: struct {
+	id: ObjectId,
+	card_id: CardId,
+	owner: PlayerId,
+	base_controller: Maybe(PlayerId),
+	controller: PlayerId,
+	zone: Zone,
+	display_visible_to_viewer: bool,
+	tapped: bool,
+	face_down: bool,
+	face_down_cause: Maybe(FaceDownCause),
+	flipped: bool,
+	transformed: bool,
+	transformation_count: u32,
+	modal_back_face: bool,
+	cast_face_committed: bool,
+	damage_marked: u32,
+	dealt_deathtouch_damage: bool,
+	dealt_damage_kinds: DealtDamageKinds,
+	attached_to: Maybe(AttachTarget),
+	attachments: [dynamic]ObjectId,
+	protection_start_snapshots: [dynamic]Tuple2(ProtectionStartKey, ProtectionStartSnapshot),
+	legacy_protection_start_exempt_attachments: [dynamic]Tuple2(Tuple3(int, int, ObjectId), ProtectionStartSnapshot),
+	protection_start_grants: [dynamic]ProtectionStartGrant,
+	protection_provenance: [dynamic]ProtectionProvenance,
+	paired_with: Maybe(ObjectId),
+	pair_controller: Maybe(PlayerId),
+	counters: [dynamic]Tuple2(CounterType, u32),
+	intensity: u32,
+	perpetual_mods: [dynamic]PerpetualModification,
+	name: string,
+	power: Maybe(i32),
+	toughness: Maybe(i32),
+	layer_base_power: Maybe(i32),
+	layer_base_toughness: Maybe(i32),
+	loyalty: Maybe(u32),
+	printed_loyalty: Maybe(PrintedLoyalty),
+	defense: Maybe(u32),
+	token_rules_text: Maybe(string),
+	card_types: CardType,
+	attraction_lights: [dynamic]u8,
+	in_attraction_deck: bool,
+	in_contraption_deck: bool,
+	is_horde_deck_token: bool,
+	horde_library_rarity: Maybe(Rarity),
+	contraption_sprocket: Maybe(u8),
+	stickers: [dynamic]AppliedSticker,
+	mana_cost: ManaCost,
+	keywords: [dynamic]Keyword,
+	abilities: ^[dynamic]AbilityDefinition,
+	trigger_definitions: Definitions_TriggerEntry,
+	replacement_definitions: Definitions_ReplacementDefinition,
+	static_definitions: Definitions_StaticDefinition,
+	cleave_variant: Maybe(CleaveVariant),
+	color: [dynamic]ManaColor,
+	printed_ref: Maybe(PrintedCardRef),
+	printing: DisplayOnly_ptr_CardPrinting,
+	token_image_ref: Maybe(TokenImageRef),
+	token_art: Maybe(TokenArtDescriptor),
+	source_related_token_ids: [dynamic]string,
+	spellbook: [dynamic]string,
+	parse_warnings: [dynamic]OracleDiagnostic,
+	back_face: Maybe(BackFaceData),
+	double_faced_token_alternative: Maybe(BackFaceData),
+	specialize_faces: Maybe(map[ManaColor]BackFaceData),
+	specialized_color: Maybe(ManaColor),
+	base_power: Maybe(i32),
+	base_toughness: Maybe(i32),
+	base_name: string,
+	base_loyalty: Maybe(u32),
+	base_printed_loyalty: Maybe(PrintedLoyalty),
+	base_defense: Maybe(u32),
+	base_card_types: CardType,
+	base_mana_cost: ManaCost,
+	base_keywords: [dynamic]Keyword,
+	base_abilities: ^[dynamic]AbilityDefinition,
+	base_trigger_definitions: ^[dynamic]TriggerDefinition,
+	base_trigger_printed_origins: [dynamic]Maybe(TriggerPrintedOrigin),
+	trigger_base_set_instance: TriggerBaseSetInstanceRef,
+	next_trigger_base_set_instance: u64,
+	trigger_occurrence_state: TriggerOccurrenceState,
+	base_replacement_definitions: ^[dynamic]ReplacementDefinition,
+	base_static_definitions: ^[dynamic]StaticDefinition,
+	base_color: [dynamic]ManaColor,
+	base_printed_ref: Maybe(PrintedCardRef),
+	base_printing: DisplayOnly_ptr_CardPrinting,
+	base_characteristics_initialized: bool,
+	timestamp: u64,
+	incarnation: u64,
+	entered_battlefield_turn: Maybe(u32),
+	discarded_turn: Maybe(u32),
+	summoning_sick: bool,
+	echo_due: bool,
+	cast_variant_paid: Maybe(Tuple2(CastVariantPaid, u32)),
+	cast_cost_paid_object: Maybe(CostPaidObjectSnapshot),
+	entered_via_ability_source: Maybe(ObjectId),
+	cast_timing_permission: Maybe(Tuple2(CastTimingPermission, u32)),
+	cost_x_paid: Maybe(u32),
+	fused_split_spell: bool,
+	kickers_paid: [dynamic]KickerVariant,
+	gift_recipient: Maybe(PlayerId),
+	additional_cost_payment_count: u32,
+	additional_cost_payments: [dynamic]AdditionalCostInstancePayment,
+	convoked_creatures: [dynamic]ObjectId,
+	chosen_modes: [dynamic]int,
+	bestow_form: Maybe(BestowFormState),
+	prototype_form: Maybe(PrototypeFormState),
+	mutate_form: Maybe(MutateFormState),
+	merged_components: [dynamic]ObjectId,
+	merge_kind: Maybe(MergeKind),
+	merge_layer_effect_id: Maybe(u64),
+	pre_merge_is_token: Maybe(bool),
+	component_face_down: Maybe(bool),
+	split_from_merge_survivor: Maybe(ObjectIncarnationRef),
+	cleave_form: Maybe(CleaveFormState),
+	unimplemented_mechanics: [dynamic]string,
+	has_summoning_sickness: bool,
+	devotion: Maybe(u32),
+	has_mana_ability: bool,
+	mana_ability_index: Maybe(int),
+	available_mana_pips: [dynamic]ManaPip,
+	blocked_abilities: [dynamic]AbilityBlockEntry,
+	loyalty_activations_this_turn: u32,
+	extra_loyalty_activations_this_turn: u32,
+	is_commander: bool,
+	signature_spell: Maybe(SignatureSpellState),
+	commander_tax: Maybe(u32),
+	is_renowned: bool,
+	is_emblem: bool,
+	is_conspiracy: bool,
+	agenda_name_count: u8,
+	emblem_source: Maybe(EmblemSource),
+	linked_ability_source: Maybe(LinkedAbilitySource),
+	is_token: bool,
+	is_copy: bool,
+	created_outside_game: bool,
+	display_source: DisplaySource,
+	modal: Maybe(ModalChoice),
+	additional_cost: Maybe(AdditionalCost),
+	strive_cost: Maybe(ManaCost),
+	casting_restrictions: [dynamic]CastingRestriction,
+	casting_options: [dynamic]SpellCastingOption,
+	casting_permissions: [dynamic]CastingPermission,
+	foretold: bool,
+	exiled_by: Maybe(PlayerId),
+	chosen_attributes: [dynamic]ChosenAttribute,
+	secret_chosen_names: [dynamic]string,
+	goaded_by: [dynamic]PlayerId,
+	detained_by: [dynamic]PlayerId,
+	is_suspected: bool,
+	monstrous: bool,
+	harnessed: bool,
+	prepared: Maybe(PreparedState),
+	prepared_copy_source: Maybe(ObjectId),
+	is_saddled: bool,
+	saddled_by: [dynamic]ObjectId,
+	assigns_damage_from_toughness: bool,
+	assigns_damage_as_though_unblocked: bool,
+	assigns_no_combat_damage: bool,
+	case_state: Maybe(CaseState),
+	room_unlocks: Maybe(RoomUnlockState),
+	copied_room_halves: Maybe(RoomCopiableHalves),
+	copied_prepare_face: ^BackFaceData,
+	layer1_name_origin: Maybe(CopiedNameOrigin),
+	granted_abilities_from: Maybe(int),
+	layer1_copy_effect: Maybe(CopyEffectInstanceRef),
+	base_name_origin: Maybe(CopiedNameOrigin),
+	class_level: Maybe(u8),
+	cast_from_zone: Maybe(Zone),
+	copied_from_zone: Maybe(CastOrigin),
+	cast_occurrence: Maybe(CastOccurrence),
+	cast_permission_enter_tapped: EtbTapState,
+	spell_announcement: Maybe(SpellAnnouncement),
+	cast_controller: Maybe(PlayerId),
+	cast_spell_keywords: [dynamic]Keyword,
+	cast_casualty_grant_sources: [dynamic]ObjectId,
+	exile_from_stack_linked_source: Maybe(ObjectIncarnationRef),
+	exile_from_stack_rider: Maybe(ExiledSpellRider),
+	played_from_zone: Maybe(Zone),
+	mana_spent_to_cast: bool,
+	colors_spent_to_cast: ColoredManaCount,
+	mana_spent_to_cast_amount: u32,
+	phyrexian_life_paid: u32,
+	mana_spent_source_snapshots: [dynamic]ManaSpentSourceSnapshot,
+	phase_status: PhaseStatus,
+	mana_spent_to_activate: [dynamic]ManaType,
+}
+
+ResolvedCommandOrdinal :: distinct u64
+
+SettlementNodeOrdinal :: distinct u64
+
+CachedBoard :: struct {
+	board: ^GameState,
+	original_objects: ObjectMap,
+	projected_objects: ObjectMap,
+}
+
+GraveyardPermissionId :: struct {
+	source: ObjectId,
+	grant: PermissionGrant,
+}
+
+CastExtraCost :: struct {
+	cost: AbilityCost,
+	mode: CastCostMode,
+}
+
+PermissionCastLimit :: enum u16 {
+	Unlimited,
+	Single,
+}
+
+ManaSpendPermission :: enum u16 {
+	AnyColor,
+	AnyTypeOrColor,
+}
+
+PendingEntersModifications :: struct {
+	modifications: [dynamic]ContinuousModification,
+	cast_filter: Maybe(TargetFilter),
+}
+
+StackEntryKind_Spell :: struct {
+	card_id: CardId,
+	ability: ^ResolvedAbility,
+	casting_variant: CastingVariant,
+	actual_mana_spent: u32,
+}
+StackEntryKind_ActivatedAbility :: struct {
+	source_id: ObjectId,
+	ability: ^ResolvedAbility,
+}
+StackEntryKind_TriggeredAbility :: struct {
+	source_id: ObjectId,
+	ability: ^ResolvedAbility,
+	condition: Maybe(TriggerCondition),
+	trigger_event: Maybe(GameEvent),
+	description: Maybe(string),
+	source_name: string,
+	subject_match_count: Maybe(u32),
+	die_result: Maybe(i32),
+	provenance: Maybe(SyntheticTriggerProvenance),
+}
+StackEntryKind_KeywordAction :: struct {
+	action: KeywordAction,
+}
+StackEntryKind_CombatDamage :: struct {
+	sub_step: CombatDamageSubStep,
+	assignments: [dynamic]AssignedCombatDamage,
+}
+StackEntryKind :: union {
+	StackEntryKind_Spell,
+	StackEntryKind_ActivatedAbility,
+	StackEntryKind_TriggeredAbility,
+	StackEntryKind_KeywordAction,
+	StackEntryKind_CombatDamage,
+}
+
+AttackerInfo :: struct {
+	object_id: ObjectId,
+	defending_player: PlayerId,
+	attack_target: AttackTarget,
+	blocked: bool,
+	band_id: Maybe(u32),
+}
+
+AttackedPermanentKinds :: enum u16 {
+	Planeswalker,
+	Battle,
+	PlaneswalkerBattle,
+	Neither,
+}
+
+DamageAssignment :: struct {
+	target: DamageTarget,
+	amount: u32,
+}
+
+StackResolutionBudget_Unlimited :: struct {
+}
+StackResolutionBudget_Limited :: struct {
+	_0: u32,
+}
+StackResolutionBudget :: union {
+	StackResolutionBudget_Unlimited,
+	StackResolutionBudget_Limited,
+}
+
+ResolveAllPrioritySnapshot :: struct {
+	waiting_player: PlayerId,
+	priority_player: PlayerId,
+	priority_pass_count: u8,
+	priority_passes: [dynamic]PlayerId,
+}
+
+ResolveAllConsentParticipant :: struct {
+	representative: PlayerId,
+	authorized_submitter: PlayerId,
+	granted: bool,
+}
+
+StackResolutionEntryFence :: struct {
+	entry_id: ObjectId,
+	source_id: ObjectId,
+	controller: PlayerId,
+	provenance: StackResolutionEntryProvenance,
+	target_incarnations: [dynamic]ObjectIncarnationRef,
+	target_pins: [dynamic]Maybe(ObjectIncarnationRef),
+	legacy_selected_target_incarnations: [dynamic]ObjectIncarnationRef,
+}
+
+StackResolutionPolicy :: enum u16 {
+	Committed,
+	RecheckNoMeaningfulPriorityAction,
+}
+
+StackResolutionAutoPassOverlay :: struct {
+	baseline: map[PlayerId]AutoPassMode,
+}
+
+InteractionSlotKind :: enum u16 {
+	Single,
+	Mulligan,
+	OpeningBottom,
+}
+
+InteractionId :: distinct string
+
+ProposedEvent_ZoneChange :: struct {
+	object_id: ObjectId,
+	from: Zone,
+	to: Zone,
+	library_placement: ^LibraryPosition,
+	cause: Maybe(ObjectId),
+	attach_to: Maybe(AttachTarget),
+	enter_tapped: EtbTapState,
+	enters_attacking: bool,
+	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
+	enter_with_grants: ^EnterWithGrants,
+	controller_override: Maybe(PlayerId),
+	enter_transformed: bool,
+	face_down_profile: ^FaceDownProfile,
+	face_down_in_exile: ExileConcealment,
+	chain_referent: ChainReferentIntent,
+	enter_as_copy: ^CopyTokenSpec,
+	enter_with_choices: ^EntryChoices,
+	discard_frame: Maybe(DiscardFrameId),
+	performed_by: Maybe(PlayerId),
+	with_entry_effect: ^WithEntryEffect,
+	co_entrants: ^CoEntrants,
+	ownership_actor: EntryOwnershipActor,
+	library_shuffle: LibraryShuffleMode,
+	merged_departure: Maybe(ObjectIncarnationRef),
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_Damage :: struct {
+	source_id: ObjectId,
+	target: TargetRef,
+	amount: u32,
+	is_combat: bool,
+	source_name: Maybe(string),
+	source_incarnation: Maybe(u64),
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_Draw :: struct {
+	player_id: PlayerId,
+	count: u32,
+	stage: DrawEventStage,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_SearchFound :: struct {
+	searcher: PlayerId,
+	library_owner: Maybe(PlayerId),
+	object_id: ObjectId,
+	disposition: SearchFoundDisposition,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_Scry :: struct {
+	player_id: PlayerId,
+	count: u32,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_Mill :: struct {
+	player_id: PlayerId,
+	count: u32,
+	destination: Zone,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_CoinFlip :: struct {
+	player_id: PlayerId,
+	count: u32,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_RollDice :: struct {
+	player_id: PlayerId,
+	count: u32,
+	sides: u8,
+	ignore_rules: [dynamic]DieRollIgnoreRule,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_Explore :: struct {
+	object_id: ObjectId,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_Connive :: struct {
+	object_id: ObjectId,
+	subject: ^EventObjectSnapshot,
+	count: u32,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_Proliferate :: struct {
+	player_id: PlayerId,
+	count: u32,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_LifeGain :: struct {
+	player_id: PlayerId,
+	amount: u32,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_LifeLoss :: struct {
+	player_id: PlayerId,
+	amount: u32,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_AddCounter :: struct {
+	placement: CounterPlacement,
+	count: u32,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_RemoveCounter :: struct {
+	object_id: ObjectId,
+	counter_type: CounterType,
+	count: u32,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_MoveCounter :: struct {
+	actor: PlayerId,
+	source_id: ObjectId,
+	destination_id: ObjectId,
+	counter_type: CounterType,
+	remove_count: u32,
+	add_count: u32,
+	stage: CounterMoveStage,
+	cause: CounterCause,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_CreateToken :: struct {
+	owner: PlayerId,
+	spec: ^TokenSpec,
+	copy: ^CopyTokenSpec,
+	enter_tapped: EtbTapState,
+	count: u32,
+	appended: [dynamic]TokenBatch,
+	redirected_to: Maybe(Zone),
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_TokenEntry :: struct {
+	entry_ref: ObjectId,
+	redirected_to: Maybe(Zone),
+	enter_tapped: EtbTapState,
+	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
+	enter_with_choices: ^EntryChoices,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_Discard :: struct {
+	player_id: PlayerId,
+	object_id: ObjectId,
+	source_id: Maybe(ObjectId),
+	caused_by_effect: bool,
+	discard_frame: Maybe(DiscardFrameId),
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_Tap :: struct {
+	object_id: ObjectId,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_Untap :: struct {
+	object_id: ObjectId,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_TurnFaceUp :: struct {
+	object_id: ObjectId,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_Destroy :: struct {
+	object_id: ObjectId,
+	source: Maybe(ObjectId),
+	cant_regenerate: bool,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_Sacrifice :: struct {
+	object_id: ObjectId,
+	player_id: PlayerId,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_BeginTurn :: struct {
+	player_id: PlayerId,
+	is_extra_turn: bool,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_BeginPhase :: struct {
+	player_id: PlayerId,
+	phase: Phase,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_ProduceMana :: struct {
+	source_id: ObjectId,
+	player_id: PlayerId,
+	mana_type: ManaType,
+	count: u32,
+	tapped_for_mana: bool,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_EmptyManaPool :: struct {
+	player_id: PlayerId,
+	units: [dynamic]UnitDecision,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_Planeswalk :: struct {
+	player_id: PlayerId,
+	cause: PlaneswalkCause,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent_Attach :: struct {
+	attachment_id: ObjectId,
+	target_id: ObjectId,
+	applied: [dynamic]AppliedReplacementKey,
+}
+ProposedEvent :: union {
+	ProposedEvent_ZoneChange,
+	ProposedEvent_Damage,
+	ProposedEvent_Draw,
+	ProposedEvent_SearchFound,
+	ProposedEvent_Scry,
+	ProposedEvent_Mill,
+	ProposedEvent_CoinFlip,
+	ProposedEvent_RollDice,
+	ProposedEvent_Explore,
+	ProposedEvent_Connive,
+	ProposedEvent_Proliferate,
+	ProposedEvent_LifeGain,
+	ProposedEvent_LifeLoss,
+	ProposedEvent_AddCounter,
+	ProposedEvent_RemoveCounter,
+	ProposedEvent_MoveCounter,
+	ProposedEvent_CreateToken,
+	ProposedEvent_TokenEntry,
+	ProposedEvent_Discard,
+	ProposedEvent_Tap,
+	ProposedEvent_Untap,
+	ProposedEvent_TurnFaceUp,
+	ProposedEvent_Destroy,
+	ProposedEvent_Sacrifice,
+	ProposedEvent_BeginTurn,
+	ProposedEvent_BeginPhase,
+	ProposedEvent_ProduceMana,
+	ProposedEvent_EmptyManaPool,
+	ProposedEvent_Planeswalk,
+	ProposedEvent_Attach,
+}
+
+PendingSacrificeProvenance :: struct {
+	object_id: ObjectId,
+	player_id: PlayerId,
+}
+
+ReplacementId :: struct {
+	source: ObjectId,
+	index: u64,
+}
+
+BoundSearchFoundCandidate :: struct {
+	replacement_id: ReplacementId,
+	disposition: BoundSearchFoundDisposition,
+	source_name: string,
+	description: string,
+	is_optional: bool,
+}
+
+ZoneDeliveryExileTracking :: enum u16 {
+	None,
+	TrackBySource,
+}
+
+ExcessRecipient_TargetController :: struct {
+	source_keyword: Maybe(KeywordKind),
+}
+ExcessRecipient :: union {
+	ExcessRecipient_TargetController,
+}
+
+UnrepresentablePolicy :: enum u16 {
+	Reject,
+	IgnoreImpossible,
+}
+
+PendingLifelinkGain :: struct {
+	controller: PlayerId,
+	amount: u32,
+}
+
+PreventedDamageEntry :: struct {
+	key: AppliedReplacementKey,
+	recipient: TargetRef,
+	amount: i32,
+}
+
+CombatDamageSubStep :: enum u16 {
+	FirstStrike,
+	Regular,
+}
+
+PendingCombatDamageReplacement :: struct {
+	entries: [dynamic]PendingCombatDamageEntry,
+	resolved: [dynamic]PendingCombatLegProgress,
+	one_shot_applications: [dynamic]Tuple2(AppliedReplacementKey, ObjectId),
+	settled_guards: [dynamic]SettledDamageGuard,
+}
+
+PendingCombatPhaseCRemnant :: struct {
+	remaining: [dynamic]PendingCombatLeg,
+	lifelink_by_source: [dynamic]Tuple3(ObjectId, PlayerId, u32),
+	combat_damage_to_players: [dynamic]Tuple3(PlayerId, [dynamic]Tuple2(ObjectId, u32), u32),
+	source_incarnations: [dynamic]ObjectIncarnationRef,
+	staged_gains: [dynamic]PendingLifelinkGain,
+}
+
+LiminalEntrant_Token :: struct {
+	_0: TokenProjection,
+}
+LiminalEntrant_Card :: struct {
+	_0: GameObject,
+}
+LiminalEntrant :: union {
+	LiminalEntrant_Token,
+	LiminalEntrant_Card,
+}
+
+EntryAttackDestination_AnyDefender :: struct {
+}
+EntryAttackDestination_PlayerOrPlaneswalker :: struct {
+}
+EntryAttackDestination_Exact :: struct {
+	target: AttackTarget,
+}
+EntryAttackDestination :: union {
+	EntryAttackDestination_AnyDefender,
+	EntryAttackDestination_PlayerOrPlaneswalker,
+	EntryAttackDestination_Exact,
+}
+
+CopyTokenSpec :: struct {
+	values: ^CopiableValues,
+	display: DisplayIdentity,
+	extra_keywords: [dynamic]Keyword,
+	additional_modifications: [dynamic]ContinuousModification,
+	tapped: bool,
+	enters_attacking: bool,
+	attack_request: TokenAttackRequest,
+	sacrifice_at: Maybe(Duration),
+	source_id: ObjectId,
+	controller: PlayerId,
+	donor: Maybe(ObjectIncarnationRef),
+	double_faced: Maybe(CopiedDoubleFaces),
+}
+
+TokenSpec :: struct {
+	characteristics: TokenCharacteristics,
+	script_name: string,
+	static_abilities: [dynamic]StaticDefinition,
+	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
+	tapped: bool,
+	enters_attacking: bool,
+	attack_request: TokenAttackRequest,
+	sacrifice_at: Maybe(Duration),
+	source_id: ObjectId,
+	controller: PlayerId,
+	attach_to: TokenHostRequest,
+}
+
+LiminalEntryKind_Token :: struct {
+}
+LiminalEntryKind_Meld :: struct {
+	context_: MeldSelection,
+	attack_target: Maybe(AttackTarget),
+}
+LiminalEntryKind_TransformedEntry :: struct {
+}
+LiminalEntryKind :: union {
+	LiminalEntryKind_Token,
+	LiminalEntryKind_Meld,
+	LiminalEntryKind_TransformedEntry,
+}
+
+TokenCopySettlement :: struct {
+	target_id: ObjectId,
+	ability: ResolvedAbility,
+	held_exceptions: [dynamic]ContinuousModification,
+	original: LiminalEntrant,
+	copy_values: ^CopiableValues,
+	copy_display: DisplayIdentity,
+	copy_incarnation: ObjectIncarnationRef,
+	staged_name: string,
+	superseded_replacements: Maybe(int),
+}
+
+LogicalZoneChangeGroupId :: distinct u64
+
+ChildStackDepth :: distinct int
+
+MatchedProtectionQuality_Color :: struct {
+	_0: ManaColor,
+}
+MatchedProtectionQuality_CardType :: struct {
+	_0: CoreType,
+}
+MatchedProtectionQuality_CardSubtype :: struct {
+	_0: u64,
+}
+MatchedProtectionQuality_Colorlessness :: struct {
+	_0: ProtectionColorlessness,
+}
+MatchedProtectionQuality_Multicolored :: struct {
+}
+MatchedProtectionQuality_Player :: struct {
+	_0: PlayerId,
+}
+MatchedProtectionQuality_Everything :: struct {
+}
+MatchedProtectionQuality_Filter :: struct {
+	_0: u64,
+}
+MatchedProtectionQuality_FromPlayer :: struct {
+	_0: ProtectionPlayerScope,
+}
+MatchedProtectionQuality_ChosenName :: struct {
+	_0: u64,
+}
+MatchedProtectionQuality :: union {
+	MatchedProtectionQuality_Color,
+	MatchedProtectionQuality_CardType,
+	MatchedProtectionQuality_CardSubtype,
+	MatchedProtectionQuality_Colorlessness,
+	MatchedProtectionQuality_Multicolored,
+	MatchedProtectionQuality_Player,
+	MatchedProtectionQuality_Everything,
+	MatchedProtectionQuality_Filter,
+	MatchedProtectionQuality_FromPlayer,
+	MatchedProtectionQuality_ChosenName,
+}
+
+ParkedEntryState_Pending :: struct {
+	carrier: Maybe(ObjectId),
+}
+ParkedEntryState_Completed :: struct {
+}
+ParkedEntryState :: union {
+	ParkedEntryState_Pending,
+	ParkedEntryState_Completed,
+}
+
+TriggerEventKey_EnterBattlefield :: struct {
+	_0: Maybe(CoreType),
+}
+TriggerEventKey_LeaveBattlefield :: struct {
+	_0: Maybe(CoreType),
+}
+TriggerEventKey_Dies :: struct {
+	_0: Maybe(CoreType),
+}
+TriggerEventKey_SpellCast :: struct {
+	_0: Maybe(CoreType),
+}
+TriggerEventKey_BecomesTarget :: struct {
+}
+TriggerEventKey_Attacks :: struct {
+}
+TriggerEventKey_Blocks :: struct {
+}
+TriggerEventKey_DealsDamage :: struct {
+}
+TriggerEventKey_DamagePrevented :: struct {
+}
+TriggerEventKey_CardsDrawn :: struct {
+}
+TriggerEventKey_LifeChanged :: struct {
+}
+TriggerEventKey_ManaProduced :: struct {
+}
+TriggerEventKey_ManaSpent :: struct {
+}
+TriggerEventKey_CounterAdded :: struct {
+}
+TriggerEventKey_CounterRemoved :: struct {
+}
+TriggerEventKey_BeginningOfPhase :: struct {
+	_0: Phase,
+}
+TriggerEventKey_Taps :: struct {
+}
+TriggerEventKey_TapsForMana :: struct {
+}
+TriggerEventKey_Untaps :: struct {
+}
+TriggerEventKey_Sacrificed :: struct {
+}
+TriggerEventKey_Destroyed :: struct {
+}
+TriggerEventKey_ChangesController :: struct {
+}
+TriggerEventKey_Discarded :: struct {
+}
+TriggerEventKey_Milled :: struct {
+}
+TriggerEventKey_TokenCreated :: struct {
+}
+TriggerEventKey_AttachmentChanged :: struct {
+}
+TriggerEventKey_FaceOrTransform :: struct {
+}
+TriggerEventKey_PlayerCounterChanged :: struct {
+}
+TriggerEventKey_DieOrCoin :: struct {
+}
+TriggerEventKey_MonarchOrInitiative :: struct {
+}
+TriggerEventKey_VisitAttraction :: struct {
+}
+TriggerEventKey_Specializes :: struct {
+}
+TriggerEventKey_PlayerLost :: struct {
+}
+TriggerEventKey_Clashed :: struct {
+}
+TriggerEventKey_Voted :: struct {
+}
+TriggerEventKey_DayNightChanged :: struct {
+}
+TriggerEventKey_DungeonOrClassOrCase :: struct {
+}
+TriggerEventKey_PlayerActionPerformed :: struct {
+}
+TriggerEventKey_Bending :: struct {
+}
+TriggerEventKey_TurnStarted :: struct {
+}
+TriggerEventKey_Exiled :: struct {
+}
+TriggerEventKey_Revealed :: struct {
+}
+TriggerEventKey_AbilityOrCopyActivated :: struct {
+}
+TriggerEventKey_AbilityTriggered :: struct {
+}
+TriggerEventKey_Renowned :: struct {
+}
+TriggerEventKey_BecomesMonstrous :: struct {
+}
+TriggerEventKey_ManifestDreadResolved :: struct {
+}
+TriggerEventKey_Explored :: struct {
+}
+TriggerEventKey_DiscoverResolved :: struct {
+}
+TriggerEventKey_AdaptResolved :: struct {
+}
+TriggerEventKey_ConniveResolved :: struct {
+}
+TriggerEventKey_Exerted :: struct {
+}
+TriggerEventKey_Enlisted :: struct {
+}
+TriggerEventKey_Foretold :: struct {
+}
+TriggerEventKey_Fight :: struct {
+}
+TriggerEventKey_PhaseIn :: struct {
+}
+TriggerEventKey_PhaseOut :: struct {
+}
+TriggerEventKey :: union {
+	TriggerEventKey_EnterBattlefield,
+	TriggerEventKey_LeaveBattlefield,
+	TriggerEventKey_Dies,
+	TriggerEventKey_SpellCast,
+	TriggerEventKey_BecomesTarget,
+	TriggerEventKey_Attacks,
+	TriggerEventKey_Blocks,
+	TriggerEventKey_DealsDamage,
+	TriggerEventKey_DamagePrevented,
+	TriggerEventKey_CardsDrawn,
+	TriggerEventKey_LifeChanged,
+	TriggerEventKey_ManaProduced,
+	TriggerEventKey_ManaSpent,
+	TriggerEventKey_CounterAdded,
+	TriggerEventKey_CounterRemoved,
+	TriggerEventKey_BeginningOfPhase,
+	TriggerEventKey_Taps,
+	TriggerEventKey_TapsForMana,
+	TriggerEventKey_Untaps,
+	TriggerEventKey_Sacrificed,
+	TriggerEventKey_Destroyed,
+	TriggerEventKey_ChangesController,
+	TriggerEventKey_Discarded,
+	TriggerEventKey_Milled,
+	TriggerEventKey_TokenCreated,
+	TriggerEventKey_AttachmentChanged,
+	TriggerEventKey_FaceOrTransform,
+	TriggerEventKey_PlayerCounterChanged,
+	TriggerEventKey_DieOrCoin,
+	TriggerEventKey_MonarchOrInitiative,
+	TriggerEventKey_VisitAttraction,
+	TriggerEventKey_Specializes,
+	TriggerEventKey_PlayerLost,
+	TriggerEventKey_Clashed,
+	TriggerEventKey_Voted,
+	TriggerEventKey_DayNightChanged,
+	TriggerEventKey_DungeonOrClassOrCase,
+	TriggerEventKey_PlayerActionPerformed,
+	TriggerEventKey_Bending,
+	TriggerEventKey_TurnStarted,
+	TriggerEventKey_Exiled,
+	TriggerEventKey_Revealed,
+	TriggerEventKey_AbilityOrCopyActivated,
+	TriggerEventKey_AbilityTriggered,
+	TriggerEventKey_Renowned,
+	TriggerEventKey_BecomesMonstrous,
+	TriggerEventKey_ManifestDreadResolved,
+	TriggerEventKey_Explored,
+	TriggerEventKey_DiscoverResolved,
+	TriggerEventKey_AdaptResolved,
+	TriggerEventKey_ConniveResolved,
+	TriggerEventKey_Exerted,
+	TriggerEventKey_Enlisted,
+	TriggerEventKey_Foretold,
+	TriggerEventKey_Fight,
+	TriggerEventKey_PhaseIn,
+	TriggerEventKey_PhaseOut,
+}
+
+DerivedIndexReadiness :: enum u16 {
+	Unbuilt,
+	Built,
+}
+
+ReplacementEvent_DamageDone :: struct {
+}
+ReplacementEvent_Destroy :: struct {
+}
+ReplacementEvent_Discard :: struct {
+}
+ReplacementEvent_Draw :: struct {
+}
+ReplacementEvent_LoseLife :: struct {
+}
+ReplacementEvent_GainLife :: struct {
+}
+ReplacementEvent_TurnFaceUp :: struct {
+}
+ReplacementEvent_Counter :: struct {
+}
+ReplacementEvent_ChangeZone :: struct {
+}
+ReplacementEvent_Moved :: struct {
+}
+ReplacementEvent_AddCounter :: struct {
+}
+ReplacementEvent_RemoveCounter :: struct {
+}
+ReplacementEvent_CreateToken :: struct {
+}
+ReplacementEvent_Tap :: struct {
+}
+ReplacementEvent_Untap :: struct {
+}
+ReplacementEvent_DealtDamage :: struct {
+}
+ReplacementEvent_Mill :: struct {
+}
+ReplacementEvent_PayLife :: struct {
+}
+ReplacementEvent_LifeReduced :: struct {
+}
+ReplacementEvent_Attached :: struct {
+}
+ReplacementEvent_SearchFound :: struct {
+}
+ReplacementEvent_DrawCards :: struct {
+}
+ReplacementEvent_ProduceMana :: struct {
+}
+ReplacementEvent_Scry :: struct {
+}
+ReplacementEvent_CoinFlip :: struct {
+}
+ReplacementEvent_RollDice :: struct {
+}
+ReplacementEvent_Transform :: struct {
+}
+ReplacementEvent_Explore :: struct {
+}
+ReplacementEvent_Connive :: struct {
+}
+ReplacementEvent_AssembleContraption :: struct {
+}
+ReplacementEvent_BeginPhase :: struct {
+}
+ReplacementEvent_BeginTurn :: struct {
+}
+ReplacementEvent_Cascade :: struct {
+}
+ReplacementEvent_CopySpell :: struct {
+}
+ReplacementEvent_DeclareBlocker :: struct {
+}
+ReplacementEvent_GameLoss :: struct {
+}
+ReplacementEvent_GameWin :: struct {
+}
+ReplacementEvent_Learn :: struct {
+}
+ReplacementEvent_LoseMana :: struct {
+}
+ReplacementEvent_PlanarDiceResult :: struct {
+}
+ReplacementEvent_Planeswalk :: struct {
+}
+ReplacementEvent_Proliferate :: struct {
+}
+ReplacementEvent_Other :: struct {
+	_0: string,
+}
+ReplacementEvent :: union {
+	ReplacementEvent_DamageDone,
+	ReplacementEvent_Destroy,
+	ReplacementEvent_Discard,
+	ReplacementEvent_Draw,
+	ReplacementEvent_LoseLife,
+	ReplacementEvent_GainLife,
+	ReplacementEvent_TurnFaceUp,
+	ReplacementEvent_Counter,
+	ReplacementEvent_ChangeZone,
+	ReplacementEvent_Moved,
+	ReplacementEvent_AddCounter,
+	ReplacementEvent_RemoveCounter,
+	ReplacementEvent_CreateToken,
+	ReplacementEvent_Tap,
+	ReplacementEvent_Untap,
+	ReplacementEvent_DealtDamage,
+	ReplacementEvent_Mill,
+	ReplacementEvent_PayLife,
+	ReplacementEvent_LifeReduced,
+	ReplacementEvent_Attached,
+	ReplacementEvent_SearchFound,
+	ReplacementEvent_DrawCards,
+	ReplacementEvent_ProduceMana,
+	ReplacementEvent_Scry,
+	ReplacementEvent_CoinFlip,
+	ReplacementEvent_RollDice,
+	ReplacementEvent_Transform,
+	ReplacementEvent_Explore,
+	ReplacementEvent_Connive,
+	ReplacementEvent_AssembleContraption,
+	ReplacementEvent_BeginPhase,
+	ReplacementEvent_BeginTurn,
+	ReplacementEvent_Cascade,
+	ReplacementEvent_CopySpell,
+	ReplacementEvent_DeclareBlocker,
+	ReplacementEvent_GameLoss,
+	ReplacementEvent_GameWin,
+	ReplacementEvent_Learn,
+	ReplacementEvent_LoseMana,
+	ReplacementEvent_PlanarDiceResult,
+	ReplacementEvent_Planeswalk,
+	ReplacementEvent_Proliferate,
+	ReplacementEvent_Other,
+}
+
+ReplacementIndexEntry :: struct {
+	id: ReplacementId,
+	ordinal: int,
+}
+
+StaticModeKind :: enum u16 {
+	Continuous,
+	DamageNotRemovedDuringCleanup,
+	LethalDamageDeterminedByPower,
+	CantAttack,
+	CantBlock,
+	CantAttackOrBlock,
+	CantBecomeSuspected,
+	MaxAttackersEachCombat,
+	MaxBlockersEachCombat,
+	CantBeTargeted,
+	CantBeCast,
+	CantBeActivated,
+	CantSearchLibrary,
+	RestrictLibrarySearchToTop,
+	ControlPlayersDuringOwnLibrarySearch,
+	CantCauseSacrificeOrExile,
+	CantCauseForcedAction,
+	CastWithFlash,
+	GrantsExtraVote,
+	GrantsExtraVillainousChoice,
+	CastWithKeyword,
+	CastWithAlternativeCost,
+	AlternativeKeywordCost,
+	ModifyCost,
+	ImposeAdditionalCost,
+	ReduceAbilityCost,
+	ReduceActionCost,
+	ModifyActivationLimit,
+	ActivateAsInstant,
+	CantPayCost,
+	CantGainLife,
+	CantLoseLife,
+	PlayerProtection,
+	MustAttack,
+	MustAttackDefender,
+	MustBlock,
+	MustBlockAttacker,
+	CantDraw,
+	DrawFromBottom,
+	DoubleTriggers,
+	IgnoreHexproof,
+	ExtraBlockers,
+	RevealTopOfLibrary,
+	RevealHand,
+	GraveyardCastPermission,
+	TopOfLibraryCastPermission,
+	TopOfLibraryHasPlot,
+	TopOfLibraryPlotPermission,
+	CastFromHandFree,
+	ExileCastPermission,
+	LinkedCollectionCounterPlayPermission,
+	CountersPersistAcrossZones,
+	CantBeCountered,
+	CantBeCopied,
+	CantEnterBattlefieldFrom,
+	CantCastFrom,
+	CantCastDuring,
+	CantActivateDuring,
+	PerTurnCastLimit,
+	PerTurnDrawLimit,
+	SuppressTriggers,
+	CantBeBlocked,
+	CantBeBlockedExceptBy,
+	CantBeBlockedBy,
+	CantBeBlockedByMoreThan,
+	CantBeBlockedUnlessAllBlock,
+	AttachmentRestriction,
+	Protection,
+	Indestructible,
+	CantBeDestroyed,
+	CantBeRegenerated,
+	FlashBack,
+	Shroud,
+	Hexproof,
+	Vigilance,
+	Menace,
+	Reach,
+	Flying,
+	Trample,
+	Deathtouch,
+	Lifelink,
+	CantTap,
+	CantUntap,
+	MustBeBlocked,
+	MustBeBlockedByAll,
+	Goaded,
+	MustAttackAwayFromSource,
+	CombatAlone,
+	CantCrew,
+	CantPhaseIn,
+	CrewContribution,
+	MayLookAtTopOfLibrary,
+	MayLookAtFaceDown,
+	CantBeTurnedFaceUp,
+	MayChooseNotToUntap,
+	AdditionalLandDrop,
+	EmblemStatic,
+	BlockRestriction,
+	NoMaximumHandSize,
+	MaximumHandSize,
+	MayPlayAdditionalLand,
+	CantHaveKeyword,
+	CantWinTheGame,
+	CantLoseTheGame,
+	LegendRuleDoesntApply,
+	SpeedCanIncreaseBeyondFour,
+	DefilerCostReduction,
+	SkipStep,
+	SpendManaAsAnyColor,
+	PayLifeAsColoredMana,
+	StepEndUnspentMana,
+	UnspentManaLossCausesLifeLoss,
+	WinFirstCoinFlipSetEachTurn,
+	CanAttackWithDefender,
+	AttackOnlyNeighbor,
+	IgnoreLandwalkForBlocking,
+	CanActivateAbilitiesAsThoughHaste,
+	CanBlockShadow,
+	AssignNoCombatDamage,
+	UntapsDuringEachOtherPlayersUntapStep,
+	MaxUntapPerType,
+	EntersWithAdditionalCounters,
+	CountersCantBeRemoved,
+	CountsAsNamed,
+	Other,
+}
+
+WindowKey :: struct {
+	turn: u32,
+	phase: Phase,
+	step_start: u32,
+	turns_begun: u32,
+}
+
+TraceEntry :: struct {
+	seat: PlayerId,
+	kind: EntryKind,
+	depth: int,
+	prompt: PromptClass,
+	next_object_id: u64,
+}
+
+NodeKey_Cast :: struct {
+	_0: PrintedCardRef,
+}
+NodeKey_Activated :: struct {
+	_0: ^AbilityDefinition,
+}
+NodeKey_IntrinsicMana :: struct {
+	_0: ManaType,
+}
+NodeKey_KeywordActivated :: struct {
+	printed: PrintedCardRef,
+	kind: KeywordActivation,
+}
+NodeKey_Triggered :: struct {
+	_0: TriggerPrintedOrigin,
+}
+NodeKey_Delayed :: struct {
+	_0: ^DelayedAbilityOrigin,
+}
+NodeKey_TriggeredOccurrence :: struct {
+	_0: TriggerDefinitionRef,
+}
+NodeKey_Unkeyed :: struct {
+	_0: int,
+}
+NodeKey :: union {
+	NodeKey_Cast,
+	NodeKey_Activated,
+	NodeKey_IntrinsicMana,
+	NodeKey_KeywordActivated,
+	NodeKey_Triggered,
+	NodeKey_Delayed,
+	NodeKey_TriggeredOccurrence,
+	NodeKey_Unkeyed,
+}
+
+PendingRead :: struct {
+	node: int,
+	seat: PlayerId,
+	locus: PlayLocus,
+	at: int,
+}
+
+NamedSpan :: struct {
+	start: int,
+	end: int,
+	cause: NamingCause,
+	source: SpanSource,
+	reach: PeriodReach,
+}
+
+UndoPoint :: struct {
+	undoes: Reversal,
+	before: ^PlayTrace,
+}
+
+CarriedSpan :: struct {
+	key: NodeKey,
+	seat: PlayerId,
+	reach: PeriodReach,
+	trace: PlayTrace,
+}
+
+CarryingIndex :: struct {
+	faces: [dynamic]string,
+	keys: [dynamic]Tuple2(NodeKey, PeriodReach),
+}
+
+Witnessed_Declared :: struct {
+}
+Witnessed_Offered :: struct {
+	counted_take: CountedTake,
+	residual: BoardDelta,
+	period: ^ConfirmedPeriod,
+}
+Witnessed_Refused :: struct {
+}
+Witnessed_Breakable :: struct {
+}
+Witnessed :: union {
+	Witnessed_Declared,
+	Witnessed_Offered,
+	Witnessed_Refused,
+	Witnessed_Breakable,
+}
+
+OptionProof :: enum u16 {
+	Continues,
+	Ends,
+	Undecided,
+}
+
+TopOfStack_Trigger :: struct {
+	_0: Occurrence,
+}
+TopOfStack_Other :: struct {
+	_0: u64,
+}
+TopOfStack :: union {
+	TopOfStack_Trigger,
+	TopOfStack_Other,
+}
+
+PrecastShortcutOfferRuntime :: struct {
+	caster: PlayerId,
+	spell_id: ObjectId,
+	epoch: u64,
+	route_id: u64,
+	responders: [dynamic]PlayerId,
+	transcript: [dynamic]PrecastShortcutReplayStep,
+	breakpoints: [dynamic]PrecastShortcutBreakpoint,
+	shortened: Maybe(PrecastShortcutBreakpoint),
+}
+
+ArmedLifeCostRoot_DefilerPayment :: struct {
+	_0: ^DefilerPaymentWitness,
+}
+ArmedLifeCostRoot_OptionalAdditionalCost :: struct {
+	_0: ^OptionalAdditionalCostWitness,
+}
+ArmedLifeCostRoot :: union {
+	ArmedLifeCostRoot_DefilerPayment,
+	ArmedLifeCostRoot_OptionalAdditionalCost,
+}
+
+AttemptState_Idle :: struct {
+}
+AttemptState_Active :: struct {
+	token: u64,
+	payer: PlayerId,
+}
+AttemptState_Invalid :: struct {
+}
+AttemptState :: union {
+	AttemptState_Idle,
+	AttemptState_Active,
+	AttemptState_Invalid,
+}
+
+LifeMutationReceipt :: struct {
+	token: u64,
+	payer: PlayerId,
+	before: i32,
+	after: i32,
+	committed: u32,
+}
+
+StaticCondition_DevotionGE :: struct {
+	colors: [dynamic]ManaColor,
+	threshold: u32,
+}
+StaticCondition_IsPresent :: struct {
+	filter: Maybe(TargetFilter),
+}
+StaticCondition_ChosenColorIs :: struct {
+	color: ManaColor,
+}
+StaticCondition_ChosenLabelIs :: struct {
+	label: string,
+}
+StaticCondition_QuantityComparison :: struct {
+	lhs: QuantityExpr,
+	comparator: Comparator,
+	rhs: QuantityExpr,
+}
+StaticCondition_QuantityQuality :: struct {
+	quantity: QuantityExpr,
+	quality: NumberQuality,
+}
+StaticCondition_HasMaxSpeed :: struct {
+}
+StaticCondition_SpeedGE :: struct {
+	threshold: u8,
+}
+StaticCondition_And :: struct {
+	conditions: [dynamic]StaticCondition,
+}
+StaticCondition_Or :: struct {
+	conditions: [dynamic]StaticCondition,
+}
+StaticCondition_Not :: struct {
+	condition: ^StaticCondition,
+}
+StaticCondition_DayNightIs :: struct {
+	state: DayNight,
+}
+StaticCondition_HasCounters :: struct {
+	counters: CounterMatch,
+	minimum: u32,
+	maximum: Maybe(u32),
+}
+StaticCondition_CastVariantPaid :: struct {
+	variant: CastVariantPaid,
+}
+StaticCondition_RecipientHasCounters :: struct {
+	counters: CounterMatch,
+	minimum: u32,
+	maximum: Maybe(u32),
+}
+StaticCondition_ClassLevelGE :: struct {
+	level: u8,
+}
+StaticCondition_DefendingPlayerControls :: struct {
+	filter: TargetFilter,
+}
+StaticCondition_SourceAttackingAlone :: struct {
+}
+StaticCondition_SourceIsAttacking :: struct {
+}
+StaticCondition_SourceIsBlocking :: struct {
+}
+StaticCondition_SourceIsBlocked :: struct {
+}
+StaticCondition_IsMonarch :: struct {
+	player: PlayerScope,
+}
+StaticCondition_HasBoon :: struct {
+	player: PlayerScope,
+}
+StaticCondition_IsInitiative :: struct {
+}
+StaticCondition_NoMonarch :: struct {
+}
+StaticCondition_HasCityBlessing :: struct {
+}
+StaticCondition_HasEnduringStory :: struct {
+}
+StaticCondition_CompletedADungeon :: struct {
+}
+StaticCondition_WasStartingPlayer :: struct {
+	controller: ControllerRef,
+}
+StaticCondition_SpellCastWithVariantThisTurn :: struct {
+	variant: CastingVariant,
+}
+StaticCondition_AnyPlayerAttackedYouLastTurn :: struct {
+	scope: AttackedYouScope,
+}
+StaticCondition_PlayerAttackedPlayer :: struct {
+	attacker: ControllerRef,
+	defender: ControllerRef,
+}
+StaticCondition_OpponentPoisonAtLeast :: struct {
+	count: u32,
+}
+StaticCondition_PlayerIsPoisoned :: struct {
+	player: PlayerScope,
+}
+StaticCondition_UnlessPay :: struct {
+	cost: ManaCost,
+	scaling: UnlessPayScaling,
+	defended: Maybe(AttackTargetFilter),
+}
+StaticCondition_Unrecognized :: struct {
+	text: string,
+}
+StaticCondition_DuringYourTurn :: struct {
+}
+StaticCondition_FirstCombatPhaseOfTurn :: struct {
+}
+StaticCondition_DuringOpponentsTurn :: struct {
+}
+StaticCondition_SharesColorWithMostCommonColorAmongPermanents :: struct {
+}
+StaticCondition_SourceEnteredThisTurn :: struct {
+}
+StaticCondition_SourceHasDealtDamage :: struct {
+	kind: DamageKindFilter,
+}
+StaticCondition_SourceExertedThisTurn :: struct {
+}
+StaticCondition_WasCast :: struct {
+	zone: Maybe(Zone),
+}
+StaticCondition_IsRingBearer :: struct {
+}
+StaticCondition_RingLevelAtLeast :: struct {
+	level: u8,
+}
+StaticCondition_ControlsCommander :: struct {
+	ownership: CommanderOwnership,
+}
+StaticCondition_SourceIsTapped :: struct {
+}
+StaticCondition_IsTapped :: struct {
+	scope: ObjectScope,
+}
+StaticCondition_SourceIsFaceUp :: struct {
+}
+StaticCondition_SourceIsSaddled :: struct {
+}
+StaticCondition_SourceControllerEquals :: struct {
+	player: PlayerId,
+}
+StaticCondition_SourceIsEquipped :: struct {
+}
+StaticCondition_SourceIsEnchanted :: struct {
+}
+StaticCondition_SourceIsMonstrous :: struct {
+}
+StaticCondition_SourceIsHarnessed :: struct {
+}
+StaticCondition_SourceAttachedToCreature :: struct {
+}
+StaticCondition_SourceMatchesFilter :: struct {
+	filter: TargetFilter,
+}
+StaticCondition_TopOfLibraryMatches :: struct {
+	filter: TargetFilter,
+}
+StaticCondition_RecipientMatchesFilter :: struct {
+	filter: TargetFilter,
+}
+StaticCondition_RecipientAttackingOwnerTarget :: struct {
+	target: AttackTargetFilter,
+}
+StaticCondition_SourceIsPaired :: struct {
+}
+StaticCondition_SourceInZone :: struct {
+	zone: Zone,
+}
+StaticCondition_EnchantedIsFaceDown :: struct {
+}
+StaticCondition_AdditionalCostPaid :: struct {
+}
+StaticCondition_CastingAsVariant :: struct {
+	variant: CastingVariant,
+}
+StaticCondition_None :: struct {
+}
+StaticCondition :: union {
+	StaticCondition_DevotionGE,
+	StaticCondition_IsPresent,
+	StaticCondition_ChosenColorIs,
+	StaticCondition_ChosenLabelIs,
+	StaticCondition_QuantityComparison,
+	StaticCondition_QuantityQuality,
+	StaticCondition_HasMaxSpeed,
+	StaticCondition_SpeedGE,
+	StaticCondition_And,
+	StaticCondition_Or,
+	StaticCondition_Not,
+	StaticCondition_DayNightIs,
+	StaticCondition_HasCounters,
+	StaticCondition_CastVariantPaid,
+	StaticCondition_RecipientHasCounters,
+	StaticCondition_ClassLevelGE,
+	StaticCondition_DefendingPlayerControls,
+	StaticCondition_SourceAttackingAlone,
+	StaticCondition_SourceIsAttacking,
+	StaticCondition_SourceIsBlocking,
+	StaticCondition_SourceIsBlocked,
+	StaticCondition_IsMonarch,
+	StaticCondition_HasBoon,
+	StaticCondition_IsInitiative,
+	StaticCondition_NoMonarch,
+	StaticCondition_HasCityBlessing,
+	StaticCondition_HasEnduringStory,
+	StaticCondition_CompletedADungeon,
+	StaticCondition_WasStartingPlayer,
+	StaticCondition_SpellCastWithVariantThisTurn,
+	StaticCondition_AnyPlayerAttackedYouLastTurn,
+	StaticCondition_PlayerAttackedPlayer,
+	StaticCondition_OpponentPoisonAtLeast,
+	StaticCondition_PlayerIsPoisoned,
+	StaticCondition_UnlessPay,
+	StaticCondition_Unrecognized,
+	StaticCondition_DuringYourTurn,
+	StaticCondition_FirstCombatPhaseOfTurn,
+	StaticCondition_DuringOpponentsTurn,
+	StaticCondition_SharesColorWithMostCommonColorAmongPermanents,
+	StaticCondition_SourceEnteredThisTurn,
+	StaticCondition_SourceHasDealtDamage,
+	StaticCondition_SourceExertedThisTurn,
+	StaticCondition_WasCast,
+	StaticCondition_IsRingBearer,
+	StaticCondition_RingLevelAtLeast,
+	StaticCondition_ControlsCommander,
+	StaticCondition_SourceIsTapped,
+	StaticCondition_IsTapped,
+	StaticCondition_SourceIsFaceUp,
+	StaticCondition_SourceIsSaddled,
+	StaticCondition_SourceControllerEquals,
+	StaticCondition_SourceIsEquipped,
+	StaticCondition_SourceIsEnchanted,
+	StaticCondition_SourceIsMonstrous,
+	StaticCondition_SourceIsHarnessed,
+	StaticCondition_SourceAttachedToCreature,
+	StaticCondition_SourceMatchesFilter,
+	StaticCondition_TopOfLibraryMatches,
+	StaticCondition_RecipientMatchesFilter,
+	StaticCondition_RecipientAttackingOwnerTarget,
+	StaticCondition_SourceIsPaired,
+	StaticCondition_SourceInZone,
+	StaticCondition_EnchantedIsFaceDown,
+	StaticCondition_AdditionalCostPaid,
+	StaticCondition_CastingAsVariant,
+	StaticCondition_None,
+}
+
+EndEffectPermission :: struct {
+	group: EndEffectGroupId,
+	cost: ManaCost,
+}
+
+Layer :: enum u16 {
+	Copy,
+	Control,
+	Text,
+	Type,
+	Color,
+	Ability,
+	CharDef,
+	SetPT,
+	ModifyPT,
+	CounterPT,
+	SwitchPT,
+}
+
+EffectRef_Transient :: struct {
+	id: u64,
+	mod_index: int,
+}
+EffectRef_Static :: struct {
+	source: ObjectId,
+	def_index: int,
+	mod_index: int,
+}
+EffectRef :: union {
+	EffectRef_Transient,
+	EffectRef_Static,
+}
+
+TriggerCondition_GainedLife :: struct {
+	minimum: u32,
+}
+TriggerCondition_LostLife :: struct {
+}
+TriggerCondition_Descended :: struct {
+}
+TriggerCondition_ControlsType :: struct {
+	filter: TargetFilter,
+}
+TriggerCondition_NoSpellsCastLastTurn :: struct {
+}
+TriggerCondition_TwoOrMoreSpellsCastLastTurn :: struct {
+}
+TriggerCondition_DuringPlayersTurn :: struct {
+	player: PlayerFilter,
+}
+TriggerCondition_SourceEnteredThisTurn :: struct {
+}
+TriggerCondition_SourceAttackedThisCombat :: struct {
+}
+TriggerCondition_ChoseOtherRingBearer :: struct {
+}
+TriggerCondition_ChoseRingBearer :: struct {
+}
+TriggerCondition_EchoDue :: struct {
+}
+TriggerCondition_MinCoAttackers :: struct {
+	minimum: u32,
+	filter: Maybe(TargetFilter),
+}
+TriggerCondition_SolveConditionMet :: struct {
+}
+TriggerCondition_ClassLevelGE :: struct {
+	level: u8,
+}
+TriggerCondition_SourceIsHarnessed :: struct {
+}
+TriggerCondition_AttractionVisitRoll :: struct {
+	min: u8,
+	max: u8,
+}
+TriggerCondition_WasCast :: struct {
+	zone: Maybe(Zone),
+	controller: Maybe(ControllerRef),
+	owner: Maybe(ControllerRef),
+}
+TriggerCondition_WasPlayed :: struct {
+}
+TriggerCondition_AdditionalCostPaid :: struct {
+	source: AdditionalCostPaymentSource,
+	origin: Maybe(AdditionalCostOrigin),
+	origin_ordinal: Maybe(u32),
+	variant: Maybe(KickerVariant),
+	kicker_cost: Maybe(ManaCost),
+	min_count: u32,
+}
+TriggerCondition_SourceIsAttacking :: struct {
+}
+TriggerCondition_CastVariantPaid :: struct {
+	variant: CastVariantPaid,
+}
+TriggerCondition_CastVariantPaidPersistent :: struct {
+	variant: CastVariantPaid,
+}
+TriggerCondition_ActivatedAbilityIsNonMana :: struct {
+}
+TriggerCondition_DealtDamageBySourceThisTurn :: struct {
+}
+TriggerCondition_DealtDamageThisTurnBySource :: struct {
+	source: TargetFilter,
+}
+TriggerCondition_FirstTimeObjectTappedThisTurn :: struct {
+}
+TriggerCondition_FirstTimeObjectCountersAddedThisTurn :: struct {
+}
+TriggerCondition_WasType :: struct {
+	card_type: CoreType,
+}
+TriggerCondition_LifeTotalGE :: struct {
+	minimum: i32,
+}
+TriggerCondition_ControlCount :: struct {
+	minimum: u32,
+	filter: TargetFilter,
+}
+TriggerCondition_ControlsNone :: struct {
+	filter: TargetFilter,
+}
+TriggerCondition_AttackedThisTurn :: struct {
+}
+TriggerCondition_FirstCombatPhaseOfTurn :: struct {
+}
+TriggerCondition_CastSpellThisTurn :: struct {
+	filter: Maybe(TargetFilter),
+}
+TriggerCondition_QuantityComparison :: struct {
+	lhs: QuantityExpr,
+	comparator: Comparator,
+	rhs: QuantityExpr,
+}
+TriggerCondition_QuantityQuality :: struct {
+	quantity: QuantityExpr,
+	quality: NumberQuality,
+}
+TriggerCondition_HasMaxSpeed :: struct {
+}
+TriggerCondition_IsMonarch :: struct {
+	player: PlayerScope,
+}
+TriggerCondition_IsPoisoned :: struct {
+	player: PlayerScope,
+}
+TriggerCondition_HasBoon :: struct {
+	player: PlayerScope,
+}
+TriggerCondition_IsInitiative :: struct {
+}
+TriggerCondition_NoMonarch :: struct {
+}
+TriggerCondition_WasStartingPlayer :: struct {
+	controller: ControllerRef,
+}
+TriggerCondition_SpellCastWithVariantThisTurn :: struct {
+	variant: CastingVariant,
+}
+TriggerCondition_HasCityBlessing :: struct {
+}
+TriggerCondition_HasEnduringStory :: struct {
+}
+TriggerCondition_CompletedDungeon :: struct {
+	specific: Maybe(DungeonId),
+}
+TriggerCondition_SourceIsTapped :: struct {
+}
+TriggerCondition_SourceIsTransformed :: struct {
+}
+TriggerCondition_SourceIsFaceUp :: struct {
+}
+TriggerCondition_SourceIsFaceDown :: struct {
+}
+TriggerCondition_SourceInZone :: struct {
+	zone: Zone,
+}
+TriggerCondition_CounterAddedThisTurn :: struct {
+}
+TriggerCondition_LostLifeLastTurn :: struct {
+}
+TriggerCondition_DefendingPlayerControlsNone :: struct {
+	filter: TargetFilter,
+}
+TriggerCondition_TributeNotPaid :: struct {
+}
+TriggerCondition_CastDuringPhase :: struct {
+	phases: [dynamic]Phase,
+}
+TriggerCondition_CurrentPhaseIs :: struct {
+	phases: [dynamic]Phase,
+}
+TriggerCondition_CastTimingPermission :: struct {
+	permission: CastTimingPermission,
+}
+TriggerCondition_ManaColorSpent :: struct {
+	color: SpentColor,
+	minimum: u32,
+}
+TriggerCondition_ManaSpentCondition :: struct {
+	text: string,
+}
+TriggerCondition_HadCounters :: struct {
+	counter_type: Maybe(CounterType),
+}
+TriggerCondition_ControlsCommander :: struct {
+	ownership: CommanderOwnership,
+}
+TriggerCondition_IsRenowned :: struct {
+	subject: RenownSubject,
+}
+TriggerCondition_HasCounters :: struct {
+	counters: CounterMatch,
+	minimum: u32,
+	maximum: Maybe(u32),
+}
+TriggerCondition_ZoneChangeObjectMatchesFilter :: struct {
+	origin: Maybe(Zone),
+	destination: Zone,
+	filter: TargetFilter,
+}
+TriggerCondition_ZoneChangeObjectIsTapped :: struct {
+}
+TriggerCondition_SourceMatchesFilter :: struct {
+	filter: TargetFilter,
+}
+TriggerCondition_EventDamageSourceMatchesFilter :: struct {
+	filter: TargetFilter,
+}
+TriggerCondition_EventObjectMatchesFilter :: struct {
+	filter: TargetFilter,
+}
+TriggerCondition_DamagedPlayerIsEventSourceOwner :: struct {
+}
+TriggerCondition_ChosenLabelIs :: struct {
+	label: string,
+}
+TriggerCondition_AttackersDeclaredCount :: struct {
+	subject: AttackersDeclaredCountSubject,
+	comparator: Comparator,
+	count: u32,
+}
+TriggerCondition_ExceptFirstDrawInDrawStep :: struct {
+}
+TriggerCondition_PlacedByAbilitySource :: struct {
+}
+TriggerCondition_AddedManaWithThisAbilityThisTurn :: struct {
+}
+TriggerCondition_TriggeringSpellTargetsFilter :: struct {
+	filter: TargetFilter,
+}
+TriggerCondition_TriggeringSpellMatchesFilter :: struct {
+	filter: TargetFilter,
+}
+TriggerCondition_And :: struct {
+	conditions: [dynamic]TriggerCondition,
+}
+TriggerCondition_Or :: struct {
+	conditions: [dynamic]TriggerCondition,
+}
+TriggerCondition_Not :: struct {
+	condition: ^TriggerCondition,
+}
+TriggerCondition_EventTime :: struct {
+	condition: ^TriggerCondition,
+}
+TriggerCondition :: union {
+	TriggerCondition_GainedLife,
+	TriggerCondition_LostLife,
+	TriggerCondition_Descended,
+	TriggerCondition_ControlsType,
+	TriggerCondition_NoSpellsCastLastTurn,
+	TriggerCondition_TwoOrMoreSpellsCastLastTurn,
+	TriggerCondition_DuringPlayersTurn,
+	TriggerCondition_SourceEnteredThisTurn,
+	TriggerCondition_SourceAttackedThisCombat,
+	TriggerCondition_ChoseOtherRingBearer,
+	TriggerCondition_ChoseRingBearer,
+	TriggerCondition_EchoDue,
+	TriggerCondition_MinCoAttackers,
+	TriggerCondition_SolveConditionMet,
+	TriggerCondition_ClassLevelGE,
+	TriggerCondition_SourceIsHarnessed,
+	TriggerCondition_AttractionVisitRoll,
+	TriggerCondition_WasCast,
+	TriggerCondition_WasPlayed,
+	TriggerCondition_AdditionalCostPaid,
+	TriggerCondition_SourceIsAttacking,
+	TriggerCondition_CastVariantPaid,
+	TriggerCondition_CastVariantPaidPersistent,
+	TriggerCondition_ActivatedAbilityIsNonMana,
+	TriggerCondition_DealtDamageBySourceThisTurn,
+	TriggerCondition_DealtDamageThisTurnBySource,
+	TriggerCondition_FirstTimeObjectTappedThisTurn,
+	TriggerCondition_FirstTimeObjectCountersAddedThisTurn,
+	TriggerCondition_WasType,
+	TriggerCondition_LifeTotalGE,
+	TriggerCondition_ControlCount,
+	TriggerCondition_ControlsNone,
+	TriggerCondition_AttackedThisTurn,
+	TriggerCondition_FirstCombatPhaseOfTurn,
+	TriggerCondition_CastSpellThisTurn,
+	TriggerCondition_QuantityComparison,
+	TriggerCondition_QuantityQuality,
+	TriggerCondition_HasMaxSpeed,
+	TriggerCondition_IsMonarch,
+	TriggerCondition_IsPoisoned,
+	TriggerCondition_HasBoon,
+	TriggerCondition_IsInitiative,
+	TriggerCondition_NoMonarch,
+	TriggerCondition_WasStartingPlayer,
+	TriggerCondition_SpellCastWithVariantThisTurn,
+	TriggerCondition_HasCityBlessing,
+	TriggerCondition_HasEnduringStory,
+	TriggerCondition_CompletedDungeon,
+	TriggerCondition_SourceIsTapped,
+	TriggerCondition_SourceIsTransformed,
+	TriggerCondition_SourceIsFaceUp,
+	TriggerCondition_SourceIsFaceDown,
+	TriggerCondition_SourceInZone,
+	TriggerCondition_CounterAddedThisTurn,
+	TriggerCondition_LostLifeLastTurn,
+	TriggerCondition_DefendingPlayerControlsNone,
+	TriggerCondition_TributeNotPaid,
+	TriggerCondition_CastDuringPhase,
+	TriggerCondition_CurrentPhaseIs,
+	TriggerCondition_CastTimingPermission,
+	TriggerCondition_ManaColorSpent,
+	TriggerCondition_ManaSpentCondition,
+	TriggerCondition_HadCounters,
+	TriggerCondition_ControlsCommander,
+	TriggerCondition_IsRenowned,
+	TriggerCondition_HasCounters,
+	TriggerCondition_ZoneChangeObjectMatchesFilter,
+	TriggerCondition_ZoneChangeObjectIsTapped,
+	TriggerCondition_SourceMatchesFilter,
+	TriggerCondition_EventDamageSourceMatchesFilter,
+	TriggerCondition_EventObjectMatchesFilter,
+	TriggerCondition_DamagedPlayerIsEventSourceOwner,
+	TriggerCondition_ChosenLabelIs,
+	TriggerCondition_AttackersDeclaredCount,
+	TriggerCondition_ExceptFirstDrawInDrawStep,
+	TriggerCondition_PlacedByAbilitySource,
+	TriggerCondition_AddedManaWithThisAbilityThisTurn,
+	TriggerCondition_TriggeringSpellTargetsFilter,
+	TriggerCondition_TriggeringSpellMatchesFilter,
+	TriggerCondition_And,
+	TriggerCondition_Or,
+	TriggerCondition_Not,
+	TriggerCondition_EventTime,
+}
+
+MayTriggerOrigin_Definition :: struct {
+	definition_ref: TriggerDefinitionRef,
+}
+MayTriggerOrigin_Printed :: struct {
+	trigger_index: int,
+}
+MayTriggerOrigin_Keyword :: struct {
+	keyword: KeywordKind,
+}
+MayTriggerOrigin :: union {
+	MayTriggerOrigin_Definition,
+	MayTriggerOrigin_Printed,
+	MayTriggerOrigin_Keyword,
+}
+
+SyntheticTriggerProvenance_Storm :: struct {
+	copy_count: u32,
+}
+SyntheticTriggerProvenance :: union {
+	SyntheticTriggerProvenance_Storm,
+}
+
+DelayedTriggerOrigin :: struct {
+	token: DelayedTriggerToken,
+	instance: DelayedTriggerInstanceId,
+	source_id: ObjectId,
+	offer_id: Maybe(ResolutionCastOfferId),
+}
+
+PendingTriggerDispatchOrigin :: enum u16 {
+	Normal,
+	Delayed,
+}
+
+DeferredTriggerBatchOrigin :: enum u16 {
+	Ordinary,
+	StateBasedActionChoice,
+	PriorityBoundary,
+	TurnBasedAction,
+}
+
+TriggerOrderGroup :: struct {
+	controller: PlayerId,
+	triggers: [dynamic]PendingTriggerContext,
+	ordered: bool,
+}
+
+ConsumedTriggerEventScope :: enum u16 {
+	AllCollectors,
+	OrdinaryCollectorsOnly,
+}
+
+ExileLinkKind_UntilSourceLeaves :: struct {
+	return_zone: Zone,
+}
+ExileLinkKind_UntilOpponentBecomesMonarch :: struct {
+	return_zone: Zone,
+	controller: PlayerId,
+}
+ExileLinkKind_TrackedBySource :: struct {
+}
+ExileLinkKind_ParadigmSource :: struct {
+	player: PlayerId,
+}
+ExileLinkKind_Cipher :: struct {
+}
+ExileLinkKind_Haunt :: struct {
+}
+ExileLinkKind_HideawayLookable :: struct {
+	grant: LookGrant,
+	lookers: [dynamic]PlayerId,
+	source_incarnation: u64,
+}
+ExileLinkKind_CraftMaterial :: struct {
+}
+ExileLinkKind_CastCost :: struct {
+}
+ExileLinkKind :: union {
+	ExileLinkKind_UntilSourceLeaves,
+	ExileLinkKind_UntilOpponentBecomesMonarch,
+	ExileLinkKind_TrackedBySource,
+	ExileLinkKind_ParadigmSource,
+	ExileLinkKind_Cipher,
+	ExileLinkKind_Haunt,
+	ExileLinkKind_HideawayLookable,
+	ExileLinkKind_CraftMaterial,
+	ExileLinkKind_CastCost,
+}
+
+DelayedTriggerCondition_AtNextPhase :: struct {
+	phase: Phase,
+}
+DelayedTriggerCondition_AtNextPhaseForPlayer :: struct {
+	phase: Phase,
+	player: PlayerId,
+	gate: TurnGate,
+	binding: DelayedTriggerPlayerBinding,
+}
+DelayedTriggerCondition_AtBeginningOfAddedPhase :: struct {
+	phase: Phase,
+	entry: Maybe(ExtraPhaseId),
+}
+DelayedTriggerCondition_AtBeginningOfGrantedTurn :: struct {
+	phase: Phase,
+	turn: Maybe(ExtraTurnId),
+}
+DelayedTriggerCondition_WhenLeavesPlay :: struct {
+	object_id: ObjectId,
+}
+DelayedTriggerCondition_WhenDies :: struct {
+	filter: TargetFilter,
+}
+DelayedTriggerCondition_WhenLeavesPlayFiltered :: struct {
+	filter: TargetFilter,
+}
+DelayedTriggerCondition_WhenEntersBattlefield :: struct {
+	filter: TargetFilter,
+}
+DelayedTriggerCondition_WhenDiesOrExiled :: struct {
+	filter: TargetFilter,
+}
+DelayedTriggerCondition_WheneverEvent :: struct {
+	trigger: ^TriggerDefinition,
+	expiry: WheneverEventExpiry,
+}
+DelayedTriggerCondition_WhenNextEvent :: struct {
+	trigger: ^TriggerDefinition,
+	or_trigger: ^TriggerDefinition,
+	lifetime: DelayedTriggerLifetime,
+}
+DelayedTriggerCondition :: union {
+	DelayedTriggerCondition_AtNextPhase,
+	DelayedTriggerCondition_AtNextPhaseForPlayer,
+	DelayedTriggerCondition_AtBeginningOfAddedPhase,
+	DelayedTriggerCondition_AtBeginningOfGrantedTurn,
+	DelayedTriggerCondition_WhenLeavesPlay,
+	DelayedTriggerCondition_WhenDies,
+	DelayedTriggerCondition_WhenLeavesPlayFiltered,
+	DelayedTriggerCondition_WhenEntersBattlefield,
+	DelayedTriggerCondition_WhenDiesOrExiled,
+	DelayedTriggerCondition_WheneverEvent,
+	DelayedTriggerCondition_WhenNextEvent,
+}
+
+DelayedTriggerKind :: enum u16 {
+	Ordinary,
+	Boon,
+}
+
+DelayedInstallIdentity_LegacyDelayed :: struct {
+}
+DelayedInstallIdentity_ReceiptEligible :: struct {
+	_0: DelayedTriggerOrigin,
+}
+DelayedInstallIdentity :: union {
+	DelayedInstallIdentity_LegacyDelayed,
+	DelayedInstallIdentity_ReceiptEligible,
 }
 
 Supertype :: enum u16 {
@@ -1275,724 +11954,70 @@ Supertype :: enum u16 {
 	Host,
 }
 
-CoreType :: enum u16 {
-	Artifact,
-	Creature,
-	Enchantment,
-	Instant,
-	Land,
-	Planeswalker,
-	Sorcery,
-	Tribal,
-	Battle,
-	Kindred,
-	Dungeon,
-	Plane,
-	Phenomenon,
-	Scheme,
-	Conspiracy,
-	Boss,
-	Event,
-	Vanguard,
+TriggerEntry :: struct {
+	occurrence: TriggerDefinitionOccurrenceRef,
+	definition: TriggerDefinition,
 }
 
-QuantityExpr_Ref :: struct {
-	qty: QuantityRef,
-}
-QuantityExpr_Fixed :: struct {
-	value: i32,
-}
-QuantityExpr_DivideRounded :: struct {
-	inner: ^QuantityExpr,
-	divisor: u32,
-	rounding: RoundingMode,
-}
-QuantityExpr_Offset :: struct {
-	inner: ^QuantityExpr,
-	offset: i32,
-}
-QuantityExpr_ClampMin :: struct {
-	inner: ^QuantityExpr,
-	minimum: i32,
-}
-QuantityExpr_Multiply :: struct {
-	factor: i32,
-	inner: ^QuantityExpr,
-}
-QuantityExpr_Sum :: struct {
-	exprs: [dynamic]QuantityExpr,
-}
-QuantityExpr_UpTo :: struct {
-	max: ^QuantityExpr,
-}
-QuantityExpr_Power :: struct {
-	base: i32,
-	exponent: ^QuantityExpr,
-}
-QuantityExpr_Difference :: struct {
-	left: ^QuantityExpr,
-	right: ^QuantityExpr,
-}
-QuantityExpr_Max :: struct {
-	exprs: [dynamic]QuantityExpr,
-}
-QuantityExpr :: union {
-	QuantityExpr_Ref,
-	QuantityExpr_Fixed,
-	QuantityExpr_DivideRounded,
-	QuantityExpr_Offset,
-	QuantityExpr_ClampMin,
-	QuantityExpr_Multiply,
-	QuantityExpr_Sum,
-	QuantityExpr_UpTo,
-	QuantityExpr_Power,
-	QuantityExpr_Difference,
-	QuantityExpr_Max,
+ArrivalIdentity :: struct {
+	owner: PlayerId,
+	controller: PlayerId,
 }
 
-HexproofFilter_Color :: struct {
-	_0: ManaColor,
-}
-HexproofFilter_CardType :: struct {
-	_0: string,
-}
-HexproofFilter_Quality :: struct {
-	_0: string,
-}
-HexproofFilter_ChosenColor :: struct {
-}
-HexproofFilter :: union {
-	HexproofFilter_Color,
-	HexproofFilter_CardType,
-	HexproofFilter_Quality,
-	HexproofFilter_ChosenColor,
+AttachmentSnapshot :: struct {
+	object_id: ObjectId,
+	identity: Maybe(ObjectIncarnationRef),
+	controller: PlayerId,
+	kind: AttachmentKind,
 }
 
-TargetFilter_None :: struct {
-}
-TargetFilter_Any :: struct {
-}
-TargetFilter_Player :: struct {
-}
-TargetFilter_Controller :: struct {
-}
-TargetFilter_SourceController :: struct {
-}
-TargetFilter_ControllerAndControlledPermanents :: struct {
-	permanent_type: Maybe(CoreType),
-	source_scope: SourceExclusion,
-}
-TargetFilter_Opponent :: struct {
-}
-TargetFilter_SelfRef :: struct {
-}
-TargetFilter_GrantingObject :: struct {
-	bound: Maybe(ObjectIncarnationRef),
-}
-TargetFilter_SourceOrPaired :: struct {
-}
-TargetFilter_Typed :: struct {
-	_0: TypedFilter,
-}
-TargetFilter_Not :: struct {
-	filter: ^TargetFilter,
-}
-TargetFilter_Or :: struct {
-	filters: [dynamic]TargetFilter,
-}
-TargetFilter_And :: struct {
-	filters: [dynamic]TargetFilter,
-}
-TargetFilter_StackAbility :: struct {
-	controller: Maybe(ControllerRef),
-	tag: Maybe(AbilityTag),
-	kind: Maybe(StackAbilityKind),
-}
-TargetFilter_StackSpell :: struct {
-}
-TargetFilter_CastingSpell :: struct {
-}
-TargetFilter_SpecificObject :: struct {
-	id: ObjectId,
-}
-TargetFilter_SpecificPlayer :: struct {
-	id: PlayerId,
-}
-TargetFilter_PlayerWhoChoseLabel :: struct {
-	label: string,
-}
-TargetFilter_PlayerMatching :: struct {
-	player: ^PlayerFilter,
-}
-TargetFilter_Neighbor :: struct {
-	direction: SeatDirection,
-}
-TargetFilter_ScopedPlayer :: struct {
-}
-TargetFilter_AttachedTo :: struct {
-}
-TargetFilter_LastCreated :: struct {
-}
-TargetFilter_LastRevealed :: struct {
-}
-TargetFilter_LastZoneChanged :: struct {
-}
-TargetFilter_CostPaidObject :: struct {
-}
-TargetFilter_AmassedArmy :: struct {
-}
-TargetFilter_ChosenCard :: struct {
-}
-TargetFilter_TrackedSet :: struct {
-	id: TrackedSetId,
-}
-TargetFilter_TrackedSetFiltered :: struct {
-	id: TrackedSetId,
-	filter: ^TargetFilter,
-	caused_by: Maybe(ThisWayCause),
-}
-TargetFilter_ChoiceAssignment :: struct {
-	side: ChoiceAssignmentSide,
-}
-TargetFilter_ExiledBySource :: struct {
-}
-TargetFilter_ExiledCardByIndex :: struct {
-	index: u32,
-}
-TargetFilter_TriggeringSpellController :: struct {
-}
-TargetFilter_TriggeringSpellOwner :: struct {
-}
-TargetFilter_TriggeringPlayer :: struct {
-}
-TargetFilter_TriggeringSource :: struct {
-}
-TargetFilter_AttackedPlayerOrPlaneswalker :: struct {
-}
-TargetFilter_EventTarget :: struct {
-}
-TargetFilter_TriggeringSourceController :: struct {
-}
-TargetFilter_EventTargetController :: struct {
-}
-TargetFilter_ParentTarget :: struct {
-}
-TargetFilter_ParentTargetSlot :: struct {
-	index: int,
-}
-TargetFilter_DeclaredPlayer :: struct {
-	group: ChosenGroupId,
-}
-TargetFilter_ParentTargetController :: struct {
-}
-TargetFilter_ParentTargetOwner :: struct {
-}
-TargetFilter_AffectedObjectOwner :: struct {
-}
-TargetFilter_SourceChosenPlayer :: struct {
-}
-TargetFilter_OriginalController :: struct {
-}
-TargetFilter_OriginalSource :: struct {
-}
-TargetFilter_PostReplacementSourceController :: struct {
-}
-TargetFilter_PostReplacementDamageSource :: struct {
-}
-TargetFilter_PostReplacementDamageTarget :: struct {
-}
-TargetFilter_PostReplacementDamageTargetOwner :: struct {
-}
-TargetFilter_DefendingPlayer :: struct {
-}
-TargetFilter_HasChosenName :: struct {
-}
-TargetFilter_ChosenDamageSource :: struct {
-	filter: ^TargetFilter,
-}
-TargetFilter_Named :: struct {
-	name: string,
-}
-TargetFilter_Owner :: struct {
-}
-TargetFilter_AllPlayers :: struct {
-}
-TargetFilter :: union {
-	TargetFilter_None,
-	TargetFilter_Any,
-	TargetFilter_Player,
-	TargetFilter_Controller,
-	TargetFilter_SourceController,
-	TargetFilter_ControllerAndControlledPermanents,
-	TargetFilter_Opponent,
-	TargetFilter_SelfRef,
-	TargetFilter_GrantingObject,
-	TargetFilter_SourceOrPaired,
-	TargetFilter_Typed,
-	TargetFilter_Not,
-	TargetFilter_Or,
-	TargetFilter_And,
-	TargetFilter_StackAbility,
-	TargetFilter_StackSpell,
-	TargetFilter_CastingSpell,
-	TargetFilter_SpecificObject,
-	TargetFilter_SpecificPlayer,
-	TargetFilter_PlayerWhoChoseLabel,
-	TargetFilter_PlayerMatching,
-	TargetFilter_Neighbor,
-	TargetFilter_ScopedPlayer,
-	TargetFilter_AttachedTo,
-	TargetFilter_LastCreated,
-	TargetFilter_LastRevealed,
-	TargetFilter_LastZoneChanged,
-	TargetFilter_CostPaidObject,
-	TargetFilter_AmassedArmy,
-	TargetFilter_ChosenCard,
-	TargetFilter_TrackedSet,
-	TargetFilter_TrackedSetFiltered,
-	TargetFilter_ChoiceAssignment,
-	TargetFilter_ExiledBySource,
-	TargetFilter_ExiledCardByIndex,
-	TargetFilter_TriggeringSpellController,
-	TargetFilter_TriggeringSpellOwner,
-	TargetFilter_TriggeringPlayer,
-	TargetFilter_TriggeringSource,
-	TargetFilter_AttackedPlayerOrPlaneswalker,
-	TargetFilter_EventTarget,
-	TargetFilter_TriggeringSourceController,
-	TargetFilter_EventTargetController,
-	TargetFilter_ParentTarget,
-	TargetFilter_ParentTargetSlot,
-	TargetFilter_DeclaredPlayer,
-	TargetFilter_ParentTargetController,
-	TargetFilter_ParentTargetOwner,
-	TargetFilter_AffectedObjectOwner,
-	TargetFilter_SourceChosenPlayer,
-	TargetFilter_OriginalController,
-	TargetFilter_OriginalSource,
-	TargetFilter_PostReplacementSourceController,
-	TargetFilter_PostReplacementDamageSource,
-	TargetFilter_PostReplacementDamageTarget,
-	TargetFilter_PostReplacementDamageTargetOwner,
-	TargetFilter_DefendingPlayer,
-	TargetFilter_HasChosenName,
-	TargetFilter_ChosenDamageSource,
-	TargetFilter_Named,
-	TargetFilter_Owner,
-	TargetFilter_AllPlayers,
+LinkedExileSnapshot :: struct {
+	exiled_id: ObjectId,
+	owner: PlayerId,
+	mana_value: u32,
+	incarnation: u64,
 }
 
-CounterType_Plus1Plus1 :: struct {
-}
-CounterType_Minus1Minus1 :: struct {
-}
-CounterType_PowerToughness :: struct {
-	power: i32,
-	toughness: i32,
-}
-CounterType_Loyalty :: struct {
-}
-CounterType_Defense :: struct {
-}
-CounterType_Stun :: struct {
-}
-CounterType_Lore :: struct {
-}
-CounterType_Time :: struct {
-}
-CounterType_Fade :: struct {
-}
-CounterType_Age :: struct {
-}
-CounterType_Shield :: struct {
-}
-CounterType_Finality :: struct {
-}
-CounterType_Keyword :: struct {
-	_0: KeywordKind,
-}
-CounterType_Generic :: struct {
-	_0: string,
-}
-CounterType :: union {
-	CounterType_Plus1Plus1,
-	CounterType_Minus1Minus1,
-	CounterType_PowerToughness,
-	CounterType_Loyalty,
-	CounterType_Defense,
-	CounterType_Stun,
-	CounterType_Lore,
-	CounterType_Time,
-	CounterType_Fade,
-	CounterType_Age,
-	CounterType_Shield,
-	CounterType_Finality,
-	CounterType_Keyword,
-	CounterType_Generic,
+ZoneChangeCombatStatus :: struct {
+	attacking: bool,
+	blocking: bool,
+	blocked: bool,
+	attacking_alone: bool,
+	blocking_alone: bool,
+	defending_player: Maybe(PlayerId),
+	attack_target: Maybe(AttackTarget),
+	attack_target_identity: Maybe(ObjectIncarnationRef),
 }
 
-BestowCost_Mana :: struct {
-	_0: ManaCost,
-}
-BestowCost_NonMana :: struct {
-	_0: AbilityCost,
-}
-BestowCost :: union {
-	BestowCost_Mana,
-	BestowCost_NonMana,
+ZoneDeparture :: enum u16 {
+	Moved,
+	LeftGame,
+	LeftGamePhasedOut,
 }
 
-EmbalmCost_Mana :: struct {
-	_0: ManaCost,
-}
-EmbalmCost_NonMana :: struct {
-	_0: AbilityCost,
-}
-EmbalmCost :: union {
-	EmbalmCost_Mana,
-	EmbalmCost_NonMana,
+ControlWindow :: enum u16 {
+	NextTurn,
+	NextCombatPhase,
 }
 
-EternalizeCost_Mana :: struct {
-	_0: ManaCost,
+TurnSegment_Phase :: struct {
+	_0: PhaseGroup,
 }
-EternalizeCost_NonMana :: struct {
-	_0: AbilityCost,
+TurnSegment_CreatedPhase :: struct {
+	_0: Phase,
 }
-EternalizeCost :: union {
-	EternalizeCost_Mana,
-	EternalizeCost_NonMana,
+TurnSegment_Step :: struct {
+	_0: Phase,
 }
-
-ProtectionTarget_Color :: struct {
-	_0: ManaColor,
-}
-ProtectionTarget_CardType :: struct {
-	_0: string,
-}
-ProtectionTarget_Quality :: struct {
-	_0: string,
-}
-ProtectionTarget_Multicolored :: struct {
-}
-ProtectionTarget_ChosenColor :: struct {
-}
-ProtectionTarget_ChosenCardType :: struct {
-}
-ProtectionTarget_ChosenCardName :: struct {
-}
-ProtectionTarget_ChosenPlayer :: struct {
-}
-ProtectionTarget_Everything :: struct {
-}
-ProtectionTarget_Filter :: struct {
-	_0: TargetFilter,
-}
-ProtectionTarget_FromPlayer :: struct {
-	_0: ControllerRef,
-}
-ProtectionTarget_EachColor :: struct {
-	_0: ProtectionColorSet,
-}
-ProtectionTarget :: union {
-	ProtectionTarget_Color,
-	ProtectionTarget_CardType,
-	ProtectionTarget_Quality,
-	ProtectionTarget_Multicolored,
-	ProtectionTarget_ChosenColor,
-	ProtectionTarget_ChosenCardType,
-	ProtectionTarget_ChosenCardName,
-	ProtectionTarget_ChosenPlayer,
-	ProtectionTarget_Everything,
-	ProtectionTarget_Filter,
-	ProtectionTarget_FromPlayer,
-	ProtectionTarget_EachColor,
+TurnSegment :: union {
+	TurnSegment_Phase,
+	TurnSegment_CreatedPhase,
+	TurnSegment_Step,
 }
 
-CyclingCost_Mana :: struct {
-	_0: ManaCost,
-}
-CyclingCost_NonMana :: struct {
-	_0: AbilityCost,
-}
-CyclingCost :: union {
-	CyclingCost_Mana,
-	CyclingCost_NonMana,
-}
-
-FlashbackCost_Mana :: struct {
-	_0: ManaCost,
-}
-FlashbackCost_NonMana :: struct {
-	_0: AbilityCost,
-}
-FlashbackCost :: union {
-	FlashbackCost_Mana,
-	FlashbackCost_NonMana,
-}
-
-WardCost_Mana :: struct {
-	_0: ManaCost,
-}
-WardCost_PayLife :: struct {
-	_0: i32,
-}
-WardCost_PayLifeEqualToPower :: struct {
-}
-WardCost_Discard :: struct {
-	count: u32,
-	filter: Maybe(TargetFilter),
-	selection: CardSelectionMode,
-}
-WardCost_Sacrifice :: struct {
-	count: u32,
-	filter: TargetFilter,
-}
-WardCost_Waterbend :: struct {
-	_0: ManaCost,
-}
-WardCost_Compound :: struct {
-	_0: [dynamic]WardCost,
-}
-WardCost_GetPlayerCounters :: struct {
-	counter_kind: PlayerCounterKind,
-	count: u32,
-}
-WardCost :: union {
-	WardCost_Mana,
-	WardCost_PayLife,
-	WardCost_PayLifeEqualToPower,
-	WardCost_Discard,
-	WardCost_Sacrifice,
-	WardCost_Waterbend,
-	WardCost_Compound,
-	WardCost_GetPlayerCounters,
-}
-
-ActivationRestriction_AsSorcery :: struct {
-}
-ActivationRestriction_AsInstant :: struct {
-}
-ActivationRestriction_DuringYourTurn :: struct {
-}
-ActivationRestriction_DuringYourUpkeep :: struct {
-}
-ActivationRestriction_DuringCombat :: struct {
-}
-ActivationRestriction_BeforeAttackersDeclared :: struct {
-}
-ActivationRestriction_BeforeCombatDamage :: struct {
-}
-ActivationRestriction_OnlyOnceEachTurn :: struct {
-}
-ActivationRestriction_OnlyOnce :: struct {
-}
-ActivationRestriction_MaxTimesEachTurn :: struct {
-	count: u8,
-}
-ActivationRestriction_RequiresCondition :: struct {
-	condition: Maybe(ParsedCondition),
-}
-ActivationRestriction_IsSolved :: struct {
-}
-ActivationRestriction_SourceIsHarnessed :: struct {
-}
-ActivationRestriction_ClassLevelIs :: struct {
-	level: u8,
-}
-ActivationRestriction_LevelCounterRange :: struct {
-	minimum: u32,
-	maximum: Maybe(u32),
-}
-ActivationRestriction_CounterThreshold :: struct {
-	counters: CounterMatch,
-	minimum: u32,
-	maximum: Maybe(u32),
-}
-ActivationRestriction_MatchesCardCastTiming :: struct {
-}
-ActivationRestriction :: union {
-	ActivationRestriction_AsSorcery,
-	ActivationRestriction_AsInstant,
-	ActivationRestriction_DuringYourTurn,
-	ActivationRestriction_DuringYourUpkeep,
-	ActivationRestriction_DuringCombat,
-	ActivationRestriction_BeforeAttackersDeclared,
-	ActivationRestriction_BeforeCombatDamage,
-	ActivationRestriction_OnlyOnceEachTurn,
-	ActivationRestriction_OnlyOnce,
-	ActivationRestriction_MaxTimesEachTurn,
-	ActivationRestriction_RequiresCondition,
-	ActivationRestriction_IsSolved,
-	ActivationRestriction_SourceIsHarnessed,
-	ActivationRestriction_ClassLevelIs,
-	ActivationRestriction_LevelCounterRange,
-	ActivationRestriction_CounterThreshold,
-	ActivationRestriction_MatchesCardCastTiming,
-}
-
-PartnerType_Generic :: struct {
-}
-PartnerType_With :: struct {
-	_0: string,
-}
-PartnerType_FriendsForever :: struct {
-}
-PartnerType_CharacterSelect :: struct {
-}
-PartnerType_DoctorsCompanion :: struct {
-}
-PartnerType_ChooseABackground :: struct {
-}
-PartnerType :: union {
-	PartnerType_Generic,
-	PartnerType_With,
-	PartnerType_FriendsForever,
-	PartnerType_CharacterSelect,
-	PartnerType_DoctorsCompanion,
-	PartnerType_ChooseABackground,
-}
-
-CompanionCondition_EvenManaValues :: struct {
-}
-CompanionCondition_NoRepeatedManaSymbols :: struct {
-}
-CompanionCondition_CreatureTypeRestriction :: struct {
-	_0: [dynamic]string,
-}
-CompanionCondition_MinManaValue :: struct {
-	_0: u32,
-}
-CompanionCondition_MaxPermanentManaValue :: struct {
-	_0: u32,
-}
-CompanionCondition_Singleton :: struct {
-}
-CompanionCondition_OddManaValues :: struct {
-}
-CompanionCondition_SharedCardType :: struct {
-}
-CompanionCondition_MinDeckSizeOver :: struct {
-	_0: u32,
-}
-CompanionCondition_PermanentsHaveActivatedAbilities :: struct {
-}
-CompanionCondition :: union {
-	CompanionCondition_EvenManaValues,
-	CompanionCondition_NoRepeatedManaSymbols,
-	CompanionCondition_CreatureTypeRestriction,
-	CompanionCondition_MinManaValue,
-	CompanionCondition_MaxPermanentManaValue,
-	CompanionCondition_Singleton,
-	CompanionCondition_OddManaValues,
-	CompanionCondition_SharedCardType,
-	CompanionCondition_MinDeckSizeOver,
-	CompanionCondition_PermanentsHaveActivatedAbilities,
-}
-
-MorphCost_Mana :: struct {
-	_0: ManaCost,
-}
-MorphCost_NonMana :: struct {
-	_0: AbilityCost,
-}
-MorphCost :: union {
-	MorphCost_Mana,
-	MorphCost_NonMana,
-}
-
-EmergeCost :: struct {
-	mana_cost: ManaCost,
-	sacrifice_filter: TargetFilter,
-}
-
-EscapeCost_Mana :: struct {
-	_0: ManaCost,
-}
-EscapeCost_NonMana :: struct {
-	_0: AbilityCost,
-}
-EscapeCost :: union {
-	EscapeCost_Mana,
-	EscapeCost_NonMana,
-}
-
-EvokeCost_Mana :: struct {
-	_0: ManaCost,
-}
-EvokeCost_NonMana :: struct {
-	_0: AbilityCost,
-}
-EvokeCost :: union {
-	EvokeCost_Mana,
-	EvokeCost_NonMana,
-}
-
-DisguiseCost_Mana :: struct {
-	_0: ManaCost,
-}
-DisguiseCost_Reduced :: struct {
-	cost: ManaCost,
-	reduction: ^CostReduction,
-}
-DisguiseCost :: union {
-	DisguiseCost_Mana,
-	DisguiseCost_Reduced,
-}
-
-BlitzCost_Mana :: struct {
-	_0: ManaCost,
-}
-BlitzCost_NonMana :: struct {
-	_0: AbilityCost,
-}
-BlitzCost :: union {
-	BlitzCost_Mana,
-	BlitzCost_NonMana,
-}
-
-BuybackCost_Mana :: struct {
-	_0: ManaCost,
-}
-BuybackCost_NonMana :: struct {
-	_0: AbilityCost,
-}
-BuybackCost :: union {
-	BuybackCost_Mana,
-	BuybackCost_NonMana,
-}
-
-EchoCost_Mana :: struct {
-	_0: ManaCost,
-}
-EchoCost_NonMana :: struct {
-	_0: AbilityCost,
-}
-EchoCost :: union {
-	EchoCost_Mana,
-	EchoCost_NonMana,
-}
-
-EntwineCost_Mana :: struct {
-	_0: ManaCost,
-}
-EntwineCost_NonMana :: struct {
-	_0: AbilityCost,
-}
-EntwineCost :: union {
-	EntwineCost_Mana,
-	EntwineCost_NonMana,
-}
-
-CostObjectCount_Exactly :: struct {
-	count: u32,
-}
-CostObjectCount_AtLeast :: struct {
-	count: u32,
-}
-CostObjectCount :: union {
-	CostObjectCount_Exactly,
-	CostObjectCount_AtLeast,
+SourceExclusion :: enum u16 {
+	Include,
+	Exclude,
 }
 
 TypedFilter :: struct {
@@ -2001,243 +12026,1550 @@ TypedFilter :: struct {
 	properties: [dynamic]FilterProp,
 }
 
-AbilityCost_Mana :: struct {
-	cost: ManaCost,
+ControllerRef_You :: struct {
 }
-AbilityCost_ManaDynamic :: struct {
-	quantity: QuantityExpr,
+ControllerRef_Opponent :: struct {
 }
-AbilityCost_Tap :: struct {
+ControllerRef_ScopedPlayer :: struct {
 }
-AbilityCost_Untap :: struct {
+ControllerRef_TargetPlayer :: struct {
 }
-AbilityCost_Loyalty :: struct {
+ControllerRef_TargetOpponent :: struct {
+}
+ControllerRef_ParentTargetController :: struct {
+}
+ControllerRef_EventTargetController :: struct {
+}
+ControllerRef_ParentTargetOwner :: struct {
+}
+ControllerRef_DefendingPlayer :: struct {
+}
+ControllerRef_ChosenPlayer :: struct {
+	index: u8,
+}
+ControllerRef_DeclaredPlayer :: struct {
+	group: ChosenGroupId,
+}
+ControllerRef_SourceChosenPlayer :: struct {
+}
+ControllerRef_TriggeringPlayer :: struct {
+}
+ControllerRef_EnchantedPlayer :: struct {
+}
+ControllerRef_ActivePlayer :: struct {
+}
+ControllerRef_SpecificPlayer :: struct {
+	id: PlayerId,
+}
+ControllerRef :: union {
+	ControllerRef_You,
+	ControllerRef_Opponent,
+	ControllerRef_ScopedPlayer,
+	ControllerRef_TargetPlayer,
+	ControllerRef_TargetOpponent,
+	ControllerRef_ParentTargetController,
+	ControllerRef_EventTargetController,
+	ControllerRef_ParentTargetOwner,
+	ControllerRef_DefendingPlayer,
+	ControllerRef_ChosenPlayer,
+	ControllerRef_DeclaredPlayer,
+	ControllerRef_SourceChosenPlayer,
+	ControllerRef_TriggeringPlayer,
+	ControllerRef_EnchantedPlayer,
+	ControllerRef_ActivePlayer,
+	ControllerRef_SpecificPlayer,
+}
+
+StackAbilityKind :: enum u16 {
+	Activated,
+	Triggered,
+}
+
+PlayerFilter_Controller :: struct {
+}
+PlayerFilter_Opponent :: struct {
+}
+PlayerFilter_DefendingPlayer :: struct {
+}
+PlayerFilter_OpponentLostLife :: struct {
+}
+PlayerFilter_OpponentGainedLife :: struct {
+}
+PlayerFilter_HasLostTheGame :: struct {
+}
+PlayerFilter_OpponentDealtDamage :: struct {
+	kind: DamageKindFilter,
+	source: ^TargetFilter,
+	min_sources: u32,
+	relation: PlayerRelation,
+}
+PlayerFilter_OpponentAttacked :: struct {
+	subject: AttackSubject,
+	scope: CombatHistoryScope,
+}
+PlayerFilter_OpponentAttackingEnchantedPlayer :: struct {
+}
+PlayerFilter_All :: struct {
+}
+PlayerFilter_AllExcept :: struct {
+	exclude: ^PlayerFilter,
+	relation: PlayerRelation,
+}
+PlayerFilter_HighestSpeed :: struct {
+}
+PlayerFilter_ZoneChangedThisWay :: struct {
+}
+PlayerFilter_PerformedActionThisWay :: struct {
+	relation: PlayerRelation,
+	action: PlayerActionKind,
+}
+PlayerFilter_OwnersOfCardsExiledBySource :: struct {
+}
+PlayerFilter_TriggeringPlayer :: struct {
+}
+PlayerFilter_OpponentOtherThanTriggering :: struct {
+}
+PlayerFilter_OpponentOfTriggeringPlayer :: struct {
+}
+PlayerFilter_OpponentOfTriggeringPlayerNotAttacked :: struct {
+}
+PlayerFilter_VotedFor :: struct {
+	choice_index: u32,
+}
+PlayerFilter_ParentObjectTargetController :: struct {
+}
+PlayerFilter_ControlsCount :: struct {
+	relation: PlayerRelation,
+	filter: TargetFilter,
+	comparator: Comparator,
+	count: ^QuantityExpr,
+}
+PlayerFilter_PlayerAttribute :: struct {
+	relation: PlayerRelation,
+	attr: ^QuantityRef,
+	comparator: Comparator,
+	value: ^QuantityExpr,
+}
+PlayerFilter_ChosenPlayer :: struct {
+	index: u8,
+}
+PlayerFilter_ParentObjectTargetOwner :: struct {
+}
+PlayerFilter_GrantingObjectCaster :: struct {
+}
+PlayerFilter_AnyOf :: struct {
+	filters: [dynamic]PlayerFilter,
+}
+PlayerFilter_TargetPlayer :: struct {
+}
+PlayerFilter_TrackedSetPossessor :: struct {
+	relation: PlayerRelation,
+	possession: PossessionAxis,
+	filter: TargetFilter,
+	caused_by: Maybe(ThisWayCause),
+}
+PlayerFilter :: union {
+	PlayerFilter_Controller,
+	PlayerFilter_Opponent,
+	PlayerFilter_DefendingPlayer,
+	PlayerFilter_OpponentLostLife,
+	PlayerFilter_OpponentGainedLife,
+	PlayerFilter_HasLostTheGame,
+	PlayerFilter_OpponentDealtDamage,
+	PlayerFilter_OpponentAttacked,
+	PlayerFilter_OpponentAttackingEnchantedPlayer,
+	PlayerFilter_All,
+	PlayerFilter_AllExcept,
+	PlayerFilter_HighestSpeed,
+	PlayerFilter_ZoneChangedThisWay,
+	PlayerFilter_PerformedActionThisWay,
+	PlayerFilter_OwnersOfCardsExiledBySource,
+	PlayerFilter_TriggeringPlayer,
+	PlayerFilter_OpponentOtherThanTriggering,
+	PlayerFilter_OpponentOfTriggeringPlayer,
+	PlayerFilter_OpponentOfTriggeringPlayerNotAttacked,
+	PlayerFilter_VotedFor,
+	PlayerFilter_ParentObjectTargetController,
+	PlayerFilter_ControlsCount,
+	PlayerFilter_PlayerAttribute,
+	PlayerFilter_ChosenPlayer,
+	PlayerFilter_ParentObjectTargetOwner,
+	PlayerFilter_GrantingObjectCaster,
+	PlayerFilter_AnyOf,
+	PlayerFilter_TargetPlayer,
+	PlayerFilter_TrackedSetPossessor,
+}
+
+SeatDirection :: enum u16 {
+	Left,
+	Right,
+}
+
+ChoiceAssignmentSide :: enum u16 {
+	Objects,
+	PlayerForObject,
+}
+
+GameFormat_Standard :: struct {
+}
+GameFormat_Limited :: struct {
+}
+GameFormat_Commander :: struct {
+}
+GameFormat_Pioneer :: struct {
+}
+GameFormat_Modern :: struct {
+}
+GameFormat_Premodern :: struct {
+}
+GameFormat_Legacy :: struct {
+}
+GameFormat_Vintage :: struct {
+}
+GameFormat_Historic :: struct {
+}
+GameFormat_Timeless :: struct {
+}
+GameFormat_Pauper :: struct {
+}
+GameFormat_PauperCommander :: struct {
+}
+GameFormat_DuelCommander :: struct {
+}
+GameFormat_TinyLeaders :: struct {
+}
+GameFormat_Oathbreaker :: struct {
+}
+GameFormat_Brawl :: struct {
+}
+GameFormat_HistoricBrawl :: struct {
+}
+GameFormat_FreeForAll :: struct {
+}
+GameFormat_TwoHeadedGiant :: struct {
+}
+GameFormat_TwoHeadedGiantCommander :: struct {
+}
+GameFormat_Archenemy :: struct {
+}
+GameFormat_ArchenemyCommander :: struct {
+}
+GameFormat_Planechase :: struct {
+}
+GameFormat_PlanechaseCommander :: struct {
+}
+GameFormat_Momir :: struct {
+}
+GameFormat_Horde :: struct {
+}
+GameFormat_CommanderDraft :: struct {
+}
+GameFormat_Freeform :: struct {
+}
+GameFormat_FreeformCommander :: struct {
+}
+GameFormat_Dandan :: struct {
+}
+GameFormat_Custom :: struct {
+	_0: CustomFormatId,
+}
+GameFormat :: union {
+	GameFormat_Standard,
+	GameFormat_Limited,
+	GameFormat_Commander,
+	GameFormat_Pioneer,
+	GameFormat_Modern,
+	GameFormat_Premodern,
+	GameFormat_Legacy,
+	GameFormat_Vintage,
+	GameFormat_Historic,
+	GameFormat_Timeless,
+	GameFormat_Pauper,
+	GameFormat_PauperCommander,
+	GameFormat_DuelCommander,
+	GameFormat_TinyLeaders,
+	GameFormat_Oathbreaker,
+	GameFormat_Brawl,
+	GameFormat_HistoricBrawl,
+	GameFormat_FreeForAll,
+	GameFormat_TwoHeadedGiant,
+	GameFormat_TwoHeadedGiantCommander,
+	GameFormat_Archenemy,
+	GameFormat_ArchenemyCommander,
+	GameFormat_Planechase,
+	GameFormat_PlanechaseCommander,
+	GameFormat_Momir,
+	GameFormat_Horde,
+	GameFormat_CommanderDraft,
+	GameFormat_Freeform,
+	GameFormat_FreeformCommander,
+	GameFormat_Dandan,
+	GameFormat_Custom,
+}
+
+DeckSizeRule_Minimum :: struct {
+	_0: u16,
+}
+DeckSizeRule_Exactly :: struct {
+	_0: u16,
+}
+DeckSizeRule :: union {
+	DeckSizeRule_Minimum,
+	DeckSizeRule_Exactly,
+}
+
+DeckSizeOrigin :: enum u16 {
+	Registry,
+	DraftSession,
+}
+
+RangeOfInfluenceConfig :: struct {
+	default_range: u8,
+	player_overrides: map[PlayerId]u8,
+}
+
+SideboardPolicy_Forbidden :: struct {
+}
+SideboardPolicy_Limited :: struct {
+	_0: u32,
+}
+SideboardPolicy_Unlimited :: struct {
+}
+SideboardPolicy :: union {
+	SideboardPolicy_Forbidden,
+	SideboardPolicy_Limited,
+	SideboardPolicy_Unlimited,
+}
+
+HordeRuleset :: struct {
+	challenge_deck: ChallengeDeck,
+	wave: WaveTermination,
+	survivor_setup_turns: u8,
+	combined_base_life: i32,
+	per_extra_survivor_life_delta: i32,
+	horde_creatures_forced_attackers: bool,
+	horde_creatures_haste: bool,
+	legendary_death: HordeLegendaryDeath,
+	post_combat_activation: HordePostCombatActivation,
+	survivor_deck_format: SurvivorDeckFormat,
+	co_horde_decks: [dynamic]ChallengeDeck,
+	boss_stages: Maybe(BossStages),
+}
+
+CustomFormatRules :: struct {
+	id: CustomFormatId,
+	structural: StructuralRules,
+	legality: LegalityRules,
+}
+
+TurnBoundary :: enum u16 {
+	EndOfCurrentTurn,
+	MyNextTurnStart,
+}
+
+PhaseStopScope :: enum u16 {
+	AllTurns,
+	OwnTurn,
+	OpponentsTurns,
+}
+
+CounterClass :: enum u16 {
+	Plus1Plus1,
+	Minus1Minus1,
+	Loyalty,
+	Defense,
+	Poison,
+	Energy,
+	Other,
+}
+
+ObjectClass :: enum u16 {
+	Creature,
+	Planeswalker,
+	Battle,
+	Player,
+	Other,
+}
+
+TriggerKind :: enum u16 {
+	Proliferate,
+	Magecraft,
+	Constellation,
+	Landfall,
+	Other,
+}
+
+KeywordKind :: enum u16 {
+	Flying,
+	FirstStrike,
+	DoubleStrike,
+	Trample,
+	TrampleOverPlaneswalkers,
+	Deathtouch,
+	Lifelink,
+	Vigilance,
+	Haste,
+	Reach,
+	Defender,
+	Menace,
+	Indestructible,
+	Hexproof,
+	Shroud,
+	Flash,
+	Fear,
+	Intimidate,
+	Skulk,
+	Shadow,
+	Horsemanship,
+	Wither,
+	Infect,
+	Afflict,
+	Prowess,
+	Undying,
+	Persist,
+	Cascade,
+	Exalted,
+	Flanking,
+	Evolve,
+	Extort,
+	Exploit,
+	Explore,
+	Ascend,
+	Storied,
+	StartYourEngines,
+	Dredge,
+	Modular,
+	Renown,
+	Fabricate,
+	Graft,
+	Annihilator,
+	Bushido,
+	Frenzy,
+	Tribute,
+	Soulbond,
+	Unearth,
+	Convoke,
+	Waterbend,
+	Delve,
+	Devoid,
+	Changeling,
+	Phasing,
+	Battlecry,
+	Decayed,
+	Unleash,
+	Riot,
+	Afterlife,
+	Enchant,
+	EtbCounter,
+	Reconfigure,
+	LivingWeapon,
+	JobSelect,
+	TotemArmor,
+	Bestow,
+	Embalm,
+	Eternalize,
+	Fading,
+	Vanishing,
+	Protection,
+	Kicker,
+	Cycling,
+	Typecycling,
+	Flashback,
+	Retrace,
+	Ward,
+	Equip,
+	Landwalk,
+	Rampage,
+	Absorb,
+	Crew,
+	Partner,
+	Companion,
+	Doctor,
+	Background,
+	CommanderNinjutsu,
+	Ninjutsu,
+	Sneak,
+	Mutate,
+	Escape,
+	Morph,
+	Megamorph,
+	Madness,
+	Disguise,
+	Mayhem,
+	Suspend,
+	Blitz,
+	Disturb,
+	UnearthAlt,
+	Foretell,
+	Plot,
+	Gift,
+	Outlast,
+	Dash,
+	Craft,
+	Harmonize,
+	Warp,
+	Devour,
+	Offspring,
+	Splice,
+	Bargain,
+	Sunburst,
+	Champion,
+	Training,
+	Assist,
+	Augment,
+	Aftermath,
+	JumpStart,
+	Cipher,
+	Transmute,
+	Transfigure,
+	Cleave,
+	Undaunted,
+	Station,
+	Paradigm,
+	Miracle,
+	Replicate,
+	Awaken,
+	ForMirrodin,
+	MoreThanMeetsTheEye,
+	Freerunning,
+	Increment,
+	Firebending,
+	Specialize,
+	Offering,
+	Escalate,
+	Recover,
+	Fuse,
+	BandsWithOther,
+	Unknown,
+}
+
+TokenGrowth :: struct {
+	profile: ^CopiableValues,
+	per_cycle_delta: u32,
+}
+
+CounterGrowth :: struct {
+	object: ObjectId,
+	counter: CounterType,
+	per_cycle_delta: u32,
+}
+
+MatchForfeitCause :: enum u16 {
+	MatchConcede,
+	HostKick,
+	DisconnectedForfeit,
+}
+
+DeckEntry :: struct {
+	card: CardFace,
+	count: u32,
+}
+
+CommanderBracketTier :: enum u16 {
+	Exhibition,
+	Core,
+	Upgraded,
+	Optimized,
+	Cedh,
+}
+
+DeckPrintingRecord :: struct {
+	rows: [dynamic]DeckPrinting,
+	lookup_names: [dynamic]DeckFaceLookupName,
+}
+
+DisplayOnly_ptr_DeckPrintingRecord :: distinct ^DeckPrintingRecord
+
+TriggerDefinitionOccurrenceRef_Printed :: struct {
+	base_set: TriggerBaseSetInstanceRef,
+	printed_index: int,
+}
+TriggerDefinitionOccurrenceRef_CopiedValue :: struct {
+	copy_effect: CopyEffectInstanceRef,
+	copied_slot: int,
+	printed_origin: Maybe(TriggerPrintedOrigin),
+}
+TriggerDefinitionOccurrenceRef_KeywordCompanion :: struct {
+	grant_instance: TriggerGrantInstanceRef,
+	companion_index: int,
+}
+TriggerDefinitionOccurrenceRef_CopyRetained :: struct {
+	grant_instance: TriggerGrantInstanceRef,
+	source_base_set: TriggerBaseSetInstanceRef,
+	source_printed_index: int,
+}
+TriggerDefinitionOccurrenceRef_Granted :: struct {
+	grant_instance: TriggerGrantInstanceRef,
+}
+TriggerDefinitionOccurrenceRef_ExpandedGrant :: struct {
+	grant_instance: TriggerGrantInstanceRef,
+	provider: ^TriggerDefinitionRef,
+	provider_output_index: int,
+}
+TriggerDefinitionOccurrenceRef_Unmaterialized :: struct {
+}
+TriggerDefinitionOccurrenceRef :: union {
+	TriggerDefinitionOccurrenceRef_Printed,
+	TriggerDefinitionOccurrenceRef_CopiedValue,
+	TriggerDefinitionOccurrenceRef_KeywordCompanion,
+	TriggerDefinitionOccurrenceRef_CopyRetained,
+	TriggerDefinitionOccurrenceRef_Granted,
+	TriggerDefinitionOccurrenceRef_ExpandedGrant,
+	TriggerDefinitionOccurrenceRef_Unmaterialized,
+}
+
+ActivationTargetFact_Player :: struct {
+	_0: PlayerId,
+}
+ActivationTargetFact_Object :: struct {
+	id: ObjectId,
+	lki: ^LKISnapshot,
+}
+ActivationTargetFact :: union {
+	ActivationTargetFact_Player,
+	ActivationTargetFact_Object,
+}
+
+EntryTokenStatus :: enum u16 {
+	Token,
+	Nontoken,
+}
+
+FaceState :: enum u16 {
+	FaceUp,
+	FaceDown,
+}
+
+NextSpellModifier_CantBeCountered :: struct {
+}
+NextSpellModifier_HasKeyword :: struct {
+	keyword: Keyword,
+}
+NextSpellModifier_CastAsThoughFlash :: struct {
+}
+NextSpellModifier_WithoutPayingManaCost :: struct {
+}
+NextSpellModifier :: union {
+	NextSpellModifier_CantBeCountered,
+	NextSpellModifier_HasKeyword,
+	NextSpellModifier_CastAsThoughFlash,
+	NextSpellModifier_WithoutPayingManaCost,
+}
+
+ProductKnowledgeFact :: struct {
+	viewer: PlayerId,
+	owner: PlayerId,
+	zone: Zone,
+	identity: ObjectIncarnationRef,
+	library_epoch: Maybe(u64),
+}
+
+ZoneChangeLibraryKnowledgeStamp :: struct {
+	recorded_turn_number: u32,
+	turn_zone_change_index: int,
+	source: Maybe(LibraryKnowledgeStamp),
+	destination: Maybe(LibraryKnowledgeStamp),
+}
+
+FrameVec :: struct {
+	frames: [dynamic]ResolutionFrame,
+}
+
+ResolutionPaymentTranscriptEntry :: struct {
+	authenticated_actor: PlayerId,
+	semantic_owner: PlayerId,
+	action: GameAction,
+}
+
+PaymentRecoveryCheckpoint :: struct {
+	state: ^GameState,
+	events: [dynamic]GameEvent,
+	log_entries: [dynamic]GameLogEntry,
+	consumed: int,
+}
+
+SpellCastUndo_Value :: struct {
+	path: [dynamic]string,
+	before: Maybe(json.Value),
+}
+SpellCastUndo_Splice :: struct {
+	path: [dynamic]string,
+	index: int,
+	remove: int,
+	insert: [dynamic]json.Value,
+}
+SpellCastUndo_Hand :: struct {
+	path: [dynamic]string,
+	removed: [dynamic]Tuple2(int, json.Value),
+	added: [dynamic]json.Value,
+}
+SpellCastUndo :: union {
+	SpellCastUndo_Value,
+	SpellCastUndo_Splice,
+	SpellCastUndo_Hand,
+}
+
+SeatCreatedTokens :: struct {
+	seat: PlayerId,
+	tokens: [dynamic]ObjectIncarnationRef,
+}
+
+InstructionWatch :: enum u16 {
+	Watched,
+	Unwatched,
+}
+
+CoinFlipResult :: enum u16 {
+	Won,
+	Lost,
+}
+
+PendingPlayerScopeSacrificeCompletion :: struct {
+	announced: [dynamic]ObjectId,
+	sacrificed: [dynamic]ObjectId,
+	zone_changed: [dynamic]ObjectId,
+	departed_zone_change_indices: [dynamic]int,
+	deferred_events: [dynamic]GameEvent,
+	spans_replacement_pause: bool,
+	effect_kind: Maybe(EffectKind),
+	follow_up: Maybe(PendingPlayerScopeSacrificeFollowUp),
+	followed_up_sacrifices: [dynamic]ObjectId,
+	publish_fresh_tracked_set: bool,
+	propagate_parent_context: bool,
+	pending_deliveries: [dynamic]PendingSacrificeDelivery,
+	consult_pause: Maybe(PendingSacrificeProvenance),
+}
+
+PendingPlayerScopeSacrificeFollowUp_Exploit :: struct {
+	exploiter: ObjectId,
+	exploiter_incarnation: Maybe(u64),
+}
+PendingPlayerScopeSacrificeFollowUp :: union {
+	PendingPlayerScopeSacrificeFollowUp_Exploit,
+}
+
+PendingSacrificeDelivery :: struct {
+	sacrifice: PendingSacrificeMove,
+	rider: Maybe(PostReplacementDrain),
+}
+
+PlayerScopeUnlessSelection :: struct {
+	player: PlayerId,
+	action: PlayerScopeUnlessAction,
+	objects: [dynamic]ObjectIncarnationRef,
+}
+
+UnlessPayModifier :: struct {
+	cost: AbilityCost,
+	payer: TargetFilter,
+}
+
+SimultaneousUnlessPhase_Collecting :: struct {
+	_0: SimultaneousUnlessCollection,
+}
+SimultaneousUnlessPhase_Delivering :: struct {
+	_0: SimultaneousUnlessDelivery,
+}
+SimultaneousUnlessPhase :: union {
+	SimultaneousUnlessPhase_Collecting,
+	SimultaneousUnlessPhase_Delivering,
+}
+
+DiscardBatchCursor_All :: struct {
+	remaining: [dynamic]ObjectId,
+}
+DiscardBatchCursor_Random :: struct {
+	pool: [dynamic]ObjectId,
+	remaining: int,
+}
+DiscardBatchCursor_Ordered :: struct {
+	remaining: [dynamic]ObjectIncarnationRef,
+}
+DiscardBatchCursor :: union {
+	DiscardBatchCursor_All,
+	DiscardBatchCursor_Random,
+	DiscardBatchCursor_Ordered,
+}
+
+PendingDiscardBatchCompletion_Standard :: struct {
+}
+PendingDiscardBatchCompletion_DiscardChoice :: struct {
+	chosen: [dynamic]ObjectIncarnationRef,
+}
+PendingDiscardBatchCompletion :: union {
+	PendingDiscardBatchCompletion_Standard,
+	PendingDiscardBatchCompletion_DiscardChoice,
+}
+
+PendingDiscardFanOut :: struct {
+	scoped_template: ^ResolvedAbility,
+	outer: ^ResolvedAbility,
+	original_controller: PlayerId,
+	remaining_players: [dynamic]PlayerId,
+	matching_players: [dynamic]PlayerId,
+	after_scope_needs_linked_exile: bool,
+}
+
+HeroEventApplyStep_Sacrifice :: struct {
+	hero: PlayerId,
+	card: ObjectId,
+}
+HeroEventApplyStep_Discard :: struct {
+	hero: PlayerId,
+	card: ObjectId,
+}
+HeroEventApplyStep_Destroy :: struct {
+	card: ObjectId,
+}
+HeroEventApplyStep_LoseLife :: struct {
+	player: PlayerId,
 	amount: i32,
 }
-AbilityCost_SayPhrase :: struct {
-	phrase: string,
+HeroEventApplyStep_GainLife :: struct {
+	player: PlayerId,
+	amount: i32,
 }
-AbilityCost_Sacrifice :: struct {
-	_0: SacrificeCost,
-}
-AbilityCost_PayLife :: struct {
-	amount: QuantityExpr,
-}
-AbilityCost_Discard :: struct {
-	count: QuantityExpr,
-	filter: Maybe(TargetFilter),
-	selection: CardSelectionMode,
-	self_scope: DiscardSelfScope,
-}
-AbilityCost_Exile :: struct {
-	count: u32,
-	zone: Maybe(Zone),
-	filter: Maybe(TargetFilter),
-}
-AbilityCost_ExileMaterials :: struct {
-	materials: TargetFilter,
-	count: CostObjectCount,
-}
-AbilityCost_CollectEvidence :: struct {
+HeroEventApplyStep_Damage :: struct {
+	card: ObjectId,
 	amount: u32,
 }
-AbilityCost_ExileWithAggregate :: struct {
+HeroEventApplyStep_ZoneMove :: struct {
+	card: ObjectId,
+	dest: Zone,
+}
+HeroEventApplyStep_ShuffleLibrary :: struct {
+	player: PlayerId,
+}
+HeroEventApplyStep_DiscardFiredBaxters :: struct {
+	cards: [dynamic]ObjectId,
+}
+HeroEventApplyStep_Tap :: struct {
+	card: ObjectId,
+}
+HeroEventApplyStep_AddCounters :: struct {
+	card: ObjectId,
+	counter: CounterType,
+	count: u32,
+}
+HeroEventApplyStep_Bounce :: struct {
+	card: ObjectId,
+}
+HeroEventApplyStep :: union {
+	HeroEventApplyStep_Sacrifice,
+	HeroEventApplyStep_Discard,
+	HeroEventApplyStep_Destroy,
+	HeroEventApplyStep_LoseLife,
+	HeroEventApplyStep_GainLife,
+	HeroEventApplyStep_Damage,
+	HeroEventApplyStep_ZoneMove,
+	HeroEventApplyStep_ShuffleLibrary,
+	HeroEventApplyStep_DiscardFiredBaxters,
+	HeroEventApplyStep_Tap,
+	HeroEventApplyStep_AddCounters,
+	HeroEventApplyStep_Bounce,
+}
+
+HeroEventDepartureCarry :: struct {
+	ids: [dynamic]ObjectId,
+	record_indices: [dynamic]int,
+}
+
+TokenImageRef :: struct {
+	scryfall_id: string,
+	scryfall_oracle_id: Maybe(string),
+	face_name: Maybe(string),
+	preset_id: string,
+}
+
+DamagePostLossStage :: enum u16 {
+	EmitAndRecord,
+	LifelinkGain,
+}
+
+DamageContextSnapshot :: struct {
+	source_id: ObjectId,
+	source_incarnation: Maybe(u64),
+	controller: PlayerId,
+	source_is_creature: bool,
+	has_deathtouch: bool,
+	has_lifelink: bool,
+	has_wither: bool,
+	has_infect: bool,
+	combat_damage_poison: u32,
+	excess_recipient: Maybe(ExcessRecipient),
+	lifelink_bonus: u32,
+}
+
+PendingMassLibraryOrderBatches_Typed :: struct {
+	_0: [dynamic]MassLibraryOrderBatch,
+}
+PendingMassLibraryOrderBatches_Legacy :: struct {
+	_0: [dynamic]Tuple2(PlayerId, [dynamic]ObjectId),
+}
+PendingMassLibraryOrderBatches :: union {
+	PendingMassLibraryOrderBatches_Typed,
+	PendingMassLibraryOrderBatches_Legacy,
+}
+
+ScopedLibrarySearchPhase_CollectAcceptance :: struct {
+	remaining_players: [dynamic]PlayerId,
+	accepted_players: [dynamic]PlayerId,
+	acceptance_authorities: [dynamic]Tuple2(PlayerId, ActiveSearchDecisionAuthority),
+	current_player: Maybe(PlayerId),
+}
+ScopedLibrarySearchPhase_CollectSelections :: struct {
+	prepared_choices: [dynamic]PreparedScopedLibrarySearchChoice,
+	next_selection_index: int,
+	current_player: Maybe(PlayerId),
+	selections: [dynamic]Tuple2(PlayerId, [dynamic]ObjectIncarnationRef),
+	frozen_dispositions: [dynamic]FrozenScopedSearchFoundDisposition,
+	pending_reveals: [dynamic]Tuple2(PlayerId, [dynamic]ObjectIncarnationRef),
+}
+ScopedLibrarySearchPhase_Delivering :: struct {
+	search_keys: [dynamic]PlayerId,
+}
+ScopedLibrarySearchPhase :: union {
+	ScopedLibrarySearchPhase_CollectAcceptance,
+	ScopedLibrarySearchPhase_CollectSelections,
+	ScopedLibrarySearchPhase_Delivering,
+}
+
+BoundSearchFoundGrant :: struct {
+	source: ObjectIncarnationRef,
+	controller: PlayerId,
+	grantee: PlayerId,
+	mana_spend_permission: Maybe(ManaSpendPermission),
+}
+
+PendingSearchFoundContinuation_Standard :: struct {
+	split: Maybe(SearchDestinationSplit),
+}
+PendingSearchFoundContinuation_Scoped :: struct {
+}
+PendingSearchFoundContinuation :: union {
+	PendingSearchFoundContinuation_Standard,
+	PendingSearchFoundContinuation_Scoped,
+}
+
+SearchFoundVisibility :: enum u16 {
+	Private,
+	Public,
+}
+
+DieResultBranch :: struct {
+	min: u8,
+	max: u8,
+	effect: ^AbilityDefinition,
+}
+
+DieRollModifier_Add :: struct {
+	value: QuantityExpr,
+}
+DieRollModifier_Subtract :: struct {
+	value: QuantityExpr,
+}
+DieRollModifier :: union {
+	DieRollModifier_Add,
+	DieRollModifier_Subtract,
+}
+
+DieRollContinuation :: enum u16 {
+	Resolution,
+	RollToVisitAttractions,
+}
+
+CapturedDeclarationPayload :: struct {
+	targets: [dynamic]TargetRef,
+	target_pins: [dynamic]Maybe(ObjectIncarnationRef),
+	ahead: int,
+}
+
+DeclaredPlayerTarget_Legal :: struct {
+	_0: PlayerId,
+}
+DeclaredPlayerTarget_Illegal :: struct {
+}
+DeclaredPlayerTarget_Undeclared :: struct {
+}
+DeclaredPlayerTarget :: union {
+	DeclaredPlayerTarget_Legal,
+	DeclaredPlayerTarget_Illegal,
+	DeclaredPlayerTarget_Undeclared,
+}
+
+MayTriggerAutoChoiceSelector_ExactInstance :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	origin: MayTriggerOrigin,
+}
+MayTriggerAutoChoiceSelector_SameCard :: struct {
+	player: PlayerId,
+	printed_ref: PrintedCardRef,
+	printed_occurrence: int,
+}
+MayTriggerAutoChoiceSelector :: union {
+	MayTriggerAutoChoiceSelector_ExactInstance,
+	MayTriggerAutoChoiceSelector_SameCard,
+}
+
+UnTellKind_Physical :: struct {
+	_0: PhysicalTell,
+}
+UnTellKind_SaysWord :: struct {
+}
+UnTellKind_SaysNumber :: struct {
+}
+UnTellKind :: union {
+	UnTellKind_Physical,
+	UnTellKind_SaysWord,
+	UnTellKind_SaysNumber,
+}
+
+GotchaOffer :: struct {
+	id: u64,
+	player: PlayerId,
+	source: ObjectIdentityBinding,
+	returns: ObjectIdentityBinding,
+}
+
+ReplacementAutoChoiceIdentity_Definition :: struct {
+	source: ObjectIncarnationRef,
+	index: u64,
+	definition: ^ReplacementDefinition,
+	rider: ^ResolvedAbility,
+}
+ReplacementAutoChoiceIdentity_Mana :: struct {
+	source: ObjectIncarnationRef,
+	controller: PlayerId,
+	filter: Maybe(ManaColor),
+	action: StepEndManaAction,
+}
+ReplacementAutoChoiceIdentity :: union {
+	ReplacementAutoChoiceIdentity_Definition,
+	ReplacementAutoChoiceIdentity_Mana,
+}
+
+ReplayMode_Static :: struct {
+}
+ReplayMode_Scheduled :: struct {
+	count: IterationCount,
+}
+ReplayMode :: union {
+	ReplayMode_Static,
+	ReplayMode_Scheduled,
+}
+
+DecisionGroupKey :: struct {
+	sources: [dynamic]Tuple2(YieldTarget, u8),
+	kind: DecisionKind,
+}
+
+YieldTarget_ThisObject :: struct {
+	source_id: ObjectId,
+	incarnation: Maybe(u64),
+	trigger_description: Maybe(string),
+}
+YieldTarget_AllCopies :: struct {
+	card_id: CardId,
+	trigger_description: Maybe(string),
+}
+YieldTarget :: union {
+	YieldTarget_ThisObject,
+	YieldTarget_AllCopies,
+}
+
+BasicLandType :: enum u16 {
+	Plains,
+	Island,
+	Swamp,
+	Mountain,
+	Forest,
+}
+
+Parity :: enum u16 {
+	Odd,
+	Even,
+}
+
+CardPredicateChoice_Land :: struct {
+}
+CardPredicateChoice_Nonland :: struct {
+}
+CardPredicateChoice_Color :: struct {
+	_0: ManaColor,
+}
+CardPredicateChoice :: union {
+	CardPredicateChoice_Land,
+	CardPredicateChoice_Nonland,
+	CardPredicateChoice_Color,
+}
+
+StickerLocator :: struct {
+	sheet: string,
+	index: u8,
+}
+
+CardDatabase :: struct {
+	cards: map[string]CardRules,
+	face_index: FaceIndex,
+	name_alias_index: map[string]string,
+	oracle_id_index: map[string][dynamic]string,
+	face_order_index: map[string]int,
+	search_face_keys: [dynamic]string,
+	layout_index: map[string]LayoutKind,
+	legalities: map[string]map[LegalityFormat]LegalityStatus,
+	printings_index: map[string][dynamic]string,
+	rulings_index: map[string][dynamic]Ruling,
+	errors: [dynamic]Tuple2(string, string),
+	bracket_lists: BracketLists,
+	bracket_signals_by_name: map[string]BracketSignals,
+	creature_type_vocabulary: [dynamic]string,
+	valid_subtypes: [dynamic]string,
+}
+
+BoosterProduct :: struct {
+	set_code: string,
+	commons: [dynamic]CardFace,
+	uncommons: [dynamic]CardFace,
+	rares: [dynamic]CardFace,
+	mythics: [dynamic]CardFace,
+}
+
+TargetReadOrigin :: enum u16 {
+	OwnAnnouncement,
+	ParentAnnouncement,
+}
+
+QuantityRef_HandSize :: struct {
+	player: PlayerScope,
+}
+QuantityRef_LifeTotal :: struct {
+	player: PlayerScope,
+}
+QuantityRef_GraveyardSize :: struct {
+	player: PlayerScope,
+}
+QuantityRef_LifeAboveStarting :: struct {
+}
+QuantityRef_StartingLifeTotal :: struct {
+	player: PlayerScope,
+}
+QuantityRef_StartingDeckSize :: struct {
+	player: PlayerScope,
+}
+QuantityRef_TriggeringDiscoverValue :: struct {
+}
+QuantityRef_TriggeringScryLookCount :: struct {
+}
+QuantityRef_TriggeringScryBottomCount :: struct {
+}
+QuantityRef_ObjectCount :: struct {
+	filter: TargetFilter,
+}
+QuantityRef_ObjectCountDistinct :: struct {
+	filter: TargetFilter,
+	qualities: [dynamic]SharedQuality,
+}
+QuantityRef_ObjectCountBySharedQuality :: struct {
+	filter: TargetFilter,
+	quality: SharedQuality,
+	aggregate: AggregateFunction,
+}
+QuantityRef_PlayerCount :: struct {
+	filter: PlayerFilter,
+}
+QuantityRef_CountersOn :: struct {
+	scope: ObjectScope,
+	counter_type: Maybe(CounterType),
+}
+QuantityRef_CountersOnObjects :: struct {
+	counter_type: Maybe(CounterType),
+	filter: TargetFilter,
+}
+QuantityRef_PlayerCounter :: struct {
+	kind: PlayerCounterKind,
+	scope: CountScope,
+}
+QuantityRef_TargetControllerCounter :: struct {
+	kind: PlayerCounterKind,
+}
+QuantityRef_Variable :: struct {
+	name: string,
+}
+QuantityRef_Power :: struct {
+	scope: ObjectScope,
+}
+QuantityRef_BasePower :: struct {
+	scope: ObjectScope,
+}
+QuantityRef_Intensity :: struct {
+	scope: ObjectScope,
+}
+QuantityRef_Toughness :: struct {
+	scope: ObjectScope,
+}
+QuantityRef_ObjectManaValue :: struct {
+	scope: ObjectScope,
+}
+QuantityRef_TargetObjectManaValue :: struct {
+	filter: ^TargetFilter,
+}
+QuantityRef_ObjectColorCount :: struct {
+	scope: ObjectScope,
+}
+QuantityRef_ObjectNameWordCount :: struct {
+	scope: ObjectScope,
+}
+QuantityRef_NameStickerLetterCount :: struct {
+	stickers: NameStickerSet,
+	letters: LetterQuery,
+}
+QuantityRef_ObjectTypelineComponentCount :: struct {
+	scope: ObjectScope,
+}
+QuantityRef_ManaSymbolsInManaCost :: struct {
+	scope: ObjectScope,
+	color: Maybe(ManaColor),
+}
+QuantityRef_SelfManaValue :: struct {
+}
+QuantityRef_PropertyAggregate :: struct {
+	_0: PropertyAggregate,
+}
+QuantityRef_ControlledByEachPlayer :: struct {
+	filter: TargetFilter,
+	aggregate: AggregateFunction,
+	relation: PlayerRelation,
+}
+QuantityRef_TargetZoneCardCount :: struct {
+	zone: ZoneRef,
+	scope: ControllerRef,
+	binding: CountBinding,
+}
+QuantityRef_Devotion :: struct {
+	colors: DevotionColors,
+}
+QuantityRef_DistinctCardTypes :: struct {
+	source: CardTypeSetSource,
+}
+QuantityRef_SharedCardTypes :: struct {
+	source: CardTypeSetSource,
+}
+QuantityRef_DistinctSubtypes :: struct {
+	source: CardTypeSetSource,
+	exclude: SubtypeExclusion,
+	restrict: Maybe(SubtypeSet),
+}
+QuantityRef_CardsExiledBySource :: struct {
+}
+QuantityRef_DeployedBossCount :: struct {
+}
+QuantityRef_ExiledCardPower :: struct {
+	index: u32,
+}
+QuantityRef_ZoneCardCount :: struct {
+	zone: ZoneRef,
+	card_types: [dynamic]TypeFilter,
+	filter: Maybe(TargetFilter),
+	scope: CountScope,
+}
+QuantityRef_BasicLandTypeCount :: struct {
+	controller: ControllerRef,
+}
+QuantityRef_TrackedSetSize :: struct {
+}
+QuantityRef_FilteredTrackedSetSize :: struct {
+	filter: ^TargetFilter,
+	caused_by: Maybe(ThisWayCause),
+	destination: Maybe(Zone),
+}
+QuantityRef_ExiledFromHandThisResolution :: struct {
+}
+QuantityRef_PreviousEffectAmount :: struct {
+	channel: DamageChannel,
+	aggregate: AggregateFunction,
+}
+QuantityRef_PreviousEffectCount :: struct {
+}
+QuantityRef_LifeLost :: struct {
+	player: PlayerScope,
+	window: TurnWindow,
+}
+QuantityRef_PartySize :: struct {
+	player: PlayerScope,
+}
+QuantityRef_UnspentMana :: struct {
+	color: Maybe(ManaColor),
+}
+QuantityRef_Speed :: struct {
+	player: PlayerScope,
+}
+QuantityRef_EventContextAmount :: struct {
+}
+QuantityRef_EventContextPlayerCount :: struct {
+	filter: PlayerFilter,
+}
+QuantityRef_AttachmentsOnLeavingObject :: struct {
+	kind: AttachmentKind,
+	controller: Maybe(ControllerRef),
+}
+QuantityRef_EventContextSourceCostX :: struct {
+}
+QuantityRef_EventContextSourceModesChosen :: struct {
+}
+QuantityRef_SpellsCast :: struct {
+	scope: CountScope,
+	filter: Maybe(TargetFilter),
+	window: TurnWindow,
+}
+QuantityRef_SpellsCastBeforeTriggeringSpell :: struct {
+	scope: CountScope,
+	filter: Maybe(TargetFilter),
+}
+QuantityRef_EnteredThisTurn :: struct {
+	filter: TargetFilter,
+}
+QuantityRef_SacrificedThisTurn :: struct {
+	player: PlayerScope,
+	filter: TargetFilter,
+}
+QuantityRef_CrimesCommittedThisTurn :: struct {
+}
+QuantityRef_EnergyPaidOrLostThisTurn :: struct {
+}
+QuantityRef_BendTypesThisTurn :: struct {
+}
+QuantityRef_LifeGainedThisTurn :: struct {
+	player: PlayerScope,
+}
+QuantityRef_CardsDrawnThisTurn :: struct {
+	player: PlayerScope,
+}
+QuantityRef_CardsDrawnLastTurn :: struct {
+	player: PlayerScope,
+}
+QuantityRef_OpponentSpellsCastSinceLastTurn :: struct {
+	player: PlayerScope,
+}
+QuantityRef_BattlefieldEntriesThisTurn :: struct {
+	player: PlayerScope,
+	filter: TargetFilter,
+}
+QuantityRef_LandsPlayedThisTurn :: struct {
+	player: PlayerScope,
+	from_zones: Maybe([dynamic]Zone),
+}
+QuantityRef_TurnsTaken :: struct {
+}
+QuantityRef_ZoneChangeCountThisTurn :: struct {
+	from: Maybe(Zone),
+	to: Maybe(Zone),
+	filter: TargetFilter,
+}
+QuantityRef_ZoneChangeAggregateThisTurn :: struct {
+	from: Maybe(Zone),
+	to: Maybe(Zone),
 	filter: TargetFilter,
 	function: AggregateFunction,
 	property: ObjectProperty,
-	comparator: Comparator,
-	value: i32,
-	zone: Zone,
 }
-AbilityCost_TapCreatures :: struct {
-	requirement: TapCreaturesRequirement,
-	filter: TargetFilter,
+QuantityRef_DamageDealtThisTurn :: struct {
+	source: ^TargetFilter,
+	target: ^TargetFilter,
+	aggregate: AggregateFunction,
+	group_by: Maybe(DamageGroupKey),
+	damage_kind: DamageKindFilter,
+	channel: DamageChannel,
 }
-AbilityCost_RemoveCounter :: struct {
-	count: u32,
-	counter_type: CounterMatch,
-	target: Maybe(TargetFilter),
-	selection: CounterCostSelection,
+QuantityRef_NotedNumber :: struct {
 }
-AbilityCost_PayEnergy :: struct {
-	amount: QuantityExpr,
+QuantityRef_ChosenNumber :: struct {
 }
-AbilityCost_PaySpeed :: struct {
-	amount: QuantityExpr,
+QuantityRef_PlayerChosenNumber :: struct {
+	player: PlayerScope,
 }
-AbilityCost_ReturnToHand :: struct {
-	count: u32,
+QuantityRef_AttackedThisTurn :: struct {
+	scope: CountScope,
 	filter: Maybe(TargetFilter),
-	from_zone: Maybe(Zone),
 }
-AbilityCost_Unattach :: struct {
+QuantityRef_DescendedThisTurn :: struct {
 }
-AbilityCost_UnattachFrom :: struct {
-	filter: TargetFilter,
-	count: u32,
+QuantityRef_LoyaltyAbilitiesActivatedThisTurn :: struct {
+	player: PlayerScope,
 }
-AbilityCost_Mill :: struct {
-	count: u32,
-}
-AbilityCost_Exert :: struct {
-}
-AbilityCost_Blight :: struct {
-	count: u32,
-}
-AbilityCost_Reveal :: struct {
-	count: QuantityExpr,
+QuantityRef_SpellsCastThisGame :: struct {
+	scope: CountScope,
 	filter: Maybe(TargetFilter),
-	shared_quality: Maybe(SharedQuality),
 }
-AbilityCost_Behold :: struct {
-	count: u32,
-	filter: TargetFilter,
-	action: BeholdCostAction,
-	type_choice: Maybe(ChoiceType),
+QuantityRef_CardsCycled :: struct {
+	scope: CountScope,
+	window: CyclingHistoryWindow,
+	name: Maybe(string),
 }
-AbilityCost_Composite :: struct {
-	costs: [dynamic]AbilityCost,
-}
-AbilityCost_OneOf :: struct {
-	costs: [dynamic]AbilityCost,
-}
-AbilityCost_Waterbend :: struct {
-	cost: ManaCost,
-}
-AbilityCost_NinjutsuFamily :: struct {
-	variant: NinjutsuVariant,
-	mana_cost: ManaCost,
-}
-AbilityCost_EffectCost :: struct {
-	effect: ^Effect,
-}
-AbilityCost_PerCounter :: struct {
-	counter: CounterType,
+QuantityRef_CounterAddedThisTurn :: struct {
+	actor: CountScope,
+	counters: CounterMatch,
 	target: TargetFilter,
-	base: ^AbilityCost,
 }
-AbilityCost_KeywordCostOfCastSpell :: struct {
-	keyword: KeywordKind,
+QuantityRef_CardsDiscardedThisTurn :: struct {
+	player: PlayerScope,
 }
-AbilityCost_GetPlayerCounters :: struct {
-	counter_kind: PlayerCounterKind,
-	count: u32,
+QuantityRef_TokensCreatedThisTurn :: struct {
+	player: PlayerScope,
+	filter: TargetFilter,
 }
-AbilityCost_Unimplemented :: struct {
-	description: string,
+QuantityRef_PlayerActionsThisTurn :: struct {
+	player: PlayerScope,
+	action: PlayerActionKind,
 }
-AbilityCost :: union {
-	AbilityCost_Mana,
-	AbilityCost_ManaDynamic,
-	AbilityCost_Tap,
-	AbilityCost_Untap,
-	AbilityCost_Loyalty,
-	AbilityCost_SayPhrase,
-	AbilityCost_Sacrifice,
-	AbilityCost_PayLife,
-	AbilityCost_Discard,
-	AbilityCost_Exile,
-	AbilityCost_ExileMaterials,
-	AbilityCost_CollectEvidence,
-	AbilityCost_ExileWithAggregate,
-	AbilityCost_TapCreatures,
-	AbilityCost_RemoveCounter,
-	AbilityCost_PayEnergy,
-	AbilityCost_PaySpeed,
-	AbilityCost_ReturnToHand,
-	AbilityCost_Unattach,
-	AbilityCost_UnattachFrom,
-	AbilityCost_Mill,
-	AbilityCost_Exert,
-	AbilityCost_Blight,
-	AbilityCost_Reveal,
-	AbilityCost_Behold,
-	AbilityCost_Composite,
-	AbilityCost_OneOf,
-	AbilityCost_Waterbend,
-	AbilityCost_NinjutsuFamily,
-	AbilityCost_EffectCost,
-	AbilityCost_PerCounter,
-	AbilityCost_KeywordCostOfCastSpell,
-	AbilityCost_GetPlayerCounters,
-	AbilityCost_Unimplemented,
+QuantityRef_DungeonsCompleted :: struct {
+}
+QuantityRef_CostXPaid :: struct {
+}
+QuantityRef_KickerCount :: struct {
+}
+QuantityRef_AdditionalCostPaymentCount :: struct {
+}
+QuantityRef_AdditionalCostPaymentCountFor :: struct {
+	origin: AdditionalCostOrigin,
+	origin_ordinal: Maybe(u32),
+}
+QuantityRef_ConvokedCreatureCount :: struct {
+}
+QuantityRef_TimesCostPaidThisResolution :: struct {
+}
+QuantityRef_ManaSpentToCast :: struct {
+	scope: CastManaObjectScope,
+	metric: CastManaSpentMetric,
+}
+QuantityRef_ColorsInCommandersColorIdentity :: struct {
+}
+QuantityRef_CommanderCastFromCommandZoneCount :: struct {
+}
+QuantityRef_CommanderManaValue :: struct {
+	owner: ControllerRef,
+}
+QuantityRef_DistinctColorsAmong :: struct {
+	source: CardTypeSetSource,
+}
+QuantityRef_DistinctCounterKindsAmong :: struct {
+	filter: TargetFilter,
+}
+QuantityRef_VoteCount :: struct {
+	choice_index: u32,
+}
+QuantityRef :: union {
+	QuantityRef_HandSize,
+	QuantityRef_LifeTotal,
+	QuantityRef_GraveyardSize,
+	QuantityRef_LifeAboveStarting,
+	QuantityRef_StartingLifeTotal,
+	QuantityRef_StartingDeckSize,
+	QuantityRef_TriggeringDiscoverValue,
+	QuantityRef_TriggeringScryLookCount,
+	QuantityRef_TriggeringScryBottomCount,
+	QuantityRef_ObjectCount,
+	QuantityRef_ObjectCountDistinct,
+	QuantityRef_ObjectCountBySharedQuality,
+	QuantityRef_PlayerCount,
+	QuantityRef_CountersOn,
+	QuantityRef_CountersOnObjects,
+	QuantityRef_PlayerCounter,
+	QuantityRef_TargetControllerCounter,
+	QuantityRef_Variable,
+	QuantityRef_Power,
+	QuantityRef_BasePower,
+	QuantityRef_Intensity,
+	QuantityRef_Toughness,
+	QuantityRef_ObjectManaValue,
+	QuantityRef_TargetObjectManaValue,
+	QuantityRef_ObjectColorCount,
+	QuantityRef_ObjectNameWordCount,
+	QuantityRef_NameStickerLetterCount,
+	QuantityRef_ObjectTypelineComponentCount,
+	QuantityRef_ManaSymbolsInManaCost,
+	QuantityRef_SelfManaValue,
+	QuantityRef_PropertyAggregate,
+	QuantityRef_ControlledByEachPlayer,
+	QuantityRef_TargetZoneCardCount,
+	QuantityRef_Devotion,
+	QuantityRef_DistinctCardTypes,
+	QuantityRef_SharedCardTypes,
+	QuantityRef_DistinctSubtypes,
+	QuantityRef_CardsExiledBySource,
+	QuantityRef_DeployedBossCount,
+	QuantityRef_ExiledCardPower,
+	QuantityRef_ZoneCardCount,
+	QuantityRef_BasicLandTypeCount,
+	QuantityRef_TrackedSetSize,
+	QuantityRef_FilteredTrackedSetSize,
+	QuantityRef_ExiledFromHandThisResolution,
+	QuantityRef_PreviousEffectAmount,
+	QuantityRef_PreviousEffectCount,
+	QuantityRef_LifeLost,
+	QuantityRef_PartySize,
+	QuantityRef_UnspentMana,
+	QuantityRef_Speed,
+	QuantityRef_EventContextAmount,
+	QuantityRef_EventContextPlayerCount,
+	QuantityRef_AttachmentsOnLeavingObject,
+	QuantityRef_EventContextSourceCostX,
+	QuantityRef_EventContextSourceModesChosen,
+	QuantityRef_SpellsCast,
+	QuantityRef_SpellsCastBeforeTriggeringSpell,
+	QuantityRef_EnteredThisTurn,
+	QuantityRef_SacrificedThisTurn,
+	QuantityRef_CrimesCommittedThisTurn,
+	QuantityRef_EnergyPaidOrLostThisTurn,
+	QuantityRef_BendTypesThisTurn,
+	QuantityRef_LifeGainedThisTurn,
+	QuantityRef_CardsDrawnThisTurn,
+	QuantityRef_CardsDrawnLastTurn,
+	QuantityRef_OpponentSpellsCastSinceLastTurn,
+	QuantityRef_BattlefieldEntriesThisTurn,
+	QuantityRef_LandsPlayedThisTurn,
+	QuantityRef_TurnsTaken,
+	QuantityRef_ZoneChangeCountThisTurn,
+	QuantityRef_ZoneChangeAggregateThisTurn,
+	QuantityRef_DamageDealtThisTurn,
+	QuantityRef_NotedNumber,
+	QuantityRef_ChosenNumber,
+	QuantityRef_PlayerChosenNumber,
+	QuantityRef_AttackedThisTurn,
+	QuantityRef_DescendedThisTurn,
+	QuantityRef_LoyaltyAbilitiesActivatedThisTurn,
+	QuantityRef_SpellsCastThisGame,
+	QuantityRef_CardsCycled,
+	QuantityRef_CounterAddedThisTurn,
+	QuantityRef_CardsDiscardedThisTurn,
+	QuantityRef_TokensCreatedThisTurn,
+	QuantityRef_PlayerActionsThisTurn,
+	QuantityRef_DungeonsCompleted,
+	QuantityRef_CostXPaid,
+	QuantityRef_KickerCount,
+	QuantityRef_AdditionalCostPaymentCount,
+	QuantityRef_AdditionalCostPaymentCountFor,
+	QuantityRef_ConvokedCreatureCount,
+	QuantityRef_TimesCostPaidThisResolution,
+	QuantityRef_ManaSpentToCast,
+	QuantityRef_ColorsInCommandersColorIdentity,
+	QuantityRef_CommanderCastFromCommandZoneCount,
+	QuantityRef_CommanderManaValue,
+	QuantityRef_DistinctColorsAmong,
+	QuantityRef_DistinctCounterKindsAmong,
+	QuantityRef_VoteCount,
 }
 
-GiftKind :: enum u16 {
-	Card,
-	Treasure,
-	Food,
-	TappedFish,
-	ExtraTurn,
+ControlChangeInstructionCapture :: struct {
+	watchers: ^[dynamic]TriggerSourceContext,
+	doublers: ^[dynamic]LatchedTriggerDoubler,
+	subjects: [dynamic]EventObjectSnapshot,
 }
 
-BloodthirstValue_Fixed :: struct {
-	_0: u32,
-}
-BloodthirstValue_X :: struct {
-}
-BloodthirstValue :: union {
-	BloodthirstValue_Fixed,
-	BloodthirstValue_X,
-}
-
-TypeFilter_Creature :: struct {
-}
-TypeFilter_Land :: struct {
-}
-TypeFilter_Artifact :: struct {
-}
-TypeFilter_Enchantment :: struct {
-}
-TypeFilter_Instant :: struct {
-}
-TypeFilter_Sorcery :: struct {
-}
-TypeFilter_Planeswalker :: struct {
-}
-TypeFilter_Battle :: struct {
-}
-TypeFilter_Kindred :: struct {
-}
-TypeFilter_Permanent :: struct {
-}
-TypeFilter_Card :: struct {
-}
-TypeFilter_Any :: struct {
-}
-TypeFilter_Non :: struct {
-	_0: ^TypeFilter,
-}
-TypeFilter_Subtype :: struct {
-	_0: string,
-}
-TypeFilter_AnyOf :: struct {
-	_0: [dynamic]TypeFilter,
-}
-TypeFilter :: union {
-	TypeFilter_Creature,
-	TypeFilter_Land,
-	TypeFilter_Artifact,
-	TypeFilter_Enchantment,
-	TypeFilter_Instant,
-	TypeFilter_Sorcery,
-	TypeFilter_Planeswalker,
-	TypeFilter_Battle,
-	TypeFilter_Kindred,
-	TypeFilter_Permanent,
-	TypeFilter_Card,
-	TypeFilter_Any,
-	TypeFilter_Non,
-	TypeFilter_Subtype,
-	TypeFilter_AnyOf,
-}
-
-AbilityKind :: enum u16 {
-	Spell,
-	Activated,
-	Database,
-	BeginGame,
-	Mulligan,
+LatchedTriggerDoubler :: struct {
+	source: TriggerSourceContext,
+	cause: TriggerCause,
+	affected: Maybe(TargetFilter),
 }
 
 Effect_StartYourEngines :: struct {
@@ -3585,203 +14917,61 @@ Effect :: union {
 	Effect_Unimplemented,
 }
 
-ChosenGroupId :: distinct u32
-
-ReturnResultId :: distinct u32
-
 ReturnResultReadSpec :: struct {
 	noun: TargetFilter,
 	destination: Zone,
 	recipient: ControllerRef,
 }
 
-Duration_UntilEndOfTurn :: struct {
-}
-Duration_UntilEndOfCombat :: struct {
-}
-Duration_UntilNextTurnOf :: struct {
-	player: PlayerScope,
-}
-Duration_UntilEndOfNextTurnOf :: struct {
-	player: PlayerScope,
-}
-Duration_UntilHostLeavesPlay :: struct {
-}
-Duration_WhileHostOnBattlefield :: struct {
-}
-Duration_WhileControllingHost :: struct {
-}
-Duration_UntilNextStepOf :: struct {
-	step: Phase,
-	player: PlayerScope,
-}
-Duration_ForAsLongAs :: struct {
-	condition: StaticCondition,
-}
-Duration_UntilSourceExilesAnotherCard :: struct {
-}
-Duration_UntilOpponentBecomesMonarch :: struct {
-}
-Duration_UntilEvent :: struct {
-	event: ^TriggerDefinition,
-}
-Duration_Permanent :: struct {
-}
-Duration :: union {
-	Duration_UntilEndOfTurn,
-	Duration_UntilEndOfCombat,
-	Duration_UntilNextTurnOf,
-	Duration_UntilEndOfNextTurnOf,
-	Duration_UntilHostLeavesPlay,
-	Duration_WhileHostOnBattlefield,
-	Duration_WhileControllingHost,
-	Duration_UntilNextStepOf,
-	Duration_ForAsLongAs,
-	Duration_UntilSourceExilesAnotherCard,
-	Duration_UntilOpponentBecomesMonarch,
-	Duration_UntilEvent,
-	Duration_Permanent,
+CastOccurrence :: struct {
+	caster: PlayerId,
+	turn_journal_index: u32,
 }
 
-ActivationManaPaymentRestriction :: enum u16 {
-	OnlySourceChosenColor,
+CyclingOccurrence :: struct {
+	activator: PlayerId,
+	journal_index: int,
 }
 
-PlayerFilter_Controller :: struct {
-}
-PlayerFilter_Opponent :: struct {
-}
-PlayerFilter_DefendingPlayer :: struct {
-}
-PlayerFilter_OpponentLostLife :: struct {
-}
-PlayerFilter_OpponentGainedLife :: struct {
-}
-PlayerFilter_HasLostTheGame :: struct {
-}
-PlayerFilter_OpponentDealtDamage :: struct {
-	kind: DamageKindFilter,
-	source: ^TargetFilter,
-	min_sources: u32,
-	relation: PlayerRelation,
-}
-PlayerFilter_OpponentAttacked :: struct {
-	subject: AttackSubject,
-	scope: CombatHistoryScope,
-}
-PlayerFilter_OpponentAttackingEnchantedPlayer :: struct {
-}
-PlayerFilter_All :: struct {
-}
-PlayerFilter_AllExcept :: struct {
-	exclude: ^PlayerFilter,
-	relation: PlayerRelation,
-}
-PlayerFilter_HighestSpeed :: struct {
-}
-PlayerFilter_ZoneChangedThisWay :: struct {
-}
-PlayerFilter_PerformedActionThisWay :: struct {
-	relation: PlayerRelation,
-	action: PlayerActionKind,
-}
-PlayerFilter_OwnersOfCardsExiledBySource :: struct {
-}
-PlayerFilter_TriggeringPlayer :: struct {
-}
-PlayerFilter_OpponentOtherThanTriggering :: struct {
-}
-PlayerFilter_OpponentOfTriggeringPlayer :: struct {
-}
-PlayerFilter_OpponentOfTriggeringPlayerNotAttacked :: struct {
-}
-PlayerFilter_VotedFor :: struct {
-	choice_index: u32,
-}
-PlayerFilter_ParentObjectTargetController :: struct {
-}
-PlayerFilter_ControlsCount :: struct {
-	relation: PlayerRelation,
-	filter: TargetFilter,
-	comparator: Comparator,
-	count: ^QuantityExpr,
-}
-PlayerFilter_PlayerAttribute :: struct {
-	relation: PlayerRelation,
-	attr: ^QuantityRef,
-	comparator: Comparator,
-	value: ^QuantityExpr,
-}
-PlayerFilter_ChosenPlayer :: struct {
-	index: u8,
-}
-PlayerFilter_ParentObjectTargetOwner :: struct {
-}
-PlayerFilter_GrantingObjectCaster :: struct {
-}
-PlayerFilter_AnyOf :: struct {
-	filters: [dynamic]PlayerFilter,
-}
-PlayerFilter_TargetPlayer :: struct {
-}
-PlayerFilter_TrackedSetPossessor :: struct {
-	relation: PlayerRelation,
-	possession: PossessionAxis,
-	filter: TargetFilter,
-	caused_by: Maybe(ThisWayCause),
-}
-PlayerFilter :: union {
-	PlayerFilter_Controller,
-	PlayerFilter_Opponent,
-	PlayerFilter_DefendingPlayer,
-	PlayerFilter_OpponentLostLife,
-	PlayerFilter_OpponentGainedLife,
-	PlayerFilter_HasLostTheGame,
-	PlayerFilter_OpponentDealtDamage,
-	PlayerFilter_OpponentAttacked,
-	PlayerFilter_OpponentAttackingEnchantedPlayer,
-	PlayerFilter_All,
-	PlayerFilter_AllExcept,
-	PlayerFilter_HighestSpeed,
-	PlayerFilter_ZoneChangedThisWay,
-	PlayerFilter_PerformedActionThisWay,
-	PlayerFilter_OwnersOfCardsExiledBySource,
-	PlayerFilter_TriggeringPlayer,
-	PlayerFilter_OpponentOtherThanTriggering,
-	PlayerFilter_OpponentOfTriggeringPlayer,
-	PlayerFilter_OpponentOfTriggeringPlayerNotAttacked,
-	PlayerFilter_VotedFor,
-	PlayerFilter_ParentObjectTargetController,
-	PlayerFilter_ControlsCount,
-	PlayerFilter_PlayerAttribute,
-	PlayerFilter_ChosenPlayer,
-	PlayerFilter_ParentObjectTargetOwner,
-	PlayerFilter_GrantingObjectCaster,
-	PlayerFilter_AnyOf,
-	PlayerFilter_TargetPlayer,
-	PlayerFilter_TrackedSetPossessor,
+DelayedAbilityOrigin :: struct {
+	creator: PrintedCardRef,
+	condition: DelayedTriggerCondition,
+	effect: Effect,
 }
 
-Zone :: enum u16 {
-	Library,
-	Hand,
-	Battlefield,
-	Graveyard,
-	Stack,
-	Exile,
-	Command,
+ChosenTargetSlots_Unrecorded :: struct {
+}
+ChosenTargetSlots_Recorded :: struct {
+	_0: [dynamic]int,
+}
+ChosenTargetSlots :: union {
+	ChosenTargetSlots_Unrecorded,
+	ChosenTargetSlots_Recorded,
 }
 
-AbilityTag :: enum u16 {
-	Boast,
-	Evolve,
-	Exhaust,
-	Outlast,
-	Cycling,
-	Backup,
-	PowerUp,
-	Equip,
-	Augment,
+CostReduction :: struct {
+	mode: CostModifyMode,
+	amount_per: u32,
+	count: QuantityExpr,
+	condition: Maybe(ParsedCondition),
+}
+
+DeclaredPlayerTargetSlot :: struct {
+	declared_position: int,
+	stored_position: Maybe(int),
+}
+
+AbilityKind :: enum u16 {
+	Spell,
+	Activated,
+	Database,
+	BeginGame,
+	Mulligan,
+}
+
+ResolvedCoinBranches :: struct {
+	won: Maybe(ResolvedAbility),
+	lost: Maybe(ResolvedAbility),
 }
 
 AbilityCondition_TriggerEventTargetDamagedBySourceThisTurn :: struct {
@@ -4048,48 +15238,14 @@ MultiTargetSpec :: struct {
 	max: Maybe(QuantityExpr),
 }
 
-TargetSelectionConstraint_DifferentTargetPlayers :: struct {
-}
-TargetSelectionConstraint_DifferentObjectControllers :: struct {
-}
-TargetSelectionConstraint_SameZoneOwner :: struct {
-	zone: Zone,
-}
-TargetSelectionConstraint_TotalManaValue :: struct {
-	comparator: Comparator,
-	value: QuantityExpr,
-}
-TargetSelectionConstraint :: union {
-	TargetSelectionConstraint_DifferentTargetPlayers,
-	TargetSelectionConstraint_DifferentObjectControllers,
-	TargetSelectionConstraint_SameZoneOwner,
-	TargetSelectionConstraint_TotalManaValue,
-}
-
 TargetChoiceTiming :: enum u16 {
 	Stack,
 	Resolution,
 }
 
-DistributionUnit_Damage :: struct {
-}
-DistributionUnit_EvenSplitDamage :: struct {
-}
-DistributionUnit_Counters :: struct {
-	_0: string,
-}
-DistributionUnit_Life :: struct {
-}
-DistributionUnit :: union {
-	DistributionUnit_Damage,
-	DistributionUnit_EvenSplitDamage,
-	DistributionUnit_Counters,
-	DistributionUnit_Life,
-}
-
-UnlessPayModifier :: struct {
-	cost: AbilityCost,
-	payer: TargetFilter,
+DetachedRemainder :: enum u16 {
+	NoProducer,
+	HoldsPublisher,
 }
 
 RepeatForTiming :: enum u16 {
@@ -4102,65 +15258,25 @@ IllegalTargetsDisposition :: enum u16 {
 	StillResolves,
 }
 
-CostReduction :: struct {
-	mode: CostModifyMode,
-	amount_per: u32,
-	count: QuantityExpr,
-	condition: Maybe(ParsedCondition),
+CopyCountStatus :: enum u16 {
+	Pending,
+	Finalized,
 }
 
-ControllerRef_You :: struct {
+NotedManaPayment :: struct {
+	types: [dynamic]ManaType,
+	source_incarnation: u64,
 }
-ControllerRef_Opponent :: struct {
+
+CostPaidObjectRecord_Captured :: struct {
+	_0: CostPaidObjectSnapshot,
 }
-ControllerRef_ScopedPlayer :: struct {
+CostPaidObjectRecord_MembershipOnly :: struct {
+	_0: ObjectId,
 }
-ControllerRef_TargetPlayer :: struct {
-}
-ControllerRef_TargetOpponent :: struct {
-}
-ControllerRef_ParentTargetController :: struct {
-}
-ControllerRef_EventTargetController :: struct {
-}
-ControllerRef_ParentTargetOwner :: struct {
-}
-ControllerRef_DefendingPlayer :: struct {
-}
-ControllerRef_ChosenPlayer :: struct {
-	index: u8,
-}
-ControllerRef_DeclaredPlayer :: struct {
-	group: ChosenGroupId,
-}
-ControllerRef_SourceChosenPlayer :: struct {
-}
-ControllerRef_TriggeringPlayer :: struct {
-}
-ControllerRef_EnchantedPlayer :: struct {
-}
-ControllerRef_ActivePlayer :: struct {
-}
-ControllerRef_SpecificPlayer :: struct {
-	id: PlayerId,
-}
-ControllerRef :: union {
-	ControllerRef_You,
-	ControllerRef_Opponent,
-	ControllerRef_ScopedPlayer,
-	ControllerRef_TargetPlayer,
-	ControllerRef_TargetOpponent,
-	ControllerRef_ParentTargetController,
-	ControllerRef_EventTargetController,
-	ControllerRef_ParentTargetOwner,
-	ControllerRef_DefendingPlayer,
-	ControllerRef_ChosenPlayer,
-	ControllerRef_DeclaredPlayer,
-	ControllerRef_SourceChosenPlayer,
-	ControllerRef_TriggeringPlayer,
-	ControllerRef_EnchantedPlayer,
-	ControllerRef_ActivePlayer,
-	ControllerRef_SpecificPlayer,
+CostPaidObjectRecord :: union {
+	CostPaidObjectRecord_Captured,
+	CostPaidObjectRecord_MembershipOnly,
 }
 
 TargetSelectionMode :: enum u16 {
@@ -4189,18 +15305,9 @@ SubAbilityLink :: enum u16 {
 	SequentialSibling,
 }
 
-TargetReadOrigin :: enum u16 {
-	OwnAnnouncement,
-	ParentAnnouncement,
-}
-
 ContinuousEffectOnset :: enum u16 {
 	WhenFollowed,
 	WithEntry,
-}
-
-IterationKindBinding :: enum u16 {
-	RebindToIteratedKind,
 }
 
 SiblingCondition :: enum u16 {
@@ -4213,6 +15320,1721 @@ InstructionJoin :: enum u16 {
 	ListSlot,
 }
 
+ControlChangeInstructionCarrier_Captured :: struct {
+	_0: u64,
+}
+ControlChangeInstructionCarrier_Unobservable :: struct {
+}
+ControlChangeInstructionCarrier :: union {
+	ControlChangeInstructionCarrier_Captured,
+	ControlChangeInstructionCarrier_Unobservable,
+}
+
+RestrictionExpiry_EndOfTurn :: struct {
+}
+RestrictionExpiry_EndOfCombat :: struct {
+}
+RestrictionExpiry_UntilPlayerNextTurn :: struct {
+	player: PlayerId,
+}
+RestrictionExpiry_UntilEndOfNextTurnOf :: struct {
+	player: PlayerId,
+}
+RestrictionExpiry_UntilHostLeavesPlay :: struct {
+}
+RestrictionExpiry :: union {
+	RestrictionExpiry_EndOfTurn,
+	RestrictionExpiry_EndOfCombat,
+	RestrictionExpiry_UntilPlayerNextTurn,
+	RestrictionExpiry_UntilEndOfNextTurnOf,
+	RestrictionExpiry_UntilHostLeavesPlay,
+}
+
+RestrictionScope_SourcesControlledBy :: struct {
+	_0: PlayerId,
+}
+RestrictionScope_SpecificSource :: struct {
+	_0: ObjectId,
+}
+RestrictionScope_DamageToTarget :: struct {
+	_0: ObjectId,
+}
+RestrictionScope :: union {
+	RestrictionScope_SourcesControlledBy,
+	RestrictionScope_SpecificSource,
+	RestrictionScope_DamageToTarget,
+}
+
+RestrictionPlayerScope_AllPlayers :: struct {
+}
+RestrictionPlayerScope_SpecificPlayer :: struct {
+	_0: PlayerId,
+}
+RestrictionPlayerScope_TargetedPlayer :: struct {
+}
+RestrictionPlayerScope_ParentTargetedPlayer :: struct {
+}
+RestrictionPlayerScope_ParentObjectTargetController :: struct {
+}
+RestrictionPlayerScope_OpponentsOfSourceController :: struct {
+}
+RestrictionPlayerScope_DefendingPlayer :: struct {
+}
+RestrictionPlayerScope_ScopedPlayer :: struct {
+}
+RestrictionPlayerScope_SourceController :: struct {
+}
+RestrictionPlayerScope :: union {
+	RestrictionPlayerScope_AllPlayers,
+	RestrictionPlayerScope_SpecificPlayer,
+	RestrictionPlayerScope_TargetedPlayer,
+	RestrictionPlayerScope_ParentTargetedPlayer,
+	RestrictionPlayerScope_ParentObjectTargetController,
+	RestrictionPlayerScope_OpponentsOfSourceController,
+	RestrictionPlayerScope_DefendingPlayer,
+	RestrictionPlayerScope_ScopedPlayer,
+	RestrictionPlayerScope_SourceController,
+}
+
+ProhibitedActivity_CastOnlyFromZones :: struct {
+	allowed_zones: [dynamic]Zone,
+}
+ProhibitedActivity_CastSpells :: struct {
+	spell_filter: Maybe(TargetFilter),
+}
+ProhibitedActivity_ActivateAbilities :: struct {
+	exemption: ActivationExemption,
+	only_tag: Maybe(AbilityTag),
+}
+ProhibitedActivity_Attack :: struct {
+	defended: AttackTargetFilter,
+	protected_player: Maybe(PlayerId),
+	protected_scope: Maybe(RestrictionPlayerScope),
+}
+ProhibitedActivity_ProhibitPlayFromZone :: struct {
+	zone: Zone,
+}
+ProhibitedActivity_PlayLands :: struct {
+	land_filter: Maybe(TargetFilter),
+}
+ProhibitedActivity :: union {
+	ProhibitedActivity_CastOnlyFromZones,
+	ProhibitedActivity_CastSpells,
+	ProhibitedActivity_ActivateAbilities,
+	ProhibitedActivity_Attack,
+	ProhibitedActivity_ProhibitPlayFromZone,
+	ProhibitedActivity_PlayLands,
+}
+
+ReplacementContinuationId :: distinct u64
+
+ReplacementMode_Mandatory :: struct {
+}
+ReplacementMode_Optional :: struct {
+	decline: ^AbilityDefinition,
+}
+ReplacementMode_MayCost :: struct {
+	cost: AbilityCost,
+	decline: ^AbilityDefinition,
+}
+ReplacementMode :: union {
+	ReplacementMode_Mandatory,
+	ReplacementMode_Optional,
+	ReplacementMode_MayCost,
+}
+
+ReplacementChoiceAuthority :: enum u16 {
+	AffectedPlayer,
+	SourceController,
+}
+
+ReplacementCondition_And :: struct {
+	conditions: [dynamic]ReplacementCondition,
+}
+ReplacementCondition_UnlessControlsSubtype :: struct {
+	subtypes: [dynamic]string,
+}
+ReplacementCondition_UnlessControlsOtherLeq :: struct {
+	count: u32,
+	filter: TypedFilter,
+}
+ReplacementCondition_UnlessControlsMatching :: struct {
+	filter: TargetFilter,
+}
+ReplacementCondition_UnlessControlsCountMatching :: struct {
+	minimum: u32,
+	filter: TargetFilter,
+}
+ReplacementCondition_UnlessPlayerLifeAtMost :: struct {
+	amount: u32,
+}
+ReplacementCondition_UnlessMultipleOpponents :: struct {
+}
+ReplacementCondition_UnlessYourTurn :: struct {
+}
+ReplacementCondition_UnlessQuantity :: struct {
+	lhs: QuantityExpr,
+	comparator: Comparator,
+	rhs: QuantityExpr,
+	active_player_req: Maybe(ControllerRef),
+}
+ReplacementCondition_OnlyIfQuantity :: struct {
+	lhs: QuantityExpr,
+	comparator: Comparator,
+	rhs: QuantityExpr,
+	active_player_req: Maybe(ControllerRef),
+}
+ReplacementCondition_HasMaxSpeed :: struct {
+}
+ReplacementCondition_CastViaEscape :: struct {
+}
+ReplacementCondition_CastVariantPaid :: struct {
+	variant: CastVariantPaid,
+}
+ReplacementCondition_TurnUpCostSourcePaid :: struct {
+	source: TurnUpCostSource,
+}
+ReplacementCondition_CastFromZone :: struct {
+	zone: Zone,
+}
+ReplacementCondition_EnteredFromZone :: struct {
+	origin_constraint: Maybe(OriginConstraint),
+	cast_origin: Maybe(Zone),
+}
+ReplacementCondition_YouAttackedThisTurn :: struct {
+}
+ReplacementCondition_OpponentDamagedThisTurn :: struct {
+}
+ReplacementCondition_CastViaKicker :: struct {
+	variant: Maybe(KickerVariant),
+	kicker_cost: Maybe(ManaCost),
+}
+ReplacementCondition_SourceTappedState :: struct {
+	tapped: bool,
+}
+ReplacementCondition_DealtDamageThisTurnBySource :: struct {
+	source: TargetFilter,
+}
+ReplacementCondition_EventSourceControlledBy :: struct {
+	controller: ControllerRef,
+}
+ReplacementCondition_EffectCausedDiscard :: struct {
+}
+ReplacementCondition_EffectCausedPlacement :: struct {
+}
+ReplacementCondition_OnlyExtraTurn :: struct {
+}
+ReplacementCondition_TokenSubtypeMatches :: struct {
+	subtypes: [dynamic]string,
+}
+ReplacementCondition_TokenCoreTypeMatches :: struct {
+	core_types: [dynamic]CoreType,
+}
+ReplacementCondition_FirstTokenCreationEachTurn :: struct {
+	active_player_req: Maybe(ControllerRef),
+}
+ReplacementCondition_ExceptFirstDrawInDrawStep :: struct {
+}
+ReplacementCondition_IfControlsMatching :: struct {
+	minimum: u32,
+	filter: TargetFilter,
+}
+ReplacementCondition_OnlyIfStatic :: struct {
+	condition: ^StaticCondition,
+}
+ReplacementCondition_ClassLevelGE :: struct {
+	level: u8,
+}
+ReplacementCondition_DuringUntapStep :: struct {
+}
+ReplacementCondition_DuringDrawStep :: struct {
+	active_player_req: Maybe(ControllerRef),
+}
+ReplacementCondition_ControllerControlsSource :: struct {
+	source: ObjectId,
+	controller: PlayerId,
+}
+ReplacementCondition_Unrecognized :: struct {
+	text: string,
+}
+ReplacementCondition :: union {
+	ReplacementCondition_And,
+	ReplacementCondition_UnlessControlsSubtype,
+	ReplacementCondition_UnlessControlsOtherLeq,
+	ReplacementCondition_UnlessControlsMatching,
+	ReplacementCondition_UnlessControlsCountMatching,
+	ReplacementCondition_UnlessPlayerLifeAtMost,
+	ReplacementCondition_UnlessMultipleOpponents,
+	ReplacementCondition_UnlessYourTurn,
+	ReplacementCondition_UnlessQuantity,
+	ReplacementCondition_OnlyIfQuantity,
+	ReplacementCondition_HasMaxSpeed,
+	ReplacementCondition_CastViaEscape,
+	ReplacementCondition_CastVariantPaid,
+	ReplacementCondition_TurnUpCostSourcePaid,
+	ReplacementCondition_CastFromZone,
+	ReplacementCondition_EnteredFromZone,
+	ReplacementCondition_YouAttackedThisTurn,
+	ReplacementCondition_OpponentDamagedThisTurn,
+	ReplacementCondition_CastViaKicker,
+	ReplacementCondition_SourceTappedState,
+	ReplacementCondition_DealtDamageThisTurnBySource,
+	ReplacementCondition_EventSourceControlledBy,
+	ReplacementCondition_EffectCausedDiscard,
+	ReplacementCondition_EffectCausedPlacement,
+	ReplacementCondition_OnlyExtraTurn,
+	ReplacementCondition_TokenSubtypeMatches,
+	ReplacementCondition_TokenCoreTypeMatches,
+	ReplacementCondition_FirstTokenCreationEachTurn,
+	ReplacementCondition_ExceptFirstDrawInDrawStep,
+	ReplacementCondition_IfControlsMatching,
+	ReplacementCondition_OnlyIfStatic,
+	ReplacementCondition_ClassLevelGE,
+	ReplacementCondition_DuringUntapStep,
+	ReplacementCondition_DuringDrawStep,
+	ReplacementCondition_ControllerControlsSource,
+	ReplacementCondition_Unrecognized,
+}
+
+DamageModification_Double :: struct {
+}
+DamageModification_Triple :: struct {
+}
+DamageModification_Plus :: struct {
+	value: QuantityExpr,
+}
+DamageModification_Minus :: struct {
+	value: u32,
+}
+DamageModification_PreventionMinus :: struct {
+	value: PreventionFormula,
+}
+DamageModification_SetToSourcePower :: struct {
+}
+DamageModification_SetTo :: struct {
+	value: u32,
+}
+DamageModification_LifeFloor :: struct {
+	minimum: i32,
+}
+DamageModification :: union {
+	DamageModification_Double,
+	DamageModification_Triple,
+	DamageModification_Plus,
+	DamageModification_Minus,
+	DamageModification_PreventionMinus,
+	DamageModification_SetToSourcePower,
+	DamageModification_SetTo,
+	DamageModification_LifeFloor,
+}
+
+DamageTargetFilter_CreatureOnly :: struct {
+}
+DamageTargetFilter_Player :: struct {
+	player: DamageTargetPlayerScope,
+}
+DamageTargetFilter_PlayerOrPermanentsControlledBy :: struct {
+	player: DamageTargetPlayerScope,
+	permanent_type: Maybe(CoreType),
+	source_scope: SourceExclusion,
+}
+DamageTargetFilter :: union {
+	DamageTargetFilter_CreatureOnly,
+	DamageTargetFilter_Player,
+	DamageTargetFilter_PlayerOrPermanentsControlledBy,
+}
+
+CombatDamageScope :: enum u16 {
+	CombatOnly,
+	NoncombatOnly,
+}
+
+DrawReplacementScope :: enum u16 {
+	InstructionCount,
+	IndividualDraw,
+}
+
+DieRollIgnoreRule :: enum u16 {
+	Lowest,
+}
+
+PlaneswalkReplacementScope :: enum u16 {
+	Any,
+	PlanarDieOnly,
+}
+
+ShieldKind_None :: struct {
+}
+ShieldKind_Regeneration :: struct {
+}
+ShieldKind_Prevention :: struct {
+	amount: PreventionAmount,
+}
+ShieldKind_DamageReplacementOneShot :: struct {
+}
+ShieldKind_Redirection :: struct {
+	recipient: DamageRedirectTarget,
+	amount: PreventionAmount,
+	lifetime: RedirectionLifetime,
+}
+ShieldKind_PreventionOneShot :: struct {
+}
+ShieldKind :: union {
+	ShieldKind_None,
+	ShieldKind_Regeneration,
+	ShieldKind_Prevention,
+	ShieldKind_DamageReplacementOneShot,
+	ShieldKind_Redirection,
+	ShieldKind_PreventionOneShot,
+}
+
+QuantityModification_Times :: struct {
+	factor: u32,
+}
+QuantityModification_Half :: struct {
+}
+QuantityModification_Plus :: struct {
+	value: u32,
+}
+QuantityModification_Minus :: struct {
+	value: u32,
+}
+QuantityModification_Prevent :: struct {
+}
+QuantityModification :: union {
+	QuantityModification_Times,
+	QuantityModification_Half,
+	QuantityModification_Plus,
+	QuantityModification_Minus,
+	QuantityModification_Prevent,
+}
+
+ReplacementPlayerScope :: enum u16 {
+	You,
+	Opponent,
+	AnyPlayer,
+}
+
+ManaModification_ReplaceWith :: struct {
+	mana_type: ManaType,
+}
+ManaModification_Multiply :: struct {
+	factor: u32,
+}
+ManaModification :: union {
+	ManaModification_ReplaceWith,
+	ManaModification_Multiply,
+}
+
+ManaReplacementScope :: enum u16 {
+	Any,
+	TappedForMana,
+}
+
+CounterMatch_Any :: struct {
+}
+CounterMatch_OfType :: struct {
+	_0: CounterType,
+}
+CounterMatch :: union {
+	CounterMatch_Any,
+	CounterMatch_OfType,
+}
+
+ReplacementOrigin :: enum u16 {
+	Characteristic,
+	Resolution,
+}
+
+CounterReplacementSubject :: enum u16 {
+	Recipient,
+	Actor,
+}
+
+StepEndManaAction_Retain :: struct {
+}
+StepEndManaAction_Transform :: struct {
+	_0: ManaType,
+}
+StepEndManaAction :: union {
+	StepEndManaAction_Retain,
+	StepEndManaAction_Transform,
+}
+
+PendingEmptyPoolLifeLoss :: struct {
+	player_id: PlayerId,
+	amount: u32,
+	cause: EmptyPoolLifeLossCause,
+}
+
+PhaseTransitionDrainState :: enum u16 {
+	Ready,
+	AwaitingPostReplacementContinuation,
+	AwaitingBeginChoice,
+}
+
+PrintedLoyalty_Fixed :: struct {
+	_0: u32,
+}
+PrintedLoyalty_X :: struct {
+}
+PrintedLoyalty :: union {
+	PrintedLoyalty_Fixed,
+	PrintedLoyalty_X,
+}
+
+TriggerPrintedOrigin :: struct {
+	printed_ref: PrintedCardRef,
+	printed_occurrence: int,
+}
+
+RoomCopiableHalves :: struct {
+	left: RoomHalfIdentity,
+	right: Maybe(RoomHalfIdentity),
+}
+
+BackFaceData :: struct {
+	name: string,
+	power: Maybe(i32),
+	toughness: Maybe(i32),
+	loyalty: Maybe(u32),
+	printed_loyalty: Maybe(PrintedLoyalty),
+	defense: Maybe(u32),
+	card_types: CardType,
+	mana_cost: ManaCost,
+	keywords: [dynamic]Keyword,
+	abilities: [dynamic]AbilityDefinition,
+	trigger_definitions: Definitions_TriggerDefinition,
+	trigger_printed_origins: [dynamic]Maybe(TriggerPrintedOrigin),
+	replacement_definitions: Definitions_ReplacementDefinition,
+	static_definitions: Definitions_StaticDefinition,
+	color: [dynamic]ManaColor,
+	printed_ref: Maybe(PrintedCardRef),
+	modal: Maybe(ModalChoice),
+	additional_cost: Maybe(AdditionalCost),
+	strive_cost: Maybe(ManaCost),
+	casting_restrictions: [dynamic]CastingRestriction,
+	casting_options: [dynamic]SpellCastingOption,
+	parse_warnings: [dynamic]OracleDiagnostic,
+	layout_kind: Maybe(LayoutKind),
+	is_swap_snapshot: bool,
+}
+
+CopiedNameOrigin :: enum u16 {
+	Source,
+	Exception,
+}
+
+PendingCostMoveCompletion_FinishPending :: struct {
+}
+PendingCostMoveCompletion_CompleteSelectedReturnToHand :: struct {
+	selected: [dynamic]ObjectId,
+	automatic_remaining: Maybe(AbilityCost),
+}
+PendingCostMoveCompletion_PublishExileTrackedSet :: struct {
+}
+PendingCostMoveCompletion_FinalizeCast :: struct {
+	phyrexian_choices: Maybe([dynamic]ShardChoice),
+	cascade_cast_transformed: bool,
+	resolution_success_waiting_for: ^WaitingFor,
+	prepaid_actual_mana_spent: Maybe(u32),
+}
+PendingCostMoveCompletion_FinalizeDelvedCast :: struct {
+	phyrexian_choices: Maybe([dynamic]ShardChoice),
+	pre_payment_checks: ^FinalizePrePaymentChecks,
+}
+PendingCostMoveCompletion :: union {
+	PendingCostMoveCompletion_FinishPending,
+	PendingCostMoveCompletion_CompleteSelectedReturnToHand,
+	PendingCostMoveCompletion_PublishExileTrackedSet,
+	PendingCostMoveCompletion_FinalizeCast,
+	PendingCostMoveCompletion_FinalizeDelvedCast,
+}
+
+PendingSacrificeCostCompletion_FinalizeSpell :: struct {
+	phyrexian_choices: Maybe([dynamic]ShardChoice),
+	pre_payment_checks: ^FinalizePrePaymentChecks,
+}
+PendingSacrificeCostCompletion_SelectedNonSelf :: struct {
+}
+PendingSacrificeCostCompletion_SelfRef :: struct {
+}
+PendingSacrificeCostCompletion_ResolutionOptionalPayment :: struct {
+	frame: ^OptionalEffectFrame,
+	selected: [dynamic]ObjectIncarnationRef,
+}
+PendingSacrificeCostCompletion :: union {
+	PendingSacrificeCostCompletion_FinalizeSpell,
+	PendingSacrificeCostCompletion_SelectedNonSelf,
+	PendingSacrificeCostCompletion_SelfRef,
+	PendingSacrificeCostCompletion_ResolutionOptionalPayment,
+}
+
+WardSacrificePaymentResume_MultiSacrifice :: struct {
+	remaining: [dynamic]ObjectId,
+}
+WardSacrificePaymentResume_Sequential :: struct {
+	permanents: [dynamic]ObjectId,
+	sacrificed: ObjectId,
+	remaining: u32,
+}
+WardSacrificePaymentResume :: union {
+	WardSacrificePaymentResume_MultiSacrifice,
+	WardSacrificePaymentResume_Sequential,
+}
+
+ManaAbilityCostCursor :: struct {
+	remaining: [dynamic]AbilityCost,
+	activation: ManaAbilityActivationStage,
+	remaining_life_payments: [dynamic]u32,
+	resolution_mode: ManaAbilityCostResolutionMode,
+	excluded_sources: [dynamic]ObjectId,
+	sub_cost_demand: Maybe([5]u32),
+	next_tapper: int,
+	next_discard: int,
+	next_exiled: int,
+	next_sacrificed: int,
+	next_counter_choice: int,
+	cost_removed_counters: Maybe(u32),
+	counter_removal: ^PausedCounterCostRemoval,
+	selected_exile_remaining: Maybe([dynamic]ObjectId),
+	selected_sacrifice_remaining: Maybe([dynamic]ObjectId),
+	deferred_cost_events: [dynamic]GameEvent,
+	current_action_deferred_start: int,
+	parent: ^ManaAbilityCostParent,
+}
+
+PausedCounterCostRemoval :: struct {
+	in_flight: PendingCounterRemovalInFlight,
+	remaining: [dynamic]PendingCounterRemoval,
+	replacement_subtree: ReplacementSubtreeBoundary,
+}
+
+UnpaidCostSuffix :: struct {
+	payer: PlayerId,
+	remainder: UnpaidCostRemainder,
+}
+
+RandomDiscardUnlessPaymentResume :: struct {
+	pending_effect: ^ResolvedAbility,
+	trigger_event: Maybe(GameEvent),
+	payer: PlayerId,
+	source_id: ObjectId,
+	remaining_eligible: [dynamic]ObjectId,
+	remaining_count: u32,
+}
+
+TurnFaceUpMoveKind :: enum u16 {
+	ReturnToHand,
+	Discard,
+	Sacrifice,
+}
+
+PlayerScopeUnlessSettlement :: struct {
+	source_id: ObjectId,
+	controller: PlayerId,
+	discards: [dynamic]Tuple2(PlayerId, ObjectIncarnationRef),
+	sacrifices: [dynamic]Tuple2(PlayerId, [dynamic]ObjectIncarnationRef),
+	punishment: ^ResolvedAbility,
+	trigger_event: Maybe(GameEvent),
+}
+
+ManaAbilityResume_Priority :: struct {
+}
+ManaAbilityResume_CompanionToHand :: struct {
+	player: PlayerId,
+	cost: ManaCost,
+}
+ManaAbilityResume_PlanarDieRoll :: struct {
+	player: PlayerId,
+	cost: ManaCost,
+}
+ManaAbilityResume_TurnFaceUp :: struct {
+	player: PlayerId,
+	source: ObjectIncarnationRef,
+	cost: ManaCost,
+	announced_x: Maybe(u32),
+	cost_source: TurnUpCostSource,
+}
+ManaAbilityResume_EndContinuousEffect :: struct {
+	player: PlayerId,
+	group: EndEffectGroupId,
+	cost: ManaCost,
+}
+ManaAbilityResume_RoomUnlock :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	door: RoomDoor,
+	cost: ManaCost,
+}
+ManaAbilityResume_Foretell :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	cost: ManaCost,
+	payment_cost: ManaCost,
+	turn_foretold: u32,
+}
+ManaAbilityResume_ManaPayment :: struct {
+	outer_player: Maybe(PlayerId),
+	convoke_mode: Maybe(ConvokeMode),
+}
+ManaAbilityResume_ManaSourceSelection :: struct {
+	player: PlayerId,
+	options: [dynamic]ManaSourceSelection,
+	convoke_mode: Maybe(ConvokeMode),
+}
+ManaAbilityResume_UnlessPayment :: struct {
+	outer_player: Maybe(PlayerId),
+	cost: ^AbilityCost,
+	pending_effect: ^ResolvedAbility,
+	trigger_event: Maybe(GameEvent),
+	effect_description: Maybe(string),
+	remaining: [dynamic]PlayerId,
+	affected_object: Maybe(ObjectId),
+	repeat: Maybe(u32),
+}
+ManaAbilityResume_CombatTaxPayment :: struct {
+	player: PlayerId,
+	context_: CombatTaxContext,
+	total_cost: ManaCost,
+	per_creature: [dynamic]Tuple2(ObjectId, ManaCost),
+	pending: CombatTaxPending,
+}
+ManaAbilityResume_EffectPayCost :: struct {
+	payer: PlayerId,
+	return_to: PlayerId,
+	ability: ^ResolvedAbility,
+	cost: ^AbilityCost,
+}
+ManaAbilityResume_PhyrexianCastPayment :: struct {
+	caster: PlayerId,
+	choices: [dynamic]ShardChoice,
+}
+ManaAbilityResume_FinalizePendingManaPayment :: struct {
+	player: PlayerId,
+}
+ManaAbilityResume_ManaAbilityManaPayment :: struct {
+	pending_mana_ability: ^PendingManaAbility,
+}
+ManaAbilityResume :: union {
+	ManaAbilityResume_Priority,
+	ManaAbilityResume_CompanionToHand,
+	ManaAbilityResume_PlanarDieRoll,
+	ManaAbilityResume_TurnFaceUp,
+	ManaAbilityResume_EndContinuousEffect,
+	ManaAbilityResume_RoomUnlock,
+	ManaAbilityResume_Foretell,
+	ManaAbilityResume_ManaPayment,
+	ManaAbilityResume_ManaSourceSelection,
+	ManaAbilityResume_UnlessPayment,
+	ManaAbilityResume_CombatTaxPayment,
+	ManaAbilityResume_EffectPayCost,
+	ManaAbilityResume_PhyrexianCastPayment,
+	ManaAbilityResume_FinalizePendingManaPayment,
+	ManaAbilityResume_ManaAbilityManaPayment,
+}
+
+CollectedTriggerContextBatch :: struct {
+	contexts: [dynamic]PendingTriggerContext,
+	delayed_events: [dynamic]GameEvent,
+	delayed_consumed: [dynamic]ConsumedTriggerEventOccurrence,
+	normal_was_non_empty: bool,
+}
+
+ManaTriggerFixedPointResume_Parent :: struct {
+}
+ManaTriggerFixedPointResume_Root :: struct {
+	player: PlayerId,
+	resume: ^ManaAbilityResume,
+}
+ManaTriggerFixedPointResume_ColorChoice :: struct {
+	_0: ^ManaColorChoiceResume,
+}
+ManaTriggerFixedPointResume :: union {
+	ManaTriggerFixedPointResume_Parent,
+	ManaTriggerFixedPointResume_Root,
+	ManaTriggerFixedPointResume_ColorChoice,
+}
+
+TriggeredManaStage :: enum u16 {
+	ChoosingModalChooser,
+	ChoosingModes,
+	ResolvingBody,
+}
+
+RandomDiscardCostPick :: struct {
+	occurrence: ObjectIncarnationRef,
+	snapshot: CostPaidObjectSnapshot,
+}
+
+CostReductionElection :: struct {
+	order: [dynamic]ReductionProvenance,
+	hybrid_announcement: [dynamic]ManaCostShard,
+}
+
+DeferredHandDiscardCost_Random :: struct {
+	count: int,
+}
+DeferredHandDiscardCost_WholeHand :: struct {
+}
+DeferredHandDiscardCost :: union {
+	DeferredHandDiscardCost_Random,
+	DeferredHandDiscardCost_WholeHand,
+}
+
+PrepaidSpellFinalization :: struct {
+	phyrexian_choices: Maybe([dynamic]ShardChoice),
+	pre_payment_checks: ^FinalizePrePaymentChecks,
+}
+
+DeferredLifeGainCost_Unpaid :: struct {
+	cost: ^AbilityCost,
+}
+DeferredLifeGainCost_Owed :: struct {
+	recipients: [dynamic]PlayerId,
+	amount: u32,
+	staged: StagedLifeGains,
+	paused_on: Maybe(PlayerId),
+}
+DeferredLifeGainCost :: union {
+	DeferredLifeGainCost_Unpaid,
+	DeferredLifeGainCost_Owed,
+}
+
+CastTimingRoute :: enum u16 {
+	Permission,
+	SpellOption,
+	AlternativeCost,
+	Offering,
+}
+
+AdditionalCostInstance :: struct {
+	origin: AdditionalCostOrigin,
+	origin_ordinal: u32,
+	cost: AdditionalCost,
+	grant_source: Maybe(ObjectId),
+}
+
+SpellCostSource :: enum u16 {
+	Other,
+	Offering,
+	Emerge,
+}
+
+SpellAlternativeCostElection :: enum u16 {
+	Undecided,
+	Offered,
+	Accepted,
+	Declined,
+	Legacy,
+}
+
+DeferredSpellSacrifice_Selected :: struct {
+	object_id: ObjectId,
+	filter: TargetFilter,
+}
+DeferredSpellSacrifice_All :: struct {
+	filter: TargetFilter,
+}
+DeferredSpellSacrifice :: union {
+	DeferredSpellSacrifice_Selected,
+	DeferredSpellSacrifice_All,
+}
+
+DeferredSpellTap :: struct {
+	object_ids: [dynamic]ObjectId,
+	cost: AbilityCost,
+}
+
+AssistState_NotOffered :: struct {
+}
+AssistState_Offered :: struct {
+}
+AssistState_Committed :: struct {
+	helper: PlayerId,
+	generic: u32,
+}
+AssistState_PaymentStarted :: struct {
+	helper: PlayerId,
+	generic: u32,
+}
+AssistState_Paid :: struct {
+	helper: PlayerId,
+	generic: u32,
+}
+AssistState :: union {
+	AssistState_NotOffered,
+	AssistState_Offered,
+	AssistState_Committed,
+	AssistState_PaymentStarted,
+	AssistState_Paid,
+}
+
+ActivationResidual :: enum u16 {
+	None,
+	XMana,
+	ManaLeg,
+}
+
+ActivationTargetSelection :: enum u16 {
+	Pending,
+	Settled,
+}
+
+PendingActivationTriggerCollection :: struct {
+	overlay: TriggerCollectionOverlay,
+	operation_journal: [dynamic]TriggerCollectionOperation,
+	pending_contexts: [dynamic]PendingTriggerContext,
+}
+
+ActivationPhyrexianIntent :: struct {
+	native_choices: [dynamic]ActivationShardChoice,
+	payment_choices: Maybe([dynamic]ActivationShardChoice),
+}
+
+PostReplacementFrameId :: distinct u64
+
+HeldBatchRider :: struct {
+	authority: PlayerId,
+	timing: RiderTiming,
+	drain: PostReplacementDrain,
+}
+
+SplitDamagePortion :: struct {
+	source: ObjectId,
+	target: TargetRef,
+	amount: u32,
+	is_combat: bool,
+	applied: [dynamic]AppliedReplacementKey,
+}
+
+EventOutcomes :: struct {
+	losers: [dynamic]PlayerId,
+	winners: [dynamic]PlayerId,
+}
+
+ActiveSearchDecisionAuthority_LatchedController :: struct {
+	controller: PlayerId,
+}
+ActiveSearchDecisionAuthority_SearcherFallback :: struct {
+}
+ActiveSearchDecisionAuthority :: union {
+	ActiveSearchDecisionAuthority_LatchedController,
+	ActiveSearchDecisionAuthority_SearcherFallback,
+}
+
+ResolvedRulesCommand_ManaInsert :: struct {
+	_0: ResolvedManaInsertCommand,
+}
+ResolvedRulesCommand_ManaSpend :: struct {
+	_0: ResolvedManaSpendCommand,
+}
+ResolvedRulesCommand_PlayerEdit :: struct {
+	_0: ResolvedPlayerEditCommand,
+}
+ResolvedRulesCommand_ObjectStatus :: struct {
+	_0: ResolvedObjectStatusCommand,
+}
+ResolvedRulesCommand_ObjectCounter :: struct {
+	_0: ResolvedObjectCounterCommand,
+}
+ResolvedRulesCommand_ObjectTransform :: struct {
+	_0: ResolvedObjectTransformCommand,
+}
+ResolvedRulesCommand_Attachment :: struct {
+	_0: ResolvedAttachmentCommand,
+}
+ResolvedRulesCommand_DelayedTriggerInstall :: struct {
+	_0: ^ResolvedDelayedTriggerCommand,
+}
+ResolvedRulesCommand_ContinuousEffect :: struct {
+	_0: ^ResolvedContinuousEffectEdit,
+}
+ResolvedRulesCommand_CombatMembership :: struct {
+	_0: ResolvedCombatMembershipCommand,
+}
+ResolvedRulesCommand_ControllerOverride :: struct {
+	_0: ResolvedControllerOverrideCommand,
+}
+ResolvedRulesCommand_EntryProvenance :: struct {
+	_0: ResolvedEntryProvenanceCommand,
+}
+ResolvedRulesCommand_ObjectCease :: struct {
+	_0: ResolvedObjectCeaseCommand,
+}
+ResolvedRulesCommand_PlayerLeave :: struct {
+	_0: ResolvedPlayerLeaveCommand,
+}
+ResolvedRulesCommand_TokenCreation :: struct {
+	_0: ^ResolvedTokenCreationCommand,
+}
+ResolvedRulesCommand_Information :: struct {
+	_0: ResolvedInformationCommand,
+}
+ResolvedRulesCommand_LedgerEdit :: struct {
+	_0: ResolvedLedgerEditCommand,
+}
+ResolvedRulesCommand_LibraryShuffle :: struct {
+	_0: ResolvedLibraryShuffleCommand,
+}
+ResolvedRulesCommand_ZoneChange :: struct {
+	_0: ^ResolvedZoneChangeCommand,
+}
+ResolvedRulesCommand_FrameTransition :: struct {
+	_0: ^ResolvedFrameTransitionCommand,
+}
+ResolvedRulesCommand_TriggerCollection :: struct {
+	_0: ResolvedTriggerCollectionCommand,
+}
+ResolvedRulesCommand_StackPush :: struct {
+	_0: ^ResolvedStackPushCommand,
+}
+ResolvedRulesCommand_StackEntryFinalize :: struct {
+	_0: ^ResolvedStackEntryFinalizeCommand,
+}
+ResolvedRulesCommand_UncommittedTriggerRemoval :: struct {
+	_0: ^ResolvedUncommittedTriggerRemovalCommand,
+}
+ResolvedRulesCommand_StackRemoval :: struct {
+	_0: ^ResolvedStackRemovalCommand,
+}
+ResolvedRulesCommand :: union {
+	ResolvedRulesCommand_ManaInsert,
+	ResolvedRulesCommand_ManaSpend,
+	ResolvedRulesCommand_PlayerEdit,
+	ResolvedRulesCommand_ObjectStatus,
+	ResolvedRulesCommand_ObjectCounter,
+	ResolvedRulesCommand_ObjectTransform,
+	ResolvedRulesCommand_Attachment,
+	ResolvedRulesCommand_DelayedTriggerInstall,
+	ResolvedRulesCommand_ContinuousEffect,
+	ResolvedRulesCommand_CombatMembership,
+	ResolvedRulesCommand_ControllerOverride,
+	ResolvedRulesCommand_EntryProvenance,
+	ResolvedRulesCommand_ObjectCease,
+	ResolvedRulesCommand_PlayerLeave,
+	ResolvedRulesCommand_TokenCreation,
+	ResolvedRulesCommand_Information,
+	ResolvedRulesCommand_LedgerEdit,
+	ResolvedRulesCommand_LibraryShuffle,
+	ResolvedRulesCommand_ZoneChange,
+	ResolvedRulesCommand_FrameTransition,
+	ResolvedRulesCommand_TriggerCollection,
+	ResolvedRulesCommand_StackPush,
+	ResolvedRulesCommand_StackEntryFinalize,
+	ResolvedRulesCommand_UncommittedTriggerRemoval,
+	ResolvedRulesCommand_StackRemoval,
+}
+
+RulesExecutionNodeKind_Proposal :: struct {
+}
+RulesExecutionNodeKind_ActivatedMana :: struct {
+	source: ObjectIncarnationRef,
+}
+RulesExecutionNodeKind_TriggeredMana :: struct {
+	source: ObjectIncarnationRef,
+	trigger: Maybe(TriggerDefinitionRef),
+}
+RulesExecutionNodeKind_Payment :: struct {
+	payer: PlayerId,
+	recipient: ManaPaymentRecipient,
+}
+RulesExecutionNodeKind_PlayerLeave :: struct {
+}
+RulesExecutionNodeKind :: union {
+	RulesExecutionNodeKind_Proposal,
+	RulesExecutionNodeKind_ActivatedMana,
+	RulesExecutionNodeKind_TriggeredMana,
+	RulesExecutionNodeKind_Payment,
+	RulesExecutionNodeKind_PlayerLeave,
+}
+
+ManaUnit :: struct {
+	color: ManaType,
+	source_id: ObjectId,
+	pip_id: ManaPipId,
+	supertype: Maybe(ManaSupertype),
+	source_could_produce_two_or_more_colors: bool,
+	restrictions: [dynamic]ManaRestriction,
+	grants: [dynamic]ManaSpellGrant,
+	expiry: Maybe(ManaExpiry),
+}
+
+ManaPaymentRecipient_Object :: struct {
+	_0: ObjectIncarnationRef,
+}
+ManaPaymentRecipient_Player :: struct {
+	_0: PlayerId,
+}
+ManaPaymentRecipient :: union {
+	ManaPaymentRecipient_Object,
+	ManaPaymentRecipient_Player,
+}
+
+PrintedCardRef :: struct {
+	oracle_id: string,
+	face_name: string,
+}
+
+CardPrinting :: struct {
+	set_code: string,
+	collector_number: string,
+	automatic_art_catalog_version: Maybe(u8),
+}
+
+DisplayOnly_ptr_CardPrinting :: distinct ^CardPrinting
+
+CaseState :: struct {
+	is_solved: bool,
+	solve_condition: SolveCondition,
+}
+
+PhaseStatus_PhasedIn :: struct {
+}
+PhaseStatus_PhasedOut :: struct {
+	cause: PhaseOutCause,
+}
+PhaseStatus :: union {
+	PhaseStatus_PhasedIn,
+	PhaseStatus_PhasedOut,
+}
+
+CastVariantPaid :: enum u16 {
+	Ninjutsu,
+	CommanderNinjutsu,
+	Sneak,
+	WebSlinging,
+	Evoke,
+	Suspend,
+	Escape,
+	Foretell,
+	Bestow,
+	Impending,
+	Surge,
+	Spectacle,
+	Prowl,
+	Emerge,
+	Warp,
+	Mayhem,
+}
+
+CastTimingPermission :: enum u16 {
+	AsThoughHadFlash,
+	Offering,
+}
+
+ColoredManaCount :: struct {
+	white: u32,
+	blue: u32,
+	black: u32,
+	red: u32,
+	green: u32,
+}
+
+ManaSpentSourceSnapshot :: struct {
+	source_id: ObjectId,
+	lki: LKISnapshot,
+}
+
+SubjectIncarnationScope :: enum u16 {
+	Live,
+	DepartureWindow,
+}
+
+ManaSourceOutput_Concrete :: struct {
+	_0: ManaType,
+}
+ManaSourceOutput_DeferredColorChoice :: struct {
+	quantity: ManaSourceQuantity,
+}
+ManaSourceOutput :: union {
+	ManaSourceOutput_Concrete,
+	ManaSourceOutput_DeferredColorChoice,
+}
+
+ManaRestriction_OnlyForSpell :: struct {
+}
+ManaRestriction_OnlyForSpellType :: struct {
+	_0: string,
+}
+ManaRestriction_OnlyForCreatureType :: struct {
+	_0: string,
+}
+ManaRestriction_OnlyForTypeSpellsOrAbilities :: struct {
+	spell_type: string,
+	ability: AbilityActivationScope,
+}
+ManaRestriction_OnlyForActivation :: struct {
+}
+ManaRestriction_OnlyForTaggedActivation :: struct {
+	_0: AbilityTag,
+}
+ManaRestriction_OnlyForXCosts :: struct {
+}
+ManaRestriction_OnlyForSpellWithKeywordKind :: struct {
+	_0: KeywordKind,
+}
+ManaRestriction_OnlyForSpellWithKeywordKindFromZone :: struct {
+	_0: KeywordKind,
+	_1: Zone,
+}
+ManaRestriction_OnlyForSpellWithManaValue :: struct {
+	comparator: Comparator,
+	value: u32,
+}
+ManaRestriction_OnlyForSpellMatchingCostCriteria :: struct {
+	spell_type: Maybe(string),
+	criteria: [dynamic]SpellCostCriterion,
+}
+ManaRestriction_OnlyForSpellWithColorCount :: struct {
+	comparator: Comparator,
+	count: u32,
+}
+ManaRestriction_OnlyForSpellColor :: struct {
+	_0: ManaColor,
+}
+ManaRestriction_OnlyForSpellFromZone :: struct {
+	_0: ZoneSpend,
+}
+ManaRestriction_CannotCastSpellFromZone :: struct {
+	_0: Zone,
+}
+ManaRestriction_OnlyForFaceDownSpell :: struct {
+}
+ManaRestriction_OnlyForAny :: struct {
+	_0: [dynamic]ManaRestriction,
+}
+ManaRestriction_OnlyForSpecialAction :: struct {
+	_0: SpecialAction,
+}
+ManaRestriction_Impossible :: struct {
+}
+ManaRestriction_ConvokePayment :: struct {
+}
+ManaRestriction :: union {
+	ManaRestriction_OnlyForSpell,
+	ManaRestriction_OnlyForSpellType,
+	ManaRestriction_OnlyForCreatureType,
+	ManaRestriction_OnlyForTypeSpellsOrAbilities,
+	ManaRestriction_OnlyForActivation,
+	ManaRestriction_OnlyForTaggedActivation,
+	ManaRestriction_OnlyForXCosts,
+	ManaRestriction_OnlyForSpellWithKeywordKind,
+	ManaRestriction_OnlyForSpellWithKeywordKindFromZone,
+	ManaRestriction_OnlyForSpellWithManaValue,
+	ManaRestriction_OnlyForSpellMatchingCostCriteria,
+	ManaRestriction_OnlyForSpellWithColorCount,
+	ManaRestriction_OnlyForSpellColor,
+	ManaRestriction_OnlyForSpellFromZone,
+	ManaRestriction_CannotCastSpellFromZone,
+	ManaRestriction_OnlyForFaceDownSpell,
+	ManaRestriction_OnlyForAny,
+	ManaRestriction_OnlyForSpecialAction,
+	ManaRestriction_Impossible,
+	ManaRestriction_ConvokePayment,
+}
+
+ManaSourcePenalty_None :: struct {
+}
+ManaSourcePenalty_HasIrreversibleContinuation :: struct {
+}
+ManaSourcePenalty_DealsDamageOnResolution :: struct {
+	fixed_amount: Maybe(u16),
+}
+ManaSourcePenalty_PaysLifeOnActivation :: struct {
+	fixed_amount: Maybe(u16),
+}
+ManaSourcePenalty_Sacrifices :: struct {
+}
+ManaSourcePenalty :: union {
+	ManaSourcePenalty_None,
+	ManaSourcePenalty_HasIrreversibleContinuation,
+	ManaSourcePenalty_DealsDamageOnResolution,
+	ManaSourcePenalty_PaysLifeOnActivation,
+	ManaSourcePenalty_Sacrifices,
+}
+
+TapsForManaSelection :: struct {
+	source: ObjectIncarnationRef,
+	occurrence: TriggerDefinitionOccurrenceRef,
+	production_override: ProductionOverride,
+}
+
+YieldScope :: enum u16 {
+	ThisObject,
+	AllCopies,
+}
+
+DebugCardCreationKind :: enum u16 {
+	Card,
+	Token,
+}
+
+DebugTokenRequest_Preset :: struct {
+	preset_id: string,
+	owner: PlayerId,
+	power_override: Maybe(i32),
+	toughness_override: Maybe(i32),
+	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
+}
+DebugTokenRequest_Custom :: struct {
+	owner: PlayerId,
+	characteristics: TokenCharacteristics,
+	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
+}
+DebugTokenRequest :: union {
+	DebugTokenRequest_Preset,
+	DebugTokenRequest_Custom,
+}
+
+PermanentEntryMode_Normal :: struct {
+}
+PermanentEntryMode_TappedAndAttacking :: struct {
+	destination: EntryAttackDestination,
+}
+PermanentEntryMode :: union {
+	PermanentEntryMode_Normal,
+	PermanentEntryMode_TappedAndAttacking,
+}
+
+MulliganDecisionPhase_Declare :: struct {
+}
+MulliganDecisionPhase_BottomCards :: struct {
+	count: u8,
+	then: PendingMulliganAction,
+}
+MulliganDecisionPhase :: union {
+	MulliganDecisionPhase_Declare,
+	MulliganDecisionPhase_BottomCards,
+}
+
+MulliganDeclarationKind :: enum u16 {
+	Regular,
+	FreeReveal,
+}
+
+TargetEffectDetail_None :: struct {
+}
+TargetEffectDetail_Destination :: struct {
+	_0: Zone,
+}
+TargetEffectDetail_Modification :: struct {
+	_0: PtDirection,
+}
+TargetEffectDetail :: union {
+	TargetEffectDetail_None,
+	TargetEffectDetail_Destination,
+	TargetEffectDetail_Modification,
+}
+
+EventAttachmentSnapshot :: struct {
+	identity: ObjectIncarnationRef,
+	controller: PlayerId,
+	kind: AttachmentKind,
+}
+
+EventCombatSnapshot :: struct {
+	attacking: bool,
+	blocking: bool,
+	blocked: bool,
+	attacking_alone: bool,
+	blocking_alone: bool,
+	defending_player: Maybe(PlayerId),
+	related_objects: [dynamic]ObjectIncarnationRef,
+}
+
+EventObjectHistorySnapshot :: struct {
+	was_dealt_damage_this_turn: bool,
+	entered_this_turn: bool,
+	attacked_defenders_this_turn: [dynamic]PlayerId,
+	blocked_this_turn: bool,
+	zone_changes_this_turn: [dynamic]Tuple2(Maybe(Zone), Zone),
+	counters_put_on_this_turn: [dynamic]EventCounterHistoryEntry,
+}
+
+EventObjectRelationSnapshot :: struct {
+	saddled_sources: [dynamic]ObjectIncarnationRef,
+	convoked_sources: [dynamic]ObjectIncarnationRef,
+	tracked_sets: [dynamic]EventTrackedSetMembership,
+}
+
+BatchCompletion_RecordInstructionZoneResult :: struct {
+	occurrence_id: ReturnResultOccurrenceId,
+	result_id: ReturnResultId,
+	settled_records: Maybe([dynamic]ZoneChangeRecord),
+}
+BatchCompletion_ReturnAsAuraNoTargetComplete :: struct {
+	source_id: ObjectId,
+}
+BatchCompletion_ExploreLandDeliveryComplete :: struct {
+	explorer_id: ObjectId,
+}
+BatchCompletion_CloakExileDeliveryComplete :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	members: [dynamic]CloakExileMember,
+	enters_under: Maybe(PlayerId),
+}
+BatchCompletion_ExileFaceDownPileDeliveryComplete :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	members: [dynamic]ObjectId,
+	required_member_count: int,
+}
+BatchCompletion_ExileFaceDownPileReturnComplete :: struct {
+	source_id: ObjectId,
+}
+BatchCompletion_CastFromZoneExileDeliveryComplete :: struct {
+	ability: ^ResolvedAbility,
+	in_place_ids: [dynamic]ObjectId,
+	exile_delivery_ids: [dynamic]ObjectId,
+}
+BatchCompletion_CascadeExileLoopComplete :: struct {
+	controller: PlayerId,
+	source_id: ObjectId,
+	source_mv: u32,
+	exiled_misses: [dynamic]ObjectId,
+	current_card: ObjectId,
+}
+BatchCompletion_TopCardContestRoundComplete :: struct {
+	ability: ^ResolvedAbility,
+	round: [dynamic]Tuple2(PlayerId, ObjectId),
+}
+BatchCompletion_CascadeBottomComplete :: struct {
+	controller: PlayerId,
+	source_id: ObjectId,
+	exiled_count: u32,
+}
+BatchCompletion_RippleTerminalComplete :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	final_cast: Maybe(ObjectId),
+}
+BatchCompletion_DiscoverBottomComplete :: struct {
+	source_id: ObjectId,
+}
+BatchCompletion_DiscoverPlacementComplete :: struct {
+	source_id: ObjectId,
+}
+BatchCompletion_DiscoverDeclined :: struct {
+	player: PlayerId,
+	hit_card: ObjectId,
+	source_id: ObjectId,
+}
+BatchCompletion_ResolutionCastRejectedToHand :: struct {
+	player: PlayerId,
+	hit_card: ObjectId,
+	source_id: ObjectId,
+}
+BatchCompletion_DiscoverDeclinedComplete :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+}
+BatchCompletion_ResolutionCastRejectionComplete :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+}
+BatchCompletion_PutOnTopComplete :: struct {
+	source_id: ObjectId,
+	removed_exile_links: [dynamic]ObjectId,
+}
+BatchCompletion_TopOrBottomComplete :: struct {
+	player: PlayerId,
+}
+BatchCompletion_EffectZonePutAtLibraryPositionComplete :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	chosen: [dynamic]ObjectId,
+	library_origin: [dynamic]ObjectId,
+	library_position: LibraryPosition,
+}
+BatchCompletion_ForEachCategoryExileComplete :: struct {
+	ability: ^ResolvedAbility,
+	pool: [dynamic]ObjectId,
+	remaining_member_filters: [dynamic]TargetFilter,
+	chosen: [dynamic]ObjectId,
+}
+BatchCompletion_DrawnThisTurnTopdeckComplete :: struct {
+	player: PlayerId,
+	life_payment: u32,
+	payment_count: int,
+	topdecked_count: int,
+	source_id: ObjectId,
+}
+BatchCompletion_SurveilKeepOnTop :: struct {
+	player: PlayerId,
+	top_cards: [dynamic]ObjectId,
+	graveyard_bound: [dynamic]ObjectId,
+}
+BatchCompletion_ManifestDreadCleanup :: struct {
+	player: PlayerId,
+	revealed: [dynamic]ObjectId,
+}
+BatchCompletion_RevealRestPile :: struct {
+	delivery_stage: DigDeliveryStage,
+	player: PlayerId,
+	source_id: Maybe(ObjectId),
+	rest_cards: [dynamic]ObjectId,
+	rest_destination: Zone,
+	rest_remainder: DigRestRemainder,
+	rest_order: DigRestOrder,
+	rest_split_top_count: Maybe(int),
+	clear_markers: [dynamic]ObjectId,
+	publish_tracked_set: Maybe([dynamic]ObjectId),
+	publish_tracked_set_cause: Maybe(ThisWayCause),
+	emit_reveal_until_resolved: Maybe(ObjectId),
+	reveal_until_hit_snapshot: ^EventObjectSnapshot,
+	manifested_for_continuation: Maybe(ObjectId),
+	kept_delivery: DigKeptDeliveryOutcome,
+	continuation_targets: [dynamic]ObjectId,
+	rest_delivery: DigRestDeliveryOutcome,
+}
+BatchCompletion_DigMassPutAllRestComplete :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	selected: [dynamic]ObjectId,
+	destination: Zone,
+	enter_tapped: EtbTapState,
+	enters_attacking: bool,
+}
+BatchCompletion_DigMassPutAllComplete :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	selected: [dynamic]ObjectId,
+	destination: Zone,
+}
+BatchCompletion_DigPriorLookRestComplete :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+}
+BatchCompletion_RemoveExileLinks :: struct {
+	returned_ids: [dynamic]ObjectId,
+}
+BatchCompletion_NinjutsuPlacement :: struct {
+	player: PlayerId,
+	ninjutsu_obj_id: ObjectId,
+	cast_variant: CastVariantPaid,
+	defending_player: PlayerId,
+	attack_target: AttackTarget,
+}
+BatchCompletion_AttractionOpenRemainder :: struct {
+	player: PlayerId,
+	object_id: ObjectId,
+	remaining: u32,
+}
+BatchCompletion_ContraptionAssembleRemainder :: struct {
+	player: PlayerId,
+	source_id: ObjectId,
+	object_id: ObjectId,
+	sprocket: u8,
+	remaining_after: u32,
+}
+BatchCompletion_LibrarySearchDeliverySettled :: struct {
+	resume: LibrarySearchDeliveryResume,
+}
+BatchCompletion_SearchPartitionPrimaryDelivered :: struct {
+	rest_ids: [dynamic]ObjectId,
+	rest_destination: Zone,
+	source_id: ObjectId,
+	resume: LibrarySearchDeliveryResume,
+}
+BatchCompletion_SearchFoundZoneDelivery :: struct {
+	object_id: ObjectId,
+	grant: Maybe(BoundSearchFoundGrant),
+}
+BatchCompletion_MeldExile :: struct {
+	context_: MeldSelection,
+}
+BatchCompletion_MeldEntry :: struct {
+	context_: MeldSelection,
+	attack_target: Maybe(AttackTarget),
+}
+BatchCompletion_MeldRedirect :: struct {
+	source_id: ObjectId,
+}
+BatchCompletion_MilledDeliveryComplete :: struct {
+	player_id: PlayerId,
+	cards: [dynamic]ObjectId,
+	position: LibraryPosition,
+	destination: Zone,
+}
+BatchCompletion_HordeMillFromLossDeliveryComplete :: struct {
+	player_id: PlayerId,
+	milled: [dynamic]ObjectId,
+	legendary_cohort: [dynamic]ObjectId,
+}
+BatchCompletion_DestroyPopulationSettled :: struct {
+	ability: ^ResolvedAbility,
+	settled_destroyed: Maybe([dynamic]ObjectId),
+}
+BatchCompletion_ChangeZonePopulationSettled :: struct {
+	tail: ^ChangeZoneBatchTail,
+	settled: Maybe(ChangeZoneSettled),
+}
+BatchCompletion :: union {
+	BatchCompletion_RecordInstructionZoneResult,
+	BatchCompletion_ReturnAsAuraNoTargetComplete,
+	BatchCompletion_ExploreLandDeliveryComplete,
+	BatchCompletion_CloakExileDeliveryComplete,
+	BatchCompletion_ExileFaceDownPileDeliveryComplete,
+	BatchCompletion_ExileFaceDownPileReturnComplete,
+	BatchCompletion_CastFromZoneExileDeliveryComplete,
+	BatchCompletion_CascadeExileLoopComplete,
+	BatchCompletion_TopCardContestRoundComplete,
+	BatchCompletion_CascadeBottomComplete,
+	BatchCompletion_RippleTerminalComplete,
+	BatchCompletion_DiscoverBottomComplete,
+	BatchCompletion_DiscoverPlacementComplete,
+	BatchCompletion_DiscoverDeclined,
+	BatchCompletion_ResolutionCastRejectedToHand,
+	BatchCompletion_DiscoverDeclinedComplete,
+	BatchCompletion_ResolutionCastRejectionComplete,
+	BatchCompletion_PutOnTopComplete,
+	BatchCompletion_TopOrBottomComplete,
+	BatchCompletion_EffectZonePutAtLibraryPositionComplete,
+	BatchCompletion_ForEachCategoryExileComplete,
+	BatchCompletion_DrawnThisTurnTopdeckComplete,
+	BatchCompletion_SurveilKeepOnTop,
+	BatchCompletion_ManifestDreadCleanup,
+	BatchCompletion_RevealRestPile,
+	BatchCompletion_DigMassPutAllRestComplete,
+	BatchCompletion_DigMassPutAllComplete,
+	BatchCompletion_DigPriorLookRestComplete,
+	BatchCompletion_RemoveExileLinks,
+	BatchCompletion_NinjutsuPlacement,
+	BatchCompletion_AttractionOpenRemainder,
+	BatchCompletion_ContraptionAssembleRemainder,
+	BatchCompletion_LibrarySearchDeliverySettled,
+	BatchCompletion_SearchPartitionPrimaryDelivered,
+	BatchCompletion_SearchFoundZoneDelivery,
+	BatchCompletion_MeldExile,
+	BatchCompletion_MeldEntry,
+	BatchCompletion_MeldRedirect,
+	BatchCompletion_MilledDeliveryComplete,
+	BatchCompletion_HordeMillFromLossDeliveryComplete,
+	BatchCompletion_DestroyPopulationSettled,
+	BatchCompletion_ChangeZonePopulationSettled,
+}
+
+SharedQuality :: enum u16 {
+	Name,
+	ManaValue,
+	Power,
+	Toughness,
+	TotalPowerToughness,
+	CreatureType,
+	Color,
+	CardType,
+	LandType,
+	PermanentType,
+}
+
+SharedQualityRelation :: enum u16 {
+	Shares,
+	DoesNotShare,
+}
+
+Comparator :: enum u16 {
+	GT,
+	LT,
+	GE,
+	LE,
+	EQ,
+	NE,
+}
+
+OutsideGameChoiceSource_Sideboard :: struct {
+	sideboard_index: int,
+	card: CardFace,
+}
+OutsideGameChoiceSource_FaceUpExile :: struct {
+	object_id: ObjectId,
+}
+OutsideGameChoiceSource_BoosterPack :: struct {
+	pack_slot: int,
+	origin: PackOrigin,
+	card: ^CardFace,
+}
+OutsideGameChoiceSource_Companion :: struct {
+	card: ^CardFace,
+}
+OutsideGameChoiceSource :: union {
+	OutsideGameChoiceSource_Sideboard,
+	OutsideGameChoiceSource_FaceUpExile,
+	OutsideGameChoiceSource_BoosterPack,
+	OutsideGameChoiceSource_Companion,
+}
+
+ActivationRestriction_AsSorcery :: struct {
+}
+ActivationRestriction_AsInstant :: struct {
+}
+ActivationRestriction_DuringYourTurn :: struct {
+}
+ActivationRestriction_DuringYourUpkeep :: struct {
+}
+ActivationRestriction_DuringCombat :: struct {
+}
+ActivationRestriction_BeforeAttackersDeclared :: struct {
+}
+ActivationRestriction_BeforeCombatDamage :: struct {
+}
+ActivationRestriction_OnlyOnceEachTurn :: struct {
+}
+ActivationRestriction_OnlyOnce :: struct {
+}
+ActivationRestriction_MaxTimesEachTurn :: struct {
+	count: u8,
+}
+ActivationRestriction_RequiresCondition :: struct {
+	condition: Maybe(ParsedCondition),
+}
+ActivationRestriction_IsSolved :: struct {
+}
+ActivationRestriction_SourceIsHarnessed :: struct {
+}
+ActivationRestriction_ClassLevelIs :: struct {
+	level: u8,
+}
+ActivationRestriction_LevelCounterRange :: struct {
+	minimum: u32,
+	maximum: Maybe(u32),
+}
+ActivationRestriction_CounterThreshold :: struct {
+	counters: CounterMatch,
+	minimum: u32,
+	maximum: Maybe(u32),
+}
+ActivationRestriction_MatchesCardCastTiming :: struct {
+}
+ActivationRestriction :: union {
+	ActivationRestriction_AsSorcery,
+	ActivationRestriction_AsInstant,
+	ActivationRestriction_DuringYourTurn,
+	ActivationRestriction_DuringYourUpkeep,
+	ActivationRestriction_DuringCombat,
+	ActivationRestriction_BeforeAttackersDeclared,
+	ActivationRestriction_BeforeCombatDamage,
+	ActivationRestriction_OnlyOnceEachTurn,
+	ActivationRestriction_OnlyOnce,
+	ActivationRestriction_MaxTimesEachTurn,
+	ActivationRestriction_RequiresCondition,
+	ActivationRestriction_IsSolved,
+	ActivationRestriction_SourceIsHarnessed,
+	ActivationRestriction_ClassLevelIs,
+	ActivationRestriction_LevelCounterRange,
+	ActivationRestriction_CounterThreshold,
+	ActivationRestriction_MatchesCardCastTiming,
+}
+
+ActivationManaPaymentRestriction :: enum u16 {
+	OnlySourceChosenColor,
+}
+
+IterationKindBinding :: enum u16 {
+	RebindToIteratedKind,
+}
+
 UnloweredGuard :: struct {
 	reading: GuardReading,
 	clause_text: string,
@@ -4223,14 +17045,1601 @@ LinkedExileReturn :: enum u16 {
 	WholeSet,
 }
 
-ExileConcealment :: enum u16 {
-	Public,
-	FaceDown,
+FaceDownBody :: enum u16 {
+	Creature,
+	Noncreature,
 }
 
-ObjectIncarnationRef :: struct {
-	object_id: ObjectId,
-	incarnation: u64,
+WardCost_Mana :: struct {
+	_0: ManaCost,
+}
+WardCost_PayLife :: struct {
+	_0: i32,
+}
+WardCost_PayLifeEqualToPower :: struct {
+}
+WardCost_Discard :: struct {
+	count: u32,
+	filter: Maybe(TargetFilter),
+	selection: CardSelectionMode,
+}
+WardCost_Sacrifice :: struct {
+	count: u32,
+	filter: TargetFilter,
+}
+WardCost_Waterbend :: struct {
+	_0: ManaCost,
+}
+WardCost_Compound :: struct {
+	_0: [dynamic]WardCost,
+}
+WardCost_GetPlayerCounters :: struct {
+	counter_kind: PlayerCounterKind,
+	count: u32,
+}
+WardCost :: union {
+	WardCost_Mana,
+	WardCost_PayLife,
+	WardCost_PayLifeEqualToPower,
+	WardCost_Discard,
+	WardCost_Sacrifice,
+	WardCost_Waterbend,
+	WardCost_Compound,
+	WardCost_GetPlayerCounters,
+}
+
+FaceDownCause :: enum u16 {
+	Manifest,
+	Morph,
+	Cloak,
+	Disguise,
+	TurnedFaceDown,
+}
+
+RoundingMode :: enum u16 {
+	Up,
+	Down,
+}
+
+MassLibraryOrderMember :: struct {
+	identity: ObjectIncarnationRef,
+	origin: Zone,
+	departing_permanent: Maybe(ObjectIncarnationRef),
+}
+
+PlayerScope_Controller :: struct {
+}
+PlayerScope_ScopedPlayer :: struct {
+}
+PlayerScope_Target :: struct {
+}
+PlayerScope_Opponent :: struct {
+	aggregate: AggregateFunction,
+}
+PlayerScope_AllPlayers :: struct {
+	aggregate: AggregateFunction,
+	exclude: ^PlayerScope,
+}
+PlayerScope_RecipientController :: struct {
+}
+PlayerScope_DefendingPlayer :: struct {
+}
+PlayerScope_ParentObjectTarget :: struct {
+	possession: PossessionAxis,
+}
+PlayerScope_SourceChosenPlayer :: struct {
+}
+PlayerScope_AnyTurn :: struct {
+}
+PlayerScope_SpecificPlayer :: struct {
+	id: PlayerId,
+}
+PlayerScope :: union {
+	PlayerScope_Controller,
+	PlayerScope_ScopedPlayer,
+	PlayerScope_Target,
+	PlayerScope_Opponent,
+	PlayerScope_AllPlayers,
+	PlayerScope_RecipientController,
+	PlayerScope_DefendingPlayer,
+	PlayerScope_ParentObjectTarget,
+	PlayerScope_SourceChosenPlayer,
+	PlayerScope_AnyTurn,
+	PlayerScope_SpecificPlayer,
+}
+
+NameDistinctness :: enum u16 {
+	Repeatable,
+	DistinctFromSourceHistory,
+}
+
+NumberDistinctness :: enum u16 {
+	Repeatable,
+	DistinctFromSourceHistory,
+}
+
+PlayerChoiceDistinctness :: enum u16 {
+	Independent,
+	DistinctFromPriorChoices,
+}
+
+PromptSourceBinding :: struct {
+	identity: ObjectIdentityBinding,
+	controller: PlayerId,
+	display_name: string,
+}
+
+NamedChoiceSourceBinding :: enum u16 {
+	ResolutionContext,
+	ExactObjectAndResolution,
+	PendingEntry,
+}
+
+ModalSelectionConstraint_DifferentTargetPlayers :: struct {
+}
+ModalSelectionConstraint_ConditionalMaxChoices :: struct {
+	condition: ModalSelectionCondition,
+	max_choices: int,
+	otherwise_max_choices: int,
+}
+ModalSelectionConstraint_NoRepeatThisTurn :: struct {
+}
+ModalSelectionConstraint_NoRepeatThisGame :: struct {
+}
+ModalSelectionConstraint :: union {
+	ModalSelectionConstraint_DifferentTargetPlayers,
+	ModalSelectionConstraint_ConditionalMaxChoices,
+	ModalSelectionConstraint_NoRepeatThisTurn,
+	ModalSelectionConstraint_NoRepeatThisGame,
+}
+
+AdditionalCostRepeatability :: enum u16 {
+	Once,
+	Repeatable,
+}
+
+ReductionProvenance_Static :: struct {
+	source: ObjectId,
+	ordinal: u8,
+}
+ReductionProvenance_Defiler :: struct {
+}
+ReductionProvenance_CastingPermission :: struct {
+}
+ReductionProvenance_PendingOneShot :: struct {
+	index: int,
+}
+ReductionProvenance_Affinity :: struct {
+}
+ReductionProvenance_Undaunted :: struct {
+}
+ReductionProvenance_AbilityCostRider :: struct {
+}
+ReductionProvenance_TransientEffect :: struct {
+	effect: u64,
+	ordinal: u8,
+}
+ReductionProvenance_SacrificedForCost :: struct {
+	_0: SpellCostSource,
+}
+ReductionProvenance :: union {
+	ReductionProvenance_Static,
+	ReductionProvenance_Defiler,
+	ReductionProvenance_CastingPermission,
+	ReductionProvenance_PendingOneShot,
+	ReductionProvenance_Affinity,
+	ReductionProvenance_Undaunted,
+	ReductionProvenance_AbilityCostRider,
+	ReductionProvenance_TransientEffect,
+	ReductionProvenance_SacrificedForCost,
+}
+
+ResolutionCastFacePolicy :: struct {
+	filter: TargetFilter,
+	source_id: ObjectId,
+	controller: PlayerId,
+	constraint: Maybe(CastPermissionConstraint),
+	play_mode: CardPlayMode,
+}
+
+SpellStackToGraveyardReplacement_Exile :: struct {
+}
+SpellStackToGraveyardReplacement_Library :: struct {
+	position: LibraryPosition,
+}
+SpellStackToGraveyardReplacement_Hand :: struct {
+}
+SpellStackToGraveyardReplacement :: union {
+	SpellStackToGraveyardReplacement_Exile,
+	SpellStackToGraveyardReplacement_Library,
+	SpellStackToGraveyardReplacement_Hand,
+}
+
+ResolutionCastCleanup :: struct {
+	source_id: ObjectId,
+	offer_id: Maybe(ResolutionCastOfferId),
+	face_policy: ResolutionCastFacePolicy,
+	exiled_misses: [dynamic]ObjectId,
+	reject_action: ResolutionMvRejectAction,
+	success_action: ResolutionCastSuccessAction,
+	delayed_trigger_receipts: [dynamic]ResolutionCastDelayedTriggerReceipt,
+	indicated_action: ^IndicatedActionLimit,
+}
+
+SacrificeCost :: struct {
+	target: TargetFilter,
+	requirement: SacrificeRequirement,
+}
+
+CardSelectionMode :: enum u16 {
+	Chosen,
+	Random,
+}
+
+DiscardSelfScope :: enum u16 {
+	FromHand,
+	SourceCard,
+}
+
+CostObjectCount_Exactly :: struct {
+	count: u32,
+}
+CostObjectCount_AtLeast :: struct {
+	count: u32,
+}
+CostObjectCount :: union {
+	CostObjectCount_Exactly,
+	CostObjectCount_AtLeast,
+}
+
+AggregateFunction :: enum u16 {
+	Max,
+	Min,
+	Sum,
+}
+
+ObjectProperty_Power :: struct {
+}
+ObjectProperty_Toughness :: struct {
+}
+ObjectProperty_ManaValue :: struct {
+}
+ObjectProperty_ManaSymbolCount :: struct {
+	_0: ManaColor,
+}
+ObjectProperty :: union {
+	ObjectProperty_Power,
+	ObjectProperty_Toughness,
+	ObjectProperty_ManaValue,
+	ObjectProperty_ManaSymbolCount,
+}
+
+TapCreaturesRequirement_Count :: struct {
+	count: u32,
+}
+TapCreaturesRequirement_Aggregate :: struct {
+	stat: TapCreaturesAggregateStat,
+	comparator: Comparator,
+	value: i32,
+	collective: bool,
+}
+TapCreaturesRequirement :: union {
+	TapCreaturesRequirement_Count,
+	TapCreaturesRequirement_Aggregate,
+}
+
+CounterCostSelection :: enum u16 {
+	SingleObject,
+	AmongObjects,
+}
+
+BeholdCostAction :: enum u16 {
+	ChooseOrReveal,
+	ExileChosen,
+}
+
+NinjutsuVariant :: enum u16 {
+	Ninjutsu,
+	CommanderNinjutsu,
+}
+
+EmergeSacrificeQuality_Artifact :: struct {
+}
+EmergeSacrificeQuality_Battle :: struct {
+}
+EmergeSacrificeQuality_Card :: struct {
+}
+EmergeSacrificeQuality_Creature :: struct {
+}
+EmergeSacrificeQuality_Enchantment :: struct {
+}
+EmergeSacrificeQuality_Instant :: struct {
+}
+EmergeSacrificeQuality_Kindred :: struct {
+}
+EmergeSacrificeQuality_Land :: struct {
+}
+EmergeSacrificeQuality_Permanent :: struct {
+}
+EmergeSacrificeQuality_Planeswalker :: struct {
+}
+EmergeSacrificeQuality_Sorcery :: struct {
+}
+EmergeSacrificeQuality_Subtype :: struct {
+	_0: string,
+}
+EmergeSacrificeQuality :: union {
+	EmergeSacrificeQuality_Artifact,
+	EmergeSacrificeQuality_Battle,
+	EmergeSacrificeQuality_Card,
+	EmergeSacrificeQuality_Creature,
+	EmergeSacrificeQuality_Enchantment,
+	EmergeSacrificeQuality_Instant,
+	EmergeSacrificeQuality_Kindred,
+	EmergeSacrificeQuality_Land,
+	EmergeSacrificeQuality_Permanent,
+	EmergeSacrificeQuality_Planeswalker,
+	EmergeSacrificeQuality_Sorcery,
+	EmergeSacrificeQuality_Subtype,
+}
+
+CastingVariantFace :: enum u16 {
+	Current,
+	Left,
+	Right,
+}
+
+CastAuthorityChoice :: struct {
+	announcement: AnnouncedGraveyardPermission,
+	extra_cost: Maybe(CastExtraCost),
+	enters_with_counter: Maybe(CounterType),
+	frequency: CastFrequency,
+	graveyard_destination_replacement: Maybe(Zone),
+}
+
+GrantDigest :: distinct string
+
+ManaCarrier :: enum u16 {
+	Whole,
+	Split,
+}
+
+SettledTail :: enum u16 {
+	SurfaceThenBoundary,
+	Boundary,
+}
+
+ActivationCostLock_Open :: struct {
+	point: ActivationCostLockPoint,
+}
+ActivationCostLock_Locked :: struct {
+	point: ActivationCostLockPoint,
+	order: Maybe([dynamic]ReductionProvenance),
+}
+ActivationCostLock :: union {
+	ActivationCostLock_Open,
+	ActivationCostLock_Locked,
+}
+
+WinKind :: enum u16 {
+	LethalDamage,
+	PoisonLoss,
+	Decking,
+	ImmediateWin,
+	ExtraTurns,
+	Advantage,
+}
+
+BoardDelta :: struct {
+	added: [dynamic]ResidualPermanent,
+	removed: [dynamic]ResidualPermanent,
+}
+
+PeriodSignature_EveryRepetition :: struct {
+	_0: PeriodicDelta,
+}
+PeriodSignature_OneRepetition :: struct {
+	_0: PeriodicDelta,
+}
+PeriodSignature :: union {
+	PeriodSignature_EveryRepetition,
+	PeriodSignature_OneRepetition,
+}
+
+RepetitionBound :: enum u16 {
+	Measured,
+	Unmeasured,
+}
+
+DecisionPoint :: struct {
+	slot: DecisionSlot,
+	kind: DecisionPointKind,
+}
+
+DecisionSlot :: struct {
+	source: YieldTarget,
+	point: ChoicePoint,
+	index: u8,
+}
+
+UnperformableCause :: enum u16 {
+	UncontainedChoice,
+}
+
+DungeonCardView :: struct {
+	oracle_id: string,
+	scryfall_id: string,
+	face_name: string,
+}
+
+DungeonRoomNodeView :: struct {
+	room: RoomPreview,
+	next_rooms: [dynamic]u8,
+	marker: RoomMarkerPoint,
+}
+
+ExileCostSourceZone :: enum u16 {
+	Hand,
+	Graveyard,
+}
+
+TapCreaturesSelectionMode_Fixed :: struct {
+}
+TapCreaturesSelectionMode_VariableX :: struct {
+}
+TapCreaturesSelectionMode_Aggregate :: struct {
+	_0: TapCreaturesAggregate,
+}
+TapCreaturesSelectionMode :: union {
+	TapCreaturesSelectionMode_Fixed,
+	TapCreaturesSelectionMode_VariableX,
+	TapCreaturesSelectionMode_Aggregate,
+}
+
+TapCreaturesAggregate :: struct {
+	stat: TapCreaturesAggregateStat,
+	comparator: Comparator,
+	value: i32,
+}
+
+ContestPhase :: enum u16 {
+	Pending,
+	Preparing,
+	Active,
+	Resolving,
+	Completed,
+	Cancelled,
+}
+
+ContestConfig :: struct {
+	countdown_ms: u64,
+	inactivity_timeout_ms: u64,
+	reconnect_grace_ms: u64,
+	settle_window_ms: u64,
+	max_active_ms: u64,
+}
+
+Contestant :: struct {
+	player: PlayerId,
+	clicks: u32,
+	last_activity_ms: u64,
+	last_seq: Maybe(u32),
+	connection: ContestantConnection,
+}
+
+TieResolution_Breaker :: struct {
+	_0: u8,
+}
+TieResolution_AllTied :: struct {
+}
+TieResolution :: union {
+	TieResolution_Breaker,
+	TieResolution_AllTied,
+}
+
+CompanionChoiceSource_Sideboard :: struct {
+	index: int,
+}
+CompanionChoiceSource_Dedicated :: struct {
+}
+CompanionChoiceSource :: union {
+	CompanionChoiceSource_Sideboard,
+	CompanionChoiceSource_Dedicated,
+}
+
+DisplayIdentity :: struct {
+	display_source: DisplaySource,
+	printed_ref: Maybe(PrintedCardRef),
+	token_image_ref: Maybe(TokenImageRef),
+	token_art: Maybe(TokenArtDescriptor),
+}
+
+TextSubstitutionSpec_Fixed :: struct {
+	_0: TextSubstitution,
+}
+TextSubstitutionSpec_Chosen :: struct {
+	domains: [dynamic]TextWordDomain,
+}
+TextSubstitutionSpec :: union {
+	TextSubstitutionSpec_Fixed,
+	TextSubstitutionSpec_Chosen,
+}
+
+SubtypeSet :: enum u16 {
+	Creature,
+	Land,
+	Artifact,
+	Enchantment,
+	Planeswalker,
+	Spell,
+	Battle,
+}
+
+DynamicKeywordKind :: enum u16 {
+	Annihilator,
+	Modular,
+	Mobilize,
+}
+
+CostBearingKeywordKind :: enum u16 {
+	Foretell,
+	Madness,
+	Disturb,
+	Mayhem,
+	Dash,
+	Unearth,
+}
+
+CostDerivation_ManaCostReducedBy :: struct {
+	_0: ManaCost,
+}
+CostDerivation :: union {
+	CostDerivation_ManaCostReducedBy,
+}
+
+ChosenSubtypeKind :: enum u16 {
+	CreatureType,
+	BasicLandType,
+}
+
+ColorChangeMode :: enum u16 {
+	Set,
+	Add,
+}
+
+StaticMode_Continuous :: struct {
+}
+StaticMode_DamageNotRemovedDuringCleanup :: struct {
+}
+StaticMode_LethalDamageDeterminedByPower :: struct {
+}
+StaticMode_CantAttack :: struct {
+}
+StaticMode_CantBlock :: struct {
+}
+StaticMode_CantAttackOrBlock :: struct {
+}
+StaticMode_AttackOnlyNeighbor :: struct {
+}
+StaticMode_CantBecomeSuspected :: struct {
+}
+StaticMode_MaxAttackersEachCombat :: struct {
+	max: u32,
+	defender: Maybe(AttackDefenderScope),
+}
+StaticMode_MaxBlockersEachCombat :: struct {
+	max: u32,
+}
+StaticMode_CantBeTargeted :: struct {
+	who: ProhibitionScope,
+}
+StaticMode_CantBeCast :: struct {
+	who: ProhibitionScope,
+}
+StaticMode_CantBeActivated :: struct {
+	who: ProhibitionScope,
+	source_filter: TargetFilter,
+	exemption: ActivationExemption,
+	kind: Maybe(ActivatedAbilityKind),
+}
+StaticMode_CantSearchLibrary :: struct {
+	cause: ProhibitionScope,
+}
+StaticMode_RestrictLibrarySearchToTop :: struct {
+	who: ProhibitionScope,
+	count: u32,
+}
+StaticMode_ControlPlayersDuringOwnLibrarySearch :: struct {
+	who: ProhibitionScope,
+}
+StaticMode_CantCauseSacrificeOrExile :: struct {
+	cause: ProhibitionScope,
+}
+StaticMode_CantCauseForcedAction :: struct {
+	cause: ProhibitionScope,
+	actions: [dynamic]CostCategory,
+}
+StaticMode_CastWithFlash :: struct {
+}
+StaticMode_GrantsExtraVote :: struct {
+}
+StaticMode_GrantsExtraVillainousChoice :: struct {
+}
+StaticMode_CastWithKeyword :: struct {
+	keyword: Keyword,
+}
+StaticMode_CastWithAlternativeCost :: struct {
+	cost: AbilityCost,
+	timing_permission: Maybe(CastTimingPermission),
+	frequency: CastFrequency,
+}
+StaticMode_AlternativeKeywordCost :: struct {
+	keyword: KeywordKind,
+	cost: AbilityCost,
+	frequency: Maybe(CastFrequency),
+}
+StaticMode_ModifyCost :: struct {
+	mode: CostModifyMode,
+	amount: ManaCost,
+	spell_filter: Maybe(TargetFilter),
+	dynamic_count: Maybe(QuantityRef),
+	reach: CostReductionReach,
+}
+StaticMode_ImposeAdditionalCost :: struct {
+	cost: AbilityCost,
+	spell_filter: Maybe(TargetFilter),
+	action: AdditionalCostTaxAction,
+}
+StaticMode_ReduceAbilityCost :: struct {
+	mode: CostModifyMode,
+	keyword: string,
+	amount: u32,
+	minimum_mana: Maybe(u32),
+	dynamic_count: Maybe(QuantityRef),
+	exemption: ActivationExemption,
+	activator: Maybe(PlayerFilter),
+	targets: Maybe(TargetFilter),
+	frequency: Maybe(CastFrequency),
+}
+StaticMode_ReduceActionCost :: struct {
+	action: SpecialAction,
+	mode: CostModifyMode,
+	amount: u32,
+}
+StaticMode_ModifyActivationLimit :: struct {
+	keyword: string,
+	new_limit: u8,
+}
+StaticMode_ActivateAsInstant :: struct {
+	cost_category: CostCategory,
+	keyword: Maybe(AbilityTag),
+}
+StaticMode_CantPayCost :: struct {
+	who: ProhibitionScope,
+	cost: CostPaymentProhibition,
+}
+StaticMode_CantGainLife :: struct {
+}
+StaticMode_CantLoseLife :: struct {
+}
+StaticMode_PlayerProtection :: struct {
+	_0: ProtectionTarget,
+}
+StaticMode_MustAttack :: struct {
+}
+StaticMode_MustAttackDefender :: struct {
+	defender: RequiredDefender,
+}
+StaticMode_MustBlock :: struct {
+}
+StaticMode_MustBlockAttacker :: struct {
+	attacker: ObjectIncarnationRef,
+}
+StaticMode_CantDraw :: struct {
+	who: ProhibitionScope,
+}
+StaticMode_DrawFromBottom :: struct {
+	who: ProhibitionScope,
+}
+StaticMode_DoubleTriggers :: struct {
+	cause: TriggerCause,
+}
+StaticMode_IgnoreHexproof :: struct {
+}
+StaticMode_ExtraBlockers :: struct {
+	count: Maybe(u32),
+}
+StaticMode_RevealTopOfLibrary :: struct {
+	all_players: bool,
+}
+StaticMode_RevealHand :: struct {
+	who: ProhibitionScope,
+}
+StaticMode_GraveyardCastPermission :: struct {
+	frequency: CastFrequency,
+	play_mode: CardPlayMode,
+	graveyard_destination_replacement: Maybe(Zone),
+	extra_cost: Maybe(CastExtraCost),
+	enters_with_counter: Maybe(CounterType),
+	enter_tapped: EtbTapState,
+	required_cast_keyword: Maybe(KeywordKind),
+	pool: GraveyardPermissionPool,
+	cast_limit: PermissionCastLimit,
+	mana_spend_permission: Maybe(ManaSpendPermission),
+	enters_modifications: PendingEntersModifications,
+}
+StaticMode_TopOfLibraryCastPermission :: struct {
+	play_mode: CardPlayMode,
+	frequency: CastFrequency,
+	alt_cost: Maybe(AbilityCost),
+}
+StaticMode_TopOfLibraryHasPlot :: struct {
+}
+StaticMode_TopOfLibraryPlotPermission :: struct {
+}
+StaticMode_CastFromHandFree :: struct {
+	frequency: CastFrequency,
+	origin: CastFreeOrigin,
+}
+StaticMode_ExileCastPermission :: struct {
+	frequency: CastFrequency,
+	play_mode: CardPlayMode,
+	cost: ExileCastCost,
+	pool: ExileCardPool,
+	timing: ExileCastTiming,
+	mana_spend_permission: Maybe(ManaSpendPermission),
+	grants_flash: bool,
+	extra_cost: Maybe(CastExtraCost),
+	enters_with_counter: Maybe(CounterType),
+	grantee: ExileCastGrantee,
+}
+StaticMode_LinkedCollectionCounterPlayPermission :: struct {
+}
+StaticMode_CountersPersistAcrossZones :: struct {
+	excluded_zones: [dynamic]Zone,
+}
+StaticMode_CantBeCountered :: struct {
+}
+StaticMode_CantBeCopied :: struct {
+}
+StaticMode_CantEnterBattlefieldFrom :: struct {
+}
+StaticMode_CantCastFrom :: struct {
+	who: ProhibitionScope,
+}
+StaticMode_CantCastDuring :: struct {
+	who: ProhibitionScope,
+	when_: CastingProhibitionCondition,
+}
+StaticMode_CantActivateDuring :: struct {
+	who: ProhibitionScope,
+	when_: CastingProhibitionCondition,
+	exemption: ActivationExemption,
+}
+StaticMode_PerTurnCastLimit :: struct {
+	who: ProhibitionScope,
+	max: u32,
+	spell_filter: Maybe(TargetFilter),
+}
+StaticMode_PerTurnDrawLimit :: struct {
+	who: ProhibitionScope,
+	max: u32,
+}
+StaticMode_SuppressTriggers :: struct {
+	source_filter: TargetFilter,
+	trigger_source_filter: Maybe(TargetFilter),
+	events: [dynamic]SuppressedTriggerEvent,
+}
+StaticMode_CantBeBlocked :: struct {
+}
+StaticMode_CantBeBlockedExceptBy :: struct {
+	kind: BlockExceptionKind,
+}
+StaticMode_CantBeBlockedBy :: struct {
+	filter: TargetFilter,
+}
+StaticMode_CantBeBlockedByMoreThan :: struct {
+	max: u32,
+}
+StaticMode_CantBeBlockedUnlessAllBlock :: struct {
+}
+StaticMode_AttachmentRestriction :: struct {
+	filter: TargetFilter,
+}
+StaticMode_Protection :: struct {
+}
+StaticMode_Indestructible :: struct {
+}
+StaticMode_CantBeDestroyed :: struct {
+}
+StaticMode_CantBeRegenerated :: struct {
+}
+StaticMode_FlashBack :: struct {
+}
+StaticMode_Shroud :: struct {
+}
+StaticMode_Hexproof :: struct {
+}
+StaticMode_Vigilance :: struct {
+}
+StaticMode_Menace :: struct {
+}
+StaticMode_Reach :: struct {
+}
+StaticMode_Flying :: struct {
+}
+StaticMode_Trample :: struct {
+}
+StaticMode_Deathtouch :: struct {
+}
+StaticMode_Lifelink :: struct {
+}
+StaticMode_CantTap :: struct {
+}
+StaticMode_CantUntap :: struct {
+}
+StaticMode_MustBeBlocked :: struct {
+	by: Maybe(TargetFilter),
+}
+StaticMode_MustBeBlockedByAll :: struct {
+	blockers: Maybe(TargetFilter),
+}
+StaticMode_Goaded :: struct {
+}
+StaticMode_MustAttackAwayFromSource :: struct {
+}
+StaticMode_CombatAlone :: struct {
+	action: CombatAloneAction,
+	requirement: CombatAloneRequirement,
+}
+StaticMode_CantCrew :: struct {
+}
+StaticMode_CantPhaseIn :: struct {
+}
+StaticMode_CrewContribution :: struct {
+	kind: CrewContributionKind,
+	actions: [dynamic]CrewAction,
+}
+StaticMode_MayLookAtTopOfLibrary :: struct {
+}
+StaticMode_MayLookAtFaceDown :: struct {
+}
+StaticMode_CantBeTurnedFaceUp :: struct {
+}
+StaticMode_MayChooseNotToUntap :: struct {
+}
+StaticMode_AdditionalLandDrop :: struct {
+	count: u8,
+}
+StaticMode_EmblemStatic :: struct {
+}
+StaticMode_BlockRestriction :: struct {
+	filter: TargetFilter,
+}
+StaticMode_NoMaximumHandSize :: struct {
+}
+StaticMode_MaximumHandSize :: struct {
+	modification: HandSizeModification,
+}
+StaticMode_MayPlayAdditionalLand :: struct {
+}
+StaticMode_CantHaveKeyword :: struct {
+	keyword: Keyword,
+}
+StaticMode_CantWinTheGame :: struct {
+}
+StaticMode_CantLoseTheGame :: struct {
+}
+StaticMode_LegendRuleDoesntApply :: struct {
+}
+StaticMode_SpeedCanIncreaseBeyondFour :: struct {
+}
+StaticMode_DefilerCostReduction :: struct {
+	color: ManaColor,
+	life_cost: u32,
+	mana_reduction: ManaCost,
+	reach: CostReductionReach,
+}
+StaticMode_SkipStep :: struct {
+	step: Phase,
+}
+StaticMode_SpendManaAsAnyColor :: struct {
+	spell_filter: Maybe(TargetFilter),
+	activation_source_filter: Maybe(TargetFilter),
+	concession: ManaSpendPermission,
+}
+StaticMode_PayLifeAsColoredMana :: struct {
+	color: ManaColor,
+}
+StaticMode_StepEndUnspentMana :: struct {
+	filter: Maybe(ManaColor),
+	action: StepEndManaAction,
+}
+StaticMode_UnspentManaLossCausesLifeLoss :: struct {
+}
+StaticMode_WinFirstCoinFlipSetEachTurn :: struct {
+}
+StaticMode_CanAttackWithDefender :: struct {
+}
+StaticMode_IgnoreLandwalkForBlocking :: struct {
+	qualifier: Maybe(string),
+}
+StaticMode_CanActivateAbilitiesAsThoughHaste :: struct {
+}
+StaticMode_CanBlockShadow :: struct {
+}
+StaticMode_AssignNoCombatDamage :: struct {
+}
+StaticMode_UntapsDuringEachOtherPlayersUntapStep :: struct {
+}
+StaticMode_MaxUntapPerType :: struct {
+	filter: TargetFilter,
+	max: u32,
+}
+StaticMode_EntersWithAdditionalCounters :: struct {
+	counter_type: CounterType,
+	count: u32,
+}
+StaticMode_CountersCantBeRemoved :: struct {
+	counter_type: CounterType,
+}
+StaticMode_CountsAsNamed :: struct {
+	name: string,
+}
+StaticMode_Other :: struct {
+	_0: string,
+}
+StaticMode :: union {
+	StaticMode_Continuous,
+	StaticMode_DamageNotRemovedDuringCleanup,
+	StaticMode_LethalDamageDeterminedByPower,
+	StaticMode_CantAttack,
+	StaticMode_CantBlock,
+	StaticMode_CantAttackOrBlock,
+	StaticMode_AttackOnlyNeighbor,
+	StaticMode_CantBecomeSuspected,
+	StaticMode_MaxAttackersEachCombat,
+	StaticMode_MaxBlockersEachCombat,
+	StaticMode_CantBeTargeted,
+	StaticMode_CantBeCast,
+	StaticMode_CantBeActivated,
+	StaticMode_CantSearchLibrary,
+	StaticMode_RestrictLibrarySearchToTop,
+	StaticMode_ControlPlayersDuringOwnLibrarySearch,
+	StaticMode_CantCauseSacrificeOrExile,
+	StaticMode_CantCauseForcedAction,
+	StaticMode_CastWithFlash,
+	StaticMode_GrantsExtraVote,
+	StaticMode_GrantsExtraVillainousChoice,
+	StaticMode_CastWithKeyword,
+	StaticMode_CastWithAlternativeCost,
+	StaticMode_AlternativeKeywordCost,
+	StaticMode_ModifyCost,
+	StaticMode_ImposeAdditionalCost,
+	StaticMode_ReduceAbilityCost,
+	StaticMode_ReduceActionCost,
+	StaticMode_ModifyActivationLimit,
+	StaticMode_ActivateAsInstant,
+	StaticMode_CantPayCost,
+	StaticMode_CantGainLife,
+	StaticMode_CantLoseLife,
+	StaticMode_PlayerProtection,
+	StaticMode_MustAttack,
+	StaticMode_MustAttackDefender,
+	StaticMode_MustBlock,
+	StaticMode_MustBlockAttacker,
+	StaticMode_CantDraw,
+	StaticMode_DrawFromBottom,
+	StaticMode_DoubleTriggers,
+	StaticMode_IgnoreHexproof,
+	StaticMode_ExtraBlockers,
+	StaticMode_RevealTopOfLibrary,
+	StaticMode_RevealHand,
+	StaticMode_GraveyardCastPermission,
+	StaticMode_TopOfLibraryCastPermission,
+	StaticMode_TopOfLibraryHasPlot,
+	StaticMode_TopOfLibraryPlotPermission,
+	StaticMode_CastFromHandFree,
+	StaticMode_ExileCastPermission,
+	StaticMode_LinkedCollectionCounterPlayPermission,
+	StaticMode_CountersPersistAcrossZones,
+	StaticMode_CantBeCountered,
+	StaticMode_CantBeCopied,
+	StaticMode_CantEnterBattlefieldFrom,
+	StaticMode_CantCastFrom,
+	StaticMode_CantCastDuring,
+	StaticMode_CantActivateDuring,
+	StaticMode_PerTurnCastLimit,
+	StaticMode_PerTurnDrawLimit,
+	StaticMode_SuppressTriggers,
+	StaticMode_CantBeBlocked,
+	StaticMode_CantBeBlockedExceptBy,
+	StaticMode_CantBeBlockedBy,
+	StaticMode_CantBeBlockedByMoreThan,
+	StaticMode_CantBeBlockedUnlessAllBlock,
+	StaticMode_AttachmentRestriction,
+	StaticMode_Protection,
+	StaticMode_Indestructible,
+	StaticMode_CantBeDestroyed,
+	StaticMode_CantBeRegenerated,
+	StaticMode_FlashBack,
+	StaticMode_Shroud,
+	StaticMode_Hexproof,
+	StaticMode_Vigilance,
+	StaticMode_Menace,
+	StaticMode_Reach,
+	StaticMode_Flying,
+	StaticMode_Trample,
+	StaticMode_Deathtouch,
+	StaticMode_Lifelink,
+	StaticMode_CantTap,
+	StaticMode_CantUntap,
+	StaticMode_MustBeBlocked,
+	StaticMode_MustBeBlockedByAll,
+	StaticMode_Goaded,
+	StaticMode_MustAttackAwayFromSource,
+	StaticMode_CombatAlone,
+	StaticMode_CantCrew,
+	StaticMode_CantPhaseIn,
+	StaticMode_CrewContribution,
+	StaticMode_MayLookAtTopOfLibrary,
+	StaticMode_MayLookAtFaceDown,
+	StaticMode_CantBeTurnedFaceUp,
+	StaticMode_MayChooseNotToUntap,
+	StaticMode_AdditionalLandDrop,
+	StaticMode_EmblemStatic,
+	StaticMode_BlockRestriction,
+	StaticMode_NoMaximumHandSize,
+	StaticMode_MaximumHandSize,
+	StaticMode_MayPlayAdditionalLand,
+	StaticMode_CantHaveKeyword,
+	StaticMode_CantWinTheGame,
+	StaticMode_CantLoseTheGame,
+	StaticMode_LegendRuleDoesntApply,
+	StaticMode_SpeedCanIncreaseBeyondFour,
+	StaticMode_DefilerCostReduction,
+	StaticMode_SkipStep,
+	StaticMode_SpendManaAsAnyColor,
+	StaticMode_PayLifeAsColoredMana,
+	StaticMode_StepEndUnspentMana,
+	StaticMode_UnspentManaLossCausesLifeLoss,
+	StaticMode_WinFirstCoinFlipSetEachTurn,
+	StaticMode_CanAttackWithDefender,
+	StaticMode_IgnoreLandwalkForBlocking,
+	StaticMode_CanActivateAbilitiesAsThoughHaste,
+	StaticMode_CanBlockShadow,
+	StaticMode_AssignNoCombatDamage,
+	StaticMode_UntapsDuringEachOtherPlayersUntapStep,
+	StaticMode_MaxUntapPerType,
+	StaticMode_EntersWithAdditionalCounters,
+	StaticMode_CountersCantBeRemoved,
+	StaticMode_CountsAsNamed,
+	StaticMode_Other,
+}
+
+Designation :: enum u16 {
+	Monarch,
+}
+
+ManaAmountComposition :: enum u16 {
+	ConcretizeX,
+	PerUnit,
+}
+
+LoopCollapseAxis :: enum u16 {
+	Tokens,
+	Counters,
+	Life,
+	Mixed,
+}
+
+ShardOptions :: enum u16 {
+	ManaOrLife,
+	ManaOnly,
+	LifeOnly,
+}
+
+DamageGuardReading :: enum u16 {
+	Holds,
+	Fails,
+}
+
+DeferredDamageChoice :: struct {
+	chooser: PlayerId,
+	source: ObjectId,
+	target: TargetRef,
+	amount: u32,
+	is_combat: bool,
+	applied: [dynamic]AppliedReplacementKey,
+	excess_recipient: Maybe(ExcessRecipient),
+	lifelink_bonus: u32,
+	candidates: [dynamic]ReplacementId,
+}
+
+CastFrequency :: enum u16 {
+	Unlimited,
+	OncePerTurn,
+	OncePerTurnPerPermanentType,
+}
+
+SneakPlacement :: struct {
+	defender: PlayerId,
+	attack_target: AttackTarget,
+}
+
+CharacteristicSetRef_Own :: struct {
+}
+CharacteristicSetRef_Copied :: struct {
+	_0: CopyEffectInstanceRef,
+}
+CharacteristicSetRef :: union {
+	CharacteristicSetRef_Own,
+	CharacteristicSetRef_Copied,
+}
+
+PromptClass :: enum u16 {
+	Priority,
+	Other,
+}
+
+CostMove :: struct {
+	destination: Zone,
+	arrivals: [dynamic]Maybe(Zone),
+	chosen: [dynamic]string,
+}
+
+ChoicePoint :: enum u16 {
+	AnnouncedTarget,
+	MayGate,
+	TriggerOrder,
+	TapCost,
+	ProliferateSet,
+	ResolutionSet,
+	ManaColor,
+	ConvokeTaps,
+	Mode,
+	UnlessBreak,
+	ReplacementOrder,
+}
+
+TargetPin_ByIdentity :: struct {
+	_0: YieldTarget,
+}
+TargetPin_Player :: struct {
+	_0: PlayerId,
+}
+TargetPin_Scheduled :: struct {
+	_0: TargetSchedule,
+}
+TargetPin :: union {
+	TargetPin_ByIdentity,
+	TargetPin_Player,
+	TargetPin_Scheduled,
+}
+
+MayChoiceOption :: enum u16 {
+	Take,
+	Decline,
+}
+
+UnlessPaymentOption :: enum u16 {
+	Pay,
+	Decline,
+}
+
+PredictedDeparture :: struct {
+	repetition: u32,
+	seats: [dynamic]PlayerId,
+}
+
+RunNext_Start :: struct {
+}
+RunNext_From :: struct {
+	_0: ^RunFrontier,
+}
+RunNext_Stopped :: struct {
+}
+RunNext :: union {
+	RunNext_Start,
+	RunNext_From,
+	RunNext_Stopped,
+}
+
+LibrarySearchCardFaceView :: struct {
+	name: string,
+	mana_cost: ManaCost,
+	mana_value: u32,
+	colors: [dynamic]ManaColor,
+	card_type: CardType,
+	keywords: [dynamic]Keyword,
+	power: Maybe(i32),
+	toughness: Maybe(i32),
+	loyalty: Maybe(u32),
+	printed_ref: Maybe(PrintedCardRef),
+}
+
+ActivationObservers :: enum u16 {
+	Unbound,
+	Bound,
+}
+
+PhysicalTell :: enum u16 {
+	TouchFace,
+	TouchTable,
+	Laugh,
+	FlickCards,
+}
+
+SpellAnnouncement :: distinct u64
+
+ContestOutcome_Decided :: struct {
+	winner: PlayerId,
+	loser: PlayerId,
+	reason: ContestLossReason,
+}
+ContestOutcome_Tie :: struct {
+}
+ContestOutcome :: union {
+	ContestOutcome_Decided,
+	ContestOutcome_Tie,
+}
+
+ContestCancelReason :: enum u16 {
+	BothDisconnected,
+	TimeLimit,
+	ParticipantLeftGame,
+	HostAborted,
+}
+
+DeckList :: struct {
+	booster_pack_pool: Maybe([dynamic]string),
+	player: PlayerDeckList,
+	opponent: PlayerDeckList,
+	ai_decks: [dynamic]PlayerDeckList,
+	ai_difficulties: [dynamic]string,
+	draft_set_codes: [dynamic]string,
+}
+
+RecordedActionKind_Submitted :: struct {
+}
+RecordedActionKind_VerifiedAiPriorityPass :: struct {
+	semantic_owner: PlayerId,
+}
+RecordedActionKind :: union {
+	RecordedActionKind_Submitted,
+	RecordedActionKind_VerifiedAiPriorityPass,
+}
+
+HexproofFilter_Color :: struct {
+	_0: ManaColor,
+}
+HexproofFilter_CardType :: struct {
+	_0: string,
+}
+HexproofFilter_Quality :: struct {
+	_0: string,
+}
+HexproofFilter_ChosenColor :: struct {
+}
+HexproofFilter :: union {
+	HexproofFilter_Color,
+	HexproofFilter_CardType,
+	HexproofFilter_Quality,
+	HexproofFilter_ChosenColor,
+}
+
+BestowCost_Mana :: struct {
+	_0: ManaCost,
+}
+BestowCost_NonMana :: struct {
+	_0: AbilityCost,
+}
+BestowCost :: union {
+	BestowCost_Mana,
+	BestowCost_NonMana,
+}
+
+EmbalmCost_Mana :: struct {
+	_0: ManaCost,
+}
+EmbalmCost_NonMana :: struct {
+	_0: AbilityCost,
+}
+EmbalmCost :: union {
+	EmbalmCost_Mana,
+	EmbalmCost_NonMana,
+}
+
+EternalizeCost_Mana :: struct {
+	_0: ManaCost,
+}
+EternalizeCost_NonMana :: struct {
+	_0: AbilityCost,
+}
+EternalizeCost :: union {
+	EternalizeCost_Mana,
+	EternalizeCost_NonMana,
+}
+
+ProtectionTarget_Color :: struct {
+	_0: ManaColor,
+}
+ProtectionTarget_CardType :: struct {
+	_0: string,
+}
+ProtectionTarget_Quality :: struct {
+	_0: string,
+}
+ProtectionTarget_Multicolored :: struct {
+}
+ProtectionTarget_ChosenColor :: struct {
+}
+ProtectionTarget_ChosenCardType :: struct {
+}
+ProtectionTarget_ChosenCardName :: struct {
+}
+ProtectionTarget_ChosenPlayer :: struct {
+}
+ProtectionTarget_Everything :: struct {
+}
+ProtectionTarget_Filter :: struct {
+	_0: TargetFilter,
+}
+ProtectionTarget_FromPlayer :: struct {
+	_0: ControllerRef,
+}
+ProtectionTarget_EachColor :: struct {
+	_0: ProtectionColorSet,
+}
+ProtectionTarget :: union {
+	ProtectionTarget_Color,
+	ProtectionTarget_CardType,
+	ProtectionTarget_Quality,
+	ProtectionTarget_Multicolored,
+	ProtectionTarget_ChosenColor,
+	ProtectionTarget_ChosenCardType,
+	ProtectionTarget_ChosenCardName,
+	ProtectionTarget_ChosenPlayer,
+	ProtectionTarget_Everything,
+	ProtectionTarget_Filter,
+	ProtectionTarget_FromPlayer,
+	ProtectionTarget_EachColor,
+}
+
+CyclingCost_Mana :: struct {
+	_0: ManaCost,
+}
+CyclingCost_NonMana :: struct {
+	_0: AbilityCost,
+}
+CyclingCost :: union {
+	CyclingCost_Mana,
+	CyclingCost_NonMana,
+}
+
+FlashbackCost_Mana :: struct {
+	_0: ManaCost,
+}
+FlashbackCost_NonMana :: struct {
+	_0: AbilityCost,
+}
+FlashbackCost :: union {
+	FlashbackCost_Mana,
+	FlashbackCost_NonMana,
+}
+
+PartnerType_Generic :: struct {
+}
+PartnerType_With :: struct {
+	_0: string,
+}
+PartnerType_FriendsForever :: struct {
+}
+PartnerType_CharacterSelect :: struct {
+}
+PartnerType_DoctorsCompanion :: struct {
+}
+PartnerType_ChooseABackground :: struct {
+}
+PartnerType :: union {
+	PartnerType_Generic,
+	PartnerType_With,
+	PartnerType_FriendsForever,
+	PartnerType_CharacterSelect,
+	PartnerType_DoctorsCompanion,
+	PartnerType_ChooseABackground,
+}
+
+CompanionCondition_EvenManaValues :: struct {
+}
+CompanionCondition_NoRepeatedManaSymbols :: struct {
+}
+CompanionCondition_CreatureTypeRestriction :: struct {
+	_0: [dynamic]string,
+}
+CompanionCondition_MinManaValue :: struct {
+	_0: u32,
+}
+CompanionCondition_MaxPermanentManaValue :: struct {
+	_0: u32,
+}
+CompanionCondition_Singleton :: struct {
+}
+CompanionCondition_OddManaValues :: struct {
+}
+CompanionCondition_SharedCardType :: struct {
+}
+CompanionCondition_MinDeckSizeOver :: struct {
+	_0: u32,
+}
+CompanionCondition_PermanentsHaveActivatedAbilities :: struct {
+}
+CompanionCondition :: union {
+	CompanionCondition_EvenManaValues,
+	CompanionCondition_NoRepeatedManaSymbols,
+	CompanionCondition_CreatureTypeRestriction,
+	CompanionCondition_MinManaValue,
+	CompanionCondition_MaxPermanentManaValue,
+	CompanionCondition_Singleton,
+	CompanionCondition_OddManaValues,
+	CompanionCondition_SharedCardType,
+	CompanionCondition_MinDeckSizeOver,
+	CompanionCondition_PermanentsHaveActivatedAbilities,
+}
+
+MorphCost_Mana :: struct {
+	_0: ManaCost,
+}
+MorphCost_NonMana :: struct {
+	_0: AbilityCost,
+}
+MorphCost :: union {
+	MorphCost_Mana,
+	MorphCost_NonMana,
+}
+
+EmergeCost :: struct {
+	mana_cost: ManaCost,
+	sacrifice_filter: TargetFilter,
+}
+
+EscapeCost_Mana :: struct {
+	_0: ManaCost,
+}
+EscapeCost_NonMana :: struct {
+	_0: AbilityCost,
+}
+EscapeCost :: union {
+	EscapeCost_Mana,
+	EscapeCost_NonMana,
+}
+
+EvokeCost_Mana :: struct {
+	_0: ManaCost,
+}
+EvokeCost_NonMana :: struct {
+	_0: AbilityCost,
+}
+EvokeCost :: union {
+	EvokeCost_Mana,
+	EvokeCost_NonMana,
+}
+
+DisguiseCost_Mana :: struct {
+	_0: ManaCost,
+}
+DisguiseCost_Reduced :: struct {
+	cost: ManaCost,
+	reduction: ^CostReduction,
+}
+DisguiseCost :: union {
+	DisguiseCost_Mana,
+	DisguiseCost_Reduced,
+}
+
+BlitzCost_Mana :: struct {
+	_0: ManaCost,
+}
+BlitzCost_NonMana :: struct {
+	_0: AbilityCost,
+}
+BlitzCost :: union {
+	BlitzCost_Mana,
+	BlitzCost_NonMana,
+}
+
+BuybackCost_Mana :: struct {
+	_0: ManaCost,
+}
+BuybackCost_NonMana :: struct {
+	_0: AbilityCost,
+}
+BuybackCost :: union {
+	BuybackCost_Mana,
+	BuybackCost_NonMana,
+}
+
+EchoCost_Mana :: struct {
+	_0: ManaCost,
+}
+EchoCost_NonMana :: struct {
+	_0: AbilityCost,
+}
+EchoCost :: union {
+	EchoCost_Mana,
+	EchoCost_NonMana,
+}
+
+EntwineCost_Mana :: struct {
+	_0: ManaCost,
+}
+EntwineCost_NonMana :: struct {
+	_0: AbilityCost,
+}
+EntwineCost :: union {
+	EntwineCost_Mana,
+	EntwineCost_NonMana,
+}
+
+BloodthirstValue_Fixed :: struct {
+	_0: u32,
+}
+BloodthirstValue_X :: struct {
+}
+BloodthirstValue :: union {
+	BloodthirstValue_Fixed,
+	BloodthirstValue_X,
+}
+
+TypeFilter_Creature :: struct {
+}
+TypeFilter_Land :: struct {
+}
+TypeFilter_Artifact :: struct {
+}
+TypeFilter_Enchantment :: struct {
+}
+TypeFilter_Instant :: struct {
+}
+TypeFilter_Sorcery :: struct {
+}
+TypeFilter_Planeswalker :: struct {
+}
+TypeFilter_Battle :: struct {
+}
+TypeFilter_Kindred :: struct {
+}
+TypeFilter_Permanent :: struct {
+}
+TypeFilter_Card :: struct {
+}
+TypeFilter_Any :: struct {
+}
+TypeFilter_Non :: struct {
+	_0: ^TypeFilter,
+}
+TypeFilter_Subtype :: struct {
+	_0: string,
+}
+TypeFilter_AnyOf :: struct {
+	_0: [dynamic]TypeFilter,
+}
+TypeFilter :: union {
+	TypeFilter_Creature,
+	TypeFilter_Land,
+	TypeFilter_Artifact,
+	TypeFilter_Enchantment,
+	TypeFilter_Instant,
+	TypeFilter_Sorcery,
+	TypeFilter_Planeswalker,
+	TypeFilter_Battle,
+	TypeFilter_Kindred,
+	TypeFilter_Permanent,
+	TypeFilter_Card,
+	TypeFilter_Any,
+	TypeFilter_Non,
+	TypeFilter_Subtype,
+	TypeFilter_AnyOf,
 }
 
 TriggerMode_ChangesZone :: struct {
@@ -4796,21 +19205,6 @@ OriginConstraint :: union {
 	OriginConstraint_OneOf,
 }
 
-Phase :: enum u16 {
-	Untap,
-	Upkeep,
-	Draw,
-	PreCombatMain,
-	BeginCombat,
-	DeclareAttackers,
-	DeclareBlockers,
-	CombatDamage,
-	EndCombat,
-	PostCombatMain,
-	End,
-	Cleanup,
-}
-
 DamageKindFilter :: enum u16 {
 	Any,
 	CombatOnly,
@@ -4860,578 +19254,6 @@ TriggerConstraint :: union {
 	TriggerConstraint_MaxTimesPerTurn,
 	TriggerConstraint_OncePerOpponentPerTurn,
 	TriggerConstraint_EventSourceControlledBy,
-}
-
-TriggerCondition_GainedLife :: struct {
-	minimum: u32,
-}
-TriggerCondition_LostLife :: struct {
-}
-TriggerCondition_Descended :: struct {
-}
-TriggerCondition_ControlsType :: struct {
-	filter: TargetFilter,
-}
-TriggerCondition_NoSpellsCastLastTurn :: struct {
-}
-TriggerCondition_TwoOrMoreSpellsCastLastTurn :: struct {
-}
-TriggerCondition_DuringPlayersTurn :: struct {
-	player: PlayerFilter,
-}
-TriggerCondition_SourceEnteredThisTurn :: struct {
-}
-TriggerCondition_SourceAttackedThisCombat :: struct {
-}
-TriggerCondition_ChoseOtherRingBearer :: struct {
-}
-TriggerCondition_ChoseRingBearer :: struct {
-}
-TriggerCondition_EchoDue :: struct {
-}
-TriggerCondition_MinCoAttackers :: struct {
-	minimum: u32,
-	filter: Maybe(TargetFilter),
-}
-TriggerCondition_SolveConditionMet :: struct {
-}
-TriggerCondition_ClassLevelGE :: struct {
-	level: u8,
-}
-TriggerCondition_SourceIsHarnessed :: struct {
-}
-TriggerCondition_AttractionVisitRoll :: struct {
-	min: u8,
-	max: u8,
-}
-TriggerCondition_WasCast :: struct {
-	zone: Maybe(Zone),
-	controller: Maybe(ControllerRef),
-	owner: Maybe(ControllerRef),
-}
-TriggerCondition_WasPlayed :: struct {
-}
-TriggerCondition_AdditionalCostPaid :: struct {
-	source: AdditionalCostPaymentSource,
-	origin: Maybe(AdditionalCostOrigin),
-	origin_ordinal: Maybe(u32),
-	variant: Maybe(KickerVariant),
-	kicker_cost: Maybe(ManaCost),
-	min_count: u32,
-}
-TriggerCondition_SourceIsAttacking :: struct {
-}
-TriggerCondition_CastVariantPaid :: struct {
-	variant: CastVariantPaid,
-}
-TriggerCondition_CastVariantPaidPersistent :: struct {
-	variant: CastVariantPaid,
-}
-TriggerCondition_ActivatedAbilityIsNonMana :: struct {
-}
-TriggerCondition_DealtDamageBySourceThisTurn :: struct {
-}
-TriggerCondition_DealtDamageThisTurnBySource :: struct {
-	source: TargetFilter,
-}
-TriggerCondition_FirstTimeObjectTappedThisTurn :: struct {
-}
-TriggerCondition_FirstTimeObjectCountersAddedThisTurn :: struct {
-}
-TriggerCondition_WasType :: struct {
-	card_type: CoreType,
-}
-TriggerCondition_LifeTotalGE :: struct {
-	minimum: i32,
-}
-TriggerCondition_ControlCount :: struct {
-	minimum: u32,
-	filter: TargetFilter,
-}
-TriggerCondition_ControlsNone :: struct {
-	filter: TargetFilter,
-}
-TriggerCondition_AttackedThisTurn :: struct {
-}
-TriggerCondition_FirstCombatPhaseOfTurn :: struct {
-}
-TriggerCondition_CastSpellThisTurn :: struct {
-	filter: Maybe(TargetFilter),
-}
-TriggerCondition_QuantityComparison :: struct {
-	lhs: QuantityExpr,
-	comparator: Comparator,
-	rhs: QuantityExpr,
-}
-TriggerCondition_QuantityQuality :: struct {
-	quantity: QuantityExpr,
-	quality: NumberQuality,
-}
-TriggerCondition_HasMaxSpeed :: struct {
-}
-TriggerCondition_IsMonarch :: struct {
-	player: PlayerScope,
-}
-TriggerCondition_IsPoisoned :: struct {
-	player: PlayerScope,
-}
-TriggerCondition_HasBoon :: struct {
-	player: PlayerScope,
-}
-TriggerCondition_IsInitiative :: struct {
-}
-TriggerCondition_NoMonarch :: struct {
-}
-TriggerCondition_WasStartingPlayer :: struct {
-	controller: ControllerRef,
-}
-TriggerCondition_SpellCastWithVariantThisTurn :: struct {
-	variant: CastingVariant,
-}
-TriggerCondition_HasCityBlessing :: struct {
-}
-TriggerCondition_HasEnduringStory :: struct {
-}
-TriggerCondition_CompletedDungeon :: struct {
-	specific: Maybe(DungeonId),
-}
-TriggerCondition_SourceIsTapped :: struct {
-}
-TriggerCondition_SourceIsTransformed :: struct {
-}
-TriggerCondition_SourceIsFaceUp :: struct {
-}
-TriggerCondition_SourceIsFaceDown :: struct {
-}
-TriggerCondition_SourceInZone :: struct {
-	zone: Zone,
-}
-TriggerCondition_CounterAddedThisTurn :: struct {
-}
-TriggerCondition_LostLifeLastTurn :: struct {
-}
-TriggerCondition_DefendingPlayerControlsNone :: struct {
-	filter: TargetFilter,
-}
-TriggerCondition_TributeNotPaid :: struct {
-}
-TriggerCondition_CastDuringPhase :: struct {
-	phases: [dynamic]Phase,
-}
-TriggerCondition_CurrentPhaseIs :: struct {
-	phases: [dynamic]Phase,
-}
-TriggerCondition_CastTimingPermission :: struct {
-	permission: CastTimingPermission,
-}
-TriggerCondition_ManaColorSpent :: struct {
-	color: SpentColor,
-	minimum: u32,
-}
-TriggerCondition_ManaSpentCondition :: struct {
-	text: string,
-}
-TriggerCondition_HadCounters :: struct {
-	counter_type: Maybe(CounterType),
-}
-TriggerCondition_ControlsCommander :: struct {
-	ownership: CommanderOwnership,
-}
-TriggerCondition_IsRenowned :: struct {
-	subject: RenownSubject,
-}
-TriggerCondition_HasCounters :: struct {
-	counters: CounterMatch,
-	minimum: u32,
-	maximum: Maybe(u32),
-}
-TriggerCondition_ZoneChangeObjectMatchesFilter :: struct {
-	origin: Maybe(Zone),
-	destination: Zone,
-	filter: TargetFilter,
-}
-TriggerCondition_ZoneChangeObjectIsTapped :: struct {
-}
-TriggerCondition_SourceMatchesFilter :: struct {
-	filter: TargetFilter,
-}
-TriggerCondition_EventDamageSourceMatchesFilter :: struct {
-	filter: TargetFilter,
-}
-TriggerCondition_EventObjectMatchesFilter :: struct {
-	filter: TargetFilter,
-}
-TriggerCondition_DamagedPlayerIsEventSourceOwner :: struct {
-}
-TriggerCondition_ChosenLabelIs :: struct {
-	label: string,
-}
-TriggerCondition_AttackersDeclaredCount :: struct {
-	subject: AttackersDeclaredCountSubject,
-	comparator: Comparator,
-	count: u32,
-}
-TriggerCondition_ExceptFirstDrawInDrawStep :: struct {
-}
-TriggerCondition_PlacedByAbilitySource :: struct {
-}
-TriggerCondition_AddedManaWithThisAbilityThisTurn :: struct {
-}
-TriggerCondition_TriggeringSpellTargetsFilter :: struct {
-	filter: TargetFilter,
-}
-TriggerCondition_TriggeringSpellMatchesFilter :: struct {
-	filter: TargetFilter,
-}
-TriggerCondition_And :: struct {
-	conditions: [dynamic]TriggerCondition,
-}
-TriggerCondition_Or :: struct {
-	conditions: [dynamic]TriggerCondition,
-}
-TriggerCondition_Not :: struct {
-	condition: ^TriggerCondition,
-}
-TriggerCondition_EventTime :: struct {
-	condition: ^TriggerCondition,
-}
-TriggerCondition :: union {
-	TriggerCondition_GainedLife,
-	TriggerCondition_LostLife,
-	TriggerCondition_Descended,
-	TriggerCondition_ControlsType,
-	TriggerCondition_NoSpellsCastLastTurn,
-	TriggerCondition_TwoOrMoreSpellsCastLastTurn,
-	TriggerCondition_DuringPlayersTurn,
-	TriggerCondition_SourceEnteredThisTurn,
-	TriggerCondition_SourceAttackedThisCombat,
-	TriggerCondition_ChoseOtherRingBearer,
-	TriggerCondition_ChoseRingBearer,
-	TriggerCondition_EchoDue,
-	TriggerCondition_MinCoAttackers,
-	TriggerCondition_SolveConditionMet,
-	TriggerCondition_ClassLevelGE,
-	TriggerCondition_SourceIsHarnessed,
-	TriggerCondition_AttractionVisitRoll,
-	TriggerCondition_WasCast,
-	TriggerCondition_WasPlayed,
-	TriggerCondition_AdditionalCostPaid,
-	TriggerCondition_SourceIsAttacking,
-	TriggerCondition_CastVariantPaid,
-	TriggerCondition_CastVariantPaidPersistent,
-	TriggerCondition_ActivatedAbilityIsNonMana,
-	TriggerCondition_DealtDamageBySourceThisTurn,
-	TriggerCondition_DealtDamageThisTurnBySource,
-	TriggerCondition_FirstTimeObjectTappedThisTurn,
-	TriggerCondition_FirstTimeObjectCountersAddedThisTurn,
-	TriggerCondition_WasType,
-	TriggerCondition_LifeTotalGE,
-	TriggerCondition_ControlCount,
-	TriggerCondition_ControlsNone,
-	TriggerCondition_AttackedThisTurn,
-	TriggerCondition_FirstCombatPhaseOfTurn,
-	TriggerCondition_CastSpellThisTurn,
-	TriggerCondition_QuantityComparison,
-	TriggerCondition_QuantityQuality,
-	TriggerCondition_HasMaxSpeed,
-	TriggerCondition_IsMonarch,
-	TriggerCondition_IsPoisoned,
-	TriggerCondition_HasBoon,
-	TriggerCondition_IsInitiative,
-	TriggerCondition_NoMonarch,
-	TriggerCondition_WasStartingPlayer,
-	TriggerCondition_SpellCastWithVariantThisTurn,
-	TriggerCondition_HasCityBlessing,
-	TriggerCondition_HasEnduringStory,
-	TriggerCondition_CompletedDungeon,
-	TriggerCondition_SourceIsTapped,
-	TriggerCondition_SourceIsTransformed,
-	TriggerCondition_SourceIsFaceUp,
-	TriggerCondition_SourceIsFaceDown,
-	TriggerCondition_SourceInZone,
-	TriggerCondition_CounterAddedThisTurn,
-	TriggerCondition_LostLifeLastTurn,
-	TriggerCondition_DefendingPlayerControlsNone,
-	TriggerCondition_TributeNotPaid,
-	TriggerCondition_CastDuringPhase,
-	TriggerCondition_CurrentPhaseIs,
-	TriggerCondition_CastTimingPermission,
-	TriggerCondition_ManaColorSpent,
-	TriggerCondition_ManaSpentCondition,
-	TriggerCondition_HadCounters,
-	TriggerCondition_ControlsCommander,
-	TriggerCondition_IsRenowned,
-	TriggerCondition_HasCounters,
-	TriggerCondition_ZoneChangeObjectMatchesFilter,
-	TriggerCondition_ZoneChangeObjectIsTapped,
-	TriggerCondition_SourceMatchesFilter,
-	TriggerCondition_EventDamageSourceMatchesFilter,
-	TriggerCondition_EventObjectMatchesFilter,
-	TriggerCondition_DamagedPlayerIsEventSourceOwner,
-	TriggerCondition_ChosenLabelIs,
-	TriggerCondition_AttackersDeclaredCount,
-	TriggerCondition_ExceptFirstDrawInDrawStep,
-	TriggerCondition_PlacedByAbilitySource,
-	TriggerCondition_AddedManaWithThisAbilityThisTurn,
-	TriggerCondition_TriggeringSpellTargetsFilter,
-	TriggerCondition_TriggeringSpellMatchesFilter,
-	TriggerCondition_And,
-	TriggerCondition_Or,
-	TriggerCondition_Not,
-	TriggerCondition_EventTime,
-}
-
-StaticCondition_DevotionGE :: struct {
-	colors: [dynamic]ManaColor,
-	threshold: u32,
-}
-StaticCondition_IsPresent :: struct {
-	filter: Maybe(TargetFilter),
-}
-StaticCondition_ChosenColorIs :: struct {
-	color: ManaColor,
-}
-StaticCondition_ChosenLabelIs :: struct {
-	label: string,
-}
-StaticCondition_QuantityComparison :: struct {
-	lhs: QuantityExpr,
-	comparator: Comparator,
-	rhs: QuantityExpr,
-}
-StaticCondition_QuantityQuality :: struct {
-	quantity: QuantityExpr,
-	quality: NumberQuality,
-}
-StaticCondition_HasMaxSpeed :: struct {
-}
-StaticCondition_SpeedGE :: struct {
-	threshold: u8,
-}
-StaticCondition_And :: struct {
-	conditions: [dynamic]StaticCondition,
-}
-StaticCondition_Or :: struct {
-	conditions: [dynamic]StaticCondition,
-}
-StaticCondition_Not :: struct {
-	condition: ^StaticCondition,
-}
-StaticCondition_DayNightIs :: struct {
-	state: DayNight,
-}
-StaticCondition_HasCounters :: struct {
-	counters: CounterMatch,
-	minimum: u32,
-	maximum: Maybe(u32),
-}
-StaticCondition_CastVariantPaid :: struct {
-	variant: CastVariantPaid,
-}
-StaticCondition_RecipientHasCounters :: struct {
-	counters: CounterMatch,
-	minimum: u32,
-	maximum: Maybe(u32),
-}
-StaticCondition_ClassLevelGE :: struct {
-	level: u8,
-}
-StaticCondition_DefendingPlayerControls :: struct {
-	filter: TargetFilter,
-}
-StaticCondition_SourceAttackingAlone :: struct {
-}
-StaticCondition_SourceIsAttacking :: struct {
-}
-StaticCondition_SourceIsBlocking :: struct {
-}
-StaticCondition_SourceIsBlocked :: struct {
-}
-StaticCondition_IsMonarch :: struct {
-	player: PlayerScope,
-}
-StaticCondition_HasBoon :: struct {
-	player: PlayerScope,
-}
-StaticCondition_IsInitiative :: struct {
-}
-StaticCondition_NoMonarch :: struct {
-}
-StaticCondition_HasCityBlessing :: struct {
-}
-StaticCondition_HasEnduringStory :: struct {
-}
-StaticCondition_CompletedADungeon :: struct {
-}
-StaticCondition_WasStartingPlayer :: struct {
-	controller: ControllerRef,
-}
-StaticCondition_SpellCastWithVariantThisTurn :: struct {
-	variant: CastingVariant,
-}
-StaticCondition_AnyPlayerAttackedYouLastTurn :: struct {
-	scope: AttackedYouScope,
-}
-StaticCondition_PlayerAttackedPlayer :: struct {
-	attacker: ControllerRef,
-	defender: ControllerRef,
-}
-StaticCondition_OpponentPoisonAtLeast :: struct {
-	count: u32,
-}
-StaticCondition_PlayerIsPoisoned :: struct {
-	player: PlayerScope,
-}
-StaticCondition_UnlessPay :: struct {
-	cost: ManaCost,
-	scaling: UnlessPayScaling,
-	defended: Maybe(AttackTargetFilter),
-}
-StaticCondition_Unrecognized :: struct {
-	text: string,
-}
-StaticCondition_DuringYourTurn :: struct {
-}
-StaticCondition_FirstCombatPhaseOfTurn :: struct {
-}
-StaticCondition_DuringOpponentsTurn :: struct {
-}
-StaticCondition_SharesColorWithMostCommonColorAmongPermanents :: struct {
-}
-StaticCondition_SourceEnteredThisTurn :: struct {
-}
-StaticCondition_SourceHasDealtDamage :: struct {
-	kind: DamageKindFilter,
-}
-StaticCondition_SourceExertedThisTurn :: struct {
-}
-StaticCondition_WasCast :: struct {
-	zone: Maybe(Zone),
-}
-StaticCondition_IsRingBearer :: struct {
-}
-StaticCondition_RingLevelAtLeast :: struct {
-	level: u8,
-}
-StaticCondition_ControlsCommander :: struct {
-	ownership: CommanderOwnership,
-}
-StaticCondition_SourceIsTapped :: struct {
-}
-StaticCondition_IsTapped :: struct {
-	scope: ObjectScope,
-}
-StaticCondition_SourceIsFaceUp :: struct {
-}
-StaticCondition_SourceIsSaddled :: struct {
-}
-StaticCondition_SourceControllerEquals :: struct {
-	player: PlayerId,
-}
-StaticCondition_SourceIsEquipped :: struct {
-}
-StaticCondition_SourceIsEnchanted :: struct {
-}
-StaticCondition_SourceIsMonstrous :: struct {
-}
-StaticCondition_SourceIsHarnessed :: struct {
-}
-StaticCondition_SourceAttachedToCreature :: struct {
-}
-StaticCondition_SourceMatchesFilter :: struct {
-	filter: TargetFilter,
-}
-StaticCondition_TopOfLibraryMatches :: struct {
-	filter: TargetFilter,
-}
-StaticCondition_RecipientMatchesFilter :: struct {
-	filter: TargetFilter,
-}
-StaticCondition_RecipientAttackingOwnerTarget :: struct {
-	target: AttackTargetFilter,
-}
-StaticCondition_SourceIsPaired :: struct {
-}
-StaticCondition_SourceInZone :: struct {
-	zone: Zone,
-}
-StaticCondition_EnchantedIsFaceDown :: struct {
-}
-StaticCondition_AdditionalCostPaid :: struct {
-}
-StaticCondition_CastingAsVariant :: struct {
-	variant: CastingVariant,
-}
-StaticCondition_None :: struct {
-}
-StaticCondition :: union {
-	StaticCondition_DevotionGE,
-	StaticCondition_IsPresent,
-	StaticCondition_ChosenColorIs,
-	StaticCondition_ChosenLabelIs,
-	StaticCondition_QuantityComparison,
-	StaticCondition_QuantityQuality,
-	StaticCondition_HasMaxSpeed,
-	StaticCondition_SpeedGE,
-	StaticCondition_And,
-	StaticCondition_Or,
-	StaticCondition_Not,
-	StaticCondition_DayNightIs,
-	StaticCondition_HasCounters,
-	StaticCondition_CastVariantPaid,
-	StaticCondition_RecipientHasCounters,
-	StaticCondition_ClassLevelGE,
-	StaticCondition_DefendingPlayerControls,
-	StaticCondition_SourceAttackingAlone,
-	StaticCondition_SourceIsAttacking,
-	StaticCondition_SourceIsBlocking,
-	StaticCondition_SourceIsBlocked,
-	StaticCondition_IsMonarch,
-	StaticCondition_HasBoon,
-	StaticCondition_IsInitiative,
-	StaticCondition_NoMonarch,
-	StaticCondition_HasCityBlessing,
-	StaticCondition_HasEnduringStory,
-	StaticCondition_CompletedADungeon,
-	StaticCondition_WasStartingPlayer,
-	StaticCondition_SpellCastWithVariantThisTurn,
-	StaticCondition_AnyPlayerAttackedYouLastTurn,
-	StaticCondition_PlayerAttackedPlayer,
-	StaticCondition_OpponentPoisonAtLeast,
-	StaticCondition_PlayerIsPoisoned,
-	StaticCondition_UnlessPay,
-	StaticCondition_Unrecognized,
-	StaticCondition_DuringYourTurn,
-	StaticCondition_FirstCombatPhaseOfTurn,
-	StaticCondition_DuringOpponentsTurn,
-	StaticCondition_SharesColorWithMostCommonColorAmongPermanents,
-	StaticCondition_SourceEnteredThisTurn,
-	StaticCondition_SourceHasDealtDamage,
-	StaticCondition_SourceExertedThisTurn,
-	StaticCondition_WasCast,
-	StaticCondition_IsRingBearer,
-	StaticCondition_RingLevelAtLeast,
-	StaticCondition_ControlsCommander,
-	StaticCondition_SourceIsTapped,
-	StaticCondition_IsTapped,
-	StaticCondition_SourceIsFaceUp,
-	StaticCondition_SourceIsSaddled,
-	StaticCondition_SourceControllerEquals,
-	StaticCondition_SourceIsEquipped,
-	StaticCondition_SourceIsEnchanted,
-	StaticCondition_SourceIsMonstrous,
-	StaticCondition_SourceIsHarnessed,
-	StaticCondition_SourceAttachedToCreature,
-	StaticCondition_SourceMatchesFilter,
-	StaticCondition_TopOfLibraryMatches,
-	StaticCondition_RecipientMatchesFilter,
-	StaticCondition_RecipientAttackingOwnerTarget,
-	StaticCondition_SourceIsPaired,
-	StaticCondition_SourceInZone,
-	StaticCondition_EnchantedIsFaceDown,
-	StaticCondition_AdditionalCostPaid,
-	StaticCondition_CastingAsVariant,
-	StaticCondition_None,
 }
 
 CounterTriggerFilter :: struct {
@@ -5492,37 +19314,10 @@ BlockerCountThreshold :: struct {
 	blocker: Maybe(TargetFilter),
 }
 
-PlayerActionKind :: enum u16 {
-	AcceptedOptionalEffect,
-	SearchedLibrary,
-	Scry,
-	Surveil,
-	CollectEvidence,
-	ShuffledLibrary,
-	Proliferate,
-	Investigate,
-	Forage,
-	Draw,
-}
-
-Comparator :: enum u16 {
-	GT,
-	LT,
-	GE,
-	LE,
-	EQ,
-	NE,
-}
-
 DamageAmountThreshold :: struct {
 	comparator: Comparator,
 	threshold: u32,
 	scope: DamageAmountScope,
-}
-
-CoinFlipResult :: enum u16 {
-	Won,
-	Lost,
 }
 
 DieResultFilter_Exact :: struct {
@@ -5536,768 +19331,8 @@ DieResultFilter :: union {
 	DieResultFilter_AtLeast,
 }
 
-ManaType :: enum u16 {
-	White,
-	Blue,
-	Black,
-	Red,
-	Green,
-	Colorless,
-}
-
 ManaAbilityProducedFilter :: enum u16 {
 	SourceChosenColor,
-}
-
-ClashResult :: enum u16 {
-	Won,
-	Lost,
-	Tied,
-}
-
-RoomDoor :: enum u16 {
-	Left,
-	Right,
-}
-
-StaticMode_Continuous :: struct {
-}
-StaticMode_DamageNotRemovedDuringCleanup :: struct {
-}
-StaticMode_LethalDamageDeterminedByPower :: struct {
-}
-StaticMode_CantAttack :: struct {
-}
-StaticMode_CantBlock :: struct {
-}
-StaticMode_CantAttackOrBlock :: struct {
-}
-StaticMode_AttackOnlyNeighbor :: struct {
-}
-StaticMode_CantBecomeSuspected :: struct {
-}
-StaticMode_MaxAttackersEachCombat :: struct {
-	max: u32,
-	defender: Maybe(AttackDefenderScope),
-}
-StaticMode_MaxBlockersEachCombat :: struct {
-	max: u32,
-}
-StaticMode_CantBeTargeted :: struct {
-	who: ProhibitionScope,
-}
-StaticMode_CantBeCast :: struct {
-	who: ProhibitionScope,
-}
-StaticMode_CantBeActivated :: struct {
-	who: ProhibitionScope,
-	source_filter: TargetFilter,
-	exemption: ActivationExemption,
-	kind: Maybe(ActivatedAbilityKind),
-}
-StaticMode_CantSearchLibrary :: struct {
-	cause: ProhibitionScope,
-}
-StaticMode_RestrictLibrarySearchToTop :: struct {
-	who: ProhibitionScope,
-	count: u32,
-}
-StaticMode_ControlPlayersDuringOwnLibrarySearch :: struct {
-	who: ProhibitionScope,
-}
-StaticMode_CantCauseSacrificeOrExile :: struct {
-	cause: ProhibitionScope,
-}
-StaticMode_CantCauseForcedAction :: struct {
-	cause: ProhibitionScope,
-	actions: [dynamic]CostCategory,
-}
-StaticMode_CastWithFlash :: struct {
-}
-StaticMode_GrantsExtraVote :: struct {
-}
-StaticMode_GrantsExtraVillainousChoice :: struct {
-}
-StaticMode_CastWithKeyword :: struct {
-	keyword: Keyword,
-}
-StaticMode_CastWithAlternativeCost :: struct {
-	cost: AbilityCost,
-	timing_permission: Maybe(CastTimingPermission),
-	frequency: CastFrequency,
-}
-StaticMode_AlternativeKeywordCost :: struct {
-	keyword: KeywordKind,
-	cost: AbilityCost,
-	frequency: Maybe(CastFrequency),
-}
-StaticMode_ModifyCost :: struct {
-	mode: CostModifyMode,
-	amount: ManaCost,
-	spell_filter: Maybe(TargetFilter),
-	dynamic_count: Maybe(QuantityRef),
-	reach: CostReductionReach,
-}
-StaticMode_ImposeAdditionalCost :: struct {
-	cost: AbilityCost,
-	spell_filter: Maybe(TargetFilter),
-	action: AdditionalCostTaxAction,
-}
-StaticMode_ReduceAbilityCost :: struct {
-	mode: CostModifyMode,
-	keyword: string,
-	amount: u32,
-	minimum_mana: Maybe(u32),
-	dynamic_count: Maybe(QuantityRef),
-	exemption: ActivationExemption,
-	activator: Maybe(PlayerFilter),
-	targets: Maybe(TargetFilter),
-	frequency: Maybe(CastFrequency),
-}
-StaticMode_ReduceActionCost :: struct {
-	action: SpecialAction,
-	mode: CostModifyMode,
-	amount: u32,
-}
-StaticMode_ModifyActivationLimit :: struct {
-	keyword: string,
-	new_limit: u8,
-}
-StaticMode_ActivateAsInstant :: struct {
-	cost_category: CostCategory,
-	keyword: Maybe(AbilityTag),
-}
-StaticMode_CantPayCost :: struct {
-	who: ProhibitionScope,
-	cost: CostPaymentProhibition,
-}
-StaticMode_CantGainLife :: struct {
-}
-StaticMode_CantLoseLife :: struct {
-}
-StaticMode_PlayerProtection :: struct {
-	_0: ProtectionTarget,
-}
-StaticMode_MustAttack :: struct {
-}
-StaticMode_MustAttackDefender :: struct {
-	defender: RequiredDefender,
-}
-StaticMode_MustBlock :: struct {
-}
-StaticMode_MustBlockAttacker :: struct {
-	attacker: ObjectIncarnationRef,
-}
-StaticMode_CantDraw :: struct {
-	who: ProhibitionScope,
-}
-StaticMode_DrawFromBottom :: struct {
-	who: ProhibitionScope,
-}
-StaticMode_DoubleTriggers :: struct {
-	cause: TriggerCause,
-}
-StaticMode_IgnoreHexproof :: struct {
-}
-StaticMode_ExtraBlockers :: struct {
-	count: Maybe(u32),
-}
-StaticMode_RevealTopOfLibrary :: struct {
-	all_players: bool,
-}
-StaticMode_RevealHand :: struct {
-	who: ProhibitionScope,
-}
-StaticMode_GraveyardCastPermission :: struct {
-	frequency: CastFrequency,
-	play_mode: CardPlayMode,
-	graveyard_destination_replacement: Maybe(Zone),
-	extra_cost: Maybe(CastExtraCost),
-	enters_with_counter: Maybe(CounterType),
-	enter_tapped: EtbTapState,
-	required_cast_keyword: Maybe(KeywordKind),
-	pool: GraveyardPermissionPool,
-	cast_limit: PermissionCastLimit,
-	mana_spend_permission: Maybe(ManaSpendPermission),
-	enters_modifications: PendingEntersModifications,
-}
-StaticMode_TopOfLibraryCastPermission :: struct {
-	play_mode: CardPlayMode,
-	frequency: CastFrequency,
-	alt_cost: Maybe(AbilityCost),
-}
-StaticMode_TopOfLibraryHasPlot :: struct {
-}
-StaticMode_TopOfLibraryPlotPermission :: struct {
-}
-StaticMode_CastFromHandFree :: struct {
-	frequency: CastFrequency,
-	origin: CastFreeOrigin,
-}
-StaticMode_ExileCastPermission :: struct {
-	frequency: CastFrequency,
-	play_mode: CardPlayMode,
-	cost: ExileCastCost,
-	pool: ExileCardPool,
-	timing: ExileCastTiming,
-	mana_spend_permission: Maybe(ManaSpendPermission),
-	grants_flash: bool,
-	extra_cost: Maybe(CastExtraCost),
-	enters_with_counter: Maybe(CounterType),
-	grantee: ExileCastGrantee,
-}
-StaticMode_LinkedCollectionCounterPlayPermission :: struct {
-}
-StaticMode_CountersPersistAcrossZones :: struct {
-	excluded_zones: [dynamic]Zone,
-}
-StaticMode_CantBeCountered :: struct {
-}
-StaticMode_CantBeCopied :: struct {
-}
-StaticMode_CantEnterBattlefieldFrom :: struct {
-}
-StaticMode_CantCastFrom :: struct {
-	who: ProhibitionScope,
-}
-StaticMode_CantCastDuring :: struct {
-	who: ProhibitionScope,
-	when_: CastingProhibitionCondition,
-}
-StaticMode_CantActivateDuring :: struct {
-	who: ProhibitionScope,
-	when_: CastingProhibitionCondition,
-	exemption: ActivationExemption,
-}
-StaticMode_PerTurnCastLimit :: struct {
-	who: ProhibitionScope,
-	max: u32,
-	spell_filter: Maybe(TargetFilter),
-}
-StaticMode_PerTurnDrawLimit :: struct {
-	who: ProhibitionScope,
-	max: u32,
-}
-StaticMode_SuppressTriggers :: struct {
-	source_filter: TargetFilter,
-	trigger_source_filter: Maybe(TargetFilter),
-	events: [dynamic]SuppressedTriggerEvent,
-}
-StaticMode_CantBeBlocked :: struct {
-}
-StaticMode_CantBeBlockedExceptBy :: struct {
-	kind: BlockExceptionKind,
-}
-StaticMode_CantBeBlockedBy :: struct {
-	filter: TargetFilter,
-}
-StaticMode_CantBeBlockedByMoreThan :: struct {
-	max: u32,
-}
-StaticMode_CantBeBlockedUnlessAllBlock :: struct {
-}
-StaticMode_AttachmentRestriction :: struct {
-	filter: TargetFilter,
-}
-StaticMode_Protection :: struct {
-}
-StaticMode_Indestructible :: struct {
-}
-StaticMode_CantBeDestroyed :: struct {
-}
-StaticMode_CantBeRegenerated :: struct {
-}
-StaticMode_FlashBack :: struct {
-}
-StaticMode_Shroud :: struct {
-}
-StaticMode_Hexproof :: struct {
-}
-StaticMode_Vigilance :: struct {
-}
-StaticMode_Menace :: struct {
-}
-StaticMode_Reach :: struct {
-}
-StaticMode_Flying :: struct {
-}
-StaticMode_Trample :: struct {
-}
-StaticMode_Deathtouch :: struct {
-}
-StaticMode_Lifelink :: struct {
-}
-StaticMode_CantTap :: struct {
-}
-StaticMode_CantUntap :: struct {
-}
-StaticMode_MustBeBlocked :: struct {
-	by: Maybe(TargetFilter),
-}
-StaticMode_MustBeBlockedByAll :: struct {
-	blockers: Maybe(TargetFilter),
-}
-StaticMode_Goaded :: struct {
-}
-StaticMode_MustAttackAwayFromSource :: struct {
-}
-StaticMode_CombatAlone :: struct {
-	action: CombatAloneAction,
-	requirement: CombatAloneRequirement,
-}
-StaticMode_CantCrew :: struct {
-}
-StaticMode_CantPhaseIn :: struct {
-}
-StaticMode_CrewContribution :: struct {
-	kind: CrewContributionKind,
-	actions: [dynamic]CrewAction,
-}
-StaticMode_MayLookAtTopOfLibrary :: struct {
-}
-StaticMode_MayLookAtFaceDown :: struct {
-}
-StaticMode_CantBeTurnedFaceUp :: struct {
-}
-StaticMode_MayChooseNotToUntap :: struct {
-}
-StaticMode_AdditionalLandDrop :: struct {
-	count: u8,
-}
-StaticMode_EmblemStatic :: struct {
-}
-StaticMode_BlockRestriction :: struct {
-	filter: TargetFilter,
-}
-StaticMode_NoMaximumHandSize :: struct {
-}
-StaticMode_MaximumHandSize :: struct {
-	modification: HandSizeModification,
-}
-StaticMode_MayPlayAdditionalLand :: struct {
-}
-StaticMode_CantHaveKeyword :: struct {
-	keyword: Keyword,
-}
-StaticMode_CantWinTheGame :: struct {
-}
-StaticMode_CantLoseTheGame :: struct {
-}
-StaticMode_LegendRuleDoesntApply :: struct {
-}
-StaticMode_SpeedCanIncreaseBeyondFour :: struct {
-}
-StaticMode_DefilerCostReduction :: struct {
-	color: ManaColor,
-	life_cost: u32,
-	mana_reduction: ManaCost,
-	reach: CostReductionReach,
-}
-StaticMode_SkipStep :: struct {
-	step: Phase,
-}
-StaticMode_SpendManaAsAnyColor :: struct {
-	spell_filter: Maybe(TargetFilter),
-	activation_source_filter: Maybe(TargetFilter),
-	concession: ManaSpendPermission,
-}
-StaticMode_PayLifeAsColoredMana :: struct {
-	color: ManaColor,
-}
-StaticMode_StepEndUnspentMana :: struct {
-	filter: Maybe(ManaColor),
-	action: StepEndManaAction,
-}
-StaticMode_UnspentManaLossCausesLifeLoss :: struct {
-}
-StaticMode_WinFirstCoinFlipSetEachTurn :: struct {
-}
-StaticMode_CanAttackWithDefender :: struct {
-}
-StaticMode_IgnoreLandwalkForBlocking :: struct {
-	qualifier: Maybe(string),
-}
-StaticMode_CanActivateAbilitiesAsThoughHaste :: struct {
-}
-StaticMode_CanBlockShadow :: struct {
-}
-StaticMode_AssignNoCombatDamage :: struct {
-}
-StaticMode_UntapsDuringEachOtherPlayersUntapStep :: struct {
-}
-StaticMode_MaxUntapPerType :: struct {
-	filter: TargetFilter,
-	max: u32,
-}
-StaticMode_EntersWithAdditionalCounters :: struct {
-	counter_type: CounterType,
-	count: u32,
-}
-StaticMode_CountersCantBeRemoved :: struct {
-	counter_type: CounterType,
-}
-StaticMode_CountsAsNamed :: struct {
-	name: string,
-}
-StaticMode_Other :: struct {
-	_0: string,
-}
-StaticMode :: union {
-	StaticMode_Continuous,
-	StaticMode_DamageNotRemovedDuringCleanup,
-	StaticMode_LethalDamageDeterminedByPower,
-	StaticMode_CantAttack,
-	StaticMode_CantBlock,
-	StaticMode_CantAttackOrBlock,
-	StaticMode_AttackOnlyNeighbor,
-	StaticMode_CantBecomeSuspected,
-	StaticMode_MaxAttackersEachCombat,
-	StaticMode_MaxBlockersEachCombat,
-	StaticMode_CantBeTargeted,
-	StaticMode_CantBeCast,
-	StaticMode_CantBeActivated,
-	StaticMode_CantSearchLibrary,
-	StaticMode_RestrictLibrarySearchToTop,
-	StaticMode_ControlPlayersDuringOwnLibrarySearch,
-	StaticMode_CantCauseSacrificeOrExile,
-	StaticMode_CantCauseForcedAction,
-	StaticMode_CastWithFlash,
-	StaticMode_GrantsExtraVote,
-	StaticMode_GrantsExtraVillainousChoice,
-	StaticMode_CastWithKeyword,
-	StaticMode_CastWithAlternativeCost,
-	StaticMode_AlternativeKeywordCost,
-	StaticMode_ModifyCost,
-	StaticMode_ImposeAdditionalCost,
-	StaticMode_ReduceAbilityCost,
-	StaticMode_ReduceActionCost,
-	StaticMode_ModifyActivationLimit,
-	StaticMode_ActivateAsInstant,
-	StaticMode_CantPayCost,
-	StaticMode_CantGainLife,
-	StaticMode_CantLoseLife,
-	StaticMode_PlayerProtection,
-	StaticMode_MustAttack,
-	StaticMode_MustAttackDefender,
-	StaticMode_MustBlock,
-	StaticMode_MustBlockAttacker,
-	StaticMode_CantDraw,
-	StaticMode_DrawFromBottom,
-	StaticMode_DoubleTriggers,
-	StaticMode_IgnoreHexproof,
-	StaticMode_ExtraBlockers,
-	StaticMode_RevealTopOfLibrary,
-	StaticMode_RevealHand,
-	StaticMode_GraveyardCastPermission,
-	StaticMode_TopOfLibraryCastPermission,
-	StaticMode_TopOfLibraryHasPlot,
-	StaticMode_TopOfLibraryPlotPermission,
-	StaticMode_CastFromHandFree,
-	StaticMode_ExileCastPermission,
-	StaticMode_LinkedCollectionCounterPlayPermission,
-	StaticMode_CountersPersistAcrossZones,
-	StaticMode_CantBeCountered,
-	StaticMode_CantBeCopied,
-	StaticMode_CantEnterBattlefieldFrom,
-	StaticMode_CantCastFrom,
-	StaticMode_CantCastDuring,
-	StaticMode_CantActivateDuring,
-	StaticMode_PerTurnCastLimit,
-	StaticMode_PerTurnDrawLimit,
-	StaticMode_SuppressTriggers,
-	StaticMode_CantBeBlocked,
-	StaticMode_CantBeBlockedExceptBy,
-	StaticMode_CantBeBlockedBy,
-	StaticMode_CantBeBlockedByMoreThan,
-	StaticMode_CantBeBlockedUnlessAllBlock,
-	StaticMode_AttachmentRestriction,
-	StaticMode_Protection,
-	StaticMode_Indestructible,
-	StaticMode_CantBeDestroyed,
-	StaticMode_CantBeRegenerated,
-	StaticMode_FlashBack,
-	StaticMode_Shroud,
-	StaticMode_Hexproof,
-	StaticMode_Vigilance,
-	StaticMode_Menace,
-	StaticMode_Reach,
-	StaticMode_Flying,
-	StaticMode_Trample,
-	StaticMode_Deathtouch,
-	StaticMode_Lifelink,
-	StaticMode_CantTap,
-	StaticMode_CantUntap,
-	StaticMode_MustBeBlocked,
-	StaticMode_MustBeBlockedByAll,
-	StaticMode_Goaded,
-	StaticMode_MustAttackAwayFromSource,
-	StaticMode_CombatAlone,
-	StaticMode_CantCrew,
-	StaticMode_CantPhaseIn,
-	StaticMode_CrewContribution,
-	StaticMode_MayLookAtTopOfLibrary,
-	StaticMode_MayLookAtFaceDown,
-	StaticMode_CantBeTurnedFaceUp,
-	StaticMode_MayChooseNotToUntap,
-	StaticMode_AdditionalLandDrop,
-	StaticMode_EmblemStatic,
-	StaticMode_BlockRestriction,
-	StaticMode_NoMaximumHandSize,
-	StaticMode_MaximumHandSize,
-	StaticMode_MayPlayAdditionalLand,
-	StaticMode_CantHaveKeyword,
-	StaticMode_CantWinTheGame,
-	StaticMode_CantLoseTheGame,
-	StaticMode_LegendRuleDoesntApply,
-	StaticMode_SpeedCanIncreaseBeyondFour,
-	StaticMode_DefilerCostReduction,
-	StaticMode_SkipStep,
-	StaticMode_SpendManaAsAnyColor,
-	StaticMode_PayLifeAsColoredMana,
-	StaticMode_StepEndUnspentMana,
-	StaticMode_UnspentManaLossCausesLifeLoss,
-	StaticMode_WinFirstCoinFlipSetEachTurn,
-	StaticMode_CanAttackWithDefender,
-	StaticMode_IgnoreLandwalkForBlocking,
-	StaticMode_CanActivateAbilitiesAsThoughHaste,
-	StaticMode_CanBlockShadow,
-	StaticMode_AssignNoCombatDamage,
-	StaticMode_UntapsDuringEachOtherPlayersUntapStep,
-	StaticMode_MaxUntapPerType,
-	StaticMode_EntersWithAdditionalCounters,
-	StaticMode_CountersCantBeRemoved,
-	StaticMode_CountsAsNamed,
-	StaticMode_Other,
-}
-
-ContinuousModification_CopyValues :: struct {
-	values: ^CopiableValues,
-	display: DisplayIdentity,
-}
-ContinuousModification_CopyChosen :: struct {
-}
-ContinuousModification_SetName :: struct {
-	name: string,
-}
-ContinuousModification_SetTextName :: struct {
-	name: string,
-}
-ContinuousModification_SubstituteTextWord :: struct {
-	substitution: TextSubstitutionSpec,
-}
-ContinuousModification_AddPower :: struct {
-	value: i32,
-}
-ContinuousModification_AddToughness :: struct {
-	value: i32,
-}
-ContinuousModification_SetPower :: struct {
-	value: i32,
-}
-ContinuousModification_SetToughness :: struct {
-	value: i32,
-}
-ContinuousModification_AddKeyword :: struct {
-	keyword: Keyword,
-}
-ContinuousModification_RemoveKeyword :: struct {
-	keyword: Keyword,
-}
-ContinuousModification_GrantAbility :: struct {
-	definition: ^AbilityDefinition,
-}
-ContinuousModification_GrantAllActivatedAbilitiesOf :: struct {
-	source: TargetFilter,
-	cap: Maybe(ActivationRestriction),
-	kind: Maybe(ActivatedAbilityKind),
-}
-ContinuousModification_GrantAllTriggeredAbilitiesOf :: struct {
-	source: TargetFilter,
-}
-ContinuousModification_GrantTrigger :: struct {
-	trigger: ^TriggerDefinition,
-}
-ContinuousModification_GrantReplacement :: struct {
-	replacement: ^ReplacementDefinition,
-}
-ContinuousModification_RemoveAllAbilities :: struct {
-}
-ContinuousModification_AddType :: struct {
-	core_type: CoreType,
-}
-ContinuousModification_RemoveType :: struct {
-	core_type: CoreType,
-}
-ContinuousModification_AddSubtype :: struct {
-	subtype: string,
-}
-ContinuousModification_RemoveSubtype :: struct {
-	subtype: string,
-}
-ContinuousModification_SetCardTypes :: struct {
-	core_types: [dynamic]CoreType,
-}
-ContinuousModification_RemoveAllSubtypes :: struct {
-	set: SubtypeSet,
-}
-ContinuousModification_SetDynamicPower :: struct {
-	value: QuantityExpr,
-}
-ContinuousModification_SetDynamicToughness :: struct {
-	value: QuantityExpr,
-}
-ContinuousModification_SetPowerDynamic :: struct {
-	value: QuantityExpr,
-}
-ContinuousModification_SetToughnessDynamic :: struct {
-	value: QuantityExpr,
-}
-ContinuousModification_AddDynamicPower :: struct {
-	value: QuantityExpr,
-}
-ContinuousModification_AddDynamicToughness :: struct {
-	value: QuantityExpr,
-}
-ContinuousModification_AddDynamicKeyword :: struct {
-	kind: DynamicKeywordKind,
-	value: QuantityExpr,
-}
-ContinuousModification_AddKeywordWithDerivedCost :: struct {
-	kind: CostBearingKeywordKind,
-	derivation: CostDerivation,
-}
-ContinuousModification_AddAllCreatureTypes :: struct {
-}
-ContinuousModification_AddAllBasicLandTypes :: struct {
-}
-ContinuousModification_AddAllLandTypes :: struct {
-}
-ContinuousModification_AddChosenSubtype :: struct {
-	kind: ChosenSubtypeKind,
-}
-ContinuousModification_AddChosenColor :: struct {
-	mode: ColorChangeMode,
-}
-ContinuousModification_RemoveChosenKeyword :: struct {
-}
-ContinuousModification_AddChosenKeyword :: struct {
-}
-ContinuousModification_SetColor :: struct {
-	colors: [dynamic]ManaColor,
-}
-ContinuousModification_AddColor :: struct {
-	color: ManaColor,
-}
-ContinuousModification_AddStaticMode :: struct {
-	mode: StaticMode,
-}
-ContinuousModification_GrantStaticAbility :: struct {
-	definition: ^StaticDefinition,
-}
-ContinuousModification_SwitchPowerToughness :: struct {
-}
-ContinuousModification_AssignDamageFromToughness :: struct {
-}
-ContinuousModification_AssignDamageAsThoughUnblocked :: struct {
-}
-ContinuousModification_AssignNoCombatDamage :: struct {
-}
-ContinuousModification_ChangeController :: struct {
-}
-ContinuousModification_ChangeControllerToDesignation :: struct {
-	designation: Designation,
-}
-ContinuousModification_SetBasicLandType :: struct {
-	land_type: BasicLandType,
-}
-ContinuousModification_SetChosenBasicLandType :: struct {
-}
-ContinuousModification_SetChosenName :: struct {
-}
-ContinuousModification_RetainPrintedTriggerFromSource :: struct {
-	source_trigger_index: int,
-}
-ContinuousModification_RetainPrintedAbilityFromSource :: struct {
-	source_ability_index: int,
-}
-ContinuousModification_RetainAllOtherAbilitiesFromSource :: struct {
-}
-ContinuousModification_AddSupertype :: struct {
-	supertype: Supertype,
-}
-ContinuousModification_RemoveSupertype :: struct {
-	supertype: Supertype,
-}
-ContinuousModification_AddCounterOnEnter :: struct {
-	counter_type: CounterType,
-	count: QuantityExpr,
-	if_type: Maybe(CoreType),
-}
-ContinuousModification_SetStartingLoyalty :: struct {
-	value: u32,
-}
-ContinuousModification_RemoveManaCost :: struct {
-}
-ContinuousModification :: union {
-	ContinuousModification_CopyValues,
-	ContinuousModification_CopyChosen,
-	ContinuousModification_SetName,
-	ContinuousModification_SetTextName,
-	ContinuousModification_SubstituteTextWord,
-	ContinuousModification_AddPower,
-	ContinuousModification_AddToughness,
-	ContinuousModification_SetPower,
-	ContinuousModification_SetToughness,
-	ContinuousModification_AddKeyword,
-	ContinuousModification_RemoveKeyword,
-	ContinuousModification_GrantAbility,
-	ContinuousModification_GrantAllActivatedAbilitiesOf,
-	ContinuousModification_GrantAllTriggeredAbilitiesOf,
-	ContinuousModification_GrantTrigger,
-	ContinuousModification_GrantReplacement,
-	ContinuousModification_RemoveAllAbilities,
-	ContinuousModification_AddType,
-	ContinuousModification_RemoveType,
-	ContinuousModification_AddSubtype,
-	ContinuousModification_RemoveSubtype,
-	ContinuousModification_SetCardTypes,
-	ContinuousModification_RemoveAllSubtypes,
-	ContinuousModification_SetDynamicPower,
-	ContinuousModification_SetDynamicToughness,
-	ContinuousModification_SetPowerDynamic,
-	ContinuousModification_SetToughnessDynamic,
-	ContinuousModification_AddDynamicPower,
-	ContinuousModification_AddDynamicToughness,
-	ContinuousModification_AddDynamicKeyword,
-	ContinuousModification_AddKeywordWithDerivedCost,
-	ContinuousModification_AddAllCreatureTypes,
-	ContinuousModification_AddAllBasicLandTypes,
-	ContinuousModification_AddAllLandTypes,
-	ContinuousModification_AddChosenSubtype,
-	ContinuousModification_AddChosenColor,
-	ContinuousModification_RemoveChosenKeyword,
-	ContinuousModification_AddChosenKeyword,
-	ContinuousModification_SetColor,
-	ContinuousModification_AddColor,
-	ContinuousModification_AddStaticMode,
-	ContinuousModification_GrantStaticAbility,
-	ContinuousModification_SwitchPowerToughness,
-	ContinuousModification_AssignDamageFromToughness,
-	ContinuousModification_AssignDamageAsThoughUnblocked,
-	ContinuousModification_AssignNoCombatDamage,
-	ContinuousModification_ChangeController,
-	ContinuousModification_ChangeControllerToDesignation,
-	ContinuousModification_SetBasicLandType,
-	ContinuousModification_SetChosenBasicLandType,
-	ContinuousModification_SetChosenName,
-	ContinuousModification_RetainPrintedTriggerFromSource,
-	ContinuousModification_RetainPrintedAbilityFromSource,
-	ContinuousModification_RetainAllOtherAbilitiesFromSource,
-	ContinuousModification_AddSupertype,
-	ContinuousModification_RemoveSupertype,
-	ContinuousModification_AddCounterOnEnter,
-	ContinuousModification_SetStartingLoyalty,
-	ContinuousModification_RemoveManaCost,
 }
 
 ParsedCondition_SourceInZone :: struct {
@@ -6581,529 +19616,10 @@ ParsedCondition :: union {
 	ParsedCondition_Not,
 }
 
-PlayerId :: distinct u8
-
-ObjectId :: distinct u64
-
 ProtectionDoesNotRemove :: enum u16 {
 	Source,
 	Auras,
 	ControlledAttachmentsAlreadyAttached,
-}
-
-ReplacementEvent_DamageDone :: struct {
-}
-ReplacementEvent_Destroy :: struct {
-}
-ReplacementEvent_Discard :: struct {
-}
-ReplacementEvent_Draw :: struct {
-}
-ReplacementEvent_LoseLife :: struct {
-}
-ReplacementEvent_GainLife :: struct {
-}
-ReplacementEvent_TurnFaceUp :: struct {
-}
-ReplacementEvent_Counter :: struct {
-}
-ReplacementEvent_ChangeZone :: struct {
-}
-ReplacementEvent_Moved :: struct {
-}
-ReplacementEvent_AddCounter :: struct {
-}
-ReplacementEvent_RemoveCounter :: struct {
-}
-ReplacementEvent_CreateToken :: struct {
-}
-ReplacementEvent_Tap :: struct {
-}
-ReplacementEvent_Untap :: struct {
-}
-ReplacementEvent_DealtDamage :: struct {
-}
-ReplacementEvent_Mill :: struct {
-}
-ReplacementEvent_PayLife :: struct {
-}
-ReplacementEvent_LifeReduced :: struct {
-}
-ReplacementEvent_Attached :: struct {
-}
-ReplacementEvent_SearchFound :: struct {
-}
-ReplacementEvent_DrawCards :: struct {
-}
-ReplacementEvent_ProduceMana :: struct {
-}
-ReplacementEvent_Scry :: struct {
-}
-ReplacementEvent_CoinFlip :: struct {
-}
-ReplacementEvent_RollDice :: struct {
-}
-ReplacementEvent_Transform :: struct {
-}
-ReplacementEvent_Explore :: struct {
-}
-ReplacementEvent_Connive :: struct {
-}
-ReplacementEvent_AssembleContraption :: struct {
-}
-ReplacementEvent_BeginPhase :: struct {
-}
-ReplacementEvent_BeginTurn :: struct {
-}
-ReplacementEvent_Cascade :: struct {
-}
-ReplacementEvent_CopySpell :: struct {
-}
-ReplacementEvent_DeclareBlocker :: struct {
-}
-ReplacementEvent_GameLoss :: struct {
-}
-ReplacementEvent_GameWin :: struct {
-}
-ReplacementEvent_Learn :: struct {
-}
-ReplacementEvent_LoseMana :: struct {
-}
-ReplacementEvent_PlanarDiceResult :: struct {
-}
-ReplacementEvent_Planeswalk :: struct {
-}
-ReplacementEvent_Proliferate :: struct {
-}
-ReplacementEvent_Other :: struct {
-	_0: string,
-}
-ReplacementEvent :: union {
-	ReplacementEvent_DamageDone,
-	ReplacementEvent_Destroy,
-	ReplacementEvent_Discard,
-	ReplacementEvent_Draw,
-	ReplacementEvent_LoseLife,
-	ReplacementEvent_GainLife,
-	ReplacementEvent_TurnFaceUp,
-	ReplacementEvent_Counter,
-	ReplacementEvent_ChangeZone,
-	ReplacementEvent_Moved,
-	ReplacementEvent_AddCounter,
-	ReplacementEvent_RemoveCounter,
-	ReplacementEvent_CreateToken,
-	ReplacementEvent_Tap,
-	ReplacementEvent_Untap,
-	ReplacementEvent_DealtDamage,
-	ReplacementEvent_Mill,
-	ReplacementEvent_PayLife,
-	ReplacementEvent_LifeReduced,
-	ReplacementEvent_Attached,
-	ReplacementEvent_SearchFound,
-	ReplacementEvent_DrawCards,
-	ReplacementEvent_ProduceMana,
-	ReplacementEvent_Scry,
-	ReplacementEvent_CoinFlip,
-	ReplacementEvent_RollDice,
-	ReplacementEvent_Transform,
-	ReplacementEvent_Explore,
-	ReplacementEvent_Connive,
-	ReplacementEvent_AssembleContraption,
-	ReplacementEvent_BeginPhase,
-	ReplacementEvent_BeginTurn,
-	ReplacementEvent_Cascade,
-	ReplacementEvent_CopySpell,
-	ReplacementEvent_DeclareBlocker,
-	ReplacementEvent_GameLoss,
-	ReplacementEvent_GameWin,
-	ReplacementEvent_Learn,
-	ReplacementEvent_LoseMana,
-	ReplacementEvent_PlanarDiceResult,
-	ReplacementEvent_Planeswalk,
-	ReplacementEvent_Proliferate,
-	ReplacementEvent_Other,
-}
-
-ReplacementContinuationId :: distinct u64
-
-ReplacementMode_Mandatory :: struct {
-}
-ReplacementMode_Optional :: struct {
-	decline: ^AbilityDefinition,
-}
-ReplacementMode_MayCost :: struct {
-	cost: AbilityCost,
-	decline: ^AbilityDefinition,
-}
-ReplacementMode :: union {
-	ReplacementMode_Mandatory,
-	ReplacementMode_Optional,
-	ReplacementMode_MayCost,
-}
-
-ReplacementChoiceAuthority :: enum u16 {
-	AffectedPlayer,
-	SourceController,
-}
-
-ReplacementCondition_And :: struct {
-	conditions: [dynamic]ReplacementCondition,
-}
-ReplacementCondition_UnlessControlsSubtype :: struct {
-	subtypes: [dynamic]string,
-}
-ReplacementCondition_UnlessControlsOtherLeq :: struct {
-	count: u32,
-	filter: TypedFilter,
-}
-ReplacementCondition_UnlessControlsMatching :: struct {
-	filter: TargetFilter,
-}
-ReplacementCondition_UnlessControlsCountMatching :: struct {
-	minimum: u32,
-	filter: TargetFilter,
-}
-ReplacementCondition_UnlessPlayerLifeAtMost :: struct {
-	amount: u32,
-}
-ReplacementCondition_UnlessMultipleOpponents :: struct {
-}
-ReplacementCondition_UnlessYourTurn :: struct {
-}
-ReplacementCondition_UnlessQuantity :: struct {
-	lhs: QuantityExpr,
-	comparator: Comparator,
-	rhs: QuantityExpr,
-	active_player_req: Maybe(ControllerRef),
-}
-ReplacementCondition_OnlyIfQuantity :: struct {
-	lhs: QuantityExpr,
-	comparator: Comparator,
-	rhs: QuantityExpr,
-	active_player_req: Maybe(ControllerRef),
-}
-ReplacementCondition_HasMaxSpeed :: struct {
-}
-ReplacementCondition_CastViaEscape :: struct {
-}
-ReplacementCondition_CastVariantPaid :: struct {
-	variant: CastVariantPaid,
-}
-ReplacementCondition_TurnUpCostSourcePaid :: struct {
-	source: TurnUpCostSource,
-}
-ReplacementCondition_CastFromZone :: struct {
-	zone: Zone,
-}
-ReplacementCondition_EnteredFromZone :: struct {
-	origin_constraint: Maybe(OriginConstraint),
-	cast_origin: Maybe(Zone),
-}
-ReplacementCondition_YouAttackedThisTurn :: struct {
-}
-ReplacementCondition_OpponentDamagedThisTurn :: struct {
-}
-ReplacementCondition_CastViaKicker :: struct {
-	variant: Maybe(KickerVariant),
-	kicker_cost: Maybe(ManaCost),
-}
-ReplacementCondition_SourceTappedState :: struct {
-	tapped: bool,
-}
-ReplacementCondition_DealtDamageThisTurnBySource :: struct {
-	source: TargetFilter,
-}
-ReplacementCondition_EventSourceControlledBy :: struct {
-	controller: ControllerRef,
-}
-ReplacementCondition_EffectCausedDiscard :: struct {
-}
-ReplacementCondition_EffectCausedPlacement :: struct {
-}
-ReplacementCondition_OnlyExtraTurn :: struct {
-}
-ReplacementCondition_TokenSubtypeMatches :: struct {
-	subtypes: [dynamic]string,
-}
-ReplacementCondition_TokenCoreTypeMatches :: struct {
-	core_types: [dynamic]CoreType,
-}
-ReplacementCondition_FirstTokenCreationEachTurn :: struct {
-	active_player_req: Maybe(ControllerRef),
-}
-ReplacementCondition_ExceptFirstDrawInDrawStep :: struct {
-}
-ReplacementCondition_IfControlsMatching :: struct {
-	minimum: u32,
-	filter: TargetFilter,
-}
-ReplacementCondition_OnlyIfStatic :: struct {
-	condition: ^StaticCondition,
-}
-ReplacementCondition_ClassLevelGE :: struct {
-	level: u8,
-}
-ReplacementCondition_DuringUntapStep :: struct {
-}
-ReplacementCondition_DuringDrawStep :: struct {
-	active_player_req: Maybe(ControllerRef),
-}
-ReplacementCondition_ControllerControlsSource :: struct {
-	source: ObjectId,
-	controller: PlayerId,
-}
-ReplacementCondition_Unrecognized :: struct {
-	text: string,
-}
-ReplacementCondition :: union {
-	ReplacementCondition_And,
-	ReplacementCondition_UnlessControlsSubtype,
-	ReplacementCondition_UnlessControlsOtherLeq,
-	ReplacementCondition_UnlessControlsMatching,
-	ReplacementCondition_UnlessControlsCountMatching,
-	ReplacementCondition_UnlessPlayerLifeAtMost,
-	ReplacementCondition_UnlessMultipleOpponents,
-	ReplacementCondition_UnlessYourTurn,
-	ReplacementCondition_UnlessQuantity,
-	ReplacementCondition_OnlyIfQuantity,
-	ReplacementCondition_HasMaxSpeed,
-	ReplacementCondition_CastViaEscape,
-	ReplacementCondition_CastVariantPaid,
-	ReplacementCondition_TurnUpCostSourcePaid,
-	ReplacementCondition_CastFromZone,
-	ReplacementCondition_EnteredFromZone,
-	ReplacementCondition_YouAttackedThisTurn,
-	ReplacementCondition_OpponentDamagedThisTurn,
-	ReplacementCondition_CastViaKicker,
-	ReplacementCondition_SourceTappedState,
-	ReplacementCondition_DealtDamageThisTurnBySource,
-	ReplacementCondition_EventSourceControlledBy,
-	ReplacementCondition_EffectCausedDiscard,
-	ReplacementCondition_EffectCausedPlacement,
-	ReplacementCondition_OnlyExtraTurn,
-	ReplacementCondition_TokenSubtypeMatches,
-	ReplacementCondition_TokenCoreTypeMatches,
-	ReplacementCondition_FirstTokenCreationEachTurn,
-	ReplacementCondition_ExceptFirstDrawInDrawStep,
-	ReplacementCondition_IfControlsMatching,
-	ReplacementCondition_OnlyIfStatic,
-	ReplacementCondition_ClassLevelGE,
-	ReplacementCondition_DuringUntapStep,
-	ReplacementCondition_DuringDrawStep,
-	ReplacementCondition_ControllerControlsSource,
-	ReplacementCondition_Unrecognized,
-}
-
-DamageModification_Double :: struct {
-}
-DamageModification_Triple :: struct {
-}
-DamageModification_Plus :: struct {
-	value: QuantityExpr,
-}
-DamageModification_Minus :: struct {
-	value: u32,
-}
-DamageModification_PreventionMinus :: struct {
-	value: PreventionFormula,
-}
-DamageModification_SetToSourcePower :: struct {
-}
-DamageModification_SetTo :: struct {
-	value: u32,
-}
-DamageModification_LifeFloor :: struct {
-	minimum: i32,
-}
-DamageModification :: union {
-	DamageModification_Double,
-	DamageModification_Triple,
-	DamageModification_Plus,
-	DamageModification_Minus,
-	DamageModification_PreventionMinus,
-	DamageModification_SetToSourcePower,
-	DamageModification_SetTo,
-	DamageModification_LifeFloor,
-}
-
-DamageTargetFilter_CreatureOnly :: struct {
-}
-DamageTargetFilter_Player :: struct {
-	player: DamageTargetPlayerScope,
-}
-DamageTargetFilter_PlayerOrPermanentsControlledBy :: struct {
-	player: DamageTargetPlayerScope,
-	permanent_type: Maybe(CoreType),
-	source_scope: SourceExclusion,
-}
-DamageTargetFilter :: union {
-	DamageTargetFilter_CreatureOnly,
-	DamageTargetFilter_Player,
-	DamageTargetFilter_PlayerOrPermanentsControlledBy,
-}
-
-CombatDamageScope :: enum u16 {
-	CombatOnly,
-	NoncombatOnly,
-}
-
-DrawReplacementScope :: enum u16 {
-	InstructionCount,
-	IndividualDraw,
-}
-
-DieRollIgnoreRule :: enum u16 {
-	Lowest,
-}
-
-PlaneswalkReplacementScope :: enum u16 {
-	Any,
-	PlanarDieOnly,
-}
-
-ShieldKind_None :: struct {
-}
-ShieldKind_Regeneration :: struct {
-}
-ShieldKind_Prevention :: struct {
-	amount: PreventionAmount,
-}
-ShieldKind_DamageReplacementOneShot :: struct {
-}
-ShieldKind_Redirection :: struct {
-	recipient: DamageRedirectTarget,
-	amount: PreventionAmount,
-	lifetime: RedirectionLifetime,
-}
-ShieldKind_PreventionOneShot :: struct {
-}
-ShieldKind :: union {
-	ShieldKind_None,
-	ShieldKind_Regeneration,
-	ShieldKind_Prevention,
-	ShieldKind_DamageReplacementOneShot,
-	ShieldKind_Redirection,
-	ShieldKind_PreventionOneShot,
-}
-
-QuantityModification_Times :: struct {
-	factor: u32,
-}
-QuantityModification_Half :: struct {
-}
-QuantityModification_Plus :: struct {
-	value: u32,
-}
-QuantityModification_Minus :: struct {
-	value: u32,
-}
-QuantityModification_Prevent :: struct {
-}
-QuantityModification :: union {
-	QuantityModification_Times,
-	QuantityModification_Half,
-	QuantityModification_Plus,
-	QuantityModification_Minus,
-	QuantityModification_Prevent,
-}
-
-ReplacementPlayerScope :: enum u16 {
-	You,
-	Opponent,
-	AnyPlayer,
-}
-
-RestrictionExpiry_EndOfTurn :: struct {
-}
-RestrictionExpiry_EndOfCombat :: struct {
-}
-RestrictionExpiry_UntilPlayerNextTurn :: struct {
-	player: PlayerId,
-}
-RestrictionExpiry_UntilEndOfNextTurnOf :: struct {
-	player: PlayerId,
-}
-RestrictionExpiry_UntilHostLeavesPlay :: struct {
-}
-RestrictionExpiry :: union {
-	RestrictionExpiry_EndOfTurn,
-	RestrictionExpiry_EndOfCombat,
-	RestrictionExpiry_UntilPlayerNextTurn,
-	RestrictionExpiry_UntilEndOfNextTurnOf,
-	RestrictionExpiry_UntilHostLeavesPlay,
-}
-
-ManaModification_ReplaceWith :: struct {
-	mana_type: ManaType,
-}
-ManaModification_Multiply :: struct {
-	factor: u32,
-}
-ManaModification :: union {
-	ManaModification_ReplaceWith,
-	ManaModification_Multiply,
-}
-
-ManaReplacementScope :: enum u16 {
-	Any,
-	TappedForMana,
-}
-
-TokenSpec :: struct {
-	characteristics: TokenCharacteristics,
-	script_name: string,
-	static_abilities: [dynamic]StaticDefinition,
-	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
-	tapped: bool,
-	enters_attacking: bool,
-	attack_request: TokenAttackRequest,
-	sacrifice_at: Maybe(Duration),
-	source_id: ObjectId,
-	controller: PlayerId,
-	attach_to: TokenHostRequest,
-}
-
-CounterMatch_Any :: struct {
-}
-CounterMatch_OfType :: struct {
-	_0: CounterType,
-}
-CounterMatch :: union {
-	CounterMatch_Any,
-	CounterMatch_OfType,
-}
-
-ReplacementOrigin :: enum u16 {
-	Characteristic,
-	Resolution,
-}
-
-CounterReplacementSubject :: enum u16 {
-	Recipient,
-	Actor,
-}
-
-ModalSelectionConstraint_DifferentTargetPlayers :: struct {
-}
-ModalSelectionConstraint_ConditionalMaxChoices :: struct {
-	condition: ModalSelectionCondition,
-	max_choices: int,
-	otherwise_max_choices: int,
-}
-ModalSelectionConstraint_NoRepeatThisTurn :: struct {
-}
-ModalSelectionConstraint_NoRepeatThisGame :: struct {
-}
-ModalSelectionConstraint :: union {
-	ModalSelectionConstraint_DifferentTargetPlayers,
-	ModalSelectionConstraint_ConditionalMaxChoices,
-	ModalSelectionConstraint_NoRepeatThisTurn,
-	ModalSelectionConstraint_NoRepeatThisGame,
-}
-
-AdditionalCostRepeatability :: enum u16 {
-	Once,
-	Repeatable,
 }
 
 GraveyardPermissionPool :: enum u16 {
@@ -7162,626 +19678,869 @@ CascadeSlot :: enum u16 {
 	Duration,
 }
 
-QuantityRef_HandSize :: struct {
-	player: PlayerScope,
+TributeOutcome :: enum u16 {
+	Paid,
+	Declined,
 }
-QuantityRef_LifeTotal :: struct {
-	player: PlayerScope,
+
+LatchedCopiableSnapshot :: struct {
+	values: CopiableValues,
+	display: DisplayIdentity,
 }
-QuantityRef_GraveyardSize :: struct {
-	player: PlayerScope,
+
+DealtDamageKinds :: struct {
+	combat: bool,
+	noncombat: bool,
 }
-QuantityRef_LifeAboveStarting :: struct {
+
+ProtectionStartKey :: struct {
+	occurrence: ProtectionGrantOccurrence,
+	mod_index: int,
+	host: ObjectIncarnationRef,
 }
-QuantityRef_StartingLifeTotal :: struct {
-	player: PlayerScope,
+
+ProtectionStartSnapshot :: struct {
+	resolved_quality: ProtectionTarget,
+	attachment_ids: [dynamic]ObjectId,
 }
-QuantityRef_StartingDeckSize :: struct {
-	player: PlayerScope,
+
+ProtectionStartGrant :: struct {
+	source: ObjectId,
+	key: ProtectionStartKey,
+	resolved_quality: ProtectionTarget,
 }
-QuantityRef_TriggeringDiscoverValue :: struct {
+
+ProtectionProvenance :: struct {
+	quality: ProtectionTarget,
+	rider: Maybe(ProtectionRiderGrant),
 }
-QuantityRef_TriggeringScryLookCount :: struct {
+
+PerpetualModification_SetBasePowerToughness :: struct {
+	power: i32,
+	toughness: i32,
 }
-QuantityRef_TriggeringScryBottomCount :: struct {
+PerpetualModification_ModifyPowerToughness :: struct {
+	power: QuantityExpr,
+	toughness: QuantityExpr,
+	keywords: [dynamic]Keyword,
 }
-QuantityRef_ObjectCount :: struct {
-	filter: TargetFilter,
+PerpetualModification_GrantKeywords :: struct {
+	keywords: [dynamic]Keyword,
 }
-QuantityRef_ObjectCountDistinct :: struct {
-	filter: TargetFilter,
-	qualities: [dynamic]SharedQuality,
+PerpetualModification_Become :: struct {
+	creature_subtypes: [dynamic]string,
+	power: i32,
+	toughness: i32,
+	keywords: [dynamic]Keyword,
 }
-QuantityRef_ObjectCountBySharedQuality :: struct {
-	filter: TargetFilter,
-	quality: SharedQuality,
-	aggregate: AggregateFunction,
+PerpetualModification_ModifyCost :: struct {
+	mode: CostModifyMode,
+	amount: ManaCost,
 }
-QuantityRef_PlayerCount :: struct {
-	filter: PlayerFilter,
+PerpetualModification_GrantAbility :: struct {
+	modifications: [dynamic]PerpetualGrantModification,
 }
-QuantityRef_CountersOn :: struct {
-	scope: ObjectScope,
-	counter_type: Maybe(CounterType),
+PerpetualModification :: union {
+	PerpetualModification_SetBasePowerToughness,
+	PerpetualModification_ModifyPowerToughness,
+	PerpetualModification_GrantKeywords,
+	PerpetualModification_Become,
+	PerpetualModification_ModifyCost,
+	PerpetualModification_GrantAbility,
 }
-QuantityRef_CountersOnObjects :: struct {
-	counter_type: Maybe(CounterType),
-	filter: TargetFilter,
+
+Definitions_TriggerEntry :: distinct ^[dynamic]TriggerEntry
+
+Definitions_ReplacementDefinition :: distinct ^[dynamic]ReplacementDefinition
+
+Definitions_StaticDefinition :: distinct ^[dynamic]StaticDefinition
+
+TokenArtDescriptor :: struct {
+	power: Maybe(i32),
+	toughness: Maybe(i32),
+	colors: [dynamic]ManaColor,
+	subtypes: [dynamic]string,
+	keywords: [dynamic]string,
+	has_abilities: bool,
 }
-QuantityRef_PlayerCounter :: struct {
-	kind: PlayerCounterKind,
-	scope: CountScope,
+
+TriggerBaseSetInstanceRef :: distinct u64
+
+TriggerOccurrenceState :: struct {
+	next_grant_instance: u64,
+	active_grants: [dynamic]ActiveTriggerGrantInstance,
 }
-QuantityRef_TargetControllerCounter :: struct {
-	kind: PlayerCounterKind,
+
+BestowFormState :: struct {
+	removed_creature_subtypes: [dynamic]string,
 }
-QuantityRef_Variable :: struct {
+
+PrototypeFormState :: struct {
+	mana_cost: ManaCost,
+	power: i32,
+	toughness: i32,
+	colors: [dynamic]ManaColor,
+}
+
+MutateFormState :: struct {
+}
+
+MergeKind :: enum u16 {
+	Mutate,
+	Meld,
+	Augment,
+}
+
+CleaveFormState :: struct {
+	abilities: ^[dynamic]AbilityDefinition,
+	triggers: Definitions_TriggerEntry,
+	statics: Definitions_StaticDefinition,
+	replacements: Definitions_ReplacementDefinition,
+	base_abilities: ^[dynamic]AbilityDefinition,
+	base_triggers: ^[dynamic]TriggerDefinition,
+	base_trigger_printed_origins: [dynamic]Maybe(TriggerPrintedOrigin),
+	trigger_base_set_instance: TriggerBaseSetInstanceRef,
+	next_trigger_base_set_instance: u64,
+	base_statics: ^[dynamic]StaticDefinition,
+	base_replacements: ^[dynamic]ReplacementDefinition,
+}
+
+ManaPip_Color :: struct {
+	_0: ManaColor,
+}
+ManaPip_Colorless :: struct {
+}
+ManaPip_OneOfColors :: struct {
+	_0: [dynamic]ManaColor,
+}
+ManaPip_CombinationOfColors :: struct {
+	_0: [dynamic]ManaColor,
+}
+ManaPip_AnyInCommandersIdentity :: struct {
+}
+ManaPip :: union {
+	ManaPip_Color,
+	ManaPip_Colorless,
+	ManaPip_OneOfColors,
+	ManaPip_CombinationOfColors,
+	ManaPip_AnyInCommandersIdentity,
+}
+
+AbilityBlockEntry :: struct {
+	ability_index: int,
+	reason: AbilityBlockReason,
+}
+
+SignatureSpellState :: struct {
+}
+
+EmblemSource :: struct {
 	name: string,
+	printed_ref: Maybe(PrintedCardRef),
+	printing: DisplayOnly_ptr_CardPrinting,
 }
-QuantityRef_Power :: struct {
-	scope: ObjectScope,
+
+LinkedAbilitySource :: struct {
+	creator: ObjectIncarnationRef,
+	characteristic_set: CharacteristicSetRef,
 }
-QuantityRef_BasePower :: struct {
-	scope: ObjectScope,
+
+DisplaySource :: enum u16 {
+	Card,
+	Token,
 }
-QuantityRef_Intensity :: struct {
-	scope: ObjectScope,
+
+CastingPermission_AdventureCreature :: struct {
 }
-QuantityRef_Toughness :: struct {
-	scope: ObjectScope,
+CastingPermission_ExileWithAltCost :: struct {
+	cost: ManaCost,
+	cost_provenance: ExileGrantCostProvenance,
+	cast_transformed: bool,
+	constraint: Maybe(CastPermissionConstraint),
+	granted_to: Maybe(PlayerId),
+	resolution_cleanup: Maybe(ResolutionCastCleanup),
+	duration: Maybe(Duration),
+	source_id: Maybe(ObjectId),
+	graveyard_replacement: Maybe(SpellStackToGraveyardReplacement),
+	enters_with_counter: Maybe(CounterType),
+	enters_with_modifications: PendingEntersModifications,
+	mana_spend_permission: Maybe(ManaSpendPermission),
+	cast_cost_modifier: Maybe(CastCostModifier),
 }
-QuantityRef_ObjectManaValue :: struct {
-	scope: ObjectScope,
+CastingPermission_PlayFromExile :: struct {
+	duration: Duration,
+	granted_to: PlayerId,
+	mode: CardPlayMode,
+	frequency: CastFrequency,
+	source_id: Maybe(ObjectId),
+	exiled_by_ability_controller: Maybe(PlayerId),
+	mana_spend_permission: Maybe(ManaSpendPermission),
+	card_filter: Maybe(TargetFilter),
+	single_use_group: Maybe(TrackedSetId),
+	single_use: bool,
+	cast_cost_modifier: Maybe(CastCostModifier),
+	alt_ability_cost: Maybe(AbilityCost),
+	without_paying_mana_cost: bool,
+	land_enter_tapped: EtbTapState,
+	invalidation: Maybe(PlayPermissionInvalidation),
+	provenance: PlayFromExileProvenance,
 }
-QuantityRef_TargetObjectManaValue :: struct {
-	filter: ^TargetFilter,
+CastingPermission_ExileWithEnergyCost :: struct {
 }
-QuantityRef_ObjectColorCount :: struct {
-	scope: ObjectScope,
+CastingPermission_ExileWithAltAbilityCost :: struct {
+	cost: AbilityCost,
+	constraint: Maybe(CastPermissionConstraint),
+	granted_to: Maybe(PlayerId),
+	duration: Maybe(Duration),
+	source_id: Maybe(ObjectId),
+	cast_cost_modifier: Maybe(CastCostModifier),
 }
-QuantityRef_ObjectNameWordCount :: struct {
-	scope: ObjectScope,
+CastingPermission_WarpExile :: struct {
+	castable_after_turn: u32,
 }
-QuantityRef_NameStickerLetterCount :: struct {
-	stickers: NameStickerSet,
-	letters: LetterQuery,
+CastingPermission_Plotted :: struct {
+	turn_plotted: u32,
 }
-QuantityRef_ObjectTypelineComponentCount :: struct {
-	scope: ObjectScope,
+CastingPermission_Foretold :: struct {
+	cost: ManaCost,
+	turn_foretold: u32,
 }
-QuantityRef_ManaSymbolsInManaCost :: struct {
-	scope: ObjectScope,
-	color: Maybe(ManaColor),
+CastingPermission :: union {
+	CastingPermission_AdventureCreature,
+	CastingPermission_ExileWithAltCost,
+	CastingPermission_PlayFromExile,
+	CastingPermission_ExileWithEnergyCost,
+	CastingPermission_ExileWithAltAbilityCost,
+	CastingPermission_WarpExile,
+	CastingPermission_Plotted,
+	CastingPermission_Foretold,
 }
-QuantityRef_SelfManaValue :: struct {
+
+PreparedState :: struct {
 }
-QuantityRef_PropertyAggregate :: struct {
-	_0: PropertyAggregate,
+
+RoomUnlockState :: struct {
+	left_unlocked: bool,
+	right_unlocked: bool,
 }
-QuantityRef_ControlledByEachPlayer :: struct {
-	filter: TargetFilter,
-	aggregate: AggregateFunction,
-	relation: PlayerRelation,
+
+CopyEffectInstanceRef :: struct {
+	continuous_effect_id: u64,
+	modification_index: int,
 }
-QuantityRef_TargetZoneCardCount :: struct {
-	zone: ZoneRef,
-	scope: ControllerRef,
-	binding: CountBinding,
+
+CastOrigin :: struct {
+	zone: Zone,
+	zone_owner: PlayerId,
 }
-QuantityRef_Devotion :: struct {
-	colors: DevotionColors,
+
+ExiledSpellRider_ReturnTo :: struct {
+	destination: Zone,
+	timing: DelayedTriggerCondition,
 }
-QuantityRef_DistinctCardTypes :: struct {
-	source: CardTypeSetSource,
+ExiledSpellRider_BecomePlotted :: struct {
 }
-QuantityRef_SharedCardTypes :: struct {
-	source: CardTypeSetSource,
+ExiledSpellRider :: union {
+	ExiledSpellRider_ReturnTo,
+	ExiledSpellRider_BecomePlotted,
 }
-QuantityRef_DistinctSubtypes :: struct {
-	source: CardTypeSetSource,
-	exclude: SubtypeExclusion,
-	restrict: Maybe(SubtypeSet),
-}
-QuantityRef_CardsExiledBySource :: struct {
-}
-QuantityRef_DeployedBossCount :: struct {
-}
-QuantityRef_ExiledCardPower :: struct {
+
+PermissionGrant_Static :: struct {
 	index: u32,
 }
-QuantityRef_ZoneCardCount :: struct {
-	zone: ZoneRef,
-	card_types: [dynamic]TypeFilter,
-	filter: Maybe(TargetFilter),
-	scope: CountScope,
+PermissionGrant_Transient :: struct {
+	effect_id: u64,
+	modification: u32,
 }
-QuantityRef_BasicLandTypeCount :: struct {
-	controller: ControllerRef,
-}
-QuantityRef_TrackedSetSize :: struct {
-}
-QuantityRef_FilteredTrackedSetSize :: struct {
-	filter: ^TargetFilter,
-	caused_by: Maybe(ThisWayCause),
-	destination: Maybe(Zone),
-}
-QuantityRef_ExiledFromHandThisResolution :: struct {
-}
-QuantityRef_PreviousEffectAmount :: struct {
-	channel: DamageChannel,
-	aggregate: AggregateFunction,
-}
-QuantityRef_PreviousEffectCount :: struct {
-}
-QuantityRef_LifeLost :: struct {
-	player: PlayerScope,
-	window: TurnWindow,
-}
-QuantityRef_PartySize :: struct {
-	player: PlayerScope,
-}
-QuantityRef_UnspentMana :: struct {
-	color: Maybe(ManaColor),
-}
-QuantityRef_Speed :: struct {
-	player: PlayerScope,
-}
-QuantityRef_EventContextAmount :: struct {
-}
-QuantityRef_EventContextPlayerCount :: struct {
-	filter: PlayerFilter,
-}
-QuantityRef_AttachmentsOnLeavingObject :: struct {
-	kind: AttachmentKind,
-	controller: Maybe(ControllerRef),
-}
-QuantityRef_EventContextSourceCostX :: struct {
-}
-QuantityRef_EventContextSourceModesChosen :: struct {
-}
-QuantityRef_SpellsCast :: struct {
-	scope: CountScope,
-	filter: Maybe(TargetFilter),
-	window: TurnWindow,
-}
-QuantityRef_SpellsCastBeforeTriggeringSpell :: struct {
-	scope: CountScope,
-	filter: Maybe(TargetFilter),
-}
-QuantityRef_EnteredThisTurn :: struct {
-	filter: TargetFilter,
-}
-QuantityRef_SacrificedThisTurn :: struct {
-	player: PlayerScope,
-	filter: TargetFilter,
-}
-QuantityRef_CrimesCommittedThisTurn :: struct {
-}
-QuantityRef_EnergyPaidOrLostThisTurn :: struct {
-}
-QuantityRef_BendTypesThisTurn :: struct {
-}
-QuantityRef_LifeGainedThisTurn :: struct {
-	player: PlayerScope,
-}
-QuantityRef_CardsDrawnThisTurn :: struct {
-	player: PlayerScope,
-}
-QuantityRef_CardsDrawnLastTurn :: struct {
-	player: PlayerScope,
-}
-QuantityRef_OpponentSpellsCastSinceLastTurn :: struct {
-	player: PlayerScope,
-}
-QuantityRef_BattlefieldEntriesThisTurn :: struct {
-	player: PlayerScope,
-	filter: TargetFilter,
-}
-QuantityRef_LandsPlayedThisTurn :: struct {
-	player: PlayerScope,
-	from_zones: Maybe([dynamic]Zone),
-}
-QuantityRef_TurnsTaken :: struct {
-}
-QuantityRef_ZoneChangeCountThisTurn :: struct {
-	from: Maybe(Zone),
-	to: Maybe(Zone),
-	filter: TargetFilter,
-}
-QuantityRef_ZoneChangeAggregateThisTurn :: struct {
-	from: Maybe(Zone),
-	to: Maybe(Zone),
-	filter: TargetFilter,
-	function: AggregateFunction,
-	property: ObjectProperty,
-}
-QuantityRef_DamageDealtThisTurn :: struct {
-	source: ^TargetFilter,
-	target: ^TargetFilter,
-	aggregate: AggregateFunction,
-	group_by: Maybe(DamageGroupKey),
-	damage_kind: DamageKindFilter,
-	channel: DamageChannel,
-}
-QuantityRef_NotedNumber :: struct {
-}
-QuantityRef_ChosenNumber :: struct {
-}
-QuantityRef_PlayerChosenNumber :: struct {
-	player: PlayerScope,
-}
-QuantityRef_AttackedThisTurn :: struct {
-	scope: CountScope,
-	filter: Maybe(TargetFilter),
-}
-QuantityRef_DescendedThisTurn :: struct {
-}
-QuantityRef_LoyaltyAbilitiesActivatedThisTurn :: struct {
-	player: PlayerScope,
-}
-QuantityRef_SpellsCastThisGame :: struct {
-	scope: CountScope,
-	filter: Maybe(TargetFilter),
-}
-QuantityRef_CardsCycled :: struct {
-	scope: CountScope,
-	window: CyclingHistoryWindow,
-	name: Maybe(string),
-}
-QuantityRef_CounterAddedThisTurn :: struct {
-	actor: CountScope,
-	counters: CounterMatch,
-	target: TargetFilter,
-}
-QuantityRef_CardsDiscardedThisTurn :: struct {
-	player: PlayerScope,
-}
-QuantityRef_TokensCreatedThisTurn :: struct {
-	player: PlayerScope,
-	filter: TargetFilter,
-}
-QuantityRef_PlayerActionsThisTurn :: struct {
-	player: PlayerScope,
-	action: PlayerActionKind,
-}
-QuantityRef_DungeonsCompleted :: struct {
-}
-QuantityRef_CostXPaid :: struct {
-}
-QuantityRef_KickerCount :: struct {
-}
-QuantityRef_AdditionalCostPaymentCount :: struct {
-}
-QuantityRef_AdditionalCostPaymentCountFor :: struct {
-	origin: AdditionalCostOrigin,
-	origin_ordinal: Maybe(u32),
-}
-QuantityRef_ConvokedCreatureCount :: struct {
-}
-QuantityRef_TimesCostPaidThisResolution :: struct {
-}
-QuantityRef_ManaSpentToCast :: struct {
-	scope: CastManaObjectScope,
-	metric: CastManaSpentMetric,
-}
-QuantityRef_ColorsInCommandersColorIdentity :: struct {
-}
-QuantityRef_CommanderCastFromCommandZoneCount :: struct {
-}
-QuantityRef_CommanderManaValue :: struct {
-	owner: ControllerRef,
-}
-QuantityRef_DistinctColorsAmong :: struct {
-	source: CardTypeSetSource,
-}
-QuantityRef_DistinctCounterKindsAmong :: struct {
-	filter: TargetFilter,
-}
-QuantityRef_VoteCount :: struct {
-	choice_index: u32,
-}
-QuantityRef :: union {
-	QuantityRef_HandSize,
-	QuantityRef_LifeTotal,
-	QuantityRef_GraveyardSize,
-	QuantityRef_LifeAboveStarting,
-	QuantityRef_StartingLifeTotal,
-	QuantityRef_StartingDeckSize,
-	QuantityRef_TriggeringDiscoverValue,
-	QuantityRef_TriggeringScryLookCount,
-	QuantityRef_TriggeringScryBottomCount,
-	QuantityRef_ObjectCount,
-	QuantityRef_ObjectCountDistinct,
-	QuantityRef_ObjectCountBySharedQuality,
-	QuantityRef_PlayerCount,
-	QuantityRef_CountersOn,
-	QuantityRef_CountersOnObjects,
-	QuantityRef_PlayerCounter,
-	QuantityRef_TargetControllerCounter,
-	QuantityRef_Variable,
-	QuantityRef_Power,
-	QuantityRef_BasePower,
-	QuantityRef_Intensity,
-	QuantityRef_Toughness,
-	QuantityRef_ObjectManaValue,
-	QuantityRef_TargetObjectManaValue,
-	QuantityRef_ObjectColorCount,
-	QuantityRef_ObjectNameWordCount,
-	QuantityRef_NameStickerLetterCount,
-	QuantityRef_ObjectTypelineComponentCount,
-	QuantityRef_ManaSymbolsInManaCost,
-	QuantityRef_SelfManaValue,
-	QuantityRef_PropertyAggregate,
-	QuantityRef_ControlledByEachPlayer,
-	QuantityRef_TargetZoneCardCount,
-	QuantityRef_Devotion,
-	QuantityRef_DistinctCardTypes,
-	QuantityRef_SharedCardTypes,
-	QuantityRef_DistinctSubtypes,
-	QuantityRef_CardsExiledBySource,
-	QuantityRef_DeployedBossCount,
-	QuantityRef_ExiledCardPower,
-	QuantityRef_ZoneCardCount,
-	QuantityRef_BasicLandTypeCount,
-	QuantityRef_TrackedSetSize,
-	QuantityRef_FilteredTrackedSetSize,
-	QuantityRef_ExiledFromHandThisResolution,
-	QuantityRef_PreviousEffectAmount,
-	QuantityRef_PreviousEffectCount,
-	QuantityRef_LifeLost,
-	QuantityRef_PartySize,
-	QuantityRef_UnspentMana,
-	QuantityRef_Speed,
-	QuantityRef_EventContextAmount,
-	QuantityRef_EventContextPlayerCount,
-	QuantityRef_AttachmentsOnLeavingObject,
-	QuantityRef_EventContextSourceCostX,
-	QuantityRef_EventContextSourceModesChosen,
-	QuantityRef_SpellsCast,
-	QuantityRef_SpellsCastBeforeTriggeringSpell,
-	QuantityRef_EnteredThisTurn,
-	QuantityRef_SacrificedThisTurn,
-	QuantityRef_CrimesCommittedThisTurn,
-	QuantityRef_EnergyPaidOrLostThisTurn,
-	QuantityRef_BendTypesThisTurn,
-	QuantityRef_LifeGainedThisTurn,
-	QuantityRef_CardsDrawnThisTurn,
-	QuantityRef_CardsDrawnLastTurn,
-	QuantityRef_OpponentSpellsCastSinceLastTurn,
-	QuantityRef_BattlefieldEntriesThisTurn,
-	QuantityRef_LandsPlayedThisTurn,
-	QuantityRef_TurnsTaken,
-	QuantityRef_ZoneChangeCountThisTurn,
-	QuantityRef_ZoneChangeAggregateThisTurn,
-	QuantityRef_DamageDealtThisTurn,
-	QuantityRef_NotedNumber,
-	QuantityRef_ChosenNumber,
-	QuantityRef_PlayerChosenNumber,
-	QuantityRef_AttackedThisTurn,
-	QuantityRef_DescendedThisTurn,
-	QuantityRef_LoyaltyAbilitiesActivatedThisTurn,
-	QuantityRef_SpellsCastThisGame,
-	QuantityRef_CardsCycled,
-	QuantityRef_CounterAddedThisTurn,
-	QuantityRef_CardsDiscardedThisTurn,
-	QuantityRef_TokensCreatedThisTurn,
-	QuantityRef_PlayerActionsThisTurn,
-	QuantityRef_DungeonsCompleted,
-	QuantityRef_CostXPaid,
-	QuantityRef_KickerCount,
-	QuantityRef_AdditionalCostPaymentCount,
-	QuantityRef_AdditionalCostPaymentCountFor,
-	QuantityRef_ConvokedCreatureCount,
-	QuantityRef_TimesCostPaidThisResolution,
-	QuantityRef_ManaSpentToCast,
-	QuantityRef_ColorsInCommandersColorIdentity,
-	QuantityRef_CommanderCastFromCommandZoneCount,
-	QuantityRef_CommanderManaValue,
-	QuantityRef_DistinctColorsAmong,
-	QuantityRef_DistinctCounterKindsAmong,
-	QuantityRef_VoteCount,
+PermissionGrant :: union {
+	PermissionGrant_Static,
+	PermissionGrant_Transient,
 }
 
-RoundingMode :: enum u16 {
-	Up,
-	Down,
+CastCostMode :: enum u16 {
+	Alternative,
+	Additional,
 }
 
-SourceExclusion :: enum u16 {
-	Include,
-	Exclude,
+KeywordAction_Equip :: struct {
+	equipment_id: ObjectId,
+	target_creature_id: ObjectId,
+}
+KeywordAction_Crew :: struct {
+	vehicle_id: ObjectId,
+	paid_creature_ids: [dynamic]ObjectId,
+}
+KeywordAction_Saddle :: struct {
+	mount_id: ObjectId,
+	paid_creature_ids: [dynamic]ObjectId,
+}
+KeywordAction_Station :: struct {
+	spacecraft_id: ObjectId,
+	paid_creature_id: ObjectId,
+	snapshot_power: i32,
+}
+KeywordAction :: union {
+	KeywordAction_Equip,
+	KeywordAction_Crew,
+	KeywordAction_Saddle,
+	KeywordAction_Station,
 }
 
-StackAbilityKind :: enum u16 {
-	Activated,
-	Triggered,
+AssignedCombatDamage :: struct {
+	source: ObjectIncarnationRef,
+	target: AssignedDamageRecipient,
+	amount: u32,
 }
 
-SeatDirection :: enum u16 {
-	Left,
-	Right,
+DamageTarget_Object :: struct {
+	_0: ObjectId,
+}
+DamageTarget_Player :: struct {
+	_0: PlayerId,
+}
+DamageTarget :: union {
+	DamageTarget_Object,
+	DamageTarget_Player,
 }
 
-TrackedSetId :: distinct u64
-
-ThisWayCause :: enum u16 {
-	OwnerLibraryShuffleSubject,
-	Exiled,
-	Sacrificed,
-	Destroyed,
-	Milled,
-	Discarded,
-	Tapped,
-	Returned,
-	Bounced,
-	PutIntoGraveyard,
-	ControlGained,
+StackResolutionEntryProvenance_Spell :: struct {
+	card_id: CardId,
+	ability: ^ResolvedAbility,
+	casting_variant: CastingVariant,
+	actual_mana_spent: u32,
+}
+StackResolutionEntryProvenance_ActivatedAbility :: struct {
+	source_id: ObjectId,
+	ability: ^ResolvedAbility,
+}
+StackResolutionEntryProvenance_TriggeredAbility :: struct {
+	_0: ^TriggeredAbilityProvenance,
+}
+StackResolutionEntryProvenance_KeywordAction :: struct {
+	action: KeywordAction,
+}
+StackResolutionEntryProvenance_CombatDamage :: struct {
+	sub_step: CombatDamageSubStep,
+	assignments: [dynamic]AssignedCombatDamage,
+}
+StackResolutionEntryProvenance :: union {
+	StackResolutionEntryProvenance_Spell,
+	StackResolutionEntryProvenance_ActivatedAbility,
+	StackResolutionEntryProvenance_TriggeredAbility,
+	StackResolutionEntryProvenance_KeywordAction,
+	StackResolutionEntryProvenance_CombatDamage,
 }
 
-ChoiceAssignmentSide :: enum u16 {
-	Objects,
-	PlayerForObject,
+EnterWithGrants :: distinct [dynamic]EnterWithGrant
+
+ChainReferentIntent :: enum u16 {
+	Silent,
+	Publishes,
 }
 
-KeywordKind :: enum u16 {
-	Flying,
-	FirstStrike,
-	DoubleStrike,
-	Trample,
-	TrampleOverPlaneswalkers,
-	Deathtouch,
-	Lifelink,
-	Vigilance,
-	Haste,
-	Reach,
-	Defender,
-	Menace,
-	Indestructible,
-	Hexproof,
-	Shroud,
-	Flash,
-	Fear,
-	Intimidate,
-	Skulk,
-	Shadow,
-	Horsemanship,
-	Wither,
-	Infect,
-	Afflict,
-	Prowess,
-	Undying,
-	Persist,
-	Cascade,
-	Exalted,
-	Flanking,
-	Evolve,
-	Extort,
-	Exploit,
-	Explore,
-	Ascend,
-	Storied,
-	StartYourEngines,
-	Dredge,
-	Modular,
-	Renown,
-	Fabricate,
-	Graft,
-	Annihilator,
-	Bushido,
-	Frenzy,
-	Tribute,
-	Soulbond,
-	Unearth,
-	Convoke,
-	Waterbend,
-	Delve,
-	Devoid,
-	Changeling,
-	Phasing,
-	Battlecry,
-	Decayed,
-	Unleash,
-	Riot,
-	Afterlife,
-	Enchant,
-	EtbCounter,
-	Reconfigure,
-	LivingWeapon,
-	JobSelect,
-	TotemArmor,
-	Bestow,
-	Embalm,
-	Eternalize,
-	Fading,
-	Vanishing,
-	Protection,
-	Kicker,
-	Cycling,
-	Typecycling,
-	Flashback,
-	Retrace,
-	Ward,
+EntryChoices :: distinct [dynamic]ChosenAttribute
+
+CoEntrants :: distinct ^[dynamic]ObjectIncarnationRef
+
+EntryOwnershipActor_Unrecorded :: struct {
+}
+EntryOwnershipActor_NoPlayer :: struct {
+}
+EntryOwnershipActor_Player :: struct {
+	_0: PlayerId,
+}
+EntryOwnershipActor :: union {
+	EntryOwnershipActor_Unrecorded,
+	EntryOwnershipActor_NoPlayer,
+	EntryOwnershipActor_Player,
+}
+
+DrawEventStage :: enum u16 {
+	Instruction,
+	Individual,
+}
+
+SearchFoundDisposition_Original :: struct {
+}
+SearchFoundDisposition_Modified :: struct {
+	_0: BoundSearchFoundDisposition,
+}
+SearchFoundDisposition :: union {
+	SearchFoundDisposition_Original,
+	SearchFoundDisposition_Modified,
+}
+
+CounterPlacement_Object :: struct {
+	actor: PlayerId,
+	object_id: ObjectId,
+	counter_type: CounterType,
+	cause: CounterCause,
+}
+CounterPlacement_Player :: struct {
+	actor: PlayerId,
+	player_id: PlayerId,
+	counter_kind: PlayerCounterKind,
+	cause: CounterCause,
+}
+CounterPlacement_Energy :: struct {
+	actor: PlayerId,
+	player_id: PlayerId,
+	cause: CounterCause,
+}
+CounterPlacement :: union {
+	CounterPlacement_Object,
+	CounterPlacement_Player,
+	CounterPlacement_Energy,
+}
+
+CounterMoveStage :: enum u16 {
+	Remove,
+	Add,
+}
+
+CounterCause :: enum u16 {
+	ResolvingEffect,
+	ReplacementOrPrevention,
+	Other,
+}
+
+TokenBatch :: struct {
+	owner: PlayerId,
+	spec: ^TokenSpec,
+	copy: ^CopyTokenSpec,
+	enter_tapped: EtbTapState,
+	count: u32,
+	redirected_to: Maybe(Zone),
+}
+
+UnitDecision :: struct {
+	pool_index: int,
+	color: ManaType,
+	disposition: UnitDisposition,
+}
+
+PlaneswalkCause :: enum u16 {
+	PlanarDie,
+	Instruction,
+	RulesProcess,
+}
+
+BoundSearchFoundDisposition :: struct {
+	destination: Zone,
+	source: ObjectIncarnationRef,
+	grant: Maybe(BoundSearchFoundGrant),
+	actor: LibraryInstructionActor,
+}
+
+PendingCombatDamageEntry :: struct {
+	context_: DamageContextSnapshot,
+	source_is_commander: bool,
+	target: DamageTarget,
+	lifelink_controller: Maybe(PlayerId),
+}
+
+PendingCombatLegProgress_Unstarted :: struct {
+	_0: ProposedEvent,
+}
+PendingCombatLegProgress_Settled :: struct {
+	_0: Maybe(ProposedEvent),
+}
+PendingCombatLegProgress_AwaitingChoice :: struct {
+	chooser: PlayerId,
+	parked: ^PendingCombatLegChoice,
+}
+PendingCombatLegProgress_AwaitingContinuation :: struct {
+	survivor: Maybe(ProposedEvent),
+}
+PendingCombatLegProgress :: union {
+	PendingCombatLegProgress_Unstarted,
+	PendingCombatLegProgress_Settled,
+	PendingCombatLegProgress_AwaitingChoice,
+	PendingCombatLegProgress_AwaitingContinuation,
+}
+
+PendingCombatLeg :: struct {
+	ctx: DamageContextSnapshot,
+	source_is_commander: bool,
+	target: TargetRef,
+	lifelink_controller: Maybe(PlayerId),
+	survivor: Maybe(ProposedEvent),
+}
+
+TokenProjection :: distinct GameObject
+
+TokenAttackRequest_Unspecified :: struct {
+}
+TokenAttackRequest_Named :: struct {
+	first_: PlayerId,
+	rest: [dynamic]PlayerId,
+}
+TokenAttackRequest :: union {
+	TokenAttackRequest_Unspecified,
+	TokenAttackRequest_Named,
+}
+
+CopiedDoubleFaces :: struct {
+	hidden: ^BackFaceData,
+	up: CopiedFaceUp,
+}
+
+TokenCharacteristics :: struct {
+	display_name: string,
+	power: Maybe(i32),
+	toughness: Maybe(i32),
+	loyalty: Maybe(u32),
+	core_types: [dynamic]CoreType,
+	subtypes: [dynamic]string,
+	supertypes: [dynamic]Supertype,
+	colors: [dynamic]ManaColor,
+	keywords: [dynamic]Keyword,
+}
+
+TokenHostRequest_NotRequested :: struct {
+}
+TokenHostRequest_Bound :: struct {
+	_0: AttachTarget,
+}
+TokenHostRequest_Unbound :: struct {
+}
+TokenHostRequest :: union {
+	TokenHostRequest_NotRequested,
+	TokenHostRequest_Bound,
+	TokenHostRequest_Unbound,
+}
+
+ProtectionColorlessness :: enum u16 {
+	Colorless,
+	Monocolored,
+	Multicolored,
+}
+
+ProtectionPlayerScope :: enum u16 {
+	Opponent,
+	You,
+}
+
+EntryKind_Play :: struct {
+	action: GameAction,
+	node: int,
+	locus: PlayLocus,
+}
+EntryKind_Resolution :: struct {
+	node: int,
+}
+EntryKind_Answer :: struct {
+	action: GameAction,
+	optional: AnswerOptionality,
+	asked_by: Maybe(int),
+	cost_move: Maybe(CostMove),
+	point: Maybe(ChoicePoint),
+}
+EntryKind_Remembered :: struct {
+	asked_by: Maybe(int),
+}
+EntryKind :: union {
+	EntryKind_Play,
+	EntryKind_Resolution,
+	EntryKind_Answer,
+	EntryKind_Remembered,
+}
+
+KeywordActivation :: enum u16 {
 	Equip,
-	Landwalk,
-	Rampage,
-	Absorb,
 	Crew,
-	Partner,
-	Companion,
-	Doctor,
-	Background,
-	CommanderNinjutsu,
-	Ninjutsu,
-	Sneak,
-	Mutate,
-	Escape,
-	Morph,
-	Megamorph,
-	Madness,
-	Disguise,
-	Mayhem,
-	Suspend,
-	Blitz,
-	Disturb,
-	UnearthAlt,
-	Foretell,
-	Plot,
-	Gift,
-	Outlast,
-	Dash,
-	Craft,
-	Harmonize,
-	Warp,
-	Devour,
-	Offspring,
-	Splice,
-	Bargain,
-	Sunburst,
-	Champion,
-	Training,
-	Assist,
-	Augment,
-	Aftermath,
-	JumpStart,
-	Cipher,
-	Transmute,
-	Transfigure,
-	Cleave,
-	Undaunted,
 	Station,
-	Paradigm,
-	Miracle,
-	Replicate,
-	Awaken,
-	ForMirrodin,
-	MoreThanMeetsTheEye,
-	Freerunning,
-	Increment,
-	Firebending,
-	Specialize,
-	Offering,
-	Escalate,
-	Recover,
-	Fuse,
-	BandsWithOther,
-	Unknown,
+	Saddle,
+	Ninjutsu,
 }
 
-ProtectionColorSet :: enum u16 {
-	OutsideCommanderColorIdentity,
-	AmongPermanentsYouControl,
+PlayLocus_Cast :: struct {
+	_0: ObjectId,
+}
+PlayLocus_Activate :: struct {
+	_0: ObjectId,
+	_1: int,
+}
+PlayLocus_Mana :: struct {
+	_0: ObjectId,
+	_1: Maybe(int),
+}
+PlayLocus_Unread :: struct {
+}
+PlayLocus :: union {
+	PlayLocus_Cast,
+	PlayLocus_Activate,
+	PlayLocus_Mana,
+	PlayLocus_Unread,
 }
 
-CardSelectionMode :: enum u16 {
-	Chosen,
-	Random,
+NamingCause :: enum u16 {
+	Repeat,
+	TriggerTop,
+	Restored,
+	LegalNow,
+	MandatoryRecurrence,
 }
 
-PlayerCounterKind :: enum u16 {
-	Poison,
-	Experience,
-	Rad,
-	Ticket,
+SpanSource_Window :: struct {
+}
+SpanSource_Carried :: struct {
+	_0: int,
+}
+SpanSource :: union {
+	SpanSource_Window,
+	SpanSource_Carried,
+}
+
+Reversal_Process :: struct {
+}
+Reversal_ManaSource :: struct {
+	_0: ObjectId,
+}
+Reversal_ManaAbility :: struct {
+	_0: ObjectId,
+	_1: int,
+}
+Reversal :: union {
+	Reversal_Process,
+	Reversal_ManaSource,
+	Reversal_ManaAbility,
+}
+
+Occurrence :: struct {
+	source_name: string,
+	description: Maybe(string),
+}
+
+PrecastShortcutReplayStep :: struct {
+	actor: PlayerId,
+	action: GameAction,
+}
+
+PrecastShortcutBreakpoint :: struct {
+	id: u64,
+	owner: PlayerId,
+	prefix_length: int,
+	expected_priority_holder: PlayerId,
+	expected_active_player: PlayerId,
+	expected_priority_passes: [dynamic]PlayerId,
+	fingerprint: u64,
+}
+
+DefilerPaymentWitness :: struct {
+	player: PlayerId,
+	offered_life_cost: u32,
+	mana_reduction: ManaCost,
+	pending_cast: PendingCast,
+	candidate: CandidateAction,
+}
+
+OptionalAdditionalCostWitness :: struct {
+	player: PlayerId,
+	cost: AdditionalCost,
+	times_kicked: u32,
+	origin: AdditionalCostOrigin,
+	gift_kind: Maybe(GiftKind),
+	pending_cast: PendingCast,
+	candidate: CandidateAction,
+	branch: OptionalAdditionalCostBranch,
+	materialized_cost: AbilityCost,
+	path: OptionalAdditionalCostPath,
+}
+
+NumberQuality_Parity :: struct {
+	_0: Parity,
+}
+NumberQuality_Prime :: struct {
+}
+NumberQuality :: union {
+	NumberQuality_Parity,
+	NumberQuality_Prime,
+}
+
+AttackedYouScope :: enum u16 {
+	AnyPlayer,
+	AttackedPlayer,
+}
+
+UnlessPayScaling_Flat :: struct {
+}
+UnlessPayScaling_PerAffectedCreature :: struct {
+}
+UnlessPayScaling_PerQuantityRef :: struct {
+	quantity: QuantityRef,
+}
+UnlessPayScaling_PerAffectedAndQuantityRef :: struct {
+	quantity: QuantityRef,
+}
+UnlessPayScaling_PerAffectedWithRef :: struct {
+	quantity: QuantityRef,
+}
+UnlessPayScaling :: union {
+	UnlessPayScaling_Flat,
+	UnlessPayScaling_PerAffectedCreature,
+	UnlessPayScaling_PerQuantityRef,
+	UnlessPayScaling_PerAffectedAndQuantityRef,
+	UnlessPayScaling_PerAffectedWithRef,
+}
+
+CommanderOwnership :: enum u16 {
+	Own,
+	Any,
+}
+
+ObjectScope_Source :: struct {
+}
+ObjectScope_Target :: struct {
+}
+ObjectScope_Recipient :: struct {
+}
+ObjectScope_EventSource :: struct {
+}
+ObjectScope_CostPaidObject :: struct {
+}
+ObjectScope_Anaphoric :: struct {
+}
+ObjectScope_Demonstrative :: struct {
+}
+ObjectScope_AmassedArmy :: struct {
+}
+ObjectScope_EventTarget :: struct {
+}
+ObjectScope_OtherRevealedCard :: struct {
+}
+ObjectScope_OwnedLinkedExileCard :: struct {
+}
+ObjectScope_BatchSource :: struct {
+}
+ObjectScope_ChainRootTarget :: struct {
+}
+ObjectScope_GrantingObject :: struct {
+}
+ObjectScope_SpecificObject :: struct {
+	object: ObjectIncarnationRef,
+}
+ObjectScope :: union {
+	ObjectScope_Source,
+	ObjectScope_Target,
+	ObjectScope_Recipient,
+	ObjectScope_EventSource,
+	ObjectScope_CostPaidObject,
+	ObjectScope_Anaphoric,
+	ObjectScope_Demonstrative,
+	ObjectScope_AmassedArmy,
+	ObjectScope_EventTarget,
+	ObjectScope_OtherRevealedCard,
+	ObjectScope_OwnedLinkedExileCard,
+	ObjectScope_BatchSource,
+	ObjectScope_ChainRootTarget,
+	ObjectScope_GrantingObject,
+	ObjectScope_SpecificObject,
+}
+
+AdditionalCostPaymentSource :: enum u16 {
+	Any,
+	Kicker,
+	NonKicker,
+}
+
+SpentColor_ColorWord :: struct {
+	color: ManaColor,
+}
+SpentColor_ManaSymbol :: struct {
+	color: ManaColor,
+}
+SpentColor :: union {
+	SpentColor_ColorWord,
+	SpentColor_ManaSymbol,
+}
+
+RenownSubject :: enum u16 {
+	Source,
+	EventSubject,
+}
+
+AttackersDeclaredCountSubject_CurrentCombat :: struct {
+	exclude_source: SourceExclusion,
+}
+AttackersDeclaredCountSubject_Controller :: struct {
+	scope: ControllerRef,
+	filter: Maybe(TargetFilter),
+}
+AttackersDeclaredCountSubject_AttackTarget :: struct {
+	controller: ControllerRef,
+	attacked: AttackTargetFilter,
+	filter: Maybe(TargetFilter),
+}
+AttackersDeclaredCountSubject :: union {
+	AttackersDeclaredCountSubject_CurrentCombat,
+	AttackersDeclaredCountSubject_Controller,
+	AttackersDeclaredCountSubject_AttackTarget,
+}
+
+LookGrant_SourceController :: struct {
+}
+LookGrant_Player :: struct {
+	player: PlayerId,
+}
+LookGrant :: union {
+	LookGrant_SourceController,
+	LookGrant_Player,
+}
+
+TurnGate_None :: struct {
+}
+TurnGate_AfterCreationTurn :: struct {
+}
+TurnGate_After :: struct {
+	_0: u32,
+}
+TurnGate :: union {
+	TurnGate_None,
+	TurnGate_AfterCreationTurn,
+	TurnGate_After,
+}
+
+DelayedTriggerPlayerBinding_Controller :: struct {
+}
+DelayedTriggerPlayerBinding_ParentTargetOwner :: struct {
+}
+DelayedTriggerPlayerBinding_ChosenPlayer :: struct {
+	index: u8,
+}
+DelayedTriggerPlayerBinding :: union {
+	DelayedTriggerPlayerBinding_Controller,
+	DelayedTriggerPlayerBinding_ParentTargetOwner,
+	DelayedTriggerPlayerBinding_ChosenPlayer,
+}
+
+WheneverEventExpiry_EndOfTurn :: struct {
+}
+WheneverEventExpiry_UntilControllersNextTurn :: struct {
+	after: TurnGate,
+}
+WheneverEventExpiry :: union {
+	WheneverEventExpiry_EndOfTurn,
+	WheneverEventExpiry_UntilControllersNextTurn,
+}
+
+DelayedTriggerLifetime :: enum u16 {
+	ThisTurn,
+	Persistent,
+	Reflexive,
+}
+
+AttachmentKind :: enum u16 {
+	Aura,
+	Equipment,
+}
+
+PhaseGroup :: enum u16 {
+	Beginning,
+	PrecombatMain,
+	Combat,
+	PostcombatMain,
+	Ending,
 }
 
 FilterProp_Token :: struct {
@@ -8163,152 +20922,554 @@ FilterProp :: union {
 	FilterProp_Other,
 }
 
-SacrificeCost :: struct {
-	target: TargetFilter,
-	requirement: SacrificeRequirement,
+PlayerRelation :: enum u16 {
+	Controller,
+	Opponent,
+	All,
 }
 
-DiscardSelfScope :: enum u16 {
-	FromHand,
-	SourceCard,
+AttackSubject :: enum u16 {
+	You,
+	Source,
+	EventAttackers,
 }
 
-AggregateFunction :: enum u16 {
-	Max,
-	Min,
-	Sum,
+CombatHistoryScope :: enum u16 {
+	ThisTurn,
+	ThisCombat,
 }
 
-ObjectProperty_Power :: struct {
-}
-ObjectProperty_Toughness :: struct {
-}
-ObjectProperty_ManaValue :: struct {
-}
-ObjectProperty_ManaSymbolCount :: struct {
-	_0: ManaColor,
-}
-ObjectProperty :: union {
-	ObjectProperty_Power,
-	ObjectProperty_Toughness,
-	ObjectProperty_ManaValue,
-	ObjectProperty_ManaSymbolCount,
+PossessionAxis :: enum u16 {
+	Controller,
+	Owner,
 }
 
-TapCreaturesRequirement_Count :: struct {
+CustomFormatId :: distinct u16
+
+ChallengeDeck :: enum u16 {
+	CybermanHorde,
+	DndHorde,
+	ZombiesHorde,
+	SliversHorde,
+	HumansGodzillaHorde,
+	SauronHorde,
+	SarumanHorde,
+	LotrTwoTowersHorde,
+	TurtleTeamUpHorde,
+}
+
+WaveTermination_FixedCount :: struct {
+	_0: u32,
+}
+WaveTermination_UntilNonToken :: struct {
+	count: WaveCount,
+}
+WaveTermination_UntilRarityAtLeast :: struct {
+	_0: Rarity,
+}
+WaveTermination :: union {
+	WaveTermination_FixedCount,
+	WaveTermination_UntilNonToken,
+	WaveTermination_UntilRarityAtLeast,
+}
+
+HordeLegendaryDeath :: enum u16 {
+	Normal,
+	EtbThenPhaseOut,
+}
+
+HordePostCombatActivation :: enum u16 {
+	None,
+	OncePerPermanent,
+}
+
+SurvivorDeckFormat :: enum u16 {
+	Constructed,
+	Commander,
+}
+
+BossStages :: struct {
+	stage_sizes: [dynamic]u8,
+	life_base: i32,
+	life_at_four_survivors: i32,
+}
+
+StructuralRules :: struct {
+	starting_life: i32,
+	min_players: u8,
+	max_players: u8,
+	deck_size: DeckSizeRule,
+	singleton: bool,
+	command_zone_mode: CommandZoneMode,
+	range_of_influence: ^RangeOfInfluenceConfig,
+	team_based: bool,
+	sideboard_policy: SideboardPolicy,
+	default_deck_copy_limit: DeckCopyLimit,
+	poison_counter_threshold: u8,
+}
+
+LegalityRules :: struct {
+	legal_sets: Maybe([dynamic]SetCode),
+	legal_cards: [dynamic]string,
+	banned: [dynamic]string,
+	restricted: [dynamic]string,
+	legacy: LegacyRuleSet,
+}
+
+DeckPrinting :: struct {
+	section: DeckSection,
+	name: string,
 	count: u32,
-}
-TapCreaturesRequirement_Aggregate :: struct {
-	stat: TapCreaturesAggregateStat,
-	comparator: Comparator,
-	value: i32,
-	collective: bool,
-}
-TapCreaturesRequirement :: union {
-	TapCreaturesRequirement_Count,
-	TapCreaturesRequirement_Aggregate,
+	printing: CardPrinting,
 }
 
-CounterCostSelection :: enum u16 {
-	SingleObject,
-	AmongObjects,
+DeckFaceLookupName :: struct {
+	section: DeckSection,
+	face_name: string,
+	oracle_id: Maybe(string),
+	name: string,
 }
 
-SharedQuality :: enum u16 {
-	Name,
-	ManaValue,
-	Power,
-	Toughness,
-	TotalPowerToughness,
-	CreatureType,
-	Color,
-	CardType,
-	LandType,
-	PermanentType,
+TriggerGrantInstanceRef :: distinct u64
+
+LibraryKnowledgeStamp :: struct {
+	library_owner: PlayerId,
+	boundary_generation: u64,
 }
 
-BeholdCostAction :: enum u16 {
-	ChooseOrReveal,
-	ExileChosen,
+ResolutionFrame_AbilityContinuation :: struct {
+	_0: AbilityContinuationFrame,
+}
+ResolutionFrame_RepeatFor :: struct {
+	_0: PendingRepeatIteration,
+}
+ResolutionFrame_RepeatUntil :: struct {
+	_0: PendingRepeatUntil,
+}
+ResolutionFrame_RepeatedOptionalPayment :: struct {
+	_0: RepeatedOptionalPaymentFrame,
+}
+ResolutionFrame_ChangeZone :: struct {
+	_0: ^ChangeZoneFrame,
+}
+ResolutionFrame_BatchDelivery :: struct {
+	_0: ^PendingBatchDeliveries,
+}
+ResolutionFrame_CounterMoves :: struct {
+	_0: PendingCounterMoveQueue,
+}
+ResolutionFrame_CounterRemovals :: struct {
+	_0: PendingCounterRemovalQueue,
+}
+ResolutionFrame_CounterAdditions :: struct {
+	_0: PendingCounterAdditionQueue,
+}
+ResolutionFrame_CopyToken :: struct {
+	_0: PendingCopyTokenResolution,
+}
+ResolutionFrame_DebugCardEntries :: struct {
+	_0: ^PendingDebugCardEntries,
+}
+ResolutionFrame_EachPlayerCopyChosen :: struct {
+	_0: PendingEachPlayerCopyChosen,
+}
+ResolutionFrame_ChooseOneOf :: struct {
+	_0: PendingChooseOneOf,
+}
+ResolutionFrame_VoteBallot :: struct {
+	_0: PendingVoteBallotIteration,
+}
+ResolutionFrame_PerPlayerZoneChoice :: struct {
+	_0: PendingPerPlayerZoneChoice,
+}
+ResolutionFrame_PerCategoryZoneChoice :: struct {
+	_0: PerCategoryZoneChoiceFrame,
+}
+ResolutionFrame_OptionalEffect :: struct {
+	_0: OptionalEffectFrame,
+}
+ResolutionFrame_CoinFlip :: struct {
+	_0: PendingCoinFlip,
+}
+ResolutionFrame_DieRoll :: struct {
+	_0: ^PendingDieRoll,
+}
+ResolutionFrame_Proliferate :: struct {
+	_0: PendingProliferateActions,
+}
+ResolutionFrame_MultiDraw :: struct {
+	_0: MultiDrawFrame,
+}
+ResolutionFrame_Discard :: struct {
+	_0: ^DiscardFrame,
+}
+ResolutionFrame_ConniveReentry :: struct {
+	_0: PendingConniveReentry,
+}
+ResolutionFrame_LifeTotalAssignment :: struct {
+	_0: PendingLifeTotalAssignment,
+}
+ResolutionFrame_SpellResolution :: struct {
+	_0: PendingSpellResolution,
+}
+ResolutionFrame_MutateMerge :: struct {
+	_0: PendingMutateMerge,
+}
+ResolutionFrame_CipherEncode :: struct {
+	_0: PendingCipherEncode,
+}
+ResolutionFrame_EntryAttackSeat :: struct {
+	_0: PendingEntryAttackSeat,
+}
+ResolutionFrame_PostReplacement :: struct {
+	_0: PostReplacementDrainStack,
+}
+ResolutionFrame :: union {
+	ResolutionFrame_AbilityContinuation,
+	ResolutionFrame_RepeatFor,
+	ResolutionFrame_RepeatUntil,
+	ResolutionFrame_RepeatedOptionalPayment,
+	ResolutionFrame_ChangeZone,
+	ResolutionFrame_BatchDelivery,
+	ResolutionFrame_CounterMoves,
+	ResolutionFrame_CounterRemovals,
+	ResolutionFrame_CounterAdditions,
+	ResolutionFrame_CopyToken,
+	ResolutionFrame_DebugCardEntries,
+	ResolutionFrame_EachPlayerCopyChosen,
+	ResolutionFrame_ChooseOneOf,
+	ResolutionFrame_VoteBallot,
+	ResolutionFrame_PerPlayerZoneChoice,
+	ResolutionFrame_PerCategoryZoneChoice,
+	ResolutionFrame_OptionalEffect,
+	ResolutionFrame_CoinFlip,
+	ResolutionFrame_DieRoll,
+	ResolutionFrame_Proliferate,
+	ResolutionFrame_MultiDraw,
+	ResolutionFrame_Discard,
+	ResolutionFrame_ConniveReentry,
+	ResolutionFrame_LifeTotalAssignment,
+	ResolutionFrame_SpellResolution,
+	ResolutionFrame_MutateMerge,
+	ResolutionFrame_CipherEncode,
+	ResolutionFrame_EntryAttackSeat,
+	ResolutionFrame_PostReplacement,
 }
 
-ChoiceType_CreatureType :: struct {
-	options: [dynamic]string,
+GameLogEntry :: struct {
+	seq: u32,
+	game_number: u8,
+	turn: u32,
+	phase: Phase,
+	category: LogCategory,
+	segments: [dynamic]LogSegment,
+	presentation: LogPresentation,
 }
-ChoiceType_Color :: struct {
-	excluded: [dynamic]ManaColor,
+
+PendingSacrificeMove_Sacrifice :: struct {
+	object_id: ObjectId,
+	player_id: PlayerId,
+	zone_event: ProposedEvent,
 }
-ChoiceType_OddOrEven :: struct {
+PendingSacrificeMove_InnerPrevented :: struct {
+	object_id: ObjectId,
+	player_id: PlayerId,
 }
-ChoiceType_BasicLandType :: struct {
+PendingSacrificeMove_DirectMove :: struct {
+	zone_event: ProposedEvent,
 }
-ChoiceType_CardType :: struct {
-	options: [dynamic]CoreType,
+PendingSacrificeMove :: union {
+	PendingSacrificeMove_Sacrifice,
+	PendingSacrificeMove_InnerPrevented,
+	PendingSacrificeMove_DirectMove,
 }
-ChoiceType_CardName :: struct {
-	options: [dynamic]string,
-	distinctness: NameDistinctness,
+
+PostReplacementDrain :: struct {
+	status: DrainStatus,
+	source: Maybe(ObjectId),
+	applied: [dynamic]AppliedReplacementKey,
+	event_source: Maybe(ObjectId),
+	event_target: Maybe(TargetRef),
+	event_amount: Maybe(u32),
+	controller: Maybe(PlayerId),
+	parked_entrants: [dynamic]ObjectIncarnationRef,
 }
-ChoiceType_NumberRange :: struct {
-	min: u32,
-	max: Maybe(u32),
-	distinctness: NumberDistinctness,
+
+PlayerScopeUnlessAction :: enum u16 {
+	Sacrifice,
+	Discard,
 }
-ChoiceType_Labeled :: struct {
-	options: [dynamic]string,
+
+SimultaneousUnlessCollection :: struct {
+	current_player: PlayerId,
+	next_instance: u32,
+	remaining_players: [dynamic]PlayerId,
+	answers: [dynamic]SimultaneousUnlessSeatAnswer,
+	hidden_discards: [dynamic]Tuple2(PlayerId, ObjectIncarnationRef),
 }
-ChoiceType_LandType :: struct {
+
+SimultaneousUnlessDelivery :: struct {
+	discards: [dynamic]Tuple2(PlayerId, ObjectIncarnationRef),
+	unpaid: [dynamic]PlayerId,
+	sacrifices: [dynamic]Tuple2(PlayerId, ObjectIncarnationRef),
+	held_events: [dynamic]GameEvent,
 }
-ChoiceType_CardPredicate :: struct {
-	options: [dynamic]CardPredicateChoice,
-}
-ChoiceType_CardPredicateGuess :: struct {
-	options: [dynamic]CardPredicateChoice,
-}
-ChoiceType_Opponent :: struct {
-	restriction: ^PlayerFilter,
-	distinctness: PlayerChoiceDistinctness,
-}
-ChoiceType_Player :: struct {
-	distinctness: PlayerChoiceDistinctness,
-}
-ChoiceType_TwoColors :: struct {
-}
-ChoiceType_Word :: struct {
-}
-ChoiceType_Artist :: struct {
-}
-ChoiceType_Keyword :: struct {
-	options: [dynamic]Keyword,
+
+PreparedScopedLibrarySearchChoice :: struct {
+	player: PlayerId,
+	library_owner: Maybe(PlayerId),
+	candidates: [dynamic]ObjectIncarnationRef,
+	offered_count: Maybe(int),
+	announced_selection: Maybe([dynamic]ObjectIncarnationRef),
+	filter: TargetFilter,
 	count: int,
-}
-ChoiceType_CounterKind :: struct {
-	options: [dynamic]CounterType,
-}
-ChoiceType :: union {
-	ChoiceType_CreatureType,
-	ChoiceType_Color,
-	ChoiceType_OddOrEven,
-	ChoiceType_BasicLandType,
-	ChoiceType_CardType,
-	ChoiceType_CardName,
-	ChoiceType_NumberRange,
-	ChoiceType_Labeled,
-	ChoiceType_LandType,
-	ChoiceType_CardPredicate,
-	ChoiceType_CardPredicateGuess,
-	ChoiceType_Opponent,
-	ChoiceType_Player,
-	ChoiceType_TwoColors,
-	ChoiceType_Word,
-	ChoiceType_Artist,
-	ChoiceType_Keyword,
-	ChoiceType_CounterKind,
+	reveal: bool,
+	up_to: bool,
+	allows_partial_find: bool,
+	constraint: SearchSelectionConstraint,
+	ordering_hint: SearchOrderingHint,
 }
 
-NinjutsuVariant :: enum u16 {
-	Ninjutsu,
-	CommanderNinjutsu,
+FrozenScopedSearchFoundDisposition :: struct {
+	searcher: PlayerId,
+	identity: ObjectIncarnationRef,
+	disposition: SearchFoundDisposition,
+}
+
+DecisionKind :: enum u16 {
+	TriggerOrdering,
+	LoopChoice,
+}
+
+CardRules :: struct {
+	layout: CardLayout,
+	meld_with: Maybe(string),
+}
+
+FaceIndex :: distinct map[string]FaceSlot
+
+LayoutKind :: enum u16 {
+	Single,
+	Split,
+	Flip,
+	Transform,
+	Meld,
+	Adventure,
+	Modal,
+	Omen,
+	Prepare,
+}
+
+LegalityFormat :: enum u16 {
+	Standard,
+	Commander,
+	Modern,
+	Premodern,
+	Pioneer,
+	Legacy,
+	Vintage,
+	Pauper,
+	Historic,
+	Brawl,
+	StandardBrawl,
+	Timeless,
+	PauperCommander,
+	DuelCommander,
+	Oathbreaker,
+}
+
+LegalityStatus :: enum u16 {
+	Legal,
+	NotLegal,
+	Banned,
+	Restricted,
+}
+
+BracketLists :: struct {
+	version: string,
+	lists: map[BracketCardClass]LoadedList,
+}
+
+CountScope :: enum u16 {
+	Controller,
+	Owner,
+	ScopedPlayer,
+	SourceChosenPlayer,
+	All,
+	Opponents,
+}
+
+NameStickerSet_ThatSticker :: struct {
+}
+NameStickerSet_OnObject :: struct {
+	scope: ObjectScope,
+}
+NameStickerSet :: union {
+	NameStickerSet_ThatSticker,
+	NameStickerSet_OnObject,
+}
+
+LetterQuery_UniqueVowels :: struct {
+}
+LetterQuery_Letter :: struct {
+	letter: rune,
+}
+LetterQuery :: union {
+	LetterQuery_UniqueVowels,
+	LetterQuery_Letter,
+}
+
+PropertyAggregate :: struct {
+	function: AggregateFunction,
+	property: ObjectProperty,
+	source: CardTypeSetSource,
+}
+
+ZoneRef :: enum u16 {
+	Graveyard,
+	Exile,
+	Library,
+	Hand,
+}
+
+CountBinding :: enum u16 {
+	Explicit,
+	Anaphoric,
+}
+
+DevotionColors_Fixed :: struct {
+	_0: [dynamic]ManaColor,
+}
+DevotionColors_ChosenColor :: struct {
+}
+DevotionColors :: union {
+	DevotionColors_Fixed,
+	DevotionColors_ChosenColor,
+}
+
+CardTypeSetSource_Zone :: struct {
+	zone: ZoneRef,
+	scope: CountScope,
+}
+CardTypeSetSource_ExiledBySource :: struct {
+}
+CardTypeSetSource_Objects :: struct {
+	filter: TargetFilter,
+}
+CardTypeSetSource_TrackedSet :: struct {
+	set: TrackedAnaphorSource,
+	caused_by: Maybe(ThisWayCause),
+	filter: Maybe(TargetFilter),
+}
+CardTypeSetSource_TurnJournal :: struct {
+	journal: TurnJournalKind,
+	scope: CountScope,
+	filter: Maybe(TargetFilter),
+}
+CardTypeSetSource_TargetedObjects :: struct {
+	slot: Maybe(int),
+}
+CardTypeSetSource_AnyOf :: struct {
+	sources: UnionSources,
+}
+CardTypeSetSource :: union {
+	CardTypeSetSource_Zone,
+	CardTypeSetSource_ExiledBySource,
+	CardTypeSetSource_Objects,
+	CardTypeSetSource_TrackedSet,
+	CardTypeSetSource_TurnJournal,
+	CardTypeSetSource_TargetedObjects,
+	CardTypeSetSource_AnyOf,
+}
+
+SubtypeExclusion :: enum u16 {
+	None,
+	CreatureTypes,
+}
+
+DamageChannel :: enum u16 {
+	Total,
+	Excess,
+}
+
+TurnWindow :: enum u16 {
+	ThisTurn,
+	LastTurn,
+}
+
+DamageGroupKey :: enum u16 {
+	SourceId,
+	Target,
+}
+
+CyclingHistoryWindow :: enum u16 {
+	ThisTurn,
+	ThisGame,
+}
+
+CastManaObjectScope :: enum u16 {
+	SelfObject,
+	TriggeringSpell,
+	AbilityTarget,
+}
+
+CastManaSpentMetric_Total :: struct {
+}
+CastManaSpentMetric_DistinctColors :: struct {
+}
+CastManaSpentMetric_OfColor :: struct {
+	color: ManaColor,
+}
+CastManaSpentMetric_FromSource :: struct {
+	source_filter: TargetFilter,
+}
+CastManaSpentMetric :: union {
+	CastManaSpentMetric_Total,
+	CastManaSpentMetric_DistinctColors,
+	CastManaSpentMetric_OfColor,
+	CastManaSpentMetric_FromSource,
+}
+
+TriggerCause_Any :: struct {
+}
+TriggerCause_EntersBattlefield :: struct {
+	core_types: [dynamic]CoreType,
+	entrant: CausingObject,
+}
+TriggerCause_CreatureAttacking :: struct {
+}
+TriggerCause_CreatureDying :: struct {
+}
+TriggerCause_ControlledCreature :: struct {
+	event: ControlledCreatureEvent,
+}
+TriggerCause_ControllerCastOrCopiedSpell :: struct {
+	core_types: [dynamic]CoreType,
+}
+TriggerCause_RoomEntered :: struct {
+}
+TriggerCause_PlayerAction :: struct {
+	player: PlayerRelation,
+	action: PlayerCauseAction,
+}
+TriggerCause_TurnedFaceUp :: struct {
+}
+TriggerCause_BattlefieldTransition :: struct {
+	enter: bool,
+	leave: bool,
+	qualifiers: [dynamic]ZoneChangeQualifier,
+}
+TriggerCause :: union {
+	TriggerCause_Any,
+	TriggerCause_EntersBattlefield,
+	TriggerCause_CreatureAttacking,
+	TriggerCause_CreatureDying,
+	TriggerCause_ControlledCreature,
+	TriggerCause_ControllerCastOrCopiedSpell,
+	TriggerCause_RoomEntered,
+	TriggerCause_PlayerAction,
+	TriggerCause_TurnedFaceUp,
+	TriggerCause_BattlefieldTransition,
 }
 
 SpeedDelta :: enum u16 {
@@ -8320,284 +21481,6 @@ DamageSource :: enum u16 {
 	Target,
 	TriggeringSource,
 	EachTarget,
-}
-
-ExcessRecipient_TargetController :: struct {
-	source_keyword: Maybe(KeywordKind),
-}
-ExcessRecipient :: union {
-	ExcessRecipient_TargetController,
-}
-
-DamageContextSnapshot :: struct {
-	source_id: ObjectId,
-	source_incarnation: Maybe(u64),
-	controller: PlayerId,
-	source_is_creature: bool,
-	has_deathtouch: bool,
-	has_lifelink: bool,
-	has_wither: bool,
-	has_infect: bool,
-	combat_damage_poison: u32,
-	excess_recipient: Maybe(ExcessRecipient),
-	lifelink_bonus: u32,
-}
-
-TargetRef_Object :: struct {
-	_0: ObjectId,
-}
-TargetRef_Player :: struct {
-	_0: PlayerId,
-}
-TargetRef :: union {
-	TargetRef_Object,
-	TargetRef_Player,
-}
-
-EffectKind :: enum u16 {
-	StartYourEngines,
-	ChangeSpeed,
-	DealDamage,
-	ApplyPostReplacementDamage,
-	ResumeDamageBatch,
-	EachDealsDamageEqualToPower,
-	EachSourceDealsDamage,
-	Draw,
-	Pump,
-	PairWith,
-	Destroy,
-	Counter,
-	CounterAll,
-	Token,
-	GainLife,
-	LoseLife,
-	Tap,
-	Untap,
-	RemoveCounter,
-	Sacrifice,
-	DiscardCard,
-	Mill,
-	Scry,
-	PumpAll,
-	DamageAll,
-	DamageEachPlayer,
-	DestroyAll,
-	TapAll,
-	UntapAll,
-	ChangeZone,
-	ChangeZoneAll,
-	Dig,
-	GainControl,
-	GainControlAll,
-	ControlNextTurn,
-	Attach,
-	AttachAll,
-	UnattachAll,
-	Surveil,
-	Fight,
-	Bounce,
-	BounceAll,
-	Explore,
-	ExploreAll,
-	Investigate,
-	Tribute,
-	TimeTravel,
-	BecomeMonarch,
-	ChoosePermanent,
-	NoOp,
-	Proliferate,
-	ProliferateTarget,
-	Populate,
-	Clash,
-	ExileTopCardContest,
-	OpponentGuess,
-	Behold,
-	EndTheTurn,
-	EndCombatPhase,
-	Vote,
-	SeparateIntoPiles,
-	SwitchPT,
-	CopySpell,
-	EpicCopy,
-	CastCopyOfCard,
-	CopyTokenOf,
-	CreateTokenCopyFromPool,
-	Myriad,
-	Encore,
-	CombineHost,
-	ChooseAugmentAndCombineWithHost,
-	Meld,
-	ExileHaunting,
-	HideawayConceal,
-	BecomeCopy,
-	GainActivatedAbilitiesOfTarget,
-	ChooseCard,
-	PutCounter,
-	PutCounterAll,
-	MultiplyCounter,
-	DoublePT,
-	DoublePTAll,
-	MoveCounters,
-	ReproduceEventCounters,
-	Animate,
-	ReturnAsAura,
-	RegisterBending,
-	GenericEffect,
-	Cleanup,
-	Mana,
-	Discard,
-	Shuffle,
-	SearchLibrary,
-	SearchOutsideGame,
-	OpenBoosterPack,
-	ExileTop,
-	TargetOnly,
-	Choose,
-	ChooseDamageSource,
-	Suspect,
-	Unsuspect,
-	Connive,
-	PhaseOut,
-	PhaseIn,
-	ForceBlock,
-	ForceAttack,
-	SolveCase,
-	BecomePrepared,
-	BecomeUnprepared,
-	BecomeSaddled,
-	SetClassLevel,
-	CreateDelayedTrigger,
-	AddTargetReplacement,
-	AddRestriction,
-	ReduceNextSpellCost,
-	GrantNextSpellAbility,
-	AddPendingETBCounters,
-	AddPendingEntersModifications,
-	CreateEmblem,
-	CreateBoon,
-	PayCost,
-	CastFromZone,
-	FreeCastFromZones,
-	ExileResolvingSpellInsteadOfGraveyard,
-	PreventDamage,
-	CreateDamageReplacement,
-	CreateDrawReplacement,
-	CreatePlaneswalkReplacement,
-	Regenerate,
-	RemoveAllDamage,
-	LoseTheGame,
-	WinTheGame,
-	RollDie,
-	FlipCoins,
-	RingTemptsYou,
-	VentureIntoDungeon,
-	VentureInto,
-	TakeTheInitiative,
-	ArrangePlanarDeckTop,
-	Planeswalk,
-	AbandonScheme,
-	ChaosEnsues,
-	RedistributeLifeTotals,
-	ReverseTurnOrder,
-	OpenAttractions,
-	RollToVisitAttractions,
-	AssembleContraptions,
-	AssembleContraptionsFromRollDifference,
-	CrankContraptions,
-	ReassembleContraption,
-	AssembleContraptionOnSprocket,
-	ReassembleContraptionOnSprocket,
-	PutSticker,
-	ApplySticker,
-	ProcessRadCounters,
-	GrantCastingPermission,
-	ChooseFromZone,
-	RememberCard,
-	NoteManaSpent,
-	NoteNumber,
-	ChooseObjectsIntoTrackedSet,
-	ChooseCounterKind,
-	PutChosenCounter,
-	ChooseAndSacrificeRest,
-	EachPlayerCopyChosen,
-	Exploit,
-	GainEnergy,
-	GivePlayerCounter,
-	LoseAllPlayerCounters,
-	ExileFromTopUntil,
-	ExileFaceDownPile,
-	RevealUntil,
-	Discover,
-	PhysicalContest,
-	Heist,
-	HeistExile,
-	Cascade,
-	Ripple,
-	MiracleCast,
-	MadnessCast,
-	PutAtLibraryPosition,
-	ChooseDrawnThisTurnPayOrTopdeck,
-	PutOnTopOrBottom,
-	GiftDelivery,
-	Goad,
-	GoadAll,
-	Detain,
-	SetRoomDoorLock,
-	ExchangeControl,
-	ChangeTargets,
-	Incubate,
-	Amass,
-	EmpowerJace,
-	Monstrosity,
-	HordePlayCard,
-	Specialize,
-	Renown,
-	Bolster,
-	Adapt,
-	Manifest,
-	ManifestDread,
-	Cloak,
-	ExtraTurn,
-	GrantExtraLoyaltyActivations,
-	SkipNextTurn,
-	SkipNextStep,
-	AdditionalPhase,
-	Double,
-	ModifyAnnouncedX,
-	RuntimeHandled,
-	Learn,
-	Forage,
-	CompletePlayerAction,
-	Harness,
-	CollectEvidence,
-	Endure,
-	BlightEffect,
-	Seek,
-	SetLifeTotal,
-	ExchangeLifeWithStat,
-	ExchangeLifeTotals,
-	SetDayNight,
-	GiveControl,
-	RemoveFromCombat,
-	BecomeBlocked,
-	Conjure,
-	CreateCardCopyByName,
-	Intensify,
-	ApplyPerpetual,
-	DraftFromSpellbook,
-	ChooseOneOf,
-	ChooseCounterAdjustment,
-	FlipPermanent,
-	Unimplemented,
-	Equip,
-	Crew,
-	Station,
-	Saddle,
-	Reveal,
-	Transform,
-	TurnFaceUp,
-	TurnFaceDown,
-	DayTimeChange,
 }
 
 ReplacedDamagePortion :: struct {
@@ -8639,19 +21522,6 @@ CounterSourceRider :: union {
 	CounterSourceRider_Destroy,
 }
 
-SpellStackToGraveyardReplacement_Exile :: struct {
-}
-SpellStackToGraveyardReplacement_Library :: struct {
-	position: LibraryPosition,
-}
-SpellStackToGraveyardReplacement_Hand :: struct {
-}
-SpellStackToGraveyardReplacement :: union {
-	SpellStackToGraveyardReplacement_Exile,
-	SpellStackToGraveyardReplacement_Library,
-	SpellStackToGraveyardReplacement_Hand,
-}
-
 TokenAttackDestination_ControllerChooses :: struct {
 }
 TokenAttackDestination_Player :: struct {
@@ -8678,27 +21548,6 @@ TapStateChange :: enum u16 {
 	Untap,
 }
 
-LibraryPosition_Top :: struct {
-}
-LibraryPosition_Bottom :: struct {
-}
-LibraryPosition_NthFromTop :: struct {
-	n: u32,
-}
-LibraryPosition_BeneathTop :: struct {
-	depth: QuantityExpr,
-}
-LibraryPosition_RandomWithinTop :: struct {
-	n: QuantityExpr,
-}
-LibraryPosition :: union {
-	LibraryPosition_Top,
-	LibraryPosition_Bottom,
-	LibraryPosition_NthFromTop,
-	LibraryPosition_BeneathTop,
-	LibraryPosition_RandomWithinTop,
-}
-
 LibraryInstructionActor_Controller :: struct {
 }
 LibraryInstructionActor_LibraryPlayer :: struct {
@@ -8712,46 +21561,9 @@ LibraryInstructionActor :: union {
 	LibraryInstructionActor_Player,
 }
 
-LibraryShuffleMode :: enum u16 {
-	PerObject,
-	TerminalShuffle,
-}
-
-EtbTapState :: enum u16 {
-	Unspecified,
-	Tapped,
-	Untapped,
-}
-
-FaceDownProfile :: struct {
-	power: Maybe(i32),
-	toughness: Maybe(i32),
-	body: FaceDownBody,
-	extra_core_types: [dynamic]CoreType,
-	subtypes: [dynamic]string,
-	ward: Maybe(WardCost),
-	cause: FaceDownCause,
-}
-
-DigRestRemainder :: enum u16 {
-	Route,
-	StayInLibrary,
-}
-
-DigRestOrder :: enum u16 {
-	Preserve,
-	Random,
-	PlayerChoice,
-}
-
 DigSource :: enum u16 {
 	Library,
 	PriorLook,
-}
-
-ControlWindow :: enum u16 {
-	NextTurn,
-	NextCombatPhase,
 }
 
 AttachSelection_Targeted :: struct {
@@ -8776,16 +21588,6 @@ VoterScope :: enum u16 {
 	ControllerLabels,
 }
 
-VoteTally_PerVote :: struct {
-}
-VoteTally_TopVotes :: struct {
-	tie: TieResolution,
-}
-VoteTally :: union {
-	VoteTally_PerVote,
-	VoteTally_TopVotes,
-}
-
 VoteSubject_Named :: struct {
 }
 VoteSubject_Objects :: struct {
@@ -8795,65 +21597,6 @@ VoteSubject_Objects :: struct {
 VoteSubject :: union {
 	VoteSubject_Named,
 	VoteSubject_Objects,
-}
-
-VoteVisibility :: enum u16 {
-	Open,
-	Secret,
-}
-
-PlayerScope_Controller :: struct {
-}
-PlayerScope_ScopedPlayer :: struct {
-}
-PlayerScope_Target :: struct {
-}
-PlayerScope_Opponent :: struct {
-	aggregate: AggregateFunction,
-}
-PlayerScope_AllPlayers :: struct {
-	aggregate: AggregateFunction,
-	exclude: ^PlayerScope,
-}
-PlayerScope_RecipientController :: struct {
-}
-PlayerScope_DefendingPlayer :: struct {
-}
-PlayerScope_ParentObjectTarget :: struct {
-	possession: PossessionAxis,
-}
-PlayerScope_SourceChosenPlayer :: struct {
-}
-PlayerScope_AnyTurn :: struct {
-}
-PlayerScope_SpecificPlayer :: struct {
-	id: PlayerId,
-}
-PlayerScope :: union {
-	PlayerScope_Controller,
-	PlayerScope_ScopedPlayer,
-	PlayerScope_Target,
-	PlayerScope_Opponent,
-	PlayerScope_AllPlayers,
-	PlayerScope_RecipientController,
-	PlayerScope_DefendingPlayer,
-	PlayerScope_ParentObjectTarget,
-	PlayerScope_SourceChosenPlayer,
-	PlayerScope_AnyTurn,
-	PlayerScope_SpecificPlayer,
-}
-
-PileSource_Battlefield :: struct {
-}
-PileSource_RevealedFromLibraryTop :: struct {
-	count: u32,
-}
-PileSource_ExiledThisWay :: struct {
-}
-PileSource :: union {
-	PileSource_Battlefield,
-	PileSource_RevealedFromLibraryTop,
-	PileSource_ExiledThisWay,
 }
 
 CopyRetargetPermission :: enum u16 {
@@ -8875,16 +21618,6 @@ CombineSource :: union {
 	CombineSource_Source,
 	CombineSource_ParentTarget,
 	CombineSource_SpecificObject,
-}
-
-PermanentEntryMode_Normal :: struct {
-}
-PermanentEntryMode_TappedAndAttacking :: struct {
-	destination: EntryAttackDestination,
-}
-PermanentEntryMode :: union {
-	PermanentEntryMode_Normal,
-	PermanentEntryMode_TappedAndAttacking,
 }
 
 PermissionGrantee :: enum u16 {
@@ -8970,13 +21703,6 @@ EventCounterReproductionCount_PerKind :: struct {
 EventCounterReproductionCount :: union {
 	EventCounterReproductionCount_SameNumber,
 	EventCounterReproductionCount_PerKind,
-}
-
-BendingType :: enum u16 {
-	Fire,
-	Air,
-	Earth,
-	Water,
 }
 
 ManaProduction_Fixed :: struct {
@@ -9179,46 +21905,9 @@ ManaTargetRole :: union {
 	ManaTargetRole_Both,
 }
 
-SearchSelectionConstraint_None :: struct {
-}
-SearchSelectionConstraint_SharesQualities :: struct {
-	qualities: [dynamic]SharedQuality,
-	relation: SharedQualityRelation,
-}
-SearchSelectionConstraint_TotalManaValue :: struct {
-	comparator: Comparator,
-	value: i32,
-}
-SearchSelectionConstraint_MatchEachFilter :: struct {
-	filters: [dynamic]TargetFilter,
-}
-SearchSelectionConstraint :: union {
-	SearchSelectionConstraint_None,
-	SearchSelectionConstraint_SharesQualities,
-	SearchSelectionConstraint_TotalManaValue,
-	SearchSelectionConstraint_MatchEachFilter,
-}
-
-SearchDestinationSplit :: struct {
-	primary_destination: Zone,
-	primary_count: u32,
-	primary_enter_tapped: EtbTapState,
-	rest_destination: Zone,
-}
-
 OutsideGameSourcePool :: enum u16 {
 	Sideboard,
 	SideboardAndFaceUpExile,
-}
-
-ObjectSelectionCardinality_Exactly :: struct {
-	count: u32,
-}
-ObjectSelectionCardinality_AnyNumber :: struct {
-}
-ObjectSelectionCardinality :: union {
-	ObjectSelectionCardinality_Exactly,
-	ObjectSelectionCardinality_AnyNumber,
 }
 
 GuessSubject_CommittedChoice :: struct {
@@ -9237,104 +21926,6 @@ GuessSubject :: union {
 ForceBlockAttackerRef :: enum u16 {
 	Source,
 	EventSource,
-}
-
-DelayedTriggerCondition_AtNextPhase :: struct {
-	phase: Phase,
-}
-DelayedTriggerCondition_AtNextPhaseForPlayer :: struct {
-	phase: Phase,
-	player: PlayerId,
-	gate: TurnGate,
-	binding: DelayedTriggerPlayerBinding,
-}
-DelayedTriggerCondition_AtBeginningOfAddedPhase :: struct {
-	phase: Phase,
-	entry: Maybe(ExtraPhaseId),
-}
-DelayedTriggerCondition_AtBeginningOfGrantedTurn :: struct {
-	phase: Phase,
-	turn: Maybe(ExtraTurnId),
-}
-DelayedTriggerCondition_WhenLeavesPlay :: struct {
-	object_id: ObjectId,
-}
-DelayedTriggerCondition_WhenDies :: struct {
-	filter: TargetFilter,
-}
-DelayedTriggerCondition_WhenLeavesPlayFiltered :: struct {
-	filter: TargetFilter,
-}
-DelayedTriggerCondition_WhenEntersBattlefield :: struct {
-	filter: TargetFilter,
-}
-DelayedTriggerCondition_WhenDiesOrExiled :: struct {
-	filter: TargetFilter,
-}
-DelayedTriggerCondition_WheneverEvent :: struct {
-	trigger: ^TriggerDefinition,
-	expiry: WheneverEventExpiry,
-}
-DelayedTriggerCondition_WhenNextEvent :: struct {
-	trigger: ^TriggerDefinition,
-	or_trigger: ^TriggerDefinition,
-	lifetime: DelayedTriggerLifetime,
-}
-DelayedTriggerCondition :: union {
-	DelayedTriggerCondition_AtNextPhase,
-	DelayedTriggerCondition_AtNextPhaseForPlayer,
-	DelayedTriggerCondition_AtBeginningOfAddedPhase,
-	DelayedTriggerCondition_AtBeginningOfGrantedTurn,
-	DelayedTriggerCondition_WhenLeavesPlay,
-	DelayedTriggerCondition_WhenDies,
-	DelayedTriggerCondition_WhenLeavesPlayFiltered,
-	DelayedTriggerCondition_WhenEntersBattlefield,
-	DelayedTriggerCondition_WhenDiesOrExiled,
-	DelayedTriggerCondition_WheneverEvent,
-	DelayedTriggerCondition_WhenNextEvent,
-}
-
-GameRestriction_DamagePreventionDisabled :: struct {
-	source: ObjectId,
-	expiry: RestrictionExpiry,
-	scope: Maybe(RestrictionScope),
-}
-GameRestriction_ProhibitActivity :: struct {
-	source: ObjectId,
-	affected_players: RestrictionPlayerScope,
-	expiry: RestrictionExpiry,
-	activity: ProhibitedActivity,
-}
-GameRestriction_CantEnterBattlefieldFrom :: struct {
-	source: ObjectId,
-	expiry: RestrictionExpiry,
-	filter: TargetFilter,
-}
-GameRestriction :: union {
-	GameRestriction_DamagePreventionDisabled,
-	GameRestriction_ProhibitActivity,
-	GameRestriction_CantEnterBattlefieldFrom,
-}
-
-NextSpellModifier_CantBeCountered :: struct {
-}
-NextSpellModifier_HasKeyword :: struct {
-	keyword: Keyword,
-}
-NextSpellModifier_CastAsThoughFlash :: struct {
-}
-NextSpellModifier_WithoutPayingManaCost :: struct {
-}
-NextSpellModifier :: union {
-	NextSpellModifier_CantBeCountered,
-	NextSpellModifier_HasKeyword,
-	NextSpellModifier_CastAsThoughFlash,
-	NextSpellModifier_WithoutPayingManaCost,
-}
-
-PendingEntersModifications :: struct {
-	modifications: [dynamic]ContinuousModification,
-	cast_filter: Maybe(TargetFilter),
 }
 
 CardPlayMode :: enum u16 {
@@ -9363,25 +21954,9 @@ CastFromZoneDriver :: union {
 	CastFromZoneDriver_ResolutionWindow,
 }
 
-ManaSpendPermission :: enum u16 {
-	AnyColor,
-	AnyTypeOrColor,
-}
-
 CastCostModifier :: struct {
 	mode: CostModifyMode,
 	amount: ManaCost,
-}
-
-ExiledSpellRider_ReturnTo :: struct {
-	destination: Zone,
-	timing: DelayedTriggerCondition,
-}
-ExiledSpellRider_BecomePlotted :: struct {
-}
-ExiledSpellRider :: union {
-	ExiledSpellRider_ReturnTo,
-	ExiledSpellRider_BecomePlotted,
 }
 
 PreventionAmount_Next :: struct {
@@ -9416,23 +21991,6 @@ RedirectionLifetime :: enum u16 {
 	Continuous,
 }
 
-DieResultBranch :: struct {
-	min: u8,
-	max: u8,
-	effect: ^AbilityDefinition,
-}
-
-DieRollModifier_Add :: struct {
-	value: QuantityExpr,
-}
-DieRollModifier_Subtract :: struct {
-	value: QuantityExpr,
-}
-DieRollModifier :: union {
-	DieRollModifier_Add,
-	DieRollModifier_Subtract,
-}
-
 CoinFlipRun_Exactly :: struct {
 	count: QuantityExpr,
 }
@@ -9443,126 +22001,14 @@ CoinFlipRun :: union {
 	CoinFlipRun_UntilLoss,
 }
 
-DungeonId :: enum u16 {
-	LostMineOfPhandelver,
-	DungeonOfTheMadMage,
-	TombOfAnnihilation,
-	Undercity,
-	BaldursGateWilderness,
-}
-
 ReassembleControlMode :: enum u16 {
 	KeepController,
 	GainControl,
 }
 
-StickerKind :: enum u16 {
-	Name,
-	Ability,
-	PowerToughness,
-	Art,
-}
-
 StickerTicketCostPayment :: enum u16 {
 	PayNormally,
 	WithoutPaying,
-}
-
-AppliedSticker_Name :: struct {
-	locator: StickerLocator,
-	text: string,
-	position: u8,
-	timestamp: u64,
-}
-AppliedSticker_Ability :: struct {
-	locator: StickerLocator,
-	ticket_cost: u8,
-	text: string,
-	timestamp: u64,
-}
-AppliedSticker_PowerToughness :: struct {
-	locator: StickerLocator,
-	ticket_cost: u8,
-	power: i32,
-	toughness: i32,
-	timestamp: u64,
-}
-AppliedSticker_Art :: struct {
-	locator: StickerLocator,
-	label: string,
-	timestamp: u64,
-}
-AppliedSticker :: union {
-	AppliedSticker_Name,
-	AppliedSticker_Ability,
-	AppliedSticker_PowerToughness,
-	AppliedSticker_Art,
-}
-
-CastingPermission_AdventureCreature :: struct {
-}
-CastingPermission_ExileWithAltCost :: struct {
-	cost: ManaCost,
-	cost_provenance: ExileGrantCostProvenance,
-	cast_transformed: bool,
-	constraint: Maybe(CastPermissionConstraint),
-	granted_to: Maybe(PlayerId),
-	resolution_cleanup: Maybe(ResolutionCastCleanup),
-	duration: Maybe(Duration),
-	source_id: Maybe(ObjectId),
-	graveyard_replacement: Maybe(SpellStackToGraveyardReplacement),
-	enters_with_counter: Maybe(CounterType),
-	enters_with_modifications: PendingEntersModifications,
-	mana_spend_permission: Maybe(ManaSpendPermission),
-	cast_cost_modifier: Maybe(CastCostModifier),
-}
-CastingPermission_PlayFromExile :: struct {
-	duration: Duration,
-	granted_to: PlayerId,
-	mode: CardPlayMode,
-	frequency: CastFrequency,
-	source_id: Maybe(ObjectId),
-	exiled_by_ability_controller: Maybe(PlayerId),
-	mana_spend_permission: Maybe(ManaSpendPermission),
-	card_filter: Maybe(TargetFilter),
-	single_use_group: Maybe(TrackedSetId),
-	single_use: bool,
-	cast_cost_modifier: Maybe(CastCostModifier),
-	alt_ability_cost: Maybe(AbilityCost),
-	without_paying_mana_cost: bool,
-	land_enter_tapped: EtbTapState,
-	invalidation: Maybe(PlayPermissionInvalidation),
-	provenance: PlayFromExileProvenance,
-}
-CastingPermission_ExileWithEnergyCost :: struct {
-}
-CastingPermission_ExileWithAltAbilityCost :: struct {
-	cost: AbilityCost,
-	constraint: Maybe(CastPermissionConstraint),
-	granted_to: Maybe(PlayerId),
-	duration: Maybe(Duration),
-	source_id: Maybe(ObjectId),
-	cast_cost_modifier: Maybe(CastCostModifier),
-}
-CastingPermission_WarpExile :: struct {
-	castable_after_turn: u32,
-}
-CastingPermission_Plotted :: struct {
-	turn_plotted: u32,
-}
-CastingPermission_Foretold :: struct {
-	cost: ManaCost,
-	turn_foretold: u32,
-}
-CastingPermission :: union {
-	CastingPermission_AdventureCreature,
-	CastingPermission_ExileWithAltCost,
-	CastingPermission_PlayFromExile,
-	CastingPermission_ExileWithEnergyCost,
-	CastingPermission_ExileWithAltAbilityCost,
-	CastingPermission_WarpExile,
-	CastingPermission_Plotted,
-	CastingPermission_Foretold,
 }
 
 ZoneOwner_Controller :: struct {
@@ -9616,26 +22062,9 @@ ZoneChoiceCandidateSource :: enum u16 {
 	LibraryTop,
 }
 
-ReciprocalZoneChoiceRole :: enum u16 {
-	Produce,
-	Consume,
-}
-
 ZoneChoiceGatherRole :: enum u16 {
 	Opens,
 	Joins,
-}
-
-ChooseFromZoneConstraint_DistinctCardTypes :: struct {
-	categories: [dynamic]CoreType,
-}
-ChooseFromZoneConstraint_TotalManaValue :: struct {
-	comparator: Comparator,
-	value: i32,
-}
-ChooseFromZoneConstraint :: union {
-	ChooseFromZoneConstraint_DistinctCardTypes,
-	ChooseFromZoneConstraint_TotalManaValue,
 }
 
 IterationCategory :: enum u16 {
@@ -9670,11 +22099,6 @@ ObjectSelectionEligibility :: union {
 	ObjectSelectionEligibility_RemovableCounter,
 }
 
-CategoryChooserScope :: enum u16 {
-	EachPlayerSelf,
-	ControllerForAll,
-}
-
 KeeperConstraint_ExactCount :: struct {
 	count: QuantityExpr,
 }
@@ -9685,21 +22109,6 @@ KeeperConstraint :: union {
 KeeperCounterMark :: struct {
 	counter_type: CounterType,
 	count: QuantityExpr,
-}
-
-CopyScale :: struct {
-	counter_type: CounterType,
-	scale_property: ObjectProperty,
-}
-
-CopyChooseScope_Chooser :: struct {
-}
-CopyChooseScope_Neighbor :: struct {
-	direction: SeatDirection,
-}
-CopyChooseScope :: union {
-	CopyChooseScope_Chooser,
-	CopyChooseScope_Neighbor,
 }
 
 UntilCondition_NextMatches :: struct {
@@ -9720,30 +22129,6 @@ RevealUntilDisposition :: enum u16 {
 	KeepEach,
 	ChooseAnyNumber,
 	RevealOnly,
-}
-
-ContestKind :: enum u16 {
-	Staring,
-	BreathHolding,
-}
-
-DoorLockOp :: enum u16 {
-	Unlock,
-	Lock,
-	LockOrUnlock,
-}
-
-RetargetScope_Single :: struct {
-}
-RetargetScope_All :: struct {
-}
-RetargetScope_ForcedTo :: struct {
-	_0: TargetRef,
-}
-RetargetScope :: union {
-	RetargetScope_Single,
-	RetargetScope_All,
-	RetargetScope_ForcedTo,
 }
 
 StepSkipTarget_Step :: struct {
@@ -9775,21 +22160,6 @@ ExtraPhaseRecipient :: union {
 	ExtraPhaseRecipient_Controller,
 	ExtraPhaseRecipient_TriggeringPlayer,
 	ExtraPhaseRecipient_TargetedPlayer,
-}
-
-TurnSegment_Phase :: struct {
-	_0: PhaseGroup,
-}
-TurnSegment_CreatedPhase :: struct {
-	_0: Phase,
-}
-TurnSegment_Step :: struct {
-	_0: Phase,
-}
-TurnSegment :: union {
-	TurnSegment_Phase,
-	TurnSegment_CreatedPhase,
-	TurnSegment_Step,
 }
 
 ExtraPhaseAnchor_Step :: struct {
@@ -9836,59 +22206,15 @@ RuntimeHandler :: enum u16 {
 	RepeatProcess,
 }
 
-EffectResolutionResult :: struct {
-	cause: ThisWayCause,
-	count: int,
-}
-
 PtStat :: enum u16 {
 	Power,
 	Toughness,
 	TotalPowerToughness,
 }
 
-DayNight :: enum u16 {
-	Day,
-	Night,
-}
-
 ConjureCard :: struct {
 	source: ConjureSource,
 	count: QuantityExpr,
-}
-
-PerpetualModification_SetBasePowerToughness :: struct {
-	power: i32,
-	toughness: i32,
-}
-PerpetualModification_ModifyPowerToughness :: struct {
-	power: QuantityExpr,
-	toughness: QuantityExpr,
-	keywords: [dynamic]Keyword,
-}
-PerpetualModification_GrantKeywords :: struct {
-	keywords: [dynamic]Keyword,
-}
-PerpetualModification_Become :: struct {
-	creature_subtypes: [dynamic]string,
-	power: i32,
-	toughness: i32,
-	keywords: [dynamic]Keyword,
-}
-PerpetualModification_ModifyCost :: struct {
-	mode: CostModifyMode,
-	amount: ManaCost,
-}
-PerpetualModification_GrantAbility :: struct {
-	modifications: [dynamic]PerpetualGrantModification,
-}
-PerpetualModification :: union {
-	PerpetualModification_SetBasePowerToughness,
-	PerpetualModification_ModifyPowerToughness,
-	PerpetualModification_GrantKeywords,
-	PerpetualModification_Become,
-	PerpetualModification_ModifyCost,
-	PerpetualModification_GrantAbility,
 }
 
 IntensityScope_Source :: struct {
@@ -9915,98 +22241,10 @@ ChooseOneOfKind :: enum u16 {
 	Villainous,
 }
 
-PlayerRelation :: enum u16 {
-	Controller,
-	Opponent,
-	All,
-}
-
-AttackSubject :: enum u16 {
-	You,
-	Source,
-	EventAttackers,
-}
-
-CombatHistoryScope :: enum u16 {
-	ThisTurn,
-	ThisCombat,
-}
-
-PossessionAxis :: enum u16 {
-	Controller,
-	Owner,
-}
-
-ObjectScope_Source :: struct {
-}
-ObjectScope_Target :: struct {
-}
-ObjectScope_Recipient :: struct {
-}
-ObjectScope_EventSource :: struct {
-}
-ObjectScope_CostPaidObject :: struct {
-}
-ObjectScope_Anaphoric :: struct {
-}
-ObjectScope_Demonstrative :: struct {
-}
-ObjectScope_AmassedArmy :: struct {
-}
-ObjectScope_EventTarget :: struct {
-}
-ObjectScope_OtherRevealedCard :: struct {
-}
-ObjectScope_OwnedLinkedExileCard :: struct {
-}
-ObjectScope_BatchSource :: struct {
-}
-ObjectScope_ChainRootTarget :: struct {
-}
-ObjectScope_GrantingObject :: struct {
-}
-ObjectScope_SpecificObject :: struct {
-	object: ObjectIncarnationRef,
-}
-ObjectScope :: union {
-	ObjectScope_Source,
-	ObjectScope_Target,
-	ObjectScope_Recipient,
-	ObjectScope_EventSource,
-	ObjectScope_CostPaidObject,
-	ObjectScope_Anaphoric,
-	ObjectScope_Demonstrative,
-	ObjectScope_AmassedArmy,
-	ObjectScope_EventTarget,
-	ObjectScope_OtherRevealedCard,
-	ObjectScope_OwnedLinkedExileCard,
-	ObjectScope_BatchSource,
-	ObjectScope_ChainRootTarget,
-	ObjectScope_GrantingObject,
-	ObjectScope_SpecificObject,
-}
-
-AdditionalCostPaymentSource :: enum u16 {
-	Any,
-	Kicker,
-	NonKicker,
-}
-
-AdditionalCostOrigin :: enum u16 {
-	Kicker,
-	Casualty,
-	Offspring,
-	Squad,
-	Replicate,
-	Bargain,
-	Teamwork,
-	Gift,
-	Other,
-}
-
-KickerVariant :: enum u16 {
-	First,
-	Second,
+CostModifyMode :: enum u16 {
+	Reduce,
+	Raise,
+	Minimum,
 }
 
 EffectOutcomeSignal_OptionalEffectPerformed :: struct {
@@ -10028,204 +22266,521 @@ EffectOutcomeSignal :: union {
 	EffectOutcomeSignal_RepeatDirectiveReached,
 }
 
-CastTimingPermission :: enum u16 {
-	AsThoughHadFlash,
-	Offering,
-}
-
-SpentColor_ColorWord :: struct {
-	color: ManaColor,
-}
-SpentColor_ManaSymbol :: struct {
-	color: ManaColor,
-}
-SpentColor :: union {
-	SpentColor_ColorWord,
-	SpentColor_ManaSymbol,
-}
-
-CastVariantPaid :: enum u16 {
-	Ninjutsu,
-	CommanderNinjutsu,
-	Sneak,
-	WebSlinging,
-	Evoke,
-	Suspend,
-	Escape,
-	Foretell,
-	Bestow,
-	Impending,
-	Surge,
-	Spectacle,
-	Prowl,
-	Emerge,
-	Warp,
-	Mayhem,
-}
-
-NumberQuality_Parity :: struct {
-	_0: Parity,
-}
-NumberQuality_Prime :: struct {
-}
-NumberQuality :: union {
-	NumberQuality_Parity,
-	NumberQuality_Prime,
-}
-
-DamageChannel :: enum u16 {
-	Total,
-	Excess,
-}
-
-CommanderOwnership :: enum u16 {
-	Own,
-	Any,
-}
-
-CastingVariant_Normal :: struct {
-}
-CastingVariant_Adventure :: struct {
-}
-CastingVariant_Omen :: struct {
-}
-CastingVariant_Warp :: struct {
-}
-CastingVariant_Escape :: struct {
-}
-CastingVariant_Retrace :: struct {
-}
-CastingVariant_Harmonize :: struct {
-}
-CastingVariant_Mayhem :: struct {
-}
-CastingVariant_Flashback :: struct {
-}
-CastingVariant_Aftermath :: struct {
-}
-CastingVariant_Disturb :: struct {
-}
-CastingVariant_GraveyardPermission :: struct {
-	source: ObjectId,
-	frequency: CastFrequency,
-	slot_type: Maybe(CoreType),
-	graveyard_destination_replacement: Maybe(Zone),
-}
-CastingVariant_HandPermission :: struct {
-	source: ObjectId,
-	frequency: CastFrequency,
-}
-CastingVariant_ExilePermission :: struct {
-	source: ObjectId,
-	frequency: CastFrequency,
-}
-CastingVariant_Sneak :: struct {
-	returned_creature: ObjectId,
-	placement: Maybe(SneakPlacement),
-}
-CastingVariant_WebSlinging :: struct {
-	returned_creature: ObjectId,
-}
-CastingVariant_Miracle :: struct {
-}
-CastingVariant_Madness :: struct {
-}
-CastingVariant_Evoke :: struct {
-}
-CastingVariant_Emerge :: struct {
-}
-CastingVariant_Dash :: struct {
-}
-CastingVariant_Blitz :: struct {
-}
-CastingVariant_Spectacle :: struct {
-}
-CastingVariant_Suspend :: struct {
-}
-CastingVariant_Plot :: struct {
-}
-CastingVariant_Foretell :: struct {
-}
-CastingVariant_Overload :: struct {
-}
-CastingVariant_Bestow :: struct {
-}
-CastingVariant_Awaken :: struct {
-}
-CastingVariant_Cleave :: struct {
-}
-CastingVariant_MoreThanMeetsTheEye :: struct {
-}
-CastingVariant_Impending :: struct {
-}
-CastingVariant_Prototype :: struct {
-}
-CastingVariant_Mutate :: struct {
-}
-CastingVariant_Freerunning :: struct {
-}
-CastingVariant_Prowl :: struct {
-}
-CastingVariant_JumpStart :: struct {
-}
-CastingVariant_Fuse :: struct {
-}
-CastingVariant_Surge :: struct {
-}
-CastingVariant_FaceDown :: struct {
-}
-CastingVariant :: union {
-	CastingVariant_Normal,
-	CastingVariant_Adventure,
-	CastingVariant_Omen,
-	CastingVariant_Warp,
-	CastingVariant_Escape,
-	CastingVariant_Retrace,
-	CastingVariant_Harmonize,
-	CastingVariant_Mayhem,
-	CastingVariant_Flashback,
-	CastingVariant_Aftermath,
-	CastingVariant_Disturb,
-	CastingVariant_GraveyardPermission,
-	CastingVariant_HandPermission,
-	CastingVariant_ExilePermission,
-	CastingVariant_Sneak,
-	CastingVariant_WebSlinging,
-	CastingVariant_Miracle,
-	CastingVariant_Madness,
-	CastingVariant_Evoke,
-	CastingVariant_Emerge,
-	CastingVariant_Dash,
-	CastingVariant_Blitz,
-	CastingVariant_Spectacle,
-	CastingVariant_Suspend,
-	CastingVariant_Plot,
-	CastingVariant_Foretell,
-	CastingVariant_Overload,
-	CastingVariant_Bestow,
-	CastingVariant_Awaken,
-	CastingVariant_Cleave,
-	CastingVariant_MoreThanMeetsTheEye,
-	CastingVariant_Impending,
-	CastingVariant_Prototype,
-	CastingVariant_Mutate,
-	CastingVariant_Freerunning,
-	CastingVariant_Prowl,
-	CastingVariant_JumpStart,
-	CastingVariant_Fuse,
-	CastingVariant_Surge,
-	CastingVariant_FaceDown,
-}
-
 AbilityUseTally :: enum u16 {
 	Resolved,
 	Activated,
 }
 
-CostModifyMode :: enum u16 {
-	Reduce,
-	Raise,
-	Minimum,
+ActivationExemption :: enum u16 {
+	None,
+	ManaAbilities,
+}
+
+PreventionFormula_Fixed :: struct {
+	_0: u32,
+}
+PreventionFormula_Quantity :: struct {
+	quantity: QuantityExpr,
+}
+PreventionFormula_Fraction :: struct {
+	numerator: u32,
+	denominator: u32,
+	rounding: RoundingMode,
+}
+PreventionFormula :: union {
+	PreventionFormula_Fixed,
+	PreventionFormula_Quantity,
+	PreventionFormula_Fraction,
+}
+
+DamageTargetPlayerScope_Any :: struct {
+}
+DamageTargetPlayerScope_Opponent :: struct {
+}
+DamageTargetPlayerScope_Controller :: struct {
+}
+DamageTargetPlayerScope_SourceChosenPlayer :: struct {
+}
+DamageTargetPlayerScope_Specific :: struct {
+	_0: PlayerId,
+}
+DamageTargetPlayerScope :: union {
+	DamageTargetPlayerScope_Any,
+	DamageTargetPlayerScope_Opponent,
+	DamageTargetPlayerScope_Controller,
+	DamageTargetPlayerScope_SourceChosenPlayer,
+	DamageTargetPlayerScope_Specific,
+}
+
+EmptyPoolLifeLossCause :: enum u16 {
+	ManaBurn,
+	UnspentManaStatic,
+}
+
+RoomHalfIdentity :: struct {
+	name: string,
+	mana_cost: ManaCost,
+}
+
+Definitions_TriggerDefinition :: distinct ^[dynamic]TriggerDefinition
+
+FinalizePrePaymentChecks :: struct {
+	early_waiting_for: Maybe(WaitingFor),
+	cascade_cast_transformed: bool,
+	resolution_success_waiting_for: Maybe(WaitingFor),
+	cast_this_way_etb_counter: Maybe(CounterType),
+	cast_this_way_enters_mods: PendingEntersModifications,
+}
+
+OptionalEffectFrame :: struct {
+	ability: ^ResolvedAbility,
+	trigger_event: Maybe(GameEvent),
+	trigger_events: [dynamic]GameEvent,
+	trigger_match_count: Maybe(u32),
+	return_result_occurrence: Maybe(ReturnResultOccurrenceId),
+	replacement_action: Maybe(ReplacementActionScope),
+	parked_poll: ^ParkedOpponentMayPoll,
+}
+
+ManaAbilityActivationStage :: enum u16 {
+	Unpublished,
+	Published,
+}
+
+ManaAbilityCostResolutionMode :: enum u16 {
+	Interactive,
+	AutoResolved,
+}
+
+ManaAbilityCostParent :: struct {
+	pending: ^PendingManaAbility,
+	cursor: ^ManaAbilityCostCursor,
+	lifecycle: ManaAbilityCostParentLifecycle,
+	current_action_event_start: int,
+}
+
+PendingCounterRemovalInFlight :: struct {
+	removal: PendingCounterRemoval,
+	counter_count_before: u32,
+}
+
+PendingCounterRemoval :: struct {
+	object_id: ObjectId,
+	counter_type: CounterType,
+	count: u32,
+}
+
+ReplacementSubtreeBoundary :: struct {
+	resolution_depth: int,
+	enclosing: Maybe(EnclosingPostReplacementFrame),
+}
+
+UnpaidCostRemainder_Legs :: struct {
+	_0: AbilityCost,
+}
+UnpaidCostRemainder_Repeated :: struct {
+	_0: u32,
+}
+UnpaidCostRemainder :: union {
+	UnpaidCostRemainder_Legs,
+	UnpaidCostRemainder_Repeated,
+}
+
+ManaColorChoiceResume :: struct {
+	player: PlayerId,
+	choice: ManaChoicePrompt,
+	context_: ManaChoiceContext,
+}
+
+StagedLifeGains :: struct {
+	gains: [dynamic]Tuple2(PlayerId, u32),
+	substitutes: [dynamic]StagedLifeGainSubstitute,
+}
+
+StagedLifeGainSubstitute :: struct {
+	drain: PostReplacementDrain,
+	amount: Maybe(i32),
+}
+
+TriggerCollectionOverlay :: struct {
+	virtual_targeting_source: Maybe(VirtualTargetingSource),
+}
+
+TriggerCollectionOperation_PrepareEventBatch :: struct {
+	events: [dynamic]GameEvent,
+}
+TriggerCollectionOperation_ObserveEventBatch :: struct {
+	events: [dynamic]GameEvent,
+}
+TriggerCollectionOperation_RecordTriggerFired :: struct {
+	constraint: Maybe(TriggerConstraint),
+	source_context: ^Maybe(TriggerSourceContext),
+	definition_ref: Maybe(TriggerDefinitionRef),
+	event: GameEvent,
+}
+TriggerCollectionOperation_RecordBatchedZoneChanges :: struct {
+	definition_ref: TriggerDefinitionRef,
+	turn_zone_change_keys: [dynamic]Tuple2(u32, int),
+}
+TriggerCollectionOperation_AllocateTimestamp :: struct {
+}
+TriggerCollectionOperation_RecordCombatDamageCastingPermission :: struct {
+	controller: PlayerId,
+	grants_freerunning: bool,
+	creature_types: [dynamic]string,
+}
+TriggerCollectionOperation_MarkSpeedTriggerUsed :: struct {
+	player: PlayerId,
+}
+TriggerCollectionOperation :: union {
+	TriggerCollectionOperation_PrepareEventBatch,
+	TriggerCollectionOperation_ObserveEventBatch,
+	TriggerCollectionOperation_RecordTriggerFired,
+	TriggerCollectionOperation_RecordBatchedZoneChanges,
+	TriggerCollectionOperation_AllocateTimestamp,
+	TriggerCollectionOperation_RecordCombatDamageCastingPermission,
+	TriggerCollectionOperation_MarkSpeedTriggerUsed,
+}
+
+ActivationShardChoice :: struct {
+	shard_index: int,
+	shard: ManaCostShard,
+	choice: ShardChoice,
+}
+
+RiderTiming :: enum u16 {
+	WithEvent,
+	AfterEvent,
+}
+
+ResolvedManaInsertCommand :: struct {
+	player: PlayerId,
+	unit: ManaUnit,
+	producer: RulesExecutionNodeRef,
+}
+
+ResolvedManaSpendCommand :: struct {
+	payer: PlayerId,
+	recipient: ManaPaymentRecipient,
+	payment: RulesExecutionNodeRef,
+	units: [dynamic]ResolvedManaSpentUnit,
+}
+
+ResolvedPlayerEditCommand :: struct {
+	player: PlayerId,
+	edit: ResolvedPlayerEdit,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedObjectStatusCommand :: struct {
+	object: ObjectIncarnationRef,
+	status: ResolvedObjectStatus,
+	expected_old: bool,
+	new: bool,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedObjectCounterCommand :: struct {
+	object: ObjectIncarnationRef,
+	counter_type: CounterType,
+	expected_old: u32,
+	edit: ResolvedObjectCounterEdit,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedObjectTransformCommand :: struct {
+	object: ObjectIncarnationRef,
+	expected_old_transformed: bool,
+	resulting_transformed: bool,
+	resulting_timestamp: u64,
+	resulting_transformation_count: u32,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedAttachmentCommand :: struct {
+	attachment: ObjectIncarnationRef,
+	expected_old_host: Maybe(AttachTarget),
+	resulting_host: Maybe(AttachTarget),
+	resulting_timestamp: Maybe(u64),
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedDelayedTriggerCommand :: struct {
+	trigger: DelayedTrigger,
+	token: DelayedTriggerToken,
+	expected_installed_count: int,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedContinuousEffectEdit_Install :: struct {
+	_0: ResolvedContinuousEffectCommand,
+}
+ResolvedContinuousEffectEdit_Retire :: struct {
+	_0: ResolvedContinuousEffectRetirementCommand,
+}
+ResolvedContinuousEffectEdit :: union {
+	ResolvedContinuousEffectEdit_Install,
+	ResolvedContinuousEffectEdit_Retire,
+}
+
+ResolvedCombatMembershipCommand :: struct {
+	object: ObjectIncarnationRef,
+	edit: ResolvedCombatMembershipEdit,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedControllerOverrideCommand :: struct {
+	object: ObjectIncarnationRef,
+	expected_old_base_controller: Maybe(PlayerId),
+	expected_old_controller: PlayerId,
+	resulting_controller: PlayerId,
+	zone_change_index: Maybe(int),
+	battlefield_entry_index: Maybe(int),
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedEntryProvenanceCommand :: struct {
+	object: ObjectIncarnationRef,
+	expected_old_source: Maybe(ObjectId),
+	resulting_source: ObjectId,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedObjectCeaseCommand :: struct {
+	object: ObjectIncarnationRef,
+	expected_zone: Zone,
+	owner: PlayerId,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedPlayerLeaveCommand :: struct {
+	player: PlayerId,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedTokenCreationCommand :: struct {
+	object: ObjectIncarnationRef,
+	owner: PlayerId,
+	entry_timestamp: u64,
+	entry_turn: u32,
+	body: ResolvedTokenBody,
+	resulting_tapped: bool,
+	entry_choices: [dynamic]ChosenAttribute,
+	resulting_next_object_id: u64,
+	entry_zone: Maybe(Zone),
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedInformationCommand :: struct {
+	occurrences: [dynamic]ObjectIncarnationRef,
+	audience: ResolvedInformationAudience,
+	lifetime: ResolvedInformationLifetime,
+	edit: ResolvedInformationEdit,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedLedgerEditCommand :: struct {
+	edit: ResolvedLedgerEdit,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedLibraryShuffleCommand :: struct {
+	player: PlayerId,
+	precondition_order: [dynamic]ObjectId,
+	resulting_order: [dynamic]ObjectId,
+	pre_word_pos: u128,
+	post_word_pos: u128,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedZoneChangeCommand :: struct {
+	object: ObjectIncarnationRef,
+	resulting_incarnation: u64,
+	from: Zone,
+	to: Zone,
+	destination_position: int,
+	owner: PlayerId,
+	rebound_from: Maybe(PlayerId),
+	entry_timestamp: Maybe(u64),
+	retained_sticker_timestamps: Maybe([dynamic]RetainedStickerTimestamp),
+	turn_zone_change_index: int,
+	zone_change_record: ZoneChangeRecord,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedFrameTransitionCommand :: struct {
+	transition: ResolvedFrameTransition,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedTriggerCollectionCommand :: struct {
+	collection: ResolvedTriggerCollection,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedStackPushCommand :: struct {
+	entry: ^StackEntry,
+	trigger_firing: Maybe(TriggerFiring),
+	origin: ResolvedStackPushOrigin,
+	resulting_position: int,
+	spell_announcement: Maybe(SpellAnnouncement),
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedStackEntryFinalizeCommand :: struct {
+	object: ObjectId,
+	entry_position: int,
+	expected_old_kind: ^StackEntryKind,
+	resulting_kind: ^StackEntryKind,
+	expected_old_paid_facts: ^StackPaidSnapshot,
+	resulting_paid_facts: ^StackPaidSnapshot,
+	expected_old_cast_occurrence: Maybe(CastOccurrence),
+	resulting_cast_occurrence: Maybe(CastOccurrence),
+	resulting_cycling_occurrence: Maybe(CyclingOccurrence),
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedUncommittedTriggerRemovalCommand :: struct {
+	consumed_entry_id: ObjectId,
+	removed: ^StackEntry,
+	resulting_depth: int,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedStackRemovalCommand :: struct {
+	entry: ^StackEntry,
+	index: int,
+	resulting_depth: int,
+	cause: RulesExecutionNodeRef,
+}
+
+ManaSupertype :: enum u16 {
+	Snow,
+}
+
+PhaseOutCause :: enum u16 {
+	Directly,
+	Indirectly,
+}
+
+ManaSourceQuantity_Fixed :: struct {
+	_0: u32,
+}
+ManaSourceQuantity_Variable :: struct {
+}
+ManaSourceQuantity :: union {
+	ManaSourceQuantity_Fixed,
+	ManaSourceQuantity_Variable,
+}
+
+AbilityActivationScope :: enum u16 {
+	OfSpellType,
+	Any,
+}
+
+SpellCostCriterion_ManaValue :: struct {
+	comparator: Comparator,
+	value: u32,
+}
+SpellCostCriterion_HasXInCost :: struct {
+}
+SpellCostCriterion :: union {
+	SpellCostCriterion_ManaValue,
+	SpellCostCriterion_HasXInCost,
+}
+
+ZoneSpend :: struct {
+	zone: Zone,
+	polarity: ZoneSpendPolarity,
+}
+
+SpecialAction :: enum u16 {
+	CompanionToHand,
+	UnlockDoor,
+	Plot,
+	TurnFaceUp,
+	RollPlanarDie,
+	EndContinuousEffect,
+	Foretell,
+}
+
+PendingMulliganAction_Keep :: struct {
+}
+PendingMulliganAction_UseSerumPowder :: struct {
+	object_id: ObjectId,
+}
+PendingMulliganAction :: union {
+	PendingMulliganAction_Keep,
+	PendingMulliganAction_UseSerumPowder,
+}
+
+PtDirection :: enum u16 {
+	Increase,
+	Decrease,
+}
+
+EventCounterHistoryEntry :: struct {
+	actor: PlayerId,
+	counter: CounterType,
+	count: u32,
+}
+
+EventTrackedSetMembership :: struct {
+	set_id: TrackedSetId,
+	caused_by: Maybe(ThisWayCause),
+}
+
+CloakExileMember :: struct {
+	object_id: ObjectId,
+	attachments: [dynamic]ObjectId,
+}
+
+DigDeliveryStage :: enum u16 {
+	Kept,
+	Rest,
+}
+
+DigKeptDeliveryOutcome :: struct {
+	selected: [dynamic]ObjectIncarnationRef,
+	completed: [dynamic]ObjectIncarnationRef,
+	destination: Maybe(Zone),
+	settled: bool,
+}
+
+DigRestDeliveryOutcome :: struct {
+	selected: [dynamic]ObjectIncarnationRef,
+	completed: [dynamic]ObjectIncarnationRef,
+	destination: Maybe(Zone),
+	settled: bool,
+}
+
+ChangeZoneBatchTail :: struct {
+	group_id: LogicalZoneChangeGroupId,
+	effect_kind: EffectKind,
+	source_id: ObjectId,
+	controller: PlayerId,
+	destination: Zone,
+	arrangement: ChangeZoneArrangementPlan,
+	count: ChangeZoneCountPolicy,
+	pending_return_result_producer: Maybe(Tuple2(ReturnResultOccurrenceId, ReturnResultId)),
+	own_exile_links: OwnExileLinkSettlement,
+	entry_collector: EntryOccurrenceCollector,
+}
+
+ChangeZoneSettled :: struct {
+	policy_count: i32,
+	arrival_count: int,
+	records: [dynamic]ZoneChangeRecord,
+}
+
+PackOrigin_Set :: struct {
+	_0: string,
+}
+PackOrigin_Cube :: struct {
+}
+PackOrigin :: union {
+	PackOrigin_Set,
+	PackOrigin_Cube,
 }
 
 GuardReading :: enum u16 {
@@ -10233,133 +22788,174 @@ GuardReading :: enum u16 {
 	State,
 }
 
-ControlChangeSide :: enum u16 {
-	Loses,
-	Gains,
+ModalSelectionCondition_Static :: struct {
+	condition: StaticCondition,
+}
+ModalSelectionCondition_AdditionalCostPaid :: struct {
+	source: AdditionalCostPaymentSource,
+	origin: Maybe(AdditionalCostOrigin),
+	origin_ordinal: Maybe(u32),
+	variant: Maybe(KickerVariant),
+	kicker_cost: Maybe(ManaCost),
+	min_count: u32,
+}
+ModalSelectionCondition :: union {
+	ModalSelectionCondition_Static,
+	ModalSelectionCondition_AdditionalCostPaid,
 }
 
-TriggerCause_Any :: struct {
-}
-TriggerCause_EntersBattlefield :: struct {
-	core_types: [dynamic]CoreType,
-	entrant: CausingObject,
-}
-TriggerCause_CreatureAttacking :: struct {
-}
-TriggerCause_CreatureDying :: struct {
-}
-TriggerCause_ControlledCreature :: struct {
-	event: ControlledCreatureEvent,
-}
-TriggerCause_ControllerCastOrCopiedSpell :: struct {
-	core_types: [dynamic]CoreType,
-}
-TriggerCause_RoomEntered :: struct {
-}
-TriggerCause_PlayerAction :: struct {
-	player: PlayerRelation,
-	action: PlayerCauseAction,
-}
-TriggerCause_TurnedFaceUp :: struct {
-}
-TriggerCause_BattlefieldTransition :: struct {
-	enter: bool,
-	leave: bool,
-	qualifiers: [dynamic]ZoneChangeQualifier,
-}
-TriggerCause :: union {
-	TriggerCause_Any,
-	TriggerCause_EntersBattlefield,
-	TriggerCause_CreatureAttacking,
-	TriggerCause_CreatureDying,
-	TriggerCause_ControlledCreature,
-	TriggerCause_ControllerCastOrCopiedSpell,
-	TriggerCause_RoomEntered,
-	TriggerCause_PlayerAction,
-	TriggerCause_TurnedFaceUp,
-	TriggerCause_BattlefieldTransition,
+ResolutionMvRejectAction :: enum u16 {
+	BottomWithMisses,
+	ToHand,
+	RemainExiled,
 }
 
-CausedAbilitySource :: enum u16 {
-	CausingObject,
-	Any,
+ResolutionCastSuccessAction_BottomMisses :: struct {
+}
+ResolutionCastSuccessAction_RippleOfferRemaining :: struct {
+	remaining_hits: [dynamic]ObjectId,
+}
+ResolutionCastSuccessAction_FreeCastOfferRemaining :: struct {
+	controller: PlayerId,
+	remaining_casts: Maybe(u8),
+	remaining_mv_budget: Maybe(u32),
+	face_policy: ^ResolutionCastFacePolicy,
+	zones: [dynamic]Zone,
+	graveyard_replacement: Maybe(SpellStackToGraveyardReplacement),
+	enters_with_modifications: PendingEntersModifications,
+	member_pool: [dynamic]ObjectId,
+}
+ResolutionCastSuccessAction :: union {
+	ResolutionCastSuccessAction_BottomMisses,
+	ResolutionCastSuccessAction_RippleOfferRemaining,
+	ResolutionCastSuccessAction_FreeCastOfferRemaining,
 }
 
-PlaneswalkRole :: enum u16 {
-	From,
-	To,
-	Any,
+ResolutionCastDelayedTriggerReceipt :: struct {
+	offer_id: ResolutionCastOfferId,
+	token: DelayedTriggerToken,
+	instance: DelayedTriggerInstanceId,
+	source_id: ObjectId,
 }
 
-AbilityLifecyclePoint :: enum u16 {
-	Triggered,
-	Resolved,
+IndicatedActionLimit :: struct {
+	ledger_ref: TriggerDefinitionRef,
+	controller: PlayerId,
 }
 
-TriggerLimitSpend :: enum u16 {
-	Triggering,
-	IndicatedAction,
+SacrificeRequirement_Count :: struct {
+	count: u32,
+}
+SacrificeRequirement_Aggregate :: struct {
+	stat: SacrificeAggregateStat,
+	comparator: Comparator,
+	value: i32,
+}
+SacrificeRequirement_All :: struct {
+}
+SacrificeRequirement :: union {
+	SacrificeRequirement_Count,
+	SacrificeRequirement_Aggregate,
+	SacrificeRequirement_All,
 }
 
-RenownSubject :: enum u16 {
-	Source,
-	EventSubject,
+TapCreaturesAggregateStat :: enum u16 {
+	TotalPower,
 }
 
-AttackersDeclaredCountSubject_CurrentCombat :: struct {
-	exclude_source: SourceExclusion,
-}
-AttackersDeclaredCountSubject_Controller :: struct {
-	scope: ControllerRef,
-	filter: Maybe(TargetFilter),
-}
-AttackersDeclaredCountSubject_AttackTarget :: struct {
-	controller: ControllerRef,
-	attacked: AttackTargetFilter,
-	filter: Maybe(TargetFilter),
-}
-AttackersDeclaredCountSubject :: union {
-	AttackersDeclaredCountSubject_CurrentCombat,
-	AttackersDeclaredCountSubject_Controller,
-	AttackersDeclaredCountSubject_AttackTarget,
+ActivationCostLockPoint :: enum u16 {
+	Announcement,
+	XAnnounced,
+	TargetSettlement,
 }
 
-AttackedYouScope :: enum u16 {
-	AnyPlayer,
-	AttackedPlayer,
+ResidualPermanent :: struct {
+	oracle_id: string,
+	controller: PlayerId,
+	tapped: bool,
 }
 
-UnlessPayScaling_Flat :: struct {
-}
-UnlessPayScaling_PerAffectedCreature :: struct {
-}
-UnlessPayScaling_PerQuantityRef :: struct {
-	quantity: QuantityRef,
-}
-UnlessPayScaling_PerAffectedAndQuantityRef :: struct {
-	quantity: QuantityRef,
-}
-UnlessPayScaling_PerAffectedWithRef :: struct {
-	quantity: QuantityRef,
-}
-UnlessPayScaling :: union {
-	UnlessPayScaling_Flat,
-	UnlessPayScaling_PerAffectedCreature,
-	UnlessPayScaling_PerQuantityRef,
-	UnlessPayScaling_PerAffectedAndQuantityRef,
-	UnlessPayScaling_PerAffectedWithRef,
+PeriodicDelta :: struct {
+	delta: ResourceVector,
+	victim_slot: [dynamic]Tuple2(DecisionSlot, i64),
+	declarable_victims: [dynamic]PlayerId,
+	forced_aims: [dynamic]Tuple2(DecisionSlot, PlayerId),
+	seat_life_charge: [dynamic]Tuple2(PlayerId, i64),
+	cleanup: Maybe(CleanupPair),
+	instructed_mills: Maybe(map[PlayerId]InstructedMill),
+	growth: ResourceVector,
+	seat_life_charge_growth: [dynamic]Tuple2(PlayerId, i64),
+	seat_takes: [dynamic]Tuple4([dynamic]PlayerId, DecisionSlot, PlayerId, i64),
+	zero_lifetimes: [dynamic]Tuple2(PlayerId, u32),
 }
 
-PhysicalTell :: enum u16 {
-	TouchFace,
-	TouchTable,
-	Laugh,
-	FlickCards,
+DecisionPointKind_Targets :: struct {
+	legal_targets: [dynamic]TargetRef,
+	min_targets: u32,
+	max_targets: u32,
+	ordered: bool,
+}
+DecisionPointKind_ConvokeTaps :: struct {
+	tappable: [dynamic]ObjectId,
+}
+DecisionPointKind_Mode :: struct {
+	available_modes: [dynamic]int,
+	min_modes: u32,
+	max_modes: u32,
+	allow_repeats: bool,
+}
+DecisionPointKind_MayChoice :: struct {
+}
+DecisionPointKind_UnlessBreak :: struct {
+}
+DecisionPointKind_ManaColor :: struct {
+	color: ManaColor,
+}
+DecisionPointKind_Order :: struct {
+	pos: u8,
+	positions: u8,
+}
+DecisionPointKind :: union {
+	DecisionPointKind_Targets,
+	DecisionPointKind_ConvokeTaps,
+	DecisionPointKind_Mode,
+	DecisionPointKind_MayChoice,
+	DecisionPointKind_UnlessBreak,
+	DecisionPointKind_ManaColor,
+	DecisionPointKind_Order,
 }
 
-DamageAmountScope :: enum u16 {
-	PerSource,
-	WholeEvent,
+RoomMarkerPoint :: struct {
+	x_permille: u16,
+	y_permille: u16,
+}
+
+ContestantConnection_Connected :: struct {
+}
+ContestantConnection_Disconnected :: struct {
+	since_ms: u64,
+}
+ContestantConnection :: union {
+	ContestantConnection_Connected,
+	ContestantConnection_Disconnected,
+}
+
+TextSubstitution_Color :: struct {
+	from: ManaColor,
+	to: ManaColor,
+}
+TextSubstitution_BasicLandType :: struct {
+	from: BasicLandType,
+	to: BasicLandType,
+}
+TextSubstitution :: union {
+	TextSubstitution_Color,
+	TextSubstitution_BasicLandType,
+}
+
+TextWordDomain :: enum u16 {
+	ColorWord,
+	BasicLandType,
 }
 
 AttackDefenderScope :: enum u16 {
@@ -10372,17 +22968,6 @@ ProhibitionScope :: enum u16 {
 	AllPlayers,
 	Controller,
 	EnchantedCreatureController,
-}
-
-ActivationExemption :: enum u16 {
-	None,
-	ManaAbilities,
-}
-
-ActivatedAbilityKind :: enum u16 {
-	Normal,
-	Loyalty,
-	Mana,
 }
 
 CostCategory :: enum u16 {
@@ -10407,29 +22992,8 @@ CostCategory :: enum u16 {
 	KeywordCost,
 }
 
-CastFrequency :: enum u16 {
-	Unlimited,
-	OncePerTurn,
-	OncePerTurnPerPermanentType,
-}
-
-CostReductionReach :: enum u16 {
-	SpillsToGeneric,
-	ColoredManaOnly,
-}
-
 AdditionalCostTaxAction :: enum u16 {
 	Cast,
-}
-
-SpecialAction :: enum u16 {
-	CompanionToHand,
-	UnlockDoor,
-	Plot,
-	TurnFaceUp,
-	RollPlanarDie,
-	EndContinuousEffect,
-	Foretell,
 }
 
 CostPaymentProhibition_PayLife :: struct {
@@ -10455,16 +23019,6 @@ RequiredDefender :: union {
 	RequiredDefender_Fixed,
 	RequiredDefender_Matching,
 	RequiredDefender_Permanent,
-}
-
-CastExtraCost :: struct {
-	cost: AbilityCost,
-	mode: CastCostMode,
-}
-
-PermissionCastLimit :: enum u16 {
-	Unlimited,
-	Single,
 }
 
 CastFreeOrigin :: enum u16 {
@@ -10558,201 +23112,81 @@ HandSizeModification :: union {
 	HandSizeModification_EqualTo,
 }
 
-StepEndManaAction_Retain :: struct {
+TargetSchedule_Constant :: struct {
+	_0: Ranking,
 }
-StepEndManaAction_Transform :: struct {
-	_0: ManaType,
+TargetSchedule_RoundRobin :: struct {
+	_0: [dynamic]Ranking,
 }
-StepEndManaAction :: union {
-	StepEndManaAction_Retain,
-	StepEndManaAction_Transform,
+TargetSchedule_Piecewise :: struct {
+	_0: [dynamic]Tuple2(u32, Ranking),
 }
-
-CopiableValues :: struct {
-	name: string,
-	mana_cost: ManaCost,
-	color: [dynamic]ManaColor,
-	card_types: CardType,
-	power: Maybe(i32),
-	toughness: Maybe(i32),
-	loyalty: Maybe(u32),
-	printed_loyalty: Maybe(PrintedLoyalty),
-	keywords: [dynamic]Keyword,
-	abilities: ^[dynamic]AbilityDefinition,
-	trigger_definitions: ^[dynamic]TriggerDefinition,
-	trigger_printed_origins: ^[dynamic]Maybe(TriggerPrintedOrigin),
-	replacement_definitions: ^[dynamic]ReplacementDefinition,
-	static_definitions: ^[dynamic]StaticDefinition,
-	room_halves: Maybe(RoomCopiableHalves),
-	prepare_face: ^BackFaceData,
-	name_origin: CopiedNameOrigin,
+TargetSchedule :: union {
+	TargetSchedule_Constant,
+	TargetSchedule_RoundRobin,
+	TargetSchedule_Piecewise,
 }
 
-DisplayIdentity :: struct {
-	display_source: DisplaySource,
-	printed_ref: Maybe(PrintedCardRef),
-	token_image_ref: Maybe(TokenImageRef),
-	token_art: Maybe(TokenArtDescriptor),
+RunFrontier :: struct {
+	state: GameState,
+	related: [dynamic][dynamic]Tuple2(Tuple2(ObjectId, ^ResolvedAbility), int),
 }
 
-TextSubstitutionSpec_Fixed :: struct {
-	_0: TextSubstitution,
-}
-TextSubstitutionSpec_Chosen :: struct {
-	domains: [dynamic]TextWordDomain,
-}
-TextSubstitutionSpec :: union {
-	TextSubstitutionSpec_Fixed,
-	TextSubstitutionSpec_Chosen,
+ContestLossReason :: enum u16 {
+	Inactivity,
+	Forfeit,
 }
 
-SubtypeSet :: enum u16 {
-	Creature,
-	Land,
-	Artifact,
-	Enchantment,
-	Planeswalker,
-	Spell,
-	Battle,
+PlayerDeckList :: struct {
+	main_deck: [dynamic]string,
+	sideboard: [dynamic]string,
+	commander: [dynamic]string,
+	companion: [dynamic]string,
+	attraction_deck: [dynamic]string,
+	planar_deck: [dynamic]string,
+	scheme_deck: [dynamic]string,
+	contraption_deck: [dynamic]string,
+	sticker_sheets: [dynamic]string,
+	signature_spell: [dynamic]string,
+	bracket_tier: Maybe(CommanderBracketTier),
+	combo_declaration: ComboDeclaration,
+	printings: [dynamic]DeckPrinting,
 }
 
-DynamicKeywordKind :: enum u16 {
-	Annihilator,
-	Modular,
-	Mobilize,
+ProtectionColorSet :: enum u16 {
+	OutsideCommanderColorIdentity,
+	AmongPermanentsYouControl,
 }
 
-CostBearingKeywordKind :: enum u16 {
-	Foretell,
-	Madness,
-	Disturb,
-	Mayhem,
-	Dash,
-	Unearth,
+ControlChangeSide :: enum u16 {
+	Loses,
+	Gains,
 }
 
-CostDerivation_ManaCostReducedBy :: struct {
-	_0: ManaCost,
-}
-CostDerivation :: union {
-	CostDerivation_ManaCostReducedBy,
+CausedAbilitySource :: enum u16 {
+	CausingObject,
+	Any,
 }
 
-ChosenSubtypeKind :: enum u16 {
-	CreatureType,
-	BasicLandType,
+PlaneswalkRole :: enum u16 {
+	From,
+	To,
+	Any,
 }
 
-ColorChangeMode :: enum u16 {
-	Set,
-	Add,
+AbilityLifecyclePoint :: enum u16 {
+	Triggered,
+	Resolved,
 }
 
-Designation :: enum u16 {
-	Monarch,
+TriggerLimitSpend :: enum u16 {
+	Triggering,
+	IndicatedAction,
 }
 
-BasicLandType :: enum u16 {
-	Plains,
-	Island,
-	Swamp,
-	Mountain,
-	Forest,
-}
-
-TurnUpCostSource :: enum u16 {
-	Morph,
-	Megamorph,
-	Disguise,
-	ManifestManaCost,
-}
-
-PreventionFormula_Fixed :: struct {
-	_0: u32,
-}
-PreventionFormula_Quantity :: struct {
-	quantity: QuantityExpr,
-}
-PreventionFormula_Fraction :: struct {
-	numerator: u32,
-	denominator: u32,
-	rounding: RoundingMode,
-}
-PreventionFormula :: union {
-	PreventionFormula_Fixed,
-	PreventionFormula_Quantity,
-	PreventionFormula_Fraction,
-}
-
-DamageTargetPlayerScope_Any :: struct {
-}
-DamageTargetPlayerScope_Opponent :: struct {
-}
-DamageTargetPlayerScope_Controller :: struct {
-}
-DamageTargetPlayerScope_SourceChosenPlayer :: struct {
-}
-DamageTargetPlayerScope_Specific :: struct {
-	_0: PlayerId,
-}
-DamageTargetPlayerScope :: union {
-	DamageTargetPlayerScope_Any,
-	DamageTargetPlayerScope_Opponent,
-	DamageTargetPlayerScope_Controller,
-	DamageTargetPlayerScope_SourceChosenPlayer,
-	DamageTargetPlayerScope_Specific,
-}
-
-TokenCharacteristics :: struct {
-	display_name: string,
-	power: Maybe(i32),
-	toughness: Maybe(i32),
-	loyalty: Maybe(u32),
-	core_types: [dynamic]CoreType,
-	subtypes: [dynamic]string,
-	supertypes: [dynamic]Supertype,
-	colors: [dynamic]ManaColor,
-	keywords: [dynamic]Keyword,
-}
-
-TokenAttackRequest_Unspecified :: struct {
-}
-TokenAttackRequest_Named :: struct {
-	first_: PlayerId,
-	rest: [dynamic]PlayerId,
-}
-TokenAttackRequest :: union {
-	TokenAttackRequest_Unspecified,
-	TokenAttackRequest_Named,
-}
-
-TokenHostRequest_NotRequested :: struct {
-}
-TokenHostRequest_Bound :: struct {
-	_0: AttachTarget,
-}
-TokenHostRequest_Unbound :: struct {
-}
-TokenHostRequest :: union {
-	TokenHostRequest_NotRequested,
-	TokenHostRequest_Bound,
-	TokenHostRequest_Unbound,
-}
-
-ModalSelectionCondition_Static :: struct {
-	condition: StaticCondition,
-}
-ModalSelectionCondition_AdditionalCostPaid :: struct {
-	source: AdditionalCostPaymentSource,
-	origin: Maybe(AdditionalCostOrigin),
-	origin_ordinal: Maybe(u32),
-	variant: Maybe(KickerVariant),
-	kicker_cost: Maybe(ManaCost),
-	min_count: u32,
-}
-ModalSelectionCondition :: union {
-	ModalSelectionCondition_Static,
-	ModalSelectionCondition_AdditionalCostPaid,
+DamageAmountScope :: enum u16 {
+	PerSource,
+	WholeEvent,
 }
 
 SpanPrecision :: enum u16 {
@@ -10760,144 +23194,152 @@ SpanPrecision :: enum u16 {
 	ChainRelative,
 }
 
-CountScope :: enum u16 {
-	Controller,
-	Owner,
-	ScopedPlayer,
-	SourceChosenPlayer,
-	All,
-	Opponents,
+ProtectionGrantOccurrence_Static :: struct {
+	definition_index: int,
+}
+ProtectionGrantOccurrence_Granted :: struct {
+	origin: TriggerProducerOrigin,
+}
+ProtectionGrantOccurrence :: union {
+	ProtectionGrantOccurrence_Static,
+	ProtectionGrantOccurrence_Granted,
 }
 
-NameStickerSet_ThatSticker :: struct {
-}
-NameStickerSet_OnObject :: struct {
-	scope: ObjectScope,
-}
-NameStickerSet :: union {
-	NameStickerSet_ThatSticker,
-	NameStickerSet_OnObject,
+ProtectionRiderGrant :: struct {
+	source: ObjectId,
+	occurrence: ProtectionGrantOccurrence,
+	mod_index: int,
+	does_not_remove: ProtectionDoesNotRemove,
 }
 
-LetterQuery_UniqueVowels :: struct {
+PerpetualGrantModification_AddKeyword :: struct {
+	keyword: Keyword,
 }
-LetterQuery_Letter :: struct {
-	letter: rune,
+PerpetualGrantModification_AddStaticMode :: struct {
+	mode: StaticMode,
 }
-LetterQuery :: union {
-	LetterQuery_UniqueVowels,
-	LetterQuery_Letter,
+PerpetualGrantModification_GrantAbility :: struct {
+	definition: ^AbilityDefinition,
 }
-
-PropertyAggregate :: struct {
-	function: AggregateFunction,
-	property: ObjectProperty,
-	source: CardTypeSetSource,
+PerpetualGrantModification_GrantTrigger :: struct {
+	trigger: ^TriggerDefinition,
 }
-
-ZoneRef :: enum u16 {
-	Graveyard,
-	Exile,
-	Library,
-	Hand,
+PerpetualGrantModification :: union {
+	PerpetualGrantModification_AddKeyword,
+	PerpetualGrantModification_AddStaticMode,
+	PerpetualGrantModification_GrantAbility,
+	PerpetualGrantModification_GrantTrigger,
 }
 
-CountBinding :: enum u16 {
-	Explicit,
-	Anaphoric,
+ActiveTriggerGrantInstance :: struct {
+	producer: TriggerGrantProducerKey,
+	instance: TriggerGrantInstanceRef,
 }
 
-DevotionColors_Fixed :: struct {
-	_0: [dynamic]ManaColor,
-}
-DevotionColors_ChosenColor :: struct {
-}
-DevotionColors :: union {
-	DevotionColors_Fixed,
-	DevotionColors_ChosenColor,
+AbilityBlockReason :: struct {
+	sources: [dynamic]ObjectId,
+	kind: AbilityBlockKind,
 }
 
-CardTypeSetSource_Zone :: struct {
-	zone: ZoneRef,
-	scope: CountScope,
-}
-CardTypeSetSource_ExiledBySource :: struct {
-}
-CardTypeSetSource_Objects :: struct {
-	filter: TargetFilter,
-}
-CardTypeSetSource_TrackedSet :: struct {
-	set: TrackedAnaphorSource,
-	caused_by: Maybe(ThisWayCause),
-	filter: Maybe(TargetFilter),
-}
-CardTypeSetSource_TurnJournal :: struct {
-	journal: TurnJournalKind,
-	scope: CountScope,
-	filter: Maybe(TargetFilter),
-}
-CardTypeSetSource_TargetedObjects :: struct {
-	slot: Maybe(int),
-}
-CardTypeSetSource_AnyOf :: struct {
-	sources: UnionSources,
-}
-CardTypeSetSource :: union {
-	CardTypeSetSource_Zone,
-	CardTypeSetSource_ExiledBySource,
-	CardTypeSetSource_Objects,
-	CardTypeSetSource_TrackedSet,
-	CardTypeSetSource_TurnJournal,
-	CardTypeSetSource_TargetedObjects,
-	CardTypeSetSource_AnyOf,
+ExileGrantCostProvenance :: enum u16 {
+	Alternative,
+	NormalCost,
 }
 
-SubtypeExclusion :: enum u16 {
-	None,
-	CreatureTypes,
+PlayPermissionInvalidation :: enum u16 {
+	UntilNextGrantFromSameSource,
 }
 
-TurnWindow :: enum u16 {
-	ThisTurn,
-	LastTurn,
+PlayFromExileProvenance :: enum u16 {
+	Impulse,
+	LandLookCompanion,
 }
 
-AttachmentKind :: enum u16 {
-	Aura,
-	Equipment,
+AssignedDamageRecipient_Object :: struct {
+	_0: ObjectIncarnationRef,
+}
+AssignedDamageRecipient_Player :: struct {
+	_0: PlayerId,
+}
+AssignedDamageRecipient :: union {
+	AssignedDamageRecipient_Object,
+	AssignedDamageRecipient_Player,
 }
 
-DamageGroupKey :: enum u16 {
-	SourceId,
-	Target,
+TriggeredAbilityProvenance :: struct {
+	source_id: ObjectId,
+	ability: ^ResolvedAbility,
+	condition: Maybe(TriggerCondition),
+	trigger_event: Maybe(GameEvent),
+	description: Maybe(string),
+	source_name: string,
+	subject_match_count: Maybe(u32),
+	die_result: Maybe(i32),
+	provenance: Maybe(SyntheticTriggerProvenance),
 }
 
-CyclingHistoryWindow :: enum u16 {
-	ThisTurn,
-	ThisGame,
+EnterWithGrant :: struct {
+	grant: AbilityDefinition,
+	controller: PlayerId,
 }
 
-CastManaObjectScope :: enum u16 {
-	SelfObject,
-	TriggeringSpell,
-	AbilityTarget,
+UnitDisposition_Drop :: struct {
+}
+UnitDisposition_Keep :: struct {
+}
+UnitDisposition_Recolor :: struct {
+	_0: ManaType,
+}
+UnitDisposition :: union {
+	UnitDisposition_Drop,
+	UnitDisposition_Keep,
+	UnitDisposition_Recolor,
 }
 
-CastManaSpentMetric_Total :: struct {
+PendingCombatLegChoice :: struct {
+	pending: PendingReplacement,
+	auto_choice_tail: Maybe(ReplacementAutoChoiceTail),
 }
-CastManaSpentMetric_DistinctColors :: struct {
+
+CopiedFaceUp :: enum u16 {
+	Front,
+	TransformedBack,
+	ModalBack,
 }
-CastManaSpentMetric_OfColor :: struct {
-	color: ManaColor,
+
+AnswerOptionality :: enum u16 {
+	Optional,
+	Mandatory,
 }
-CastManaSpentMetric_FromSource :: struct {
-	source_filter: TargetFilter,
+
+CandidateAction :: struct {
+	action: GameAction,
+	metadata: ActionMetadata,
 }
-CastManaSpentMetric :: union {
-	CastManaSpentMetric_Total,
-	CastManaSpentMetric_DistinctColors,
-	CastManaSpentMetric_OfColor,
-	CastManaSpentMetric_FromSource,
+
+OptionalAdditionalCostBranch_OptionalAccepted :: struct {
+}
+OptionalAdditionalCostBranch_Choice :: struct {
+	index: int,
+}
+OptionalAdditionalCostBranch :: union {
+	OptionalAdditionalCostBranch_OptionalAccepted,
+	OptionalAdditionalCostBranch_Choice,
+}
+
+OptionalAdditionalCostPath_Queue :: struct {
+	origin: AdditionalCostOrigin,
+	origin_ordinal: u32,
+}
+OptionalAdditionalCostPath_Flow :: struct {
+	repeatability: AdditionalCostRepeatability,
+}
+OptionalAdditionalCostPath_Direct :: struct {
+}
+OptionalAdditionalCostPath :: union {
+	OptionalAdditionalCostPath_Queue,
+	OptionalAdditionalCostPath_Flow,
+	OptionalAdditionalCostPath_Direct,
 }
 
 CombatRelation_BlockPairing :: struct {
@@ -10963,444 +23405,460 @@ PtValueScope :: enum u16 {
 	Base,
 }
 
-SharedQualityRelation :: enum u16 {
-	Shares,
-	DoesNotShare,
-}
-
-SacrificeRequirement_Count :: struct {
-	count: u32,
-}
-SacrificeRequirement_Aggregate :: struct {
-	stat: SacrificeAggregateStat,
-	comparator: Comparator,
-	value: i32,
-}
-SacrificeRequirement_All :: struct {
-}
-SacrificeRequirement :: union {
-	SacrificeRequirement_Count,
-	SacrificeRequirement_Aggregate,
-	SacrificeRequirement_All,
-}
-
-TapCreaturesAggregateStat :: enum u16 {
-	TotalPower,
-}
-
-NameDistinctness :: enum u16 {
-	Repeatable,
-	DistinctFromSourceHistory,
-}
-
-NumberDistinctness :: enum u16 {
-	Repeatable,
-	DistinctFromSourceHistory,
-}
-
-CardPredicateChoice_Land :: struct {
-}
-CardPredicateChoice_Nonland :: struct {
-}
-CardPredicateChoice_Color :: struct {
-	_0: ManaColor,
-}
-CardPredicateChoice :: union {
-	CardPredicateChoice_Land,
-	CardPredicateChoice_Nonland,
-	CardPredicateChoice_Color,
-}
-
-PlayerChoiceDistinctness :: enum u16 {
-	Independent,
-	DistinctFromPriorChoices,
-}
-
-NamedDefenderScope :: enum u16 {
-	Player,
-	PlayerOrPlaneswalker,
-}
-
-FaceDownBody :: enum u16 {
-	Creature,
-	Noncreature,
-}
-
-FaceDownCause :: enum u16 {
-	Manifest,
-	Morph,
-	Cloak,
-	Disguise,
-	TurnedFaceDown,
-}
-
-AttachCardinality_One :: struct {
-}
-AttachCardinality_UpTo :: struct {
-	_0: QuantityExpr,
-}
-AttachCardinality_AnyNumber :: struct {
-}
-AttachCardinality_All :: struct {
-}
-AttachCardinality :: union {
-	AttachCardinality_One,
-	AttachCardinality_UpTo,
-	AttachCardinality_AnyNumber,
-	AttachCardinality_All,
-}
-
-TieResolution_Breaker :: struct {
-	_0: u8,
-}
-TieResolution_AllTied :: struct {
-}
-TieResolution :: union {
-	TieResolution_Breaker,
-	TieResolution_AllTied,
-}
-
-EntryAttackDestination_AnyDefender :: struct {
-}
-EntryAttackDestination_PlayerOrPlaneswalker :: struct {
-}
-EntryAttackDestination_Exact :: struct {
-	target: AttackTarget,
-}
-EntryAttackDestination :: union {
-	EntryAttackDestination_AnyDefender,
-	EntryAttackDestination_PlayerOrPlaneswalker,
-	EntryAttackDestination_Exact,
-}
-
-ManaContribution :: enum u16 {
-	Base,
-	Additional,
-}
-
-LinkedExileScope :: enum u16 {
-	ThisObject,
-}
-
-AbilityActivationScope :: enum u16 {
-	OfSpellType,
-	Any,
-}
-
-SpellCostCriterion_ManaValue :: struct {
-	comparator: Comparator,
-	value: u32,
-}
-SpellCostCriterion_HasXInCost :: struct {
-}
-SpellCostCriterion :: union {
-	SpellCostCriterion_ManaValue,
-	SpellCostCriterion_HasXInCost,
-}
-
-ZoneSpend :: struct {
-	zone: Zone,
-	polarity: ZoneSpendPolarity,
-}
-
-ManaRestriction_OnlyForSpell :: struct {
-}
-ManaRestriction_OnlyForSpellType :: struct {
-	_0: string,
-}
-ManaRestriction_OnlyForCreatureType :: struct {
-	_0: string,
-}
-ManaRestriction_OnlyForTypeSpellsOrAbilities :: struct {
-	spell_type: string,
-	ability: AbilityActivationScope,
-}
-ManaRestriction_OnlyForActivation :: struct {
-}
-ManaRestriction_OnlyForTaggedActivation :: struct {
-	_0: AbilityTag,
-}
-ManaRestriction_OnlyForXCosts :: struct {
-}
-ManaRestriction_OnlyForSpellWithKeywordKind :: struct {
-	_0: KeywordKind,
-}
-ManaRestriction_OnlyForSpellWithKeywordKindFromZone :: struct {
-	_0: KeywordKind,
-	_1: Zone,
-}
-ManaRestriction_OnlyForSpellWithManaValue :: struct {
-	comparator: Comparator,
-	value: u32,
-}
-ManaRestriction_OnlyForSpellMatchingCostCriteria :: struct {
-	spell_type: Maybe(string),
-	criteria: [dynamic]SpellCostCriterion,
-}
-ManaRestriction_OnlyForSpellWithColorCount :: struct {
-	comparator: Comparator,
-	count: u32,
-}
-ManaRestriction_OnlyForSpellColor :: struct {
-	_0: ManaColor,
-}
-ManaRestriction_OnlyForSpellFromZone :: struct {
-	_0: ZoneSpend,
-}
-ManaRestriction_CannotCastSpellFromZone :: struct {
-	_0: Zone,
-}
-ManaRestriction_OnlyForFaceDownSpell :: struct {
-}
-ManaRestriction_OnlyForAny :: struct {
-	_0: [dynamic]ManaRestriction,
-}
-ManaRestriction_OnlyForSpecialAction :: struct {
-	_0: SpecialAction,
-}
-ManaRestriction_Impossible :: struct {
-}
-ManaRestriction_ConvokePayment :: struct {
-}
-ManaRestriction :: union {
-	ManaRestriction_OnlyForSpell,
-	ManaRestriction_OnlyForSpellType,
-	ManaRestriction_OnlyForCreatureType,
-	ManaRestriction_OnlyForTypeSpellsOrAbilities,
-	ManaRestriction_OnlyForActivation,
-	ManaRestriction_OnlyForTaggedActivation,
-	ManaRestriction_OnlyForXCosts,
-	ManaRestriction_OnlyForSpellWithKeywordKind,
-	ManaRestriction_OnlyForSpellWithKeywordKindFromZone,
-	ManaRestriction_OnlyForSpellWithManaValue,
-	ManaRestriction_OnlyForSpellMatchingCostCriteria,
-	ManaRestriction_OnlyForSpellWithColorCount,
-	ManaRestriction_OnlyForSpellColor,
-	ManaRestriction_OnlyForSpellFromZone,
-	ManaRestriction_CannotCastSpellFromZone,
-	ManaRestriction_OnlyForFaceDownSpell,
-	ManaRestriction_OnlyForAny,
-	ManaRestriction_OnlyForSpecialAction,
-	ManaRestriction_Impossible,
-	ManaRestriction_ConvokePayment,
-}
-
-TurnGate_None :: struct {
-}
-TurnGate_AfterCreationTurn :: struct {
-}
-TurnGate_After :: struct {
+WaveCount_Fixed :: struct {
 	_0: u32,
 }
-TurnGate :: union {
-	TurnGate_None,
-	TurnGate_AfterCreationTurn,
-	TurnGate_After,
+WaveCount_Snaking :: struct {
+	min: u32,
+	max: u32,
+}
+WaveCount :: union {
+	WaveCount_Fixed,
+	WaveCount_Snaking,
 }
 
-DelayedTriggerPlayerBinding_Controller :: struct {
+CommandZoneMode_Disabled :: struct {
 }
-DelayedTriggerPlayerBinding_ParentTargetOwner :: struct {
+CommandZoneMode_Enabled :: struct {
+	commander_damage_threshold: Maybe(u8),
+	eligibility_rule: CommanderEligibilityRule,
 }
-DelayedTriggerPlayerBinding_ChosenPlayer :: struct {
-	index: u8,
-}
-DelayedTriggerPlayerBinding :: union {
-	DelayedTriggerPlayerBinding_Controller,
-	DelayedTriggerPlayerBinding_ParentTargetOwner,
-	DelayedTriggerPlayerBinding_ChosenPlayer,
+CommandZoneMode :: union {
+	CommandZoneMode_Disabled,
+	CommandZoneMode_Enabled,
 }
 
-ExtraPhaseId :: distinct u64
+SetCode :: distinct string
 
-ExtraTurnId :: distinct u64
-
-WheneverEventExpiry_EndOfTurn :: struct {
-}
-WheneverEventExpiry_UntilControllersNextTurn :: struct {
-	after: TurnGate,
-}
-WheneverEventExpiry :: union {
-	WheneverEventExpiry_EndOfTurn,
-	WheneverEventExpiry_UntilControllersNextTurn,
+LegacyRuleSet :: struct {
+	mana_burn: ManaBurnPolicy,
+	damage_timing: CombatDamageTiming,
+	wish_scope: WishOutsideGameScope,
+	legend_rule_scope: LegendRuleScope,
+	ante: AntePolicy,
 }
 
-DelayedTriggerLifetime :: enum u16 {
-	ThisTurn,
-	Persistent,
-	Reflexive,
+DeckSection :: enum u16 {
+	MainDeck,
+	Sideboard,
+	Commander,
+	Companion,
+	AttractionDeck,
+	PlanarDeck,
+	SchemeDeck,
+	ContraptionDeck,
+	SignatureSpell,
+	Unknown,
 }
 
-RestrictionScope_SourcesControlledBy :: struct {
-	_0: PlayerId,
-}
-RestrictionScope_SpecificSource :: struct {
-	_0: ObjectId,
-}
-RestrictionScope_DamageToTarget :: struct {
-	_0: ObjectId,
-}
-RestrictionScope :: union {
-	RestrictionScope_SourcesControlledBy,
-	RestrictionScope_SpecificSource,
-	RestrictionScope_DamageToTarget,
+AbilityContinuationFrame :: struct {
+	pending: PendingContinuation,
+	choose_zone_trigger_context: Maybe(ResolvingTriggerContext),
 }
 
-RestrictionPlayerScope_AllPlayers :: struct {
-}
-RestrictionPlayerScope_SpecificPlayer :: struct {
-	_0: PlayerId,
-}
-RestrictionPlayerScope_TargetedPlayer :: struct {
-}
-RestrictionPlayerScope_ParentTargetedPlayer :: struct {
-}
-RestrictionPlayerScope_ParentObjectTargetController :: struct {
-}
-RestrictionPlayerScope_OpponentsOfSourceController :: struct {
-}
-RestrictionPlayerScope_DefendingPlayer :: struct {
-}
-RestrictionPlayerScope_ScopedPlayer :: struct {
-}
-RestrictionPlayerScope_SourceController :: struct {
-}
-RestrictionPlayerScope :: union {
-	RestrictionPlayerScope_AllPlayers,
-	RestrictionPlayerScope_SpecificPlayer,
-	RestrictionPlayerScope_TargetedPlayer,
-	RestrictionPlayerScope_ParentTargetedPlayer,
-	RestrictionPlayerScope_ParentObjectTargetController,
-	RestrictionPlayerScope_OpponentsOfSourceController,
-	RestrictionPlayerScope_DefendingPlayer,
-	RestrictionPlayerScope_ScopedPlayer,
-	RestrictionPlayerScope_SourceController,
+PendingRepeatIteration :: struct {
+	ability: ^ResolvedAbility,
+	tracked_members: [dynamic]ObjectId,
+	iterated_counter_kinds: [dynamic]CounterType,
+	next_iteration: int,
+	total_iterations: int,
+	order_fixed: Maybe(int),
 }
 
-ProhibitedActivity_CastOnlyFromZones :: struct {
-	allowed_zones: [dynamic]Zone,
-}
-ProhibitedActivity_CastSpells :: struct {
-	spell_filter: Maybe(TargetFilter),
-}
-ProhibitedActivity_ActivateAbilities :: struct {
-	exemption: ActivationExemption,
-	only_tag: Maybe(AbilityTag),
-}
-ProhibitedActivity_Attack :: struct {
-	defended: AttackTargetFilter,
-	protected_player: Maybe(PlayerId),
-	protected_scope: Maybe(RestrictionPlayerScope),
-}
-ProhibitedActivity_ProhibitPlayFromZone :: struct {
-	zone: Zone,
-}
-ProhibitedActivity_PlayLands :: struct {
-	land_filter: Maybe(TargetFilter),
-}
-ProhibitedActivity :: union {
-	ProhibitedActivity_CastOnlyFromZones,
-	ProhibitedActivity_CastSpells,
-	ProhibitedActivity_ActivateAbilities,
-	ProhibitedActivity_Attack,
-	ProhibitedActivity_ProhibitPlayFromZone,
-	ProhibitedActivity_PlayLands,
+PendingRepeatUntil :: struct {
+	ability: ^ResolvedAbility,
+	stop_progress: Maybe(RepeatUntilStopWitness),
+	iteration_progress: Maybe(RepeatUntilIterationWitness),
 }
 
-ResolutionCastWindow :: struct {
-	max_casts: Maybe(u8),
-	max_total_mv: Maybe(u32),
+RepeatedOptionalPaymentFrame :: struct {
+	pending: ^PendingRepeatedOptionalPayment,
+	optional_cost_payments_this_resolution: u32,
 }
 
-StickerLocator :: struct {
-	sheet: string,
-	index: u8,
+ChangeZoneFrame :: struct {
+	pending: Maybe(PendingChangeZoneIteration),
+	devour_eligible_snapshot: Maybe([dynamic]ObjectId),
+	awaiting_batch: Maybe(ChangeZoneBatchMarker),
 }
 
-ExileGrantCostProvenance :: enum u16 {
-	Alternative,
-	NormalCost,
+PendingBatchDeliveries :: struct {
+	component_delivery_parent: Maybe(PendingComponentDeliveryParent),
+	logical_zone_change_group: LogicalZoneChangeGroup,
+	paused_current: Maybe(PendingZoneChangeDelivery),
+	remaining: [dynamic]ObjectId,
+	destination: Zone,
+	source_id: Maybe(ObjectId),
+	library_reorder: Maybe(LibraryReorderOperation),
+	enter_tapped: EtbTapState,
+	exile_tracking: ZoneDeliveryExileTracking,
+	library_placement: Maybe(LibraryPosition),
+	completion: Maybe(BatchCompletion),
+	replacement_applied: [dynamic]AppliedReplacementKey,
+	requests: [dynamic]PendingBatchZoneMoveRequest,
+	attempted: [dynamic]ObjectId,
+	zone_change_record_start: int,
+	deferred_events: [dynamic]GameEvent,
+	staged: Maybe(StagedBatchDelivery),
+	pre_entry_battlefield: Maybe([dynamic]ObjectId),
 }
 
-ResolutionCastCleanup :: struct {
+PendingCounterMoveQueue :: struct {
+	remaining: [dynamic]PendingCounterMove,
+	effect_kind: EffectKind,
 	source_id: ObjectId,
-	offer_id: Maybe(ResolutionCastOfferId),
-	face_policy: ResolutionCastFacePolicy,
-	exiled_misses: [dynamic]ObjectId,
-	reject_action: ResolutionMvRejectAction,
-	success_action: ResolutionCastSuccessAction,
-	delayed_trigger_receipts: [dynamic]ResolutionCastDelayedTriggerReceipt,
-	indicated_action: ^IndicatedActionLimit,
 }
 
-PlayPermissionInvalidation :: enum u16 {
-	UntilNextGrantFromSameSource,
+PendingCounterRemovalQueue :: struct {
+	remaining: [dynamic]PendingCounterRemoval,
+	effect_kind: EffectKind,
+	source_ability_id: ObjectId,
+	total: u32,
+	applied_total: u32,
+	in_flight: Maybe(PendingCounterRemovalInFlight),
 }
 
-PlayFromExileProvenance :: enum u16 {
-	Impulse,
-	LandLookCompanion,
+PendingCounterAdditionQueue :: struct {
+	remaining: [dynamic]PendingCounterAddition,
+	completion: Maybe(PendingEffectResolved),
 }
 
-PerPlayerScope :: enum u16 {
-	AllPlayers,
-	OtherPlayers,
-	Opponents,
-	TargetedPlayers,
+PendingCopyTokenResolution :: struct {
+	created_ids: [dynamic]ObjectId,
+	remaining: [dynamic]PendingCopyTokenBatch,
+	effect_kind: EffectKind,
+	source_id: ObjectId,
+	referent_set: Maybe(TrackedSetId),
+	offered_batch: OfferedBatchCustody,
 }
 
-PhaseGroup :: enum u16 {
-	Beginning,
-	PrecombatMain,
+PendingDebugCardEntries :: struct {
+	source: DebugCardEntrySource,
+	owner: PlayerId,
+	attach_to: Maybe(AttachTarget),
+	nonlegendary: bool,
+	creation_kind: DebugCardCreationKind,
+	remaining: u32,
+}
+
+PendingEachPlayerCopyChosen :: struct {
+	stage: CopyChosenStage,
+	player: PlayerId,
+	chosen: [dynamic]ObjectId,
+	remaining_choices: [dynamic]CopyChosenSelection,
+	choose_filter: TargetFilter,
+	min: u32,
+	max: u32,
+	copy_modifications: [dynamic]ContinuousModification,
+	scale: Maybe(CopyScale),
+	choose_scope: CopyChooseScope,
+	source_id: ObjectId,
+	source_controller: PlayerId,
+	scoped_players: [dynamic]PlayerId,
+	trigger_event: Maybe(GameEvent),
+}
+
+PendingChooseOneOf :: struct {
+	controller: PlayerId,
+	source_id: ObjectId,
+	branches: [dynamic]AbilityDefinition,
+	parent_occurrences: ParentTargetOccurrences,
+	context_: ^SpellContext,
+	continuation: ^ResolvedAbility,
+	replacement_applied: [dynamic]AppliedReplacementKey,
+	remaining_players: [dynamic]PlayerId,
+	trigger_context: Maybe(ResolvingTriggerContext),
+}
+
+PendingVoteBallotIteration :: struct {
+	ability_template: ^AbilityDefinition,
+	remaining_voters: [dynamic]PlayerId,
+	source_id: ObjectId,
+	controller: PlayerId,
+	chain_root_targets: [dynamic]TargetRef,
+}
+
+PendingPerPlayerZoneChoice :: struct {
+	ability: ^ResolvedAbility,
+	remaining_players: [dynamic]PlayerId,
+	accumulated: bool,
+	current: Maybe(PlayerId),
+	nominee: Maybe(PlayerId),
+	tracked_pool: Maybe(TrackedSetId),
+}
+
+PerCategoryZoneChoiceFrame :: struct {
+	pending: PendingPerCategoryZoneChoice,
+}
+
+PendingCoinFlip :: struct {
+	source_id: ObjectId,
+	controller: PlayerId,
+	flipper: PlayerId,
+	win_effect: ^ResolvedAbility,
+	lose_effect: ^ResolvedAbility,
+	kind: PendingCoinFlipKind,
+	chain_root_targets: [dynamic]TargetRef,
+	branch_context: FlipBranchContext,
+	trigger_context: Maybe(ResolvingTriggerContext),
+}
+
+PendingDieRoll :: struct {
+	source_id: ObjectId,
+	controller: PlayerId,
+	roller: PlayerId,
+	quantity_controller: Maybe(PlayerId),
+	scoped_player: Maybe(PlayerId),
+	targets: [dynamic]TargetRef,
+	sides: u8,
+	results: [dynamic]u8,
+	ignore_rules: [dynamic]DieRollIgnoreRule,
+	results_table: [dynamic]DieResultBranch,
+	modifier: Maybe(DieRollModifier),
+	die_result: Maybe(i32),
+	next_index: int,
+	running_total: i32,
+	rolled_any: bool,
+	forced_ignored: [dynamic]int,
+	chain_root_targets: [dynamic]TargetRef,
+	trigger_context: Maybe(ResolvingTriggerContext),
+	illegal_target_slots: [dynamic]int,
+	chain_root_target_pins: [dynamic]Maybe(ObjectIncarnationRef),
+	declared_capture: Maybe(CapturedDeclarationPayload),
+	local_target_pins: [dynamic]Maybe(ObjectIncarnationRef),
+	keyed_target_incarnations: [dynamic]ObjectIncarnationRef,
+	declared_player: Maybe(DeclaredPlayerTarget),
+}
+
+PendingProliferateActions :: struct {
+	actor: PlayerId,
+	source_id: ObjectId,
+	remaining: u32,
+}
+
+MultiDrawFrame :: struct {
+	draw_sequences: DrawSequenceStack,
+	connive_reentry: Maybe(PendingConniveReentry),
+}
+
+DiscardFrame :: struct {
+	id: DiscardFrameId,
+	source_id: Maybe(ObjectId),
+	results: [dynamic]DiscardedCardResult,
+}
+
+PendingConniveReentry :: struct {
+	conniver: ConniveSubject,
+	count: u32,
+	applied: [dynamic]AppliedReplacementKey,
+}
+
+PendingLifeTotalAssignment :: struct {
+	completion_player: PlayerId,
+	remaining: [dynamic]Tuple2(PlayerId, i32),
+	completion: Maybe(PendingEffectResolved),
+}
+
+PendingSpellResolution :: struct {
+	object_id: ObjectId,
+	controller: PlayerId,
+	casting_variant: CastingVariant,
+	cast_from_zone: Maybe(Zone),
+	cast_controller: Maybe(PlayerId),
+	cast_timing_permission: Maybe(CastTimingPermission),
+	spell_targets: [dynamic]TargetRef,
+	actual_mana_spent: u32,
+	kickers_paid: [dynamic]KickerVariant,
+	additional_cost_payment_count: u32,
+	additional_cost_payments: [dynamic]AdditionalCostInstancePayment,
+	convoked_creatures: [dynamic]ObjectId,
+}
+
+PendingMutateMerge :: struct {
+	merging_id: ObjectId,
+	target_id: ObjectId,
+	controller: PlayerId,
+}
+
+PendingCipherEncode :: struct {
+	stage: CipherEncodeStage,
+	card_id: ObjectId,
+	controller: PlayerId,
+	creatures: [dynamic]ObjectId,
+}
+
+PendingEntryAttackSeat :: struct {
+	entrant: ObjectIncarnationRef,
+}
+
+PostReplacementDrainStack :: struct {
+	drains: [dynamic]PostReplacementDrain,
+	id: Maybe(PostReplacementFrameId),
+}
+
+LogCategory :: enum u16 {
+	Game,
+	Turn,
+	Stack,
 	Combat,
-	PostcombatMain,
-	Ending,
+	Zone,
+	Life,
+	Mana,
+	State,
+	Token,
+	Trigger,
+	Special,
+	Destroy,
+	Debug,
 }
 
-ConjureSource_Named :: struct {
+LogSegment_Text :: struct {
+	_0: string,
+}
+LogSegment_CardName :: struct {
 	name: string,
+	object_id: ObjectId,
 }
-ConjureSource_Duplicate :: struct {
-	duplicate_of: TargetFilter,
+LogSegment_PlayerName :: struct {
+	name: string,
+	player_id: PlayerId,
 }
-ConjureSource :: union {
-	ConjureSource_Named,
-	ConjureSource_Duplicate,
+LogSegment_Number :: struct {
+	_0: i32,
 }
-
-PerpetualGrantModification_AddKeyword :: struct {
-	keyword: Keyword,
+LogSegment_Mana :: struct {
+	_0: string,
 }
-PerpetualGrantModification_AddStaticMode :: struct {
-	mode: StaticMode,
+LogSegment_Zone :: struct {
+	_0: Zone,
 }
-PerpetualGrantModification_GrantAbility :: struct {
-	definition: ^AbilityDefinition,
+LogSegment_Keyword :: struct {
+	_0: string,
 }
-PerpetualGrantModification_GrantTrigger :: struct {
-	trigger: ^TriggerDefinition,
-}
-PerpetualGrantModification :: union {
-	PerpetualGrantModification_AddKeyword,
-	PerpetualGrantModification_AddStaticMode,
-	PerpetualGrantModification_GrantAbility,
-	PerpetualGrantModification_GrantTrigger,
-}
-
-GuessOutcome :: enum u16 {
-	Correct,
-	Incorrect,
+LogSegment :: union {
+	LogSegment_Text,
+	LogSegment_CardName,
+	LogSegment_PlayerName,
+	LogSegment_Number,
+	LogSegment_Mana,
+	LogSegment_Zone,
+	LogSegment_Keyword,
 }
 
-Parity :: enum u16 {
-	Odd,
-	Even,
+LogPresentation :: struct {
+	importance: LogImportance,
+	tone: LogTone,
+	boundary: LogBoundary,
+	visibility: LogVisibility,
 }
 
-SneakPlacement :: struct {
-	defender: PlayerId,
-	attack_target: AttackTarget,
+DrainStatus_Ready :: struct {
+	_0: PostReplacementContinuation,
 }
+DrainStatus_Dispatching :: struct {
+}
+DrainStatus_Paused :: struct {
+}
+DrainStatus :: union {
+	DrainStatus_Ready,
+	DrainStatus_Dispatching,
+	DrainStatus_Paused,
+}
+
+SimultaneousUnlessSeatAnswer :: struct {
+	player: PlayerId,
+	answer: SimultaneousUnlessAnswer,
+}
+
+CardLayout_Single :: struct {
+	_0: CardFace,
+}
+CardLayout_Split :: struct {
+	_0: CardFace,
+	_1: CardFace,
+}
+CardLayout_Flip :: struct {
+	_0: CardFace,
+	_1: CardFace,
+}
+CardLayout_Transform :: struct {
+	_0: CardFace,
+	_1: CardFace,
+}
+CardLayout_Meld :: struct {
+	_0: CardFace,
+	_1: CardFace,
+}
+CardLayout_Adventure :: struct {
+	_0: CardFace,
+	_1: CardFace,
+}
+CardLayout_Modal :: struct {
+	_0: CardFace,
+	_1: CardFace,
+}
+CardLayout_Omen :: struct {
+	_0: CardFace,
+	_1: CardFace,
+}
+CardLayout_Prepare :: struct {
+	_0: CardFace,
+	_1: CardFace,
+}
+CardLayout_Specialize :: struct {
+	_0: CardFace,
+	_1: [dynamic]CardFace,
+}
+CardLayout :: union {
+	CardLayout_Single,
+	CardLayout_Split,
+	CardLayout_Flip,
+	CardLayout_Transform,
+	CardLayout_Meld,
+	CardLayout_Adventure,
+	CardLayout_Modal,
+	CardLayout_Omen,
+	CardLayout_Prepare,
+	CardLayout_Specialize,
+}
+
+FaceSlot_Typed :: struct {
+	_0: CardFace,
+}
+FaceSlot_Raw :: struct {
+	_0: ^Unknown /* RawFace */,
+}
+FaceSlot :: union {
+	FaceSlot_Typed,
+	FaceSlot_Raw,
+}
+
+BracketCardClass :: enum u16 {
+	GameChangers,
+	MassLandSweepers,
+	MassManaDenial,
+	ExtraTurns,
+	ExtraCombats,
+	EfficientTutors,
+}
+
+LoadedList :: struct {
+	source: PolicySource,
+	superseded_by: Maybe(PolicySource),
+	note: Maybe(string),
+	names: [dynamic]string,
+}
+
+TrackedAnaphorSource :: enum u16 {
+	ChainSet,
+	TriggeringBatch,
+}
+
+TurnJournalKind :: enum u16 {
+	SpellsCast,
+}
+
+UnionSources :: distinct [dynamic]CardTypeSetSource
 
 CausingObject :: enum u16 {
 	Any,
@@ -11429,152 +23887,315 @@ ZoneChangeQualifier :: union {
 	ZoneChangeQualifier_Supertype,
 }
 
-CastCostMode :: enum u16 {
-	Alternative,
+NamedDefenderScope :: enum u16 {
+	Player,
+	PlayerOrPlaneswalker,
+}
+
+AttachCardinality_One :: struct {
+}
+AttachCardinality_UpTo :: struct {
+	_0: QuantityExpr,
+}
+AttachCardinality_AnyNumber :: struct {
+}
+AttachCardinality_All :: struct {
+}
+AttachCardinality :: union {
+	AttachCardinality_One,
+	AttachCardinality_UpTo,
+	AttachCardinality_AnyNumber,
+	AttachCardinality_All,
+}
+
+ManaContribution :: enum u16 {
+	Base,
 	Additional,
 }
 
-PrintedLoyalty_Fixed :: struct {
-	_0: u32,
-}
-PrintedLoyalty_X :: struct {
-}
-PrintedLoyalty :: union {
-	PrintedLoyalty_Fixed,
-	PrintedLoyalty_X,
+LinkedExileScope :: enum u16 {
+	ThisObject,
 }
 
-TriggerPrintedOrigin :: struct {
-	printed_ref: PrintedCardRef,
-	printed_occurrence: int,
+ResolutionCastWindow :: struct {
+	max_casts: Maybe(u8),
+	max_total_mv: Maybe(u32),
 }
 
-RoomCopiableHalves :: struct {
-	left: RoomHalfIdentity,
-	right: Maybe(RoomHalfIdentity),
+PerPlayerScope :: enum u16 {
+	AllPlayers,
+	OtherPlayers,
+	Opponents,
+	TargetedPlayers,
 }
 
-BackFaceData :: struct {
+ConjureSource_Named :: struct {
 	name: string,
-	power: Maybe(i32),
-	toughness: Maybe(i32),
-	loyalty: Maybe(u32),
-	printed_loyalty: Maybe(PrintedLoyalty),
-	defense: Maybe(u32),
-	card_types: CardType,
-	mana_cost: ManaCost,
-	keywords: [dynamic]Keyword,
-	abilities: [dynamic]AbilityDefinition,
-	trigger_definitions: Definitions_TriggerDefinition,
-	trigger_printed_origins: [dynamic]Maybe(TriggerPrintedOrigin),
-	replacement_definitions: Definitions_ReplacementDefinition,
-	static_definitions: Definitions_StaticDefinition,
-	color: [dynamic]ManaColor,
-	printed_ref: Maybe(PrintedCardRef),
-	modal: Maybe(ModalChoice),
-	additional_cost: Maybe(AdditionalCost),
-	strive_cost: Maybe(ManaCost),
-	casting_restrictions: [dynamic]CastingRestriction,
-	casting_options: [dynamic]SpellCastingOption,
-	parse_warnings: [dynamic]OracleDiagnostic,
-	layout_kind: Maybe(LayoutKind),
-	is_swap_snapshot: bool,
+}
+ConjureSource_Duplicate :: struct {
+	duplicate_of: TargetFilter,
+}
+ConjureSource :: union {
+	ConjureSource_Named,
+	ConjureSource_Duplicate,
 }
 
-CopiedNameOrigin :: enum u16 {
-	Source,
-	Exception,
+ReplacementActionScope :: struct {
+	amount: i32,
 }
 
-DisplaySource :: enum u16 {
-	Card,
-	Token,
+ParkedOpponentMayPoll :: struct {
+	next: PlayerId,
+	remaining: [dynamic]PlayerId,
+	decision_subject_id: Maybe(ObjectId),
+	source_id: ObjectId,
+	description: Maybe(string),
 }
 
-PrintedCardRef :: struct {
-	oracle_id: string,
-	face_name: string,
+ManaAbilityCostParentLifecycle :: enum u16 {
+	Synchronous,
+	Suspended,
 }
 
-TokenImageRef :: struct {
-	scryfall_id: string,
-	scryfall_oracle_id: Maybe(string),
-	face_name: Maybe(string),
-	preset_id: string,
+EnclosingPostReplacementFrame :: struct {
+	frame: Maybe(PostReplacementFrameId),
+	drains: int,
 }
 
-TokenArtDescriptor :: struct {
-	power: Maybe(i32),
-	toughness: Maybe(i32),
-	colors: [dynamic]ManaColor,
-	subtypes: [dynamic]string,
-	keywords: [dynamic]string,
-	has_abilities: bool,
+VirtualTargetingSource :: struct {
+	source_id: ObjectId,
+	source_occurrence: Maybe(u64),
+	controller: PlayerId,
+	ability_index: Maybe(int),
+	ability: ^ResolvedAbility,
 }
 
-TextSubstitution_Color :: struct {
-	from: ManaColor,
-	to: ManaColor,
-}
-TextSubstitution_BasicLandType :: struct {
-	from: BasicLandType,
-	to: BasicLandType,
-}
-TextSubstitution :: union {
-	TextSubstitution_Color,
-	TextSubstitution_BasicLandType,
+ResolvedManaSpentUnit :: struct {
+	unit: ManaUnit,
+	producer: RulesExecutionNodeRef,
 }
 
-TextWordDomain :: enum u16 {
-	ColorWord,
-	BasicLandType,
+ResolvedPlayerEdit_Life :: struct {
+	delta: i32,
+}
+ResolvedPlayerEdit_Energy :: struct {
+	delta: i32,
+}
+ResolvedPlayerEdit_Counter :: struct {
+	kind: PlayerCounterKind,
+	delta: i32,
+}
+ResolvedPlayerEdit_Speed :: struct {
+	old: Maybe(u8),
+	new: Maybe(u8),
+}
+ResolvedPlayerEdit :: union {
+	ResolvedPlayerEdit_Life,
+	ResolvedPlayerEdit_Energy,
+	ResolvedPlayerEdit_Counter,
+	ResolvedPlayerEdit_Speed,
 }
 
-AttachTarget_Object :: struct {
-	_0: ObjectId,
+ResolvedObjectStatus :: enum u16 {
+	Tapped,
+	Exerted,
 }
-AttachTarget_Player :: struct {
+
+ResolvedObjectCounterEdit_Add :: struct {
+	actor: PlayerId,
+	count: u32,
+}
+ResolvedObjectCounterEdit_Remove :: struct {
+	count: u32,
+}
+ResolvedObjectCounterEdit :: union {
+	ResolvedObjectCounterEdit_Add,
+	ResolvedObjectCounterEdit_Remove,
+}
+
+ResolvedContinuousEffectCommand :: struct {
+	effect: TransientContinuousEffect,
+	expected_installed_count: int,
+	resulting_next_continuous_effect_id: u64,
+	resulting_next_end_effect_group_id: u64,
+	resulting_next_timestamp: u64,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedContinuousEffectRetirementCommand :: struct {
+	effects: [dynamic]TransientContinuousEffect,
+	cause: RulesExecutionNodeRef,
+}
+
+ResolvedCombatMembershipEdit_Attack :: struct {
+	resulting_defending_player: PlayerId,
+	resulting_attack_target: AttackTarget,
+	resulting_attack_target_identity: Maybe(ObjectIncarnationRef),
+}
+ResolvedCombatMembershipEdit_Block :: struct {
+	resulting_attacker: ObjectId,
+	expected_attacker_blocked: bool,
+}
+ResolvedCombatMembershipEdit_MarkBlocked :: struct {
+}
+ResolvedCombatMembershipEdit_Remove :: struct {
+	expected_participation: CombatParticipation,
+}
+ResolvedCombatMembershipEdit_RetireAttacked :: struct {
+	expected_attacked_by: [dynamic]ObjectId,
+}
+ResolvedCombatMembershipEdit :: union {
+	ResolvedCombatMembershipEdit_Attack,
+	ResolvedCombatMembershipEdit_Block,
+	ResolvedCombatMembershipEdit_MarkBlocked,
+	ResolvedCombatMembershipEdit_Remove,
+	ResolvedCombatMembershipEdit_RetireAttacked,
+}
+
+ResolvedTokenBody_Spec :: struct {
+	spec: ^TokenSpec,
+	token_image_ref: Maybe(TokenImageRef),
+}
+ResolvedTokenBody_Copy :: struct {
+	copy: ^CopyTokenSpec,
+	modifications: ResolvedCopyBodyModifications,
+}
+ResolvedTokenBody :: union {
+	ResolvedTokenBody_Spec,
+	ResolvedTokenBody_Copy,
+}
+
+ResolvedInformationAudience_Controller :: struct {
 	_0: PlayerId,
 }
-AttachTarget :: union {
-	AttachTarget_Object,
-	AttachTarget_Player,
+ResolvedInformationAudience_Public :: struct {
+}
+ResolvedInformationAudience :: union {
+	ResolvedInformationAudience_Controller,
+	ResolvedInformationAudience_Public,
 }
 
-TrackedAnaphorSource :: enum u16 {
-	ChainSet,
-	TriggeringBatch,
+ResolvedInformationLifetime_UntilActionBoundary :: struct {
+}
+ResolvedInformationLifetime_UntilZoneChange :: struct {
+}
+ResolvedInformationLifetime_UntilStackObjectLeaves :: struct {
+	stack_entry: ObjectId,
+}
+ResolvedInformationLifetime :: union {
+	ResolvedInformationLifetime_UntilActionBoundary,
+	ResolvedInformationLifetime_UntilZoneChange,
+	ResolvedInformationLifetime_UntilStackObjectLeaves,
 }
 
-TurnJournalKind :: enum u16 {
-	SpellsCast,
+ResolvedInformationEdit :: enum u16 {
+	Reveal,
+	Hide,
 }
 
-UnionSources :: distinct [dynamic]CardTypeSetSource
-
-BlockPairDirection :: enum u16 {
-	SubjectIsBlocker,
-	CandidateIsBlocker,
-	Either,
+ResolvedLedgerEdit_CompletedCycle :: struct {
+	player: PlayerId,
+	record: CyclingRecord,
+	expected_history_len: int,
+	stack_entry: ObjectId,
+}
+ResolvedLedgerEdit_SpellCast :: struct {
+	player: PlayerId,
+	record: SpellCastRecord,
+	expected_turn_count: u8,
+	expected_game_count: u32,
+	expected_turn_history_len: u32,
+	expected_game_history_len: u32,
+}
+ResolvedLedgerEdit_AbilityActivated :: struct {
+	key: AbilityUsageKey,
+	expected_turn_count: u32,
+	expected_game_count: u32,
+	record: ^AbilityActivationRecord,
+	expected_turn_history_len: Maybe(u32),
+}
+ResolvedLedgerEdit_CrimeCommitted :: struct {
+	player: PlayerId,
+	expected_turn_count: u32,
+}
+ResolvedLedgerEdit_TriggerFired :: struct {
+	trigger: TriggerDefinitionRef,
+	edit: ResolvedTriggerLedgerEdit,
+}
+ResolvedLedgerEdit_OncePerTurnPermission :: struct {
+	source: ObjectId,
+	permission: ResolvedOncePerTurnPermission,
+}
+ResolvedLedgerEdit_CardsDrawn :: struct {
+	player: PlayerId,
+	drawn_object: Maybe(ObjectIncarnationRef),
+	attempted_empty_library: bool,
+	expected_has_drawn_this_turn: bool,
+	resulting_has_drawn_this_turn: bool,
+	expected_cards_drawn_this_turn: u32,
+	resulting_cards_drawn_this_turn: u32,
+	expected_cards_drawn_this_step: u32,
+	resulting_cards_drawn_this_step: u32,
+	expected_drew_from_empty_library: bool,
+	resulting_drew_from_empty_library: bool,
+	expected_drawn_cards_len: u32,
+	resulting_drawn_cards_len: u32,
+	expected_first_card_drawn_this_turn: Maybe(ObjectId),
+	resulting_first_card_drawn_this_turn: Maybe(ObjectId),
+}
+ResolvedLedgerEdit :: union {
+	ResolvedLedgerEdit_CompletedCycle,
+	ResolvedLedgerEdit_SpellCast,
+	ResolvedLedgerEdit_AbilityActivated,
+	ResolvedLedgerEdit_CrimeCommitted,
+	ResolvedLedgerEdit_TriggerFired,
+	ResolvedLedgerEdit_OncePerTurnPermission,
+	ResolvedLedgerEdit_CardsDrawn,
 }
 
-SacrificeAggregateStat :: enum u16 {
-	TotalPower,
+RetainedStickerTimestamp :: struct {
+	locator: StickerLocator,
+	prior_timestamp: u64,
+	timestamp: u64,
 }
 
-AttackTarget_Player :: struct {
-	_0: PlayerId,
+ResolvedFrameTransition_Push :: struct {
+	frame: ResolutionFrame,
 }
-AttackTarget_Planeswalker :: struct {
-	_0: ObjectId,
+ResolvedFrameTransition_InsertParentOfActive :: struct {
+	frame: ResolutionFrame,
 }
-AttackTarget_Battle :: struct {
-	_0: ObjectId,
+ResolvedFrameTransition_ParkBeneathLivePrompt :: struct {
+	frame: ResolutionFrame,
 }
-AttackTarget :: union {
-	AttackTarget_Player,
-	AttackTarget_Planeswalker,
-	AttackTarget_Battle,
+ResolvedFrameTransition_PopExpected :: struct {
+	kind: FrameKind,
+}
+ResolvedFrameTransition_ReplaceActive :: struct {
+	frame: ResolutionFrame,
+}
+ResolvedFrameTransition :: union {
+	ResolvedFrameTransition_Push,
+	ResolvedFrameTransition_InsertParentOfActive,
+	ResolvedFrameTransition_ParkBeneathLivePrompt,
+	ResolvedFrameTransition_PopExpected,
+	ResolvedFrameTransition_ReplaceActive,
+}
+
+ResolvedTriggerCollection_DeferPending :: struct {
+	contexts: [dynamic]PendingTriggerContext,
+}
+ResolvedTriggerCollection_ConsumeBeforePriority :: struct {
+	occurrences: [dynamic]ConsumedTriggerEventOccurrence,
+}
+ResolvedTriggerCollection :: union {
+	ResolvedTriggerCollection_DeferPending,
+	ResolvedTriggerCollection_ConsumeBeforePriority,
+}
+
+ResolvedStackPushOrigin :: enum u16 {
+	Put,
+	Copy,
 }
 
 ZoneSpendPolarity :: enum u16 {
@@ -11582,131 +24203,1178 @@ ZoneSpendPolarity :: enum u16 {
 	NotFrom,
 }
 
-ResolutionCastOfferId :: distinct u64
-
-ResolutionCastFacePolicy :: struct {
-	filter: TargetFilter,
-	source_id: ObjectId,
-	controller: PlayerId,
-	constraint: Maybe(CastPermissionConstraint),
-	play_mode: CardPlayMode,
+ChangeZoneArrangementPlan :: enum u16 {
+	OrdinaryDelivery,
+	ArrangePhysicalLibraryArrivals,
 }
 
-ResolutionMvRejectAction :: enum u16 {
-	BottomWithMisses,
-	ToHand,
-	RemainExiled,
+ChangeZoneCountPolicy_TargetedArrivals :: struct {
+	selected: [dynamic]ObjectId,
+}
+ChangeZoneCountPolicy_MassAllMembers :: struct {
+}
+ChangeZoneCountPolicy_ChoiceSelected :: struct {
+	chosen: [dynamic]ObjectId,
+}
+ChangeZoneCountPolicy :: union {
+	ChangeZoneCountPolicy_TargetedArrivals,
+	ChangeZoneCountPolicy_MassAllMembers,
+	ChangeZoneCountPolicy_ChoiceSelected,
 }
 
-ResolutionCastSuccessAction_BottomMisses :: struct {
-}
-ResolutionCastSuccessAction_RippleOfferRemaining :: struct {
-	remaining_hits: [dynamic]ObjectId,
-}
-ResolutionCastSuccessAction_FreeCastOfferRemaining :: struct {
-	controller: PlayerId,
-	remaining_casts: Maybe(u8),
-	remaining_mv_budget: Maybe(u32),
-	face_policy: ^ResolutionCastFacePolicy,
-	zones: [dynamic]Zone,
-	graveyard_replacement: Maybe(SpellStackToGraveyardReplacement),
-	enters_with_modifications: PendingEntersModifications,
-	member_pool: [dynamic]ObjectId,
-}
-ResolutionCastSuccessAction :: union {
-	ResolutionCastSuccessAction_BottomMisses,
-	ResolutionCastSuccessAction_RippleOfferRemaining,
-	ResolutionCastSuccessAction_FreeCastOfferRemaining,
+OwnExileLinkSettlement :: enum u16 {
+	Retain,
+	Consume,
 }
 
-ResolutionCastDelayedTriggerReceipt :: struct {
-	offer_id: ResolutionCastOfferId,
-	token: DelayedTriggerToken,
-	instance: DelayedTriggerInstanceId,
-	source_id: ObjectId,
+EntryOccurrenceCollector :: enum u16 {
+	Owner,
+	AfterSimultaneousEntryEffects,
 }
 
-IndicatedActionLimit :: struct {
-	ledger_ref: TriggerDefinitionRef,
-	controller: PlayerId,
+SacrificeAggregateStat :: enum u16 {
+	TotalPower,
 }
 
-RoomHalfIdentity :: struct {
-	name: string,
-	mana_cost: ManaCost,
+ResourceVector :: struct {
+	mana: [6]i64,
+	life: map[PlayerId]i64,
+	damage_dealt: map[PlayerId]i64,
+	library_delta: map[PlayerId]i64,
+	poison: map[PlayerId]i64,
+	energy: map[PlayerId]i64,
+	tokens_created: i64,
+	cards_drawn: i64,
+	casts_this_step: i64,
+	landfall_triggers: i64,
+	combat_phases: i64,
+	extra_turns: i64,
+	death_triggers: i64,
+	etb_triggers: i64,
+	ltb_triggers: i64,
+	sac_triggers: i64,
+	counters: [dynamic]Tuple2(Tuple2(CounterClass, ObjectClass), i64),
+	generic_triggers: map[TriggerKind]i64,
 }
 
-Definitions_TriggerDefinition :: distinct ^[dynamic]TriggerDefinition
-
-Definitions_ReplacementDefinition :: distinct ^[dynamic]ReplacementDefinition
-
-Definitions_StaticDefinition :: distinct ^[dynamic]StaticDefinition
-
-LayoutKind :: enum u16 {
-	Single,
-	Split,
-	Flip,
-	Transform,
-	Meld,
-	Adventure,
-	Modal,
-	Omen,
-	Prepare,
+CleanupPair :: struct {
+	to_cleanup: i64,
+	growth: i64,
 }
 
-DelayedTriggerToken :: distinct u64
+InstructedMill :: struct {
+	per_repetition: i64,
+	library: i64,
+}
 
-DelayedTriggerInstanceId :: distinct u64
+Ranking :: distinct [dynamic]AnnouncementSubject
 
-TriggerDefinitionRef :: struct {
+ComboDeclaration_Undeclared :: struct {
+}
+ComboDeclaration_NoneIntended :: struct {
+}
+ComboDeclaration_Intended :: struct {
+	window: Maybe(ComboWindow),
+}
+ComboDeclaration :: union {
+	ComboDeclaration_Undeclared,
+	ComboDeclaration_NoneIntended,
+	ComboDeclaration_Intended,
+}
+
+TriggerProducerOrigin_Static :: struct {
 	source: ObjectIncarnationRef,
-	occurrence: TriggerDefinitionOccurrenceRef,
+	definition_index: int,
+	modification_index: int,
 }
-
-TriggerDefinitionOccurrenceRef_Printed :: struct {
-	base_set: TriggerBaseSetInstanceRef,
-	printed_index: int,
-}
-TriggerDefinitionOccurrenceRef_CopiedValue :: struct {
-	copy_effect: CopyEffectInstanceRef,
-	copied_slot: int,
-	printed_origin: Maybe(TriggerPrintedOrigin),
-}
-TriggerDefinitionOccurrenceRef_KeywordCompanion :: struct {
-	grant_instance: TriggerGrantInstanceRef,
-	companion_index: int,
-}
-TriggerDefinitionOccurrenceRef_CopyRetained :: struct {
-	grant_instance: TriggerGrantInstanceRef,
-	source_base_set: TriggerBaseSetInstanceRef,
-	source_printed_index: int,
-}
-TriggerDefinitionOccurrenceRef_Granted :: struct {
-	grant_instance: TriggerGrantInstanceRef,
-}
-TriggerDefinitionOccurrenceRef_ExpandedGrant :: struct {
-	grant_instance: TriggerGrantInstanceRef,
-	provider: ^TriggerDefinitionRef,
-	provider_output_index: int,
-}
-TriggerDefinitionOccurrenceRef_Unmaterialized :: struct {
-}
-TriggerDefinitionOccurrenceRef :: union {
-	TriggerDefinitionOccurrenceRef_Printed,
-	TriggerDefinitionOccurrenceRef_CopiedValue,
-	TriggerDefinitionOccurrenceRef_KeywordCompanion,
-	TriggerDefinitionOccurrenceRef_CopyRetained,
-	TriggerDefinitionOccurrenceRef_Granted,
-	TriggerDefinitionOccurrenceRef_ExpandedGrant,
-	TriggerDefinitionOccurrenceRef_Unmaterialized,
-}
-
-TriggerBaseSetInstanceRef :: distinct u64
-
-CopyEffectInstanceRef :: struct {
+TriggerProducerOrigin_Transient :: struct {
 	continuous_effect_id: u64,
 	modification_index: int,
 }
+TriggerProducerOrigin :: union {
+	TriggerProducerOrigin_Static,
+	TriggerProducerOrigin_Transient,
+}
 
-TriggerGrantInstanceRef :: distinct u64
+TriggerGrantProducerKey_KeywordCompanion :: struct {
+	origin: TriggerProducerOrigin,
+	keyword_output_index: int,
+	companion_index: int,
+}
+TriggerGrantProducerKey_CopyRetained :: struct {
+	origin: TriggerProducerOrigin,
+	source_base_set: TriggerBaseSetInstanceRef,
+	source_printed_index: int,
+}
+TriggerGrantProducerKey_Granted :: struct {
+	origin: TriggerProducerOrigin,
+	output_index: int,
+}
+TriggerGrantProducerKey_ExpandedGrant :: struct {
+	origin: TriggerProducerOrigin,
+	provider: ^TriggerDefinitionRef,
+	provider_output_index: int,
+}
+TriggerGrantProducerKey :: union {
+	TriggerGrantProducerKey_KeywordCompanion,
+	TriggerGrantProducerKey_CopyRetained,
+	TriggerGrantProducerKey_Granted,
+	TriggerGrantProducerKey_ExpandedGrant,
+}
+
+AbilityBlockKind :: enum u16 {
+	CantBeActivated,
+	CantActivateDuring,
+	Prohibited,
+	CostNotPayableNow,
+}
+
+ActionMetadata :: struct {
+	semantic_owner: Maybe(PlayerId),
+	actor: Maybe(PlayerId),
+	tactical_class: TacticalClass,
+}
+
+BlockPairDirection :: enum u16 {
+	SubjectIsBlocker,
+	CandidateIsBlocker,
+	Either,
+}
+
+CommanderEligibilityRule :: enum u16 {
+	Standard,
+	TinyLeaders,
+	OathbreakerSignatureSpell,
+	BrawlColorIdentity,
+	FreeformAnyCastableCard,
+}
+
+ManaBurnPolicy :: enum u16 {
+	Modern,
+	Obsolete,
+}
+
+CombatDamageTiming :: enum u16 {
+	Modern,
+	OnStack,
+}
+
+WishOutsideGameScope :: enum u16 {
+	PostM10SideboardOnly,
+	PreM10ReachesExile,
+}
+
+LegendRuleScope :: enum u16 {
+	Modern,
+	PreM14AnyController,
+}
+
+AntePolicy :: enum u16 {
+	Excluded,
+	Enabled,
+}
+
+PendingContinuation :: struct {
+	chain: ^ResolvedAbility,
+	return_result_occurrence: Maybe(ReturnResultOccurrenceId),
+	pending_return_result_producer: Maybe(Tuple2(ReturnResultOccurrenceId, ReturnResultId)),
+	parent_kind: Maybe(EffectKind),
+	search_attach_host: Maybe(AttachTarget),
+	trigger_context: Maybe(ResolvingTriggerContext),
+	trigger_firing: Maybe(TriggerFiring),
+	attachment_choice: Maybe(PendingAttachmentChoice),
+	attachment_remainder: Maybe(PendingAttachmentRemainder),
+	player_scope_tail: Maybe(PendingPlayerScopeTail),
+	player_scope_queue_end: bool,
+	x_announcement: Maybe(ContinuationXAnnouncement),
+	replacement_action: Maybe(ReplacementActionScope),
+	head_payment_origin: ResolutionPaymentOrigin,
+}
+
+RepeatUntilStopWitness :: struct {
+	exiled_this_turn: [dynamic]ExiledStopInput,
+	linked: [dynamic]ExiledStopInput,
+}
+
+RepeatUntilIterationWitness :: struct {
+	choice: RepeatIterationChoice,
+	zone_changes_before: int,
+}
+
+PendingRepeatedOptionalPayment :: struct {
+	payment_unit: ^ResolvedAbility,
+	reflexive: ^ResolvedAbility,
+	remaining: u32,
+}
+
+PendingChangeZoneIteration :: struct {
+	logical_zone_change_group: LogicalZoneChangeGroup,
+	pending_return_result_producer: Maybe(Tuple2(ReturnResultOccurrenceId, ReturnResultId)),
+	paused_current: Maybe(PendingZoneChangeDelivery),
+	remaining: [dynamic]ChangeZoneMemberEntry,
+	source_id: ObjectId,
+	controller: PlayerId,
+	performed_by: PlayerId,
+	origin: Maybe(Zone),
+	destination: Zone,
+	enter_transformed: bool,
+	enters_under_player: Maybe(PlayerId),
+	duration: Maybe(Duration),
+	track_exiled_by_source: bool,
+	face_down_in_exile: ExileConcealment,
+	moved_count: Maybe(i32),
+	face_down_profile: Maybe(FaceDownProfile),
+	with_entry_effect: ^WithEntryEffect,
+	library_placement: Maybe(LibraryPosition),
+	library_reorder: Maybe(LibraryReorderOperation),
+	library_shuffle: LibraryShuffleMode,
+	enter_attached_to: Maybe(AttachTarget),
+	effect_kind: EffectKind,
+}
+
+ChangeZoneBatchMarker :: struct {
+	group_id: LogicalZoneChangeGroupId,
+	residency: BatchMarkerResidency,
+}
+
+PendingComponentDeliveryParent :: struct {
+	parent_group_id: LogicalZoneChangeGroupId,
+	member: ObjectIncarnationRef,
+	expected_event: ProposedEvent,
+	inherited_arrangements: [dynamic]StagedLibraryArrangement,
+}
+
+LogicalZoneChangeGroup :: struct {
+	logical_group_id: LogicalZoneChangeGroupId,
+	prospective_battlefield_members: [dynamic]LogicalZoneChangeProspectiveMember,
+	prospective_entrants: [dynamic]LogicalZoneChangeProspectiveMember,
+	terminal_outcomes: [dynamic]LogicalZoneChangeTerminalOutcome,
+	post_event_member_contexts: [dynamic]Maybe(TriggerSourceContext),
+	all_origin_occurrences: [dynamic]LogicalZoneChangeOccurrence,
+	immediately_before_latched: bool,
+	immediately_before_batched_triggers: [dynamic]LatchedBatchedTrigger,
+	immediately_before_suppress_triggers: [dynamic]LatchedSuppressTrigger,
+	collected_before_departure: [dynamic]CollectedZoneChange,
+	immediately_after_latched: bool,
+	immediately_after_batched_triggers: [dynamic]LatchedBatchedTrigger,
+	immediately_after_suppress_triggers: [dynamic]LatchedSuppressTrigger,
+	announced_members: [dynamic]ObjectIncarnationRef,
+	departed_owner_after_batched_triggers: [dynamic]LatchedBatchedTrigger,
+	departed_owner_after_suppress_triggers: [dynamic]LatchedSuppressTrigger,
+}
+
+PendingZoneChangeDelivery :: struct {
+	member: ObjectIncarnationRef,
+	expected_event: ProposedEvent,
+	delivery_events: [dynamic]GameEvent,
+	terminal_completion: Maybe(ZoneMoveCompletion),
+	count: PausedZoneChangeDeliveryCount,
+	face_down_in_exile: ExileConcealment,
+}
+
+LibraryReorderOperation :: struct {
+	members: [dynamic]ObjectId,
+	libraries: [dynamic]Tuple2(PlayerId, [dynamic]ObjectId),
+}
+
+PendingBatchZoneMoveRequest :: struct {
+	object_id: ObjectId,
+	destination: Zone,
+	cause: PendingBatchZoneChangeCause,
+	enter_tapped: EtbTapState,
+	enters_attacking: bool,
+	enter_transformed: bool,
+	controller_override: Maybe(PlayerId),
+	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
+	face_down_profile: Maybe(FaceDownProfile),
+	chain_referent: ChainReferentIntent,
+	attach_to: Maybe(AttachTarget),
+	performed_by: Maybe(PlayerId),
+	ownership_actor: EntryOwnershipActor,
+	with_entry_effect: ^WithEntryEffect,
+	library_placement: Maybe(LibraryPosition),
+	library_shuffle: LibraryShuffleMode,
+	exile_duration: Maybe(Duration),
+	exile_controller: Maybe(PlayerId),
+	exile_tracking: ZoneDeliveryExileTracking,
+	replacement_applied: [dynamic]AppliedReplacementKey,
+	face_down_in_exile: ExileConcealment,
+}
+
+StagedBatchDelivery :: struct {
+	stage: BatchDeliveryStage,
+	members: [dynamic]StagedBatchMember,
+	cursor: int,
+	asking: Maybe(ObjectIncarnationRef),
+	arrangements: [dynamic]StagedLibraryArrangement,
+	arrangement_cursor: int,
+	population_devour_snapshot: Maybe([dynamic]ObjectId),
+}
+
+PendingCounterMove :: struct {
+	actor: PlayerId,
+	source_id: ObjectId,
+	destination_id: ObjectId,
+	counter_type: CounterType,
+	remove_count: u32,
+	add_count: u32,
+	cause: CounterCause,
+}
+
+PendingCounterAddition_Object :: struct {
+	actor: PlayerId,
+	object_id: ObjectId,
+	counter_type: CounterType,
+	count: u32,
+	cause: CounterCause,
+}
+PendingCounterAddition_Player :: struct {
+	actor: PlayerId,
+	player_id: PlayerId,
+	counter_kind: PlayerCounterKind,
+	count: u32,
+	cause: CounterCause,
+}
+PendingCounterAddition_Energy :: struct {
+	actor: PlayerId,
+	player_id: PlayerId,
+	count: u32,
+	cause: CounterCause,
+}
+PendingCounterAddition :: union {
+	PendingCounterAddition_Object,
+	PendingCounterAddition_Player,
+	PendingCounterAddition_Energy,
+}
+
+PendingEffectResolved :: struct {
+	kind: EffectKind,
+	source_id: ObjectId,
+	resolution_event: PendingEffectResolutionEvent,
+	post_actions: [dynamic]PendingCounterPostAction,
+	player_action: Maybe(PendingPlayerAction),
+}
+
+PendingCopyTokenBatch :: struct {
+	owner: PlayerId,
+	copy: ^CopyTokenSpec,
+	count: u32,
+}
+
+OfferedBatchCustody :: enum u16 {
+	Settled,
+	AtReplacementPrompt,
+}
+
+DebugCardEntrySource :: struct {
+	face: CardFace,
+	back_face: Maybe(BackFaceData),
+	outside_game_faces: OutsideGameFaces,
+}
+
+CopyChosenStage :: enum u16 {
+	AwaitingCopy,
+	AwaitingCounters,
+}
+
+PendingPerCategoryZoneChoice :: struct {
+	ability: ^ResolvedAbility,
+	pool: [dynamic]ObjectId,
+	remaining_member_filters: [dynamic]TargetFilter,
+}
+
+PendingCoinFlipKind_Exactly :: struct {
+	remaining: u32,
+}
+PendingCoinFlipKind_UntilLoss :: struct {
+	wins_so_far: u32,
+}
+PendingCoinFlipKind :: union {
+	PendingCoinFlipKind_Exactly,
+	PendingCoinFlipKind_UntilLoss,
+}
+
+FlipBranchContext :: struct {
+	chosen_players: [dynamic]PlayerId,
+	parent_occurrences: ParentTargetOccurrences,
+	forwarded_result_context: ^ForwardedResultContext,
+	parent_target_missing_reason: Maybe(ParentTargetMissingReason),
+}
+
+DrawSequenceStack :: struct {
+	frames: [dynamic]DrawSequenceFrame,
+	next_frame_id: u64,
+}
+
+CipherEncodeStage :: enum u16 {
+	Parked,
+	Armed,
+}
+
+LogImportance :: enum u16 {
+	Essential,
+	Context,
+	Detail,
+	Diagnostic,
+}
+
+LogTone :: enum u16 {
+	Neutral,
+	Positive,
+	Negative,
+	Informational,
+	Diagnostic,
+}
+
+LogBoundary :: enum u16 {
+	None,
+	Turn,
+	Phase,
+}
+
+LogVisibility :: enum u16 {
+	Public,
+	HiddenInformation,
+}
+
+PostReplacementContinuation_Template :: struct {
+	_0: ^AbilityDefinition,
+}
+PostReplacementContinuation_Resolved :: struct {
+	_0: ^ResolvedAbility,
+}
+PostReplacementContinuation :: union {
+	PostReplacementContinuation_Template,
+	PostReplacementContinuation_Resolved,
+}
+
+SimultaneousUnlessAnswer_Declined :: struct {
+}
+SimultaneousUnlessAnswer_Sacrifice :: struct {
+	permanent: ObjectIncarnationRef,
+}
+SimultaneousUnlessAnswer_Discard :: struct {
+}
+SimultaneousUnlessAnswer :: union {
+	SimultaneousUnlessAnswer_Declined,
+	SimultaneousUnlessAnswer_Sacrifice,
+	SimultaneousUnlessAnswer_Discard,
+}
+
+PolicySource :: struct {
+	url: string,
+	published: string,
+	retrieved: string,
+	local_copy: Maybe(string),
+}
+
+CombatParticipation :: struct {
+	attacking: Maybe(AttackerInfo),
+	blocking: Maybe([dynamic]ObjectId),
+	blocked_by: [dynamic]ObjectId,
+	damage_assignments: [dynamic]DamageAssignment,
+	attacked_by: [dynamic]ObjectId,
+	outgoing_attack_target_identity: Maybe(Maybe(ObjectIncarnationRef)),
+}
+
+ResolvedCopyBodyModifications_NoExceptions :: struct {
+}
+ResolvedCopyBodyModifications_Folded :: struct {
+	modifications: [dynamic]ContinuousModification,
+	all_creature_types: [dynamic]string,
+}
+ResolvedCopyBodyModifications_DeferredToUnjournaledSeam :: struct {
+	modifications: [dynamic]ContinuousModification,
+}
+ResolvedCopyBodyModifications :: union {
+	ResolvedCopyBodyModifications_NoExceptions,
+	ResolvedCopyBodyModifications_Folded,
+	ResolvedCopyBodyModifications_DeferredToUnjournaledSeam,
+}
+
+ResolvedTriggerLedgerEdit_OncePerTurn :: struct {
+}
+ResolvedTriggerLedgerEdit_OncePerGame :: struct {
+}
+ResolvedTriggerLedgerEdit_OncePerOpponentPerTurn :: struct {
+	opponent: PlayerId,
+}
+ResolvedTriggerLedgerEdit_MaxTimesPerTurn :: struct {
+	expected_old: u32,
+}
+ResolvedTriggerLedgerEdit_IndicatedActionTaken :: struct {
+	player: PlayerId,
+}
+ResolvedTriggerLedgerEdit :: union {
+	ResolvedTriggerLedgerEdit_OncePerTurn,
+	ResolvedTriggerLedgerEdit_OncePerGame,
+	ResolvedTriggerLedgerEdit_OncePerOpponentPerTurn,
+	ResolvedTriggerLedgerEdit_MaxTimesPerTurn,
+	ResolvedTriggerLedgerEdit_IndicatedActionTaken,
+}
+
+ResolvedOncePerTurnPermission_GraveyardCast :: struct {
+}
+ResolvedOncePerTurnPermission_GraveyardCastPermanentType :: struct {
+	permanent_type: CoreType,
+}
+ResolvedOncePerTurnPermission_HandCastFree :: struct {
+}
+ResolvedOncePerTurnPermission_AlternativeCostGrant :: struct {
+}
+ResolvedOncePerTurnPermission_ExilePlay :: struct {
+}
+ResolvedOncePerTurnPermission_ExileCast :: struct {
+}
+ResolvedOncePerTurnPermission_TopOfLibraryCast :: struct {
+}
+ResolvedOncePerTurnPermission :: union {
+	ResolvedOncePerTurnPermission_GraveyardCast,
+	ResolvedOncePerTurnPermission_GraveyardCastPermanentType,
+	ResolvedOncePerTurnPermission_HandCastFree,
+	ResolvedOncePerTurnPermission_AlternativeCostGrant,
+	ResolvedOncePerTurnPermission_ExilePlay,
+	ResolvedOncePerTurnPermission_ExileCast,
+	ResolvedOncePerTurnPermission_TopOfLibraryCast,
+}
+
+FrameKind :: enum u16 {
+	AbilityContinuation,
+	RepeatFor,
+	RepeatUntil,
+	RepeatedOptionalPayment,
+	ChangeZone,
+	BatchDelivery,
+	CounterMoves,
+	CounterRemovals,
+	CounterAdditions,
+	CopyToken,
+	DebugCardEntries,
+	EachPlayerCopyChosen,
+	ChooseOneOf,
+	VoteBallot,
+	PerPlayerZoneChoice,
+	PerCategoryZoneChoice,
+	OptionalEffect,
+	CoinFlip,
+	DieRoll,
+	Proliferate,
+	MultiDraw,
+	Discard,
+	ConniveReentry,
+	LifeTotalAssignment,
+	SpellResolution,
+	MutateMerge,
+	CipherEncode,
+	EntryAttackSeat,
+	PostReplacement,
+}
+
+AnnouncementSubject_Object :: struct {
+	_0: YieldTarget,
+}
+AnnouncementSubject_Seat :: struct {
+	_0: PlayerId,
+}
+AnnouncementSubject :: union {
+	AnnouncementSubject_Object,
+	AnnouncementSubject_Seat,
+}
+
+ComboWindow :: enum u16 {
+	EarlyGame,
+	LateGame,
+}
+
+TacticalClass :: enum u16 {
+	Pass,
+	Land,
+	Spell,
+	Ability,
+	Attack,
+	Block,
+	Target,
+	Selection,
+	Replacement,
+	Mana,
+	Utility,
+}
+
+PendingAttachmentChoice :: struct {
+	operation: ^ResolvedAbility,
+}
+
+PendingAttachmentRemainder :: struct {
+	producer: ^ResolvedAbility,
+}
+
+ContinuationXAnnouncement :: enum u16 {
+	TappedCount,
+	PaidAmount,
+}
+
+ExiledStopInput :: struct {
+	object_id: ObjectId,
+	zone: Zone,
+	controller: PlayerId,
+	name: string,
+}
+
+RepeatIterationChoice_MandatoryOnly :: struct {
+	_0: RepeatIterationMovement,
+}
+RepeatIterationChoice_OptionalOffered :: struct {
+}
+RepeatIterationChoice :: union {
+	RepeatIterationChoice_MandatoryOnly,
+	RepeatIterationChoice_OptionalOffered,
+}
+
+ChangeZoneMemberEntry :: struct {
+	object_id: ObjectId,
+	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
+	enter_tapped: EtbTapState,
+	enters_attacking: bool,
+}
+
+BatchMarkerResidency :: enum u16 {
+	Parked,
+	Detached,
+}
+
+StagedLibraryArrangement :: struct {
+	position: LibraryPosition,
+	batch: MassLibraryOrderBatch,
+	status: StagedArrangementStatus,
+}
+
+LogicalZoneChangeProspectiveMember :: struct {
+	identity: ObjectIncarnationRef,
+}
+
+LogicalZoneChangeTerminalOutcome_Pending :: struct {
+}
+LogicalZoneChangeTerminalOutcome_Prevented :: struct {
+}
+LogicalZoneChangeTerminalOutcome_Remained :: struct {
+}
+LogicalZoneChangeTerminalOutcome_Moved :: struct {
+	occurrence_ordinal: int,
+}
+LogicalZoneChangeTerminalOutcome_AbandonedByPlayerLeft :: struct {
+}
+LogicalZoneChangeTerminalOutcome_Preempted :: struct {
+}
+LogicalZoneChangeTerminalOutcome :: union {
+	LogicalZoneChangeTerminalOutcome_Pending,
+	LogicalZoneChangeTerminalOutcome_Prevented,
+	LogicalZoneChangeTerminalOutcome_Remained,
+	LogicalZoneChangeTerminalOutcome_Moved,
+	LogicalZoneChangeTerminalOutcome_AbandonedByPlayerLeft,
+	LogicalZoneChangeTerminalOutcome_Preempted,
+}
+
+LogicalZoneChangeOccurrence :: struct {
+	ordinal: int,
+	event: GameEvent,
+}
+
+LatchedBatchedTrigger :: struct {
+	definition_ref: TriggerDefinitionRef,
+	definition: TriggerDefinition,
+	observations: [dynamic]LatchedTriggerObservation,
+	completed_occurrences_only: Maybe([dynamic]CollectedZoneChange),
+}
+
+LatchedSuppressTrigger :: struct {
+	source_context: TriggerSourceContext,
+	source_filter: TargetFilter,
+	trigger_source_filter: Maybe(TargetFilter),
+	events: [dynamic]SuppressedTriggerEvent,
+	completed_occurrences_only: Maybe([dynamic]CollectedZoneChange),
+}
+
+CollectedZoneChange :: struct {
+	object_id: ObjectId,
+	from: Maybe(Zone),
+	to: Zone,
+}
+
+ZoneMoveCompletion :: enum u16 {
+	Moved,
+	Prevented,
+	Remained,
+}
+
+PausedZoneChangeDeliveryCount :: enum u16 {
+	NeedsCount,
+	AlreadyCounted,
+}
+
+PendingBatchZoneChangeCause_Effect :: struct {
+	source: ObjectId,
+}
+PendingBatchZoneChangeCause_Cost :: struct {
+	source: ObjectId,
+}
+PendingBatchZoneChangeCause_SpellResolutionDefault :: struct {
+}
+PendingBatchZoneChangeCause_StateBasedAction :: struct {
+}
+PendingBatchZoneChangeCause_CommanderRuleReturn :: struct {
+}
+PendingBatchZoneChangeCause_Draw :: struct {
+	seed_applied: [dynamic]AppliedReplacementKey,
+}
+PendingBatchZoneChangeCause_CastingToStack :: struct {
+	source: ObjectId,
+}
+PendingBatchZoneChangeCause_PregameProcedure :: struct {
+}
+PendingBatchZoneChangeCause_PlayerLeftGame :: struct {
+}
+PendingBatchZoneChangeCause_MergedComponentRouting :: struct {
+}
+PendingBatchZoneChangeCause_DebugCommand :: struct {
+}
+PendingBatchZoneChangeCause :: union {
+	PendingBatchZoneChangeCause_Effect,
+	PendingBatchZoneChangeCause_Cost,
+	PendingBatchZoneChangeCause_SpellResolutionDefault,
+	PendingBatchZoneChangeCause_StateBasedAction,
+	PendingBatchZoneChangeCause_CommanderRuleReturn,
+	PendingBatchZoneChangeCause_Draw,
+	PendingBatchZoneChangeCause_CastingToStack,
+	PendingBatchZoneChangeCause_PregameProcedure,
+	PendingBatchZoneChangeCause_PlayerLeftGame,
+	PendingBatchZoneChangeCause_MergedComponentRouting,
+	PendingBatchZoneChangeCause_DebugCommand,
+}
+
+BatchDeliveryStage :: enum u16 {
+	Approving,
+	Arranging,
+	Delivering,
+}
+
+StagedBatchMember :: struct {
+	announcement_index: u32,
+	request: PendingBatchZoneMoveRequest,
+	identity: ObjectIncarnationRef,
+	expected_origin: Maybe(Zone),
+	merged_departure: Maybe(ObjectIncarnationRef),
+	owner: PlayerId,
+	state: StagedBatchMemberState,
+	approved_event: Maybe(ProposedEvent),
+	pending_outcome: Maybe(StagedMemberOutcome),
+	terminal: Maybe(ZoneMoveCompletion),
+	operation: StagedMemberOperation,
+	approved_post_replacement: Maybe(PostReplacementDrainStack),
+	held_decision: ^HeldReplacementDecision,
+	blocked: bool,
+}
+
+PendingEffectResolutionEvent :: enum u16 {
+	Emit,
+	Suppress,
+}
+
+PendingCounterPostAction_EmitEffectResolved :: struct {
+	kind: EffectKind,
+	source_id: ObjectId,
+}
+PendingCounterPostAction_RecordPlayerAction :: struct {
+	player_id: PlayerId,
+	action: PlayerActionKind,
+}
+PendingCounterPostAction_AddSubtype :: struct {
+	object_id: ObjectId,
+	subtype: string,
+}
+PendingCounterPostAction_ContinueAmassAfterTokenCreation :: struct {
+	controller: PlayerId,
+	subtype: string,
+	count: u32,
+	ability: ^ResolvedAbility,
+}
+PendingCounterPostAction_FinalizeAmass :: struct {
+	object_id: ObjectId,
+	subtype: string,
+	ability: ^ResolvedAbility,
+}
+PendingCounterPostAction_ContinueEmpowerJaceAfterTokenCreation :: struct {
+	controller: PlayerId,
+	source_id: ObjectId,
+	count: u32,
+}
+PendingCounterPostAction_InjectPredefinedTokenAbilities :: struct {
+	object_id: ObjectId,
+}
+PendingCounterPostAction_FinalizeTokenEntry :: struct {
+	object_id: ObjectId,
+	name: string,
+	attach_to: Maybe(AttachTarget),
+	sacrifice_at: Maybe(Duration),
+	source_id: ObjectId,
+	controller: PlayerId,
+}
+PendingCounterPostAction_ContinueTokenCreation :: struct {
+	owner: PlayerId,
+	spec: ^TokenSpec,
+	enter_tapped: EtbTapState,
+	remaining_count: u32,
+}
+PendingCounterPostAction_ContinueTokenEventDelivery :: struct {
+	delivery: ^PendingTokenEventDelivery,
+}
+PendingCounterPostAction_FinalizeCopyTokenEntry :: struct {
+	object_id: ObjectId,
+	name: string,
+	enters_attacking: bool,
+	attack_destination: EntryAttackDestination,
+	source_id: ObjectId,
+	controller: PlayerId,
+}
+PendingCounterPostAction_ContinueCopyTokenCreation :: struct {
+	owner: PlayerId,
+	copy: ^CopyTokenSpec,
+	enter_tapped: EtbTapState,
+	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
+	remaining_count: u32,
+}
+PendingCounterPostAction_ApplyCopyTokenModificationsAndFinalize :: struct {
+	object_id: ObjectId,
+	name: string,
+	enters_attacking: bool,
+	attack_destination: EntryAttackDestination,
+	source_id: ObjectId,
+	controller: PlayerId,
+	remaining_modifications: [dynamic]ContinuousModification,
+	donor: Maybe(ObjectIncarnationRef),
+}
+PendingCounterPostAction_ContinueCopyTokenEntryAfterAuraHost :: struct {
+	object_id: ObjectId,
+	tail: ^CopyTokenEntryTail,
+}
+PendingCounterPostAction_ContinueNonLiminalCopyTokenAfterEntryPayment :: struct {
+	object_id: ObjectId,
+	tail: ^CopyTokenEntryTail,
+}
+PendingCounterPostAction_FinalizeCommittedLiminalTokenEntry :: struct {
+	object_id: ObjectId,
+	name: string,
+	source_id: ObjectId,
+	controller: PlayerId,
+	enters_attacking: bool,
+	attack_destination: EntryAttackDestination,
+	attach_to: Maybe(AttachTarget),
+	sacrifice_at: Maybe(Duration),
+	created_ids: [dynamic]ObjectId,
+	ability_injection: LiminalTokenAbilityInjection,
+	entry_events: TokenEntryEventEmission,
+}
+PendingCounterPostAction_ContinueLiminalCopyTokenBatch :: struct {
+	owner: PlayerId,
+	copy: ^CopyTokenSpec,
+	enter_tapped: EtbTapState,
+	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
+	remaining_count: u32,
+}
+PendingCounterPostAction_EmitCommittedCopyTokenEntry :: struct {
+	object_id: ObjectId,
+}
+PendingCounterPostAction_FinishCopyTargetChoiceEntry :: struct {
+	entrant: ObjectIncarnationRef,
+	resume_stage: CopyEntryResumeStage,
+}
+PendingCounterPostAction_FinishMeldEntry :: struct {
+	context_: MeldSelection,
+}
+PendingCounterPostAction_ClearPendingEtbCounters :: struct {
+	object_id: ObjectId,
+}
+PendingCounterPostAction_ContinueZoneDeliveryTail :: struct {
+	object_id: ObjectId,
+	from: Zone,
+	to: Zone,
+	cause: Maybe(ObjectId),
+	source_id: Maybe(ObjectId),
+	duration: Maybe(Duration),
+	exile_controller: Maybe(PlayerId),
+	exile_tracking: ZoneDeliveryExileTracking,
+	enters_attacking: bool,
+	drain: PostReplacementDrainOwner,
+}
+PendingCounterPostAction_RecordStationed :: struct {
+	spacecraft_id: ObjectId,
+	creature_id: ObjectId,
+	counters_added: u32,
+}
+PendingCounterPostAction_MarkMonstrous :: struct {
+	object_id: ObjectId,
+}
+PendingCounterPostAction_MarkRenowned :: struct {
+	object_id: ObjectId,
+}
+PendingCounterPostAction_ContinueProliferateActions :: struct {
+	pending: PendingProliferateActions,
+}
+PendingCounterPostAction_ContinuePlayerScopeSacrifice :: struct {
+	kept: [dynamic]ObjectId,
+	scoped_players: [dynamic]PlayerId,
+	sacrifice_filter: TargetFilter,
+	source_id: ObjectId,
+	source_controller: PlayerId,
+}
+PendingCounterPostAction :: union {
+	PendingCounterPostAction_EmitEffectResolved,
+	PendingCounterPostAction_RecordPlayerAction,
+	PendingCounterPostAction_AddSubtype,
+	PendingCounterPostAction_ContinueAmassAfterTokenCreation,
+	PendingCounterPostAction_FinalizeAmass,
+	PendingCounterPostAction_ContinueEmpowerJaceAfterTokenCreation,
+	PendingCounterPostAction_InjectPredefinedTokenAbilities,
+	PendingCounterPostAction_FinalizeTokenEntry,
+	PendingCounterPostAction_ContinueTokenCreation,
+	PendingCounterPostAction_ContinueTokenEventDelivery,
+	PendingCounterPostAction_FinalizeCopyTokenEntry,
+	PendingCounterPostAction_ContinueCopyTokenCreation,
+	PendingCounterPostAction_ApplyCopyTokenModificationsAndFinalize,
+	PendingCounterPostAction_ContinueCopyTokenEntryAfterAuraHost,
+	PendingCounterPostAction_ContinueNonLiminalCopyTokenAfterEntryPayment,
+	PendingCounterPostAction_FinalizeCommittedLiminalTokenEntry,
+	PendingCounterPostAction_ContinueLiminalCopyTokenBatch,
+	PendingCounterPostAction_EmitCommittedCopyTokenEntry,
+	PendingCounterPostAction_FinishCopyTargetChoiceEntry,
+	PendingCounterPostAction_FinishMeldEntry,
+	PendingCounterPostAction_ClearPendingEtbCounters,
+	PendingCounterPostAction_ContinueZoneDeliveryTail,
+	PendingCounterPostAction_RecordStationed,
+	PendingCounterPostAction_MarkMonstrous,
+	PendingCounterPostAction_MarkRenowned,
+	PendingCounterPostAction_ContinueProliferateActions,
+	PendingCounterPostAction_ContinuePlayerScopeSacrifice,
+}
+
+PendingPlayerAction :: struct {
+	player_id: PlayerId,
+	action: PlayerActionKind,
+}
+
+OutsideGameFaces :: struct {
+	paper: [dynamic]CardFace,
+	digital: [dynamic]CardFace,
+}
+
+DrawSequenceFrame :: struct {
+	frame_id: DrawSequenceFrameId,
+	player: PlayerId,
+	applied: [dynamic]AppliedReplacementKey,
+	origin: DrawSequenceOrigin,
+	remaining: u32,
+	pending_delivery: Maybe(PendingDrawDelivery),
+	delivery_owner: Maybe(DrawSequenceFrameId),
+	capture_next_child_delivery: bool,
+	accumulated: u32,
+	dealer: Maybe(DrawDealer),
+}
+
+RepeatIterationMovement :: enum u16 {
+	Stationary,
+	ObjectsMoved,
+}
+
+StagedArrangementStatus :: enum u16 {
+	Derived,
+	Awaiting,
+	Offered,
+	Submitted,
+}
+
+LatchedTriggerObservation :: struct {
+	observation_time: TriggerObservationTime,
+	source_context: TriggerSourceContext,
+}
+
+StagedBatchMemberState :: enum u16 {
+	Unconsulted,
+	OuterConsulting,
+	InnerConsulting,
+	Approved,
+	PreventedWithChild,
+	Terminal,
+	Abandoned,
+}
+
+StagedMemberOutcome_Approved :: struct {
+	_0: ProposedEvent,
+}
+StagedMemberOutcome_Prevented :: struct {
+}
+StagedMemberOutcome :: union {
+	StagedMemberOutcome_Approved,
+	StagedMemberOutcome_Prevented,
+}
+
+StagedMemberOperation_ZoneMove :: struct {
+}
+StagedMemberOperation_Destroy :: struct {
+	_0: StagedDestroyOperation,
+}
+StagedMemberOperation :: union {
+	StagedMemberOperation_ZoneMove,
+	StagedMemberOperation_Destroy,
+}
+
+HeldReplacementDecision :: struct {
+	pending: PendingReplacement,
+	chooser: PlayerId,
+	prompt: HeldDecisionPrompt,
+	boundary: Maybe(PendingZoneChangeDelivery),
+	drain: Maybe(PostReplacementDrainStack),
+}
+
+PendingTokenEventDelivery :: struct {
+	remaining: [dynamic]PositionedTokenBatch,
+	delivered: [dynamic]PositionedTokenIds,
+	resumed: Maybe(u32),
+	prefix: [dynamic]ObjectId,
+	source_id: ObjectId,
+}
+
+CopyTokenEntryTail :: struct {
+	owner: PlayerId,
+	copy: ^CopyTokenSpec,
+	enter_tapped: EtbTapState,
+	enter_with_counters: [dynamic]Tuple2(CounterType, u32),
+	etb_counters: [dynamic]Tuple2(CounterType, u32),
+	remaining_count: u32,
+	attack_destination: EntryAttackDestination,
+}
+
+LiminalTokenAbilityInjection :: enum u16 {
+	PredefinedToken,
+	ResolvedToken,
+}
+
+TokenEntryEventEmission :: enum u16 {
+	Emit,
+	Suppress,
+}
+
+CopyEntryResumeStage_ChoiceOwedAfterCounters :: struct {
+}
+CopyEntryResumeStage_ChoiceSettled :: struct {
+}
+CopyEntryResumeStage_BeforeCounters :: struct {
+	_0: ^CopyEntryPendingCounters,
+}
+CopyEntryResumeStage_ReplacementsSettled :: struct {
+}
+CopyEntryResumeStage :: union {
+	CopyEntryResumeStage_ChoiceOwedAfterCounters,
+	CopyEntryResumeStage_ChoiceSettled,
+	CopyEntryResumeStage_BeforeCounters,
+	CopyEntryResumeStage_ReplacementsSettled,
+}
+
+PostReplacementDrainOwner :: enum u16 {
+	DeliveryTail,
+	CallerEpilogue,
+}
+
+DrawSequenceFrameId :: distinct u64
+
+DrawSequenceOrigin_Plain :: struct {
+}
+DrawSequenceOrigin_ConniveTail :: struct {
+	conniver: ^ConniveSubject,
+	count: u32,
+}
+DrawSequenceOrigin_ScryCompletion :: struct {
+	source_id: ObjectId,
+}
+DrawSequenceOrigin :: union {
+	DrawSequenceOrigin_Plain,
+	DrawSequenceOrigin_ConniveTail,
+	DrawSequenceOrigin_ScryCompletion,
+}
+
+PendingDrawDelivery :: struct {
+	player: PlayerId,
+	current: ObjectId,
+	current_settled: bool,
+	remaining: [dynamic]ObjectId,
+	applied: [dynamic]AppliedReplacementKey,
+	attempted_empty_library: bool,
+}
+
+DrawDealer :: struct {
+	stage: DrawDealerStage,
+	seats: [dynamic]DrawDealerSeat,
+}
+
+TriggerObservationTime :: enum u16 {
+	ImmediatelyBefore,
+	ImmediatelyAfter,
+}
+
+StagedDestroyOperation :: struct {
+	source: ObjectId,
+	cant_regenerate: bool,
+	outer: StagedDestroyOuterApproval,
+}
+
+HeldDecisionPrompt_Replacement :: struct {
+}
+HeldDecisionPrompt_Raised :: struct {
+	_0: ^WaitingFor,
+}
+HeldDecisionPrompt :: union {
+	HeldDecisionPrompt_Replacement,
+	HeldDecisionPrompt_Raised,
+}
+
+PositionedTokenBatch :: struct {
+	position: u32,
+	batch: TokenBatch,
+}
+
+PositionedTokenIds :: struct {
+	position: u32,
+	ids: [dynamic]ObjectId,
+}
+
+CopyEntryPendingCounters :: struct {
+	exceptions: Maybe([dynamic]ContinuousModification),
+	replay_entry_events: EntryEventReplay,
+}
+
+DrawDealerStage_Settling :: struct {
+	next: int,
+}
+DrawDealerStage_Dealing :: struct {
+	schedule: [dynamic]PlayerId,
+}
+DrawDealerStage :: union {
+	DrawDealerStage_Settling,
+	DrawDealerStage_Dealing,
+}
+
+DrawDealerSeat :: struct {
+	player: PlayerId,
+	count: u32,
+	applied: [dynamic]AppliedReplacementKey,
+	accumulated: u32,
+}
+
+StagedDestroyOuterApproval :: enum u16 {
+	Unapproved,
+	Approved,
+}
+
+EntryEventReplay :: enum u16 {
+	Required,
+	AlreadyDelivered,
+}
 

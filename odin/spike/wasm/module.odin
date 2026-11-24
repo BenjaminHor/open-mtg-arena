@@ -6,7 +6,7 @@ import "base:runtime"
 import "core:encoding/json"
 import "core:strings"
 import cd "../carddata"
-import rng "../rng"
+import rng "../../engine/rng"
 
 cards: map[string]cd.Card_Face
 result: []byte

@@ -80,10 +80,10 @@ pub struct TypeDef {
 
 impl TypeDef {
     pub fn derives_serialize(&self) -> bool {
-        self.derives.iter().any(|d| d == "Serialize")
+        self.derives.iter().any(|d| d == "Serialize" || d.ends_with("::Serialize"))
     }
     pub fn derives_deserialize(&self) -> bool {
-        self.derives.iter().any(|d| d == "Deserialize")
+        self.derives.iter().any(|d| d == "Deserialize" || d.ends_with("::Deserialize"))
     }
 }
 
@@ -97,6 +97,15 @@ pub struct Registry {
     /// Functions by (impl type, name); free functions have no impl type. A name defined in several modules keeps
     /// every definition.
     pub fns: BTreeMap<(Option<String>, String), Vec<FnDef>>,
+    /// Constants by (impl type, name): free `const`s have no impl type.
+    pub consts: BTreeMap<(Option<String>, String), Vec<ConstDef>>,
+}
+
+#[derive(Clone, Debug)]
+pub struct ConstDef {
+    pub ty: syn::Type,
+    pub expr: syn::Expr,
+    pub file: PathBuf,
 }
 
 #[derive(Clone, Debug)]
@@ -236,7 +245,71 @@ fn self_type_name(ty: &Type) -> Option<String> {
     None
 }
 
+/// A `macro_rules!` with one rule whose matcher is `$a:frag, $b:frag, ...`: its parameter names and body.
+struct SimpleMacro {
+    params: Vec<String>,
+    body: String,
+}
+
+fn simple_macros(items: &[Item]) -> BTreeMap<String, SimpleMacro> {
+    let mut out = BTreeMap::new();
+    for item in items {
+        let Item::Macro(m) = item else { continue };
+        if !m.mac.path.is_ident("macro_rules") {
+            continue;
+        }
+        let Some(name) = &m.ident else { continue };
+        let src = m.mac.tokens.to_string();
+        // One rule: `( matcher ) => { body }` with nothing after it but an optional `;`.
+        let Some(arrow) = src.find("=>") else { continue };
+        let matcher = src[..arrow].trim().trim_start_matches('(').trim_end_matches(')');
+        let rest = src[arrow + 2..].trim().trim_end_matches(';').trim();
+        if !(rest.starts_with('{') && rest.ends_with('}')) || rest[1..rest.len() - 1].contains("=>") {
+            continue;
+        }
+        let params: Option<Vec<String>> = matcher
+            .split(',')
+            .map(|p| {
+                let p = p.trim();
+                p.strip_prefix('$').and_then(|q| q.split(':').next()).map(|n| n.trim().to_string())
+            })
+            .collect();
+        let Some(params) = params else { continue };
+        out.insert(name.to_string(), SimpleMacro { params, body: rest[1..rest.len() - 1].to_string() });
+    }
+    out
+}
+
+/// Expands `name!(a, b)` with a simple macro by substituting the arguments, and parses the items it makes.
+fn expand_simple(mac: &SimpleMacro, args: &str) -> Option<Vec<Item>> {
+    let args: Vec<&str> = args.split(',').map(str::trim).filter(|a| !a.is_empty()).collect();
+    if args.len() != mac.params.len() {
+        return None;
+    }
+    let mut body = mac.body.clone();
+    let mut order: Vec<usize> = (0..mac.params.len()).collect();
+    order.sort_by_key(|&i| std::cmp::Reverse(mac.params[i].len()));
+    for i in order {
+        body = body.replace(&format!("$ {}", mac.params[i]), args[i]);
+    }
+    syn::parse_file(&body).ok().map(|f| f.items)
+}
+
 fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
+    let macros = simple_macros(items);
+    let mut expanded = Vec::new();
+    for item in items {
+        if let Item::Macro(m) = item {
+            if let Some(mac) = m.mac.path.get_ident().and_then(|i| macros.get(&i.to_string())) {
+                if let Some(items) = expand_simple(mac, &m.mac.tokens.to_string()) {
+                    expanded.extend(items);
+                }
+            }
+        }
+    }
+    if !expanded.is_empty() {
+        visit_items(&expanded, file, reg);
+    }
     for item in items {
         match item {
             Item::Struct(s) => {
@@ -278,6 +351,13 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
             Item::Type(t) if !is_cfg_test(&t.attrs) => {
                 reg.aliases.entry(t.ident.to_string()).or_default().push(((*t.ty).clone(), file.to_path_buf()));
             }
+            Item::Const(c) if !is_cfg_test(&c.attrs) => {
+                reg.consts.entry((None, c.ident.to_string())).or_default().push(ConstDef {
+                    ty: (*c.ty).clone(),
+                    expr: (*c.expr).clone(),
+                    file: file.to_path_buf(),
+                });
+            }
             Item::Fn(f) if !is_cfg_test(&f.attrs) => {
                 reg.fns.entry((None, f.sig.ident.to_string())).or_default().push(FnDef {
                     sig: f.sig.clone(),
@@ -290,6 +370,13 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
                 if i.trait_.is_none() && !is_cfg_test(&i.attrs) {
                     if let Some(n) = self_type_name(&i.self_ty) {
                         for it in &i.items {
+                            if let syn::ImplItem::Const(c) = it {
+                                reg.consts.entry((Some(n.clone()), c.ident.to_string())).or_default().push(ConstDef {
+                                    ty: c.ty.clone(),
+                                    expr: c.expr.clone(),
+                                    file: file.to_path_buf(),
+                                });
+                            }
                             if let syn::ImplItem::Fn(f) = it {
                                 reg.fns.entry((Some(n.clone()), f.sig.ident.to_string())).or_default().push(FnDef {
                                     sig: f.sig.clone(),

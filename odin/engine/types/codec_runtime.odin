@@ -218,3 +218,28 @@ dynamic_from :: proc(xs: []$T) -> [dynamic]T {
 	copy(out[:], xs)
 	return out
 }
+
+// A type the model doesn't hold: only behind runtime-only fields (e.g. the test-support RawFace in
+// CardDatabase's face slots), never serialized. Its uses are named in generated_types.odin.
+Unknown :: struct {}
+
+// `matches!(x, Enum::Variant)` / `x == Enum::Variant` on a data enum, in translated code.
+is_variant :: proc(x: $U, $V: typeid) -> bool {
+	_, ok := x.(V)
+	return ok
+}
+
+// Internally tagged newtype variants holding a unit enum: serde writes the inner variant as a member key with a
+// null value ({"type": "Destination", "Hand": null}). The key is that variant's JSON string.
+member_json_key :: proc(b: ^strings.Builder, first: ^bool, x: $T, enc: proc(b: ^strings.Builder, x: T)) {
+	if !first^ do strings.write_byte(b, ',')
+	first^ = false
+	enc(b, x)
+	strings.write_byte(b, ':')
+}
+
+// The first member of an object that isn't the tag (reading the case above).
+other_member_key :: proc(v: json.Value, tag: string) -> string {
+	for m in v.members do if m.key != tag do return m.key
+	return ""
+}

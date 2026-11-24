@@ -3,7 +3,7 @@ package rng_vectors
 
 import "core:fmt"
 import "core:strings"
-import rng "../rng"
+import rng "../../engine/rng"
 
 SEEDS := [6]u64{0, 1, 42, 0xDEAD_BEEF, 0x0123_4567_89AB_CDEF, max(u64)}
 

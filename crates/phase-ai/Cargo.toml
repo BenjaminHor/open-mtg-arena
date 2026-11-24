@@ -47,6 +47,12 @@ name = "ai-duel"
 path = "src/bin/ai_duel.rs"
 
 [[bin]]
+name = "record-games"
+# Records seeded AI-vs-AI games for the Odin port (docs/odin-port.md); temporary tooling.
+path = "src/bin/record_games.rs"
+test = false
+
+[[bin]]
 name = "ai-tune"
 path = "src/bin/ai_tune.rs"
 test = false

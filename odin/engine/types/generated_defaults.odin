@@ -6,6 +6,10 @@ import "../json"
 
 _ :: json
 
+default_AbilityActivationRecord_battlefield_zone :: proc() -> Zone {
+	return Zone.Battlefield
+}
+
 default_AbilityCondition_AbilityCondition_default_min_count :: proc() -> u32 {
 	return 1
 }
@@ -30,16 +34,43 @@ default_AbilityCost_default_quantity_one :: proc() -> QuantityExpr {
 	return QuantityExpr_Fixed{value = 1}
 }
 
+default_AttackerInfo_default_attack_target :: proc() -> AttackTarget {
+	return AttackTarget_Player{_0 = PlayerId(0)}
+}
+
+default_BatchCompletion_default_zone_graveyard :: proc() -> Zone {
+	return Zone.Graveyard
+}
+
 default_CastingPermission_play_from_exile_mode_default :: proc() -> CardPlayMode {
 	return CardPlayMode.Play
 }
 
 default_ConjureCard_default_quantity_one :: default_AbilityCost_default_quantity_one
+default_CostPaidObjectSnapshot_legacy_incarnation :: proc() -> u64 {
+	return max(u64)
+}
+
 default_CounterSourceRider_duration_until_host_leaves_play :: proc() -> ^Duration {
 	return new_clone(Duration(Duration_UntilHostLeavesPlay{}))
 }
 
-default_Effect_ObjectSelectionCardinality_single :: hand_ObjectSelectionCardinality_single
+default_DamageRecord_default_source_zone :: proc() -> Zone {
+	return Zone.Battlefield
+}
+
+default_DebugAction_default_debug_create_count :: proc() -> u32 {
+	return 1
+}
+
+default_DebugAction_default_true :: proc() -> bool {
+	return true
+}
+
+default_Effect_ObjectSelectionCardinality_single :: proc() -> ObjectSelectionCardinality {
+	return ObjectSelectionCardinality_Exactly{count = 1}
+}
+
 default_Effect_default_controller_ref_you :: proc() -> ControllerRef {
 	return ControllerRef_You{}
 }
@@ -126,7 +157,10 @@ default_Effect_default_target_filter_parent_target_owner :: proc() -> TargetFilt
 	return TargetFilter_ParentTargetOwner{}
 }
 
-default_Effect_default_target_filter_permanent :: hand_default_target_filter_permanent
+default_Effect_default_target_filter_permanent :: proc() -> TargetFilter {
+	return TargetFilter_Typed{_0 = TypedFilter{type_filters = dynamic_from([]TypeFilter{(TypeFilter_Permanent{})})}}
+}
+
 default_Effect_default_target_filter_self_ref :: proc() -> TargetFilter {
 	return TargetFilter_SelfRef{}
 }
@@ -167,6 +201,69 @@ default_ForEachCategoryAction_default_true :: proc() -> bool {
 	return true
 }
 
+default_FormatConfig_default_deck_copy_limit_fallback :: proc() -> DeckCopyLimit {
+	return DeckCopyLimit_UpTo{_0 = 1}
+}
+
+default_FormatConfig_default_sideboard_policy_fallback :: proc() -> SideboardPolicy {
+	return SideboardPolicy_Forbidden{}
+}
+
+default_GameAction_default_one :: proc() -> u32 {
+	return 1
+}
+
+default_GameEvent_default_nth_in_step :: proc() -> u32 {
+	return 1
+}
+
+default_GameEvent_default_nth_in_turn :: proc() -> u32 {
+	return 1
+}
+
+default_GameLogEntry_game_state_default_game_number :: proc() -> u8 {
+	return 1
+}
+
+default_GameObject_GameObject_initial_next_trigger_base_set_instance :: proc() -> u64 {
+	return 2
+}
+
+default_GameObject_GameObject_initial_trigger_base_set_instance :: proc() -> TriggerBaseSetInstanceRef {
+	return TriggerBaseSetInstanceRef(1)
+}
+
+default_GameState_AbilityOnsetRecord_absent_on_wire :: proc() -> AbilityOnsetRecord {
+	return AbilityOnsetRecord.Unrecorded
+}
+
+default_GameState_FormatConfig_standard :: hand_FormatConfig_standard
+default_GameState_default_game_number :: default_GameLogEntry_game_state_default_game_number
+default_GameState_default_interaction_serial :: proc() -> string {
+	return "1"
+}
+
+default_GameState_default_next_return_result_occurrence_id :: proc() -> u64 {
+	return 1
+}
+
+default_GameState_initial_delayed_trigger_instance_id :: proc() -> u64 {
+	return 1
+}
+
+default_GameState_initial_logical_zone_change_group_id :: proc() -> u64 {
+	return 1
+}
+
+default_GameState_initial_resolve_all_consent_epoch :: proc() -> u64 {
+	return 1
+}
+
+default_HordeRuleset_default_horde_haste_fallback :: proc() -> bool {
+	return true
+}
+
+default_LinkedExileSnapshot_ability_legacy_incarnation :: default_CostPaidObjectSnapshot_legacy_incarnation
 default_ManaProduction_default_all_mana_colors :: proc() -> [dynamic]ManaColor {
 	return dynamic_from([]ManaColor{ManaColor.White, ManaColor.Blue, ManaColor.Black, ManaColor.Red, ManaColor.Green})
 }
@@ -180,10 +277,22 @@ default_ManaSpellGrant_default_mana_keyword_grant_duration :: proc() -> ^Duratio
 	return new_clone(Duration(Duration_UntilEndOfTurn{}))
 }
 
+default_ManaUnit_unstamped_pip_id :: proc() -> ManaPipId {
+	return ManaPipId(0)
+}
+
 default_ModalChoice_default_player_filter_controller :: default_Effect_default_player_filter_controller
 default_ModalSelectionCondition_AbilityCondition_default_min_count :: default_AbilityCondition_AbilityCondition_default_min_count
+default_OutsideGameChoiceEntry_default_one_u32 :: proc() -> u32 {
+	return 1
+}
+
 default_ParsedCondition_legacy_is_during_upkeep_phases :: proc() -> [dynamic]Phase {
 	return dynamic_from([]Phase{Phase.Upkeep})
+}
+
+default_PendingCast_default_origin_zone :: proc() -> Zone {
+	return Zone.Hand
 }
 
 default_PlayerFilter_damage_kind_combat_only :: proc() -> DamageKindFilter {
@@ -211,6 +320,18 @@ default_PlayerScope_default_parent_object_target_possession :: proc() -> Possess
 	return PossessionAxis.Controller
 }
 
+default_Player_default_contraption_crank_sprocket :: proc() -> u8 {
+	return 3
+}
+
+default_PreparedScopedLibrarySearchChoice_default_prepared_search_filter :: proc() -> TargetFilter {
+	return TargetFilter_Any{}
+}
+
+default_ProposedEvent_default_produce_mana_count :: proc() -> u32 {
+	return 1
+}
+
 default_QuantityRef_default_count_scope_controller :: proc() -> CountScope {
 	return CountScope.Controller
 }
@@ -234,9 +355,21 @@ default_QuantityRef_target_zone_count_scope_default :: proc() -> ControllerRef {
 }
 
 default_ReplacementCondition_default_one :: default_AbilityCost_default_one
+default_ResolutionPaymentTransaction_resolution_payment_transaction_wire_version :: proc() -> u32 {
+	return 1
+}
+
 default_SacrificeRequirement_default_one :: default_AbilityCost_default_one
 default_SearchSelectionConstraint_default_legacy_distinct_qualities_relation :: proc() -> SharedQualityRelation {
 	return SharedQualityRelation.DoesNotShare
+}
+
+default_ShortcutDecisionSchema_default_deliverable_capacity :: proc() -> u32 {
+	return 1000
+}
+
+default_SpellCastRecord_default_spell_cast_record_from_zone :: proc() -> Zone {
+	return Zone.Hand
 }
 
 default_StaticCondition_default_damage_kind :: default_QuantityRef_default_damage_kind
@@ -247,6 +380,10 @@ default_StaticMode_cost_modify_mode_reduce :: proc() -> CostModifyMode {
 
 default_StaticMode_default_prohibition_all_players :: proc() -> ProhibitionScope {
 	return ProhibitionScope.AllPlayers
+}
+
+default_StructuralRules_default_structural_poison_counter_threshold :: proc() -> u8 {
+	return 10
 }
 
 default_TapCreaturesRequirement_default_one :: default_AbilityCost_default_one
@@ -264,19 +401,58 @@ default_TriggerDefinition_OriginConstraint_any_default :: proc() -> OriginConstr
 	return OriginConstraint_Any{}
 }
 
+default_TriggerOccurrenceState_TriggerOccurrenceState_initial_next_grant_instance :: proc() -> u64 {
+	return 1
+}
+
 default_UntilCondition_default_quantity_one :: default_AbilityCost_default_quantity_one
+default_WaitingFor_ObjectSelectionCardinality_single :: default_Effect_ObjectSelectionCardinality_single
+default_WaitingFor_UntapStepProgress_absent_on_wire :: proc() -> UntapStepProgress {
+	return UntapStepProgress.BeforeTurnBasedActions
+}
+
+default_WaitingFor_ability_default_target_filter_any :: default_Effect_default_target_filter_any
+default_WaitingFor_combat_default_attack_target :: default_AttackerInfo_default_attack_target
+default_WaitingFor_default_copy_retarget_effect_kind :: proc() -> EffectKind {
+	return EffectKind.CopySpell
+}
+
+default_WaitingFor_default_pile_source_battlefield :: proc() -> PileSource {
+	return PileSource_Battlefield{}
+}
+
+default_WaitingFor_default_remaining_one :: proc() -> u32 {
+	return 1
+}
+
+default_WaitingFor_default_target_filter_permanent :: default_Effect_default_target_filter_permanent
 default_ZoneChangeClause_OriginConstraint_any_default :: default_TriggerDefinition_OriginConstraint_any_default
-skip_AbilityCondition_AbilityCondition_is_default_min_count :: proc(x: u32) -> bool {
+skip_AbilityActivationRecord_BoundActivationCost_is_unknown_BoundActivationCost :: proc(x: BoundActivationCost) -> bool {
+	_ = x
+	#partial switch y in x {
+	case BoundActivationCost_Unknown:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_AbilityActivationRecord_is_battlefield_zone_Zone :: proc(x: Zone) -> bool {
+	_ = x
+	return (x == Zone.Battlefield)
+}
+
+skip_AbilityCondition_AbilityCondition_is_default_min_count_u32 :: proc(x: u32) -> bool {
 	_ = x
 	return (x == 1)
 }
 
-skip_AbilityCondition_AbilityCondition_is_default_use_comparator :: proc(x: Comparator) -> bool {
+skip_AbilityCondition_AbilityCondition_is_default_use_comparator_Comparator :: proc(x: Comparator) -> bool {
 	_ = x
 	return x == Comparator.EQ
 }
 
-skip_AbilityCondition_AbilityCondition_is_subject_source :: proc(x: ObjectScope) -> bool {
+skip_AbilityCondition_AbilityCondition_is_subject_source_ObjectScope :: proc(x: ObjectScope) -> bool {
 	_ = x
 	#partial switch y in x {
 	case ObjectScope_Source:
@@ -286,7 +462,7 @@ skip_AbilityCondition_AbilityCondition_is_subject_source :: proc(x: ObjectScope)
 	return false
 }
 
-skip_AbilityCondition_AbilityCondition_is_subject_target :: proc(x: ObjectScope) -> bool {
+skip_AbilityCondition_AbilityCondition_is_subject_target_ObjectScope :: proc(x: ObjectScope) -> bool {
 	_ = x
 	#partial switch y in x {
 	case ObjectScope_Target:
@@ -296,77 +472,88 @@ skip_AbilityCondition_AbilityCondition_is_subject_target :: proc(x: ObjectScope)
 	return false
 }
 
-skip_AbilityCondition_AbilityUseTally_is_resolved :: proc(x: AbilityUseTally) -> bool {
+skip_AbilityCondition_AbilityUseTally_is_resolved_AbilityUseTally :: proc(x: AbilityUseTally) -> bool {
 	_ = x
 	return x == AbilityUseTally.Resolved
 }
 
-skip_AbilityCondition_AdditionalCostPaymentSource_is_any :: proc(x: AdditionalCostPaymentSource) -> bool {
+skip_AbilityCondition_AdditionalCostPaymentSource_is_any_AdditionalCostPaymentSource :: proc(x: AdditionalCostPaymentSource) -> bool {
 	_ = x
 	return x == AdditionalCostPaymentSource.Any
 }
 
-skip_AbilityCondition_is_total_damage_channel :: proc(x: DamageChannel) -> bool {
+skip_AbilityCondition_is_total_damage_channel_DamageChannel :: proc(x: DamageChannel) -> bool {
 	_ = x
 	return x == DamageChannel.Total
 }
 
-skip_AbilityDefinition_ContinuousEffectOnset_is_when_followed :: proc(x: ContinuousEffectOnset) -> bool {
+skip_AbilityDefinition_ContinuousEffectOnset_is_when_followed_ContinuousEffectOnset :: proc(x: ContinuousEffectOnset) -> bool {
 	_ = x
 	return x == ContinuousEffectOnset.WhenFollowed
 }
 
-skip_AbilityDefinition_ExileConcealment_is_public :: proc(x: ExileConcealment) -> bool {
+skip_AbilityDefinition_ExileConcealment_is_public_ExileConcealment :: proc(x: ExileConcealment) -> bool {
 	_ = x
 	return x == ExileConcealment.Public
 }
 
-skip_AbilityDefinition_IllegalTargetsDisposition_is_does_not_resolve :: proc(x: IllegalTargetsDisposition) -> bool {
+skip_AbilityDefinition_IllegalTargetsDisposition_is_does_not_resolve_IllegalTargetsDisposition :: proc(x: IllegalTargetsDisposition) -> bool {
 	_ = x
 	return x == IllegalTargetsDisposition.DoesNotResolve
 }
 
-skip_AbilityDefinition_InstructionJoin_is_own :: proc(x: InstructionJoin) -> bool {
+skip_AbilityDefinition_InstructionJoin_is_own_InstructionJoin :: proc(x: InstructionJoin) -> bool {
 	_ = x
 	return x == InstructionJoin.Own
 }
 
-skip_AbilityDefinition_RepeatForTiming_is_sequential :: proc(x: RepeatForTiming) -> bool {
+skip_AbilityDefinition_RepeatForTiming_is_sequential_RepeatForTiming :: proc(x: RepeatForTiming) -> bool {
 	_ = x
 	return x == RepeatForTiming.Sequential
 }
 
-skip_AbilityDefinition_SiblingCondition_is_default :: proc(x: SiblingCondition) -> bool {
+skip_AbilityDefinition_SiblingCondition_is_default_SiblingCondition :: proc(x: SiblingCondition) -> bool {
 	_ = x
 	return x == SiblingCondition.Dependent
 }
 
-skip_AbilityDefinition_SubAbilityLink_is_continuation :: proc(x: SubAbilityLink) -> bool {
+skip_AbilityDefinition_SubAbilityLink_is_continuation_SubAbilityLink :: proc(x: SubAbilityLink) -> bool {
 	_ = x
 	return x == SubAbilityLink.ContinuationStep
 }
 
-skip_AbilityDefinition_TargetChoiceTiming_is_stack :: proc(x: TargetChoiceTiming) -> bool {
+skip_AbilityDefinition_TargetChoiceTiming_is_stack_TargetChoiceTiming :: proc(x: TargetChoiceTiming) -> bool {
 	_ = x
 	return x == TargetChoiceTiming.Stack
 }
 
-skip_AbilityDefinition_TargetReadOrigin_is_own :: proc(x: TargetReadOrigin) -> bool {
+skip_AbilityDefinition_TargetReadOrigin_is_own_TargetReadOrigin :: proc(x: TargetReadOrigin) -> bool {
 	_ = x
 	return x == TargetReadOrigin.OwnAnnouncement
 }
 
-skip_AbilityDefinition_TargetSelectionMode_is_chosen :: proc(x: TargetSelectionMode) -> bool {
+skip_AbilityDefinition_TargetSelectionMode_is_chosen_TargetSelectionMode :: proc(x: TargetSelectionMode) -> bool {
 	_ = x
 	return x == TargetSelectionMode.Chosen
 }
 
-skip_AdditionalCost_AdditionalCostRepeatability_is_once :: proc(x: AdditionalCostRepeatability) -> bool {
+skip_ActivationCostSnapshot_ManaCarrier_is_whole_ManaCarrier :: proc(x: ManaCarrier) -> bool {
+	_ = x
+	return x == ManaCarrier.Whole
+}
+
+skip_AdditionalCostInstancePayment_AdditionalCostOrigin_is_other_AdditionalCostOrigin :: proc(x: AdditionalCostOrigin) -> bool {
+	_ = x
+	return x == AdditionalCostOrigin.Other
+}
+
+skip_AdditionalCostInstance_AdditionalCostOrigin_is_other_AdditionalCostOrigin :: skip_AdditionalCostInstancePayment_AdditionalCostOrigin_is_other_AdditionalCostOrigin
+skip_AdditionalCost_AdditionalCostRepeatability_is_once_AdditionalCostRepeatability :: proc(x: AdditionalCostRepeatability) -> bool {
 	_ = x
 	return x == AdditionalCostRepeatability.Once
 }
 
-skip_AttachSelection_AttachCardinality_is_one :: proc(x: AttachCardinality) -> bool {
+skip_AttachSelection_AttachCardinality_is_one_AttachCardinality :: proc(x: AttachCardinality) -> bool {
 	_ = x
 	#partial switch y in x {
 	case AttachCardinality_One:
@@ -376,166 +563,12 @@ skip_AttachSelection_AttachCardinality_is_one :: proc(x: AttachCardinality) -> b
 	return false
 }
 
-skip_CardExportEntry_is_clean_signals :: hand_is_clean_signals
-skip_CardFace_CardMetadata_is_empty :: hand_CardMetadata_is_empty
-skip_CardTypeSetSource_TrackedAnaphorSource_is_chain_set :: proc(x: TrackedAnaphorSource) -> bool {
+skip_AutoPassMode_StackResolutionPolicy_is_committed_StackResolutionPolicy :: proc(x: StackResolutionPolicy) -> bool {
 	_ = x
-	return x == TrackedAnaphorSource.ChainSet
+	return (x == StackResolutionPolicy.Committed)
 }
 
-skip_CastingPermission_CardPlayMode_is_play :: proc(x: CardPlayMode) -> bool {
-	_ = x
-	return x == CardPlayMode.Play
-}
-
-skip_CastingPermission_CastFrequency_is_unlimited :: proc(x: CastFrequency) -> bool {
-	_ = x
-	return x == CastFrequency.Unlimited
-}
-
-skip_CastingPermission_EtbTapState_is_unspecified :: proc(x: EtbTapState) -> bool {
-	_ = x
-	return x == EtbTapState.Unspecified
-}
-
-skip_CastingPermission_ExileGrantCostProvenance_is_alternative :: proc(x: ExileGrantCostProvenance) -> bool {
-	_ = x
-	return x == ExileGrantCostProvenance.Alternative
-}
-
-skip_CastingPermission_PendingEntersModifications_is_empty :: hand_PendingEntersModifications_is_empty
-skip_CastingPermission_PlayFromExileProvenance_is_impulse :: proc(x: PlayFromExileProvenance) -> bool {
-	_ = x
-	return x == PlayFromExileProvenance.Impulse
-}
-
-skip_CostReduction_statics_is_cost_modify_mode_reduce :: proc(x: CostModifyMode) -> bool {
-	_ = x
-	return x == CostModifyMode.Reduce
-}
-
-skip_DamageAmountThreshold_is_per_source_damage_scope :: proc(x: DamageAmountScope) -> bool {
-	_ = x
-	return x == DamageAmountScope.PerSource
-}
-
-skip_DamageTargetFilter_SourceExclusion_is_include :: proc(x: SourceExclusion) -> bool {
-	_ = x
-	return x == SourceExclusion.Include
-}
-
-skip_DelayedTriggerCondition_DelayedTriggerLifetime_is_this_turn :: proc(x: DelayedTriggerLifetime) -> bool {
-	_ = x
-	return x == DelayedTriggerLifetime.ThisTurn
-}
-
-skip_DelayedTriggerCondition_DelayedTriggerPlayerBinding_is_controller :: proc(x: DelayedTriggerPlayerBinding) -> bool {
-	_ = x
-	#partial switch y in x {
-	case DelayedTriggerPlayerBinding_Controller:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_DelayedTriggerCondition_TurnGate_is_none :: proc(x: TurnGate) -> bool {
-	_ = x
-	#partial switch y in x {
-	case TurnGate_None:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_DelayedTriggerCondition_WheneverEventExpiry_is_end_of_turn :: proc(x: WheneverEventExpiry) -> bool {
-	_ = x
-	#partial switch y in x {
-	case WheneverEventExpiry_EndOfTurn:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_Effect_AttachSelection_is_targeted :: proc(x: AttachSelection) -> bool {
-	_ = x
-	#partial switch y in x {
-	case AttachSelection_Targeted:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_Effect_BounceSelection_is_targeted :: proc(x: BounceSelection) -> bool {
-	_ = x
-	return x == BounceSelection.Targeted
-}
-
-skip_Effect_CardSelectionMode_is_chosen :: proc(x: CardSelectionMode) -> bool {
-	_ = x
-	return x == CardSelectionMode.Chosen
-}
-
-skip_Effect_CastFromZoneDriver_is_default :: proc(x: CastFromZoneDriver) -> bool {
-	_ = x
-	#partial switch y in x {
-	case CastFromZoneDriver_LingeringPermission:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_Effect_ChooseOneOfKind_is_ordinary :: proc(x: ChooseOneOfKind) -> bool {
-	_ = x
-	return x == ChooseOneOfKind.Ordinary
-}
-
-skip_Effect_ControllerRef_is_you :: proc(x: ControllerRef) -> bool {
-	_ = x
-	#partial switch y in x {
-	case ControllerRef_You:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_Effect_CopyRecipient_is_source :: proc(x: CopyRecipient) -> bool {
-	_ = x
-	#partial switch y in x {
-	case CopyRecipient_Source:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_Effect_DigRestOrder_is_preserve :: proc(x: DigRestOrder) -> bool {
-	_ = x
-	return x == DigRestOrder.Preserve
-}
-
-skip_Effect_DigRestRemainder_is_route :: proc(x: DigRestRemainder) -> bool {
-	_ = x
-	return x == DigRestRemainder.Route
-}
-
-skip_Effect_DigSource_is_library :: proc(x: DigSource) -> bool {
-	_ = x
-	return x == DigSource.Library
-}
-
-skip_Effect_EffectScope_is_single :: proc(x: EffectScope) -> bool {
-	_ = x
-	return x == EffectScope.Single
-}
-
-skip_Effect_EtbTapState_is_unspecified :: skip_CastingPermission_EtbTapState_is_unspecified
-skip_Effect_LibraryInstructionActor_is_controller :: proc(x: LibraryInstructionActor) -> bool {
+skip_BoundSearchFoundDisposition_LibraryInstructionActor_is_controller_LibraryInstructionActor :: proc(x: LibraryInstructionActor) -> bool {
 	_ = x
 	#partial switch y in x {
 	case LibraryInstructionActor_Controller:
@@ -545,280 +578,92 @@ skip_Effect_LibraryInstructionActor_is_controller :: proc(x: LibraryInstructionA
 	return false
 }
 
-skip_Effect_LibraryPosition_is_top :: proc(x: LibraryPosition) -> bool {
+skip_CardExportEntry_is_clean_signals_BracketSignals :: hand_is_clean_signals
+skip_CardFace_CardMetadata_is_empty_CardMetadata :: proc(x: CardMetadata) -> bool {
+	_ = x
+	return ((((((((((x.forge_abilities == 0) && (x.forge_triggers == 0)) && (x.forge_statics == 0)) && (x.forge_replacements == 0)) && (len(x.related_token_ids) == 0)) && (len(x.source_printing_ids) == 0)) && (len(x.spellbook) == 0)) && (x.off_stack_mana_value_override == nil)) && (len(x.off_stack_mana_costs) == 0)) && (x.confirmed_misparse == nil))
+}
+
+skip_CardTypeSetSource_TrackedAnaphorSource_is_chain_set_TrackedAnaphorSource :: proc(x: TrackedAnaphorSource) -> bool {
+	_ = x
+	return x == TrackedAnaphorSource.ChainSet
+}
+
+skip_CastOfferKind_PendingEntersModifications_is_empty_PendingEntersModifications :: proc(x: PendingEntersModifications) -> bool {
+	_ = x
+	return (len(x.modifications) == 0)
+}
+
+skip_CastingPermission_CardPlayMode_is_play_CardPlayMode :: proc(x: CardPlayMode) -> bool {
+	_ = x
+	return x == CardPlayMode.Play
+}
+
+skip_CastingPermission_CastFrequency_is_unlimited_CastFrequency :: proc(x: CastFrequency) -> bool {
+	_ = x
+	return x == CastFrequency.Unlimited
+}
+
+skip_CastingPermission_EtbTapState_is_unspecified_EtbTapState :: proc(x: EtbTapState) -> bool {
+	_ = x
+	return x == EtbTapState.Unspecified
+}
+
+skip_CastingPermission_ExileGrantCostProvenance_is_alternative_ExileGrantCostProvenance :: proc(x: ExileGrantCostProvenance) -> bool {
+	_ = x
+	return x == ExileGrantCostProvenance.Alternative
+}
+
+skip_CastingPermission_PendingEntersModifications_is_empty_PendingEntersModifications :: skip_CastOfferKind_PendingEntersModifications_is_empty_PendingEntersModifications
+skip_CastingPermission_PlayFromExileProvenance_is_impulse_PlayFromExileProvenance :: proc(x: PlayFromExileProvenance) -> bool {
+	_ = x
+	return x == PlayFromExileProvenance.Impulse
+}
+
+skip_ChangeZoneBatchMarker_BatchMarkerResidency_is_parked_BatchMarkerResidency :: proc(x: BatchMarkerResidency) -> bool {
+	_ = x
+	return x == BatchMarkerResidency.Parked
+}
+
+skip_ChangeZoneBatchTail_ChangeZoneArrangementPlan_is_ordinary_ChangeZoneArrangementPlan :: proc(x: ChangeZoneArrangementPlan) -> bool {
+	_ = x
+	return (x == ChangeZoneArrangementPlan.OrdinaryDelivery)
+}
+
+skip_ChangeZoneBatchTail_EntryOccurrenceCollector_is_owner_EntryOccurrenceCollector :: proc(x: EntryOccurrenceCollector) -> bool {
+	_ = x
+	return x == EntryOccurrenceCollector.Owner
+}
+
+skip_ChangeZoneMemberEntry_EtbTapState_is_unspecified_EtbTapState :: skip_CastingPermission_EtbTapState_is_unspecified_EtbTapState
+skip_CompanionInfo_DisplayOnly_is_none_DisplayOnly_ptr_CardPrinting :: proc(x: DisplayOnly_ptr_CardPrinting) -> bool {
+	_ = x
+	return ((cast(^CardPrinting)(x)) == nil)
+}
+
+skip_ConfirmedPeriod_CountedBy_is_threshold_CountedBy :: proc(x: CountedBy) -> bool {
+	_ = x
+	return is_variant(x, CountedBy_Threshold)
+}
+
+skip_ConfirmedPeriod_Outcomes_is_refused_Outcomes :: proc(x: Outcomes) -> bool {
+	_ = x
+	return (x == Outcomes.Refused)
+}
+
+skip_ControlChangeInstructionCapture_latched_doublers_are_empty_ptr_dyn_LatchedTriggerDoubler :: hand_latched_doublers_are_empty
+skip_ControlChangeObservation_latched_doublers_are_empty_ptr_dyn_LatchedTriggerDoubler :: skip_ControlChangeInstructionCapture_latched_doublers_are_empty_ptr_dyn_LatchedTriggerDoubler
+skip_CopyTokenEntryTail_EntryAttackDestination_is_any_defender_EntryAttackDestination :: proc(x: EntryAttackDestination) -> bool {
 	_ = x
 	#partial switch y in x {
-	case LibraryPosition_Top:
+	case EntryAttackDestination_AnyDefender:
 		_ = y
 		return true
 	}
 	return false
 }
 
-skip_Effect_ObjectSelectionCardinality_is_single :: hand_ObjectSelectionCardinality_is_single
-skip_Effect_RedirectionLifetime_is_one_opportunity :: proc(x: RedirectionLifetime) -> bool {
-	_ = x
-	return x == RedirectionLifetime.OneOpportunity
-}
-
-skip_Effect_RevealUntilDisposition_is_keep_each :: proc(x: RevealUntilDisposition) -> bool {
-	_ = x
-	return x == RevealUntilDisposition.KeepEach
-}
-
-skip_Effect_TargetSelectionMode_is_chosen :: skip_AbilityDefinition_TargetSelectionMode_is_chosen
-skip_Effect_TokenAttackDestination_is_controller_chooses :: proc(x: TokenAttackDestination) -> bool {
-	_ = x
-	#partial switch y in x {
-	case TokenAttackDestination_ControllerChooses:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_Effect_ZoneChoiceCandidateSource_is_legacy :: proc(x: ZoneChoiceCandidateSource) -> bool {
-	_ = x
-	return x == ZoneChoiceCandidateSource.Legacy
-}
-
-skip_Effect_is_default_grantee :: proc(x: PermissionGrantee) -> bool {
-	_ = x
-	return x == PermissionGrantee.AbilityController
-}
-
-skip_Effect_is_default_library_shuffle_mode :: hand_is_default_library_shuffle_mode
-skip_Effect_is_default_outside_game_source_pool :: proc(x: OutsideGameSourcePool) -> bool {
-	_ = x
-	return x == OutsideGameSourcePool.Sideboard
-}
-
-skip_Effect_is_default_quantity_one :: proc(x: QuantityExpr) -> bool {
-	_ = x
-	#partial switch y in x {
-	case QuantityExpr_Fixed:
-		_ = y
-		return y.value == 1
-	}
-	return false
-}
-
-skip_Effect_is_default_search_selection_constraint :: proc(x: SearchSelectionConstraint) -> bool {
-	_ = x
-	#partial switch y in x {
-	case SearchSelectionConstraint_None:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_Effect_is_default_search_zones :: hand_is_default_search_zones
-skip_Effect_is_default_sticker_ticket_cost_payment :: proc(x: StickerTicketCostPayment) -> bool {
-	_ = x
-	return (x == StickerTicketCostPayment.PayNormally)
-}
-
-skip_Effect_is_target_filter_controller :: proc(x: TargetFilter) -> bool {
-	_ = x
-	#partial switch y in x {
-	case TargetFilter_Controller:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_Effect_is_target_filter_parent_target :: proc(x: TargetFilter) -> bool {
-	_ = x
-	#partial switch y in x {
-	case TargetFilter_ParentTarget:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_Effect_is_target_filter_parent_target_owner :: proc(x: TargetFilter) -> bool {
-	_ = x
-	#partial switch y in x {
-	case TargetFilter_ParentTargetOwner:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_Effect_target_filter_is_self_ref :: proc(x: TargetFilter) -> bool {
-	_ = x
-	#partial switch y in x {
-	case TargetFilter_SelfRef:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_FaceDownProfile_is_creature_body :: proc(x: FaceDownBody) -> bool {
-	_ = x
-	return x == FaceDownBody.Creature
-}
-
-skip_FilterProp_SourceExclusion_is_include :: skip_DamageTargetFilter_SourceExclusion_is_include
-skip_FilterProp_is_default_shared_quality_relation :: proc(x: SharedQualityRelation) -> bool {
-	_ = x
-	return x == SharedQualityRelation.Shares
-}
-
-skip_ManaProduction_is_default_mana_contribution :: proc(x: ManaContribution) -> bool {
-	_ = x
-	return x == ManaContribution.Base
-}
-
-skip_ModalChoice_TargetSelectionMode_is_chosen :: skip_AbilityDefinition_TargetSelectionMode_is_chosen
-skip_ModalSelectionCondition_AbilityCondition_is_default_min_count :: skip_AbilityCondition_AbilityCondition_is_default_min_count
-skip_ModalSelectionCondition_AdditionalCostPaymentSource_is_any :: skip_AbilityCondition_AdditionalCostPaymentSource_is_any
-skip_PlayerFilter_is_one :: proc(x: u32) -> bool {
-	_ = x
-	return (x == 1)
-}
-
-skip_PlayerFilter_is_player_relation_all :: proc(x: PlayerRelation) -> bool {
-	_ = x
-	return x == PlayerRelation.All
-}
-
-skip_PlayerFilter_is_player_relation_opponent :: proc(x: PlayerRelation) -> bool {
-	_ = x
-	return x == PlayerRelation.Opponent
-}
-
-skip_QuantityRef_TurnWindow_is_this_turn :: proc(x: TurnWindow) -> bool {
-	_ = x
-	return x == TurnWindow.ThisTurn
-}
-
-skip_QuantityRef_is_count_binding_default :: proc(x: CountBinding) -> bool {
-	_ = x
-	return x == CountBinding.Anaphoric
-}
-
-skip_QuantityRef_is_default_damage_kind :: proc(x: DamageKindFilter) -> bool {
-	_ = x
-	return x == DamageKindFilter.Any
-}
-
-skip_QuantityRef_is_player_relation_all :: skip_PlayerFilter_is_player_relation_all
-skip_QuantityRef_is_player_scope_controller :: proc(x: PlayerScope) -> bool {
-	_ = x
-	#partial switch y in x {
-	case PlayerScope_Controller:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_QuantityRef_is_sum_aggregate :: proc(x: AggregateFunction) -> bool {
-	_ = x
-	return x == AggregateFunction.Sum
-}
-
-skip_QuantityRef_is_target_zone_count_scope_default :: proc(x: ControllerRef) -> bool {
-	_ = x
-	#partial switch y in x {
-	case ControllerRef_TargetOpponent:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_QuantityRef_is_total_damage_channel :: skip_AbilityCondition_is_total_damage_channel
-skip_ReplacementDefinition_CounterReplacementSubject_is_default :: proc(x: CounterReplacementSubject) -> bool {
-	_ = x
-	return x == CounterReplacementSubject.Recipient
-}
-
-skip_ReplacementDefinition_ManaReplacementScope_is_any :: proc(x: ManaReplacementScope) -> bool {
-	_ = x
-	return x == ManaReplacementScope.Any
-}
-
-skip_ReplacementDefinition_ReplacementChoiceAuthority_is_affected_player :: proc(x: ReplacementChoiceAuthority) -> bool {
-	_ = x
-	return x == ReplacementChoiceAuthority.AffectedPlayer
-}
-
-skip_ReplacementDefinition_ReplacementOrigin_is_characteristic :: proc(x: ReplacementOrigin) -> bool {
-	_ = x
-	return x == ReplacementOrigin.Characteristic
-}
-
-skip_ReplacementDefinition_ShieldKind_is_none :: proc(x: ShieldKind) -> bool {
-	_ = x
-	#partial switch y in x {
-	case ShieldKind_None:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_ResolutionCastFacePolicy_CardPlayMode_is_cast :: proc(x: CardPlayMode) -> bool {
-	_ = x
-	return x == CardPlayMode.Cast
-}
-
-skip_ResolutionCastSuccessAction_PendingEntersModifications_is_empty :: skip_CastingPermission_PendingEntersModifications_is_empty
-skip_SearchDestinationSplit_EtbTapState_is_unspecified :: skip_CastingPermission_EtbTapState_is_unspecified
-skip_StaticCondition_AttackedYouScope_is_any_player :: proc(x: AttackedYouScope) -> bool {
-	_ = x
-	return x == AttackedYouScope.AnyPlayer
-}
-
-skip_StaticCondition_UnlessPayScaling_is_flat :: proc(x: UnlessPayScaling) -> bool {
-	_ = x
-	#partial switch y in x {
-	case UnlessPayScaling_Flat:
-		_ = y
-		return true
-	}
-	return false
-}
-
-skip_StaticCondition_is_default_damage_kind :: skip_QuantityRef_is_default_damage_kind
-skip_StaticCondition_is_player_scope_controller :: skip_QuantityRef_is_player_scope_controller
-skip_StaticMode_CastFrequency_is_unlimited :: skip_CastingPermission_CastFrequency_is_unlimited
-skip_StaticMode_CostReductionReach_is_spills_to_generic :: proc(x: CostReductionReach) -> bool {
-	_ = x
-	return x == CostReductionReach.SpillsToGeneric
-}
-
-skip_StaticMode_EtbTapState_is_unspecified :: skip_CastingPermission_EtbTapState_is_unspecified
-skip_StaticMode_GraveyardPermissionPool_is_own_graveyard :: proc(x: GraveyardPermissionPool) -> bool {
-	_ = x
-	return x == GraveyardPermissionPool.OwnGraveyard
-}
-
-skip_StaticMode_ManaSpendPermission_is_any_color :: proc(x: ManaSpendPermission) -> bool {
-	_ = x
-	return x == ManaSpendPermission.AnyColor
-}
-
-skip_StaticMode_PendingEntersModifications_is_empty :: skip_CastingPermission_PendingEntersModifications_is_empty
-skip_StaticMode_PermissionCastLimit_is_unlimited :: proc(x: PermissionCastLimit) -> bool {
-	_ = x
-	return x == PermissionCastLimit.Unlimited
-}
-
-skip_StaticMode_is_default_exile_cast_grantee :: proc(x: ExileCastGrantee) -> bool {
-	_ = x
-	return (x == {})
-}
-
-skip_TargetFilter_SourceExclusion_is_include :: skip_DamageTargetFilter_SourceExclusion_is_include
-skip_TokenSpec_TokenAttackRequest_is_unspecified :: proc(x: TokenAttackRequest) -> bool {
+skip_CopyTokenSpec_TokenAttackRequest_is_unspecified_TokenAttackRequest :: proc(x: TokenAttackRequest) -> bool {
 	_ = x
 	#partial switch y in x {
 	case TokenAttackRequest_Unspecified:
@@ -828,7 +673,737 @@ skip_TokenSpec_TokenAttackRequest_is_unspecified :: proc(x: TokenAttackRequest) 
 	return false
 }
 
-skip_TokenSpec_TokenHostRequest_is_not_requested :: proc(x: TokenHostRequest) -> bool {
+skip_CostReductionEntry_CostReductionReach_is_spills_to_generic_CostReductionReach :: proc(x: CostReductionReach) -> bool {
+	_ = x
+	return x == CostReductionReach.SpillsToGeneric
+}
+
+skip_CostReduction_statics_is_cost_modify_mode_reduce_CostModifyMode :: proc(x: CostModifyMode) -> bool {
+	_ = x
+	return x == CostModifyMode.Reduce
+}
+
+skip_DamageAmountThreshold_is_per_source_damage_scope_DamageAmountScope :: proc(x: DamageAmountScope) -> bool {
+	_ = x
+	return x == DamageAmountScope.PerSource
+}
+
+skip_DamageTargetFilter_SourceExclusion_is_include_SourceExclusion :: proc(x: SourceExclusion) -> bool {
+	_ = x
+	return x == SourceExclusion.Include
+}
+
+skip_DebugCardEntrySource_OutsideGameFaces_is_empty_OutsideGameFaces :: proc(x: OutsideGameFaces) -> bool {
+	_ = x
+	return ((len(x.paper) == 0) && (len(x.digital) == 0))
+}
+
+skip_DeferredLifeGainCost_StagedLifeGains_is_empty_StagedLifeGains :: proc(x: StagedLifeGains) -> bool {
+	_ = x
+	return ((len(x.gains) == 0) && (len(x.substitutes) == 0))
+}
+
+skip_DelayedTriggerCondition_DelayedTriggerLifetime_is_this_turn_DelayedTriggerLifetime :: proc(x: DelayedTriggerLifetime) -> bool {
+	_ = x
+	return x == DelayedTriggerLifetime.ThisTurn
+}
+
+skip_DelayedTriggerCondition_DelayedTriggerPlayerBinding_is_controller_DelayedTriggerPlayerBinding :: proc(x: DelayedTriggerPlayerBinding) -> bool {
+	_ = x
+	#partial switch y in x {
+	case DelayedTriggerPlayerBinding_Controller:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_DelayedTriggerCondition_TurnGate_is_none_TurnGate :: proc(x: TurnGate) -> bool {
+	_ = x
+	#partial switch y in x {
+	case TurnGate_None:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_DelayedTriggerCondition_WheneverEventExpiry_is_end_of_turn_WheneverEventExpiry :: proc(x: WheneverEventExpiry) -> bool {
+	_ = x
+	#partial switch y in x {
+	case WheneverEventExpiry_EndOfTurn:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_DelayedTrigger_DelayedTriggerKind_is_ordinary_DelayedTriggerKind :: proc(x: DelayedTriggerKind) -> bool {
+	_ = x
+	return x == DelayedTriggerKind.Ordinary
+}
+
+skip_Effect_AttachSelection_is_targeted_AttachSelection :: proc(x: AttachSelection) -> bool {
+	_ = x
+	#partial switch y in x {
+	case AttachSelection_Targeted:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_Effect_BounceSelection_is_targeted_BounceSelection :: proc(x: BounceSelection) -> bool {
+	_ = x
+	return x == BounceSelection.Targeted
+}
+
+skip_Effect_CardSelectionMode_is_chosen_CardSelectionMode :: proc(x: CardSelectionMode) -> bool {
+	_ = x
+	return x == CardSelectionMode.Chosen
+}
+
+skip_Effect_CastFromZoneDriver_is_default_CastFromZoneDriver :: proc(x: CastFromZoneDriver) -> bool {
+	_ = x
+	#partial switch y in x {
+	case CastFromZoneDriver_LingeringPermission:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_Effect_ChooseOneOfKind_is_ordinary_ChooseOneOfKind :: proc(x: ChooseOneOfKind) -> bool {
+	_ = x
+	return x == ChooseOneOfKind.Ordinary
+}
+
+skip_Effect_ControllerRef_is_you_ControllerRef :: proc(x: ControllerRef) -> bool {
+	_ = x
+	#partial switch y in x {
+	case ControllerRef_You:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_Effect_CopyRecipient_is_source_CopyRecipient :: proc(x: CopyRecipient) -> bool {
+	_ = x
+	#partial switch y in x {
+	case CopyRecipient_Source:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_Effect_DigRestOrder_is_preserve_DigRestOrder :: proc(x: DigRestOrder) -> bool {
+	_ = x
+	return x == DigRestOrder.Preserve
+}
+
+skip_Effect_DigRestRemainder_is_route_DigRestRemainder :: proc(x: DigRestRemainder) -> bool {
+	_ = x
+	return x == DigRestRemainder.Route
+}
+
+skip_Effect_DigSource_is_library_DigSource :: proc(x: DigSource) -> bool {
+	_ = x
+	return x == DigSource.Library
+}
+
+skip_Effect_EffectScope_is_single_EffectScope :: proc(x: EffectScope) -> bool {
+	_ = x
+	return x == EffectScope.Single
+}
+
+skip_Effect_EtbTapState_is_unspecified_EtbTapState :: skip_CastingPermission_EtbTapState_is_unspecified_EtbTapState
+skip_Effect_LibraryInstructionActor_is_controller_LibraryInstructionActor :: skip_BoundSearchFoundDisposition_LibraryInstructionActor_is_controller_LibraryInstructionActor
+skip_Effect_LibraryPosition_is_top_LibraryPosition :: proc(x: LibraryPosition) -> bool {
+	_ = x
+	#partial switch y in x {
+	case LibraryPosition_Top:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_Effect_ObjectSelectionCardinality_is_single_ObjectSelectionCardinality :: hand_ObjectSelectionCardinality_is_single
+skip_Effect_RedirectionLifetime_is_one_opportunity_RedirectionLifetime :: proc(x: RedirectionLifetime) -> bool {
+	_ = x
+	return x == RedirectionLifetime.OneOpportunity
+}
+
+skip_Effect_RevealUntilDisposition_is_keep_each_RevealUntilDisposition :: proc(x: RevealUntilDisposition) -> bool {
+	_ = x
+	return x == RevealUntilDisposition.KeepEach
+}
+
+skip_Effect_TargetSelectionMode_is_chosen_TargetSelectionMode :: skip_AbilityDefinition_TargetSelectionMode_is_chosen_TargetSelectionMode
+skip_Effect_TokenAttackDestination_is_controller_chooses_TokenAttackDestination :: proc(x: TokenAttackDestination) -> bool {
+	_ = x
+	#partial switch y in x {
+	case TokenAttackDestination_ControllerChooses:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_Effect_ZoneChoiceCandidateSource_is_legacy_ZoneChoiceCandidateSource :: proc(x: ZoneChoiceCandidateSource) -> bool {
+	_ = x
+	return x == ZoneChoiceCandidateSource.Legacy
+}
+
+skip_Effect_is_default_grantee_PermissionGrantee :: proc(x: PermissionGrantee) -> bool {
+	_ = x
+	return x == PermissionGrantee.AbilityController
+}
+
+skip_Effect_is_default_library_shuffle_mode_LibraryShuffleMode :: proc(x: LibraryShuffleMode) -> bool {
+	_ = x
+	return (x == LibraryShuffleMode.PerObject)
+}
+
+skip_Effect_is_default_outside_game_source_pool_OutsideGameSourcePool :: proc(x: OutsideGameSourcePool) -> bool {
+	_ = x
+	return x == OutsideGameSourcePool.Sideboard
+}
+
+skip_Effect_is_default_quantity_one_QuantityExpr :: proc(x: QuantityExpr) -> bool {
+	_ = x
+	#partial switch y in x {
+	case QuantityExpr_Fixed:
+		_ = y
+		return y.value == 1
+	}
+	return false
+}
+
+skip_Effect_is_default_search_selection_constraint_SearchSelectionConstraint :: proc(x: SearchSelectionConstraint) -> bool {
+	_ = x
+	#partial switch y in x {
+	case SearchSelectionConstraint_None:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_Effect_is_default_search_zones_dyn_Zone :: hand_is_default_search_zones
+skip_Effect_is_default_sticker_ticket_cost_payment_StickerTicketCostPayment :: proc(x: StickerTicketCostPayment) -> bool {
+	_ = x
+	return (x == StickerTicketCostPayment.PayNormally)
+}
+
+skip_Effect_is_target_filter_controller_TargetFilter :: proc(x: TargetFilter) -> bool {
+	_ = x
+	#partial switch y in x {
+	case TargetFilter_Controller:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_Effect_is_target_filter_parent_target_TargetFilter :: proc(x: TargetFilter) -> bool {
+	_ = x
+	#partial switch y in x {
+	case TargetFilter_ParentTarget:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_Effect_is_target_filter_parent_target_owner_TargetFilter :: proc(x: TargetFilter) -> bool {
+	_ = x
+	#partial switch y in x {
+	case TargetFilter_ParentTargetOwner:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_Effect_target_filter_is_self_ref_TargetFilter :: proc(x: TargetFilter) -> bool {
+	_ = x
+	#partial switch y in x {
+	case TargetFilter_SelfRef:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_EmblemSource_DisplayOnly_is_none_DisplayOnly_ptr_CardPrinting :: skip_CompanionInfo_DisplayOnly_is_none_DisplayOnly_ptr_CardPrinting
+skip_FaceDownProfile_is_creature_body_FaceDownBody :: proc(x: FaceDownBody) -> bool {
+	_ = x
+	return x == FaceDownBody.Creature
+}
+
+skip_FilterProp_SourceExclusion_is_include_SourceExclusion :: skip_DamageTargetFilter_SourceExclusion_is_include_SourceExclusion
+skip_FilterProp_is_default_shared_quality_relation_SharedQualityRelation :: proc(x: SharedQualityRelation) -> bool {
+	_ = x
+	return x == SharedQualityRelation.Shares
+}
+
+skip_FormatConfig_DeckSizeOrigin_is_registry_DeckSizeOrigin :: proc(x: DeckSizeOrigin) -> bool {
+	_ = x
+	return x == DeckSizeOrigin.Registry
+}
+
+skip_GameAction_CastPaymentMode_is_auto_CastPaymentMode :: proc(x: CastPaymentMode) -> bool {
+	_ = x
+	return x == CastPaymentMode.Auto
+}
+
+skip_GameEvent_ActivationTriggerState_is_pending_ActivationTriggerState :: proc(x: ActivationTriggerState) -> bool {
+	_ = x
+	#partial switch y in x {
+	case ActivationTriggerState_Pending:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_GameEvent_BoundActivationCost_is_unknown_BoundActivationCost :: skip_AbilityActivationRecord_BoundActivationCost_is_unknown_BoundActivationCost
+skip_GameEvent_ControlChangeEvidence_is_unrecorded_ControlChangeEvidence :: proc(x: ControlChangeEvidence) -> bool {
+	_ = x
+	#partial switch y in x {
+	case ControlChangeEvidence_Unrecorded:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_GameEvent_LifeTotalReading_is_unreported_LifeTotalReading :: proc(x: LifeTotalReading) -> bool {
+	_ = x
+	return ((cast(Maybe(i32))(x)) == nil)
+}
+
+skip_GameEvent_ManaAbilityTriggerState_is_pending_ManaAbilityTriggerState :: proc(x: ManaAbilityTriggerState) -> bool {
+	_ = x
+	return x == ManaAbilityTriggerState.Pending
+}
+
+skip_GameEvent_ManaTapState_is_not_from_tap_ManaTapState :: proc(x: ManaTapState) -> bool {
+	_ = x
+	return x == ManaTapState.NotFromTap
+}
+
+skip_GameLogEntry_game_state_is_first_game_u8 :: proc(x: u8) -> bool {
+	_ = x
+	return (x == 1)
+}
+
+skip_GameObject_ColoredManaCount_is_empty_ColoredManaCount :: proc(x: ColoredManaCount) -> bool {
+	_ = x
+	return (((((x.white == 0) && (x.blue == 0)) && (x.black == 0)) && (x.red == 0)) && (x.green == 0))
+}
+
+skip_GameObject_DealtDamageKinds_is_empty_DealtDamageKinds :: proc(x: DealtDamageKinds) -> bool {
+	_ = x
+	return (!x.combat && !x.noncombat)
+}
+
+skip_GameObject_DisplayOnly_is_none_DisplayOnly_ptr_CardPrinting :: skip_CompanionInfo_DisplayOnly_is_none_DisplayOnly_ptr_CardPrinting
+skip_GameObject_EtbTapState_is_unspecified_EtbTapState :: skip_CastingPermission_EtbTapState_is_unspecified_EtbTapState
+skip_GameObject_is_default_CardType :: hand_is_default
+skip_GameObject_is_default_DisplaySource :: proc(x: DisplaySource) -> bool {
+	_ = x
+	return (x == DisplaySource{})
+}
+
+skip_GameObject_is_default_ManaCost :: hand_is_default
+skip_GameObject_is_default_PhaseStatus :: hand_is_default
+skip_GameObject_is_default_TriggerOccurrenceState :: hand_is_default
+skip_GameObject_is_default_u64 :: proc(x: u64) -> bool {
+	_ = x
+	return (x == u64{})
+}
+
+skip_GameObject_is_initial_next_trigger_base_set_instance_u64 :: proc(x: u64) -> bool {
+	_ = x
+	return (x == 2)
+}
+
+skip_GameObject_is_initial_trigger_base_set_instance_TriggerBaseSetInstanceRef :: proc(x: TriggerBaseSetInstanceRef) -> bool {
+	_ = x
+	return (x == TriggerBaseSetInstanceRef(1))
+}
+
+skip_GameObject_is_zero_u8_field_u8 :: proc(x: u8) -> bool {
+	_ = x
+	return (x == 0)
+}
+
+skip_GameState_ActiveLibrarySearches_is_empty_ActiveLibrarySearches :: proc(x: ActiveLibrarySearches) -> bool {
+	_ = x
+	return (len((cast(map[PlayerId]ActiveLibrarySearch)(x))) == 0)
+}
+
+skip_GameState_ActiveSearchDecisionControls_is_empty_ActiveSearchDecisionControls :: proc(x: ActiveSearchDecisionControls) -> bool {
+	_ = x
+	return (len((cast(map[PlayerId]ActiveSearchDecisionControl)(x))) == 0)
+}
+
+skip_GameState_BattlefieldEntryObservations_is_empty_BattlefieldEntryObservations :: proc(x: BattlefieldEntryObservations) -> bool {
+	_ = x
+	return (len((cast(map[int]^TriggerSourceContext)(x))) == 0)
+}
+
+skip_GameState_LazyBoxedMap_is_empty_LazyBoxedMap_u64_ControlChangeLink :: proc(x: LazyBoxedMap_u64_ControlChangeLink) -> bool {
+	_ = x
+	return ((cast(^map[u64]ControlChangeLink)(x)) == nil)
+}
+
+skip_GameState_LazyBoxedMap_is_empty_LazyBoxedMap_u64_ControlChangeObservation :: proc(x: LazyBoxedMap_u64_ControlChangeObservation) -> bool {
+	_ = x
+	return ((cast(^map[u64]ControlChangeObservation)(x)) == nil)
+}
+
+skip_GameState_ResolutionStack_is_empty_ptr_ResolutionStack :: proc(x: ^ResolutionStack) -> bool {
+	_ = x
+	return (len(x^.frames.frames) == 0)
+}
+
+skip_GameState_StepTally_is_empty_StepTally :: proc(x: StepTally) -> bool {
+	_ = x
+	return (len((cast(map[Phase]u32)(x))) == 0)
+}
+
+skip_GameState_UnActionState_is_default_ptr_UnActionState :: proc(x: ^UnActionState) -> bool {
+	_ = x
+	return ((((((len(x^.enabled_players) == 0) && (len(x^.gotcha_offers) == 0)) && (len(x^.menu) == 0)) && (len(x^.pending_offers) == 0)) && (len(x^.touchable) == 0)) && (x^.next_offer_id == 0))
+}
+
+skip_GameState_is_default_interaction_serial_string :: proc(x: string) -> bool {
+	_ = x
+	return (x == "1")
+}
+
+skip_GameState_stack_bound_reveals_is_empty_ptr_map_ObjectId_dyn_ObjectIncarnationRef :: hand_stack_bound_reveals_is_empty
+skip_GraveyardPermissionLatch_EtbTapState_is_unspecified_EtbTapState :: skip_CastingPermission_EtbTapState_is_unspecified_EtbTapState
+skip_GraveyardPermissionLatch_PendingEntersModifications_is_empty_PendingEntersModifications :: skip_CastOfferKind_PendingEntersModifications_is_empty_PendingEntersModifications
+skip_GraveyardPermissionLatch_PermissionCastLimit_is_unlimited_PermissionCastLimit :: proc(x: PermissionCastLimit) -> bool {
+	_ = x
+	return x == PermissionCastLimit.Unlimited
+}
+
+skip_LibrarySearchCardView_DisplayOnly_is_none_DisplayOnly_ptr_CardPrinting :: skip_CompanionInfo_DisplayOnly_is_none_DisplayOnly_ptr_CardPrinting
+skip_LiminalEntry_EntryAttackDestination_is_any_defender_EntryAttackDestination :: skip_CopyTokenEntryTail_EntryAttackDestination_is_any_defender_EntryAttackDestination
+skip_ManaAbilityCostCursor_ManaAbilityActivationStage_is_unpublished_ManaAbilityActivationStage :: proc(x: ManaAbilityActivationStage) -> bool {
+	_ = x
+	return x == ManaAbilityActivationStage.Unpublished
+}
+
+skip_ManaProduction_is_default_mana_contribution_ManaContribution :: proc(x: ManaContribution) -> bool {
+	_ = x
+	return x == ManaContribution.Base
+}
+
+skip_MatchConfig_LoopDetectionMode_is_off_LoopDetectionMode :: proc(x: LoopDetectionMode) -> bool {
+	_ = x
+	return x == LoopDetectionMode.Off
+}
+
+skip_ModalChoice_TargetSelectionMode_is_chosen_TargetSelectionMode :: skip_AbilityDefinition_TargetSelectionMode_is_chosen_TargetSelectionMode
+skip_ModalSelectionCondition_AbilityCondition_is_default_min_count_u32 :: skip_AbilityCondition_AbilityCondition_is_default_min_count_u32
+skip_ModalSelectionCondition_AdditionalCostPaymentSource_is_any_AdditionalCostPaymentSource :: skip_AbilityCondition_AdditionalCostPaymentSource_is_any_AdditionalCostPaymentSource
+skip_PendingBatchDeliveries_EtbTapState_is_unspecified_EtbTapState :: skip_CastingPermission_EtbTapState_is_unspecified_EtbTapState
+skip_PendingBatchZoneMoveRequest_ChainReferentIntent_is_silent_ChainReferentIntent :: proc(x: ChainReferentIntent) -> bool {
+	_ = x
+	return x == ChainReferentIntent.Silent
+}
+
+skip_PendingBatchZoneMoveRequest_EntryOwnershipActor_is_unrecorded_EntryOwnershipActor :: proc(x: EntryOwnershipActor) -> bool {
+	_ = x
+	#partial switch y in x {
+	case EntryOwnershipActor_Unrecorded:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_PendingBatchZoneMoveRequest_EtbTapState_is_unspecified_EtbTapState :: skip_CastingPermission_EtbTapState_is_unspecified_EtbTapState
+skip_PendingBatchZoneMoveRequest_ExileConcealment_is_public_ExileConcealment :: skip_AbilityDefinition_ExileConcealment_is_public_ExileConcealment
+skip_PendingBatchZoneMoveRequest_LibraryShuffleMode_is_per_object_LibraryShuffleMode :: proc(x: LibraryShuffleMode) -> bool {
+	_ = x
+	return x == LibraryShuffleMode.PerObject
+}
+
+skip_PendingCast_ActivationResidual_is_none_ActivationResidual :: proc(x: ActivationResidual) -> bool {
+	_ = x
+	return x == ActivationResidual.None
+}
+
+skip_PendingCast_ActivationTargetSelection_is_pending_ActivationTargetSelection :: proc(x: ActivationTargetSelection) -> bool {
+	_ = x
+	return x == ActivationTargetSelection.Pending
+}
+
+skip_PendingChangeZoneIteration_ExileConcealment_is_public_ExileConcealment :: skip_AbilityDefinition_ExileConcealment_is_public_ExileConcealment
+skip_PendingChangeZoneIteration_LibraryShuffleMode_is_per_object_LibraryShuffleMode :: skip_PendingBatchZoneMoveRequest_LibraryShuffleMode_is_per_object_LibraryShuffleMode
+skip_PendingContinuation_ResolutionPaymentOrigin_is_fresh_choice_ResolutionPaymentOrigin :: proc(x: ResolutionPaymentOrigin) -> bool {
+	_ = x
+	return x == ResolutionPaymentOrigin.FreshChoice
+}
+
+skip_PendingCopyTokenResolution_OfferedBatchCustody_is_settled_OfferedBatchCustody :: proc(x: OfferedBatchCustody) -> bool {
+	_ = x
+	return x == OfferedBatchCustody.Settled
+}
+
+skip_PendingCounterPostAction_EntryAttackDestination_is_any_defender_EntryAttackDestination :: skip_CopyTokenEntryTail_EntryAttackDestination_is_any_defender_EntryAttackDestination
+skip_PendingDiscardBatch_DiscardCause_is_effect_DiscardCause :: proc(x: DiscardCause) -> bool {
+	_ = x
+	return x == DiscardCause.Effect
+}
+
+skip_PendingManaAbility_CastPaymentMode_is_auto_CastPaymentMode :: skip_GameAction_CastPaymentMode_is_auto_CastPaymentMode
+skip_PendingReplacement_UnrepresentablePolicy_is_ignore_impossible_UnrepresentablePolicy :: proc(x: UnrepresentablePolicy) -> bool {
+	_ = x
+	return x == UnrepresentablePolicy.IgnoreImpossible
+}
+
+skip_PendingTriggerContext_deferred_trigger_batch_origin_is_ordinary_DeferredTriggerBatchOrigin :: proc(x: DeferredTriggerBatchOrigin) -> bool {
+	_ = x
+	return x == DeferredTriggerBatchOrigin.Ordinary
+}
+
+skip_PendingTriggerContext_pending_trigger_dispatch_origin_is_normal_PendingTriggerDispatchOrigin :: proc(x: PendingTriggerDispatchOrigin) -> bool {
+	_ = x
+	return x == PendingTriggerDispatchOrigin.Normal
+}
+
+skip_PendingTriggerContext_trigger_firing_is_unknown_TriggerFiring :: proc(x: TriggerFiring) -> bool {
+	_ = x
+	#partial switch y in x {
+	case TriggerFiring_UnknownLegacy:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_PendingZoneChangeDelivery_ExileConcealment_is_public_ExileConcealment :: skip_AbilityDefinition_ExileConcealment_is_public_ExileConcealment
+skip_PeriodicDelta_ResourceVector_is_zero_ResourceVector :: hand_ResourceVector_is_zero
+skip_PlayerDeckPool_DisplayOnly_is_none_DisplayOnly_ptr_DeckPrintingRecord :: proc(x: DisplayOnly_ptr_DeckPrintingRecord) -> bool {
+	_ = x
+	return ((cast(^DeckPrintingRecord)(x)) == nil)
+}
+
+skip_PlayerFilter_is_one_u32 :: proc(x: u32) -> bool {
+	_ = x
+	return (x == 1)
+}
+
+skip_PlayerFilter_is_player_relation_all_PlayerRelation :: proc(x: PlayerRelation) -> bool {
+	_ = x
+	return x == PlayerRelation.All
+}
+
+skip_PlayerFilter_is_player_relation_opponent_PlayerRelation :: proc(x: PlayerRelation) -> bool {
+	_ = x
+	return x == PlayerRelation.Opponent
+}
+
+skip_ProposedEvent_ChainReferentIntent_is_silent_ChainReferentIntent :: skip_PendingBatchZoneMoveRequest_ChainReferentIntent_is_silent_ChainReferentIntent
+skip_ProposedEvent_DrawEventStage_is_individual_DrawEventStage :: proc(x: DrawEventStage) -> bool {
+	_ = x
+	return x == DrawEventStage.Individual
+}
+
+skip_ProposedEvent_EntryOwnershipActor_is_unrecorded_EntryOwnershipActor :: skip_PendingBatchZoneMoveRequest_EntryOwnershipActor_is_unrecorded_EntryOwnershipActor
+skip_ProposedEvent_ExileConcealment_is_public_ExileConcealment :: skip_AbilityDefinition_ExileConcealment_is_public_ExileConcealment
+skip_ProposedEvent_LibraryShuffleMode_is_per_object_LibraryShuffleMode :: skip_PendingBatchZoneMoveRequest_LibraryShuffleMode_is_per_object_LibraryShuffleMode
+skip_QuantityRef_TurnWindow_is_this_turn_TurnWindow :: proc(x: TurnWindow) -> bool {
+	_ = x
+	return x == TurnWindow.ThisTurn
+}
+
+skip_QuantityRef_is_count_binding_default_CountBinding :: proc(x: CountBinding) -> bool {
+	_ = x
+	return x == CountBinding.Anaphoric
+}
+
+skip_QuantityRef_is_default_damage_kind_DamageKindFilter :: proc(x: DamageKindFilter) -> bool {
+	_ = x
+	return x == DamageKindFilter.Any
+}
+
+skip_QuantityRef_is_player_relation_all_PlayerRelation :: skip_PlayerFilter_is_player_relation_all_PlayerRelation
+skip_QuantityRef_is_player_scope_controller_PlayerScope :: proc(x: PlayerScope) -> bool {
+	_ = x
+	#partial switch y in x {
+	case PlayerScope_Controller:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_QuantityRef_is_sum_aggregate_AggregateFunction :: proc(x: AggregateFunction) -> bool {
+	_ = x
+	return x == AggregateFunction.Sum
+}
+
+skip_QuantityRef_is_target_zone_count_scope_default_ControllerRef :: proc(x: ControllerRef) -> bool {
+	_ = x
+	#partial switch y in x {
+	case ControllerRef_TargetOpponent:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_QuantityRef_is_total_damage_channel_DamageChannel :: skip_AbilityCondition_is_total_damage_channel_DamageChannel
+skip_RecordedAction_RecordedActionKind_is_submitted_RecordedActionKind :: proc(x: RecordedActionKind) -> bool {
+	_ = x
+	#partial switch y in x {
+	case RecordedActionKind_Submitted:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_ReplacementDefinition_CounterReplacementSubject_is_default_CounterReplacementSubject :: proc(x: CounterReplacementSubject) -> bool {
+	_ = x
+	return x == CounterReplacementSubject.Recipient
+}
+
+skip_ReplacementDefinition_ManaReplacementScope_is_any_ManaReplacementScope :: proc(x: ManaReplacementScope) -> bool {
+	_ = x
+	return x == ManaReplacementScope.Any
+}
+
+skip_ReplacementDefinition_ReplacementChoiceAuthority_is_affected_player_ReplacementChoiceAuthority :: proc(x: ReplacementChoiceAuthority) -> bool {
+	_ = x
+	return x == ReplacementChoiceAuthority.AffectedPlayer
+}
+
+skip_ReplacementDefinition_ReplacementOrigin_is_characteristic_ReplacementOrigin :: proc(x: ReplacementOrigin) -> bool {
+	_ = x
+	return x == ReplacementOrigin.Characteristic
+}
+
+skip_ReplacementDefinition_ShieldKind_is_none_ShieldKind :: proc(x: ShieldKind) -> bool {
+	_ = x
+	#partial switch y in x {
+	case ShieldKind_None:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_ResolutionCastFacePolicy_CardPlayMode_is_cast_CardPlayMode :: proc(x: CardPlayMode) -> bool {
+	_ = x
+	return x == CardPlayMode.Cast
+}
+
+skip_ResolutionCastSuccessAction_PendingEntersModifications_is_empty_PendingEntersModifications :: skip_CastOfferKind_PendingEntersModifications_is_empty_PendingEntersModifications
+skip_ResolvedAbility_ChosenTargetSlots_is_unrecorded_ChosenTargetSlots :: proc(x: ChosenTargetSlots) -> bool {
+	_ = x
+	#partial switch y in x {
+	case ChosenTargetSlots_Unrecorded:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_ResolvedAbility_ContinuousEffectOnset_is_when_followed_ContinuousEffectOnset :: skip_AbilityDefinition_ContinuousEffectOnset_is_when_followed_ContinuousEffectOnset
+skip_ResolvedAbility_CopyCountStatus_is_pending_CopyCountStatus :: proc(x: CopyCountStatus) -> bool {
+	_ = x
+	return x == CopyCountStatus.Pending
+}
+
+skip_ResolvedAbility_IllegalTargetsDisposition_is_does_not_resolve_IllegalTargetsDisposition :: skip_AbilityDefinition_IllegalTargetsDisposition_is_does_not_resolve_IllegalTargetsDisposition
+skip_ResolvedAbility_InstructionJoin_is_own_InstructionJoin :: skip_AbilityDefinition_InstructionJoin_is_own_InstructionJoin
+skip_ResolvedAbility_RepeatForTiming_is_sequential_RepeatForTiming :: skip_AbilityDefinition_RepeatForTiming_is_sequential_RepeatForTiming
+skip_ResolvedAbility_SiblingCondition_is_default_SiblingCondition :: skip_AbilityDefinition_SiblingCondition_is_default_SiblingCondition
+skip_ResolvedAbility_SubAbilityLink_is_continuation_SubAbilityLink :: skip_AbilityDefinition_SubAbilityLink_is_continuation_SubAbilityLink
+skip_ResolvedAbility_TargetChoiceTiming_is_stack_TargetChoiceTiming :: skip_AbilityDefinition_TargetChoiceTiming_is_stack_TargetChoiceTiming
+skip_ResolvedAbility_TargetReadOrigin_is_own_TargetReadOrigin :: skip_AbilityDefinition_TargetReadOrigin_is_own_TargetReadOrigin
+skip_ResolvedAbility_TargetSelectionMode_is_chosen_TargetSelectionMode :: skip_AbilityDefinition_TargetSelectionMode_is_chosen_TargetSelectionMode
+skip_SearchDestinationSplit_EtbTapState_is_unspecified_EtbTapState :: skip_CastingPermission_EtbTapState_is_unspecified_EtbTapState
+skip_ShortcutProposal_ConfirmedPeriod_is_empty_ConfirmedPeriod :: proc(x: ConfirmedPeriod) -> bool {
+	_ = x
+	return ((len(x.items) == 0) && (x.performance == nil))
+}
+
+skip_ShortcutProposal_CountedTake_is_performs_CountedTake :: proc(x: CountedTake) -> bool {
+	_ = x
+	return is_variant(x, CountedTake_Performs)
+}
+
+skip_SpellContext_AttachTargetBindings_is_empty_AttachTargetBindings :: hand_AttachTargetBindings_is_empty
+skip_SpellContext_DiscardCause_is_effect_DiscardCause :: skip_PendingDiscardBatch_DiscardCause_is_effect_DiscardCause
+skip_SpellContext_ExileConcealment_is_public_ExileConcealment :: skip_AbilityDefinition_ExileConcealment_is_public_ExileConcealment
+skip_SpellContext_LazyBoxedVec_is_empty_LazyBoxedVec_SettledDamageGuard :: proc(x: LazyBoxedVec_SettledDamageGuard) -> bool {
+	_ = x
+	return ((cast(^[dynamic]SettledDamageGuard)(x)) == nil)
+}
+
+skip_SpellContext_LazyBoxedVec_is_empty_LazyBoxedVec_TargetFilter :: proc(x: LazyBoxedVec_TargetFilter) -> bool {
+	_ = x
+	return ((cast(^[dynamic]TargetFilter)(x)) == nil)
+}
+
+skip_StackPaidSnapshot_CastingVariant_is_normal_CastingVariant :: proc(x: CastingVariant) -> bool {
+	_ = x
+	return is_variant(x, CastingVariant_Normal)
+}
+
+skip_StaticCondition_AttackedYouScope_is_any_player_AttackedYouScope :: proc(x: AttackedYouScope) -> bool {
+	_ = x
+	return x == AttackedYouScope.AnyPlayer
+}
+
+skip_StaticCondition_UnlessPayScaling_is_flat_UnlessPayScaling :: proc(x: UnlessPayScaling) -> bool {
+	_ = x
+	#partial switch y in x {
+	case UnlessPayScaling_Flat:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_StaticCondition_is_default_damage_kind_DamageKindFilter :: skip_QuantityRef_is_default_damage_kind_DamageKindFilter
+skip_StaticCondition_is_player_scope_controller_PlayerScope :: skip_QuantityRef_is_player_scope_controller_PlayerScope
+skip_StaticMode_CastFrequency_is_unlimited_CastFrequency :: skip_CastingPermission_CastFrequency_is_unlimited_CastFrequency
+skip_StaticMode_CostReductionReach_is_spills_to_generic_CostReductionReach :: skip_CostReductionEntry_CostReductionReach_is_spills_to_generic_CostReductionReach
+skip_StaticMode_EtbTapState_is_unspecified_EtbTapState :: skip_CastingPermission_EtbTapState_is_unspecified_EtbTapState
+skip_StaticMode_GraveyardPermissionPool_is_own_graveyard_GraveyardPermissionPool :: proc(x: GraveyardPermissionPool) -> bool {
+	_ = x
+	return x == GraveyardPermissionPool.OwnGraveyard
+}
+
+skip_StaticMode_ManaSpendPermission_is_any_color_ManaSpendPermission :: proc(x: ManaSpendPermission) -> bool {
+	_ = x
+	return x == ManaSpendPermission.AnyColor
+}
+
+skip_StaticMode_PendingEntersModifications_is_empty_PendingEntersModifications :: skip_CastOfferKind_PendingEntersModifications_is_empty_PendingEntersModifications
+skip_StaticMode_PermissionCastLimit_is_unlimited_PermissionCastLimit :: skip_GraveyardPermissionLatch_PermissionCastLimit_is_unlimited_PermissionCastLimit
+skip_StaticMode_is_default_exile_cast_grantee_ExileCastGrantee :: proc(x: ExileCastGrantee) -> bool {
+	_ = x
+	return (x == ExileCastGrantee{})
+}
+
+skip_TargetFilter_SourceExclusion_is_include_SourceExclusion :: skip_DamageTargetFilter_SourceExclusion_is_include_SourceExclusion
+skip_TokenSpec_TokenAttackRequest_is_unspecified_TokenAttackRequest :: skip_CopyTokenSpec_TokenAttackRequest_is_unspecified_TokenAttackRequest
+skip_TokenSpec_TokenHostRequest_is_not_requested_TokenHostRequest :: proc(x: TokenHostRequest) -> bool {
 	_ = x
 	#partial switch y in x {
 	case TokenHostRequest_NotRequested:
@@ -838,25 +1413,25 @@ skip_TokenSpec_TokenHostRequest_is_not_requested :: proc(x: TokenHostRequest) ->
 	return false
 }
 
-skip_TriggerCause_CausingObject_is_any :: proc(x: CausingObject) -> bool {
+skip_TriggerCause_CausingObject_is_any_CausingObject :: proc(x: CausingObject) -> bool {
 	_ = x
 	return x == CausingObject.Any
 }
 
-skip_TriggerCondition_AbilityCondition_is_default_min_count :: skip_AbilityCondition_AbilityCondition_is_default_min_count
-skip_TriggerCondition_AdditionalCostPaymentSource_is_any :: skip_AbilityCondition_AdditionalCostPaymentSource_is_any
-skip_TriggerCondition_is_player_scope_controller :: skip_QuantityRef_is_player_scope_controller
-skip_TriggerConstraint_TriggerLimitSpend_is_triggering :: proc(x: TriggerLimitSpend) -> bool {
+skip_TriggerCondition_AbilityCondition_is_default_min_count_u32 :: skip_AbilityCondition_AbilityCondition_is_default_min_count_u32
+skip_TriggerCondition_AdditionalCostPaymentSource_is_any_AdditionalCostPaymentSource :: skip_AbilityCondition_AdditionalCostPaymentSource_is_any_AdditionalCostPaymentSource
+skip_TriggerCondition_is_player_scope_controller_PlayerScope :: skip_QuantityRef_is_player_scope_controller_PlayerScope
+skip_TriggerConstraint_TriggerLimitSpend_is_triggering_TriggerLimitSpend :: proc(x: TriggerLimitSpend) -> bool {
 	_ = x
 	return x == TriggerLimitSpend.Triggering
 }
 
-skip_TriggerConstraint_is_default_exact_ordinal_comparator :: proc(x: Comparator) -> bool {
+skip_TriggerConstraint_is_default_exact_ordinal_comparator_Comparator :: proc(x: Comparator) -> bool {
 	_ = x
 	return (x == Comparator.EQ)
 }
 
-skip_TriggerDefinition_OriginConstraint_is_any :: proc(x: OriginConstraint) -> bool {
+skip_TriggerDefinition_OriginConstraint_is_any_OriginConstraint :: proc(x: OriginConstraint) -> bool {
 	_ = x
 	#partial switch y in x {
 	case OriginConstraint_Any:
@@ -866,14 +1441,82 @@ skip_TriggerDefinition_OriginConstraint_is_any :: proc(x: OriginConstraint) -> b
 	return false
 }
 
-skip_UntilCondition_is_default_quantity_one :: skip_Effect_is_default_quantity_one
-skip_ZoneChangeClause_OriginConstraint_is_any :: skip_TriggerDefinition_OriginConstraint_is_any
+skip_TriggerSourceContext_ColoredManaCount_is_empty_ColoredManaCount :: skip_GameObject_ColoredManaCount_is_empty_ColoredManaCount
+skip_TriggerSourceContext_DisplayOnly_is_none_DisplayOnly_ptr_CardPrinting :: skip_CompanionInfo_DisplayOnly_is_none_DisplayOnly_ptr_CardPrinting
+skip_UntilCondition_is_default_quantity_one_QuantityExpr :: skip_Effect_is_default_quantity_one_QuantityExpr
+skip_WaitingFor_CastOpponentChoicePurpose_is_gift_CastOpponentChoicePurpose :: proc(x: CastOpponentChoicePurpose) -> bool {
+	_ = x
+	#partial switch y in x {
+	case CastOpponentChoicePurpose_Gift:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_WaitingFor_CastPaymentMode_is_auto_CastPaymentMode :: skip_GameAction_CastPaymentMode_is_auto_CastPaymentMode
+skip_WaitingFor_ConfirmedPeriod_is_empty_ConfirmedPeriod :: skip_ShortcutProposal_ConfirmedPeriod_is_empty_ConfirmedPeriod
+skip_WaitingFor_CostReductionReach_is_spills_to_generic_CostReductionReach :: skip_CostReductionEntry_CostReductionReach_is_spills_to_generic_CostReductionReach
+skip_WaitingFor_CountedTake_is_performs_CountedTake :: skip_ShortcutProposal_CountedTake_is_performs_CountedTake
+skip_WaitingFor_DigRestRemainder_is_route_DigRestRemainder :: skip_Effect_DigRestRemainder_is_route_DigRestRemainder
+skip_WaitingFor_DistributionScope_is_announced_targets_DistributionScope :: proc(x: DistributionScope) -> bool {
+	_ = x
+	#partial switch y in x {
+	case DistributionScope_AnnouncedTargets:
+		_ = y
+		return true
+	}
+	return false
+}
+
+skip_WaitingFor_EtbTapState_is_unspecified_EtbTapState :: skip_CastingPermission_EtbTapState_is_unspecified_EtbTapState
+skip_WaitingFor_ExileConcealment_is_public_ExileConcealment :: skip_AbilityDefinition_ExileConcealment_is_public_ExileConcealment
+skip_WaitingFor_LibraryPosition_is_top_LibraryPosition :: skip_Effect_LibraryPosition_is_top_LibraryPosition
+skip_WaitingFor_LibraryShuffleMode_is_per_object_LibraryShuffleMode :: skip_PendingBatchZoneMoveRequest_LibraryShuffleMode_is_per_object_LibraryShuffleMode
+skip_WaitingFor_ObjectSelectionCardinality_is_single_ObjectSelectionCardinality :: skip_Effect_ObjectSelectionCardinality_is_single_ObjectSelectionCardinality
+skip_WaitingFor_ZoneOpponentChooserPurpose_is_ordinary_ZoneOpponentChooserPurpose :: proc(x: ZoneOpponentChooserPurpose) -> bool {
+	_ = x
+	return x == ZoneOpponentChooserPurpose.Ordinary
+}
+
+skip_ZoneChangeClause_OriginConstraint_is_any_OriginConstraint :: skip_TriggerDefinition_OriginConstraint_is_any_OriginConstraint
+skip_ZoneChangeRecord_ZoneDeparture_is_moved_ZoneDeparture :: proc(x: ZoneDeparture) -> bool {
+	_ = x
+	return (x == ZoneDeparture.Moved)
+}
+
+default_ComboDeclaration :: proc() -> ComboDeclaration {
+	return ComboDeclaration_Undeclared{}
+}
+
 default_CostObjectCount :: hand_default_CostObjectCount
 
-default_ManaCost :: hand_default_ManaCost
+default_LogPresentation :: proc() -> LogPresentation {
+	return LogPresentation{importance = LogImportance.Detail, tone = LogTone.Neutral, boundary = LogBoundary.None, visibility = LogVisibility.Public}
+}
+
+default_ManaCost :: proc() -> ManaCost {
+	return ManaCost_Cost{shards = {}, generic = 0}
+}
+
+default_PendingMassLibraryOrderBatches :: proc() -> PendingMassLibraryOrderBatches {
+	return PendingMassLibraryOrderBatches_Typed{_0 = {}}
+}
+
+default_ShortcutDecisionSchema :: proc() -> ShortcutDecisionSchema {
+	return ShortcutDecisionSchema{iteration_count = IterationCount_Fixed{_0 = 0}, repetition_bound = RepetitionBound.Unmeasured, deliverable_capacity = 1000, points = {}, convoke_tappable_count = 0, suggested_declaration = nil, leading_aims = {}}
+}
 
 default_TapCreaturesRequirement :: proc() -> TapCreaturesRequirement {
 	return TapCreaturesRequirement_Count{count = 1}
 }
 
+default_TriggerOccurrenceState :: proc() -> TriggerOccurrenceState {
+	return TriggerOccurrenceState{next_grant_instance = 1, active_grants = {}}
+}
+
+
+default_ConfirmedPeriod :: proc() -> ConfirmedPeriod {
+	return ConfirmedPeriod{counted_by = CountedBy(CountedBy_Threshold{})}
+}
 

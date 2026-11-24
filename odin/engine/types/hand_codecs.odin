@@ -2,6 +2,8 @@
 // named above it (odingen lists them; docs/odin-port.md, "O-1 data model design").
 package types
 
+import "base:runtime"
+import "core:reflect"
 import "core:strconv"
 import "core:strings"
 import "core:unicode"
@@ -525,4 +527,586 @@ hand_default_ManaCost :: proc() -> ManaCost {
 // types/ability.rs `impl Default for CostObjectCount` = CostObjectCount::exactly(1).
 hand_default_CostObjectCount :: proc() -> CostObjectCount {
 	return CostObjectCount_Exactly{count = 1}
+}
+
+// game/game_object.rs `is_default<T>(value) = *value == T::default()`, for the field types that use it.
+hand_is_default :: proc {
+	hand_is_default_ManaCost,
+	hand_is_default_PhaseStatus,
+	hand_is_default_CardType,
+	hand_is_default_TriggerOccurrenceState,
+}
+
+// phase-ast types/card_type.rs CardType derives Default: no supertypes, core types or subtypes.
+hand_is_default_CardType :: proc(x: CardType) -> bool {
+	return len(x.supertypes) == 0 && len(x.core_types) == 0 && len(x.subtypes) == 0
+}
+
+// phase-ast types/ability.rs `impl Default for TriggerOccurrenceState`: next_grant_instance =
+// initial_next_grant_instance() = 1, no active grants.
+hand_is_default_TriggerOccurrenceState :: proc(x: TriggerOccurrenceState) -> bool {
+	return x.next_grant_instance == 1 && len(x.active_grants) == 0
+}
+
+// ManaCost's Default is ManaCost::zero() = Cost { shards: [], generic: 0 } (types/mana.rs).
+hand_is_default_ManaCost :: proc(x: ManaCost) -> bool {
+	c, ok := x.(ManaCost_Cost)
+	return ok && len(c.shards) == 0 && c.generic == 0
+}
+
+// PhaseStatus's #[default] is PhasedIn (game/game_object.rs).
+hand_is_default_PhaseStatus :: proc(x: PhaseStatus) -> bool {
+	return is_variant(x, PhaseStatus_PhasedIn)
+}
+
+// types/ability.rs `AttachTargetBindings::is_empty`: no inner record, or one with nothing in it.
+hand_AttachTargetBindings_is_empty :: proc(x: AttachTargetBindings) -> bool {
+	return x.inner == nil || (len(x.inner.attachment_targets) == 0 && x.inner.host_target == nil && len(x.inner.attachment_candidates) == 0)
+}
+
+// types/format.rs `FormatConfig::standard()`. Its GameFormat calls, for Standard: no 2HG, so the poison
+// threshold is INDIVIDUAL_POISON_LOSS_THRESHOLD (10, CR 104.3d); sideboard_policy is Limited(15);
+// default_deck_copy_limit is UpTo(4) (CR 100.2a).
+hand_FormatConfig_standard :: proc() -> FormatConfig {
+	return FormatConfig {
+		format = GameFormat_Standard{},
+		starting_life = 20,
+		min_players = 2,
+		max_players = 2,
+		deck_size = DeckSizeRule_Minimum{_0 = 60},
+		poison_counter_threshold = u8(10),
+		sideboard_policy = SideboardPolicy_Limited{_0 = 15},
+		default_deck_copy_limit = DeckCopyLimit_UpTo{_0 = 4},
+	}
+}
+
+// ------------------------------------------------------------------------------------ game-state hand codecs ---
+
+// types/game_state.rs `impl Serialize for StackResolutionBudget`: the cap as a u32, 0 meaning no cap
+// (from_legacy_max_resolutions). CR 117.3d + CR 117.4.
+decode_StackResolutionBudget :: proc(v: json.Value, out: ^StackResolutionBudget) -> bool {
+	n: u32
+	if !decode_u32(v, &n) do return false
+	out^ = n == 0 ? StackResolutionBudget(StackResolutionBudget_Unlimited{}) : StackResolutionBudget(StackResolutionBudget_Limited{_0 = n})
+	return true
+}
+encode_StackResolutionBudget :: proc(b: ^strings.Builder, x: StackResolutionBudget) {
+	l, limited := x.(StackResolutionBudget_Limited)
+	encode_u32(b, limited ? l._0 : 0)
+}
+
+// types/game_state.rs SearchFoundVisibility: `from/into = "bool"`, true = Public (CR 701.23e).
+decode_SearchFoundVisibility :: proc(v: json.Value, out: ^SearchFoundVisibility) -> bool {
+	return decode_bool_as(v, out, SearchFoundVisibility.Public, SearchFoundVisibility.Private)
+}
+encode_SearchFoundVisibility :: proc(b: ^strings.Builder, x: SearchFoundVisibility) { encode_bool(b, x == .Public) }
+
+// types/game_state.rs EntryEventReplay: `from/into = "bool"`, true = Required.
+decode_EntryEventReplay :: proc(v: json.Value, out: ^EntryEventReplay) -> bool {
+	return decode_bool_as(v, out, EntryEventReplay.Required, EntryEventReplay.AlreadyDelivered)
+}
+encode_EntryEventReplay :: proc(b: ^strings.Builder, x: EntryEventReplay) { encode_bool(b, x == .Required) }
+
+// types/game_state.rs `impl Serialize for FaceState`: a bool, true = FaceDown (CR 110.5, CR 708.2).
+decode_FaceState :: proc(v: json.Value, out: ^FaceState) -> bool {
+	return decode_bool_as(v, out, FaceState.FaceDown, FaceState.FaceUp)
+}
+encode_FaceState :: proc(b: ^strings.Builder, x: FaceState) { encode_bool(b, x == .FaceDown) }
+
+// types/format.rs GameFormat: its Display string ("Standard", ..., "Custom:<id>"), read back by FromStr.
+decode_GameFormat :: proc(v: json.Value, out: ^GameFormat) -> bool {
+	if v.kind != .String do return fail("GameFormat: expected a string")
+	if strings.has_prefix(v.text, "Custom:") {
+		n, ok := strconv.parse_u64_of_base(v.text[len("Custom:"):], 10)
+		if !ok || n > u64(max(u16)) do return fail("GameFormat: invalid Custom format id")
+		out^ = GameFormat_Custom{_0 = CustomFormatId(n)}
+		return true
+	}
+	// Every other format's string is its variant name, which is how the derived unit-variant codec reads it.
+	return decode_GameFormat_named(v, out)
+}
+encode_GameFormat :: proc(b: ^strings.Builder, x: GameFormat) {
+	if c, ok := x.(GameFormat_Custom); ok {
+		strings.write_string(b, "\"Custom:")
+		strings.write_u64(b, u64(c._0))
+		strings.write_byte(b, '"')
+		return
+	}
+	encode_GameFormat_named(b, x)
+}
+
+// types/ability.rs CostPaidObjectRecord: Captured writes the bare snapshot (an object), MembershipOnly the bare
+// object id (a number); reading goes by the JSON shape (CR 601.2h, CR 602.2b).
+decode_CostPaidObjectRecord :: proc(v: json.Value, out: ^CostPaidObjectRecord) -> bool {
+	if v.kind == .Object {
+		c: CostPaidObjectRecord_Captured
+		if !decode_CostPaidObjectSnapshot(v, &c._0) do return false
+		out^ = c
+		return true
+	}
+	m: CostPaidObjectRecord_MembershipOnly
+	if !decode_ObjectId(v, &m._0) do return false
+	out^ = m
+	return true
+}
+encode_CostPaidObjectRecord :: proc(b: ^strings.Builder, x: CostPaidObjectRecord) {
+	switch y in x {
+	case CostPaidObjectRecord_Captured: encode_CostPaidObjectSnapshot(b, y._0)
+	case CostPaidObjectRecord_MembershipOnly: encode_ObjectId(b, y._0)
+	}
+}
+
+// types/game_state.rs LiminalEntrant: written as the projected GameObject; read back as Token when its is_token
+// is set (CR 111.1), else Card.
+decode_LiminalEntrant :: proc(v: json.Value, out: ^LiminalEntrant) -> bool {
+	o: GameObject
+	if !decode_GameObject(v, &o) do return false
+	out^ = o.is_token ? LiminalEntrant(LiminalEntrant_Token{_0 = TokenProjection(o)}) : LiminalEntrant(LiminalEntrant_Card{_0 = o})
+	return true
+}
+encode_LiminalEntrant :: proc(b: ^strings.Builder, x: LiminalEntrant) {
+	switch y in x {
+	case LiminalEntrant_Token: encode_GameObject(b, GameObject(y._0))
+	case LiminalEntrant_Card: encode_GameObject(b, y._0)
+	}
+}
+
+// analysis/resource.rs PeriodSignature: `from/into = "SignatureWire"`, the period's own fields (flattened) plus
+// `"scope": "OneRepetition"` for a one-repetition signature; absent scope reads as EveryRepetition (CR 732.2a).
+decode_PeriodSignature :: proc(v: json.Value, out: ^PeriodSignature) -> bool {
+	p: PeriodicDelta
+	if !decode_PeriodicDelta(v, &p) do return false
+	scope, has := json.get(v, "scope")
+	if has && (scope.kind != .String || (scope.text != "EveryRepetition" && scope.text != "OneRepetition")) do return fail("PeriodSignature.scope")
+	out^ = has && scope.text == "OneRepetition" ? PeriodSignature(PeriodSignature_OneRepetition{_0 = p}) : PeriodSignature(PeriodSignature_EveryRepetition{_0 = p})
+	return true
+}
+encode_PeriodSignature :: proc(b: ^strings.Builder, x: PeriodSignature) {
+	strings.write_byte(b, '{')
+	f := true
+	switch y in x {
+	case PeriodSignature_EveryRepetition: encode_PeriodicDelta_members(b, y._0, &f)
+	case PeriodSignature_OneRepetition:
+		encode_PeriodicDelta_members(b, y._0, &f)
+		member(b, &f, "scope")
+		json.write_string(b, "OneRepetition")
+	}
+	strings.write_byte(b, '}')
+}
+
+// types/resolution.rs `impl Serialize for PendingCoinFlip`: the branches go under `bound_branches` {won, lost}
+// (required on reading: a parked flip without them is invalid), `branch_context` is left out when empty and
+// `trigger_context` when absent. CR 705.
+decode_PendingCoinFlip :: proc(v: json.Value, out: ^PendingCoinFlip) -> bool {
+	if v.kind != .Object do return fail("PendingCoinFlip: expected an object")
+	req :: proc(v: json.Value, key: string, out: ^$T, d: proc(json.Value, ^T) -> bool) -> bool {
+		m, ok := json.get(v, key)
+		if !ok do return fail("PendingCoinFlip: a field is missing")
+		return d(m, out)
+	}
+	opt :: proc(v: json.Value, key: string, out: ^$T, d: proc(json.Value, ^T) -> bool) -> bool {
+		m, ok := json.get(v, key)
+		return !ok || d(m, out)
+	}
+	bb: ResolvedCoinBranches
+	bbv, has_branches := json.get(v, "bound_branches")
+	if !has_branches || bbv.kind == .Null do return fail("PendingCoinFlip: missing bound_branches")
+	if !decode_ResolvedCoinBranches(bbv, &bb) do return false
+	if !req(v, "source_id", &out.source_id, decode_ObjectId) || !req(v, "controller", &out.controller, decode_PlayerId) ||
+	   !opt(v, "flipper", &out.flipper, decode_PlayerId) ||
+	   !req(v, "kind", &out.kind, decode_PendingCoinFlipKind) || !opt(v, "chain_root_targets", &out.chain_root_targets, dec_dyn_TargetRef) ||
+	   !opt(v, "branch_context", &out.branch_context, decode_FlipBranchContext) ||
+	   !opt(v, "trigger_context", &out.trigger_context, dec_opt_ResolvingTriggerContext) {
+		return false
+	}
+	if w, has := bb.won.?; has { out.win_effect = new(ResolvedAbility); out.win_effect^ = w }
+	if l, has := bb.lost.?; has { out.lose_effect = new(ResolvedAbility); out.lose_effect^ = l }
+	return true
+}
+encode_PendingCoinFlip :: proc(b: ^strings.Builder, x: PendingCoinFlip) {
+	strings.write_byte(b, '{')
+	f := true
+	member(b, &f, "source_id"); encode_ObjectId(b, x.source_id)
+	member(b, &f, "controller"); encode_PlayerId(b, x.controller)
+	member(b, &f, "flipper"); encode_PlayerId(b, x.flipper)
+	member(b, &f, "bound_branches")
+	{
+		strings.write_byte(b, '{')
+		g := true
+		if x.win_effect != nil { member(b, &g, "won"); encode_ResolvedAbility(b, x.win_effect^) }
+		if x.lose_effect != nil { member(b, &g, "lost"); encode_ResolvedAbility(b, x.lose_effect^) }
+		strings.write_byte(b, '}')
+	}
+	member(b, &f, "kind"); encode_PendingCoinFlipKind(b, x.kind)
+	member(b, &f, "chain_root_targets"); enc_dyn_TargetRef(b, x.chain_root_targets)
+	if !flip_branch_context_is_empty(x.branch_context) { member(b, &f, "branch_context"); encode_FlipBranchContext(b, x.branch_context) }
+	if t, ok := x.trigger_context.?; ok { member(b, &f, "trigger_context"); encode_ResolvingTriggerContext(b, t) }
+	strings.write_byte(b, '}')
+}
+
+// types/resolution.rs FlipBranchContext::is_empty.
+flip_branch_context_is_empty :: proc(x: FlipBranchContext) -> bool {
+	return len(x.chosen_players) == 0 && len(x.parent_occurrences.targets) == 0 && x.forwarded_result_context == nil && x.parent_target_missing_reason == nil
+}
+
+// types/card_printing.rs owner_printing_pair: a deck's printing as {set_code, collector_number}, read back as
+// CardPrinting::owner (no automatic art catalog version).
+decode_with_owner_printing_pair :: proc(v: json.Value, out: ^CardPrinting) -> bool {
+	if v.kind != .Object do return fail("printing: expected an object")
+	s, ok1 := json.get(v, "set_code")
+	c, ok2 := json.get(v, "collector_number")
+	if !ok1 || !ok2 do return fail("printing: missing set_code or collector_number")
+	out^ = {}
+	return decode_string(s, &out.set_code) && decode_string(c, &out.collector_number)
+}
+encode_with_owner_printing_pair :: proc(b: ^strings.Builder, x: CardPrinting) {
+	strings.write_byte(b, '{')
+	f := true
+	member(b, &f, "set_code"); json.write_string(b, x.set_code)
+	member(b, &f, "collector_number"); json.write_string(b, x.collector_number)
+	strings.write_byte(b, '}')
+}
+
+// game/combat.rs outgoing_attack_wire: Option<Option<ObjectIncarnationRef>> written as the inner option (outer
+// None writes null) and read back as Some(inner).
+decode_with_outgoing_attack_wire :: proc(v: json.Value, out: ^Maybe(Maybe(ObjectIncarnationRef))) -> bool {
+	inner: Maybe(ObjectIncarnationRef)
+	if !dec_opt_ObjectIncarnationRef(v, &inner) do return false
+	out^ = inner
+	return true
+}
+encode_with_outgoing_attack_wire :: proc(b: ^strings.Builder, x: Maybe(Maybe(ObjectIncarnationRef))) {
+	inner, _ := x.?
+	enc_opt_ObjectIncarnationRef(b, inner)
+}
+
+// game/combat.rs blocking_wire (CR 733): None ↔ [], Some([]) ↔ null, Some(ids) ↔ ids.
+decode_with_blocking_wire :: proc(v: json.Value, out: ^Maybe([dynamic]ObjectId)) -> bool {
+	if v.kind == .Null {
+		out^ = make([dynamic]ObjectId)
+		return true
+	}
+	ids: [dynamic]ObjectId
+	if !dec_dyn_ObjectId(v, &ids) do return false
+	if len(ids) == 0 do out^ = nil
+	else do out^ = ids
+	return true
+}
+encode_with_blocking_wire :: proc(b: ^strings.Builder, x: Maybe([dynamic]ObjectId)) {
+	ids, ok := x.?
+	if !ok do strings.write_string(b, "[]")
+	else if len(ids) == 0 do strings.write_string(b, "null")
+	else do enc_dyn_ObjectId(b, ids)
+}
+
+// types/game_state.rs stack_bound_reveals_is_empty, types/events.rs latched_doublers_are_empty.
+hand_stack_bound_reveals_is_empty :: proc(x: ^map[ObjectId][dynamic]ObjectIncarnationRef) -> bool { return x == nil || len(x^) == 0 }
+hand_latched_doublers_are_empty :: proc(x: ^[dynamic]LatchedTriggerDoubler) -> bool { return x == nil || len(x^) == 0 }
+
+// analysis/resource.rs ResourceVector::is_zero: equal to the derived default (no map entries, every count 0).
+hand_ResourceVector_is_zero :: proc(x: ResourceVector) -> bool {
+	for m in x.mana do if m != 0 do return false
+	return len(x.life) == 0 && len(x.damage_dealt) == 0 && len(x.library_delta) == 0 && len(x.poison) == 0 &&
+		len(x.energy) == 0 && x.tokens_created == 0 && x.cards_drawn == 0 && x.casts_this_step == 0 &&
+		x.landfall_triggers == 0 && x.combat_phases == 0 && x.extra_turns == 0 && x.death_triggers == 0 &&
+		x.etb_triggers == 0 && x.ltb_triggers == 0 && x.sac_triggers == 0 && len(x.counters) == 0 &&
+		len(x.generic_triggers) == 0
+}
+
+// GameFormat's other variants are written as their names; the variant structs are GameFormat_<Name>.
+@(private)
+decode_GameFormat_named :: proc(v: json.Value, out: ^GameFormat) -> bool {
+	u := runtime.type_info_base(type_info_of(GameFormat)).variant.(runtime.Type_Info_Union)
+	for vt in u.variants {
+		name := vt.variant.(runtime.Type_Info_Named).name[len("GameFormat_"):]
+		if name != "Custom" && name == v.text {
+			reflect.set_union_variant_typeid(any{out, typeid_of(GameFormat)}, vt.id)
+			return true
+		}
+	}
+	return fail("GameFormat: unknown format")
+}
+@(private)
+encode_GameFormat_named :: proc(b: ^strings.Builder, x: GameFormat) {
+	x := x
+	ti := type_info_of(reflect.union_variant_typeid(x))
+	json.write_string(b, ti.variant.(runtime.Type_Info_Named).name[len("GameFormat_"):])
+}
+
+// ------------------------------------------------------------------------------------ game-state field adapters ---
+// Rust's map adapters write their entries sorted by key (deterministic saves). These write them in model order;
+// the round trip compares JSON values, where object member order doesn't matter. Byte-identical output, if a
+// later step needs it, sorts here.
+
+// game/game_object.rs unit_marker_option_serde: Option<T> of a marker type written as a bool; true or null reads
+// back as Some(T::default()).
+decode_with_unit_marker_option_serde :: proc(v: json.Value, out: ^Maybe($T)) -> bool {
+	#partial switch v.kind {
+	case .Null: out^ = T{}; return true
+	case .Bool:
+		if v.boolean do out^ = T{}
+		else do out^ = nil
+		return true
+	}
+	return fail("expected a bool marker")
+}
+encode_with_unit_marker_option_serde :: proc(b: ^strings.Builder, x: Maybe($T)) { encode_bool(b, x != nil) }
+
+// game/game_object.rs bestow_form_serde (CR 702.103): a bare flag, or the state itself once it records removed
+// subtypes; null or true reads as the default state.
+decode_with_bestow_form_serde :: proc(v: json.Value, out: ^Maybe(BestowFormState)) -> bool {
+	#partial switch v.kind {
+	case .Null: out^ = BestowFormState{}; return true
+	case .Bool:
+		if v.boolean do out^ = BestowFormState{}
+		else do out^ = nil
+		return true
+	}
+	s: BestowFormState
+	if !decode_BestowFormState(v, &s) do return false
+	out^ = s
+	return true
+}
+encode_with_bestow_form_serde :: proc(b: ^strings.Builder, x: Maybe(BestowFormState)) {
+	s, ok := x.?
+	if ok && len(s.removed_creature_subtypes) > 0 do encode_BestowFormState(b, s)
+	else do encode_bool(b, ok)
+}
+
+// phase-ast types/mana.rs snow_compat: Option<ManaSupertype> as a bool, true = Snow.
+decode_with_snow_compat :: proc(v: json.Value, out: ^Maybe(ManaSupertype)) -> bool {
+	if v.kind != .Bool do return fail("snow: expected a bool")
+	if v.boolean do out^ = ManaSupertype.Snow
+	else do out^ = nil
+	return true
+}
+encode_with_snow_compat :: proc(b: ^strings.Builder, x: Maybe(ManaSupertype)) {
+	s, ok := x.?
+	encode_bool(b, ok && s == .Snow)
+}
+
+// types/object_map.rs serialize_sorted: GameState.objects written as its map in ascending ObjectId order.
+encode_with_sorted :: proc(b: ^strings.Builder, x: ObjectMap) { encode_ObjectMap(b, x) }
+
+// phase-ast types/counter.rs counter_map_serde: a map keyed by the counter type's string; reading adds up
+// repeated keys (two spellings of one counter type).
+decode_with_counter_map_serde :: proc(v: json.Value, out: ^[dynamic]Tuple2(CounterType, u32)) -> bool {
+	if v.kind != .Object do return fail("counters: expected an object")
+	out^ = make([dynamic]Tuple2(CounterType, u32), 0, len(v.members))
+	outer: for m in v.members {
+		ct: CounterType
+		n: u32
+		if !decode_CounterType(json.Value{kind = .String, text = m.key}, &ct) || !decode_u32(m.value, &n) do return false
+		for &e in out {
+			if counter_key(e._0) == counter_key(ct) {
+				if u64(e._1) + u64(n) > u64(max(u32)) do return fail("counters: count overflow")
+				e._1 += n
+				continue outer
+			}
+		}
+		append(out, Tuple2(CounterType, u32){ct, n})
+	}
+	return true
+}
+@(private)
+counter_key :: proc(x: CounterType) -> string {
+	kb := strings.builder_make(context.temp_allocator)
+	counter_type_as_str(&kb, x)
+	return strings.to_string(kb)
+}
+
+encode_with_counter_map_serde :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(CounterType, u32)) {
+	strings.write_byte(b, '{')
+	for e, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		encode_CounterType(b, e._0)
+		strings.write_byte(b, ':')
+		encode_u32(b, e._1)
+	}
+	strings.write_byte(b, '}')
+}
+
+// types/game_state.rs tuple_key_map: (ObjectId, index) keys written "<object id>_<index>".
+decode_with_tuple_key_map :: proc(v: json.Value, out: ^[dynamic]Tuple2(Tuple2(ObjectId, int), u32)) -> bool {
+	if v.kind != .Object do return fail("tuple-key map: expected an object")
+	out^ = make([dynamic]Tuple2(Tuple2(ObjectId, int), u32), len(v.members))
+	for m, i in v.members {
+		sep := strings.index_byte(m.key, '_')
+		if sep < 0 do return fail("tuple-key map: invalid key")
+		oid, ok1 := strconv.parse_u64_of_base(m.key[:sep], 10)
+		idx, ok2 := strconv.parse_u64_of_base(m.key[sep + 1:], 10)
+		if !ok1 || !ok2 do return fail("tuple-key map: invalid key")
+		out[i]._0 = {ObjectId(oid), int(idx)}
+		if !decode_u32(m.value, &out[i]._1) do return false
+	}
+	return true
+}
+encode_with_tuple_key_map :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(Tuple2(ObjectId, int), u32)) {
+	strings.write_byte(b, '{')
+	for e, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		strings.write_byte(b, '"')
+		strings.write_u64(b, u64(e._0._0))
+		strings.write_byte(b, '_')
+		strings.write_u64(b, u64(e._0._1))
+		strings.write_string(b, "\":")
+		encode_u32(b, e._1)
+	}
+	strings.write_byte(b, '}')
+}
+
+// types/game_state.rs ability_usage_key_map (CR 602.5b, CR 602.5c): AbilityUsageKey written as
+// "<source>#<provenance or ->#<0|1>#<fingerprint, % and # escaped>#<grant chain>#<description>", the grant chain
+// as comma-separated "<object>.<incarnation>" stamps.
+@(private)
+write_usage_key :: proc(b: ^strings.Builder, k: AbilityUsageKey) {
+	stamp :: proc(b: ^strings.Builder, r: ObjectIncarnationRef) {
+		strings.write_u64(b, u64(r.object_id))
+		strings.write_byte(b, '.')
+		strings.write_u64(b, r.incarnation)
+	}
+	strings.write_u64(b, u64(k.source))
+	strings.write_byte(b, '#')
+	if p, ok := k.provenance.?; ok do stamp(b, p)
+	else do strings.write_byte(b, '-')
+	d, has_d := k.description.?
+	strings.write_string(b, has_d ? "#1#" : "#0#")
+	for c in transmute([]byte)k.fingerprint {
+		switch c {
+		case '%': strings.write_string(b, "%25")
+		case '#': strings.write_string(b, "%23")
+		case: strings.write_byte(b, c)
+		}
+	}
+	strings.write_byte(b, '#')
+	for r, i in k.grant_chain {
+		if i > 0 do strings.write_byte(b, ',')
+		stamp(b, r)
+	}
+	strings.write_byte(b, '#')
+	if has_d do strings.write_string(b, d)
+}
+
+@(private)
+parse_stamp :: proc(s: string) -> (ObjectIncarnationRef, bool) {
+	dot := strings.index_byte(s, '.')
+	if dot < 0 do return {}, false
+	oid, ok1 := strconv.parse_u64_of_base(s[:dot], 10)
+	inc, ok2 := strconv.parse_u64_of_base(s[dot + 1:], 10)
+	return {object_id = ObjectId(oid), incarnation = inc}, ok1 && ok2
+}
+
+@(private)
+read_usage_key :: proc(raw: string) -> (k: AbilityUsageKey, ok: bool) {
+	parts: [6]string
+	rest := raw
+	for i in 0 ..< 5 {
+		sep := strings.index_byte(rest, '#')
+		if sep < 0 do return {}, false
+		parts[i] = rest[:sep]
+		rest = rest[sep + 1:]
+	}
+	parts[5] = rest
+	src, src_ok := strconv.parse_u64_of_base(parts[0], 10)
+	if !src_ok do return {}, false
+	k.source = ObjectId(src)
+	if parts[1] != "-" {
+		p, p_ok := parse_stamp(parts[1])
+		if !p_ok do return {}, false
+		k.provenance = p
+	}
+	// The fingerprint's escapes: %25 is %, %23 is #; any other escape is invalid.
+	fb := strings.builder_make()
+	fp := parts[3]
+	for i := 0; i < len(fp); i += 1 {
+		if fp[i] != '%' { strings.write_byte(&fb, fp[i]); continue }
+		if i + 2 >= len(fp) do return {}, false
+		switch fp[i + 1:i + 3] {
+		case "25": strings.write_byte(&fb, '%')
+		case "23": strings.write_byte(&fb, '#')
+		case: return {}, false
+		}
+		i += 2
+	}
+	k.fingerprint = strings.to_string(fb)
+	switch {
+	case parts[2] == "0" && parts[5] == "":
+	case parts[2] == "1": k.description = parts[5]
+	case: return {}, false
+	}
+	if parts[4] != "" {
+		chain := parts[4]
+		for seg in strings.split_iterator(&chain, ",") {
+			r, r_ok := parse_stamp(seg)
+			if !r_ok do return {}, false
+			append(&k.grant_chain, r)
+		}
+	}
+	return k, true
+}
+
+decode_with_ability_usage_key_map :: proc(v: json.Value, out: ^[dynamic]Tuple2(AbilityUsageKey, u32)) -> bool {
+	if v.kind != .Object do return fail("ability usage map: expected an object")
+	out^ = make([dynamic]Tuple2(AbilityUsageKey, u32), len(v.members))
+	for m, i in v.members {
+		k, ok := read_usage_key(m.key)
+		if !ok do return fail("ability usage map: invalid key")
+		out[i]._0 = k
+		if !decode_u32(m.value, &out[i]._1) do return false
+	}
+	return true
+}
+encode_with_ability_usage_key_map :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(AbilityUsageKey, u32)) {
+	strings.write_byte(b, '{')
+	for e, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		kb := strings.builder_make(context.temp_allocator)
+		write_usage_key(&kb, e._0)
+		json.write_string(b, strings.to_string(kb))
+		strings.write_byte(b, ':')
+		encode_u32(b, e._1)
+	}
+	strings.write_byte(b, '}')
+}
+
+// types/game_state.rs departed_activation_tally_map (CR 602.5b): (key, incarnation) written
+// "<incarnation>#<usage key>".
+decode_with_departed_activation_tally_map :: proc(v: json.Value, out: ^[dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32)) -> bool {
+	if v.kind != .Object do return fail("departed tally map: expected an object")
+	out^ = make([dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32), len(v.members))
+	for m, i in v.members {
+		sep := strings.index_byte(m.key, '#')
+		if sep < 0 do return fail("departed tally map: invalid key")
+		inc, ok1 := strconv.parse_u64_of_base(m.key[:sep], 10)
+		k, ok2 := read_usage_key(m.key[sep + 1:])
+		if !ok1 || !ok2 do return fail("departed tally map: invalid key")
+		out[i]._0 = {k, inc}
+		if !decode_u32(m.value, &out[i]._1) do return false
+	}
+	return true
+}
+encode_with_departed_activation_tally_map :: proc(b: ^strings.Builder, x: [dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32)) {
+	strings.write_byte(b, '{')
+	for e, i in x {
+		if i > 0 do strings.write_byte(b, ',')
+		kb := strings.builder_make(context.temp_allocator)
+		strings.write_u64(&kb, e._0._1)
+		strings.write_byte(&kb, '#')
+		write_usage_key(&kb, e._0._0)
+		json.write_string(b, strings.to_string(kb))
+		strings.write_byte(b, ':')
+		encode_u32(b, e._1)
+	}
+	strings.write_byte(b, '}')
+}
+
+// types/game_state.rs persisted_checkpoint_state: a payment recovery checkpoint (CR 614.17a, CR 118.12) is
+// written through ResolutionStateWire, the versioned persistence form (resolution frames in place of the
+// resolution stack, types/resolution.rs). Not ported yet: reading one fails rather than misreading it.
+decode_with_persisted_checkpoint_state :: proc(v: json.Value, out: ^^GameState) -> bool {
+	_ = v; _ = out
+	return fail("payment recovery checkpoint: ResolutionStateWire is not ported yet")
+}
+encode_with_persisted_checkpoint_state :: proc(b: ^strings.Builder, x: ^GameState) {
+	encode_GameState(b, x^) // TODO(O-1): ResolutionStateWire's form; see decode_with_persisted_checkpoint_state
 }

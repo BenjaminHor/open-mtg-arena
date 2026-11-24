@@ -19,6 +19,8 @@ pub struct Tx<'a, 'b> {
     /// Rust parameter names (and `self`) and the Odin expressions they become.
     pub vars: BTreeMap<String, (String, Shape)>,
     pub self_ty: Option<String>,
+    /// Inlining depth (calls to single-expression functions are translated in place).
+    pub depth: u32,
 }
 
 fn path_segs(p: &syn::Path) -> Vec<String> {
@@ -37,6 +39,76 @@ fn lit(l: &Lit) -> R<String> {
 }
 
 impl<'a, 'b> Tx<'a, 'b> {
+    /// The owner a path names: `Self::x` is the impl type, `T::x` is T, a bare `x` has none.
+    fn owner_of(&self, segs: &[String]) -> Option<String> {
+        if segs.len() >= 2 {
+            let o = &segs[segs.len() - 2];
+            if o == "Self" { self.self_ty.clone() } else if o.chars().next()?.is_uppercase() { Some(o.clone()) } else { None }
+        } else {
+            None
+        }
+    }
+
+    /// A named constant, translated from its value.
+    fn const_value(&mut self, segs: &[String], want: &Shape) -> Option<R<String>> {
+        let name = segs.last()?.clone();
+        let owner = self.owner_of(segs);
+        let c = self.e.reg.consts.get(&(owner.clone(), name.clone())).and_then(|v| v.first()).cloned()?;
+        let shape = self.e.shape(&c.ty, &[]);
+        let shape = if matches!(shape, Shape::Named(ref n, _) if n == "Self") { want.clone() } else { shape };
+        let next_self = owner.or(self.self_ty.clone());
+        let saved = std::mem::replace(&mut self.self_ty, next_self);
+        let r = self.expr(&c.expr, &shape);
+        self.self_ty = saved;
+        Some(r)
+    }
+
+    /// A call to a function whose body is one expression: its parameters bound to the (translated) arguments.
+    fn inline_call(&mut self, owner: Option<String>, name: &str, recv: Option<(String, Shape)>, args: &[&Expr], want: &Shape) -> Option<R<String>> {
+        if self.depth > 8 {
+            return Some(Err("inlining too deep".into()));
+        }
+        let f = self.e.reg.fns.get(&(owner.clone(), name.to_string())).and_then(|v| v.first()).cloned()?;
+        let body = single_expr(&f.block)?.clone();
+        let mut vars = BTreeMap::new();
+        let mut arg_i = 0;
+        for input in &f.sig.inputs {
+            match input {
+                syn::FnArg::Receiver(_) => {
+                    let Some((r, sh)) = recv.clone() else { return Some(Err("method without receiver".into())) };
+                    vars.insert("self".to_string(), (r, sh));
+                }
+                syn::FnArg::Typed(pt) => {
+                    let Pat::Ident(pi) = &*pt.pat else { return Some(Err("parameter pattern".into())) };
+                    let sh = self.e.shape(&pt.ty, &[]);
+                    let Some(a) = args.get(arg_i) else { return Some(Err("arity".into())) };
+                    arg_i += 1;
+                    let v = match self.expr(a, &sh) {
+                        Ok(v) => v,
+                        Err(e) => return Some(Err(e)),
+                    };
+                    vars.insert(pi.ident.to_string(), (format!("({v})"), sh));
+                }
+            }
+        }
+        let ret = match &f.sig.output {
+            syn::ReturnType::Type(_, t) => {
+                let sh = self.e.shape(t, &[]);
+                if matches!(sh, Shape::Named(ref n, _) if n == "Self") { want.clone() } else { sh }
+            }
+            syn::ReturnType::Default => Shape::Unit,
+        };
+        let saved_vars = std::mem::replace(&mut self.vars, vars);
+        let next_self = owner.or(self.self_ty.clone());
+        let saved_self = std::mem::replace(&mut self.self_ty, next_self);
+        self.depth += 1;
+        let r = self.expr(&body, &ret);
+        self.depth -= 1;
+        self.vars = saved_vars;
+        self.self_ty = saved_self;
+        Some(r)
+    }
+
     fn enum_variants(&self, name: &str) -> Option<(bool, Vec<crate::model::Variant>)> {
         let def = self.e.def(name)?;
         match &def.kind {
@@ -60,7 +132,37 @@ impl<'a, 'b> Tx<'a, 'b> {
         vs.iter().any(|x| x.name == v).then_some((e, v))
     }
 
+    /// Whether Odin's `==` works on values of this shape: no dynamic arrays, maps or pointers inside.
+    fn comparable(&mut self, s: &Shape) -> bool {
+        match s {
+            Shape::Bool | Shape::Int(_) | Shape::Float(_) | Shape::Str | Shape::Char | Shape::Unit => true,
+            Shape::Option(i) => self.comparable(i),
+            Shape::Named(n, _) => {
+                let Some(def) = self.e.def(n).cloned() else { return false };
+                let mut tys = Vec::new();
+                match &def.kind {
+                    Kind::Struct(Fields::Named(fs) | Fields::Tuple(fs)) => tys.extend(fs.iter().map(|f| f.ty.clone())),
+                    Kind::Struct(Fields::Unit) => {}
+                    Kind::Enum(vs) => {
+                        for v in vs {
+                            if let Fields::Named(fs) | Fields::Tuple(fs) = &v.fields {
+                                tys.extend(fs.iter().map(|f| f.ty.clone()));
+                            }
+                        }
+                    }
+                }
+                tys.iter().all(|t| {
+                    let sh = self.e.shape(t, &[]);
+                    !matches!(sh, Shape::Named(ref m, _) if m == n) && self.comparable(&sh)
+                })
+            }
+            _ => false,
+        }
+    }
+
     fn named_fields(&self, ty: &str, variant: Option<&str>) -> Option<Fields> {
+        // A monomorphized generic (DisplayOnly_ptr_CardPrinting) has its base type's fields.
+        let ty = self.e.instances.get(ty).map(|(b, _)| b.as_str()).unwrap_or(ty);
         let def = self.e.def(ty)?;
         match (&def.kind, variant) {
             (Kind::Struct(f), None) => Some(f.clone()),
@@ -88,6 +190,35 @@ impl<'a, 'b> Tx<'a, 'b> {
     pub fn expr(&mut self, ex: &Expr, want: &Shape) -> R<String> {
         match ex {
             Expr::Lit(l) => lit(&l.lit),
+            Expr::Field(fe) => {
+                let mut base_shape = self.shape_of(&fe.base).ok_or("field of an unknown value")?;
+                let mut base = self.expr(&fe.base, &base_shape)?;
+                if let Shape::Ptr(inner) = base_shape.clone() {
+                    base = format!("{base}^");
+                    base_shape = *inner;
+                }
+                let Shape::Named(tn, _) = &base_shape else { return Err("field of a non-struct".into()) };
+                match &fe.member {
+                    syn::Member::Named(id) => Ok(format!("{base}.{}", field_ident(&id.to_string()))),
+                    // A newtype's only field: the Odin type is `distinct` of it, so the value itself.
+                    syn::Member::Unnamed(i) if i.index == 0 => match self.named_fields(tn, None) {
+                        Some(Fields::Tuple(fs)) if fs.len() == 1 => {
+                            // A monomorphized generic: its parameters stand for the instance's arguments.
+                            let saved = self.e.subst.clone();
+                            if let Some((base, args)) = self.e.instances.get(tn).cloned() {
+                                if let Some(d) = self.e.def(&base) {
+                                    self.e.subst = d.generics.iter().cloned().zip(args).collect();
+                                }
+                            }
+                            let inner = self.e.shape(&fs[0].ty, &[]);
+                            self.e.subst = saved;
+                            Ok(format!("(cast({})({base}))", self.e.odin(&inner)))
+                        }
+                        _ => Ok(format!("{base}._0")),
+                    },
+                    _ => Err("tuple field".into()),
+                }
+            }
             Expr::Paren(p) => self.expr(&p.expr, want),
             Expr::Group(g) => self.expr(&g.expr, want),
             Expr::Reference(r) => self.expr(&r.expr, want),
@@ -126,6 +257,16 @@ impl<'a, 'b> Tx<'a, 'b> {
                         _ => val,
                     });
                 }
+                if let Some(v) = self.const_value(&segs, want) {
+                    return v;
+                }
+                // u64::MAX and friends.
+                if segs.len() == 2 && matches!(segs[1].as_str(), "MAX" | "MIN")
+                    && matches!(segs[0].as_str(), "u8" | "u16" | "u32" | "u64" | "usize" | "i8" | "i16" | "i32" | "i64" | "isize")
+                {
+                    let t = match segs[0].as_str() { "usize" | "isize" => "int", t => t };
+                    return Ok(format!("{}({t})", segs[1].to_lowercase()));
+                }
                 Err(format!("path {}", segs.join("::")))
             }
             Expr::Call(c) => {
@@ -150,7 +291,14 @@ impl<'a, 'b> Tx<'a, 'b> {
                         let v = self.expr(args[0], &inner)?;
                         return Ok(format!("new_clone({}({v}))", self.e.odin(&inner)));
                     }
-                    (_, "new" | "default" | "with_capacity") if args.len() <= 1 => return Ok("{}".into()),
+                    // Empty standard collections and Default::default(): Odin's zero value.
+                    (_, "new" | "with_capacity" | "default")
+                        if segs.len() == 2
+                            && matches!(segs[0].as_str(), "Vec" | "VecDeque" | "SmallVec" | "HashMap" | "HashSet"
+                                | "BTreeMap" | "BTreeSet" | "IndexMap" | "IndexSet" | "String" | "Default" | "Vector") =>
+                    {
+                        return Ok("{}".into())
+                    }
                     _ => {}
                 }
                 let target = match want {
@@ -179,6 +327,31 @@ impl<'a, 'b> Tx<'a, 'b> {
                             return Ok(format!("{last}({})", self.expr(args[0], &s)?));
                         }
                     }
+                }
+                // `T::default()` / `Default::default()`: Rust's Default for the wanted type.
+                if last == "default" && args.is_empty() {
+                    // A generic parameter (`T::default()` in `is_default<T>`) is the wanted type.
+                    let target = if segs.len() == 2 && segs[0] != "Default" && segs[0] != "Self" && self.e.reg.types.contains_key(&segs[0]) {
+                        Shape::Named(segs[0].clone(), vec![])
+                    } else {
+                        want.clone()
+                    };
+                    return Ok(self.e.default_expr(&target).unwrap_or_else(|| format!("{}{{}}", self.e.odin(&target))));
+                }
+                // `Self(x)`: the impl type's newtype constructor.
+                if segs.len() == 1 && last == "Self" && args.len() == 1 {
+                    if let Some(st) = self.self_ty.clone() {
+                        if let Some(Fields::Tuple(fs)) = self.named_fields(&st, None) {
+                            if fs.len() == 1 {
+                                let sh = self.e.shape(&fs[0].ty, &[]);
+                                return Ok(format!("{st}({})", self.expr(args[0], &sh)?));
+                            }
+                        }
+                    }
+                }
+                let owner = self.owner_of(&segs);
+                if let Some(v) = self.inline_call(owner, &last, None, &args, want) {
+                    return v;
                 }
                 Err(format!("call {}", segs.join("::")))
             }
@@ -219,6 +392,31 @@ impl<'a, 'b> Tx<'a, 'b> {
                     _ => val,
                 })
             }
+            Expr::Macro(m) if m.mac.path.is_ident("matches") => {
+                let mac: MatchesArgs = m.mac.parse_body().map_err(|e| e.to_string())?;
+                let sh = self.shape_of(&mac.subject).ok_or("matches! subject")?;
+                let subj = self.expr(&mac.subject, &sh)?;
+                let alts: Vec<&Pat> = match &mac.pat {
+                    Pat::Or(o) => o.cases.iter().collect(),
+                    p => vec![p],
+                };
+                let mut conds = Vec::new();
+                for p in alts {
+                    let segs = pat_path(p).ok_or("pattern")?;
+                    let (e, v) = self.variant_of(&segs, &sh).ok_or("pattern variant")?;
+                    let unit_enum = self.enum_variants(&e).map(|x| x.0).unwrap_or(false);
+                    let has_field_conds = match p {
+                        Pat::Struct(ps) => ps.fields.iter().any(|f| !matches!(*f.pat, Pat::Wild(_))),
+                        Pat::TupleStruct(ts) => ts.elems.iter().any(|e| !matches!(e, Pat::Wild(_) | Pat::Rest(_))),
+                        _ => false,
+                    };
+                    if has_field_conds {
+                        return Err("matches! with field conditions in an expression".into());
+                    }
+                    conds.push(if unit_enum { format!("{subj} == {e}.{v}") } else { format!("is_variant({subj}, {e}_{v})") });
+                }
+                Ok(format!("({})", conds.join(" || ")))
+            }
             Expr::Macro(m) if m.mac.path.is_ident("vec") => {
                 let Shape::Vec(elem) = want else { return Err("vec! for a non-vector".into()) };
                 let items: syn::punctuated::Punctuated<Expr, syn::Token![,]> =
@@ -251,9 +449,22 @@ impl<'a, 'b> Tx<'a, 'b> {
                 if matches!(op, "==" | "!=") {
                     if let Shape::Named(n, _) = &left_shape {
                         if !self.enum_variants(n).map(|x| x.0).unwrap_or(true) {
-                            return Err("== on a data enum".into());
+                            // Comparing a data enum with one of its unit variants: a variant test.
+                            let segs = match &*b.right {
+                                Expr::Path(p) => path_segs(&p.path),
+                                _ => return Err("== on a data enum with a non-variant".into()),
+                            };
+                            let (e, v) = self.variant_of(&segs, &left_shape).ok_or("== variant")?;
+                            if !matches!(self.named_fields(&e, Some(&v)), Some(Fields::Unit)) {
+                                return Err("== with a data-carrying variant".into());
+                            }
+                            let neg = if op == "!=" { "!" } else { "" };
+                            return Ok(format!("{neg}is_variant({l}, {e}_{v})"));
                         }
                     }
+                }
+                if matches!(op, "==" | "!=") && !self.comparable(&left_shape) {
+                    return Err("== on a type Odin can't compare".into());
                 }
                 Ok(format!("({l} {op} {r})"))
             }
@@ -261,11 +472,18 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let recv_shape = self.shape_of(&mc.receiver).unwrap_or(Shape::Bool);
                 let recv = self.expr(&mc.receiver, &recv_shape)?;
                 match mc.method.to_string().as_str() {
-                    "is_empty" => Ok(format!("(len({recv}) == 0)")),
+                    "is_empty" if matches!(recv_shape, Shape::Vec(_) | Shape::Map(..) | Shape::Str) => Ok(format!("(len({recv}) == 0)")),
                     "is_none" => Ok(format!("({recv} == nil)")),
                     "is_some" => Ok(format!("({recv} != nil)")),
                     "clone" | "into" | "to_owned" | "to_string" => Ok(recv),
-                    m => Err(format!("method {m}")),
+                    m => {
+                        let owner = match &recv_shape { Shape::Named(n, _) => Some(n.clone()), _ => None };
+                        let args: Vec<&Expr> = mc.args.iter().collect();
+                        match owner.and_then(|o| self.inline_call(Some(o), m, Some((recv.clone(), recv_shape.clone())), &args, want)) {
+                            Some(v) => v,
+                            None => Err(format!("method {m}")),
+                        }
+                    }
                 }
             }
             other => Err(format!("expression {}", quote::quote!(#other).to_string().chars().take(60).collect::<String>())),
@@ -273,12 +491,28 @@ impl<'a, 'b> Tx<'a, 'b> {
     }
 
     /// The shape of a variable reference (parameters and `self`), for comparisons.
-    fn shape_of(&self, ex: &Expr) -> Option<Shape> {
+    fn shape_of(&mut self, ex: &Expr) -> Option<Shape> {
         match ex {
             Expr::Path(p) if p.path.segments.len() == 1 => self.vars.get(&p.path.segments[0].ident.to_string()).map(|v| v.1.clone()),
             Expr::Unary(u) => self.shape_of(&u.expr),
             Expr::Reference(r) => self.shape_of(&r.expr),
             Expr::Paren(p) => self.shape_of(&p.expr),
+            Expr::Field(fe) => {
+                let base = match self.shape_of(&fe.base)? {
+                    Shape::Ptr(inner) => *inner,
+                    s => s,
+                };
+                let Shape::Named(tn, _) = base else { return None };
+                let fields = self.named_fields(&tn, None)?;
+                match (&fe.member, &fields) {
+                    (syn::Member::Named(id), Fields::Named(fs)) => {
+                        let f = fs.iter().find(|f| f.name.as_deref() == Some(&id.to_string()))?;
+                        Some(self.e.shape(&f.ty, &[]))
+                    }
+                    (syn::Member::Unnamed(i), Fields::Tuple(fs)) => fs.get(i.index as usize).map(|f| self.e.shape(&f.ty, &[])),
+                    _ => None,
+                }
+            }
             _ => None,
         }
     }
@@ -424,7 +658,7 @@ pub fn defaults_and_skips(e: &mut Emitter) -> (String, Vec<String>) {
             let odin_ty = e.odin(&shape);
             let result = (|| -> R<String> {
                 let body = single_expr(&f.block).ok_or("not a single expression")?;
-                let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: f.self_ty.clone() };
+                let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: f.self_ty.clone(), depth: 0 };
                 if is_default {
                     let v = tx.expr(body, &shape)?;
                     Ok(format!("{proc_name} :: proc() -> {odin_ty} {{\n\treturn {v}\n}}\n"))
@@ -477,7 +711,7 @@ pub fn defaults_and_skips(e: &mut Emitter) -> (String, Vec<String>) {
         let shape = Shape::Named(ty.clone(), vec![]);
         let res = (|| -> R<String> {
             let body = single_expr(&f.block).ok_or("not a single expression")?;
-            let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: Some(ty.clone()) };
+            let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: Some(ty.clone()), depth: 0 };
             tx.expr(body, &shape)
         })();
         match res {

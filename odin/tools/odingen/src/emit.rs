@@ -30,6 +30,8 @@ pub enum Shape {
     Array(Box<Shape>, String),
     Named(String, Vec<Shape>),
     Param(String),
+    /// A type defined by hand outside the generated model (the RNG), named as Odin knows it.
+    Extern(String),
     Unknown(String),
 }
 
@@ -160,6 +162,9 @@ pub struct Emitter<'a> {
     pub computed: BTreeSet<String>,
     /// Types with `into = "..."` whose repr has the same shape, so the derived codec is right.
     pub ignore_into: BTreeSet<String>,
+    /// What each hand-written codec reads and writes through generated codecs (its fields aren't walked: a hand
+    /// type's runtime fields, like ManaPool's slot index, aren't serialized).
+    pub hand_deps: BTreeMap<String, Vec<String>>,
     /// Types read by another type's serde attributes (a Rust "De" struct with the same fields).
     pub decode_as: BTreeMap<String, String>,
     /// Per-shape helper procedures for containers (decode/encode of Maybe, ^T, [dynamic], maps, tuples), so the
@@ -170,7 +175,7 @@ pub struct Emitter<'a> {
     /// Generic types are emitted per instantiation (`Definitions<TriggerDefinition>` becomes
     /// `Definitions_TriggerDefinition`), so no Odin code is polymorphic and nothing needs overload groups.
     pub instances: BTreeMap<String, (String, Vec<Shape>)>,
-    subst: BTreeMap<String, Shape>,
+    pub subst: BTreeMap<String, Shape>,
     /// Field adapters (`#[serde(with = "...")]`) that change the wire form, written by hand.
     pub with_reqs: BTreeMap<String, String>,
     /// Types whose `Default::default()` isn't Odin's zero value, given a `default_<T>()` procedure: derived
@@ -203,6 +208,7 @@ impl<'a> Emitter<'a> {
             codec_as: BTreeMap::new(),
             computed: BTreeSet::new(),
             ignore_into: BTreeSet::new(),
+            hand_deps: BTreeMap::new(),
             decode_as: BTreeMap::new(),
             helper_names: BTreeMap::new(),
             helpers_out: String::new(),
@@ -240,7 +246,12 @@ impl<'a> Emitter<'a> {
             Type::Tuple(t) => return Shape::Tuple(t.elems.iter().map(|e| self.shape(e, params)).collect()),
             Type::Array(a) => {
                 let len = &a.len;
-                return Shape::Array(Box::new(self.shape(&a.elem, params)), quote::quote!(#len).to_string());
+                let n = quote::quote!(#len).to_string();
+                // `[T; Enum::COUNT]` is indexed by the enum, which must then be emitted.
+                if let Some(en) = n.strip_suffix(":: COUNT").map(str::trim) {
+                    self.require(en);
+                }
+                return Shape::Array(Box::new(self.shape(&a.elem, params)), n);
             }
             Type::Slice(s) => return Shape::Vec(Box::new(self.shape(&s.elem, params))),
             _ => {}
@@ -290,6 +301,12 @@ impl<'a> Emitter<'a> {
                 Shape::Map(Box::new(arg(self, 0)), Box::new(arg(self, 1)))
             }
             "PhantomData" => Shape::Unit,
+            // Runtime-only wrappers (behind #[serde(skip)] fields): the Odin type is what they hold.
+            "Mutex" | "RwLock" | "OnceLock" | "OnceCell" | "Cell" | "RefCell" | "LazyLock" => arg(self, 0),
+            "PathBuf" => Shape::Str,
+            "Discriminant" => Shape::Int("u64"),
+            // The game's ChaCha20 generator (types/game_state.rs GameRng): the verified Odin port.
+            "ChaCha20Rng" => Shape::Extern("rng.Chacha20".into()),
             _ if self.subst.contains_key(&name) => self.subst[&name].clone(),
             _ if params.contains(&name) => Shape::Param(name),
             _ => {
@@ -345,13 +362,18 @@ impl<'a> Emitter<'a> {
                 let inner: Vec<String> = es.iter().map(|e| self.odin(e)).collect();
                 format!("Tuple{}({})", es.len(), inner.join(", "))
             }
-            Shape::Array(e, n) => format!("[{}]{}", n, self.odin(e)),
+            // `[T; Enum::COUNT]` (strum's variant count) is Odin's enumerated array, indexed by the enum.
+            Shape::Array(e, n) => match n.strip_suffix(":: COUNT").map(str::trim) {
+                Some(en) => format!("[{en}]{}", self.odin(e)),
+                None => format!("[{}]{}", n, self.odin(e)),
+            },
             Shape::Named(n, args) if args.is_empty() => n.clone(),
             Shape::Named(n, args) => {
                 let a: Vec<String> = args.iter().map(|x| self.odin(x)).collect();
                 format!("{n}({})", a.join(", "))
             }
             Shape::Param(p) => p.clone(),
+            Shape::Extern(e) => e.clone(),
             Shape::Unknown(u) => format!("Unknown /* {u} */"),
         }
     }
@@ -382,7 +404,7 @@ impl<'a> Emitter<'a> {
             Shape::Unit => "decode_unit".into(),
             Shape::Json => "decode_json".into(),
             Shape::Named(n, a) if a.is_empty() => format!("decode_{n}"),
-            Shape::Named(..) | Shape::Param(_) | Shape::Unknown(_) => "decode".into(),
+            Shape::Named(..) | Shape::Param(_) | Shape::Unknown(_) | Shape::Extern(_) => "decode".into(),
             _ => self.helper(s, 0),
         }
     }
@@ -397,7 +419,7 @@ impl<'a> Emitter<'a> {
             Shape::Unit => "encode_unit".into(),
             Shape::Json => "encode_json".into(),
             Shape::Named(n, a) if a.is_empty() => format!("encode_{n}"),
-            Shape::Named(..) | Shape::Param(_) | Shape::Unknown(_) => "encode".into(),
+            Shape::Named(..) | Shape::Param(_) | Shape::Unknown(_) | Shape::Extern(_) => "encode".into(),
             _ => self.helper(s, 1),
         }
     }
@@ -409,7 +431,7 @@ impl<'a> Emitter<'a> {
                 self.flattened.insert(n.clone());
                 format!("encode_{n}_members")
             }
-            Shape::Map(..) | Shape::Option(_) => self.helper(s, 2),
+            Shape::Map(..) | Shape::Option(_) | Shape::Ptr(_) | Shape::OptPtr(_) => self.helper(s, 2),
             _ => "encode_members".into(),
         }
     }
@@ -464,6 +486,12 @@ impl<'a> Emitter<'a> {
             (2, Shape::Option(i)) => {
                 let m = self.mem(i);
                 format!("	if y, ok := x.?; ok do {m}(b, y, first)
+")
+            }
+            (2, Shape::Ptr(i) | Shape::OptPtr(i)) => {
+                // A flattened box: its members, or none when it's absent.
+                let m = self.mem(i);
+                format!("	if x != nil do {m}(b, x^, first)
 ")
             }
             (0, Shape::Ptr(i) | Shape::OptPtr(i)) => {
@@ -544,8 +572,10 @@ impl<'a> Emitter<'a> {
             }
             (_, Shape::Map(k, v)) if !self.simple_key(k) => {
                 // Written as an array of [key, value] pairs.
+                // Same Odin type as the list of pairs, so the list's helper is this helper.
                 let pair = Shape::Vec(Box::new(Shape::Tuple(vec![(**k).clone(), (**v).clone()])));
-                return if kind == 0 { let n = self.dec(&pair); self.alias_helper(&name, &n) } else { let n = self.enc(&pair); self.alias_helper(&name, &n) };
+                self.helper_names.remove(&(kind, ty.clone()));
+                return if kind == 0 { self.dec(&pair) } else { self.enc(&pair) };
             }
             (0, Shape::Map(k, v)) => {
                 let (kt, vt) = (self.odin(k), self.odin(v));
@@ -605,6 +635,54 @@ impl<'a> Emitter<'a> {
         name
     }
 
+    /// A map (or Option of one) read and written as an array of [key, value] pairs.
+    fn pairs_helper(&mut self, shape: &Shape, decode: bool) -> String {
+        let (inner, optional) = match shape {
+            Shape::Option(i) => ((**i).clone(), true),
+            s => (s.clone(), false),
+        };
+        let Shape::Map(k, v) = &inner else { return "decode".into() };
+        if !self.simple_key(k) {
+            // Already a list of pairs in Odin.
+            return if decode { self.dec(shape) } else { self.enc(shape) };
+        }
+        let ty = self.odin(shape);
+        let name = format!("{}_pairs_{}", if decode { "dec" } else { "enc" }, mangle(&ty));
+        if self.helper_names.values().any(|n| n == &name) {
+            return name;
+        }
+        self.helper_names.insert((if decode { 5 } else { 6 }, ty.clone()), name.clone());
+        let (kt, vt) = (self.odin(k), self.odin(v));
+        let (kd, vd, ke, ve) = (self.dec(k), self.dec(v), self.enc(k), self.enc(v));
+        let body = if decode {
+            let target = if optional { "m" } else { "out^" };
+            let mut b = String::new();
+            if optional {
+                let _ = writeln!(b, "\tif v.kind == .Null {{ out^ = nil; return true }}\n\tm: map[{kt}]{vt}");
+            }
+            let _ = write!(b, "\tif v.kind != .Array do return fail(\"expected [key, value] pairs\")\n\t{target} = make(map[{kt}]{vt}, len(v.items))\n\tfor p in v.items {{\n\t\tif p.kind != .Array || len(p.items) != 2 do return fail(\"expected a [key, value] pair\")\n\t\tkey: {kt}\n\t\tval: {vt}\n\t\tif !{kd}(p.items[0], &key) || !{vd}(p.items[1], &val) do return false\n\t\t{target}[key] = val\n\t}}\n");
+            if optional {
+                b.push_str("\tout^ = m\n");
+            }
+            b.push_str("\treturn true\n");
+            b
+        } else {
+            let mut b = String::new();
+            let src = if optional {
+                b.push_str("\tm, ok := x.?\n\tif !ok { strings.write_string(b, \"null\"); return }\n");
+                "m"
+            } else {
+                "x"
+            };
+            // BTreeMap order: sorted keys.
+            let _ = write!(b, "\tkeys := make([dynamic]{kt}, 0, len({src}), context.temp_allocator)\n\tfor k in {src} do append(&keys, k)\n\tslice.sort(keys[:])\n\tstrings.write_byte(b, '[')\n\tfor k, i in keys {{\n\t\tif i > 0 do strings.write_byte(b, ',')\n\t\tstrings.write_byte(b, '[')\n\t\t{ke}(b, k)\n\t\tstrings.write_byte(b, ',')\n\t\t{ve}(b, {src}[k])\n\t\tstrings.write_byte(b, ']')\n\t}}\n\tstrings.write_byte(b, ']')\n");
+            b
+        };
+        let sig = if decode { format!("proc(v: json.Value, out: ^{ty}) -> bool") } else { format!("proc(b: ^strings.Builder, x: {ty})") };
+        let _ = writeln!(self.helpers_out, "{name} :: {sig} {{\n{body}}}\n");
+        name
+    }
+
     fn alias_helper(&mut self, name: &str, target: &str) -> String {
         let _ = writeln!(self.helpers_out, "{name} :: {target}\n");
         name.to_string()
@@ -616,7 +694,7 @@ impl<'a> Emitter<'a> {
     /// number, serialize_damage_amount_compat writes a per-source threshold as a [comparator, threshold] pair. Any
     /// other `deserialize_with` reads today's (derived) form plus older ones, and deterministic_serde writers keep
     /// the derived shape (sorted). An adapter not listed becomes a missing procedure, so it can't slip through.
-    fn with_adapter(&mut self, f: &crate::model::Field, decode: bool) -> Option<String> {
+    fn with_adapter(&mut self, f: &crate::model::Field, shape: &Shape, decode: bool) -> Option<String> {
         const CHANGES_FORM: &[&str] = &[
             "etb_tap_bool_compat", "card_selection_bool_compat", "additional_cost_repeatability_bool_compat",
             "discard_self_scope_bool_compat", "source_exclusion_bool_compat",
@@ -629,6 +707,10 @@ impl<'a> Emitter<'a> {
             f.serde.with.clone().or(f.serde.serialize_with.clone())
         }?;
         let last = path.rsplit("::").next().unwrap_or(&path).to_string();
+        // analysis/resource.rs map_key_pairs (and its `opt` for Option<map>): a map written as [[key, value], ...].
+        if path == "map_key_pairs" || path == "map_key_pairs::opt" {
+            return Some(self.pairs_helper(shape, decode));
+        }
         let keeps_form = path.contains("deterministic_serde")
             || matches!(last.as_str(), "hash_set" | "hash_map" | "option_hash_set" | "option_hash_map" | "vec_hash_map"
                 | "hash_map_of_hash_set" | "im_hash_set" | "im_hash_map" | "im_hash_map_of_im_hash_map");
@@ -705,7 +787,19 @@ impl<'a> Emitter<'a> {
             if !self.wire.insert(n.clone()) {
                 continue;
             }
+            if self.hand.contains(&n) {
+                for d in self.hand_deps.get(&n).cloned().unwrap_or_default() {
+                    if !self.wire.contains(&d) {
+                        stack.push(d);
+                    }
+                }
+                continue;
+            }
             let mut defs: Vec<&TypeDef> = self.def(&n).into_iter().collect();
+            if self.codec_as.contains_key(&n) || self.decode_as.contains_key(&n) {
+                // The repr stands for the type on the wire; the type's own other fields are runtime state.
+                defs.clear();
+            }
             for alt in [self.codec_as.get(&n), self.decode_as.get(&n)].into_iter().flatten() {
                 if let Some(d) = self.def(alt) {
                     defs.push(d);
@@ -792,8 +886,23 @@ impl<'a> Emitter<'a> {
             if !self.wire.contains(&base) {
                 continue;
             }
+            // An instance of a serialized generic is serialized only if its arguments are (LazyBoxedVec<T> holds
+            // serialized vectors and, behind `#[serde(skip)]`, the runtime-only QueuedControlChange).
+            if let Some((_, args)) = &inst {
+                let mut names = Vec::new();
+                for a in args {
+                    shape_names(a, &mut names);
+                }
+                if names.iter().any(|n| self.reg.types.contains_key(n) && !self.wire.contains(n)) {
+                    continue;
+                }
+            }
             if self.hand.contains(&name) {
-                // Hand-written codecs call the same per-type helpers for their fields, so make sure they exist.
+                // Hand-written codecs call the generated codecs of what they declare (hand_deps), and the per-shape
+                // helpers of their fields whose types are all serialized (a runtime-only field's are left out).
+                for d in self.hand_deps.get(&name).cloned().unwrap_or_default() {
+                    self.require(&d);
+                }
                 let mut field_tys = Vec::new();
                 match &def.kind {
                     Kind::Struct(Fields::Named(fs) | Fields::Tuple(fs)) => field_tys.extend(fs.iter().map(|f| f.ty.clone())),
@@ -807,9 +916,13 @@ impl<'a> Emitter<'a> {
                     _ => {}
                 }
                 for t in field_tys {
-                    let sh = self.shape(&t, &[]);
-                    self.dec(&sh);
-                    self.enc(&sh);
+                    let mut names = Vec::new();
+                    crate::type_names(&t, &mut names);
+                    if names.iter().all(|n| !self.reg.types.contains_key(n) || self.wire.contains(n)) {
+                        let sh = self.shape(&t, &[]);
+                        self.dec(&sh);
+                        self.enc(&sh);
+                    }
                 }
             }
             if !self.hand.contains(&name) {
@@ -936,15 +1049,16 @@ impl<'a> Emitter<'a> {
         let last = pred.rsplit("::").next().unwrap_or(pred);
         match (pred, last) {
             (_, "is_none") if pred.starts_with("Option") => format!("{expr} == nil"),
-            (_, "is_empty") if pred.starts_with("Vec") || pred.starts_with("HashMap") || pred.starts_with("HashSet")
+            (_, "is_empty") if pred.starts_with("std::collections::") || pred.starts_with("Vec") || pred.starts_with("HashMap") || pred.starts_with("HashSet")
                 || pred.starts_with("BTreeMap") || pred.starts_with("BTreeSet") || pred.starts_with("im::")
                 || pred.starts_with("String") || pred.starts_with("IndexMap") || pred.starts_with("SmallVec")
                 || pred.starts_with("VecDeque") => format!("len({expr}) == 0"),
             ("std::ops::Not::not" | "Not::not", _) | (_, "is_false") => format!("!{expr}"),
             (_, "is_zero_u32" | "is_zero_usize" | "is_zero_u64" | "is_zero" | "is_zero_u32_field" | "is_zero_u8"
-                | "is_zero_i32") => format!("{expr} == 0"),
+                | "is_zero_i32") if matches!(shape, Shape::Int(_)) => format!("{expr} == 0"),
             _ => {
-                let proc_name = format!("skip_{}_{}", self.current, sanitize(pred));
+                // Named per field type too: a generic predicate (`is_default<T>`) serves fields of several types.
+                let proc_name = format!("skip_{}_{}_{}", self.current, sanitize(pred), mangle(&self.odin(shape)));
                 self.skip_reqs.insert(proc_name.clone(), (pred.to_string(), shape.clone(), self.current.clone()));
                 format!("{proc_name}({expr})")
             }
@@ -987,7 +1101,7 @@ impl<'a> Emitter<'a> {
                 continue;
             }
             let shape = self.shape(&f.ty, params);
-            let d = match self.with_adapter(f, true) {
+            let d = match self.with_adapter(f, &shape, true) {
                 Some(w) => w,
                 None => self.dec(&shape),
             };
@@ -1048,7 +1162,7 @@ impl<'a> Emitter<'a> {
                 let _ = writeln!(out, "\t{m}(b, {expr}, first)");
                 continue;
             }
-            let e = match self.with_adapter(f, false) {
+            let e = match self.with_adapter(f, &shape, false) {
                 Some(w) => w,
                 None => self.enc(&shape),
             };
@@ -1318,7 +1432,18 @@ impl<'a> Emitter<'a> {
                     let sh = self.shape(&fs[0].ty, params);
                     let (d, e) = (self.dec(&sh), self.enc(&sh));
                     let _ = writeln!(dec, "\tcase {}: tmp: {vt}; if !{d}({data_expr}, &tmp._0) do return fail(\"{ctx}\"); out^ = tmp", lits.join(", "));
-                    if internally {
+                    let unit_payload = matches!(&sh, Shape::Named(n, a) if a.is_empty()
+                        && matches!(self.def(n).map(|d| &d.kind), Some(Kind::Enum(pv)) if pv.iter().all(|x| matches!(x.fields, Fields::Unit))));
+                    if internally && unit_payload {
+                        // serde's tagged serializer writes a unit-enum payload as one more member, `"Inner": null`
+                        // ({"type": "Destination", "Hand": null}); reading takes the member that isn't the tag.
+                        let tag = s.tag.clone().unwrap();
+                        let pd = self.dec(&sh);
+                        dec = dec.replace(&format!("\tcase {}: tmp: {vt}; if !{d}({data_expr}, &tmp._0) do return fail(\"{ctx}\"); out^ = tmp\n", lits.join(", ")),
+                            &format!("\tcase {}: tmp: {vt}; if !{pd}(json.Value{{kind = .String, text = other_member_key(v, \"{tag}\")}}, &tmp._0) do return fail(\"{ctx}\"); out^ = tmp\n", lits.join(", ")));
+                        let _ = writeln!(enc, "\tcase {vt}: strings.write_byte(b, '{{'); f := true; member(b, &f, \"{tag}\"); json.write_string(b, \"{vname}\"); member_json_key(b, &f, y._0, {e}); strings.write_string(b, \"null\"); strings.write_byte(b, '}}')");
+                        let _ = writeln!(mem, "\tcase {vt}: member(b, first, \"{tag}\"); json.write_string(b, \"{vname}\"); member_json_key(b, first, y._0, {e}); strings.write_string(b, \"null\")");
+                    } else if internally {
                         // The newtype's members are merged with the tag.
                         let tag = s.tag.clone().unwrap();
                         let m = self.mem(&sh);
@@ -1385,5 +1510,22 @@ impl<'a> Emitter<'a> {
         mem.push_str("\t}\n");
         let members = if internally { Some(mem) } else { None };
         (dec, enc, members)
+    }
+}
+
+/// The model type names a shape mentions.
+fn shape_names(s: &Shape, out: &mut Vec<String>) {
+    match s {
+        Shape::Option(i) | Shape::OptPtr(i) | Shape::Ptr(i) | Shape::Vec(i) | Shape::Array(i, _) => shape_names(i, out),
+        Shape::Map(k, v) => {
+            shape_names(k, out);
+            shape_names(v, out);
+        }
+        Shape::Tuple(es) => es.iter().for_each(|e| shape_names(e, out)),
+        Shape::Named(n, a) => {
+            out.push(n.clone());
+            a.iter().for_each(|e| shape_names(e, out));
+        }
+        _ => {}
     }
 }

@@ -3,7 +3,7 @@
 // The Rust engine's `GameRng` is rand_chacha 0.9.0's `ChaCha20Rng::seed_from_u64(seed)`, and it draws with
 // rand 0.9.4's `shuffle`, `random_range`, `choose` and `random_bool`. Seeds, recordings and saved replays carry over
 // between the two engines only if every one of these returns exactly what the Rust crates return, so each procedure
-// below follows the crate source line for line (paths in the comments). odin/spike/rng-vectors prints the Rust side.
+// below follows the crate source line for line (paths in the comments). odin/spike/rng-vectors prints the Rust side; odin/spike/rng_vectors the Odin side.
 package rng
 
 // rand_chacha keeps 4 ChaCha blocks (64 words) per refill: chacha.rs BUF_BLOCKS = 4, BLOCK_WORDS = 16.
