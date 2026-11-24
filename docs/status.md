@@ -2799,6 +2799,16 @@ Progress:
   ~100 min). Shards integration, integration_2 and integration_3 completed (one Rust test failed in the first);
   integration_4 failed partway, likely killed in a memory squeeze (the container's processes share ~15 GB).
   Next: replay on Rust to keep the clean recordings, then on Odin for the pass rate, then the card-to-test map.
+- Edit to app (measured 2026-11-24, 4-core container, one core busy with a replay): `scripts/build-odin-engine.sh
+  dev` 13.8 s, then the running `ENGINE=odin` dev server reloads the page 0.4 s later: about 14 s from an engine edit
+  to the app. LLVM code generation is 88% of the build (type check 1.1 s, which is the quick check after an edit);
+  `-o:none` and `-use-separate-modules` save little. Rust's dev build here: 18 min cold, then out of memory.
+- Step 3 progress (2026-11-24, late): X spells, modal spells (choose one), up to N targets, cost reductions,
+  intervening-if triggers, instruction conditions, painland/pay-life/sacrifice mana riders, conditional
+  enters-tapped lands; the stack now holds each instruction's targets (as Rust's state does), so it resolves after
+  a save/restore. Rules tests: 48. Coverage: 3,525 of 15,772. Rust self-replay of the capture: about 94% of
+  recordings replay cleanly on Rust (the usable fixtures); a sample of 200 of those on Odin: 9 pass, almost all
+  failures being cards the Odin engine reports unsupported.
 - Step 2/3 start: `odin/engine/game/setup.odin` starts a game from the CR (103: libraries shuffled with the seeded
   generator, starting life, seven-card hands, mulligan decisions in turn order); `game_calls.odin` serves
   `initialize_game` (decks checked against the format first, as Rust does), `get_game_state`,
