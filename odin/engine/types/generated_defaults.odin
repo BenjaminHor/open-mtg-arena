@@ -682,7 +682,11 @@ skip_ConfirmedPeriod_Outcomes_is_refused_Outcomes :: proc(x: Outcomes) -> bool {
 	return (x == Outcomes.Refused)
 }
 
-skip_ControlChangeInstructionCapture_latched_doublers_are_empty_ptr_dyn_LatchedTriggerDoubler :: hand_latched_doublers_are_empty
+skip_ControlChangeInstructionCapture_latched_doublers_are_empty_ptr_dyn_LatchedTriggerDoubler :: proc(x: ^[dynamic]LatchedTriggerDoubler) -> bool {
+	_ = x
+	return (x == nil || len(x^) == 0)
+}
+
 skip_ControlChangeObservation_latched_doublers_are_empty_ptr_dyn_LatchedTriggerDoubler :: skip_ControlChangeInstructionCapture_latched_doublers_are_empty_ptr_dyn_LatchedTriggerDoubler
 skip_CopyTokenEntryTail_EntryAttackDestination_is_any_defender_EntryAttackDestination :: proc(x: EntryAttackDestination) -> bool {
 	_ = x
@@ -1085,7 +1089,7 @@ skip_GameState_ActiveSearchDecisionControls_is_empty_ActiveSearchDecisionControl
 
 skip_GameState_BattlefieldEntryObservations_is_empty_BattlefieldEntryObservations :: proc(x: BattlefieldEntryObservations) -> bool {
 	_ = x
-	return (len((cast(map[int]^TriggerSourceContext)(x))) == 0)
+	return ((cast(^map[int]^TriggerSourceContext)(x)) == nil || len((cast(^map[int]^TriggerSourceContext)(x))^) == 0)
 }
 
 skip_GameState_LazyBoxedMap_is_empty_LazyBoxedMap_u64_ControlChangeLink :: proc(x: LazyBoxedMap_u64_ControlChangeLink) -> bool {
@@ -1118,7 +1122,11 @@ skip_GameState_is_default_interaction_serial_string :: proc(x: string) -> bool {
 	return (x == "1")
 }
 
-skip_GameState_stack_bound_reveals_is_empty_ptr_map_ObjectId_dyn_ObjectIncarnationRef :: hand_stack_bound_reveals_is_empty
+skip_GameState_stack_bound_reveals_is_empty_ptr_map_ObjectId_dyn_ObjectIncarnationRef :: proc(x: ^map[ObjectId][dynamic]ObjectIncarnationRef) -> bool {
+	_ = x
+	return (x == nil || len(x^) == 0)
+}
+
 skip_GraveyardPermissionLatch_EtbTapState_is_unspecified_EtbTapState :: skip_CastingPermission_EtbTapState_is_unspecified_EtbTapState
 skip_GraveyardPermissionLatch_PendingEntersModifications_is_empty_PendingEntersModifications :: skip_CastOfferKind_PendingEntersModifications_is_empty_PendingEntersModifications
 skip_GraveyardPermissionLatch_PermissionCastLimit_is_unlimited_PermissionCastLimit :: proc(x: PermissionCastLimit) -> bool {

@@ -230,6 +230,14 @@ persistent vector where appends dominate, chosen per collection from what the ex
 make ObjectMap an array indexed by id with D-182's order kept beside it. Then re-measure, including a parent
 written after many discarded clones (stale counts copy more).
 
+**Step 1 done (2026-11-24): `im` collections shared.** odingen models `im::Vector`/`HashMap`/`HashSet`/`OrdMap`/
+`OrdSet` as shared collections (like `Arc<Vec<T>>`: cloning shares them, the first write after a clone copies).
+All round trips still pass. Clone: 4–5 µs with a plain arena, 10.7–15 µs with `core:mem/virtual`'s, against Rust's
+19–20 µs. But the stale-count pattern (a clone discarded without release, then the parent written) costs 345 µs a
+round: each append to the journal copies the whole journal deeply, where Rust's `im::Vector` copies only the
+64-entry chunk it writes. So step 2: the `im` collections get a chunked persistent representation (a write copies
+one chunk), and scope-end release for the clones the translator can see die; then the same benchmark again.
+
 ## Review follow-ups (2026-11-24, not yet done)
 
 From the review of odingen, the recorder and the workflow (the fixes made are in PR #117's history):

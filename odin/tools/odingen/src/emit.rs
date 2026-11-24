@@ -136,6 +136,16 @@ fn capitalize(w: &str) -> String {
     }
 }
 
+/// Whether a type path names one of the `im` crate's persistent collections (`im::Vector`, `im::HashMap`, ...).
+/// The engine always writes them qualified (`im::...`; checked: no `use im::` imports).
+fn is_im_collection(ty: &Type) -> bool {
+    let Type::Path(p) = ty else { return false };
+    let segs: Vec<String> = p.path.segments.iter().map(|s| s.ident.to_string()).collect();
+    segs.len() >= 2
+        && segs[segs.len() - 2] == "im"
+        && matches!(segs[segs.len() - 1].as_str(), "Vector" | "HashMap" | "HashSet" | "OrdMap" | "OrdSet")
+}
+
 fn last_ident(ty: &Type) -> Option<(String, Vec<Type>)> {
     if let Type::Path(p) = ty {
         let seg = p.path.segments.last()?;
@@ -267,6 +277,30 @@ impl<'a> Emitter<'a> {
         let Some((name, args)) = last_ident(ty) else {
             return Shape::Unknown(quote::quote!(#ty).to_string());
         };
+        // An `im` collection clones in O(1) in Rust (persistent). The Odin model holds it as a shared collection,
+        // like `Arc<Vec<T>>`: clones share it, the first write after a clone copies it (make_mut). Its JSON is the
+        // plain collection's. docs/odin-port.md, "State layout".
+        if is_im_collection(ty) {
+            if let Type::Path(p) = ty {
+                let mut plain = p.clone();
+                let last = plain.path.segments.len() - 1;
+                let seg = &mut plain.path.segments[last];
+                seg.ident = syn::Ident::new(
+                    match name.as_str() {
+                        "Vector" => "Vec",
+                        "HashSet" | "OrdSet" => "BTreeSet",
+                        _ => "BTreeMap",
+                    },
+                    seg.ident.span(),
+                );
+                // Keep the plain collection's own name so `HashMap`/`OrdMap` keep their key handling.
+                if name == "HashMap" || name == "OrdMap" {
+                    seg.ident = syn::Ident::new(&name, seg.ident.span());
+                }
+                plain.path.segments = plain.path.segments.into_iter().skip(last).collect();
+                return Shape::Ptr(Box::new(self.shape(&Type::Path(plain), params)), true);
+            }
+        }
         let arg = |this: &mut Self, i: usize| -> Shape {
             args.get(i).map(|t| this.shape(t, params)).unwrap_or(Shape::Unknown(format!("{name} arg {i}")))
         };
@@ -749,6 +783,21 @@ impl<'a> Emitter<'a> {
         let key = last.trim_start_matches("serialize_").trim_start_matches("deserialize_").to_string();
         let n = if decode { format!("decode_with_{key}") } else { format!("encode_with_{key}") };
         self.with_reqs.insert(n.clone(), path.clone());
+        // On an `im` collection (a shared collection in the model) the hand-written adapter works on the collection
+        // itself; a generated wrapper allocates or dereferences the shared pointer around it.
+        if let Shape::Ptr(inner, true) = shape {
+            let it = self.odin(inner);
+            let wrapper = format!("{n}_shared");
+            if self.helper_names.insert((if decode { 4 } else { 5 }, wrapper.clone()), wrapper.clone()).is_none() {
+                let body = if decode {
+                    format!("{wrapper} :: proc(v: json.Value, out: ^^{it}) -> bool {{\n\tp := shared_new({it})\n\tif !{n}(v, p) do return false\n\tout^ = p\n\treturn true\n}}\n\n")
+                } else {
+                    format!("{wrapper} :: proc(b: ^strings.Builder, x: ^{it}) {{\n\tif x == nil {{ zero: {it}; {n}(b, zero) }} else do {n}(b, x^)\n}}\n\n")
+                };
+                self.helpers_out.push_str(&body);
+            }
+            return Some(wrapper);
+        }
         Some(n)
     }
 
@@ -760,8 +809,14 @@ impl<'a> Emitter<'a> {
             if matches!(**i, Shape::Vec(_) | Shape::Map(..) | Shape::Str) {
                 return None;
             }
-            let inner = self.default_expr(i).unwrap_or_else(|| format!("{}{{}}", self.odin(i)));
-            return Some(if *shared { format!("shared_from({inner})") } else { format!("new_clone({inner})") });
+            let it = self.odin(i);
+            return Some(match (self.default_expr(i), *shared) {
+                (Some(inner), true) => format!("shared_from({inner})"),
+                (Some(inner), false) => format!("new_clone({inner})"),
+                // The zero value is the default (a nil inner pointer included).
+                (None, true) => format!("shared_new({it})"),
+                (None, false) => format!("new({it})"),
+            });
         }
         let Shape::Named(n, a) = s else { return None };
         if !a.is_empty() {
@@ -1090,11 +1145,19 @@ impl<'a> Emitter<'a> {
             (_, "is_empty") if pred.starts_with("std::collections::") || pred.starts_with("Vec") || pred.starts_with("HashMap") || pred.starts_with("HashSet")
                 || pred.starts_with("BTreeMap") || pred.starts_with("BTreeSet") || pred.starts_with("im::")
                 || pred.starts_with("String") || pred.starts_with("IndexMap") || pred.starts_with("SmallVec")
-                || pred.starts_with("VecDeque") => match shape {
-                    // A shared collection (Arc<Vec<T>>): nil stands for the empty one.
-                    Shape::Ptr(_, _) | Shape::OptPtr(_, _) => format!("({expr} == nil || len({expr}^) == 0)"),
-                    _ => format!("len({expr}) == 0"),
-                },
+                || pred.starts_with("VecDeque") => {
+                // Through any pointers (a shared collection, a Box of one): nil at any level is the empty collection.
+                let mut cond = Vec::new();
+                let mut e = expr.to_string();
+                let mut sh = shape;
+                while let Shape::Ptr(i, _) | Shape::OptPtr(i, _) = sh {
+                    cond.push(format!("{e} == nil"));
+                    e = format!("{e}^");
+                    sh = i;
+                }
+                cond.push(format!("len({e}) == 0"));
+                format!("({})", cond.join(" || "))
+            }
             ("std::ops::Not::not" | "Not::not", _) | (_, "is_false") => format!("!{expr}"),
             (_, "is_zero_u32" | "is_zero_usize" | "is_zero_u64" | "is_zero" | "is_zero_u32_field" | "is_zero_u8"
                 | "is_zero_i32") if matches!(shape, Shape::Int(_)) => format!("{expr} == 0"),

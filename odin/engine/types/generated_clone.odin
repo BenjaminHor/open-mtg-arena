@@ -69,10 +69,14 @@ cln_dyn_int :: proc(x: [dynamic]int) -> [dynamic]int {
 	return out
 }
 
-cln_dyn_StackEntry :: proc(x: [dynamic]StackEntry) -> [dynamic]StackEntry {
-	out := make([dynamic]StackEntry, len(x))
-	for item, i in x do out[i] = clone_StackEntry(item)
-	return out
+cln_shared_dyn_ObjectId :: proc(x: ^[dynamic]ObjectId) -> ^[dynamic]ObjectId {
+	shared_retain(x)
+	return x
+}
+
+cln_shared_dyn_StackEntry :: proc(x: ^[dynamic]StackEntry) -> ^[dynamic]StackEntry {
+	shared_retain(x)
+	return x
 }
 
 cln_map_ObjectId_StackPaidSnapshot :: proc(x: map[ObjectId]StackPaidSnapshot) -> map[ObjectId]StackPaidSnapshot {
@@ -153,10 +157,9 @@ cln_dyn_GameEvent :: proc(x: [dynamic]GameEvent) -> [dynamic]GameEvent {
 	return out
 }
 
-cln_dyn_t2_StaticGateKey_bool :: proc(x: [dynamic]Tuple2(StaticGateKey, bool)) -> [dynamic]Tuple2(StaticGateKey, bool) {
-	out := make([dynamic]Tuple2(StaticGateKey, bool), len(x))
-	copy(out[:], x[:])
-	return out
+cln_shared_dyn_t2_StaticGateKey_bool :: proc(x: ^[dynamic]Tuple2(StaticGateKey, bool)) -> ^[dynamic]Tuple2(StaticGateKey, bool) {
+	shared_retain(x)
+	return x
 }
 
 cln_ptr_PlayTrace :: proc(x: ^PlayTrace) -> ^PlayTrace {
@@ -173,16 +176,14 @@ cln_ptr_LifeSafetyProbe :: proc(x: ^LifeSafetyProbe) -> ^LifeSafetyProbe {
 	return p
 }
 
-cln_dyn_TransientContinuousEffect :: proc(x: [dynamic]TransientContinuousEffect) -> [dynamic]TransientContinuousEffect {
-	out := make([dynamic]TransientContinuousEffect, len(x))
-	for item, i in x do out[i] = clone_TransientContinuousEffect(item)
-	return out
+cln_shared_dyn_TransientContinuousEffect :: proc(x: ^[dynamic]TransientContinuousEffect) -> ^[dynamic]TransientContinuousEffect {
+	shared_retain(x)
+	return x
 }
 
-cln_map_ObjectId_ObjectAttribution :: proc(x: map[ObjectId]ObjectAttribution) -> map[ObjectId]ObjectAttribution {
-	out := make(map[ObjectId]ObjectAttribution, len(x))
-	for key, val in x do out[key] = clone_ObjectAttribution(val)
-	return out
+cln_shared_map_ObjectId_ObjectAttribution :: proc(x: ^map[ObjectId]ObjectAttribution) -> ^map[ObjectId]ObjectAttribution {
+	shared_retain(x)
+	return x
 }
 
 cln_dyn_AbilityUsageKey :: proc(x: [dynamic]AbilityUsageKey) -> [dynamic]AbilityUsageKey {
@@ -233,10 +234,9 @@ cln_dyn_DelayedTrigger :: proc(x: [dynamic]DelayedTrigger) -> [dynamic]DelayedTr
 	return out
 }
 
-cln_map_TrackedSetId_dyn_ObjectId :: proc(x: map[TrackedSetId][dynamic]ObjectId) -> map[TrackedSetId][dynamic]ObjectId {
-	out := make(map[TrackedSetId][dynamic]ObjectId, len(x))
-	for key, val in x do out[key] = cln_dyn_ObjectId(val)
-	return out
+cln_shared_map_TrackedSetId_dyn_ObjectId :: proc(x: ^map[TrackedSetId][dynamic]ObjectId) -> ^map[TrackedSetId][dynamic]ObjectId {
+	shared_retain(x)
+	return x
 }
 
 cln_dyn_ZoneChangeRecord :: proc(x: [dynamic]ZoneChangeRecord) -> [dynamic]ZoneChangeRecord {
@@ -257,28 +257,14 @@ cln_map_ReturnResultOccurrenceId_map_ReturnResultId_dyn_ZoneChangeRecord :: proc
 	return out
 }
 
-cln_map_ObjectId_ThisWayCause :: proc(x: map[ObjectId]ThisWayCause) -> map[ObjectId]ThisWayCause {
-	out := make(map[ObjectId]ThisWayCause, len(x))
-	for key, val in x do out[key] = val
-	return out
+cln_shared_map_TrackedSetId_ptr_map_ObjectId_ThisWayCause :: proc(x: ^map[TrackedSetId]^map[ObjectId]ThisWayCause) -> ^map[TrackedSetId]^map[ObjectId]ThisWayCause {
+	shared_retain(x)
+	return x
 }
 
-cln_map_TrackedSetId_map_ObjectId_ThisWayCause :: proc(x: map[TrackedSetId]map[ObjectId]ThisWayCause) -> map[TrackedSetId]map[ObjectId]ThisWayCause {
-	out := make(map[TrackedSetId]map[ObjectId]ThisWayCause, len(x))
-	for key, val in x do out[key] = cln_map_ObjectId_ThisWayCause(val)
-	return out
-}
-
-cln_map_ObjectId_TrackedMemberOrigin :: proc(x: map[ObjectId]TrackedMemberOrigin) -> map[ObjectId]TrackedMemberOrigin {
-	out := make(map[ObjectId]TrackedMemberOrigin, len(x))
-	for key, val in x do out[key] = val
-	return out
-}
-
-cln_map_TrackedSetId_map_ObjectId_TrackedMemberOrigin :: proc(x: map[TrackedSetId]map[ObjectId]TrackedMemberOrigin) -> map[TrackedSetId]map[ObjectId]TrackedMemberOrigin {
-	out := make(map[TrackedSetId]map[ObjectId]TrackedMemberOrigin, len(x))
-	for key, val in x do out[key] = cln_map_ObjectId_TrackedMemberOrigin(val)
-	return out
+cln_shared_map_TrackedSetId_ptr_map_ObjectId_TrackedMemberOrigin :: proc(x: ^map[TrackedSetId]^map[ObjectId]TrackedMemberOrigin) -> ^map[TrackedSetId]^map[ObjectId]TrackedMemberOrigin {
+	shared_retain(x)
+	return x
 }
 
 cln_dyn_t2_PlayerId_ThisWayCause :: proc(x: [dynamic]Tuple2(PlayerId, ThisWayCause)) -> [dynamic]Tuple2(PlayerId, ThisWayCause) {
@@ -515,34 +501,14 @@ cln_ptr_dyn_t2_TriggerDefinitionRef_PlayerId :: proc(x: ^[dynamic]Tuple2(Trigger
 	return p
 }
 
-cln_t2_AbilityUsageKey_u32 :: proc(x: Tuple2(AbilityUsageKey, u32)) -> Tuple2(AbilityUsageKey, u32) {
-	out := x
-	out._0 = clone_AbilityUsageKey(x._0)
-	return out
+cln_shared_dyn_t2_AbilityUsageKey_u32 :: proc(x: ^[dynamic]Tuple2(AbilityUsageKey, u32)) -> ^[dynamic]Tuple2(AbilityUsageKey, u32) {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_t2_AbilityUsageKey_u32 :: proc(x: [dynamic]Tuple2(AbilityUsageKey, u32)) -> [dynamic]Tuple2(AbilityUsageKey, u32) {
-	out := make([dynamic]Tuple2(AbilityUsageKey, u32), len(x))
-	for item, i in x do out[i] = cln_t2_AbilityUsageKey_u32(item)
-	return out
-}
-
-cln_t2_AbilityUsageKey_u64 :: proc(x: Tuple2(AbilityUsageKey, u64)) -> Tuple2(AbilityUsageKey, u64) {
-	out := x
-	out._0 = clone_AbilityUsageKey(x._0)
-	return out
-}
-
-cln_t2_t2_AbilityUsageKey_u64_u32 :: proc(x: Tuple2(Tuple2(AbilityUsageKey, u64), u32)) -> Tuple2(Tuple2(AbilityUsageKey, u64), u32) {
-	out := x
-	out._0 = cln_t2_AbilityUsageKey_u64(x._0)
-	return out
-}
-
-cln_dyn_t2_t2_AbilityUsageKey_u64_u32 :: proc(x: [dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32)) -> [dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32) {
-	out := make([dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32), len(x))
-	for item, i in x do out[i] = cln_t2_t2_AbilityUsageKey_u64_u32(item)
-	return out
+cln_shared_dyn_t2_t2_AbilityUsageKey_u64_u32 :: proc(x: ^[dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32)) -> ^[dynamic]Tuple2(Tuple2(AbilityUsageKey, u64), u32) {
+	shared_retain(x)
+	return x
 }
 
 cln_dyn_ObjectIncarnationRef :: proc(x: [dynamic]ObjectIncarnationRef) -> [dynamic]ObjectIncarnationRef {
@@ -557,10 +523,9 @@ cln_dyn_CrewHistoryPair :: proc(x: [dynamic]CrewHistoryPair) -> [dynamic]CrewHis
 	return out
 }
 
-cln_dyn_t2_t2_ObjectId_int_u32 :: proc(x: [dynamic]Tuple2(Tuple2(ObjectId, int), u32)) -> [dynamic]Tuple2(Tuple2(ObjectId, int), u32) {
-	out := make([dynamic]Tuple2(Tuple2(ObjectId, int), u32), len(x))
-	copy(out[:], x[:])
-	return out
+cln_shared_dyn_t2_t2_ObjectId_int_u32 :: proc(x: ^[dynamic]Tuple2(Tuple2(ObjectId, int), u32)) -> ^[dynamic]Tuple2(Tuple2(ObjectId, int), u32) {
+	shared_retain(x)
+	return x
 }
 
 cln_dyn_t2_ObjectId_CoreType :: proc(x: [dynamic]Tuple2(ObjectId, CoreType)) -> [dynamic]Tuple2(ObjectId, CoreType) {
@@ -569,22 +534,21 @@ cln_dyn_t2_ObjectId_CoreType :: proc(x: [dynamic]Tuple2(ObjectId, CoreType)) -> 
 	return out
 }
 
-cln_dyn_AbilityActivationRecord :: proc(x: [dynamic]AbilityActivationRecord) -> [dynamic]AbilityActivationRecord {
-	out := make([dynamic]AbilityActivationRecord, len(x))
-	for item, i in x do out[i] = clone_AbilityActivationRecord(item)
+cln_shared_dyn_AbilityActivationRecord :: proc(x: ^[dynamic]AbilityActivationRecord) -> ^[dynamic]AbilityActivationRecord {
+	shared_retain(x)
+	return x
+}
+
+cln_map_PlayerId_ptr_dyn_AbilityActivationRecord :: proc(x: map[PlayerId]^[dynamic]AbilityActivationRecord) -> map[PlayerId]^[dynamic]AbilityActivationRecord {
+	out := make(map[PlayerId]^[dynamic]AbilityActivationRecord, len(x))
+	for key, val in x do out[key] = cln_shared_dyn_AbilityActivationRecord(val)
 	return out
 }
 
-cln_map_PlayerId_dyn_AbilityActivationRecord :: proc(x: map[PlayerId][dynamic]AbilityActivationRecord) -> map[PlayerId][dynamic]AbilityActivationRecord {
-	out := make(map[PlayerId][dynamic]AbilityActivationRecord, len(x))
-	for key, val in x do out[key] = cln_dyn_AbilityActivationRecord(val)
-	return out
-}
-
-cln_ptr_map_PlayerId_dyn_AbilityActivationRecord :: proc(x: ^map[PlayerId][dynamic]AbilityActivationRecord) -> ^map[PlayerId][dynamic]AbilityActivationRecord {
+cln_ptr_map_PlayerId_ptr_dyn_AbilityActivationRecord :: proc(x: ^map[PlayerId]^[dynamic]AbilityActivationRecord) -> ^map[PlayerId]^[dynamic]AbilityActivationRecord {
 	if x == nil do return nil
-	p := new(map[PlayerId][dynamic]AbilityActivationRecord)
-	p^ = cln_map_PlayerId_dyn_AbilityActivationRecord(x^)
+	p := new(map[PlayerId]^[dynamic]AbilityActivationRecord)
+	p^ = cln_map_PlayerId_ptr_dyn_AbilityActivationRecord(x^)
 	return p
 }
 
@@ -617,39 +581,36 @@ cln_opt_PendingParadigmRemainingOffers :: proc(x: Maybe(PendingParadigmRemaining
 	return nil
 }
 
-cln_dyn_SpellCastRecord :: proc(x: [dynamic]SpellCastRecord) -> [dynamic]SpellCastRecord {
-	out := make([dynamic]SpellCastRecord, len(x))
-	for item, i in x do out[i] = clone_SpellCastRecord(item)
+cln_shared_dyn_SpellCastRecord :: proc(x: ^[dynamic]SpellCastRecord) -> ^[dynamic]SpellCastRecord {
+	shared_retain(x)
+	return x
+}
+
+cln_map_PlayerId_ptr_dyn_SpellCastRecord :: proc(x: map[PlayerId]^[dynamic]SpellCastRecord) -> map[PlayerId]^[dynamic]SpellCastRecord {
+	out := make(map[PlayerId]^[dynamic]SpellCastRecord, len(x))
+	for key, val in x do out[key] = cln_shared_dyn_SpellCastRecord(val)
 	return out
 }
 
-cln_map_PlayerId_dyn_SpellCastRecord :: proc(x: map[PlayerId][dynamic]SpellCastRecord) -> map[PlayerId][dynamic]SpellCastRecord {
-	out := make(map[PlayerId][dynamic]SpellCastRecord, len(x))
-	for key, val in x do out[key] = cln_dyn_SpellCastRecord(val)
+cln_shared_dyn_CyclingRecord :: proc(x: ^[dynamic]CyclingRecord) -> ^[dynamic]CyclingRecord {
+	shared_retain(x)
+	return x
+}
+
+cln_map_PlayerId_ptr_dyn_CyclingRecord :: proc(x: map[PlayerId]^[dynamic]CyclingRecord) -> map[PlayerId]^[dynamic]CyclingRecord {
+	out := make(map[PlayerId]^[dynamic]CyclingRecord, len(x))
+	for key, val in x do out[key] = cln_shared_dyn_CyclingRecord(val)
 	return out
 }
 
-cln_dyn_CyclingRecord :: proc(x: [dynamic]CyclingRecord) -> [dynamic]CyclingRecord {
-	out := make([dynamic]CyclingRecord, len(x))
-	copy(out[:], x[:])
-	return out
+cln_shared_dyn_LandPlayRecord :: proc(x: ^[dynamic]LandPlayRecord) -> ^[dynamic]LandPlayRecord {
+	shared_retain(x)
+	return x
 }
 
-cln_map_PlayerId_dyn_CyclingRecord :: proc(x: map[PlayerId][dynamic]CyclingRecord) -> map[PlayerId][dynamic]CyclingRecord {
-	out := make(map[PlayerId][dynamic]CyclingRecord, len(x))
-	for key, val in x do out[key] = cln_dyn_CyclingRecord(val)
-	return out
-}
-
-cln_dyn_LandPlayRecord :: proc(x: [dynamic]LandPlayRecord) -> [dynamic]LandPlayRecord {
-	out := make([dynamic]LandPlayRecord, len(x))
-	copy(out[:], x[:])
-	return out
-}
-
-cln_map_PlayerId_dyn_LandPlayRecord :: proc(x: map[PlayerId][dynamic]LandPlayRecord) -> map[PlayerId][dynamic]LandPlayRecord {
-	out := make(map[PlayerId][dynamic]LandPlayRecord, len(x))
-	for key, val in x do out[key] = cln_dyn_LandPlayRecord(val)
+cln_map_PlayerId_ptr_dyn_LandPlayRecord :: proc(x: map[PlayerId]^[dynamic]LandPlayRecord) -> map[PlayerId]^[dynamic]LandPlayRecord {
+	out := make(map[PlayerId]^[dynamic]LandPlayRecord, len(x))
+	for key, val in x do out[key] = cln_shared_dyn_LandPlayRecord(val)
 	return out
 }
 
@@ -690,46 +651,39 @@ cln_dyn_AttackDeclarationRecord :: proc(x: [dynamic]AttackDeclarationRecord) -> 
 	return out
 }
 
-cln_dyn_CounterAddedRecord :: proc(x: [dynamic]CounterAddedRecord) -> [dynamic]CounterAddedRecord {
-	out := make([dynamic]CounterAddedRecord, len(x))
-	for item, i in x do out[i] = clone_CounterAddedRecord(item)
-	return out
+cln_shared_dyn_ZoneChangeRecord :: proc(x: ^[dynamic]ZoneChangeRecord) -> ^[dynamic]ZoneChangeRecord {
+	shared_retain(x)
+	return x
 }
 
-cln_t3_TriggerDefinitionRef_u32_int :: proc(x: Tuple3(TriggerDefinitionRef, u32, int)) -> Tuple3(TriggerDefinitionRef, u32, int) {
-	out := x
-	out._0 = clone_TriggerDefinitionRef(x._0)
-	return out
+cln_shared_dyn_CounterAddedRecord :: proc(x: ^[dynamic]CounterAddedRecord) -> ^[dynamic]CounterAddedRecord {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_t3_TriggerDefinitionRef_u32_int :: proc(x: [dynamic]Tuple3(TriggerDefinitionRef, u32, int)) -> [dynamic]Tuple3(TriggerDefinitionRef, u32, int) {
-	out := make([dynamic]Tuple3(TriggerDefinitionRef, u32, int), len(x))
-	for item, i in x do out[i] = cln_t3_TriggerDefinitionRef_u32_int(item)
-	return out
+cln_shared_dyn_t3_TriggerDefinitionRef_u32_int :: proc(x: ^[dynamic]Tuple3(TriggerDefinitionRef, u32, int)) -> ^[dynamic]Tuple3(TriggerDefinitionRef, u32, int) {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_BattlefieldEntryRecord :: proc(x: [dynamic]BattlefieldEntryRecord) -> [dynamic]BattlefieldEntryRecord {
-	out := make([dynamic]BattlefieldEntryRecord, len(x))
-	for item, i in x do out[i] = clone_BattlefieldEntryRecord(item)
-	return out
+cln_shared_dyn_BattlefieldEntryRecord :: proc(x: ^[dynamic]BattlefieldEntryRecord) -> ^[dynamic]BattlefieldEntryRecord {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_DamageRecord :: proc(x: [dynamic]DamageRecord) -> [dynamic]DamageRecord {
-	out := make([dynamic]DamageRecord, len(x))
-	for item, i in x do out[i] = clone_DamageRecord(item)
-	return out
+cln_shared_dyn_DamageRecord :: proc(x: ^[dynamic]DamageRecord) -> ^[dynamic]DamageRecord {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_ExploitRecord :: proc(x: [dynamic]ExploitRecord) -> [dynamic]ExploitRecord {
-	out := make([dynamic]ExploitRecord, len(x))
-	copy(out[:], x[:])
-	return out
+cln_shared_dyn_ExploitRecord :: proc(x: ^[dynamic]ExploitRecord) -> ^[dynamic]ExploitRecord {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_t2_PlayerId_string :: proc(x: [dynamic]Tuple2(PlayerId, string)) -> [dynamic]Tuple2(PlayerId, string) {
-	out := make([dynamic]Tuple2(PlayerId, string), len(x))
-	copy(out[:], x[:])
-	return out
+cln_shared_dyn_t2_PlayerId_string :: proc(x: ^[dynamic]Tuple2(PlayerId, string)) -> ^[dynamic]Tuple2(PlayerId, string) {
+	shared_retain(x)
+	return x
 }
 
 cln_dyn_PendingSpellCostReduction :: proc(x: [dynamic]PendingSpellCostReduction) -> [dynamic]PendingSpellCostReduction {
@@ -1016,10 +970,9 @@ cln_shared_BoosterShelf :: proc(x: ^BoosterShelf) -> ^BoosterShelf {
 	return x
 }
 
-cln_dyn_t2_PlayerId_u32 :: proc(x: [dynamic]Tuple2(PlayerId, u32)) -> [dynamic]Tuple2(PlayerId, u32) {
-	out := make([dynamic]Tuple2(PlayerId, u32), len(x))
-	copy(out[:], x[:])
-	return out
+cln_shared_dyn_t2_PlayerId_u32 :: proc(x: ^[dynamic]Tuple2(PlayerId, u32)) -> ^[dynamic]Tuple2(PlayerId, u32) {
+	shared_retain(x)
+	return x
 }
 
 cln_map_PlayerId_i32 :: proc(x: map[PlayerId]i32) -> map[PlayerId]i32 {
@@ -1046,16 +999,15 @@ cln_dyn_EpicEffect :: proc(x: [dynamic]EpicEffect) -> [dynamic]EpicEffect {
 	return out
 }
 
-cln_dyn_ResolvedAbility :: proc(x: [dynamic]ResolvedAbility) -> [dynamic]ResolvedAbility {
-	out := make([dynamic]ResolvedAbility, len(x))
-	for item, i in x do out[i] = clone_ResolvedAbility(item)
-	return out
+cln_shared_dyn_ResolvedAbility :: proc(x: ^[dynamic]ResolvedAbility) -> ^[dynamic]ResolvedAbility {
+	shared_retain(x)
+	return x
 }
 
-cln_ptr_dyn_ResolvedAbility :: proc(x: ^[dynamic]ResolvedAbility) -> ^[dynamic]ResolvedAbility {
+cln_ptr_ptr_dyn_ResolvedAbility :: proc(x: ^^[dynamic]ResolvedAbility) -> ^^[dynamic]ResolvedAbility {
 	if x == nil do return nil
-	p := new([dynamic]ResolvedAbility)
-	p^ = cln_dyn_ResolvedAbility(x^)
+	p := new(^[dynamic]ResolvedAbility)
+	p^ = cln_shared_dyn_ResolvedAbility(x^)
 	return p
 }
 
@@ -1104,58 +1056,34 @@ cln_map_ObjectId_TriggerFiring :: proc(x: map[ObjectId]TriggerFiring) -> map[Obj
 	return out
 }
 
-cln_map_ObjectId_LKISnapshot :: proc(x: map[ObjectId]LKISnapshot) -> map[ObjectId]LKISnapshot {
-	out := make(map[ObjectId]LKISnapshot, len(x))
-	for key, val in x do out[key] = clone_LKISnapshot(val)
-	return out
+cln_shared_map_ObjectId_LKISnapshot :: proc(x: ^map[ObjectId]LKISnapshot) -> ^map[ObjectId]LKISnapshot {
+	shared_retain(x)
+	return x
 }
 
-cln_map_ObjectId_CopiableValues :: proc(x: map[ObjectId]CopiableValues) -> map[ObjectId]CopiableValues {
-	out := make(map[ObjectId]CopiableValues, len(x))
-	for key, val in x do out[key] = clone_CopiableValues(val)
-	return out
+cln_shared_map_ObjectId_CopiableValues :: proc(x: ^map[ObjectId]CopiableValues) -> ^map[ObjectId]CopiableValues {
+	shared_retain(x)
+	return x
 }
 
-cln_map_u64_LKISnapshot :: proc(x: map[u64]LKISnapshot) -> map[u64]LKISnapshot {
-	out := make(map[u64]LKISnapshot, len(x))
-	for key, val in x do out[key] = clone_LKISnapshot(val)
-	return out
+cln_shared_map_ObjectId_ptr_map_u64_LKISnapshot :: proc(x: ^map[ObjectId]^map[u64]LKISnapshot) -> ^map[ObjectId]^map[u64]LKISnapshot {
+	shared_retain(x)
+	return x
 }
 
-cln_map_ObjectId_map_u64_LKISnapshot :: proc(x: map[ObjectId]map[u64]LKISnapshot) -> map[ObjectId]map[u64]LKISnapshot {
-	out := make(map[ObjectId]map[u64]LKISnapshot, len(x))
-	for key, val in x do out[key] = cln_map_u64_LKISnapshot(val)
-	return out
+cln_shared_map_ObjectId_ptr_map_u64_CopiableValues :: proc(x: ^map[ObjectId]^map[u64]CopiableValues) -> ^map[ObjectId]^map[u64]CopiableValues {
+	shared_retain(x)
+	return x
 }
 
-cln_map_u64_CopiableValues :: proc(x: map[u64]CopiableValues) -> map[u64]CopiableValues {
-	out := make(map[u64]CopiableValues, len(x))
-	for key, val in x do out[key] = clone_CopiableValues(val)
-	return out
+cln_shared_map_ObjectId_ptr_map_u64_DepartedStackSpell :: proc(x: ^map[ObjectId]^map[u64]DepartedStackSpell) -> ^map[ObjectId]^map[u64]DepartedStackSpell {
+	shared_retain(x)
+	return x
 }
 
-cln_map_ObjectId_map_u64_CopiableValues :: proc(x: map[ObjectId]map[u64]CopiableValues) -> map[ObjectId]map[u64]CopiableValues {
-	out := make(map[ObjectId]map[u64]CopiableValues, len(x))
-	for key, val in x do out[key] = cln_map_u64_CopiableValues(val)
-	return out
-}
-
-cln_map_u64_DepartedStackSpell :: proc(x: map[u64]DepartedStackSpell) -> map[u64]DepartedStackSpell {
-	out := make(map[u64]DepartedStackSpell, len(x))
-	for key, val in x do out[key] = clone_DepartedStackSpell(val)
-	return out
-}
-
-cln_map_ObjectId_map_u64_DepartedStackSpell :: proc(x: map[ObjectId]map[u64]DepartedStackSpell) -> map[ObjectId]map[u64]DepartedStackSpell {
-	out := make(map[ObjectId]map[u64]DepartedStackSpell, len(x))
-	for key, val in x do out[key] = cln_map_u64_DepartedStackSpell(val)
-	return out
-}
-
-cln_map_ObjectId_StackEntry :: proc(x: map[ObjectId]StackEntry) -> map[ObjectId]StackEntry {
-	out := make(map[ObjectId]StackEntry, len(x))
-	for key, val in x do out[key] = clone_StackEntry(val)
-	return out
+cln_shared_map_ObjectId_StackEntry :: proc(x: ^map[ObjectId]StackEntry) -> ^map[ObjectId]StackEntry {
+	shared_retain(x)
+	return x
 }
 
 cln_dyn_LinkedExileLki :: proc(x: [dynamic]LinkedExileLki) -> [dynamic]LinkedExileLki {
@@ -1272,11 +1200,11 @@ clone_GameState :: proc(x: GameState) -> GameState {
 	out.active_copy_token_resolution_tokens = cln_opt_dyn_ObjectId(x.active_copy_token_resolution_tokens)
 	out.active_graveyard_permission_latch = cln_ptr_GraveyardPermissionLatch(x.active_graveyard_permission_latch)
 	out.released_entry_rows = cln_dyn_int(x.released_entry_rows)
-	out.battlefield = cln_dyn_ObjectId(x.battlefield)
-	out.stack = cln_dyn_StackEntry(x.stack)
+	out.battlefield = cln_shared_dyn_ObjectId(x.battlefield)
+	out.stack = cln_shared_dyn_StackEntry(x.stack)
 	out.stack_paid_facts = cln_map_ObjectId_StackPaidSnapshot(x.stack_paid_facts)
-	out.exile = cln_dyn_ObjectId(x.exile)
-	out.command_zone = cln_dyn_ObjectId(x.command_zone)
+	out.exile = cln_shared_dyn_ObjectId(x.exile)
+	out.command_zone = cln_shared_dyn_ObjectId(x.command_zone)
 	out.combat = cln_opt_CombatState(x.combat)
 	out.waiting_for = clone_WaitingFor(x.waiting_for)
 	out.resolve_all_consent_run = cln_opt_ResolveAllConsentRun(x.resolve_all_consent_run)
@@ -1291,7 +1219,7 @@ clone_GameState :: proc(x: GameState) -> GameState {
 	out.deferred_entry_events = cln_dyn_ParkedEntry(x.deferred_entry_events)
 	out.unsettled_entry_batch_events = cln_dyn_GameEvent(x.unsettled_entry_batch_events)
 	out.layers_dirty = clone_LayersDirty(x.layers_dirty)
-	out.static_gate_truth = cln_dyn_t2_StaticGateKey_bool(x.static_gate_truth)
+	out.static_gate_truth = cln_shared_dyn_t2_StaticGateKey_bool(x.static_gate_truth)
 	out.trigger_index = clone_TriggerIndex(x.trigger_index)
 	out.replacement_index = clone_ReplacementIndex(x.replacement_index)
 	out.static_source_index = clone_StaticSourceIndex(x.static_source_index)
@@ -1299,9 +1227,9 @@ clone_GameState :: proc(x: GameState) -> GameState {
 	out.precast_shortcut_runtime = clone_PrecastShortcutRuntime(x.precast_shortcut_runtime)
 	out.life_safety_probe = cln_ptr_LifeSafetyProbe(x.life_safety_probe)
 	out.public_state_dirty = clone_PublicStateDirty(x.public_state_dirty)
-	out.transient_continuous_effects = cln_dyn_TransientContinuousEffect(x.transient_continuous_effects)
-	out.attribution = cln_map_ObjectId_ObjectAttribution(x.attribution)
-	out.remote_type_layer_recipients = cln_dyn_ObjectId(x.remote_type_layer_recipients)
+	out.transient_continuous_effects = cln_shared_dyn_TransientContinuousEffect(x.transient_continuous_effects)
+	out.attribution = cln_shared_map_ObjectId_ObjectAttribution(x.attribution)
+	out.remote_type_layer_recipients = cln_shared_dyn_ObjectId(x.remote_type_layer_recipients)
 	out.cancelled_casts = cln_dyn_ObjectId(x.cancelled_casts)
 	out.pending_activations = cln_dyn_AbilityUsageKey(x.pending_activations)
 	out.pending_trigger = cln_ptr_PendingTrigger(x.pending_trigger)
@@ -1312,10 +1240,10 @@ clone_GameState :: proc(x: GameState) -> GameState {
 	out.exile_links = cln_dyn_ExileLink(x.exile_links)
 	out.paradigm_primed = cln_dyn_ParadigmPrime(x.paradigm_primed)
 	out.delayed_triggers = cln_dyn_DelayedTrigger(x.delayed_triggers)
-	out.tracked_object_sets = cln_map_TrackedSetId_dyn_ObjectId(x.tracked_object_sets)
+	out.tracked_object_sets = cln_shared_map_TrackedSetId_dyn_ObjectId(x.tracked_object_sets)
 	out.return_result_frames = cln_map_ReturnResultOccurrenceId_map_ReturnResultId_dyn_ZoneChangeRecord(x.return_result_frames)
-	out.tracked_set_member_causes = cln_map_TrackedSetId_map_ObjectId_ThisWayCause(x.tracked_set_member_causes)
-	out.tracked_set_member_origins = cln_map_TrackedSetId_map_ObjectId_TrackedMemberOrigin(x.tracked_set_member_origins)
+	out.tracked_set_member_causes = cln_shared_map_TrackedSetId_ptr_map_ObjectId_ThisWayCause(x.tracked_set_member_causes)
+	out.tracked_set_member_origins = cln_shared_map_TrackedSetId_ptr_map_ObjectId_TrackedMemberOrigin(x.tracked_set_member_origins)
 	out.tracked_set_participants = cln_map_TrackedSetId_dyn_t2_PlayerId_ThisWayCause(x.tracked_set_participants)
 	out.commander_cast_count = cln_map_ObjectId_u32(x.commander_cast_count)
 	out.commander_cast_owners = cln_map_ObjectId_PlayerId(x.commander_cast_owners)
@@ -1361,10 +1289,10 @@ clone_GameState :: proc(x: GameState) -> GameState {
 	out.trigger_indicated_actions_this_turn = cln_ptr_dyn_t2_TriggerDefinitionRef_PlayerId(x.trigger_indicated_actions_this_turn)
 	out.triggers_fired_this_game = cln_dyn_TriggerDefinitionRef(x.triggers_fired_this_game)
 	out.triggered_abilities_added_mana_this_turn = cln_dyn_t2_TriggerDefinitionRef_PlayerId(x.triggered_abilities_added_mana_this_turn)
-	out.activated_abilities_this_turn = cln_dyn_t2_AbilityUsageKey_u32(x.activated_abilities_this_turn)
-	out.activated_abilities_this_game = cln_dyn_t2_AbilityUsageKey_u32(x.activated_abilities_this_game)
-	out.departed_activated_abilities_this_turn = cln_dyn_t2_t2_AbilityUsageKey_u64_u32(x.departed_activated_abilities_this_turn)
-	out.departed_activated_abilities_this_game = cln_dyn_t2_t2_AbilityUsageKey_u64_u32(x.departed_activated_abilities_this_game)
+	out.activated_abilities_this_turn = cln_shared_dyn_t2_AbilityUsageKey_u32(x.activated_abilities_this_turn)
+	out.activated_abilities_this_game = cln_shared_dyn_t2_AbilityUsageKey_u32(x.activated_abilities_this_game)
+	out.departed_activated_abilities_this_turn = cln_shared_dyn_t2_t2_AbilityUsageKey_u64_u32(x.departed_activated_abilities_this_turn)
+	out.departed_activated_abilities_this_game = cln_shared_dyn_t2_t2_AbilityUsageKey_u64_u32(x.departed_activated_abilities_this_game)
 	out.crew_activated_this_turn = cln_dyn_ObjectIncarnationRef(x.crew_activated_this_turn)
 	out.crew_resolved_this_turn = cln_dyn_ObjectIncarnationRef(x.crew_resolved_this_turn)
 	out.crew_history_this_turn = cln_dyn_CrewHistoryPair(x.crew_history_this_turn)
@@ -1375,12 +1303,12 @@ clone_GameState :: proc(x: GameState) -> GameState {
 	out.object_tap_count_this_turn = cln_map_ObjectId_u32(x.object_tap_count_this_turn)
 	out.object_counter_placement_count_this_turn = cln_map_ObjectId_u32(x.object_counter_placement_count_this_turn)
 	out.pending_attack_trigger_events = cln_dyn_GameEvent(x.pending_attack_trigger_events)
-	out.ability_resolutions_this_turn = cln_dyn_t2_t2_ObjectId_int_u32(x.ability_resolutions_this_turn)
+	out.ability_resolutions_this_turn = cln_shared_dyn_t2_t2_ObjectId_int_u32(x.ability_resolutions_this_turn)
 	out.graveyard_cast_permissions_used = cln_dyn_ObjectId(x.graveyard_cast_permissions_used)
 	out.graveyard_cast_permissions_used_per_type = cln_dyn_t2_ObjectId_CoreType(x.graveyard_cast_permissions_used_per_type)
 	out.hand_cast_free_permissions_used = cln_dyn_ObjectId(x.hand_cast_free_permissions_used)
 	out.alt_cost_grant_permissions_used = cln_dyn_ObjectId(x.alt_cost_grant_permissions_used)
-	out.abilities_activated_this_turn_by_player = cln_ptr_map_PlayerId_dyn_AbilityActivationRecord(x.abilities_activated_this_turn_by_player)
+	out.abilities_activated_this_turn_by_player = cln_ptr_map_PlayerId_ptr_dyn_AbilityActivationRecord(x.abilities_activated_this_turn_by_player)
 	out.exile_play_permissions_used = cln_dyn_ObjectId(x.exile_play_permissions_used)
 	out.exile_play_single_use_consumed = cln_dyn_TrackedSetId(x.exile_play_single_use_consumed)
 	out.exile_cast_permissions_used = cln_dyn_ObjectId(x.exile_cast_permissions_used)
@@ -1391,10 +1319,10 @@ clone_GameState :: proc(x: GameState) -> GameState {
 	out.pending_miracle_offers = cln_dyn_MiracleOffer(x.pending_miracle_offers)
 	out.pending_paradigm_remaining_offers = cln_opt_PendingParadigmRemainingOffers(x.pending_paradigm_remaining_offers)
 	out.spells_cast_this_game = cln_map_PlayerId_u32(x.spells_cast_this_game)
-	out.spells_cast_this_game_by_player = cln_map_PlayerId_dyn_SpellCastRecord(x.spells_cast_this_game_by_player)
-	out.cycles_completed_this_game_by_player = cln_map_PlayerId_dyn_CyclingRecord(x.cycles_completed_this_game_by_player)
-	out.spells_cast_this_turn_by_player = cln_map_PlayerId_dyn_SpellCastRecord(x.spells_cast_this_turn_by_player)
-	out.lands_played_this_turn_by_player = cln_map_PlayerId_dyn_LandPlayRecord(x.lands_played_this_turn_by_player)
+	out.spells_cast_this_game_by_player = cln_map_PlayerId_ptr_dyn_SpellCastRecord(x.spells_cast_this_game_by_player)
+	out.cycles_completed_this_game_by_player = cln_map_PlayerId_ptr_dyn_CyclingRecord(x.cycles_completed_this_game_by_player)
+	out.spells_cast_this_turn_by_player = cln_map_PlayerId_ptr_dyn_SpellCastRecord(x.spells_cast_this_turn_by_player)
+	out.lands_played_this_turn_by_player = cln_map_PlayerId_ptr_dyn_LandPlayRecord(x.lands_played_this_turn_by_player)
 	out.players_who_searched_library_this_turn = cln_dyn_PlayerId(x.players_who_searched_library_this_turn)
 	out.player_actions_this_turn = cln_dyn_t2_PlayerId_PlayerActionKind(x.player_actions_this_turn)
 	out.players_attacked_this_step = cln_dyn_PlayerId(x.players_attacked_this_step)
@@ -1411,21 +1339,21 @@ clone_GameState :: proc(x: GameState) -> GameState {
 	out.creatures_blocked_this_turn = cln_dyn_ObjectId(x.creatures_blocked_this_turn)
 	out.players_who_created_token_this_turn = cln_dyn_PlayerId(x.players_who_created_token_this_turn)
 	out.players_who_flipped_coins_this_turn = cln_dyn_PlayerId(x.players_who_flipped_coins_this_turn)
-	out.created_tokens_this_turn = cln_dyn_ZoneChangeRecord(x.created_tokens_this_turn)
-	out.counter_added_this_turn = cln_dyn_CounterAddedRecord(x.counter_added_this_turn)
+	out.created_tokens_this_turn = cln_shared_dyn_ZoneChangeRecord(x.created_tokens_this_turn)
+	out.counter_added_this_turn = cln_shared_dyn_CounterAddedRecord(x.counter_added_this_turn)
 	out.players_who_discarded_card_this_turn = cln_dyn_PlayerId(x.players_who_discarded_card_this_turn)
 	out.cards_discarded_this_turn_by_player = cln_map_PlayerId_u32(x.cards_discarded_this_turn_by_player)
 	out.players_who_sacrificed_artifact_this_turn = cln_dyn_PlayerId(x.players_who_sacrificed_artifact_this_turn)
-	out.sacrificed_permanents_this_turn = cln_dyn_ZoneChangeRecord(x.sacrificed_permanents_this_turn)
-	out.zone_changes_this_turn = cln_dyn_ZoneChangeRecord(x.zone_changes_this_turn)
+	out.sacrificed_permanents_this_turn = cln_shared_dyn_ZoneChangeRecord(x.sacrificed_permanents_this_turn)
+	out.zone_changes_this_turn = cln_shared_dyn_ZoneChangeRecord(x.zone_changes_this_turn)
 	out.battlefield_entry_observations = clone_BattlefieldEntryObservations(x.battlefield_entry_observations)
 	out.instruction_boundary_marks = cln_dyn_int(x.instruction_boundary_marks)
-	out.batched_zone_change_trigger_fired = cln_dyn_t3_TriggerDefinitionRef_u32_int(x.batched_zone_change_trigger_fired)
-	out.battlefield_entries_this_turn = cln_dyn_BattlefieldEntryRecord(x.battlefield_entries_this_turn)
-	out.damage_dealt_this_turn = cln_dyn_DamageRecord(x.damage_dealt_this_turn)
-	out.creatures_exploited_this_turn = cln_dyn_ExploitRecord(x.creatures_exploited_this_turn)
+	out.batched_zone_change_trigger_fired = cln_shared_dyn_t3_TriggerDefinitionRef_u32_int(x.batched_zone_change_trigger_fired)
+	out.battlefield_entries_this_turn = cln_shared_dyn_BattlefieldEntryRecord(x.battlefield_entries_this_turn)
+	out.damage_dealt_this_turn = cln_shared_dyn_DamageRecord(x.damage_dealt_this_turn)
+	out.creatures_exploited_this_turn = cln_shared_dyn_ExploitRecord(x.creatures_exploited_this_turn)
 	out.assassin_or_commander_dealt_combat_damage_this_turn = cln_dyn_PlayerId(x.assassin_or_commander_dealt_combat_damage_this_turn)
-	out.creature_types_dealt_combat_damage_this_turn = cln_dyn_t2_PlayerId_string(x.creature_types_dealt_combat_damage_this_turn)
+	out.creature_types_dealt_combat_damage_this_turn = cln_shared_dyn_t2_PlayerId_string(x.creature_types_dealt_combat_damage_this_turn)
 	out.mana_spent_on_spells_this_turn = cln_map_PlayerId_u32(x.mana_spent_on_spells_this_turn)
 	out.pending_spell_cost_reductions = cln_dyn_PendingSpellCostReduction(x.pending_spell_cost_reductions)
 	out.pending_next_spell_modifiers = cln_dyn_PendingNextSpellModifier(x.pending_next_spell_modifiers)
@@ -1483,14 +1411,14 @@ clone_GameState :: proc(x: GameState) -> GameState {
 	out.private_look_ids = cln_dyn_ObjectId(x.private_look_ids)
 	out.last_zone_changed_ids = cln_dyn_ObjectId(x.last_zone_changed_ids)
 	out.exile_rider_countered_ids = cln_dyn_ObjectId(x.exile_rider_countered_ids)
-	out.last_vote_ballots = cln_dyn_t2_PlayerId_u32(x.last_vote_ballots)
+	out.last_vote_ballots = cln_shared_dyn_t2_PlayerId_u32(x.last_vote_ballots)
 	out.player_actions_this_way = cln_dyn_t2_PlayerId_PlayerActionKind(x.player_actions_this_way)
 	out.last_effect_counts_by_player = cln_map_PlayerId_i32(x.last_effect_counts_by_player)
 	out.clause_minimum_snapshot = cln_opt_ClauseMinimumSnapshot(x.clause_minimum_snapshot)
 	out.city_blessing = cln_dyn_PlayerId(x.city_blessing)
 	out.enduring_story = cln_ptr_dyn_PlayerId(x.enduring_story)
 	out.epic_effects = cln_dyn_EpicEffect(x.epic_effects)
-	out.replacement_continuations = cln_ptr_dyn_ResolvedAbility(x.replacement_continuations)
+	out.replacement_continuations = cln_ptr_ptr_dyn_ResolvedAbility(x.replacement_continuations)
 	out.restrictions = cln_dyn_GameRestriction(x.restrictions)
 	out.pending_damage_replacements = cln_dyn_ReplacementDefinition(x.pending_damage_replacements)
 	out.pending_step_end_mana_handlers = cln_dyn_StepEndManaScanEntry(x.pending_step_end_mana_handlers)
@@ -1502,12 +1430,12 @@ clone_GameState :: proc(x: GameState) -> GameState {
 	out.current_trigger_events = cln_dyn_GameEvent(x.current_trigger_events)
 	out.stack_trigger_event_batches = cln_map_ObjectId_dyn_GameEvent(x.stack_trigger_event_batches)
 	out.stack_trigger_firings = cln_map_ObjectId_TriggerFiring(x.stack_trigger_firings)
-	out.lki_cache = cln_map_ObjectId_LKISnapshot(x.lki_cache)
-	out.lki_copiable_values = cln_map_ObjectId_CopiableValues(x.lki_copiable_values)
-	out.lki_by_incarnation = cln_map_ObjectId_map_u64_LKISnapshot(x.lki_by_incarnation)
-	out.lki_copiable_values_by_incarnation = cln_map_ObjectId_map_u64_CopiableValues(x.lki_copiable_values_by_incarnation)
-	out.departed_stack_spells = cln_map_ObjectId_map_u64_DepartedStackSpell(x.departed_stack_spells)
-	out.departed_activated_abilities = cln_map_ObjectId_StackEntry(x.departed_activated_abilities)
+	out.lki_cache = cln_shared_map_ObjectId_LKISnapshot(x.lki_cache)
+	out.lki_copiable_values = cln_shared_map_ObjectId_CopiableValues(x.lki_copiable_values)
+	out.lki_by_incarnation = cln_shared_map_ObjectId_ptr_map_u64_LKISnapshot(x.lki_by_incarnation)
+	out.lki_copiable_values_by_incarnation = cln_shared_map_ObjectId_ptr_map_u64_CopiableValues(x.lki_copiable_values_by_incarnation)
+	out.departed_stack_spells = cln_shared_map_ObjectId_ptr_map_u64_DepartedStackSpell(x.departed_stack_spells)
+	out.departed_activated_abilities = cln_shared_map_ObjectId_StackEntry(x.departed_activated_abilities)
 	out.linked_exile_lki = cln_map_ObjectId_dyn_LinkedExileLki(x.linked_exile_lki)
 	out.pending_taps_for_mana_overrides = cln_dyn_t2_TriggerDefinitionRef_ProductionOverride(x.pending_taps_for_mana_overrides)
 	out.current_triggered_mana_override = cln_opt_ProductionOverride(x.current_triggered_mana_override)
@@ -1521,12 +1449,12 @@ clone_GameState :: proc(x: GameState) -> GameState {
 	out.ring_level = cln_map_PlayerId_u8(x.ring_level)
 	out.ring_bearer = cln_map_PlayerId_opt_ObjectId(x.ring_bearer)
 	out.dungeon_progress = cln_map_PlayerId_DungeonProgress(x.dungeon_progress)
-	out.planar_deck = cln_dyn_ObjectId(x.planar_deck)
+	out.planar_deck = cln_shared_dyn_ObjectId(x.planar_deck)
 	out.planar_die_actions_this_turn = cln_map_PlayerId_u32(x.planar_die_actions_this_turn)
-	out.scheme_deck = cln_dyn_ObjectId(x.scheme_deck)
+	out.scheme_deck = cln_shared_dyn_ObjectId(x.scheme_deck)
 	out.horde_postcombat_activation_queue = cln_dyn_ObjectId(x.horde_postcombat_activation_queue)
 	out.horde_seats = cln_dyn_PlayerId(x.horde_seats)
-	out.boss_deck = cln_dyn_ObjectId(x.boss_deck)
+	out.boss_deck = cln_shared_dyn_ObjectId(x.boss_deck)
 	out.baxter_set_aside = cln_dyn_ObjectId(x.baxter_set_aside)
 	out.combat_prevention_tally = cln_opt_dyn_t2_t2_AppliedReplacementKey_TargetRef_i32(x.combat_prevention_tally)
 	out.damage_batch_ledger = cln_ptr_DamageBatchLedger(x.damage_batch_ledger)
@@ -2181,6 +2109,12 @@ cln_ptr_ContestState :: proc(x: ^ContestState) -> ^ContestState {
 	return p
 }
 
+cln_dyn_t2_PlayerId_u32 :: proc(x: [dynamic]Tuple2(PlayerId, u32)) -> [dynamic]Tuple2(PlayerId, u32) {
+	out := make([dynamic]Tuple2(PlayerId, u32), len(x))
+	copy(out[:], x[:])
+	return out
+}
+
 cln_ptr_AbilityDefinition :: proc(x: ^AbilityDefinition) -> ^AbilityDefinition {
 	if x == nil do return nil
 	p := new(AbilityDefinition)
@@ -2194,22 +2128,14 @@ cln_dyn_ptr_AbilityDefinition :: proc(x: [dynamic]^AbilityDefinition) -> [dynami
 	return out
 }
 
-cln_t2_PlayerId_dyn_ObjectId :: proc(x: Tuple2(PlayerId, [dynamic]ObjectId)) -> Tuple2(PlayerId, [dynamic]ObjectId) {
-	out := x
-	out._1 = cln_dyn_ObjectId(x._1)
-	return out
+cln_shared_dyn_t2_PlayerId_ptr_dyn_ObjectId :: proc(x: ^[dynamic]Tuple2(PlayerId, ^[dynamic]ObjectId)) -> ^[dynamic]Tuple2(PlayerId, ^[dynamic]ObjectId) {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_t2_PlayerId_dyn_ObjectId :: proc(x: [dynamic]Tuple2(PlayerId, [dynamic]ObjectId)) -> [dynamic]Tuple2(PlayerId, [dynamic]ObjectId) {
-	out := make([dynamic]Tuple2(PlayerId, [dynamic]ObjectId), len(x))
-	for item, i in x do out[i] = cln_t2_PlayerId_dyn_ObjectId(item)
-	return out
-}
-
-cln_dyn_PileResult :: proc(x: [dynamic]PileResult) -> [dynamic]PileResult {
-	out := make([dynamic]PileResult, len(x))
-	for item, i in x do out[i] = clone_PileResult(item)
-	return out
+cln_shared_dyn_PileResult :: proc(x: ^[dynamic]PileResult) -> ^[dynamic]PileResult {
+	shared_retain(x)
+	return x
 }
 
 cln_dyn_CompanionRevealChoice :: proc(x: [dynamic]CompanionRevealChoice) -> [dynamic]CompanionRevealChoice {
@@ -2851,30 +2777,30 @@ clone_WaitingFor :: proc(x: WaitingFor) -> WaitingFor {
 		v.option_labels = cln_dyn_string(y.option_labels)
 		v.remaining_voters = cln_dyn_t2_PlayerId_u32(y.remaining_voters)
 		v.tallies = cln_dyn_u32(y.tallies)
-		v.ballots = cln_dyn_t2_PlayerId_u32(y.ballots)
+		v.ballots = cln_shared_dyn_t2_PlayerId_u32(y.ballots)
 		v.per_choice_effect = cln_dyn_ptr_AbilityDefinition(y.per_choice_effect)
-		v.candidate_objects = cln_dyn_ObjectId(y.candidate_objects)
+		v.candidate_objects = cln_shared_dyn_ObjectId(y.candidate_objects)
 		v.outcome_template = cln_ptr_AbilityDefinition(y.outcome_template)
 		v.chain_root_targets = cln_dyn_TargetRef(y.chain_root_targets)
 		return v
 	case WaitingFor_SeparatePilesChooseOpponent:
 		v := y
 		v.candidates = cln_dyn_PlayerId(y.candidates)
-		v.eligible = cln_dyn_ObjectId(y.eligible)
+		v.eligible = cln_shared_dyn_ObjectId(y.eligible)
 		v.chosen_pile_effect = cln_ptr_AbilityDefinition(y.chosen_pile_effect)
 		v.unchosen_pile_effect = cln_ptr_AbilityDefinition(y.unchosen_pile_effect)
 		return v
 	case WaitingFor_SeparatePilesPartition:
 		v := y
-		v.eligible = cln_dyn_ObjectId(y.eligible)
-		v.remaining_subjects = cln_dyn_t2_PlayerId_dyn_ObjectId(y.remaining_subjects)
-		v.completed = cln_dyn_PileResult(y.completed)
+		v.eligible = cln_shared_dyn_ObjectId(y.eligible)
+		v.remaining_subjects = cln_shared_dyn_t2_PlayerId_ptr_dyn_ObjectId(y.remaining_subjects)
+		v.completed = cln_shared_dyn_PileResult(y.completed)
 		v.chosen_pile_effect = cln_ptr_AbilityDefinition(y.chosen_pile_effect)
 		v.unchosen_pile_effect = cln_ptr_AbilityDefinition(y.unchosen_pile_effect)
 		return v
 	case WaitingFor_SeparatePilesChoice:
 		v := y
-		v.pending = cln_dyn_PileResult(y.pending)
+		v.pending = cln_shared_dyn_PileResult(y.pending)
 		v.current = clone_PileResult(y.current)
 		v.chosen_pile_effect = cln_ptr_AbilityDefinition(y.chosen_pile_effect)
 		v.unchosen_pile_effect = cln_ptr_AbilityDefinition(y.unchosen_pile_effect)
@@ -3993,11 +3919,11 @@ cln_dyn_ChosenAttribute :: proc(x: [dynamic]ChosenAttribute) -> [dynamic]ChosenA
 clone_Player :: proc(x: Player) -> Player {
 	out := x
 	out.mana_pool = clone_ManaPool(x.mana_pool)
-	out.library = cln_dyn_ObjectId(x.library)
-	out.hand = cln_dyn_ObjectId(x.hand)
-	out.graveyard = cln_dyn_ObjectId(x.graveyard)
-	out.attraction_deck = cln_dyn_ObjectId(x.attraction_deck)
-	out.contraption_deck = cln_dyn_ObjectId(x.contraption_deck)
+	out.library = cln_shared_dyn_ObjectId(x.library)
+	out.hand = cln_shared_dyn_ObjectId(x.hand)
+	out.graveyard = cln_shared_dyn_ObjectId(x.graveyard)
+	out.attraction_deck = cln_shared_dyn_ObjectId(x.attraction_deck)
+	out.contraption_deck = cln_shared_dyn_ObjectId(x.contraption_deck)
 	out.sticker_sheets = cln_dyn_string(x.sticker_sheets)
 	out.bending_types_this_turn = cln_dyn_BendingType(x.bending_types_this_turn)
 	out.player_counters = cln_map_PlayerCounterKind_u32(x.player_counters)
@@ -4027,53 +3953,43 @@ clone_ActiveSearchDecisionControls :: proc(x: ActiveSearchDecisionControls) -> A
 	return cast(ActiveSearchDecisionControls)cln_map_PlayerId_ActiveSearchDecisionControl(cast(map[PlayerId]ActiveSearchDecisionControl)x)
 }
 
-cln_shared_GameObject :: proc(x: ^GameObject) -> ^GameObject {
+cln_shared_map_ObjectId_ptr_GameObject :: proc(x: ^map[ObjectId]^GameObject) -> ^map[ObjectId]^GameObject {
 	shared_retain(x)
 	return x
 }
 
-cln_map_ObjectId_ptr_GameObject :: proc(x: map[ObjectId]^GameObject) -> map[ObjectId]^GameObject {
-	out := make(map[ObjectId]^GameObject, len(x))
-	for key, val in x do out[key] = cln_shared_GameObject(val)
-	return out
-}
-
 clone_ObjectMap :: proc(x: ObjectMap) -> ObjectMap {
 	out := x
-	out.inner = cln_map_ObjectId_ptr_GameObject(x.inner)
+	out.inner = cln_shared_map_ObjectId_ptr_GameObject(x.inner)
 	return out
 }
 
-cln_dyn_ResolvedCommandJournalEntry :: proc(x: [dynamic]ResolvedCommandJournalEntry) -> [dynamic]ResolvedCommandJournalEntry {
-	out := make([dynamic]ResolvedCommandJournalEntry, len(x))
-	for item, i in x do out[i] = clone_ResolvedCommandJournalEntry(item)
-	return out
+cln_shared_dyn_ResolvedCommandJournalEntry :: proc(x: ^[dynamic]ResolvedCommandJournalEntry) -> ^[dynamic]ResolvedCommandJournalEntry {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_SettlementNode :: proc(x: [dynamic]SettlementNode) -> [dynamic]SettlementNode {
-	out := make([dynamic]SettlementNode, len(x))
-	for item, i in x do out[i] = clone_SettlementNode(item)
-	return out
+cln_shared_dyn_SettlementNode :: proc(x: ^[dynamic]SettlementNode) -> ^[dynamic]SettlementNode {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_ProducedManaUnit :: proc(x: [dynamic]ProducedManaUnit) -> [dynamic]ProducedManaUnit {
-	out := make([dynamic]ProducedManaUnit, len(x))
-	for item, i in x do out[i] = clone_ProducedManaUnit(item)
-	return out
+cln_shared_dyn_ProducedManaUnit :: proc(x: ^[dynamic]ProducedManaUnit) -> ^[dynamic]ProducedManaUnit {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_SpentManaUnit :: proc(x: [dynamic]SpentManaUnit) -> [dynamic]SpentManaUnit {
-	out := make([dynamic]SpentManaUnit, len(x))
-	for item, i in x do out[i] = clone_SpentManaUnit(item)
-	return out
+cln_shared_dyn_SpentManaUnit :: proc(x: ^[dynamic]SpentManaUnit) -> ^[dynamic]SpentManaUnit {
+	shared_retain(x)
+	return x
 }
 
 clone_ResolvedRulesJournal :: proc(x: ResolvedRulesJournal) -> ResolvedRulesJournal {
 	out := x
-	out.entries = cln_dyn_ResolvedCommandJournalEntry(x.entries)
-	out.nodes = cln_dyn_SettlementNode(x.nodes)
-	out.produced_mana = cln_dyn_ProducedManaUnit(x.produced_mana)
-	out.spent_mana = cln_dyn_SpentManaUnit(x.spent_mana)
+	out.entries = cln_shared_dyn_ResolvedCommandJournalEntry(x.entries)
+	out.nodes = cln_shared_dyn_SettlementNode(x.nodes)
+	out.produced_mana = cln_shared_dyn_ProducedManaUnit(x.produced_mana)
+	out.spent_mana = cln_shared_dyn_SpentManaUnit(x.spent_mana)
 	out.index = clone_JournalIndex(x.index)
 	return out
 }
@@ -4346,90 +4262,69 @@ clone_LayersDirty :: proc(x: LayersDirty) -> LayersDirty {
 	return x
 }
 
-cln_t2_TriggerEventKey_dyn_ObjectId :: proc(x: Tuple2(TriggerEventKey, [dynamic]ObjectId)) -> Tuple2(TriggerEventKey, [dynamic]ObjectId) {
-	out := x
-	out._1 = cln_dyn_ObjectId(x._1)
-	return out
-}
-
-cln_dyn_t2_TriggerEventKey_dyn_ObjectId :: proc(x: [dynamic]Tuple2(TriggerEventKey, [dynamic]ObjectId)) -> [dynamic]Tuple2(TriggerEventKey, [dynamic]ObjectId) {
-	out := make([dynamic]Tuple2(TriggerEventKey, [dynamic]ObjectId), len(x))
-	for item, i in x do out[i] = cln_t2_TriggerEventKey_dyn_ObjectId(item)
-	return out
+cln_shared_dyn_t2_TriggerEventKey_dyn_ObjectId :: proc(x: ^[dynamic]Tuple2(TriggerEventKey, [dynamic]ObjectId)) -> ^[dynamic]Tuple2(TriggerEventKey, [dynamic]ObjectId) {
+	shared_retain(x)
+	return x
 }
 
 clone_TriggerIndex :: proc(x: TriggerIndex) -> TriggerIndex {
 	out := x
-	out.by_key = cln_dyn_t2_TriggerEventKey_dyn_ObjectId(x.by_key)
+	out.by_key = cln_shared_dyn_t2_TriggerEventKey_dyn_ObjectId(x.by_key)
 	out.unclassified = cln_dyn_ObjectId(x.unclassified)
 	return out
 }
 
-cln_dyn_ReplacementIndexEntry :: proc(x: [dynamic]ReplacementIndexEntry) -> [dynamic]ReplacementIndexEntry {
-	out := make([dynamic]ReplacementIndexEntry, len(x))
-	copy(out[:], x[:])
-	return out
-}
-
-cln_t2_ReplacementEvent_dyn_ReplacementIndexEntry :: proc(x: Tuple2(ReplacementEvent, [dynamic]ReplacementIndexEntry)) -> Tuple2(ReplacementEvent, [dynamic]ReplacementIndexEntry) {
-	out := x
-	out._1 = cln_dyn_ReplacementIndexEntry(x._1)
-	return out
-}
-
-cln_dyn_t2_ReplacementEvent_dyn_ReplacementIndexEntry :: proc(x: [dynamic]Tuple2(ReplacementEvent, [dynamic]ReplacementIndexEntry)) -> [dynamic]Tuple2(ReplacementEvent, [dynamic]ReplacementIndexEntry) {
-	out := make([dynamic]Tuple2(ReplacementEvent, [dynamic]ReplacementIndexEntry), len(x))
-	for item, i in x do out[i] = cln_t2_ReplacementEvent_dyn_ReplacementIndexEntry(item)
-	return out
+cln_shared_dyn_t2_ReplacementEvent_ptr_dyn_ReplacementIndexEntry :: proc(x: ^[dynamic]Tuple2(ReplacementEvent, ^[dynamic]ReplacementIndexEntry)) -> ^[dynamic]Tuple2(ReplacementEvent, ^[dynamic]ReplacementIndexEntry) {
+	shared_retain(x)
+	return x
 }
 
 clone_ReplacementIndex :: proc(x: ReplacementIndex) -> ReplacementIndex {
 	out := x
-	out.by_event = cln_dyn_t2_ReplacementEvent_dyn_ReplacementIndexEntry(x.by_event)
+	out.by_event = cln_shared_dyn_t2_ReplacementEvent_ptr_dyn_ReplacementIndexEntry(x.by_event)
 	return out
 }
 
 clone_StaticSourceIndex :: proc(x: StaticSourceIndex) -> StaticSourceIndex {
 	out := x
-	out.battlefield_sources = cln_dyn_ObjectId(x.battlefield_sources)
-	out.command_sources = cln_dyn_ObjectId(x.command_sources)
+	out.battlefield_sources = cln_shared_dyn_ObjectId(x.battlefield_sources)
+	out.command_sources = cln_shared_dyn_ObjectId(x.command_sources)
 	return out
 }
 
-cln_dyn_TraceEntry :: proc(x: [dynamic]TraceEntry) -> [dynamic]TraceEntry {
-	out := make([dynamic]TraceEntry, len(x))
-	for item, i in x do out[i] = clone_TraceEntry(item)
-	return out
+cln_shared_dyn_TraceEntry :: proc(x: ^[dynamic]TraceEntry) -> ^[dynamic]TraceEntry {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_NodeKey :: proc(x: [dynamic]NodeKey) -> [dynamic]NodeKey {
-	out := make([dynamic]NodeKey, len(x))
-	for item, i in x do out[i] = clone_NodeKey(item)
-	return out
+cln_shared_dyn_NodeKey :: proc(x: ^[dynamic]NodeKey) -> ^[dynamic]NodeKey {
+	shared_retain(x)
+	return x
 }
 
-cln_map_int_int :: proc(x: map[int]int) -> map[int]int {
-	out := make(map[int]int, len(x))
-	for key, val in x do out[key] = val
-	return out
+cln_shared_map_int_int :: proc(x: ^map[int]int) -> ^map[int]int {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_PendingRead :: proc(x: [dynamic]PendingRead) -> [dynamic]PendingRead {
-	out := make([dynamic]PendingRead, len(x))
-	copy(out[:], x[:])
-	return out
+cln_shared_dyn_int :: proc(x: ^[dynamic]int) -> ^[dynamic]int {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_NamedSpan :: proc(x: [dynamic]NamedSpan) -> [dynamic]NamedSpan {
-	out := make([dynamic]NamedSpan, len(x))
-	copy(out[:], x[:])
-	return out
+cln_shared_dyn_PendingRead :: proc(x: ^[dynamic]PendingRead) -> ^[dynamic]PendingRead {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_UndoPoint :: proc(x: [dynamic]UndoPoint) -> [dynamic]UndoPoint {
-	out := make([dynamic]UndoPoint, len(x))
-	for item, i in x do out[i] = clone_UndoPoint(item)
-	return out
+cln_shared_dyn_NamedSpan :: proc(x: ^[dynamic]NamedSpan) -> ^[dynamic]NamedSpan {
+	shared_retain(x)
+	return x
+}
+
+cln_shared_dyn_UndoPoint :: proc(x: ^[dynamic]UndoPoint) -> ^[dynamic]UndoPoint {
+	shared_retain(x)
+	return x
 }
 
 cln_dyn_t2_ObjectId_int :: proc(x: [dynamic]Tuple2(ObjectId, int)) -> [dynamic]Tuple2(ObjectId, int) {
@@ -4438,22 +4333,19 @@ cln_dyn_t2_ObjectId_int :: proc(x: [dynamic]Tuple2(ObjectId, int)) -> [dynamic]T
 	return out
 }
 
-cln_map_int_t2_ObjectId_int :: proc(x: map[int]Tuple2(ObjectId, int)) -> map[int]Tuple2(ObjectId, int) {
-	out := make(map[int]Tuple2(ObjectId, int), len(x))
-	for key, val in x do out[key] = val
-	return out
+cln_shared_map_int_t2_ObjectId_int :: proc(x: ^map[int]Tuple2(ObjectId, int)) -> ^map[int]Tuple2(ObjectId, int) {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_CarriedSpan :: proc(x: [dynamic]CarriedSpan) -> [dynamic]CarriedSpan {
-	out := make([dynamic]CarriedSpan, len(x))
-	for item, i in x do out[i] = clone_CarriedSpan(item)
-	return out
+cln_shared_dyn_CarriedSpan :: proc(x: ^[dynamic]CarriedSpan) -> ^[dynamic]CarriedSpan {
+	shared_retain(x)
+	return x
 }
 
-cln_map_PlayerId_CarryingIndex :: proc(x: map[PlayerId]CarryingIndex) -> map[PlayerId]CarryingIndex {
-	out := make(map[PlayerId]CarryingIndex, len(x))
-	for key, val in x do out[key] = clone_CarryingIndex(val)
-	return out
+cln_shared_map_PlayerId_CarryingIndex :: proc(x: ^map[PlayerId]CarryingIndex) -> ^map[PlayerId]CarryingIndex {
+	shared_retain(x)
+	return x
 }
 
 cln_t2_int_Witnessed :: proc(x: Tuple2(int, Witnessed)) -> Tuple2(int, Witnessed) {
@@ -4490,32 +4382,31 @@ cln_opt_dyn_t2_opt_ObjectId_TraceEntry :: proc(x: Maybe([dynamic]Tuple2(Maybe(Ob
 	return nil
 }
 
-cln_map_int_opt_TopOfStack :: proc(x: map[int]Maybe(TopOfStack)) -> map[int]Maybe(TopOfStack) {
-	out := make(map[int]Maybe(TopOfStack), len(x))
-	for key, val in x do out[key] = val
-	return out
+cln_shared_map_int_opt_TopOfStack :: proc(x: ^map[int]Maybe(TopOfStack)) -> ^map[int]Maybe(TopOfStack) {
+	shared_retain(x)
+	return x
 }
 
 clone_PlayTrace :: proc(x: PlayTrace) -> PlayTrace {
 	out := x
-	out.entries = cln_dyn_TraceEntry(x.entries)
-	out.nodes = cln_dyn_NodeKey(x.nodes)
-	out.last = cln_map_int_int(x.last)
-	out.repeated = cln_dyn_int(x.repeated)
-	out.optional_triggers = cln_dyn_int(x.optional_triggers)
-	out.consumed = cln_dyn_int(x.consumed)
-	out.spent_from = cln_map_int_int(x.spent_from)
-	out.pending_reads = cln_dyn_PendingRead(x.pending_reads)
-	out.named = cln_dyn_NamedSpan(x.named)
-	out.undo = cln_dyn_UndoPoint(x.undo)
+	out.entries = cln_shared_dyn_TraceEntry(x.entries)
+	out.nodes = cln_shared_dyn_NodeKey(x.nodes)
+	out.last = cln_shared_map_int_int(x.last)
+	out.repeated = cln_shared_dyn_int(x.repeated)
+	out.optional_triggers = cln_shared_dyn_int(x.optional_triggers)
+	out.consumed = cln_shared_dyn_int(x.consumed)
+	out.spent_from = cln_shared_map_int_int(x.spent_from)
+	out.pending_reads = cln_shared_dyn_PendingRead(x.pending_reads)
+	out.named = cln_shared_dyn_NamedSpan(x.named)
+	out.undo = cln_shared_dyn_UndoPoint(x.undo)
 	out.reversed = cln_dyn_t2_ObjectId_int(x.reversed)
-	out.mana_ability_entries = cln_map_int_t2_ObjectId_int(x.mana_ability_entries)
-	out.carried = cln_dyn_CarriedSpan(x.carried)
-	out.carried_named = cln_dyn_CarriedSpan(x.carried_named)
-	out.carrying = cln_map_PlayerId_CarryingIndex(x.carrying)
+	out.mana_ability_entries = cln_shared_map_int_t2_ObjectId_int(x.mana_ability_entries)
+	out.carried = cln_shared_dyn_CarriedSpan(x.carried)
+	out.carried_named = cln_shared_dyn_CarriedSpan(x.carried_named)
+	out.carrying = cln_shared_map_PlayerId_CarryingIndex(x.carrying)
 	out.witnessed = cln__2_opt_t2_int_Witnessed(x.witnessed)
 	out.held = cln_opt_dyn_t2_opt_ObjectId_TraceEntry(x.held)
-	out.beneath = cln_map_int_opt_TopOfStack(x.beneath)
+	out.beneath = cln_shared_map_int_opt_TopOfStack(x.beneath)
 	return out
 }
 
@@ -4905,19 +4796,13 @@ clone_CounterAddedRecord :: proc(x: CounterAddedRecord) -> CounterAddedRecord {
 	return out
 }
 
-cln_shared_TriggerSourceContext :: proc(x: ^TriggerSourceContext) -> ^TriggerSourceContext {
+cln_shared_map_int_ptr_TriggerSourceContext :: proc(x: ^map[int]^TriggerSourceContext) -> ^map[int]^TriggerSourceContext {
 	shared_retain(x)
 	return x
 }
 
-cln_map_int_ptr_TriggerSourceContext :: proc(x: map[int]^TriggerSourceContext) -> map[int]^TriggerSourceContext {
-	out := make(map[int]^TriggerSourceContext, len(x))
-	for key, val in x do out[key] = cln_shared_TriggerSourceContext(val)
-	return out
-}
-
 clone_BattlefieldEntryObservations :: proc(x: BattlefieldEntryObservations) -> BattlefieldEntryObservations {
-	return cast(BattlefieldEntryObservations)cln_map_int_ptr_TriggerSourceContext(cast(map[int]^TriggerSourceContext)x)
+	return cast(BattlefieldEntryObservations)cln_shared_map_int_ptr_TriggerSourceContext(cast(^map[int]^TriggerSourceContext)x)
 }
 
 clone_BattlefieldEntryRecord :: proc(x: BattlefieldEntryRecord) -> BattlefieldEntryRecord {
@@ -5044,6 +4929,18 @@ clone_PendingPlayerScopeTail :: proc(x: PendingPlayerScopeTail) -> PendingPlayer
 clone_CreatedTokenSeatsHandoff :: proc(x: CreatedTokenSeatsHandoff) -> CreatedTokenSeatsHandoff {
 	out := x
 	out.seats = cln_dyn_SeatCreatedTokens(x.seats)
+	return out
+}
+
+cln_t2_PlayerId_dyn_ObjectId :: proc(x: Tuple2(PlayerId, [dynamic]ObjectId)) -> Tuple2(PlayerId, [dynamic]ObjectId) {
+	out := x
+	out._1 = cln_dyn_ObjectId(x._1)
+	return out
+}
+
+cln_dyn_t2_PlayerId_dyn_ObjectId :: proc(x: [dynamic]Tuple2(PlayerId, [dynamic]ObjectId)) -> [dynamic]Tuple2(PlayerId, [dynamic]ObjectId) {
+	out := make([dynamic]Tuple2(PlayerId, [dynamic]ObjectId), len(x))
+	for item, i in x do out[i] = cln_t2_PlayerId_dyn_ObjectId(item)
 	return out
 }
 
@@ -6324,51 +6221,45 @@ clone_SpentManaUnit :: proc(x: SpentManaUnit) -> SpentManaUnit {
 	return out
 }
 
-cln_dyn_t2_RulesExecutionNodeRef_int :: proc(x: [dynamic]Tuple2(RulesExecutionNodeRef, int)) -> [dynamic]Tuple2(RulesExecutionNodeRef, int) {
-	out := make([dynamic]Tuple2(RulesExecutionNodeRef, int), len(x))
-	copy(out[:], x[:])
-	return out
+cln_shared_dyn_t2_RulesExecutionNodeRef_int :: proc(x: ^[dynamic]Tuple2(RulesExecutionNodeRef, int)) -> ^[dynamic]Tuple2(RulesExecutionNodeRef, int) {
+	shared_retain(x)
+	return x
 }
 
-cln_map_ManaPipId_int :: proc(x: map[ManaPipId]int) -> map[ManaPipId]int {
-	out := make(map[ManaPipId]int, len(x))
-	for key, val in x do out[key] = val
-	return out
+cln_shared_map_ManaPipId_int :: proc(x: ^map[ManaPipId]int) -> ^map[ManaPipId]int {
+	shared_retain(x)
+	return x
 }
 
-cln_map_ObjectId_int :: proc(x: map[ObjectId]int) -> map[ObjectId]int {
-	out := make(map[ObjectId]int, len(x))
-	for key, val in x do out[key] = val
-	return out
+cln_shared_map_ObjectId_int :: proc(x: ^map[ObjectId]int) -> ^map[ObjectId]int {
+	shared_retain(x)
+	return x
 }
 
-cln_map_DelayedTriggerToken_dyn_int :: proc(x: map[DelayedTriggerToken][dynamic]int) -> map[DelayedTriggerToken][dynamic]int {
-	out := make(map[DelayedTriggerToken][dynamic]int, len(x))
-	for key, val in x do out[key] = cln_dyn_int(val)
-	return out
+cln_shared_map_DelayedTriggerToken_ptr_dyn_int :: proc(x: ^map[DelayedTriggerToken]^[dynamic]int) -> ^map[DelayedTriggerToken]^[dynamic]int {
+	shared_retain(x)
+	return x
 }
 
-cln_map_DelayedTriggerInstanceId_dyn_int :: proc(x: map[DelayedTriggerInstanceId][dynamic]int) -> map[DelayedTriggerInstanceId][dynamic]int {
-	out := make(map[DelayedTriggerInstanceId][dynamic]int, len(x))
-	for key, val in x do out[key] = cln_dyn_int(val)
-	return out
+cln_shared_map_DelayedTriggerInstanceId_ptr_dyn_int :: proc(x: ^map[DelayedTriggerInstanceId]^[dynamic]int) -> ^map[DelayedTriggerInstanceId]^[dynamic]int {
+	shared_retain(x)
+	return x
 }
 
-cln_dyn_PlayerLeaveMove :: proc(x: [dynamic]PlayerLeaveMove) -> [dynamic]PlayerLeaveMove {
-	out := make([dynamic]PlayerLeaveMove, len(x))
-	copy(out[:], x[:])
-	return out
+cln_shared_dyn_PlayerLeaveMove :: proc(x: ^[dynamic]PlayerLeaveMove) -> ^[dynamic]PlayerLeaveMove {
+	shared_retain(x)
+	return x
 }
 
 clone_JournalIndex :: proc(x: JournalIndex) -> JournalIndex {
 	out := x
-	out.nodes = cln_dyn_t2_RulesExecutionNodeRef_int(x.nodes)
-	out.produced = cln_map_ManaPipId_int(x.produced)
-	out.spent = cln_map_ManaPipId_int(x.spent)
-	out.latest_producer = cln_map_ObjectId_int(x.latest_producer)
-	out.delayed_by_token = cln_map_DelayedTriggerToken_dyn_int(x.delayed_by_token)
-	out.delayed_by_instance = cln_map_DelayedTriggerInstanceId_dyn_int(x.delayed_by_instance)
-	out.player_leave_moves = cln_dyn_PlayerLeaveMove(x.player_leave_moves)
+	out.nodes = cln_shared_dyn_t2_RulesExecutionNodeRef_int(x.nodes)
+	out.produced = cln_shared_map_ManaPipId_int(x.produced)
+	out.spent = cln_shared_map_ManaPipId_int(x.spent)
+	out.latest_producer = cln_shared_map_ObjectId_int(x.latest_producer)
+	out.delayed_by_token = cln_shared_map_DelayedTriggerToken_ptr_dyn_int(x.delayed_by_token)
+	out.delayed_by_instance = cln_shared_map_DelayedTriggerInstanceId_ptr_dyn_int(x.delayed_by_instance)
+	out.player_leave_moves = cln_shared_dyn_PlayerLeaveMove(x.player_leave_moves)
 	return out
 }
 
@@ -7711,188 +7602,6 @@ clone_Effect :: proc(x: Effect) -> Effect {
 	return x
 }
 
-cln_dyn_AssignedCombatDamage :: proc(x: [dynamic]AssignedCombatDamage) -> [dynamic]AssignedCombatDamage {
-	out := make([dynamic]AssignedCombatDamage, len(x))
-	copy(out[:], x[:])
-	return out
-}
-
-clone_StackEntryKind :: proc(x: StackEntryKind) -> StackEntryKind {
-	#partial switch y in x {
-	case StackEntryKind_Spell:
-		v := y
-		v.ability = cln_ptr_ResolvedAbility(y.ability)
-		return v
-	case StackEntryKind_ActivatedAbility:
-		v := y
-		v.ability = cln_ptr_ResolvedAbility(y.ability)
-		return v
-	case StackEntryKind_TriggeredAbility:
-		v := y
-		v.ability = cln_ptr_ResolvedAbility(y.ability)
-		v.condition = cln_opt_TriggerCondition(y.condition)
-		v.trigger_event = cln_opt_GameEvent(y.trigger_event)
-		return v
-	case StackEntryKind_KeywordAction:
-		v := y
-		v.action = clone_KeywordAction(y.action)
-		return v
-	case StackEntryKind_CombatDamage:
-		v := y
-		v.assignments = cln_dyn_AssignedCombatDamage(y.assignments)
-		return v
-	}
-	return x
-}
-
-cln_dyn_Phase :: proc(x: [dynamic]Phase) -> [dynamic]Phase {
-	out := make([dynamic]Phase, len(x))
-	copy(out[:], x[:])
-	return out
-}
-
-cln_dyn_TriggerCondition :: proc(x: [dynamic]TriggerCondition) -> [dynamic]TriggerCondition {
-	out := make([dynamic]TriggerCondition, len(x))
-	for item, i in x do out[i] = clone_TriggerCondition(item)
-	return out
-}
-
-cln_ptr_TriggerCondition :: proc(x: ^TriggerCondition) -> ^TriggerCondition {
-	if x == nil do return nil
-	p := new(TriggerCondition)
-	p^ = clone_TriggerCondition(x^)
-	return p
-}
-
-clone_TriggerCondition :: proc(x: TriggerCondition) -> TriggerCondition {
-	#partial switch y in x {
-	case TriggerCondition_ControlsType:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case TriggerCondition_DuringPlayersTurn:
-		v := y
-		v.player = clone_PlayerFilter(y.player)
-		return v
-	case TriggerCondition_MinCoAttackers:
-		v := y
-		v.filter = cln_opt_TargetFilter(y.filter)
-		return v
-	case TriggerCondition_AdditionalCostPaid:
-		v := y
-		v.kicker_cost = cln_opt_ManaCost(y.kicker_cost)
-		return v
-	case TriggerCondition_DealtDamageThisTurnBySource:
-		v := y
-		v.source = clone_TargetFilter(y.source)
-		return v
-	case TriggerCondition_ControlCount:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case TriggerCondition_ControlsNone:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case TriggerCondition_CastSpellThisTurn:
-		v := y
-		v.filter = cln_opt_TargetFilter(y.filter)
-		return v
-	case TriggerCondition_QuantityComparison:
-		v := y
-		v.lhs = clone_QuantityExpr(y.lhs)
-		v.rhs = clone_QuantityExpr(y.rhs)
-		return v
-	case TriggerCondition_QuantityQuality:
-		v := y
-		v.quantity = clone_QuantityExpr(y.quantity)
-		return v
-	case TriggerCondition_IsMonarch:
-		v := y
-		v.player = clone_PlayerScope(y.player)
-		return v
-	case TriggerCondition_IsPoisoned:
-		v := y
-		v.player = clone_PlayerScope(y.player)
-		return v
-	case TriggerCondition_HasBoon:
-		v := y
-		v.player = clone_PlayerScope(y.player)
-		return v
-	case TriggerCondition_DefendingPlayerControlsNone:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case TriggerCondition_CastDuringPhase:
-		v := y
-		v.phases = cln_dyn_Phase(y.phases)
-		return v
-	case TriggerCondition_CurrentPhaseIs:
-		v := y
-		v.phases = cln_dyn_Phase(y.phases)
-		return v
-	case TriggerCondition_ZoneChangeObjectMatchesFilter:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case TriggerCondition_SourceMatchesFilter:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case TriggerCondition_EventDamageSourceMatchesFilter:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case TriggerCondition_EventObjectMatchesFilter:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case TriggerCondition_AttackersDeclaredCount:
-		v := y
-		v.subject = clone_AttackersDeclaredCountSubject(y.subject)
-		return v
-	case TriggerCondition_TriggeringSpellTargetsFilter:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case TriggerCondition_TriggeringSpellMatchesFilter:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case TriggerCondition_And:
-		v := y
-		v.conditions = cln_dyn_TriggerCondition(y.conditions)
-		return v
-	case TriggerCondition_Or:
-		v := y
-		v.conditions = cln_dyn_TriggerCondition(y.conditions)
-		return v
-	case TriggerCondition_Not:
-		v := y
-		v.condition = cln_ptr_TriggerCondition(y.condition)
-		return v
-	case TriggerCondition_EventTime:
-		v := y
-		v.condition = cln_ptr_TriggerCondition(y.condition)
-		return v
-	}
-	return x
-}
-
-clone_KeywordAction :: proc(x: KeywordAction) -> KeywordAction {
-	#partial switch y in x {
-	case KeywordAction_Crew:
-		v := y
-		v.paid_creature_ids = cln_dyn_ObjectId(y.paid_creature_ids)
-		return v
-	case KeywordAction_Saddle:
-		v := y
-		v.paid_creature_ids = cln_dyn_ObjectId(y.paid_creature_ids)
-		return v
-	}
-	return x
-}
-
 cln_dyn_TapsForManaSelection :: proc(x: [dynamic]TapsForManaSelection) -> [dynamic]TapsForManaSelection {
 	out := make([dynamic]TapsForManaSelection, len(x))
 	for item, i in x do out[i] = clone_TapsForManaSelection(item)
@@ -8585,8 +8294,8 @@ clone_CollectEvidenceResume :: proc(x: CollectEvidenceResume) -> CollectEvidence
 
 clone_PileResult :: proc(x: PileResult) -> PileResult {
 	out := x
-	out.pile_a = cln_dyn_ObjectId(x.pile_a)
-	out.pile_b = cln_dyn_ObjectId(x.pile_b)
+	out.pile_a = cln_shared_dyn_ObjectId(x.pile_a)
+	out.pile_b = cln_shared_dyn_ObjectId(x.pile_b)
 	return out
 }
 
@@ -9601,105 +9310,135 @@ clone_OptionalAdditionalCostWitness :: proc(x: OptionalAdditionalCostWitness) ->
 	return out
 }
 
-cln_dyn_StaticCondition :: proc(x: [dynamic]StaticCondition) -> [dynamic]StaticCondition {
-	out := make([dynamic]StaticCondition, len(x))
-	for item, i in x do out[i] = clone_StaticCondition(item)
+cln_dyn_Phase :: proc(x: [dynamic]Phase) -> [dynamic]Phase {
+	out := make([dynamic]Phase, len(x))
+	copy(out[:], x[:])
 	return out
 }
 
-cln_ptr_StaticCondition :: proc(x: ^StaticCondition) -> ^StaticCondition {
+cln_dyn_TriggerCondition :: proc(x: [dynamic]TriggerCondition) -> [dynamic]TriggerCondition {
+	out := make([dynamic]TriggerCondition, len(x))
+	for item, i in x do out[i] = clone_TriggerCondition(item)
+	return out
+}
+
+cln_ptr_TriggerCondition :: proc(x: ^TriggerCondition) -> ^TriggerCondition {
 	if x == nil do return nil
-	p := new(StaticCondition)
-	p^ = clone_StaticCondition(x^)
+	p := new(TriggerCondition)
+	p^ = clone_TriggerCondition(x^)
 	return p
 }
 
-clone_StaticCondition :: proc(x: StaticCondition) -> StaticCondition {
+clone_TriggerCondition :: proc(x: TriggerCondition) -> TriggerCondition {
 	#partial switch y in x {
-	case StaticCondition_DevotionGE:
+	case TriggerCondition_ControlsType:
 		v := y
-		v.colors = cln_dyn_ManaColor(y.colors)
+		v.filter = clone_TargetFilter(y.filter)
 		return v
-	case StaticCondition_IsPresent:
+	case TriggerCondition_DuringPlayersTurn:
+		v := y
+		v.player = clone_PlayerFilter(y.player)
+		return v
+	case TriggerCondition_MinCoAttackers:
 		v := y
 		v.filter = cln_opt_TargetFilter(y.filter)
 		return v
-	case StaticCondition_QuantityComparison:
+	case TriggerCondition_AdditionalCostPaid:
+		v := y
+		v.kicker_cost = cln_opt_ManaCost(y.kicker_cost)
+		return v
+	case TriggerCondition_DealtDamageThisTurnBySource:
+		v := y
+		v.source = clone_TargetFilter(y.source)
+		return v
+	case TriggerCondition_ControlCount:
+		v := y
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	case TriggerCondition_ControlsNone:
+		v := y
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	case TriggerCondition_CastSpellThisTurn:
+		v := y
+		v.filter = cln_opt_TargetFilter(y.filter)
+		return v
+	case TriggerCondition_QuantityComparison:
 		v := y
 		v.lhs = clone_QuantityExpr(y.lhs)
 		v.rhs = clone_QuantityExpr(y.rhs)
 		return v
-	case StaticCondition_QuantityQuality:
+	case TriggerCondition_QuantityQuality:
 		v := y
 		v.quantity = clone_QuantityExpr(y.quantity)
 		return v
-	case StaticCondition_And:
-		v := y
-		v.conditions = cln_dyn_StaticCondition(y.conditions)
-		return v
-	case StaticCondition_Or:
-		v := y
-		v.conditions = cln_dyn_StaticCondition(y.conditions)
-		return v
-	case StaticCondition_Not:
-		v := y
-		v.condition = cln_ptr_StaticCondition(y.condition)
-		return v
-	case StaticCondition_DefendingPlayerControls:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case StaticCondition_IsMonarch:
+	case TriggerCondition_IsMonarch:
 		v := y
 		v.player = clone_PlayerScope(y.player)
 		return v
-	case StaticCondition_HasBoon:
+	case TriggerCondition_IsPoisoned:
 		v := y
 		v.player = clone_PlayerScope(y.player)
 		return v
-	case StaticCondition_PlayerIsPoisoned:
+	case TriggerCondition_HasBoon:
 		v := y
 		v.player = clone_PlayerScope(y.player)
 		return v
-	case StaticCondition_UnlessPay:
-		v := y
-		v.cost = clone_ManaCost(y.cost)
-		v.scaling = clone_UnlessPayScaling(y.scaling)
-		return v
-	case StaticCondition_SourceMatchesFilter:
+	case TriggerCondition_DefendingPlayerControlsNone:
 		v := y
 		v.filter = clone_TargetFilter(y.filter)
 		return v
-	case StaticCondition_TopOfLibraryMatches:
+	case TriggerCondition_CastDuringPhase:
+		v := y
+		v.phases = cln_dyn_Phase(y.phases)
+		return v
+	case TriggerCondition_CurrentPhaseIs:
+		v := y
+		v.phases = cln_dyn_Phase(y.phases)
+		return v
+	case TriggerCondition_ZoneChangeObjectMatchesFilter:
 		v := y
 		v.filter = clone_TargetFilter(y.filter)
 		return v
-	case StaticCondition_RecipientMatchesFilter:
+	case TriggerCondition_SourceMatchesFilter:
 		v := y
 		v.filter = clone_TargetFilter(y.filter)
 		return v
-	}
-	return x
-}
-
-clone_EndEffectPermission :: proc(x: EndEffectPermission) -> EndEffectPermission {
-	out := x
-	out.cost = clone_ManaCost(x.cost)
-	return out
-}
-
-cln_ptr_PlayerScope :: proc(x: ^PlayerScope) -> ^PlayerScope {
-	if x == nil do return nil
-	p := new(PlayerScope)
-	p^ = clone_PlayerScope(x^)
-	return p
-}
-
-clone_PlayerScope :: proc(x: PlayerScope) -> PlayerScope {
-	#partial switch y in x {
-	case PlayerScope_AllPlayers:
+	case TriggerCondition_EventDamageSourceMatchesFilter:
 		v := y
-		v.exclude = cln_ptr_PlayerScope(y.exclude)
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	case TriggerCondition_EventObjectMatchesFilter:
+		v := y
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	case TriggerCondition_AttackersDeclaredCount:
+		v := y
+		v.subject = clone_AttackersDeclaredCountSubject(y.subject)
+		return v
+	case TriggerCondition_TriggeringSpellTargetsFilter:
+		v := y
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	case TriggerCondition_TriggeringSpellMatchesFilter:
+		v := y
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	case TriggerCondition_And:
+		v := y
+		v.conditions = cln_dyn_TriggerCondition(y.conditions)
+		return v
+	case TriggerCondition_Or:
+		v := y
+		v.conditions = cln_dyn_TriggerCondition(y.conditions)
+		return v
+	case TriggerCondition_Not:
+		v := y
+		v.condition = cln_ptr_TriggerCondition(y.condition)
+		return v
+	case TriggerCondition_EventTime:
+		v := y
+		v.condition = cln_ptr_TriggerCondition(y.condition)
 		return v
 	}
 	return x
@@ -9755,6 +9494,23 @@ clone_PlayerFilter :: proc(x: PlayerFilter) -> PlayerFilter {
 	case PlayerFilter_TrackedSetPossessor:
 		v := y
 		v.filter = clone_TargetFilter(y.filter)
+		return v
+	}
+	return x
+}
+
+cln_ptr_PlayerScope :: proc(x: ^PlayerScope) -> ^PlayerScope {
+	if x == nil do return nil
+	p := new(PlayerScope)
+	p^ = clone_PlayerScope(x^)
+	return p
+}
+
+clone_PlayerScope :: proc(x: PlayerScope) -> PlayerScope {
+	#partial switch y in x {
+	case PlayerScope_AllPlayers:
+		v := y
+		v.exclude = cln_ptr_PlayerScope(y.exclude)
 		return v
 	}
 	return x
@@ -9956,6 +9712,87 @@ clone_DelayedTriggerCondition :: proc(x: DelayedTriggerCondition) -> DelayedTrig
 	return x
 }
 
+cln_dyn_StaticCondition :: proc(x: [dynamic]StaticCondition) -> [dynamic]StaticCondition {
+	out := make([dynamic]StaticCondition, len(x))
+	for item, i in x do out[i] = clone_StaticCondition(item)
+	return out
+}
+
+cln_ptr_StaticCondition :: proc(x: ^StaticCondition) -> ^StaticCondition {
+	if x == nil do return nil
+	p := new(StaticCondition)
+	p^ = clone_StaticCondition(x^)
+	return p
+}
+
+clone_StaticCondition :: proc(x: StaticCondition) -> StaticCondition {
+	#partial switch y in x {
+	case StaticCondition_DevotionGE:
+		v := y
+		v.colors = cln_dyn_ManaColor(y.colors)
+		return v
+	case StaticCondition_IsPresent:
+		v := y
+		v.filter = cln_opt_TargetFilter(y.filter)
+		return v
+	case StaticCondition_QuantityComparison:
+		v := y
+		v.lhs = clone_QuantityExpr(y.lhs)
+		v.rhs = clone_QuantityExpr(y.rhs)
+		return v
+	case StaticCondition_QuantityQuality:
+		v := y
+		v.quantity = clone_QuantityExpr(y.quantity)
+		return v
+	case StaticCondition_And:
+		v := y
+		v.conditions = cln_dyn_StaticCondition(y.conditions)
+		return v
+	case StaticCondition_Or:
+		v := y
+		v.conditions = cln_dyn_StaticCondition(y.conditions)
+		return v
+	case StaticCondition_Not:
+		v := y
+		v.condition = cln_ptr_StaticCondition(y.condition)
+		return v
+	case StaticCondition_DefendingPlayerControls:
+		v := y
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	case StaticCondition_IsMonarch:
+		v := y
+		v.player = clone_PlayerScope(y.player)
+		return v
+	case StaticCondition_HasBoon:
+		v := y
+		v.player = clone_PlayerScope(y.player)
+		return v
+	case StaticCondition_PlayerIsPoisoned:
+		v := y
+		v.player = clone_PlayerScope(y.player)
+		return v
+	case StaticCondition_UnlessPay:
+		v := y
+		v.cost = clone_ManaCost(y.cost)
+		v.scaling = clone_UnlessPayScaling(y.scaling)
+		return v
+	case StaticCondition_SourceMatchesFilter:
+		v := y
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	case StaticCondition_TopOfLibraryMatches:
+		v := y
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	case StaticCondition_RecipientMatchesFilter:
+		v := y
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	}
+	return x
+}
+
 clone_RangeOfInfluenceConfig :: proc(x: RangeOfInfluenceConfig) -> RangeOfInfluenceConfig {
 	out := x
 	out.player_overrides = cln_map_PlayerId_u8(x.player_overrides)
@@ -10030,16 +9867,6 @@ clone_TriggerDefinitionOccurrenceRef :: proc(x: TriggerDefinitionOccurrenceRef) 
 	case TriggerDefinitionOccurrenceRef_ExpandedGrant:
 		v := y
 		v.provider = cln_ptr_TriggerDefinitionRef(y.provider)
-		return v
-	}
-	return x
-}
-
-clone_ActivationTargetFact :: proc(x: ActivationTargetFact) -> ActivationTargetFact {
-	#partial switch y in x {
-	case ActivationTargetFact_Object:
-		v := y
-		v.lki = cln_ptr_LKISnapshot(y.lki)
 		return v
 	}
 	return x
@@ -11076,6 +10903,598 @@ clone_CardDatabase :: proc(x: CardDatabase) -> CardDatabase {
 	return out
 }
 
+clone_ProhibitedActivity :: proc(x: ProhibitedActivity) -> ProhibitedActivity {
+	#partial switch y in x {
+	case ProhibitedActivity_CastOnlyFromZones:
+		v := y
+		v.allowed_zones = cln_dyn_Zone(y.allowed_zones)
+		return v
+	case ProhibitedActivity_CastSpells:
+		v := y
+		v.spell_filter = cln_opt_TargetFilter(y.spell_filter)
+		return v
+	case ProhibitedActivity_PlayLands:
+		v := y
+		v.land_filter = cln_opt_TargetFilter(y.land_filter)
+		return v
+	}
+	return x
+}
+
+clone_ReplacementMode :: proc(x: ReplacementMode) -> ReplacementMode {
+	#partial switch y in x {
+	case ReplacementMode_Optional:
+		v := y
+		v.decline = cln_ptr_AbilityDefinition(y.decline)
+		return v
+	case ReplacementMode_MayCost:
+		v := y
+		v.cost = clone_AbilityCost(y.cost)
+		v.decline = cln_ptr_AbilityDefinition(y.decline)
+		return v
+	}
+	return x
+}
+
+cln_dyn_ReplacementCondition :: proc(x: [dynamic]ReplacementCondition) -> [dynamic]ReplacementCondition {
+	out := make([dynamic]ReplacementCondition, len(x))
+	for item, i in x do out[i] = clone_ReplacementCondition(item)
+	return out
+}
+
+cln_opt_OriginConstraint :: proc(x: Maybe(OriginConstraint)) -> Maybe(OriginConstraint) {
+	if y, ok := x.?; ok do return clone_OriginConstraint(y)
+	return nil
+}
+
+clone_ReplacementCondition :: proc(x: ReplacementCondition) -> ReplacementCondition {
+	#partial switch y in x {
+	case ReplacementCondition_And:
+		v := y
+		v.conditions = cln_dyn_ReplacementCondition(y.conditions)
+		return v
+	case ReplacementCondition_UnlessControlsSubtype:
+		v := y
+		v.subtypes = cln_dyn_string(y.subtypes)
+		return v
+	case ReplacementCondition_UnlessControlsOtherLeq:
+		v := y
+		v.filter = clone_TypedFilter(y.filter)
+		return v
+	case ReplacementCondition_UnlessControlsMatching:
+		v := y
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	case ReplacementCondition_UnlessControlsCountMatching:
+		v := y
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	case ReplacementCondition_UnlessQuantity:
+		v := y
+		v.lhs = clone_QuantityExpr(y.lhs)
+		v.rhs = clone_QuantityExpr(y.rhs)
+		return v
+	case ReplacementCondition_OnlyIfQuantity:
+		v := y
+		v.lhs = clone_QuantityExpr(y.lhs)
+		v.rhs = clone_QuantityExpr(y.rhs)
+		return v
+	case ReplacementCondition_EnteredFromZone:
+		v := y
+		v.origin_constraint = cln_opt_OriginConstraint(y.origin_constraint)
+		return v
+	case ReplacementCondition_CastViaKicker:
+		v := y
+		v.kicker_cost = cln_opt_ManaCost(y.kicker_cost)
+		return v
+	case ReplacementCondition_DealtDamageThisTurnBySource:
+		v := y
+		v.source = clone_TargetFilter(y.source)
+		return v
+	case ReplacementCondition_TokenSubtypeMatches:
+		v := y
+		v.subtypes = cln_dyn_string(y.subtypes)
+		return v
+	case ReplacementCondition_TokenCoreTypeMatches:
+		v := y
+		v.core_types = cln_dyn_CoreType(y.core_types)
+		return v
+	case ReplacementCondition_IfControlsMatching:
+		v := y
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	case ReplacementCondition_OnlyIfStatic:
+		v := y
+		v.condition = cln_ptr_StaticCondition(y.condition)
+		return v
+	}
+	return x
+}
+
+clone_DamageModification :: proc(x: DamageModification) -> DamageModification {
+	#partial switch y in x {
+	case DamageModification_Plus:
+		v := y
+		v.value = clone_QuantityExpr(y.value)
+		return v
+	case DamageModification_PreventionMinus:
+		v := y
+		v.value = clone_PreventionFormula(y.value)
+		return v
+	}
+	return x
+}
+
+cln_dyn_AssignedCombatDamage :: proc(x: [dynamic]AssignedCombatDamage) -> [dynamic]AssignedCombatDamage {
+	out := make([dynamic]AssignedCombatDamage, len(x))
+	copy(out[:], x[:])
+	return out
+}
+
+clone_StackEntryKind :: proc(x: StackEntryKind) -> StackEntryKind {
+	#partial switch y in x {
+	case StackEntryKind_Spell:
+		v := y
+		v.ability = cln_ptr_ResolvedAbility(y.ability)
+		return v
+	case StackEntryKind_ActivatedAbility:
+		v := y
+		v.ability = cln_ptr_ResolvedAbility(y.ability)
+		return v
+	case StackEntryKind_TriggeredAbility:
+		v := y
+		v.ability = cln_ptr_ResolvedAbility(y.ability)
+		v.condition = cln_opt_TriggerCondition(y.condition)
+		v.trigger_event = cln_opt_GameEvent(y.trigger_event)
+		return v
+	case StackEntryKind_KeywordAction:
+		v := y
+		v.action = clone_KeywordAction(y.action)
+		return v
+	case StackEntryKind_CombatDamage:
+		v := y
+		v.assignments = cln_dyn_AssignedCombatDamage(y.assignments)
+		return v
+	}
+	return x
+}
+
+clone_KeywordAction :: proc(x: KeywordAction) -> KeywordAction {
+	#partial switch y in x {
+	case KeywordAction_Crew:
+		v := y
+		v.paid_creature_ids = cln_dyn_ObjectId(y.paid_creature_ids)
+		return v
+	case KeywordAction_Saddle:
+		v := y
+		v.paid_creature_ids = cln_dyn_ObjectId(y.paid_creature_ids)
+		return v
+	}
+	return x
+}
+
+cln_opt_dyn_ShardChoice :: proc(x: Maybe([dynamic]ShardChoice)) -> Maybe([dynamic]ShardChoice) {
+	if y, ok := x.?; ok do return cln_dyn_ShardChoice(y)
+	return nil
+}
+
+cln_ptr_FinalizePrePaymentChecks :: proc(x: ^FinalizePrePaymentChecks) -> ^FinalizePrePaymentChecks {
+	if x == nil do return nil
+	p := new(FinalizePrePaymentChecks)
+	p^ = clone_FinalizePrePaymentChecks(x^)
+	return p
+}
+
+clone_PendingCostMoveCompletion :: proc(x: PendingCostMoveCompletion) -> PendingCostMoveCompletion {
+	#partial switch y in x {
+	case PendingCostMoveCompletion_CompleteSelectedReturnToHand:
+		v := y
+		v.selected = cln_dyn_ObjectId(y.selected)
+		v.automatic_remaining = cln_opt_AbilityCost(y.automatic_remaining)
+		return v
+	case PendingCostMoveCompletion_FinalizeCast:
+		v := y
+		v.phyrexian_choices = cln_opt_dyn_ShardChoice(y.phyrexian_choices)
+		v.resolution_success_waiting_for = cln_ptr_WaitingFor(y.resolution_success_waiting_for)
+		return v
+	case PendingCostMoveCompletion_FinalizeDelvedCast:
+		v := y
+		v.phyrexian_choices = cln_opt_dyn_ShardChoice(y.phyrexian_choices)
+		v.pre_payment_checks = cln_ptr_FinalizePrePaymentChecks(y.pre_payment_checks)
+		return v
+	}
+	return x
+}
+
+cln_ptr_OptionalEffectFrame :: proc(x: ^OptionalEffectFrame) -> ^OptionalEffectFrame {
+	if x == nil do return nil
+	p := new(OptionalEffectFrame)
+	p^ = clone_OptionalEffectFrame(x^)
+	return p
+}
+
+clone_PendingSacrificeCostCompletion :: proc(x: PendingSacrificeCostCompletion) -> PendingSacrificeCostCompletion {
+	#partial switch y in x {
+	case PendingSacrificeCostCompletion_FinalizeSpell:
+		v := y
+		v.phyrexian_choices = cln_opt_dyn_ShardChoice(y.phyrexian_choices)
+		v.pre_payment_checks = cln_ptr_FinalizePrePaymentChecks(y.pre_payment_checks)
+		return v
+	case PendingSacrificeCostCompletion_ResolutionOptionalPayment:
+		v := y
+		v.frame = cln_ptr_OptionalEffectFrame(y.frame)
+		v.selected = cln_dyn_ObjectIncarnationRef(y.selected)
+		return v
+	}
+	return x
+}
+
+clone_WardSacrificePaymentResume :: proc(x: WardSacrificePaymentResume) -> WardSacrificePaymentResume {
+	#partial switch y in x {
+	case WardSacrificePaymentResume_MultiSacrifice:
+		v := y
+		v.remaining = cln_dyn_ObjectId(y.remaining)
+		return v
+	case WardSacrificePaymentResume_Sequential:
+		v := y
+		v.permanents = cln_dyn_ObjectId(y.permanents)
+		return v
+	}
+	return x
+}
+
+cln_ptr_ManaAbilityCostParent :: proc(x: ^ManaAbilityCostParent) -> ^ManaAbilityCostParent {
+	if x == nil do return nil
+	p := new(ManaAbilityCostParent)
+	p^ = clone_ManaAbilityCostParent(x^)
+	return p
+}
+
+clone_ManaAbilityCostCursor :: proc(x: ManaAbilityCostCursor) -> ManaAbilityCostCursor {
+	out := x
+	out.remaining = cln_dyn_AbilityCost(x.remaining)
+	out.remaining_life_payments = cln_dyn_u32(x.remaining_life_payments)
+	out.excluded_sources = cln_dyn_ObjectId(x.excluded_sources)
+	out.counter_removal = cln_ptr_PausedCounterCostRemoval(x.counter_removal)
+	out.selected_exile_remaining = cln_opt_dyn_ObjectId(x.selected_exile_remaining)
+	out.selected_sacrifice_remaining = cln_opt_dyn_ObjectId(x.selected_sacrifice_remaining)
+	out.deferred_cost_events = cln_dyn_GameEvent(x.deferred_cost_events)
+	out.parent = cln_ptr_ManaAbilityCostParent(x.parent)
+	return out
+}
+
+cln_dyn_PendingCounterRemoval :: proc(x: [dynamic]PendingCounterRemoval) -> [dynamic]PendingCounterRemoval {
+	out := make([dynamic]PendingCounterRemoval, len(x))
+	copy(out[:], x[:])
+	return out
+}
+
+clone_PausedCounterCostRemoval :: proc(x: PausedCounterCostRemoval) -> PausedCounterCostRemoval {
+	out := x
+	out.remaining = cln_dyn_PendingCounterRemoval(x.remaining)
+	return out
+}
+
+clone_UnpaidCostSuffix :: proc(x: UnpaidCostSuffix) -> UnpaidCostSuffix {
+	out := x
+	out.remainder = clone_UnpaidCostRemainder(x.remainder)
+	return out
+}
+
+clone_RandomDiscardUnlessPaymentResume :: proc(x: RandomDiscardUnlessPaymentResume) -> RandomDiscardUnlessPaymentResume {
+	out := x
+	out.pending_effect = cln_ptr_ResolvedAbility(x.pending_effect)
+	out.trigger_event = cln_opt_GameEvent(x.trigger_event)
+	out.remaining_eligible = cln_dyn_ObjectId(x.remaining_eligible)
+	return out
+}
+
+clone_PlayerScopeUnlessSettlement :: proc(x: PlayerScopeUnlessSettlement) -> PlayerScopeUnlessSettlement {
+	out := x
+	out.discards = cln_dyn_t2_PlayerId_ObjectIncarnationRef(x.discards)
+	out.sacrifices = cln_dyn_t2_PlayerId_dyn_ObjectIncarnationRef(x.sacrifices)
+	out.punishment = cln_ptr_ResolvedAbility(x.punishment)
+	out.trigger_event = cln_opt_GameEvent(x.trigger_event)
+	return out
+}
+
+clone_ManaAbilityResume :: proc(x: ManaAbilityResume) -> ManaAbilityResume {
+	#partial switch y in x {
+	case ManaAbilityResume_CompanionToHand:
+		v := y
+		v.cost = clone_ManaCost(y.cost)
+		return v
+	case ManaAbilityResume_PlanarDieRoll:
+		v := y
+		v.cost = clone_ManaCost(y.cost)
+		return v
+	case ManaAbilityResume_TurnFaceUp:
+		v := y
+		v.cost = clone_ManaCost(y.cost)
+		return v
+	case ManaAbilityResume_EndContinuousEffect:
+		v := y
+		v.cost = clone_ManaCost(y.cost)
+		return v
+	case ManaAbilityResume_RoomUnlock:
+		v := y
+		v.cost = clone_ManaCost(y.cost)
+		return v
+	case ManaAbilityResume_Foretell:
+		v := y
+		v.cost = clone_ManaCost(y.cost)
+		v.payment_cost = clone_ManaCost(y.payment_cost)
+		return v
+	case ManaAbilityResume_ManaSourceSelection:
+		v := y
+		v.options = cln_dyn_ManaSourceSelection(y.options)
+		return v
+	case ManaAbilityResume_UnlessPayment:
+		v := y
+		v.cost = cln_ptr_AbilityCost(y.cost)
+		v.pending_effect = cln_ptr_ResolvedAbility(y.pending_effect)
+		v.trigger_event = cln_opt_GameEvent(y.trigger_event)
+		v.remaining = cln_dyn_PlayerId(y.remaining)
+		return v
+	case ManaAbilityResume_CombatTaxPayment:
+		v := y
+		v.total_cost = clone_ManaCost(y.total_cost)
+		v.per_creature = cln_dyn_t2_ObjectId_ManaCost(y.per_creature)
+		v.pending = clone_CombatTaxPending(y.pending)
+		return v
+	case ManaAbilityResume_EffectPayCost:
+		v := y
+		v.ability = cln_ptr_ResolvedAbility(y.ability)
+		v.cost = cln_ptr_AbilityCost(y.cost)
+		return v
+	case ManaAbilityResume_PhyrexianCastPayment:
+		v := y
+		v.choices = cln_dyn_ShardChoice(y.choices)
+		return v
+	case ManaAbilityResume_ManaAbilityManaPayment:
+		v := y
+		v.pending_mana_ability = cln_ptr_PendingManaAbility(y.pending_mana_ability)
+		return v
+	}
+	return x
+}
+
+clone_CollectedTriggerContextBatch :: proc(x: CollectedTriggerContextBatch) -> CollectedTriggerContextBatch {
+	out := x
+	out.contexts = cln_dyn_PendingTriggerContext(x.contexts)
+	out.delayed_events = cln_dyn_GameEvent(x.delayed_events)
+	out.delayed_consumed = cln_dyn_ConsumedTriggerEventOccurrence(x.delayed_consumed)
+	return out
+}
+
+cln_ptr_ManaColorChoiceResume :: proc(x: ^ManaColorChoiceResume) -> ^ManaColorChoiceResume {
+	if x == nil do return nil
+	p := new(ManaColorChoiceResume)
+	p^ = clone_ManaColorChoiceResume(x^)
+	return p
+}
+
+clone_ManaTriggerFixedPointResume :: proc(x: ManaTriggerFixedPointResume) -> ManaTriggerFixedPointResume {
+	#partial switch y in x {
+	case ManaTriggerFixedPointResume_Root:
+		v := y
+		v.resume = cln_ptr_ManaAbilityResume(y.resume)
+		return v
+	case ManaTriggerFixedPointResume_ColorChoice:
+		v := y
+		v._0 = cln_ptr_ManaColorChoiceResume(y._0)
+		return v
+	}
+	return x
+}
+
+clone_RandomDiscardCostPick :: proc(x: RandomDiscardCostPick) -> RandomDiscardCostPick {
+	out := x
+	out.snapshot = clone_CostPaidObjectSnapshot(x.snapshot)
+	return out
+}
+
+cln_dyn_ReductionProvenance :: proc(x: [dynamic]ReductionProvenance) -> [dynamic]ReductionProvenance {
+	out := make([dynamic]ReductionProvenance, len(x))
+	copy(out[:], x[:])
+	return out
+}
+
+clone_CostReductionElection :: proc(x: CostReductionElection) -> CostReductionElection {
+	out := x
+	out.order = cln_dyn_ReductionProvenance(x.order)
+	out.hybrid_announcement = cln_dyn_ManaCostShard(x.hybrid_announcement)
+	return out
+}
+
+clone_PrepaidSpellFinalization :: proc(x: PrepaidSpellFinalization) -> PrepaidSpellFinalization {
+	out := x
+	out.phyrexian_choices = cln_opt_dyn_ShardChoice(x.phyrexian_choices)
+	out.pre_payment_checks = cln_ptr_FinalizePrePaymentChecks(x.pre_payment_checks)
+	return out
+}
+
+clone_DeferredLifeGainCost :: proc(x: DeferredLifeGainCost) -> DeferredLifeGainCost {
+	#partial switch y in x {
+	case DeferredLifeGainCost_Unpaid:
+		v := y
+		v.cost = cln_ptr_AbilityCost(y.cost)
+		return v
+	case DeferredLifeGainCost_Owed:
+		v := y
+		v.recipients = cln_dyn_PlayerId(y.recipients)
+		v.staged = clone_StagedLifeGains(y.staged)
+		return v
+	}
+	return x
+}
+
+clone_AdditionalCostInstance :: proc(x: AdditionalCostInstance) -> AdditionalCostInstance {
+	out := x
+	out.cost = clone_AdditionalCost(x.cost)
+	return out
+}
+
+clone_DeferredSpellSacrifice :: proc(x: DeferredSpellSacrifice) -> DeferredSpellSacrifice {
+	#partial switch y in x {
+	case DeferredSpellSacrifice_Selected:
+		v := y
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	case DeferredSpellSacrifice_All:
+		v := y
+		v.filter = clone_TargetFilter(y.filter)
+		return v
+	}
+	return x
+}
+
+clone_DeferredSpellTap :: proc(x: DeferredSpellTap) -> DeferredSpellTap {
+	out := x
+	out.object_ids = cln_dyn_ObjectId(x.object_ids)
+	out.cost = clone_AbilityCost(x.cost)
+	return out
+}
+
+cln_dyn_TriggerCollectionOperation :: proc(x: [dynamic]TriggerCollectionOperation) -> [dynamic]TriggerCollectionOperation {
+	out := make([dynamic]TriggerCollectionOperation, len(x))
+	for item, i in x do out[i] = clone_TriggerCollectionOperation(item)
+	return out
+}
+
+clone_PendingActivationTriggerCollection :: proc(x: PendingActivationTriggerCollection) -> PendingActivationTriggerCollection {
+	out := x
+	out.overlay = clone_TriggerCollectionOverlay(x.overlay)
+	out.operation_journal = cln_dyn_TriggerCollectionOperation(x.operation_journal)
+	out.pending_contexts = cln_dyn_PendingTriggerContext(x.pending_contexts)
+	return out
+}
+
+cln_dyn_ActivationShardChoice :: proc(x: [dynamic]ActivationShardChoice) -> [dynamic]ActivationShardChoice {
+	out := make([dynamic]ActivationShardChoice, len(x))
+	copy(out[:], x[:])
+	return out
+}
+
+cln_opt_dyn_ActivationShardChoice :: proc(x: Maybe([dynamic]ActivationShardChoice)) -> Maybe([dynamic]ActivationShardChoice) {
+	if y, ok := x.?; ok do return cln_dyn_ActivationShardChoice(y)
+	return nil
+}
+
+clone_ActivationPhyrexianIntent :: proc(x: ActivationPhyrexianIntent) -> ActivationPhyrexianIntent {
+	out := x
+	out.native_choices = cln_dyn_ActivationShardChoice(x.native_choices)
+	out.payment_choices = cln_opt_dyn_ActivationShardChoice(x.payment_choices)
+	return out
+}
+
+clone_HeldBatchRider :: proc(x: HeldBatchRider) -> HeldBatchRider {
+	out := x
+	out.drain = clone_PostReplacementDrain(x.drain)
+	return out
+}
+
+clone_SplitDamagePortion :: proc(x: SplitDamagePortion) -> SplitDamagePortion {
+	out := x
+	out.applied = cln_dyn_AppliedReplacementKey(x.applied)
+	return out
+}
+
+clone_EventOutcomes :: proc(x: EventOutcomes) -> EventOutcomes {
+	out := x
+	out.losers = cln_dyn_PlayerId(x.losers)
+	out.winners = cln_dyn_PlayerId(x.winners)
+	return out
+}
+
+clone_MayTriggerAutoChoiceOp :: proc(x: MayTriggerAutoChoiceOp) -> MayTriggerAutoChoiceOp {
+	#partial switch y in x {
+	case MayTriggerAutoChoiceOp_Remove:
+		v := y
+		v.selector = clone_MayTriggerAutoChoiceSelector(y.selector)
+		return v
+	}
+	return x
+}
+
+clone_ManaChoice :: proc(x: ManaChoice) -> ManaChoice {
+	#partial switch y in x {
+	case ManaChoice_Combination:
+		v := y
+		v._0 = cln_dyn_ManaType(y._0)
+		return v
+	}
+	return x
+}
+
+clone_DebugAction :: proc(x: DebugAction) -> DebugAction {
+	#partial switch y in x {
+	case DebugAction_MoveToZone:
+		v := y
+		v.library_position = cln_opt_LibraryPosition(y.library_position)
+		return v
+	case DebugAction_GrantKeyword:
+		v := y
+		v.keyword = clone_Keyword(y.keyword)
+		return v
+	case DebugAction_RemoveKeyword:
+		v := y
+		v.keyword = clone_Keyword(y.keyword)
+		return v
+	case DebugAction_AddMana:
+		v := y
+		v.mana = cln_dyn_ManaType(y.mana)
+		return v
+	case DebugAction_CreateToken:
+		v := y
+		v.request = clone_DebugTokenRequest(y.request)
+		return v
+	}
+	return x
+}
+
+cln_dyn_SpellCostCriterion :: proc(x: [dynamic]SpellCostCriterion) -> [dynamic]SpellCostCriterion {
+	out := make([dynamic]SpellCostCriterion, len(x))
+	copy(out[:], x[:])
+	return out
+}
+
+clone_ManaRestriction :: proc(x: ManaRestriction) -> ManaRestriction {
+	#partial switch y in x {
+	case ManaRestriction_OnlyForSpellMatchingCostCriteria:
+		v := y
+		v.criteria = cln_dyn_SpellCostCriterion(y.criteria)
+		return v
+	case ManaRestriction_OnlyForAny:
+		v := y
+		v._0 = cln_dyn_ManaRestriction(y._0)
+		return v
+	}
+	return x
+}
+
+clone_TapsForManaSelection :: proc(x: TapsForManaSelection) -> TapsForManaSelection {
+	out := x
+	out.occurrence = clone_TriggerDefinitionOccurrenceRef(x.occurrence)
+	out.production_override = clone_ProductionOverride(x.production_override)
+	return out
+}
+
+clone_DebugTokenRequest :: proc(x: DebugTokenRequest) -> DebugTokenRequest {
+	#partial switch y in x {
+	case DebugTokenRequest_Preset:
+		v := y
+		v.enter_with_counters = cln_dyn_t2_CounterType_u32(y.enter_with_counters)
+		return v
+	case DebugTokenRequest_Custom:
+		v := y
+		v.characteristics = clone_TokenCharacteristics(y.characteristics)
+		v.enter_with_counters = cln_dyn_t2_CounterType_u32(y.enter_with_counters)
+		return v
+	}
+	return x
+}
+
 clone_ReturnResultReadSpec :: proc(x: ReturnResultReadSpec) -> ReturnResultReadSpec {
 	out := x
 	out.noun = clone_TargetFilter(x.noun)
@@ -11480,12 +11899,6 @@ clone_ManaProduction :: proc(x: ManaProduction) -> ManaProduction {
 	return x
 }
 
-cln_dyn_SpellCostCriterion :: proc(x: [dynamic]SpellCostCriterion) -> [dynamic]SpellCostCriterion {
-	out := make([dynamic]SpellCostCriterion, len(x))
-	copy(out[:], x[:])
-	return out
-}
-
 clone_ManaSpendRestriction :: proc(x: ManaSpendRestriction) -> ManaSpendRestriction {
 	#partial switch y in x {
 	case ManaSpendRestriction_SpellMatchingCostCriteria:
@@ -11581,20 +11994,6 @@ clone_CastCostModifier :: proc(x: CastCostModifier) -> CastCostModifier {
 	return out
 }
 
-clone_DamageModification :: proc(x: DamageModification) -> DamageModification {
-	#partial switch y in x {
-	case DamageModification_Plus:
-		v := y
-		v.value = clone_QuantityExpr(y.value)
-		return v
-	case DamageModification_PreventionMinus:
-		v := y
-		v.value = clone_PreventionFormula(y.value)
-		return v
-	}
-	return x
-}
-
 clone_CoinFlipRun :: proc(x: CoinFlipRun) -> CoinFlipRun {
 	#partial switch y in x {
 	case CoinFlipRun_Exactly:
@@ -11683,530 +12082,6 @@ clone_ConjureCard :: proc(x: ConjureCard) -> ConjureCard {
 	out.source = clone_ConjureSource(x.source)
 	out.count = clone_QuantityExpr(x.count)
 	return out
-}
-
-clone_ProhibitedActivity :: proc(x: ProhibitedActivity) -> ProhibitedActivity {
-	#partial switch y in x {
-	case ProhibitedActivity_CastOnlyFromZones:
-		v := y
-		v.allowed_zones = cln_dyn_Zone(y.allowed_zones)
-		return v
-	case ProhibitedActivity_CastSpells:
-		v := y
-		v.spell_filter = cln_opt_TargetFilter(y.spell_filter)
-		return v
-	case ProhibitedActivity_PlayLands:
-		v := y
-		v.land_filter = cln_opt_TargetFilter(y.land_filter)
-		return v
-	}
-	return x
-}
-
-clone_ReplacementMode :: proc(x: ReplacementMode) -> ReplacementMode {
-	#partial switch y in x {
-	case ReplacementMode_Optional:
-		v := y
-		v.decline = cln_ptr_AbilityDefinition(y.decline)
-		return v
-	case ReplacementMode_MayCost:
-		v := y
-		v.cost = clone_AbilityCost(y.cost)
-		v.decline = cln_ptr_AbilityDefinition(y.decline)
-		return v
-	}
-	return x
-}
-
-cln_dyn_ReplacementCondition :: proc(x: [dynamic]ReplacementCondition) -> [dynamic]ReplacementCondition {
-	out := make([dynamic]ReplacementCondition, len(x))
-	for item, i in x do out[i] = clone_ReplacementCondition(item)
-	return out
-}
-
-cln_opt_OriginConstraint :: proc(x: Maybe(OriginConstraint)) -> Maybe(OriginConstraint) {
-	if y, ok := x.?; ok do return clone_OriginConstraint(y)
-	return nil
-}
-
-clone_ReplacementCondition :: proc(x: ReplacementCondition) -> ReplacementCondition {
-	#partial switch y in x {
-	case ReplacementCondition_And:
-		v := y
-		v.conditions = cln_dyn_ReplacementCondition(y.conditions)
-		return v
-	case ReplacementCondition_UnlessControlsSubtype:
-		v := y
-		v.subtypes = cln_dyn_string(y.subtypes)
-		return v
-	case ReplacementCondition_UnlessControlsOtherLeq:
-		v := y
-		v.filter = clone_TypedFilter(y.filter)
-		return v
-	case ReplacementCondition_UnlessControlsMatching:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case ReplacementCondition_UnlessControlsCountMatching:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case ReplacementCondition_UnlessQuantity:
-		v := y
-		v.lhs = clone_QuantityExpr(y.lhs)
-		v.rhs = clone_QuantityExpr(y.rhs)
-		return v
-	case ReplacementCondition_OnlyIfQuantity:
-		v := y
-		v.lhs = clone_QuantityExpr(y.lhs)
-		v.rhs = clone_QuantityExpr(y.rhs)
-		return v
-	case ReplacementCondition_EnteredFromZone:
-		v := y
-		v.origin_constraint = cln_opt_OriginConstraint(y.origin_constraint)
-		return v
-	case ReplacementCondition_CastViaKicker:
-		v := y
-		v.kicker_cost = cln_opt_ManaCost(y.kicker_cost)
-		return v
-	case ReplacementCondition_DealtDamageThisTurnBySource:
-		v := y
-		v.source = clone_TargetFilter(y.source)
-		return v
-	case ReplacementCondition_TokenSubtypeMatches:
-		v := y
-		v.subtypes = cln_dyn_string(y.subtypes)
-		return v
-	case ReplacementCondition_TokenCoreTypeMatches:
-		v := y
-		v.core_types = cln_dyn_CoreType(y.core_types)
-		return v
-	case ReplacementCondition_IfControlsMatching:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case ReplacementCondition_OnlyIfStatic:
-		v := y
-		v.condition = cln_ptr_StaticCondition(y.condition)
-		return v
-	}
-	return x
-}
-
-cln_opt_dyn_ShardChoice :: proc(x: Maybe([dynamic]ShardChoice)) -> Maybe([dynamic]ShardChoice) {
-	if y, ok := x.?; ok do return cln_dyn_ShardChoice(y)
-	return nil
-}
-
-cln_ptr_FinalizePrePaymentChecks :: proc(x: ^FinalizePrePaymentChecks) -> ^FinalizePrePaymentChecks {
-	if x == nil do return nil
-	p := new(FinalizePrePaymentChecks)
-	p^ = clone_FinalizePrePaymentChecks(x^)
-	return p
-}
-
-clone_PendingCostMoveCompletion :: proc(x: PendingCostMoveCompletion) -> PendingCostMoveCompletion {
-	#partial switch y in x {
-	case PendingCostMoveCompletion_CompleteSelectedReturnToHand:
-		v := y
-		v.selected = cln_dyn_ObjectId(y.selected)
-		v.automatic_remaining = cln_opt_AbilityCost(y.automatic_remaining)
-		return v
-	case PendingCostMoveCompletion_FinalizeCast:
-		v := y
-		v.phyrexian_choices = cln_opt_dyn_ShardChoice(y.phyrexian_choices)
-		v.resolution_success_waiting_for = cln_ptr_WaitingFor(y.resolution_success_waiting_for)
-		return v
-	case PendingCostMoveCompletion_FinalizeDelvedCast:
-		v := y
-		v.phyrexian_choices = cln_opt_dyn_ShardChoice(y.phyrexian_choices)
-		v.pre_payment_checks = cln_ptr_FinalizePrePaymentChecks(y.pre_payment_checks)
-		return v
-	}
-	return x
-}
-
-cln_ptr_OptionalEffectFrame :: proc(x: ^OptionalEffectFrame) -> ^OptionalEffectFrame {
-	if x == nil do return nil
-	p := new(OptionalEffectFrame)
-	p^ = clone_OptionalEffectFrame(x^)
-	return p
-}
-
-clone_PendingSacrificeCostCompletion :: proc(x: PendingSacrificeCostCompletion) -> PendingSacrificeCostCompletion {
-	#partial switch y in x {
-	case PendingSacrificeCostCompletion_FinalizeSpell:
-		v := y
-		v.phyrexian_choices = cln_opt_dyn_ShardChoice(y.phyrexian_choices)
-		v.pre_payment_checks = cln_ptr_FinalizePrePaymentChecks(y.pre_payment_checks)
-		return v
-	case PendingSacrificeCostCompletion_ResolutionOptionalPayment:
-		v := y
-		v.frame = cln_ptr_OptionalEffectFrame(y.frame)
-		v.selected = cln_dyn_ObjectIncarnationRef(y.selected)
-		return v
-	}
-	return x
-}
-
-clone_WardSacrificePaymentResume :: proc(x: WardSacrificePaymentResume) -> WardSacrificePaymentResume {
-	#partial switch y in x {
-	case WardSacrificePaymentResume_MultiSacrifice:
-		v := y
-		v.remaining = cln_dyn_ObjectId(y.remaining)
-		return v
-	case WardSacrificePaymentResume_Sequential:
-		v := y
-		v.permanents = cln_dyn_ObjectId(y.permanents)
-		return v
-	}
-	return x
-}
-
-cln_ptr_ManaAbilityCostParent :: proc(x: ^ManaAbilityCostParent) -> ^ManaAbilityCostParent {
-	if x == nil do return nil
-	p := new(ManaAbilityCostParent)
-	p^ = clone_ManaAbilityCostParent(x^)
-	return p
-}
-
-clone_ManaAbilityCostCursor :: proc(x: ManaAbilityCostCursor) -> ManaAbilityCostCursor {
-	out := x
-	out.remaining = cln_dyn_AbilityCost(x.remaining)
-	out.remaining_life_payments = cln_dyn_u32(x.remaining_life_payments)
-	out.excluded_sources = cln_dyn_ObjectId(x.excluded_sources)
-	out.counter_removal = cln_ptr_PausedCounterCostRemoval(x.counter_removal)
-	out.selected_exile_remaining = cln_opt_dyn_ObjectId(x.selected_exile_remaining)
-	out.selected_sacrifice_remaining = cln_opt_dyn_ObjectId(x.selected_sacrifice_remaining)
-	out.deferred_cost_events = cln_dyn_GameEvent(x.deferred_cost_events)
-	out.parent = cln_ptr_ManaAbilityCostParent(x.parent)
-	return out
-}
-
-cln_dyn_PendingCounterRemoval :: proc(x: [dynamic]PendingCounterRemoval) -> [dynamic]PendingCounterRemoval {
-	out := make([dynamic]PendingCounterRemoval, len(x))
-	copy(out[:], x[:])
-	return out
-}
-
-clone_PausedCounterCostRemoval :: proc(x: PausedCounterCostRemoval) -> PausedCounterCostRemoval {
-	out := x
-	out.remaining = cln_dyn_PendingCounterRemoval(x.remaining)
-	return out
-}
-
-clone_UnpaidCostSuffix :: proc(x: UnpaidCostSuffix) -> UnpaidCostSuffix {
-	out := x
-	out.remainder = clone_UnpaidCostRemainder(x.remainder)
-	return out
-}
-
-clone_RandomDiscardUnlessPaymentResume :: proc(x: RandomDiscardUnlessPaymentResume) -> RandomDiscardUnlessPaymentResume {
-	out := x
-	out.pending_effect = cln_ptr_ResolvedAbility(x.pending_effect)
-	out.trigger_event = cln_opt_GameEvent(x.trigger_event)
-	out.remaining_eligible = cln_dyn_ObjectId(x.remaining_eligible)
-	return out
-}
-
-clone_PlayerScopeUnlessSettlement :: proc(x: PlayerScopeUnlessSettlement) -> PlayerScopeUnlessSettlement {
-	out := x
-	out.discards = cln_dyn_t2_PlayerId_ObjectIncarnationRef(x.discards)
-	out.sacrifices = cln_dyn_t2_PlayerId_dyn_ObjectIncarnationRef(x.sacrifices)
-	out.punishment = cln_ptr_ResolvedAbility(x.punishment)
-	out.trigger_event = cln_opt_GameEvent(x.trigger_event)
-	return out
-}
-
-clone_ManaAbilityResume :: proc(x: ManaAbilityResume) -> ManaAbilityResume {
-	#partial switch y in x {
-	case ManaAbilityResume_CompanionToHand:
-		v := y
-		v.cost = clone_ManaCost(y.cost)
-		return v
-	case ManaAbilityResume_PlanarDieRoll:
-		v := y
-		v.cost = clone_ManaCost(y.cost)
-		return v
-	case ManaAbilityResume_TurnFaceUp:
-		v := y
-		v.cost = clone_ManaCost(y.cost)
-		return v
-	case ManaAbilityResume_EndContinuousEffect:
-		v := y
-		v.cost = clone_ManaCost(y.cost)
-		return v
-	case ManaAbilityResume_RoomUnlock:
-		v := y
-		v.cost = clone_ManaCost(y.cost)
-		return v
-	case ManaAbilityResume_Foretell:
-		v := y
-		v.cost = clone_ManaCost(y.cost)
-		v.payment_cost = clone_ManaCost(y.payment_cost)
-		return v
-	case ManaAbilityResume_ManaSourceSelection:
-		v := y
-		v.options = cln_dyn_ManaSourceSelection(y.options)
-		return v
-	case ManaAbilityResume_UnlessPayment:
-		v := y
-		v.cost = cln_ptr_AbilityCost(y.cost)
-		v.pending_effect = cln_ptr_ResolvedAbility(y.pending_effect)
-		v.trigger_event = cln_opt_GameEvent(y.trigger_event)
-		v.remaining = cln_dyn_PlayerId(y.remaining)
-		return v
-	case ManaAbilityResume_CombatTaxPayment:
-		v := y
-		v.total_cost = clone_ManaCost(y.total_cost)
-		v.per_creature = cln_dyn_t2_ObjectId_ManaCost(y.per_creature)
-		v.pending = clone_CombatTaxPending(y.pending)
-		return v
-	case ManaAbilityResume_EffectPayCost:
-		v := y
-		v.ability = cln_ptr_ResolvedAbility(y.ability)
-		v.cost = cln_ptr_AbilityCost(y.cost)
-		return v
-	case ManaAbilityResume_PhyrexianCastPayment:
-		v := y
-		v.choices = cln_dyn_ShardChoice(y.choices)
-		return v
-	case ManaAbilityResume_ManaAbilityManaPayment:
-		v := y
-		v.pending_mana_ability = cln_ptr_PendingManaAbility(y.pending_mana_ability)
-		return v
-	}
-	return x
-}
-
-clone_CollectedTriggerContextBatch :: proc(x: CollectedTriggerContextBatch) -> CollectedTriggerContextBatch {
-	out := x
-	out.contexts = cln_dyn_PendingTriggerContext(x.contexts)
-	out.delayed_events = cln_dyn_GameEvent(x.delayed_events)
-	out.delayed_consumed = cln_dyn_ConsumedTriggerEventOccurrence(x.delayed_consumed)
-	return out
-}
-
-cln_ptr_ManaColorChoiceResume :: proc(x: ^ManaColorChoiceResume) -> ^ManaColorChoiceResume {
-	if x == nil do return nil
-	p := new(ManaColorChoiceResume)
-	p^ = clone_ManaColorChoiceResume(x^)
-	return p
-}
-
-clone_ManaTriggerFixedPointResume :: proc(x: ManaTriggerFixedPointResume) -> ManaTriggerFixedPointResume {
-	#partial switch y in x {
-	case ManaTriggerFixedPointResume_Root:
-		v := y
-		v.resume = cln_ptr_ManaAbilityResume(y.resume)
-		return v
-	case ManaTriggerFixedPointResume_ColorChoice:
-		v := y
-		v._0 = cln_ptr_ManaColorChoiceResume(y._0)
-		return v
-	}
-	return x
-}
-
-clone_RandomDiscardCostPick :: proc(x: RandomDiscardCostPick) -> RandomDiscardCostPick {
-	out := x
-	out.snapshot = clone_CostPaidObjectSnapshot(x.snapshot)
-	return out
-}
-
-cln_dyn_ReductionProvenance :: proc(x: [dynamic]ReductionProvenance) -> [dynamic]ReductionProvenance {
-	out := make([dynamic]ReductionProvenance, len(x))
-	copy(out[:], x[:])
-	return out
-}
-
-clone_CostReductionElection :: proc(x: CostReductionElection) -> CostReductionElection {
-	out := x
-	out.order = cln_dyn_ReductionProvenance(x.order)
-	out.hybrid_announcement = cln_dyn_ManaCostShard(x.hybrid_announcement)
-	return out
-}
-
-clone_PrepaidSpellFinalization :: proc(x: PrepaidSpellFinalization) -> PrepaidSpellFinalization {
-	out := x
-	out.phyrexian_choices = cln_opt_dyn_ShardChoice(x.phyrexian_choices)
-	out.pre_payment_checks = cln_ptr_FinalizePrePaymentChecks(x.pre_payment_checks)
-	return out
-}
-
-clone_DeferredLifeGainCost :: proc(x: DeferredLifeGainCost) -> DeferredLifeGainCost {
-	#partial switch y in x {
-	case DeferredLifeGainCost_Unpaid:
-		v := y
-		v.cost = cln_ptr_AbilityCost(y.cost)
-		return v
-	case DeferredLifeGainCost_Owed:
-		v := y
-		v.recipients = cln_dyn_PlayerId(y.recipients)
-		v.staged = clone_StagedLifeGains(y.staged)
-		return v
-	}
-	return x
-}
-
-clone_AdditionalCostInstance :: proc(x: AdditionalCostInstance) -> AdditionalCostInstance {
-	out := x
-	out.cost = clone_AdditionalCost(x.cost)
-	return out
-}
-
-clone_DeferredSpellSacrifice :: proc(x: DeferredSpellSacrifice) -> DeferredSpellSacrifice {
-	#partial switch y in x {
-	case DeferredSpellSacrifice_Selected:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	case DeferredSpellSacrifice_All:
-		v := y
-		v.filter = clone_TargetFilter(y.filter)
-		return v
-	}
-	return x
-}
-
-clone_DeferredSpellTap :: proc(x: DeferredSpellTap) -> DeferredSpellTap {
-	out := x
-	out.object_ids = cln_dyn_ObjectId(x.object_ids)
-	out.cost = clone_AbilityCost(x.cost)
-	return out
-}
-
-cln_dyn_TriggerCollectionOperation :: proc(x: [dynamic]TriggerCollectionOperation) -> [dynamic]TriggerCollectionOperation {
-	out := make([dynamic]TriggerCollectionOperation, len(x))
-	for item, i in x do out[i] = clone_TriggerCollectionOperation(item)
-	return out
-}
-
-clone_PendingActivationTriggerCollection :: proc(x: PendingActivationTriggerCollection) -> PendingActivationTriggerCollection {
-	out := x
-	out.overlay = clone_TriggerCollectionOverlay(x.overlay)
-	out.operation_journal = cln_dyn_TriggerCollectionOperation(x.operation_journal)
-	out.pending_contexts = cln_dyn_PendingTriggerContext(x.pending_contexts)
-	return out
-}
-
-cln_dyn_ActivationShardChoice :: proc(x: [dynamic]ActivationShardChoice) -> [dynamic]ActivationShardChoice {
-	out := make([dynamic]ActivationShardChoice, len(x))
-	copy(out[:], x[:])
-	return out
-}
-
-cln_opt_dyn_ActivationShardChoice :: proc(x: Maybe([dynamic]ActivationShardChoice)) -> Maybe([dynamic]ActivationShardChoice) {
-	if y, ok := x.?; ok do return cln_dyn_ActivationShardChoice(y)
-	return nil
-}
-
-clone_ActivationPhyrexianIntent :: proc(x: ActivationPhyrexianIntent) -> ActivationPhyrexianIntent {
-	out := x
-	out.native_choices = cln_dyn_ActivationShardChoice(x.native_choices)
-	out.payment_choices = cln_opt_dyn_ActivationShardChoice(x.payment_choices)
-	return out
-}
-
-clone_HeldBatchRider :: proc(x: HeldBatchRider) -> HeldBatchRider {
-	out := x
-	out.drain = clone_PostReplacementDrain(x.drain)
-	return out
-}
-
-clone_SplitDamagePortion :: proc(x: SplitDamagePortion) -> SplitDamagePortion {
-	out := x
-	out.applied = cln_dyn_AppliedReplacementKey(x.applied)
-	return out
-}
-
-clone_EventOutcomes :: proc(x: EventOutcomes) -> EventOutcomes {
-	out := x
-	out.losers = cln_dyn_PlayerId(x.losers)
-	out.winners = cln_dyn_PlayerId(x.winners)
-	return out
-}
-
-clone_MayTriggerAutoChoiceOp :: proc(x: MayTriggerAutoChoiceOp) -> MayTriggerAutoChoiceOp {
-	#partial switch y in x {
-	case MayTriggerAutoChoiceOp_Remove:
-		v := y
-		v.selector = clone_MayTriggerAutoChoiceSelector(y.selector)
-		return v
-	}
-	return x
-}
-
-clone_ManaChoice :: proc(x: ManaChoice) -> ManaChoice {
-	#partial switch y in x {
-	case ManaChoice_Combination:
-		v := y
-		v._0 = cln_dyn_ManaType(y._0)
-		return v
-	}
-	return x
-}
-
-clone_DebugAction :: proc(x: DebugAction) -> DebugAction {
-	#partial switch y in x {
-	case DebugAction_MoveToZone:
-		v := y
-		v.library_position = cln_opt_LibraryPosition(y.library_position)
-		return v
-	case DebugAction_GrantKeyword:
-		v := y
-		v.keyword = clone_Keyword(y.keyword)
-		return v
-	case DebugAction_RemoveKeyword:
-		v := y
-		v.keyword = clone_Keyword(y.keyword)
-		return v
-	case DebugAction_AddMana:
-		v := y
-		v.mana = cln_dyn_ManaType(y.mana)
-		return v
-	case DebugAction_CreateToken:
-		v := y
-		v.request = clone_DebugTokenRequest(y.request)
-		return v
-	}
-	return x
-}
-
-clone_ManaRestriction :: proc(x: ManaRestriction) -> ManaRestriction {
-	#partial switch y in x {
-	case ManaRestriction_OnlyForSpellMatchingCostCriteria:
-		v := y
-		v.criteria = cln_dyn_SpellCostCriterion(y.criteria)
-		return v
-	case ManaRestriction_OnlyForAny:
-		v := y
-		v._0 = cln_dyn_ManaRestriction(y._0)
-		return v
-	}
-	return x
-}
-
-clone_TapsForManaSelection :: proc(x: TapsForManaSelection) -> TapsForManaSelection {
-	out := x
-	out.occurrence = clone_TriggerDefinitionOccurrenceRef(x.occurrence)
-	out.production_override = clone_ProductionOverride(x.production_override)
-	return out
-}
-
-clone_DebugTokenRequest :: proc(x: DebugTokenRequest) -> DebugTokenRequest {
-	#partial switch y in x {
-	case DebugTokenRequest_Preset:
-		v := y
-		v.enter_with_counters = cln_dyn_t2_CounterType_u32(y.enter_with_counters)
-		return v
-	case DebugTokenRequest_Custom:
-		v := y
-		v.characteristics = clone_TokenCharacteristics(y.characteristics)
-		v.enter_with_counters = cln_dyn_t2_CounterType_u32(y.enter_with_counters)
-		return v
-	}
-	return x
 }
 
 clone_EventCombatSnapshot :: proc(x: EventCombatSnapshot) -> EventCombatSnapshot {
@@ -13144,297 +13019,6 @@ clone_LatchedCopiableSnapshot :: proc(x: LatchedCopiableSnapshot) -> LatchedCopi
 	return out
 }
 
-cln_ptr_ResolvedDelayedTriggerCommand :: proc(x: ^ResolvedDelayedTriggerCommand) -> ^ResolvedDelayedTriggerCommand {
-	if x == nil do return nil
-	p := new(ResolvedDelayedTriggerCommand)
-	p^ = clone_ResolvedDelayedTriggerCommand(x^)
-	return p
-}
-
-cln_ptr_ResolvedContinuousEffectEdit :: proc(x: ^ResolvedContinuousEffectEdit) -> ^ResolvedContinuousEffectEdit {
-	if x == nil do return nil
-	p := new(ResolvedContinuousEffectEdit)
-	p^ = clone_ResolvedContinuousEffectEdit(x^)
-	return p
-}
-
-cln_ptr_ResolvedTokenCreationCommand :: proc(x: ^ResolvedTokenCreationCommand) -> ^ResolvedTokenCreationCommand {
-	if x == nil do return nil
-	p := new(ResolvedTokenCreationCommand)
-	p^ = clone_ResolvedTokenCreationCommand(x^)
-	return p
-}
-
-cln_ptr_ResolvedZoneChangeCommand :: proc(x: ^ResolvedZoneChangeCommand) -> ^ResolvedZoneChangeCommand {
-	if x == nil do return nil
-	p := new(ResolvedZoneChangeCommand)
-	p^ = clone_ResolvedZoneChangeCommand(x^)
-	return p
-}
-
-cln_ptr_ResolvedFrameTransitionCommand :: proc(x: ^ResolvedFrameTransitionCommand) -> ^ResolvedFrameTransitionCommand {
-	if x == nil do return nil
-	p := new(ResolvedFrameTransitionCommand)
-	p^ = clone_ResolvedFrameTransitionCommand(x^)
-	return p
-}
-
-cln_ptr_ResolvedStackPushCommand :: proc(x: ^ResolvedStackPushCommand) -> ^ResolvedStackPushCommand {
-	if x == nil do return nil
-	p := new(ResolvedStackPushCommand)
-	p^ = clone_ResolvedStackPushCommand(x^)
-	return p
-}
-
-cln_ptr_ResolvedStackEntryFinalizeCommand :: proc(x: ^ResolvedStackEntryFinalizeCommand) -> ^ResolvedStackEntryFinalizeCommand {
-	if x == nil do return nil
-	p := new(ResolvedStackEntryFinalizeCommand)
-	p^ = clone_ResolvedStackEntryFinalizeCommand(x^)
-	return p
-}
-
-cln_ptr_ResolvedUncommittedTriggerRemovalCommand :: proc(x: ^ResolvedUncommittedTriggerRemovalCommand) -> ^ResolvedUncommittedTriggerRemovalCommand {
-	if x == nil do return nil
-	p := new(ResolvedUncommittedTriggerRemovalCommand)
-	p^ = clone_ResolvedUncommittedTriggerRemovalCommand(x^)
-	return p
-}
-
-cln_ptr_ResolvedStackRemovalCommand :: proc(x: ^ResolvedStackRemovalCommand) -> ^ResolvedStackRemovalCommand {
-	if x == nil do return nil
-	p := new(ResolvedStackRemovalCommand)
-	p^ = clone_ResolvedStackRemovalCommand(x^)
-	return p
-}
-
-clone_ResolvedRulesCommand :: proc(x: ResolvedRulesCommand) -> ResolvedRulesCommand {
-	#partial switch y in x {
-	case ResolvedRulesCommand_ManaInsert:
-		v := y
-		v._0 = clone_ResolvedManaInsertCommand(y._0)
-		return v
-	case ResolvedRulesCommand_ManaSpend:
-		v := y
-		v._0 = clone_ResolvedManaSpendCommand(y._0)
-		return v
-	case ResolvedRulesCommand_DelayedTriggerInstall:
-		v := y
-		v._0 = cln_ptr_ResolvedDelayedTriggerCommand(y._0)
-		return v
-	case ResolvedRulesCommand_ContinuousEffect:
-		v := y
-		v._0 = cln_ptr_ResolvedContinuousEffectEdit(y._0)
-		return v
-	case ResolvedRulesCommand_CombatMembership:
-		v := y
-		v._0 = clone_ResolvedCombatMembershipCommand(y._0)
-		return v
-	case ResolvedRulesCommand_TokenCreation:
-		v := y
-		v._0 = cln_ptr_ResolvedTokenCreationCommand(y._0)
-		return v
-	case ResolvedRulesCommand_Information:
-		v := y
-		v._0 = clone_ResolvedInformationCommand(y._0)
-		return v
-	case ResolvedRulesCommand_LedgerEdit:
-		v := y
-		v._0 = clone_ResolvedLedgerEditCommand(y._0)
-		return v
-	case ResolvedRulesCommand_LibraryShuffle:
-		v := y
-		v._0 = clone_ResolvedLibraryShuffleCommand(y._0)
-		return v
-	case ResolvedRulesCommand_ZoneChange:
-		v := y
-		v._0 = cln_ptr_ResolvedZoneChangeCommand(y._0)
-		return v
-	case ResolvedRulesCommand_FrameTransition:
-		v := y
-		v._0 = cln_ptr_ResolvedFrameTransitionCommand(y._0)
-		return v
-	case ResolvedRulesCommand_TriggerCollection:
-		v := y
-		v._0 = clone_ResolvedTriggerCollectionCommand(y._0)
-		return v
-	case ResolvedRulesCommand_StackPush:
-		v := y
-		v._0 = cln_ptr_ResolvedStackPushCommand(y._0)
-		return v
-	case ResolvedRulesCommand_StackEntryFinalize:
-		v := y
-		v._0 = cln_ptr_ResolvedStackEntryFinalizeCommand(y._0)
-		return v
-	case ResolvedRulesCommand_UncommittedTriggerRemoval:
-		v := y
-		v._0 = cln_ptr_ResolvedUncommittedTriggerRemovalCommand(y._0)
-		return v
-	case ResolvedRulesCommand_StackRemoval:
-		v := y
-		v._0 = cln_ptr_ResolvedStackRemovalCommand(y._0)
-		return v
-	}
-	return x
-}
-
-clone_ResolvedManaInsertCommand :: proc(x: ResolvedManaInsertCommand) -> ResolvedManaInsertCommand {
-	out := x
-	out.unit = clone_ManaUnit(x.unit)
-	return out
-}
-
-cln_dyn_ResolvedManaSpentUnit :: proc(x: [dynamic]ResolvedManaSpentUnit) -> [dynamic]ResolvedManaSpentUnit {
-	out := make([dynamic]ResolvedManaSpentUnit, len(x))
-	for item, i in x do out[i] = clone_ResolvedManaSpentUnit(item)
-	return out
-}
-
-clone_ResolvedManaSpendCommand :: proc(x: ResolvedManaSpendCommand) -> ResolvedManaSpendCommand {
-	out := x
-	out.units = cln_dyn_ResolvedManaSpentUnit(x.units)
-	return out
-}
-
-clone_ResolvedDelayedTriggerCommand :: proc(x: ResolvedDelayedTriggerCommand) -> ResolvedDelayedTriggerCommand {
-	out := x
-	out.trigger = clone_DelayedTrigger(x.trigger)
-	return out
-}
-
-clone_ResolvedContinuousEffectEdit :: proc(x: ResolvedContinuousEffectEdit) -> ResolvedContinuousEffectEdit {
-	#partial switch y in x {
-	case ResolvedContinuousEffectEdit_Install:
-		v := y
-		v._0 = clone_ResolvedContinuousEffectCommand(y._0)
-		return v
-	case ResolvedContinuousEffectEdit_Retire:
-		v := y
-		v._0 = clone_ResolvedContinuousEffectRetirementCommand(y._0)
-		return v
-	}
-	return x
-}
-
-clone_ResolvedCombatMembershipCommand :: proc(x: ResolvedCombatMembershipCommand) -> ResolvedCombatMembershipCommand {
-	out := x
-	out.edit = clone_ResolvedCombatMembershipEdit(x.edit)
-	return out
-}
-
-clone_ResolvedTokenCreationCommand :: proc(x: ResolvedTokenCreationCommand) -> ResolvedTokenCreationCommand {
-	out := x
-	out.body = clone_ResolvedTokenBody(x.body)
-	out.entry_choices = cln_dyn_ChosenAttribute(x.entry_choices)
-	return out
-}
-
-clone_ResolvedInformationCommand :: proc(x: ResolvedInformationCommand) -> ResolvedInformationCommand {
-	out := x
-	out.occurrences = cln_dyn_ObjectIncarnationRef(x.occurrences)
-	return out
-}
-
-clone_ResolvedLedgerEditCommand :: proc(x: ResolvedLedgerEditCommand) -> ResolvedLedgerEditCommand {
-	out := x
-	out.edit = clone_ResolvedLedgerEdit(x.edit)
-	return out
-}
-
-clone_ResolvedLibraryShuffleCommand :: proc(x: ResolvedLibraryShuffleCommand) -> ResolvedLibraryShuffleCommand {
-	out := x
-	out.precondition_order = cln_dyn_ObjectId(x.precondition_order)
-	out.resulting_order = cln_dyn_ObjectId(x.resulting_order)
-	return out
-}
-
-cln_dyn_RetainedStickerTimestamp :: proc(x: [dynamic]RetainedStickerTimestamp) -> [dynamic]RetainedStickerTimestamp {
-	out := make([dynamic]RetainedStickerTimestamp, len(x))
-	copy(out[:], x[:])
-	return out
-}
-
-cln_opt_dyn_RetainedStickerTimestamp :: proc(x: Maybe([dynamic]RetainedStickerTimestamp)) -> Maybe([dynamic]RetainedStickerTimestamp) {
-	if y, ok := x.?; ok do return cln_dyn_RetainedStickerTimestamp(y)
-	return nil
-}
-
-clone_ResolvedZoneChangeCommand :: proc(x: ResolvedZoneChangeCommand) -> ResolvedZoneChangeCommand {
-	out := x
-	out.retained_sticker_timestamps = cln_opt_dyn_RetainedStickerTimestamp(x.retained_sticker_timestamps)
-	out.zone_change_record = clone_ZoneChangeRecord(x.zone_change_record)
-	return out
-}
-
-clone_ResolvedFrameTransitionCommand :: proc(x: ResolvedFrameTransitionCommand) -> ResolvedFrameTransitionCommand {
-	out := x
-	out.transition = clone_ResolvedFrameTransition(x.transition)
-	return out
-}
-
-clone_ResolvedTriggerCollectionCommand :: proc(x: ResolvedTriggerCollectionCommand) -> ResolvedTriggerCollectionCommand {
-	out := x
-	out.collection = clone_ResolvedTriggerCollection(x.collection)
-	return out
-}
-
-cln_ptr_StackEntry :: proc(x: ^StackEntry) -> ^StackEntry {
-	if x == nil do return nil
-	p := new(StackEntry)
-	p^ = clone_StackEntry(x^)
-	return p
-}
-
-clone_ResolvedStackPushCommand :: proc(x: ResolvedStackPushCommand) -> ResolvedStackPushCommand {
-	out := x
-	out.entry = cln_ptr_StackEntry(x.entry)
-	return out
-}
-
-cln_ptr_StackEntryKind :: proc(x: ^StackEntryKind) -> ^StackEntryKind {
-	if x == nil do return nil
-	p := new(StackEntryKind)
-	p^ = clone_StackEntryKind(x^)
-	return p
-}
-
-cln_ptr_StackPaidSnapshot :: proc(x: ^StackPaidSnapshot) -> ^StackPaidSnapshot {
-	if x == nil do return nil
-	p := new(StackPaidSnapshot)
-	p^ = clone_StackPaidSnapshot(x^)
-	return p
-}
-
-clone_ResolvedStackEntryFinalizeCommand :: proc(x: ResolvedStackEntryFinalizeCommand) -> ResolvedStackEntryFinalizeCommand {
-	out := x
-	out.expected_old_kind = cln_ptr_StackEntryKind(x.expected_old_kind)
-	out.resulting_kind = cln_ptr_StackEntryKind(x.resulting_kind)
-	out.expected_old_paid_facts = cln_ptr_StackPaidSnapshot(x.expected_old_paid_facts)
-	out.resulting_paid_facts = cln_ptr_StackPaidSnapshot(x.resulting_paid_facts)
-	return out
-}
-
-clone_ResolvedUncommittedTriggerRemovalCommand :: proc(x: ResolvedUncommittedTriggerRemovalCommand) -> ResolvedUncommittedTriggerRemovalCommand {
-	out := x
-	out.removed = cln_ptr_StackEntry(x.removed)
-	return out
-}
-
-clone_ResolvedStackRemovalCommand :: proc(x: ResolvedStackRemovalCommand) -> ResolvedStackRemovalCommand {
-	out := x
-	out.entry = cln_ptr_StackEntry(x.entry)
-	return out
-}
-
-clone_RulesExecutionNodeKind :: proc(x: RulesExecutionNodeKind) -> RulesExecutionNodeKind {
-	#partial switch y in x {
-	case RulesExecutionNodeKind_TriggeredMana:
-		v := y
-		v.trigger = cln_opt_TriggerDefinitionRef(y.trigger)
-		return v
-	}
-	return x
-}
-
 cln_ptr_TriggeredAbilityProvenance :: proc(x: ^TriggeredAbilityProvenance) -> ^TriggeredAbilityProvenance {
 	if x == nil do return nil
 	p := new(TriggeredAbilityProvenance)
@@ -13563,6 +13147,12 @@ clone_CostMove :: proc(x: CostMove) -> CostMove {
 	return out
 }
 
+clone_EndEffectPermission :: proc(x: EndEffectPermission) -> EndEffectPermission {
+	out := x
+	out.cost = clone_ManaCost(x.cost)
+	return out
+}
+
 clone_BossStages :: proc(x: BossStages) -> BossStages {
 	out := x
 	out.stage_sizes = cln_dyn_u8(x.stage_sizes)
@@ -13593,6 +13183,16 @@ clone_LegalityRules :: proc(x: LegalityRules) -> LegalityRules {
 	out.banned = cln_dyn_string(x.banned)
 	out.restricted = cln_dyn_string(x.restricted)
 	return out
+}
+
+clone_ActivationTargetFact :: proc(x: ActivationTargetFact) -> ActivationTargetFact {
+	#partial switch y in x {
+	case ActivationTargetFact_Object:
+		v := y
+		v.lki = cln_ptr_LKISnapshot(y.lki)
+		return v
+	}
+	return x
 }
 
 cln_dyn_LogSegment :: proc(x: [dynamic]LogSegment) -> [dynamic]LogSegment {
@@ -13934,6 +13534,297 @@ clone_AbilityBlockReason :: proc(x: AbilityBlockReason) -> AbilityBlockReason {
 	out := x
 	out.sources = cln_dyn_ObjectId(x.sources)
 	return out
+}
+
+cln_ptr_ResolvedDelayedTriggerCommand :: proc(x: ^ResolvedDelayedTriggerCommand) -> ^ResolvedDelayedTriggerCommand {
+	if x == nil do return nil
+	p := new(ResolvedDelayedTriggerCommand)
+	p^ = clone_ResolvedDelayedTriggerCommand(x^)
+	return p
+}
+
+cln_ptr_ResolvedContinuousEffectEdit :: proc(x: ^ResolvedContinuousEffectEdit) -> ^ResolvedContinuousEffectEdit {
+	if x == nil do return nil
+	p := new(ResolvedContinuousEffectEdit)
+	p^ = clone_ResolvedContinuousEffectEdit(x^)
+	return p
+}
+
+cln_ptr_ResolvedTokenCreationCommand :: proc(x: ^ResolvedTokenCreationCommand) -> ^ResolvedTokenCreationCommand {
+	if x == nil do return nil
+	p := new(ResolvedTokenCreationCommand)
+	p^ = clone_ResolvedTokenCreationCommand(x^)
+	return p
+}
+
+cln_ptr_ResolvedZoneChangeCommand :: proc(x: ^ResolvedZoneChangeCommand) -> ^ResolvedZoneChangeCommand {
+	if x == nil do return nil
+	p := new(ResolvedZoneChangeCommand)
+	p^ = clone_ResolvedZoneChangeCommand(x^)
+	return p
+}
+
+cln_ptr_ResolvedFrameTransitionCommand :: proc(x: ^ResolvedFrameTransitionCommand) -> ^ResolvedFrameTransitionCommand {
+	if x == nil do return nil
+	p := new(ResolvedFrameTransitionCommand)
+	p^ = clone_ResolvedFrameTransitionCommand(x^)
+	return p
+}
+
+cln_ptr_ResolvedStackPushCommand :: proc(x: ^ResolvedStackPushCommand) -> ^ResolvedStackPushCommand {
+	if x == nil do return nil
+	p := new(ResolvedStackPushCommand)
+	p^ = clone_ResolvedStackPushCommand(x^)
+	return p
+}
+
+cln_ptr_ResolvedStackEntryFinalizeCommand :: proc(x: ^ResolvedStackEntryFinalizeCommand) -> ^ResolvedStackEntryFinalizeCommand {
+	if x == nil do return nil
+	p := new(ResolvedStackEntryFinalizeCommand)
+	p^ = clone_ResolvedStackEntryFinalizeCommand(x^)
+	return p
+}
+
+cln_ptr_ResolvedUncommittedTriggerRemovalCommand :: proc(x: ^ResolvedUncommittedTriggerRemovalCommand) -> ^ResolvedUncommittedTriggerRemovalCommand {
+	if x == nil do return nil
+	p := new(ResolvedUncommittedTriggerRemovalCommand)
+	p^ = clone_ResolvedUncommittedTriggerRemovalCommand(x^)
+	return p
+}
+
+cln_ptr_ResolvedStackRemovalCommand :: proc(x: ^ResolvedStackRemovalCommand) -> ^ResolvedStackRemovalCommand {
+	if x == nil do return nil
+	p := new(ResolvedStackRemovalCommand)
+	p^ = clone_ResolvedStackRemovalCommand(x^)
+	return p
+}
+
+clone_ResolvedRulesCommand :: proc(x: ResolvedRulesCommand) -> ResolvedRulesCommand {
+	#partial switch y in x {
+	case ResolvedRulesCommand_ManaInsert:
+		v := y
+		v._0 = clone_ResolvedManaInsertCommand(y._0)
+		return v
+	case ResolvedRulesCommand_ManaSpend:
+		v := y
+		v._0 = clone_ResolvedManaSpendCommand(y._0)
+		return v
+	case ResolvedRulesCommand_DelayedTriggerInstall:
+		v := y
+		v._0 = cln_ptr_ResolvedDelayedTriggerCommand(y._0)
+		return v
+	case ResolvedRulesCommand_ContinuousEffect:
+		v := y
+		v._0 = cln_ptr_ResolvedContinuousEffectEdit(y._0)
+		return v
+	case ResolvedRulesCommand_CombatMembership:
+		v := y
+		v._0 = clone_ResolvedCombatMembershipCommand(y._0)
+		return v
+	case ResolvedRulesCommand_TokenCreation:
+		v := y
+		v._0 = cln_ptr_ResolvedTokenCreationCommand(y._0)
+		return v
+	case ResolvedRulesCommand_Information:
+		v := y
+		v._0 = clone_ResolvedInformationCommand(y._0)
+		return v
+	case ResolvedRulesCommand_LedgerEdit:
+		v := y
+		v._0 = clone_ResolvedLedgerEditCommand(y._0)
+		return v
+	case ResolvedRulesCommand_LibraryShuffle:
+		v := y
+		v._0 = clone_ResolvedLibraryShuffleCommand(y._0)
+		return v
+	case ResolvedRulesCommand_ZoneChange:
+		v := y
+		v._0 = cln_ptr_ResolvedZoneChangeCommand(y._0)
+		return v
+	case ResolvedRulesCommand_FrameTransition:
+		v := y
+		v._0 = cln_ptr_ResolvedFrameTransitionCommand(y._0)
+		return v
+	case ResolvedRulesCommand_TriggerCollection:
+		v := y
+		v._0 = clone_ResolvedTriggerCollectionCommand(y._0)
+		return v
+	case ResolvedRulesCommand_StackPush:
+		v := y
+		v._0 = cln_ptr_ResolvedStackPushCommand(y._0)
+		return v
+	case ResolvedRulesCommand_StackEntryFinalize:
+		v := y
+		v._0 = cln_ptr_ResolvedStackEntryFinalizeCommand(y._0)
+		return v
+	case ResolvedRulesCommand_UncommittedTriggerRemoval:
+		v := y
+		v._0 = cln_ptr_ResolvedUncommittedTriggerRemovalCommand(y._0)
+		return v
+	case ResolvedRulesCommand_StackRemoval:
+		v := y
+		v._0 = cln_ptr_ResolvedStackRemovalCommand(y._0)
+		return v
+	}
+	return x
+}
+
+clone_ResolvedManaInsertCommand :: proc(x: ResolvedManaInsertCommand) -> ResolvedManaInsertCommand {
+	out := x
+	out.unit = clone_ManaUnit(x.unit)
+	return out
+}
+
+cln_dyn_ResolvedManaSpentUnit :: proc(x: [dynamic]ResolvedManaSpentUnit) -> [dynamic]ResolvedManaSpentUnit {
+	out := make([dynamic]ResolvedManaSpentUnit, len(x))
+	for item, i in x do out[i] = clone_ResolvedManaSpentUnit(item)
+	return out
+}
+
+clone_ResolvedManaSpendCommand :: proc(x: ResolvedManaSpendCommand) -> ResolvedManaSpendCommand {
+	out := x
+	out.units = cln_dyn_ResolvedManaSpentUnit(x.units)
+	return out
+}
+
+clone_ResolvedDelayedTriggerCommand :: proc(x: ResolvedDelayedTriggerCommand) -> ResolvedDelayedTriggerCommand {
+	out := x
+	out.trigger = clone_DelayedTrigger(x.trigger)
+	return out
+}
+
+clone_ResolvedContinuousEffectEdit :: proc(x: ResolvedContinuousEffectEdit) -> ResolvedContinuousEffectEdit {
+	#partial switch y in x {
+	case ResolvedContinuousEffectEdit_Install:
+		v := y
+		v._0 = clone_ResolvedContinuousEffectCommand(y._0)
+		return v
+	case ResolvedContinuousEffectEdit_Retire:
+		v := y
+		v._0 = clone_ResolvedContinuousEffectRetirementCommand(y._0)
+		return v
+	}
+	return x
+}
+
+clone_ResolvedCombatMembershipCommand :: proc(x: ResolvedCombatMembershipCommand) -> ResolvedCombatMembershipCommand {
+	out := x
+	out.edit = clone_ResolvedCombatMembershipEdit(x.edit)
+	return out
+}
+
+clone_ResolvedTokenCreationCommand :: proc(x: ResolvedTokenCreationCommand) -> ResolvedTokenCreationCommand {
+	out := x
+	out.body = clone_ResolvedTokenBody(x.body)
+	out.entry_choices = cln_dyn_ChosenAttribute(x.entry_choices)
+	return out
+}
+
+clone_ResolvedInformationCommand :: proc(x: ResolvedInformationCommand) -> ResolvedInformationCommand {
+	out := x
+	out.occurrences = cln_dyn_ObjectIncarnationRef(x.occurrences)
+	return out
+}
+
+clone_ResolvedLedgerEditCommand :: proc(x: ResolvedLedgerEditCommand) -> ResolvedLedgerEditCommand {
+	out := x
+	out.edit = clone_ResolvedLedgerEdit(x.edit)
+	return out
+}
+
+clone_ResolvedLibraryShuffleCommand :: proc(x: ResolvedLibraryShuffleCommand) -> ResolvedLibraryShuffleCommand {
+	out := x
+	out.precondition_order = cln_dyn_ObjectId(x.precondition_order)
+	out.resulting_order = cln_dyn_ObjectId(x.resulting_order)
+	return out
+}
+
+cln_dyn_RetainedStickerTimestamp :: proc(x: [dynamic]RetainedStickerTimestamp) -> [dynamic]RetainedStickerTimestamp {
+	out := make([dynamic]RetainedStickerTimestamp, len(x))
+	copy(out[:], x[:])
+	return out
+}
+
+cln_opt_dyn_RetainedStickerTimestamp :: proc(x: Maybe([dynamic]RetainedStickerTimestamp)) -> Maybe([dynamic]RetainedStickerTimestamp) {
+	if y, ok := x.?; ok do return cln_dyn_RetainedStickerTimestamp(y)
+	return nil
+}
+
+clone_ResolvedZoneChangeCommand :: proc(x: ResolvedZoneChangeCommand) -> ResolvedZoneChangeCommand {
+	out := x
+	out.retained_sticker_timestamps = cln_opt_dyn_RetainedStickerTimestamp(x.retained_sticker_timestamps)
+	out.zone_change_record = clone_ZoneChangeRecord(x.zone_change_record)
+	return out
+}
+
+clone_ResolvedFrameTransitionCommand :: proc(x: ResolvedFrameTransitionCommand) -> ResolvedFrameTransitionCommand {
+	out := x
+	out.transition = clone_ResolvedFrameTransition(x.transition)
+	return out
+}
+
+clone_ResolvedTriggerCollectionCommand :: proc(x: ResolvedTriggerCollectionCommand) -> ResolvedTriggerCollectionCommand {
+	out := x
+	out.collection = clone_ResolvedTriggerCollection(x.collection)
+	return out
+}
+
+cln_ptr_StackEntry :: proc(x: ^StackEntry) -> ^StackEntry {
+	if x == nil do return nil
+	p := new(StackEntry)
+	p^ = clone_StackEntry(x^)
+	return p
+}
+
+clone_ResolvedStackPushCommand :: proc(x: ResolvedStackPushCommand) -> ResolvedStackPushCommand {
+	out := x
+	out.entry = cln_ptr_StackEntry(x.entry)
+	return out
+}
+
+cln_ptr_StackEntryKind :: proc(x: ^StackEntryKind) -> ^StackEntryKind {
+	if x == nil do return nil
+	p := new(StackEntryKind)
+	p^ = clone_StackEntryKind(x^)
+	return p
+}
+
+cln_ptr_StackPaidSnapshot :: proc(x: ^StackPaidSnapshot) -> ^StackPaidSnapshot {
+	if x == nil do return nil
+	p := new(StackPaidSnapshot)
+	p^ = clone_StackPaidSnapshot(x^)
+	return p
+}
+
+clone_ResolvedStackEntryFinalizeCommand :: proc(x: ResolvedStackEntryFinalizeCommand) -> ResolvedStackEntryFinalizeCommand {
+	out := x
+	out.expected_old_kind = cln_ptr_StackEntryKind(x.expected_old_kind)
+	out.resulting_kind = cln_ptr_StackEntryKind(x.resulting_kind)
+	out.expected_old_paid_facts = cln_ptr_StackPaidSnapshot(x.expected_old_paid_facts)
+	out.resulting_paid_facts = cln_ptr_StackPaidSnapshot(x.resulting_paid_facts)
+	return out
+}
+
+clone_ResolvedUncommittedTriggerRemovalCommand :: proc(x: ResolvedUncommittedTriggerRemovalCommand) -> ResolvedUncommittedTriggerRemovalCommand {
+	out := x
+	out.removed = cln_ptr_StackEntry(x.removed)
+	return out
+}
+
+clone_ResolvedStackRemovalCommand :: proc(x: ResolvedStackRemovalCommand) -> ResolvedStackRemovalCommand {
+	out := x
+	out.entry = cln_ptr_StackEntry(x.entry)
+	return out
+}
+
+clone_RulesExecutionNodeKind :: proc(x: RulesExecutionNodeKind) -> RulesExecutionNodeKind {
+	#partial switch y in x {
+	case RulesExecutionNodeKind_TriggeredMana:
+		v := y
+		v.trigger = cln_opt_TriggerDefinitionRef(y.trigger)
+		return v
+	}
+	return x
 }
 
 clone_AttachCardinality :: proc(x: AttachCardinality) -> AttachCardinality {
@@ -15059,6 +14950,12 @@ clone_ResolvedManaSpentUnit :: proc(x: ResolvedManaSpentUnit) -> ResolvedManaSpe
 clone_ResolvedContinuousEffectCommand :: proc(x: ResolvedContinuousEffectCommand) -> ResolvedContinuousEffectCommand {
 	out := x
 	out.effect = clone_TransientContinuousEffect(x.effect)
+	return out
+}
+
+cln_dyn_TransientContinuousEffect :: proc(x: [dynamic]TransientContinuousEffect) -> [dynamic]TransientContinuousEffect {
+	out := make([dynamic]TransientContinuousEffect, len(x))
+	for item, i in x do out[i] = clone_TransientContinuousEffect(item)
 	return out
 }
 

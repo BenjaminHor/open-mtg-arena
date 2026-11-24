@@ -473,6 +473,10 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let recv = self.expr(&mc.receiver, &recv_shape)?;
                 match mc.method.to_string().as_str() {
                     "is_empty" if matches!(recv_shape, Shape::Vec(_) | Shape::Map(..) | Shape::Str) => Ok(format!("(len({recv}) == 0)")),
+                    // A shared collection (`Arc<Vec<T>>`, an `im` collection): nil is the empty one.
+                    "is_empty" if matches!(&recv_shape, Shape::Ptr(i, _) if matches!(**i, Shape::Vec(_) | Shape::Map(..))) => {
+                        Ok(format!("({recv} == nil || len({recv}^) == 0)"))
+                    }
                     "is_none" => Ok(format!("({recv} == nil)")),
                     "is_some" => Ok(format!("({recv} != nil)")),
                     "clone" | "into" | "to_owned" | "to_string" => Ok(recv),
