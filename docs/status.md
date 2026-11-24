@@ -78,6 +78,12 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     call into the parser (triggers, layers, combat, effects). An all-Odin engine needs those parses precomputed
     into the card data (a Rust oracle-gen change) or the parser ported; D-179 assumed the engine never parses.
     Question for the owner (Open questions).
+    **Logic port started (2026-11-24): the whole-function translator** (odin/tools/odingen/src/body.rs,
+    `odingen translate-report crates <dir> [filter]`). Engine-wide 3,386 of 15,923 functions translate (21.3%; phase-ast
+    44%), the rest are typed stubs; all of it type-checks against the model except a dozen errors. Next blockers:
+    untyped `let` (1,835), `.iter()` chains (1,009), generic calls/functions (~1,000), nested items (526), match on
+    non-enums (433), let patterns (415), let-else patterns (397), `.as_ref()` (386). Then the vector printer (Rust
+    results for the translated functions) before any of it becomes engine code. docs/odin-port.md has the plan.
     **O-0/O-1 in review: PR #117** (2026-11-24), with the Odin CI workflow; merge on green (D-027). A code review
     of odingen, the recorder and the workflow (2026-11-24) led to: the recorder steps one AI action per line and
     records contest settlements, the submitter and semantic owner, and the RNG position; skipped fields get their

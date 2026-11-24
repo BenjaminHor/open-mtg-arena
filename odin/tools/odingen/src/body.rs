@@ -190,8 +190,10 @@ impl Body<'_, '_, '_> {
     }
 
     fn local(&mut self, l: &syn::Local) -> R<()> {
-        if l.init.as_ref().is_some_and(|i| i.diverge.is_some()) {
-            return Err("let else".into());
+        if let Some(init) = l.init.as_ref() {
+            if let Some((_, els)) = &init.diverge {
+                return self.let_else(&l.pat, &init.expr, els);
+            }
         }
         let (pat, ty) = match &l.pat {
             Pat::Type(pt) => (&*pt.pat, Some(&*pt.ty)),
@@ -208,6 +210,62 @@ impl Body<'_, '_, '_> {
         let ident = self.fresh(&local_ident(&name));
         self.line(&format!("{ident}: {} = {v}", self.tx.e.odin(&sh)));
         self.tx.vars.insert(name, (ident, sh));
+        Ok(())
+    }
+
+    /// `let Some(x) = e else { .. };` and `let Enum::V(a, ..) = e else { .. };` (the else block diverges).
+    fn let_else(&mut self, pat: &Pat, e: &Expr, els: &Expr) -> R<()> {
+        let Pat::TupleStruct(ts) = pat else { return Err("let else pattern".into()) };
+        let segs: Vec<String> = ts.path.segments.iter().map(|s| s.ident.to_string()).collect();
+        let sh = self.shape_of(e).ok_or("let else on an untyped value")?;
+        let v = self.tx.expr(e, &sh)?;
+        let tmp = self.fresh("le_");
+        let last = segs.last().cloned().unwrap_or_default();
+        let mut binds: Vec<(String, String, Shape)> = Vec::new();
+        if last == "Some" && ts.elems.len() == 1 {
+            let inner = match &sh {
+                Shape::Option(i) => (**i).clone(),
+                Shape::OptPtr(i, s) => Shape::Ptr(i.clone(), *s),
+                _ => return Err("let Some else on a non-option".into()),
+            };
+            self.line(&format!("{tmp} := {v}"));
+            self.line(&format!("if {tmp} == nil {{"));
+            if let Pat::Ident(pi) = &ts.elems[0] {
+                let src = if matches!(sh, Shape::OptPtr(..)) { tmp.clone() } else { format!("{tmp}.?") };
+                binds.push((pi.ident.to_string(), src, inner));
+            } else if !matches!(&ts.elems[0], Pat::Wild(_)) {
+                return Err("let Some else binding".into());
+            }
+        } else {
+            let Shape::Named(en, _) = &sh else { return Err("let else on a non-enum".into()) };
+            let en = en.clone();
+            let fields = self.tx.named_fields_pub(&en, Some(&last)).ok_or("let else variant")?;
+            let Fields::Tuple(fs) = fields else { return Err("let else on a struct variant".into()) };
+            self.line(&format!("{tmp}, {tmp}ok := {v}.({en}_{last})"));
+            self.line(&format!("if !{tmp}ok {{"));
+            for (i, (pe, f)) in ts.elems.iter().zip(fs.iter()).enumerate() {
+                match pe {
+                    Pat::Ident(pi) => {
+                        let s = self.tx.e.shape(&f.ty, &[]);
+                        binds.push((pi.ident.to_string(), format!("{tmp}._{i}"), s));
+                    }
+                    Pat::Wild(_) => {}
+                    _ => return Err("let else nested pattern".into()),
+                }
+            }
+        }
+        self.indent += 1;
+        match els {
+            Expr::Block(b) => self.block(&b.block, false)?,
+            _ => return Err("let else block".into()),
+        }
+        self.indent -= 1;
+        self.line("}");
+        for (n, src, s) in binds {
+            let ident = self.fresh(&local_ident(&n));
+            self.line(&format!("{ident} := {src}"));
+            self.tx.vars.insert(n, (ident, s));
+        }
         Ok(())
     }
 
