@@ -725,3 +725,30 @@ spells_you_cast_cost_less :: proc(t: ^testing.T) {
 	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = divination.id}))
 	testing.expect(t, divination.zone == .Stack, "cast for two")
 }
+
+@(test)
+intervening_if_is_checked_twice :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 603.4: "At the beginning of your upkeep, if you have seven or more cards in hand, you gain 4 life" triggers
+	// only if the condition is true, and does nothing if it's false as the ability resolves.
+	g := new_game()
+	add(t, g, "Ivory Crane Netsuke", 0, .Battlefield)
+	hand := game.player(&g.state, 0).hand
+	for types.pvec_len(hand) > 0 do game.move_object(g, types.pvec_get(hand, 0), .Library)
+	game.begin_step(g, .Upkeep)
+	testing.expect(t, types.pvec_len(g.state.stack) == 0, "an empty hand: no trigger")
+
+	for _ in 0 ..< 7 do add(t, g, "Forest", 0, .Hand)
+	game.begin_step(g, .Upkeep)
+	testing.expect(t, types.pvec_len(g.state.stack) == 1, "seven cards: it triggers")
+	game.move_object(g, types.pvec_get(hand, 0), .Graveyard) // down to six before it resolves
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, types.pvec_len(g.state.stack) == 0 && game.player(&g.state, 0).life == 20, "six cards on resolution: nothing")
+
+	add(t, g, "Forest", 0, .Hand)
+	game.begin_step(g, .Upkeep)
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, game.player(&g.state, 0).life == 24, "seven cards throughout: 4 life")
+}

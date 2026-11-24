@@ -37,7 +37,8 @@ Pending_Trigger :: struct {
 
 trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	if t.execute == nil || !ability_supported(t.execute^) do return false
-	if t.condition != nil || t.unless_pay != nil || t.batched do return false
+	if c, has := t.condition.?; has && !trigger_condition_supported(c) do return false
+	if t.unless_pay != nil || t.batched do return false
 	// "you" as the one acting is read only by spell-cast triggers ("whenever you cast").
 	_, is_cast := t.mode.(types.TriggerMode_SpellCast)
 	_, is_damage := t.mode.(types.TriggerMode_DamageDone)
@@ -291,7 +292,67 @@ turn_constraint_met :: proc(s: ^types.GameState, t: types.TriggerDefinition, con
 }
 
 add_trigger :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, t: ^types.TriggerDefinition) {
+	// CR 603.4: with an intervening "if", the ability triggers only if the condition is true now.
+	if c, has := t.condition.?; has && !trigger_condition_holds(&g.state, source, controller, c) do return
 	append(&g.pending_triggers, Pending_Trigger{source = source, controller = controller, definition = t})
+}
+
+// ---- Intervening "if" conditions (CR 603.4) -----------------------------------------------------------------
+
+trigger_condition_supported :: proc(c: types.TriggerCondition) -> bool {
+	#partial switch x in c {
+	case types.TriggerCondition_QuantityComparison:
+		return quantity_supported(x.lhs) && quantity_supported(x.rhs)
+	case types.TriggerCondition_HasCounters:
+		#partial switch m in x.counters {
+		case types.CounterMatch_Any:
+			return true
+		case types.CounterMatch_OfType:
+			return counter_kind_supported(m._0)
+		}
+	case types.TriggerCondition_SourceInZone:
+		return true
+	case types.TriggerCondition_And:
+		for y in x.conditions do if !trigger_condition_supported(y) do return false
+		return true
+	case types.TriggerCondition_Or:
+		for y in x.conditions do if !trigger_condition_supported(y) do return false
+		return true
+	case types.TriggerCondition_Not:
+		return x.condition != nil && trigger_condition_supported(x.condition^)
+	}
+	return false
+}
+
+trigger_condition_holds :: proc(s: ^types.GameState, source: types.ObjectId, controller: types.PlayerId, c: types.TriggerCondition) -> bool {
+	src := object(s, source)
+	#partial switch x in c {
+	case types.TriggerCondition_QuantityComparison:
+		return compare(quantity_value(s, x.lhs, controller, source, 0), x.comparator, quantity_value(s, x.rhs, controller, source, 0))
+	case types.TriggerCondition_HasCounters:
+		n: u32
+		if src != nil do for k in src.counters {
+			#partial switch m in x.counters {
+			case types.CounterMatch_Any:
+				n += k._1
+			case types.CounterMatch_OfType:
+				if same_counter(k._0, m._0) do n += k._1
+			}
+		}
+		if most, has := x.maximum.?; has && n > most do return false
+		return n >= x.minimum
+	case types.TriggerCondition_SourceInZone:
+		return src != nil && src.zone == x.zone
+	case types.TriggerCondition_And:
+		for y in x.conditions do if !trigger_condition_holds(s, source, controller, y) do return false
+		return true
+	case types.TriggerCondition_Or:
+		for y in x.conditions do if trigger_condition_holds(s, source, controller, y) do return true
+		return false
+	case types.TriggerCondition_Not:
+		return !trigger_condition_holds(s, source, controller, x.condition^)
+	}
+	return false
 }
 
 // ---- Onto the stack (CR 603.3) ------------------------------------------------------------------------------
@@ -327,7 +388,8 @@ place_triggers :: proc(g: ^Game) -> bool {
 		ordered_remove(&g.pending_triggers, index)
 		// CR 603.3d: an ability that needs a target and has none legal is removed from the stack.
 		if len(targets) < len(slots) do continue
-		push_ability(g, pt.source, pt.controller, pt.definition.execute, targets[:], true)
+		id := push_ability(g, pt.source, pt.controller, pt.definition.execute, targets[:], true)
+		if pt.definition.condition != nil do g.stack_conditions[id] = pt.definition
 	}
 	return true
 }
@@ -380,7 +442,7 @@ choose_trigger_target :: proc(g: ^Game, p: types.PlayerId, t: types.TargetRef) -
 }
 
 // Puts an ability on the stack: a new stack object (CR 113.7a) whose definition the game keeps to resolve it.
-push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, a: ^types.AbilityDefinition, targets: []types.TargetRef, triggered: bool) {
+push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, a: ^types.AbilityDefinition, targets: []types.TargetRef, triggered: bool) -> types.ObjectId {
 	s := &g.state
 	id := types.ObjectId(s.next_object_id)
 	s.next_object_id += 1
@@ -399,6 +461,7 @@ push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerI
 		kind = types.StackEntryKind_ActivatedAbility{source_id = source, ability = resolved}
 	}
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = source, controller = controller, kind = kind}, copy_entry)
+	return id
 }
 
 // ---- Resolving (CR 608.2) -----------------------------------------------------------------------------------
@@ -407,6 +470,14 @@ push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerI
 resolve_ability :: proc(g: ^Game, entry: types.StackEntry, resolved: ^types.ResolvedAbility) {
 	a := g.stack_abilities[entry.id]
 	if a == nil do return // a restored game: its abilities on the stack aren't known to this engine
+	// CR 603.4: the intervening "if" is checked again as the ability resolves; if false, it does nothing.
+	if t, has := g.stack_conditions[entry.id]; has {
+		delete_key(&g.stack_conditions, entry.id)
+		if !trigger_condition_holds(&g.state, entry.source_id, entry.controller, t.condition.?) {
+			delete_key(&g.stack_abilities, entry.id)
+			return
+		}
+	}
 	if a.optional && !g.optional_accepted {
 		g.optional_entry = entry
 		s := &g.state
