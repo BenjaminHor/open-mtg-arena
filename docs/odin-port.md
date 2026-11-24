@@ -1,6 +1,6 @@
-# Odin port plan (DRAFT, for the owner's approval)
+# Odin port plan
 
-Status: draft, 2026-11-24. Nothing here is approved yet. The owner's goal (D-178): "iterate safely on porting this
+Status: approved in shape, 2026-11-24 (D-179): the parser stays Rust, the RNG is bit-exact, the AI is ported later. The owner's goal (D-178): "iterate safely on porting this
 from rust to Odin as efficiently and quickly as possible", as its own milestones, with two agreed ideas: **safely**, by
 recorded reference games from the Rust engine that ported pieces must reproduce; **quickly**, by vertical slices behind
 the client's existing interface.
@@ -79,12 +79,12 @@ Facts that shape the plan:
 - **Later:** the AI (port or new), the per-game switch to Odin, drafting, then removing the Rust engine. Porting the
   parser is a separate, optional decision at the end.
 
-## Questions for the owner
+## Decided (D-179)
 
-1. Keep the Rust card-text parser as an offline build tool for now (recommended), so only the engine is ported?
-2. Bit-exact RNG (seeds and saved replays carry over between engines; recommended), or free to change?
-3. The AI: port the existing one later, or write a smaller Odin AI earlier?
-4. Pace: slices are sized to a session or two each; how often do you want to play-check a slice?
+1. The Rust card-text parser stays as an offline build tool; only the engine is ported.
+2. Bit-exact RNG: seeds, recordings and saved replays carry over between engines.
+3. The existing AI is ported later.
+4. Open: how often the owner play-checks a slice (default: whenever a slice changes what a player can see or play).
 
 ## Honest scale
 

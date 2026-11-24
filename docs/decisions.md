@@ -2858,3 +2858,19 @@ owner's answer to the D-089 open question, option (a))
   app, which no longer refresh (the scraper and its daily job stay removed). The starter decks' feed gets back its
   original "no format" (the strip had labelled it Standard, which they aren't legal in).
 
+
+**D-179: The Odin port's shape: the parser stays Rust, the RNG stays bit-exact, the AI comes later (owner, 2026-11-24)** · 2026-11-24 · accepted
+- Plan: docs/odin-port.md. Survey: the engine runs the parsed card AST shipped in `card-data.json` (it never parses
+  Oracle text in play), and the client talks to the engine only in JSON. So an Odin engine reads the same card data
+  and speaks the same JSON behind the client's worker. Safety: the Rust engine records games and test runs (actions
+  plus a normalized checkpoint after each), and Odin must reproduce them. Speed: slices by mechanic, measured by the
+  share of cards Odin can fully play; Odin runs in shadow mode beside Rust before any game switches to it.
+- The owner, on the plan's questions: "yes to 1 and 2, port the AI later". So:
+  1. The Rust card-text parser (`phase-parser`, `oracle-gen`) stays, as an offline build tool producing
+     `card-data.json`; only the engine is ported. Porting the parser is a separate decision at the end.
+  2. The RNG is reproduced bit for bit (ChaCha20 seeded from a u64, and rand 0.9's `shuffle`, `random_range`,
+     `choose`, `random_bool`), so seeds, recordings and saved replays carry over between the engines.
+  3. The existing AI is ported later, after the engine slices it depends on; until then Odin-run games use a simple
+     stand-in or stay in shadow mode.
+- Not yet answered: how often the owner play-checks a slice. Default until then: whenever a slice changes what a
+  player can see or play.
