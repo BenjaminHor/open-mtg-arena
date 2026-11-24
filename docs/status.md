@@ -2789,6 +2789,16 @@ Progress:
   untap, must attack, extra land, no max hand size, flash), Auras and Equipment (303.4, 702.5-6, 704.5m-n), and
   the AI for them. Rules tests: 23. Process note: background jobs only build and test; commits are made in the
   foreground (a background commit once picked up half-finished edits).
+- Step 3 progress (2026-11-24, night): conditional and dynamic statics, CDAs, colors (layer 5), discard and dig
+  choices, "it"/"that creature" instructions acting on the earlier target (608.2c), resolved effects granting
+  rules for a duration (can't block, can't be blocked, doesn't untap; 611.2), tokens with statics and X/X sizes,
+  sacrifice-a-permanent and discard-a-card costs through the PayCost prompt (601.2h, 602.2b, 701.21a). Rules
+  tests: 30. Pool coverage: 2,765 of 15,772 (the owner asked; reported). `coverage.mjs --examples "<gap>"` lists
+  the cards one gap alone blocks.
+- Step 1 full capture (2026-11-24): 12,326 tests recorded (3.3 GB, in the session scratchpad, not committed;
+  ~100 min). Shards integration, integration_2 and integration_3 completed (one Rust test failed in the first);
+  integration_4 failed partway, likely killed in a memory squeeze (the container's processes share ~15 GB).
+  Next: replay on Rust to keep the clean recordings, then on Odin for the pass rate, then the card-to-test map.
 - Step 2/3 start: `odin/engine/game/setup.odin` starts a game from the CR (103: libraries shuffled with the seeded
   generator, starting life, seven-card hands, mulligan decisions in turn order); `game_calls.odin` serves
   `initialize_game` (decks checked against the format first, as Rust does), `get_game_state`,
