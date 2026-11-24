@@ -357,6 +357,48 @@ A translated procedure becomes engine code only after passing here. Fields Rust 
 behind `#[serde(skip)]`) reach Odin as defaults, so a function that reads one shows up as a failure. Investigating
 each such failure is part of the check.
 
+## D-183 runtime parse census (2026-11-24)
+
+Every call from `crates/engine` into `phase-parser` outside tests, card-data generation and the bins: 52 call sites
+in 25 functions of 10 files. Found by scanning non-test code for parser paths and imported parser names, then
+checking each caller chain by hand (a name-based call graph from the `engine-wasm` exports overreaches through
+common names like `resolve`). `phase-ast` makes no parser calls. Grouped by what the engine does with the text:
+
+| # | Call site | What it parses, from where | Reached | Precomputable? |
+| --- | --- | --- | --- | --- |
+| 1 | `game/dungeon.rs` `room_effects`, `throne_of_dead_three`: `parse_effect_chain` x10 | Ten room texts, string constants in the engine (Tomb of Annihilation, Undercity, Baldur's Gate rooms) | In play: venturing into a room | Yes: fixed strings |
+| 2 | `game/effects/token.rs` `catalog_rules_text_abilities`: `parse_static_line_multi`, `classify_quoted_inner`, `normalize_card_name_refs_reporting`, `render_granting_self_reference`, `granter_reference_unreached`, `render_static/modification_descriptions` (7) | A token preset's rules text and name, from the compiled-in token catalog (`phase-ast/data/known-tokens.toml`) | In play: every token created from a catalog preset | Yes: the catalog is fixed |
+| 3 | `game/stickers.rs` `parse_sticker_ability_face` -> `database/synthesis.rs` `parse_oracle_with_cleave_brackets` (`parse_oracle_text` x2, `apply_bracket_mode` x2) and `synthesize_all` (`max_spacecraft_threshold`; backup: `parse_oracle_text`, `strip_reminder_text` x2, `parse_granted_keyword_fragment` x2, `keyword_display_name`) | An ability sticker's text, from the compiled-in sticker sheets (`game/stickers_data.json`) | In play: putting, keeping (each layer pass) and copying ability stickers | Yes: the sheets are fixed |
+| 4 | `database/synthesis.rs` `champion_type_filter`: `parse_type_phrase_union` | A Champion keyword's type ("Goblin or Shaman"), from the card's keyword in card data (printed or granted) | In play: Champion triggers built for printed, granted and copied Champion (`KeywordTriggerInstaller`, layers, copy effects) | Yes: every payload is in card data |
+| 5 | `game/keywords.rs` `source_subtype_matches_protection_quality`: `parse_subtype` | A "protection from [quality]" word ("elves"), from the card's Protection keyword in card data | In play: blocking, targeting, damage and attaching checks against protection | Yes: every quality is in card data |
+| 6 | `game/deck_validation.rs` `is_brawl_commander_eligible`, `is_tiny_leader_eligible` (`oracle_text_allows_commander`), `deck_copy_limit_for` (`compute_deck_copy_limit_from_text`); `database/synthesis.rs` `commander_qualification` (`oracle_text_allows_commander`) | A card's Oracle text and name | Deck building and validation (wasm exports), not during play. Brawl and copy limits read precomputed face fields (`brawl_commander`, `deck_copy_limit`) and parse only for faces without them (test fixtures); `commander_qualification` always parses | Yes: per card |
+| 7 | `game/coverage.rs` (deck compatibility and the parse-details panel): `is_commander_permission_sentence` and three more sentence tests, `parse_strive_cost_line`, `parse_casting_restriction_line`, `try_parse_em_dash_die_result_line`, `parse_subtype`, `normalize_card_name_refs`, `render_granting_self_reference`, `diagnose_clause_gap` (11) | A card's Oracle text, for support analysis | Client tooling (`evaluate_deck_compatibility_js`, `get_card_parse_details`), not during play | Yes: per card; `coverage-data.json` already holds the per-card result |
+| 8 | `types/game_state.rs` `migrate_legacy_attack_exert_conditions`: `parse_attack_exert_header` x2 (via `nom_on_lower`) | The saved description of an exert permission, from an old save | Loading a save in a legacy form | Not needed: the Odin engine reads today's save form only (D-181) |
+| 9 | `database/unearth.rs` (`leave_battlefield_exile_replacement`), `game/triggers.rs` `delayed_intervening_if` (`ability_condition_to_static_condition`, `static_condition_to_trigger_condition`), `game/replacement.rs` (`each_target_filter_mut`) | No text: AST constructors, converters and walkers that live in the parser crate | In play | Not parses: ported as engine logic |
+
+Not counted: `database/forge/` (Forge script fallback, oracle-gen only) and synthesis's other parser calls
+(`compute_no_maximum_deck_size`, `compute_brawl_commander`, casualty riders, keyword corroboration), which run
+only while oracle-gen builds the card data. Also not parses in this sense: `FromStr` lookups on AST enum names
+(`Keyword`, `CoreType`, `Supertype`, `BasicLandType`, `DungeonId`), tables the Odin AST port carries.
+
+No call parses text built from game state mid-game: every text in rows 1-5 is either an engine constant or a
+string from card data, so the full set of inputs is known when the card data is generated.
+
+### The precompute (rows 1-5 first)
+
+oracle-gen writes the results into `card-data.json` under one reserved top-level key, `__engine_parses__`, which
+the card-database loaders strip before reading cards. Its keys are the parse inputs: the room texts, every
+catalog preset's rules text and name, every sticker text, and every Champion type and protection quality found by
+walking the card data, the token catalog and the sticker faces. When a database with the table loads, the engine
+installs it; each of rows 1-5 looks its input up there and calls the parser only on a miss. In Rust that keeps
+tests that build cards from Oracle text (no card-data file) working unchanged; with card data loaded, a miss
+means a gap in the enumeration, which a test checks for. The Odin engine reads only the table. Since a hit holds
+exactly what the parser returns for the same input, Rust's behaviour is unchanged, which the same-seed recording
+check confirms.
+
+Rows 6 and 7 run outside play and come second, as per-card results in the same table. Row 8 needs nothing.
+Row 9 moves with the engine logic.
+
 ## Decided (D-179)
 
 1. The Rust card-text parser stays as an offline build tool; only the engine is ported.
