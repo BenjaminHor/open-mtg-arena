@@ -150,6 +150,17 @@ pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef)
 /// A function translated under another procedure name (a closure instance), with extra parameters at the end.
 /// Its own `?` returns from it, even when an instance is made from inside a closure body elsewhere.
 fn translate_fn_with(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, pname_override: Option<&str>, extra: &[String]) -> R<Translated> {
+    // Performance counters (game/perf_counters.rs) are thread-local diagnostics only tests read: recording into
+    // one changes no game. Their unit-returning procedures are translated with empty bodies.
+    let emptied;
+    let f = if f.file.to_string_lossy().ends_with("game/perf_counters.rs") && matches!(f.sig.output, ReturnType::Default) {
+        let mut g = f.clone();
+        g.block = syn::parse_quote!({});
+        emptied = g;
+        &emptied
+    } else {
+        f
+    };
     let saved_exit = crate::translate::TRY_EXIT.with(|t| t.replace(None));
     let saved_return = crate::translate::RETURN_EXIT.with(|t| t.replace(None));
     let saved_pending = crate::translate::PENDING.with(|p| std::mem::take(&mut *p.borrow_mut()));
