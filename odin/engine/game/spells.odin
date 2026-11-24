@@ -21,7 +21,7 @@ has_keyword :: proc(o: ^types.GameObject, $T: typeid) -> bool {
 // later.
 card_supported :: proc(face: ^types.CardFace) -> bool {
 	for r in face.replacements do if !replacement_supported(r) do return false
-	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) do return false
+	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !cost_modifier_supported(st) do return false
 	for t in face.triggers do if !trigger_supported(t) do return false
 	if face.additional_cost != nil || face.modal != nil || len(face.casting_options) > 0 do return false
 	// A spell needs a mana cost it can pay (CR 118.6, 107.4e-f); lands aren't cast.
@@ -361,17 +361,20 @@ castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c
 	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander)) do return false
 	if !object_supported(o, card_db) || !can_cast_now(s, p, o) do return false
 	for f in spell_target_slots(o) do if len(legal_targets(s, f, p, o.id)) == 0 do return false
-	_, payable := plan_payment(s, p, spell_cost(s, o))
+	_, payable := plan_payment(s, p, spell_cost(s, o, p))
 	return payable
 }
 
 // The total cost to cast it: its mana cost, plus {2} for each earlier cast of a commander from the command zone
 // (CR 903.8, the commander tax).
-spell_cost :: proc(s: ^types.GameState, o: ^types.GameObject) -> types.ManaCost {
-	if o.zone != .Command do return o.mana_cost
+// CR 601.2f: the total cost: the mana cost, plus the commander tax (CR 903.8), plus increases, minus reductions,
+// never below {0}. Reductions here are of generic mana only.
+spell_cost :: proc(s: ^types.GameState, o: ^types.GameObject, p: types.PlayerId) -> types.ManaCost {
 	c, is_cost := o.mana_cost.(types.ManaCost_Cost)
 	if !is_cost do return o.mana_cost
-	c.generic += 2 * s.commander_cast_count[o.id]
+	generic := int(c.generic) + cost_change(s, p, o)
+	if o.zone == .Command do generic += 2 * int(s.commander_cast_count[o.id])
+	c.generic = u32(max(generic, 0))
 	return c
 }
 
@@ -485,7 +488,7 @@ choose_target :: proc(g: ^Game, p: types.PlayerId, t: types.TargetRef) -> bool {
 finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []types.TargetRef) {
 	s := &g.state
 	o := object(s, id)
-	taps, _ := plan_payment(s, p, spell_cost(s, o))
+	taps, _ := plan_payment(s, p, spell_cost(s, o, p))
 	for t in taps do t.tapped = true // CR 605.3: the mana abilities are activated while paying
 	if o.zone == .Command {
 		s.commander_cast_count[o.id] += 1
@@ -697,7 +700,7 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 			append(&out, name("trigger:", t.mode))
 		}
 	}
-	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) do append(&out, static_gap(st))
+	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !cost_modifier_supported(st) do append(&out, static_gap(st))
 	for r in face.replacements do if !replacement_supported(r) do append(&out, name("replacement:", r.event))
 	if face.additional_cost != nil do append(&out, "additional cost")
 	if face.modal != nil do append(&out, "modal")

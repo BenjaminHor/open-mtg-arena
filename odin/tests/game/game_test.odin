@@ -708,3 +708,20 @@ target_opponent_written_as_a_player_filter :: proc(t: ^testing.T) {
 	legal := game.legal_targets(&g.state, types.TargetFilter_Typed{f}, 0)
 	testing.expect(t, len(legal) == 1 && legal[0] == types.TargetRef(types.TargetRef_Player{1}), "only the opponent")
 }
+
+@(test)
+spells_you_cast_cost_less :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 601.2f: the total cost is the mana cost minus cost reductions. Archmage of Runes: "Instant and sorcery
+	// spells you cast cost {1} less to cast" (its controller's spells only).
+	g := new_game()
+	for _ in 0 ..< 2 do add(t, g, "Island", 0, .Battlefield)
+	divination := add(t, g, "Divination", 0, .Hand) // {2}{U}
+	testing.expect(t, !game.castable(&g.state, 0, divination, g.card_db), "three mana needed, two lands")
+	add(t, g, "Archmage of Runes", 1, .Battlefield)
+	testing.expect(t, !game.castable(&g.state, 0, divination, g.card_db), "the opponent's Archmage doesn't help")
+	add(t, g, "Archmage of Runes", 0, .Battlefield)
+	testing.expect(t, game.castable(&g.state, 0, divination, g.card_db), "{1}{U} with the Archmage")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = divination.id}))
+	testing.expect(t, divination.zone == .Stack, "cast for two")
+}
