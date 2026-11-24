@@ -1233,15 +1233,21 @@ impl Body<'_, '_, '_> {
             }
             e => e,
         };
-        let sh = self.shape_of(coll).ok_or("for over an untyped collection")?;
-        let elem = match &sh {
-            Shape::Vec(i) => (**i).clone(),
+        let sh = self.shape_of(coll).ok_or_else(|| format!("for over an untyped collection: {}", source_kind(coll)))?;
+        let (elem, src) = match &sh {
+            Shape::Vec(i) => ((**i).clone(), LoopSource::Vec),
+            Shape::PVec(i) if mode == Mode::Value => ((**i).clone(), LoopSource::PVec),
+            Shape::Ptr(p, _) if mode == Mode::Value && matches!(**p, Shape::Vec(_)) => {
+                let Shape::Vec(i) = &**p else { unreachable!() };
+                ((**i).clone(), LoopSource::VecPtr)
+            }
             other => return Err(format!("for over a non-Vec collection: {}", shape_kind(other))),
         };
         if mode == Mode::Mut && !is_place(coll) {
             return Err("mutable iteration over something that isn't a place".into());
         }
         let c = self.tx.expr(coll, &sh)?;
+        let c = self.hoist_pvec(c, src);
         let item = self.fresh("it");
         let idx = self.fresh("ix");
         let label = self.open_loop(fl.label.as_ref());
@@ -1250,8 +1256,11 @@ impl Body<'_, '_, '_> {
             bv.borrow_mut().insert(idx.clone());
         });
         let amp = if mode == Mode::Mut { "&" } else { "" };
-        self.line(&format!("{label}: for {amp}{item}, {idx} in {c} {{"));
+        self.loop_head(&label, &format!("{amp}{item}"), Some(&idx), &c, &elem, src);
         self.indent += 1;
+        if src == LoopSource::PVec {
+            self.line(&format!("{item} := pvec_get({c}, {idx})"));
+        }
         let (elem_pat, idx_pat): (&Pat, Option<&Pat>) = if enumerate {
             let Pat::Tuple(t) = &*fl.pat else { return Err("enumerate without a tuple pattern".into()) };
             if t.elems.len() != 2 {
@@ -1318,6 +1327,36 @@ impl Body<'_, '_, '_> {
         }
     }
 
+    /// An im::Vector loop source, read once into a local (a PVec value shares its chunks, so the copy is cheap).
+    fn hoist_pvec(&mut self, c: String, src: LoopSource) -> String {
+        if src != LoopSource::PVec {
+            return c;
+        }
+        let v = self.fresh("pv");
+        self.line(&format!("{v} := {c}"));
+        v
+    }
+
+    /// A `for` loop's head over a collection, the item named `item` (and the index `idx`). An im::Vector is walked by
+    /// index (the caller binds the item with `pvec_get` from the local `hoist_pvec` made); a Vec behind a nil-able
+    /// pointer reads as empty when nil.
+    fn loop_head(&mut self, label: &str, item: &str, idx: Option<&str>, c: &str, elem: &Shape, src: LoopSource) {
+        let ix = idx.map(|i| format!(", {i}")).unwrap_or_default();
+        match src {
+            LoopSource::Vec => self.line(&format!("{label}: for {item}{ix} in {c} {{")),
+            LoopSource::PVec => {
+                let i = idx.unwrap_or("_");
+                self.line(&format!("{label}: for {i} in 0 ..< {c}.len {{"));
+            }
+            LoopSource::VecPtr => {
+                let v = self.fresh("pv");
+                self.line(&format!("{v}: [dynamic]{}", self.tx.e.odin(elem)));
+                self.line(&format!("if p_ := {c}; p_ != nil do {v} = p_^"));
+                self.line(&format!("{label}: for {item}{ix} in {v} {{"));
+            }
+        }
+    }
+
     /// A new loop: its Odin label, pushed on the loop stack (the caller pops it).
     fn open_loop(&mut self, rust: Option<&syn::Label>) -> String {
         let label = self.fresh("loop");
@@ -1371,17 +1410,27 @@ impl Body<'_, '_, '_> {
             Expr::Reference(r) => &*r.expr,
             e => e,
         };
-        let sh = self.shape_of(coll).ok_or("for over an untyped collection")?;
-        let elem = match &sh {
-            Shape::Vec(i) => (**i).clone(),
+        let sh = self.shape_of(coll).ok_or_else(|| format!("for over an untyped collection: {}", source_kind(coll)))?;
+        let (elem, src) = match &sh {
+            Shape::Vec(i) => ((**i).clone(), LoopSource::Vec),
+            Shape::PVec(i) => ((**i).clone(), LoopSource::PVec),
+            Shape::Ptr(p, _) if matches!(**p, Shape::Vec(_)) => {
+                let Shape::Vec(i) = &**p else { unreachable!() };
+                ((**i).clone(), LoopSource::VecPtr)
+            }
             other => return Err(format!("for over a non-Vec collection: {}", shape_kind(other))),
         };
         let c = self.tx.expr(coll, &sh)?;
+        let c = self.hoist_pvec(c, src);
         let label = self.open_loop(fl.label.as_ref());
         crate::closures::BY_VALUE.with(|bv| bv.borrow_mut().insert(ident.clone()));
-        self.line(&format!("{label}: for {ident} in {c} {{"));
-        let saved = self.tx.vars.insert(name.clone(), (ident, elem));
+        let idx = self.fresh("ix");
+        self.loop_head(&label, &ident, Some(&idx), &c, &elem, src);
+        let saved = self.tx.vars.insert(name.clone(), (ident.clone(), elem));
         self.indent += 1;
+        if src == LoopSource::PVec {
+            self.line(&format!("{ident} := pvec_get({c}, {idx})"));
+        }
         self.block(&fl.body, false)?;
         self.indent -= 1;
         self.line("}");
@@ -1777,6 +1826,31 @@ enum Ctor {
 }
 
 /// An empty collection constructor, by the kind of shape it makes.
+/// Where a `for` loop's items come from.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum LoopSource {
+    Vec,
+    PVec,
+    VecPtr,
+}
+
+/// A short name for an expression's kind in refusal messages: the method or function it calls, or its form.
+fn source_kind(e: &Expr) -> String {
+    match e {
+        Expr::MethodCall(m) => format!("method .{}()", m.method),
+        Expr::Call(c) => match &*c.func {
+            Expr::Path(p) => format!("call {}", p.path.segments.last().map(|s| s.ident.to_string()).unwrap_or_default()),
+            _ => "call".into(),
+        },
+        Expr::Reference(r) => source_kind(&r.expr),
+        Expr::Paren(p) => source_kind(&p.expr),
+        Expr::Field(_) => "field".into(),
+        Expr::Path(_) => "variable".into(),
+        Expr::Range(_) => "range".into(),
+        _ => "expression".into(),
+    }
+}
+
 /// The placeholder type of a pending local's declaration, replaced when the function is finished.
 fn pending_marker(ident: &str) -> String {
     format!("«pending:{ident}»")
