@@ -61,6 +61,12 @@ reply_ok_raw :: proc(b: ^strings.Builder, value_json: string) {
 	strings.write_byte(b, '}')
 }
 
+reply_ok_value :: proc(b: ^strings.Builder, value: json.Value) {
+	strings.write_string(b, `{"ok":`)
+	json.write_value(b, value)
+	strings.write_byte(b, '}')
+}
+
 reply_err :: proc(b: ^strings.Builder, message: string) {
 	strings.write_string(b, `{"err":`)
 	json.write_string(b, message)
@@ -78,9 +84,51 @@ dispatch :: proc(b: ^strings.Builder, fn: string, args: []json.Value) {
 		reply_ok_raw(b, "false")
 	case "load_card_database":
 		load_card_database(b, args)
+	case "load_combo_table":
+		load_combo_table(b, args)
+	case "getFormatRegistry":
+		reply_ok_value(b, static_table("format_registry"))
+	case "llmProviderCatalog":
+		reply_ok_value(b, static_table("llm_provider_catalog"))
+	case "getBracketDifficultyTable":
+		reply_ok_value(b, static_table("bracket_difficulty_table"))
+	case "getChallengeDeckRegistry":
+		reply_ok_value(b, static_table("challenge_deck_registry"))
+	case "deckSupplyForFormat":
+		format_lookup(b, "deck_supply", arg(args, 0))
+	case "bestOfThreeCeilingForFormat":
+		format_lookup(b, "best_of_three_ceiling", arg(args, 0))
+	case "sideboardPolicyForFormat":
+		// The format config's own sideboard policy (CR 100.4).
+		reply_ok_value(b, json.get_or_null(arg(args, 0), "sideboard_policy"))
+	case "evaluate_deck_compatibility_js":
+		evaluate_deck_compatibility(b, arg(args, 0))
+	case "estimate_bracket_for_deck":
+		// No bracket estimate yet: the Rust engine also answers null when it has none.
+		reply_ok_raw(b, "null")
 	case:
 		reply_err(b, strings.concatenate({"not implemented in the Odin engine yet: ", fn}, context.temp_allocator))
 	}
+}
+
+// The nth argument, or null when the client left it out.
+arg :: proc(args: []json.Value, n: int) -> json.Value {
+	return args[n] if n < len(args) else {}
+}
+
+// load_combo_table(json_str): the Commander combo table, used only by the bracket estimate, which the Odin engine
+// doesn't do yet. Answers the entry count, as the Rust engine does.
+load_combo_table :: proc(b: ^strings.Builder, args: []json.Value) {
+	root, perr := json.parse(transmute([]byte)arg(args, 0).text)
+	if perr != nil {
+		reply_err(b, "Failed to parse combo table")
+		return
+	}
+	list, _ := json.get(root, "entries")
+	entries := list.items
+	count := strings.builder_make(context.temp_allocator)
+	strings.write_int(&count, len(entries))
+	reply_ok_raw(b, strings.to_string(count))
 }
 
 // load_card_database(json_str): the card data the client fetched, kept for the engine's lifetime.

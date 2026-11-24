@@ -95,7 +95,7 @@ function call(fn, args) {
     console.warn(\`[odin engine] \${fn}: \${reply.err}\`);
     throw new Error(reply.err);
   }
-  return reply.ok === null ? undefined : reply.ok;
+  return reply.ok;
 }
 
 // The state codec: an immutable JSON holder, as the Rust engine's handle is.

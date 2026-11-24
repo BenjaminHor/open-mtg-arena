@@ -2749,6 +2749,21 @@ Plan (keep current):
 
 Also in flight: the dev bundle (scripts/fetch-dev-bundle.sh; the Pages deploy publishes it).
 
+Progress:
+- Step 1: the capture hook compiles (`cargo check -p phase-engine --features test-support --lib`, 2026-11-24). Next:
+  a small filtered capture run first (bytes per test, one file per test at the thread setting used, files produced vs
+  tests run), then the full corpus, run on its own.
+- Step 2 (2026-11-24): `odin/engine-wasm/` serves the match setup page. Start Match enables in the app on the Odin
+  engine (`cd client && ENGINE=odin pnpm dev` after `scripts/build-odin-engine.sh dev`, ~5 s). Real: the card
+  database, the fixed tables (format registry, LLM catalog, bracket table, Horde decks, per-format deck supply and
+  best-of-three ceiling, embedded from `static.json`, which `snapshot-static.mjs` regenerates from the Rust build), the
+  sideboard policy, and the deck checks (`decks.odin`). `compare-rust.mjs` runs both engines in Node and compares:
+  the tables and lookups agree exactly; the deck checks agree on all 1,396 precon decks for the constructed formats
+  and Commander. Not yet: engine coverage in the deck check (omitted, not faked: it's step 3's number), the other
+  Commander variants, Brawl, Oathbreaker, Limited and the casual formats (the Odin engine answers "no opinion", null,
+  where Rust gives a verdict), the summary check's choice of first failure, unaccented name aliases, the bracket
+  estimate (null). Next: `initialize_game`.
+
 Rust baseline (measured 2026-11-24, this cloud container: 4 cores, 15 GB): `./scripts/build-wasm.sh wasm-dev` from
 cold compiled for 18 min 15 s, then wasm-bindgen was killed for lack of memory on the 260 MB debug-info module, so
 the dev engine build doesn't complete here without stripping `.debug_*` first. That is the loop the Odin engine
