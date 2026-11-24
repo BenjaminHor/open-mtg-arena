@@ -2551,6 +2551,26 @@ impl<'a, 'b> Tx<'a, 'b> {
                 ("next", Shape::Vec(_), 0) if deref.is_empty() && !matches!(&*mc.receiver, Expr::Path(_)) => format!("vec_first({recv}[:])"),
                 ("last", Shape::Vec(_), 0) if deref.is_empty() => format!("vec_last({recv}[:])"),
                 ("unwrap" | "expect", Shape::Option(_), _) => format!("{recv}.?"),
+                // A Result's value; its error panics, as Rust's does.
+                ("unwrap" | "expect", Shape::Result(..), _) if deref.is_empty() => {
+                    let n = self.next_temp();
+                    self.pre.push(format!("ur{n}_ := {recv}"));
+                    self.pre.push(format!("if _, bad{n}_ := ur{n}_.err.?; bad{n}_ do panic(\"called `{m}` on an `Err` value\")"));
+                    format!("ur{n}_.ok")
+                }
+                // An `Option<Box<T>>` (nil-able pointer): the closure runs on the value when there is one.
+                ("is_some_and" | "is_none_or", Shape::OptPtr(i, _), 1) if deref.is_empty() => {
+                    let i = (**i).clone();
+                    let c = Self::closure_of(args[0])?;
+                    let n = self.next_temp();
+                    let (t, v, r) = (format!("o{n}_"), format!("v{n}_"), format!("r{n}_"));
+                    let mut body = Vec::new();
+                    let cond = self.closure_in(&mut body, &c, &format!("{v}^"), &i, &Shape::Bool)?;
+                    self.pre.push(format!("{t} := {recv}"));
+                    self.pre.push(format!("{r} := {}", if m == "is_some_and" { "false" } else { "true" }));
+                    self.pre.push(format!("if {v} := {t}; {v} != nil {{\n{}\n{r} = {cond}\n}}", body.join("\n")));
+                    r
+                }
                 ("unwrap_or", Shape::Option(i), 1) => {
                     let d = self.expr(args[0], i)?;
                     format!("({recv}.? or_else {d})")
