@@ -9,6 +9,7 @@ mod census;
 mod emit;
 mod translate;
 mod vectors;
+mod trace;
 mod model;
 mod pattern;
 
@@ -153,6 +154,10 @@ fn real_main() {
             // In a scratch copy of the crates only: wraps engine functions to log their calls (vectors.rs).
             let only = args.get(3).map(|f| std::fs::read_to_string(f).expect("names file").lines().map(|l| l.trim().to_string()).filter(|l| !l.is_empty()).collect());
             vectors::patch(&PathBuf::from(&args[2]), only.as_ref());
+        }
+        Some("trace-patch") => {
+            // In a scratch copy of the crates only: logs each function's first use inside the reducer (trace.rs).
+            trace::patch(&PathBuf::from(&args[2]));
         }
         Some("census") => {
             let crates = PathBuf::from(&args[2]);

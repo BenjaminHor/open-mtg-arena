@@ -21,11 +21,16 @@
 // Build against a translation (odingen translate-report; odin/tools/replay.sh does it all):
 //   odin build odin/tools/replay -collection:eng=<dir holding types/, json/, rng/> -define:VECTOR=true
 // Usage: replay <game.jsonl> [-steps:N] [-from:N] [-timeout:SECONDS] [-trace] [-first-stub] [-top:N]
+//               [-translation:<translated.odin>] [-needs:<first-use log>]
 //   -steps:N      replay at most N steps; -from:N  start at step N
 //   -timeout:S    seconds a step may run (after a stub, zero values can loop); default 5
 //   -trace        one line per step
 //   -first-stub   end each step at its first stub (no "also reached" list)
 //   -top:N        rows of each ranking to print; default 40
+//   -translation:F  the translated.odin built against: stubs' reasons, and which functions it has at all
+//   -needs:F      the first-use log of the same game (odingen trace-patch; FIRST_USE_LOG): every function the
+//                 Rust reducer calls, with the step it is first called in. With -translation, the report lists
+//                 all the untranslated functions the game needs, by first use, not only the first stub per step.
 package replay
 
 import "core:c"
@@ -254,12 +259,15 @@ main :: proc() {
 	}
 	max_steps, from, timeout_s, top := max(int), 0, 5, 40
 	trace := false
+	translation_path, needs_path: string
 	for a in os.args[2:] {
 		switch {
 		case strings.has_prefix(a, "-steps:"):   max_steps, _ = strconv.parse_int(a[len("-steps:"):])
 		case strings.has_prefix(a, "-from:"):    from, _ = strconv.parse_int(a[len("-from:"):])
 		case strings.has_prefix(a, "-timeout:"): timeout_s, _ = strconv.parse_int(a[len("-timeout:"):])
 		case strings.has_prefix(a, "-top:"):     top, _ = strconv.parse_int(a[len("-top:"):])
+		case strings.has_prefix(a, "-translation:"): translation_path = a[len("-translation:"):]
+		case strings.has_prefix(a, "-needs:"):   needs_path = a[len("-needs:"):]
 		case a == "-trace":                      trace = true
 		case a == "-first-stub":                 stop_at_first_stub = true
 		case:
@@ -371,8 +379,88 @@ main :: proc() {
 	else do fmt.println("every replayed step passes")
 	if first_diff >= 0 do fmt.printf("first difference: %v\n", first_diff_line)
 
-	print_ranking("Stubs that block steps, by first use (each step's first stub):", blockers, top)
-	if !stop_at_first_stub do print_ranking("Also reached after a stub returned a zero value (indicative only):", reached, top)
+	tr := read_translation(translation_path) if translation_path != "" else Translation{}
+	print_ranking("Stubs that block steps, by first use (each step's first stub):", blockers, top, tr)
+	if !stop_at_first_stub do print_ranking("Also reached after a stub returned a zero value (indicative only):", reached, top, tr)
+	if needs_path != "" && translation_path != "" do report_needs(needs_path, tr, top)
+}
+
+Translation :: struct {
+	procs: map[string]bool,   // every procedure translated.odin defines
+	stubs: map[string]string, // the untranslated ones, with the construct that stopped them
+}
+
+// Reads translated.odin's procedure names and its stubs' reasons (`panic("not translated yet: <name> (<why>)")`).
+read_translation :: proc(path: string) -> Translation {
+	t: Translation
+	data, err := os.read_entire_file_from_path(path, context.allocator)
+	if err != nil {
+		fmt.eprintln("can't read", path)
+		os.exit(1)
+	}
+	rest := string(data)
+	PANIC :: "panic(\"not translated yet: "
+	for line in strings.split_lines_iterator(&rest) {
+		if i := strings.index(line, " :: proc"); i > 0 && line[0] != '\t' && line[0] != ' ' {
+			t.procs[line[:i]] = true
+		} else if j := strings.index(line, PANIC); j >= 0 {
+			body := line[j + len(PANIC):]
+			sp := strings.index(body, " (")
+			if sp < 0 do continue
+			why := body[sp + 2:]
+			why = why[:max(0, len(why) - len(")\")"))]
+			t.stubs[body[:sp]] = why
+		}
+	}
+	return t
+}
+
+// Every function the Rust reducer called in the recorded game (the first-use log), against the translation: the
+// untranslated ones in the order the game first needs them, and those the translation doesn't define at all.
+report_needs :: proc(path: string, tr: Translation, top: int) {
+	data, err := os.read_entire_file_from_path(path, context.allocator)
+	if err != nil {
+		fmt.eprintln("can't read", path)
+		os.exit(1)
+	}
+	Need :: struct { step: int, name, file: string }
+	needed, missing: [dynamic]Need
+	called, translated := 0, 0
+	seen := make(map[string]bool)
+	rest := string(data)
+	for line in strings.split_lines_iterator(&rest) {
+		parts := strings.split(line, "\t")
+		if len(parts) < 3 || parts[1] in seen do continue
+		seen[parts[1]] = true
+		called += 1
+		step, _ := strconv.parse_int(parts[0])
+		n := Need{step, parts[1], parts[2]}
+		if n.name in tr.stubs do append(&needed, n)
+		else if n.name in tr.procs do translated += 1
+		else do append(&missing, n)
+	}
+	// The log is in call order; a stable sort by step keeps that order within a step.
+	slice.stable_sort_by(needed[:], proc(a, b: Need) -> bool { return a.step < b.step })
+	slice.stable_sort_by(missing[:], proc(a, b: Need) -> bool { return a.step < b.step })
+	fmt.printf("\nWhat the game needs (the Rust reducer's calls, %v): %v functions called; %v translated, %v stubs, %v not in the translation\n",
+		path, called, translated, len(needed), len(missing))
+	fmt.println("\nUntranslated functions the game needs, by first use:")
+	fmt.println("  rank  first step  stub  (why it isn't translated)")
+	for n, i in needed {
+		if i >= top {
+			fmt.printf("  ... %v more\n", len(needed) - top)
+			break
+		}
+		fmt.printf("  %4d  %10d  %v  (%v)\n", i + 1, n.step, n.name, tr.stubs[n.name])
+	}
+	fmt.println("\nCalled but not in the translation (trait impls, macro-generated or colliding names), by first use:")
+	for n, i in missing {
+		if i >= top {
+			fmt.printf("  ... %v more\n", len(missing) - top)
+			break
+		}
+		fmt.printf("  %4d  %10d  %v  %v\n", i + 1, n.step, n.name, n.file)
+	}
 }
 
 describe :: proc(where_: string, r: Step_Result, a: = context.allocator) -> string {
@@ -392,7 +480,7 @@ action_label :: proc(v: json.Value) -> string {
 	return "?"
 }
 
-print_ranking :: proc(title: string, table: map[string]Stub_Rank, top: int) {
+print_ranking :: proc(title: string, table: map[string]Stub_Rank, top: int, tr: Translation) {
 	rows := make([dynamic]Stub_Rank, 0, len(table))
 	for _, r in table do append(&rows, r)
 	slice.sort_by(rows[:], proc(a, b: Stub_Rank) -> bool {
@@ -406,6 +494,7 @@ print_ranking :: proc(title: string, table: map[string]Stub_Rank, top: int) {
 			fmt.printf("  ... %v more\n", len(rows) - top)
 			break
 		}
-		fmt.printf("  %4d  %10d  %5d  %v\n", i + 1, r.first_step, r.steps, r.name)
+		if why, ok := tr.stubs[r.name]; ok do fmt.printf("  %4d  %10d  %5d  %v  (%v)\n", i + 1, r.first_step, r.steps, r.name, why)
+		else do fmt.printf("  %4d  %10d  %5d  %v\n", i + 1, r.first_step, r.steps, r.name)
 	}
 }
