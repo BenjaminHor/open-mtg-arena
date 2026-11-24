@@ -9,7 +9,7 @@ publish = false
 [workspace]
 
 [dependencies]
-syn = { version = "2", features = ["full", "extra-traits"] }
+syn = { version = "2", features = ["full", "extra-traits", "visit"] }
 proc-macro2 = "1"
 quote = "1"
 walkdir = "2"

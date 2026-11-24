@@ -3,6 +3,7 @@
 //! `odingen report <crates-dir>` lists what the generator sees: serialized types, name collisions, hand-written serde
 //! impls and the type names fields use that nothing defines.
 
+mod census;
 mod emit;
 mod translate;
 mod model;
@@ -132,6 +133,11 @@ fn main() {
         Some("report") => {
             let crates = PathBuf::from(&args[2]);
             report(&[crates.join("phase-ast/src"), crates.join("engine/src")]);
+        }
+        Some("census") => {
+            let crates = PathBuf::from(&args[2]);
+            let reg = model::scan(&[crates.join("phase-ast/src"), crates.join("engine/src")]);
+            census::census(&reg, args.get(3).map(String::as_str));
         }
         Some("gen") => {
             let crates = PathBuf::from(&args[2]);
