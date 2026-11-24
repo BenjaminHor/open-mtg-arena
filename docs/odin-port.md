@@ -212,8 +212,22 @@ Proposal: the Odin model mirrors that exactly, and the translator follows it mec
 `make_mut` in codec_runtime.odin), everything else is copied. A clone of a recorded state encodes to the same JSON
 as its original (`odin/tools/clone_bench`, all states checked). Speed, `-o:speed`, clones in an arena: 87–159 µs
 per clone against Rust's 19–20 µs, so 4–8x slower; lookups 3.4 ns (Rust 6 ns, Odin's map against im's trie). The
-bar is 2x, so the layout isn't settled: next, profile where the clone's time goes (by field type), then decide
-between sharing more (persistent collections for the big `im` fields) and copying cheaper.
+bar is 2x, so the layout isn't settled. Where the time goes (same day):
+- Half the gap was the benchmark's arena (`core:mem/virtual` takes a mutex per allocation and unmaps and zeroes on
+  reset). With a preallocated `core:mem` arena reset each clone: 32–66 µs per clone (1.6–3.3x Rust), copying
+  185–353 KB in 265–442 allocations.
+- By field: the rules journal (`im::Vector`s) is over half of it, then `zone_changes_this_turn`,
+  `spells_cast_this_game_by_player`, `sacrificed_permanents_this_turn`, `transient_continuous_effects`,
+  `attribution` (all `im::Vector`/`im::HashMap`, O(1) to clone in Rust), then `objects` (an Odin map rebuilt).
+- Odin's types are fat where Rust boxes: GameState 19.8 KB, GameObject 8.9 KB, ZoneChangeRecord 2.9 KB, a journal
+  entry 432 B (a tagged union is as large as its largest variant). Rust's sizes to compare next (clone-bench).
+- Object ids are dense: ids 1..N with a few gaps (next_object_id at most ~15 past the count in the recordings).
+Next design step, from these: carry the collection kind in odingen's shapes (`Vec`, `im::Vector`, `im::HashMap`,
+ordered maps; also the ordered-map follow-up), give the `im` collections their own Odin types behind a small API so
+translated code never touches `[dynamic]` directly (copy-on-write of the whole collection at first, a chunked
+persistent vector where appends dominate, chosen per collection from what the executed code does to them), and
+make ObjectMap an array indexed by id with D-182's order kept beside it. Then re-measure, including a parent
+written after many discarded clones (stale counts copy more).
 
 ## Review follow-ups (2026-11-24, not yet done)
 
