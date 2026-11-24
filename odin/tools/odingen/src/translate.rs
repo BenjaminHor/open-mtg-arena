@@ -709,6 +709,28 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
                 Ok(format!("({})", conds.join(" || ")))
             }
+            // An array literal: a Vec where one is wanted (`&[a, b]` passed as a slice, read the same way), else a
+            // fixed-size Odin array.
+            Expr::Array(a) => match want {
+                Shape::Vec(elem) => {
+                    if a.elems.is_empty() {
+                        return Ok("{}".into());
+                    }
+                    let mut parts = Vec::new();
+                    for it in &a.elems {
+                        parts.push(self.expr(it, elem)?);
+                    }
+                    Ok(format!("dynamic_from([]{}{{{}}})", self.e.odin(elem), parts.join(", ")))
+                }
+                Shape::Array(elem, _) => {
+                    let mut parts = Vec::new();
+                    for it in &a.elems {
+                        parts.push(self.expr(it, elem)?);
+                    }
+                    Ok(format!("{}{{{}}}", self.e.odin(want), parts.join(", ")))
+                }
+                _ => Err("array literal for a non-sequence".into()),
+            },
             Expr::Macro(m) if m.mac.path.is_ident("vec") => {
                 let Shape::Vec(elem) = want else { return Err("vec! for a non-vector".into()) };
                 let items: syn::punctuated::Punctuated<Expr, syn::Token![,]> =
@@ -1123,6 +1145,8 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
                 Some(Shape::Tuple(es))
             }
+            // An array literal reads like a Vec (its first element's shape).
+            Expr::Array(a) => Some(Shape::Vec(Box::new(self.shape_of(a.elems.first()?)?))),
             Expr::Macro(m) if self.calls => {
                 let name = m.mac.path.segments.last()?.ident.to_string();
                 match name.as_str() {
