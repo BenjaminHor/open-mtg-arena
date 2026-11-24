@@ -2620,6 +2620,11 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   requirement the engine-language question gets judged by: a change, client or engine, visible in the running app in
   seconds. Next step: measure today's loops (a client-only change; a small engine change) and what cheap build
   settings buy, before choosing between keeping Rust and porting.
+- Owner (2026-11-24): "yeah go ahead with 1 and 2 and 3". Plan, in order (the Odin port stays paused meanwhile):
+  1. Client loop instant: client work needs no Rust build (a prebuilt engine fetched, not built) and a compact engine
+     file (the dev build is 263 MB); measure edit-to-screen.
+  2. Engine loop measured: a one-line engine change to a reloaded app, today and with cheap build settings.
+  3. Report the numbers and a recommendation on the engine (keep Rust, or port) for the owner to decide.
 - Settled (2026-11-24, D-183): runtime card-text parses are precomputed into the card data; the Odin engine
   never parses. Settled (2026-11-24, D-184): fix the saved-game `"type"` clash, changing that wire form.
 
