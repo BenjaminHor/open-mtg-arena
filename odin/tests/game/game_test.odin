@@ -1376,3 +1376,29 @@ additional_cost_sacrifice :: proc(t: ^testing.T) {
 	game.apply(g, 1, types.GameAction_PassPriority{})
 	testing.expect(t, types.pvec_len(pl.hand) == hand - 1 + 2, "two cards drawn")
 }
+
+@(test)
+kicker_instead :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.33a, d: Burst Lightning: "Kicker {4}. Deals 2 damage to any target. If this spell was kicked, it
+	// deals 4 damage instead." Kicking is announced as it's cast (CR 601.2b) and adds to the cost.
+	run :: proc(t: ^testing.T, kick: bool) -> i32 {
+		g := new_game()
+		for _ in 0 ..< 5 do add(t, g, "Mountain", 0, .Battlefield)
+		burst := add(t, g, "Burst Lightning", 0, .Hand)
+		testing.expect(t, game.card_supported(&card(t, "Burst Lightning").face))
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = burst.id}))
+		_, asked := g.state.waiting_for.(types.WaitingFor_OptionalCostChoice)
+		testing.expect(t, asked, "asked whether to kick")
+		testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalCost{index = 0 if kick else 1}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+		tapped := 0
+		for id in game.ids_of(g.state.battlefield) do if game.object(&g.state, id).tapped do tapped += 1
+		testing.expect(t, tapped == (5 if kick else 1), "kicker {4} paid too")
+		game.apply(g, 0, types.GameAction_PassPriority{})
+		game.apply(g, 1, types.GameAction_PassPriority{})
+		return 20 - game.player(&g.state, 1).life
+	}
+	testing.expect(t, run(t, false) == 2, "not kicked: 2")
+	testing.expect(t, run(t, true) == 4, "kicked: 4 instead")
+}

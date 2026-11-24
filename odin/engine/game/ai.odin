@@ -34,6 +34,8 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		out := make([dynamic]types.ObjectId, context.temp_allocator)
 		append(&out, ..cards[:min(w.count, len(cards))])
 		return types.GameAction_SelectCards{cards = out}, true
+	case types.WaitingFor_OptionalCostChoice:
+		return types.GameAction_DecideOptionalCost{index = 0}, true // kicked, since it can afford it
 	case types.WaitingFor_ModeChoice:
 		modes, _ := ai_modes(g, p, object(s, g.pending.object))
 		return types.GameAction_SelectModes{indices = modes}, true

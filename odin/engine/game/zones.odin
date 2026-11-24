@@ -95,7 +95,10 @@ move_object :: proc(g: ^Game, id: types.ObjectId, to: types.Zone) {
 	reset_characteristics(o)
 	// CR 107.3a: X, announced as the spell is cast, stays with it on the stack; CR 107.3m: the enters abilities of
 	// the permanent it becomes use that X too. Anywhere else, X is gone.
-	if to != .Stack && !(from == .Stack && to == .Battlefield) do o.cost_x_paid = nil
+	if to != .Stack && !(from == .Stack && to == .Battlefield) {
+		o.cost_x_paid = nil
+		o.additional_cost_payment_count = 0 // CR 702.33d: "kicked" belongs to the spell and the permanent it became
+	}
 	// A permanent is controlled by whoever put it onto the battlefield; elsewhere its owner (CR 108.4, 110.2).
 	o.controller = o.owner
 	if to == .Battlefield {

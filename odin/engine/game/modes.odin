@@ -85,14 +85,7 @@ select_modes :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_ModeChoice
 	append(&g.pending.modes, ..indices)
 	slice.sort(g.pending.modes[:]) // CR 700.2d: carried out in printed order
 	g.pending.modes_chosen = true
-	o := object(&g.state, g.pending.object)
-	if has_x(o.mana_cost) {
-		pending := new(types.PendingCast)
-		pending.object_id = o.id
-		g.state.waiting_for = types.WaitingFor_ChooseXValue{player = p, min = 0, max = max_x(&g.state, p, o), pending_cast = pending}
-		return true
-	}
-	next_target_or_finish(g, p)
+	continue_casting(g, p) // then kicker, X, targets (CR 601.2b-c)
 	return true
 }
 

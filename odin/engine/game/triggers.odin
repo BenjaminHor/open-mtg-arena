@@ -356,6 +356,9 @@ trigger_condition_supported :: proc(c: types.TriggerCondition) -> bool {
 		}
 	case types.TriggerCondition_SourceInZone:
 		return true
+	case types.TriggerCondition_AdditionalCostPaid:
+		// "When this enters, if it was kicked" (CR 702.33d).
+		return x.source != .NonKicker && x.origin == nil && x.variant == nil && x.kicker_cost == nil && x.min_count <= 1
 	case types.TriggerCondition_And:
 		for y in x.conditions do if !trigger_condition_supported(y) do return false
 		return true
@@ -387,6 +390,8 @@ trigger_condition_holds :: proc(s: ^types.GameState, source: types.ObjectId, con
 		return n >= x.minimum
 	case types.TriggerCondition_SourceInZone:
 		return src != nil && src.zone == x.zone
+	case types.TriggerCondition_AdditionalCostPaid:
+		return kicked(src)
 	case types.TriggerCondition_And:
 		for y in x.conditions do if !trigger_condition_holds(s, source, controller, y) do return false
 		return true

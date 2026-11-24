@@ -433,6 +433,7 @@ castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c
 spell_cost :: proc(s: ^types.GameState, o: ^types.GameObject, p: types.PlayerId) -> types.ManaCost {
 	c, is_cost := o.mana_cost.(types.ManaCost_Cost)
 	if !is_cost do return o.mana_cost
+	add_kicker_cost(o, &c) // CR 702.33a: an additional cost
 	generic := int(c.generic) + cost_change(s, p, o)
 	if has_x(o.mana_cost) {
 		// CR 107.3a: each {X} is the announced value (0 before it's announced).
@@ -495,17 +496,25 @@ cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []t
 		ask_modes(g, p, o)
 		return true
 	}
-	if has_x(o.mana_cost) {
-		// CR 601.2b, 107.3a: the value of X is announced first.
+	continue_casting(g, p)
+	return true
+}
+
+// CR 601.2b: the announcements in order: kicker, then X; then targets (601.2c) and paying (601.2h).
+continue_casting :: proc(g: ^Game, p: types.PlayerId) {
+	s := &g.state
+	o := object(s, g.pending.object)
+	if ask_kicker(g, p, o) do return
+	if has_x(o.mana_cost) && o.cost_x_paid == nil {
+		// CR 107.3a: the value of X is announced.
 		pending := new(types.PendingCast)
-		pending.object_id = id
+		pending.object_id = o.id
 		pending.card_id = o.card_id
 		pending.cost = o.mana_cost
 		s.waiting_for = types.WaitingFor_ChooseXValue{player = p, min = 0, max = max_x(s, p, o), pending_cast = pending}
-		return true
+		return
 	}
 	next_target_or_finish(g, p)
-	return true
 }
 
 // CR 601.2c: asks for the next target, or (all chosen) goes on to pay: the spell is cast, or the ability's costs
@@ -570,6 +579,7 @@ Pending_Cast :: struct {
 	using choice:  Target_Choice, // the targets chosen so far
 	modes:         [dynamic]int, // a modal spell's chosen modes, in printed order (CR 700.2d)
 	modes_chosen:  bool,
+	kicker_decided: bool,
 	ability_index: int, // an activated ability being activated, or -1 for a spell being cast
 	cost_objects:  [dynamic]types.ObjectId, // the permanents to sacrifice or cards to discard for the cost, once chosen
 	cost_chosen:   bool,
@@ -1013,6 +1023,11 @@ pt_supported :: proc(v: types.PtValue) -> bool {
 ability_condition_supported :: proc(c: types.AbilityCondition) -> bool {
 	if _, is_outcome := outcome_wanted(c); is_outcome do return true // "if you do" / "if you don't"
 	#partial switch x in c {
+	case types.AbilityCondition_AdditionalCostPaid:
+		_, of_source := x.subject.(types.ObjectScope_Source)
+		return of_source && x.source != .NonKicker && x.origin == nil && x.variant == nil
+	case types.AbilityCondition_AdditionalCostPaidInstead:
+		return true
 	case types.AbilityCondition_QuantityCheck:
 		return quantity_supported(x.lhs) && quantity_supported(x.rhs)
 	case types.AbilityCondition_TargetMatchesFilter:
@@ -1043,6 +1058,8 @@ ability_condition_holds :: proc(s: ^types.GameState, c: types.AbilityCondition, 
 	case types.AbilityCondition_SourceMatchesFilter:
 		o := object(s, source)
 		return o != nil && object_matches(s, o, x.filter.(types.TargetFilter_Typed)._0, controller, source)
+	case types.AbilityCondition_AdditionalCostPaid, types.AbilityCondition_AdditionalCostPaidInstead:
+		return kicked(object(s, source)) // CR 702.33d
 	}
 	return false
 }
@@ -1122,6 +1139,7 @@ additional_cost :: proc(face: ^types.CardFace) -> (types.AbilityCost, bool) {
 
 additional_cost_supported :: proc(face: ^types.CardFace) -> bool {
 	if face.additional_cost == nil do return true
+	if _, kicker := kicker_cost(face); kicker do return true
 	cost, ok := additional_cost(face)
 	if !ok || !cost_supported(cost) do return false
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)

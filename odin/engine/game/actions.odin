@@ -46,6 +46,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_EffectZoneChoice:
 		return w.player, true
+	case types.WaitingFor_OptionalCostChoice:
+		return w.player, true
 	}
 	return 0, false
 }
@@ -123,7 +125,10 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			if !ok do return decline_target(g, p) // CR 115.6
 			return choose_target(g, p, t)
 		case types.GameAction_CancelCast:
-			if o := object(s, g.pending.object); o != nil do o.cost_x_paid = nil // CR 601.2: the cast is undone
+			if o := object(s, g.pending.object); o != nil {
+				o.cost_x_paid = nil // CR 601.2: the cast is undone
+				o.additional_cost_payment_count = 0
+			}
 			g.pending = {}
 			give_priority(g, p)
 			return true
@@ -158,6 +163,16 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_SurveilChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		return ok && answer_scry(g, p, w.cards[:], a.cards[:], true)
+	case types.WaitingFor_OptionalCostChoice:
+		#partial switch a in action {
+		case types.GameAction_DecideOptionalCost:
+			return decide_kicker(g, p, a.index)
+		case types.GameAction_CancelCast:
+			if o := object(s, g.pending.object); o != nil do o.additional_cost_payment_count = 0
+			g.pending = {}
+			give_priority(g, p)
+			return true
+		}
 	case types.WaitingFor_EffectZoneChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		return ok && answer_sacrifice(g, p, w, a.cards[:])
@@ -323,6 +338,8 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		for t in w.selection.current_legal_targets do append(&out, types.GameAction_ChooseTarget{target = t})
 		slot := w.selection.current_slot
 		if slot < len(w.target_slots) && w.target_slots[slot].optional do append(&out, types.GameAction_ChooseTarget{})
+	case types.WaitingFor_OptionalCostChoice:
+		append(&out, types.GameAction_DecideOptionalCost{index = 0}, types.GameAction_DecideOptionalCost{index = 1})
 	case types.WaitingFor_ModeChoice:
 		if w.modal.min_choices == 1 {
 			for i in 0 ..< w.modal.mode_count do if !slice.contains(w.unavailable_modes[:], i) {
