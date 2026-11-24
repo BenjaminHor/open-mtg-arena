@@ -4356,10 +4356,6 @@ ActiveLibrarySearches :: distinct map[PlayerId]ActiveLibrarySearch
 
 ActiveSearchDecisionControls :: distinct map[PlayerId]ActiveSearchDecisionControl
 
-ObjectMap :: struct {
-	inner: ^map[ObjectId]^GameObject,
-}
-
 ResolvedRulesJournal :: struct {
 	next_command_ordinal: u64,
 	next_settlement_node_ordinal: u64,

@@ -5,12 +5,104 @@ package types
 
 import "core:slice"
 
-// ObjectMap::get (types/object_map.rs): the object with this id, if any. Rust's is generic over `Borrow<Q>` only so
-// that `&ObjectId` and `ObjectId` both work; every caller passes an ObjectId.
+// ObjectMap's methods (types/object_map.rs), over the layout in object_map.odin. Rust's iterators return Vecs in
+// its order (D-182); `Option<&GameObject>` is a copy of the object (the translator's mapping), and
+// object_map_lookup is the pointer form.
+
+// ObjectMap::get: the object with this id, if any. Rust's is generic over `Borrow<Q>` only so that `&ObjectId` and
+// `ObjectId` both work; every caller passes an ObjectId.
 ObjectMap_get :: proc(self_: ObjectMap, id: ObjectId) -> Maybe(GameObject) {
-	if self_.inner == nil do return nil
-	if p, ok := self_.inner^[id]; ok && p != nil do return p^
+	if p := object_map_lookup(self_, id); p != nil do return p^
 	return nil
+}
+
+ObjectMap_new :: proc() -> ObjectMap {
+	return {}
+}
+
+ObjectMap_len :: proc(self_: ObjectMap) -> int {
+	return self_.count
+}
+
+ObjectMap_is_empty :: proc(self_: ObjectMap) -> bool {
+	return self_.count == 0
+}
+
+// Drops this map's hold on its trie and order (a clone keeps them).
+ObjectMap_clear :: proc(self_: ^ObjectMap) {
+	if self_.root != nil do shared_count(self_.root)^ -= 1
+	if self_.order != nil do shared_count(self_.order)^ -= 1
+	self_^ = {}
+}
+
+ObjectMap_contains_key :: proc(self_: ObjectMap, id: ObjectId) -> bool {
+	return object_map_lookup(self_, id) != nil
+}
+
+// ObjectMap::get_mut: `inner.get_mut(id).map(Arc::make_mut)`. This state's own copy of the object: the trie nodes
+// on its path are copied if another map shares them, then the object if another map shares it.
+ObjectMap_get_mut :: proc(self_: ^ObjectMap, id: ObjectId) -> Maybe(^GameObject) {
+	if p := object_map_get_mut(self_, id); p != nil do return p
+	return nil
+}
+
+ObjectMap_insert :: proc(self_: ^ObjectMap, id: ObjectId, object: GameObject) -> Maybe(GameObject) {
+	return object_map_insert(self_, id, object)
+}
+
+ObjectMap_remove :: proc(self_: ^ObjectMap, id: ObjectId) -> Maybe(GameObject) {
+	return object_map_remove(self_, id)
+}
+
+// `map[&id]` (Index): Rust panics on an absent id, so does this.
+ObjectMap_index :: proc(self_: ObjectMap, id: ObjectId) -> ^GameObject {
+	p := object_map_lookup(self_, id)
+	assert(p != nil, "ObjectMap: no object with this id")
+	return p
+}
+
+// `&mut map[&id]` (IndexMut): copy-on-write; never inserts.
+ObjectMap_index_mut :: proc(self_: ^ObjectMap, id: ObjectId) -> ^GameObject {
+	p := object_map_get_mut(self_, id)
+	assert(p != nil, "ObjectMap: no object with this id")
+	return p
+}
+
+// ObjectMap::ptr_eq: both maps share one root (so hold the same objects); false says nothing.
+ObjectMap_ptr_eq :: proc(self_: ObjectMap, other: ObjectMap) -> bool {
+	return self_.root == other.root && self_.height == other.height
+}
+
+// ObjectMap::shares_object_with: `id` is in both maps as the same allocation.
+ObjectMap_shares_object_with :: proc(self_: ObjectMap, other: ObjectMap, id: ObjectId) -> bool {
+	a, b := object_map_lookup(self_, id), object_map_lookup(other, id)
+	return a != nil && a == b
+}
+
+// ObjectMap::unshared_ids: the ids present in one map only or as different allocations, ascending (a BTreeSet).
+// Rust compares entry by entry; subtrees both tries share are skipped here, which gives the same set.
+ObjectMap_unshared_ids :: proc(self_: ObjectMap, other: ObjectMap) -> [dynamic]ObjectId {
+	out := make([dynamic]ObjectId)
+	if ObjectMap_ptr_eq(self_, other) do return out
+	if self_.order != nil do for id in self_.order^ do if !ObjectMap_shares_object_with(self_, other, id) do append(&out, id)
+	if other.order != nil {
+		for id in other.order^ do if object_map_lookup(self_, id) == nil do append(&out, id)
+	}
+	slice.sort(out[:])
+	return out
+}
+
+// ObjectMap::restricted_to: the entries of `ids` this map holds, sharing their objects.
+ObjectMap_restricted_to :: proc(self_: ObjectMap, ids: [dynamic]ObjectId) -> ObjectMap {
+	out: ObjectMap
+	for id in ids {
+		if p := object_map_lookup(self_, id); p != nil {
+			shared_retain(p)
+			object_map_build_insert(&out, id, p)
+		}
+	}
+	object_map_finish_order(&out)
+	return out
 }
 
 // D-182: the Rust ObjectMap (an `im::HashMap` with FxHash) iterates in an order that is a pure function of the ids:
@@ -29,15 +121,11 @@ object_map_order_key :: proc(id: ObjectId) -> u64 {
 	return key
 }
 
-// The ids of an ObjectMap in Rust's iteration order.
+// The ids of an ObjectMap in Rust's iteration order (a copy: callers may change the map while walking it).
 object_map_ordered_ids :: proc(self_: ObjectMap) -> [dynamic]ObjectId {
-	ids := make([dynamic]ObjectId)
-	if self_.inner == nil do return ids
-	for id in self_.inner^ do append(&ids, id)
-	slice.sort_by(ids[:], proc(a, b: ObjectId) -> bool {
-		ka, kb := object_map_order_key(a), object_map_order_key(b)
-		return ka < kb || (ka == kb && a < b)
-	})
+	if self_.order == nil do return make([dynamic]ObjectId)
+	ids := make([dynamic]ObjectId, len(self_.order))
+	copy(ids[:], self_.order^[:])
 	return ids
 }
 
@@ -47,34 +135,15 @@ ObjectMap_keys :: proc(self_: ObjectMap) -> [dynamic]ObjectId {
 }
 
 ObjectMap_values :: proc(self_: ObjectMap) -> [dynamic]GameObject {
-	out := make([dynamic]GameObject)
-	for id in object_map_ordered_ids(self_) do append(&out, self_.inner^[id]^)
+	out := make([dynamic]GameObject, 0, self_.count)
+	if self_.order != nil do for id in self_.order^ do append(&out, object_map_lookup(self_, id)^)
 	return out
 }
 
 ObjectMap_iter :: proc(self_: ObjectMap) -> [dynamic]Tuple2(ObjectId, GameObject) {
-	out := make([dynamic]Tuple2(ObjectId, GameObject))
-	for id in object_map_ordered_ids(self_) do append(&out, Tuple2(ObjectId, GameObject){id, self_.inner^[id]^})
-	return out
-}
-
-// ObjectMap::get_mut (types/object_map.rs): `inner.get_mut(id).map(Arc::make_mut)`. This state's own copy of the
-// object: the map is copied if another state shares it (each object retained, as cloning the im::HashMap shares its
-// Arcs), then the object is copied if another map shares it.
-ObjectMap_get_mut :: proc(self_: ^ObjectMap, id: ObjectId) -> Maybe(^GameObject) {
-	if self_.inner == nil do return nil
-	if _, ok := self_.inner^[id]; !ok do return nil
-	m := make_mut(&self_.inner, object_map_share)
-	slot := &m^[id]
-	return make_mut(slot, clone_GameObject)
-}
-
-// A copy of an ObjectMap's map sharing every object (cloning the im::HashMap of Arcs).
-object_map_share :: proc(x: map[ObjectId]^GameObject) -> map[ObjectId]^GameObject {
-	out := make(map[ObjectId]^GameObject, len(x))
-	for k, v in x {
-		shared_retain(v)
-		out[k] = v
+	out := make([dynamic]Tuple2(ObjectId, GameObject), 0, self_.count)
+	if self_.order != nil {
+		for id in self_.order^ do append(&out, Tuple2(ObjectId, GameObject){id, object_map_lookup(self_, id)^})
 	}
 	return out
 }

@@ -3677,7 +3677,6 @@ COVERAGE_KEYS := []string{
 	"ObjectId",
 	"ObjectIdentityBinding",
 	"ObjectIncarnationRef",
-	"ObjectMap",
 	"ObjectPlayerAssignment",
 	"ObjectProperty",
 	"ObjectProperty::ManaSymbolCount",
@@ -15124,15 +15123,6 @@ decode_ActiveSearchDecisionControls :: proc(v: json.Value, out: ^ActiveSearchDec
 
 encode_ActiveSearchDecisionControls :: proc(b: ^strings.Builder, x: ActiveSearchDecisionControls) {
 	enc_map_PlayerId_ActiveSearchDecisionControl(b, cast(map[PlayerId]ActiveSearchDecisionControl)x)
-}
-
-decode_ObjectMap :: proc(v: json.Value, out: ^ObjectMap) -> bool {
-	when COVERAGE do cov_hit("ObjectMap")
-	return dec_shared_map_ObjectId_ptr_GameObject(v, &out.inner)
-}
-
-encode_ObjectMap :: proc(b: ^strings.Builder, x: ObjectMap) {
-	enc_shared_map_ObjectId_ptr_GameObject(b, x.inner)
 }
 
 decode_ResolvedRulesJournal :: proc(v: json.Value, out: ^ResolvedRulesJournal) -> bool {
@@ -76397,58 +76387,6 @@ enc_map_PlayerId_ActiveSearchDecisionControl :: proc(b: ^strings.Builder, x: map
 		encode_ActiveSearchDecisionControl(b, val)
 	}
 	strings.write_byte(b, '}')
-}
-
-dec_shared_GameObject :: proc(v: json.Value, out: ^^GameObject) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	p := shared_new(GameObject)
-	if !decode_GameObject(v, p) do return false
-	out^ = p
-	return true
-}
-
-dec_map_ObjectId_ptr_GameObject :: proc(v: json.Value, out: ^map[ObjectId]^GameObject) -> bool {
-	if v.kind != .Object do return fail("expected an object (map)")
-	out^ = make(map[ObjectId]^GameObject, len(v.members))
-	for m in v.members {
-		key: ObjectId
-		val: ^GameObject
-		ok_k := decode_ObjectId(json.Value{kind = .Number, text = m.key}, &key)
-		if !ok_k || !dec_shared_GameObject(m.value, &val) do return false
-		out[key] = val
-	}
-	return true
-}
-
-dec_shared_map_ObjectId_ptr_GameObject :: proc(v: json.Value, out: ^^map[ObjectId]^GameObject) -> bool {
-	if v.kind == .Null { out^ = nil; return true }
-	p := shared_new(map[ObjectId]^GameObject)
-	if !dec_map_ObjectId_ptr_GameObject(v, p) do return false
-	out^ = p
-	return true
-}
-
-enc_shared_GameObject :: proc(b: ^strings.Builder, x: ^GameObject) {
-	if x == nil do strings.write_string(b, "null")
-	else do encode_GameObject(b, x^)
-}
-
-enc_map_ObjectId_ptr_GameObject :: proc(b: ^strings.Builder, x: map[ObjectId]^GameObject) {
-	strings.write_byte(b, '{')
-	first := true
-	for k, val in x {
-		if !first do strings.write_byte(b, ',')
-		first = false
-		strings.write_byte(b, '"'); encode_ObjectId(b, k); strings.write_byte(b, '"')
-		strings.write_byte(b, ':')
-		enc_shared_GameObject(b, val)
-	}
-	strings.write_byte(b, '}')
-}
-
-enc_shared_map_ObjectId_ptr_GameObject :: proc(b: ^strings.Builder, x: ^map[ObjectId]^GameObject) {
-	if x == nil { zero: map[ObjectId]^GameObject; enc_map_ObjectId_ptr_GameObject(b, zero) }
-	else do enc_map_ObjectId_ptr_GameObject(b, x^)
 }
 
 dec_PVec_ResolvedCommandJournalEntry :: proc(v: json.Value, out: ^PVec(ResolvedCommandJournalEntry)) -> bool {

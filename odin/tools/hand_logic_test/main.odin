@@ -33,11 +33,15 @@ RUST_ORDER := [?]types.ObjectId{
 }
 
 main :: proc() {
-	m := make(map[types.ObjectId]^types.GameObject)
-	for id in RUST_ORDER do m[id] = new(types.GameObject)
-	om := types.ObjectMap{inner = &m}
+	// Inserted in RUST_ORDER's own order, then removed and re-inserted, so the order can't come from insertion.
+	om: types.ObjectMap
+	for id in RUST_ORDER do types.ObjectMap_insert(&om, id, types.GameObject{})
+	for id in ([]types.ObjectId{1, 2, 3, 100000}) {
+		types.ObjectMap_remove(&om, id)
+		types.ObjectMap_insert(&om, id, types.GameObject{})
+	}
 	got := types.ObjectMap_keys(om)
-	if len(got) != len(RUST_ORDER) {
+	if len(got) != len(RUST_ORDER) || types.ObjectMap_len(om) != len(RUST_ORDER) {
 		fmt.eprintln("FAIL: ObjectMap_keys length", len(got), "want", len(RUST_ORDER))
 		os.exit(1)
 	}
@@ -49,34 +53,61 @@ main :: proc() {
 	}
 	fmt.println("ok: ObjectMap iterates in the Rust order (", len(got), "ids )")
 	check_get_mut_copies_on_write()
+	check_insert_remove_on_clones()
 }
 
-// ObjectMap::get_mut is `Arc::make_mut` on the map and the object: a write through a clone's object leaves the
-// original state's object (and map) untouched, and a second write through the same clone copies nothing again.
+fail :: proc(msg: ..any) {
+	fmt.eprintln(..msg)
+	os.exit(1)
+}
+
+// ObjectMap::get_mut is `Arc::make_mut` on the trie path and the object: a write through a clone's object leaves the
+// original state's object (and trie) untouched, and a second write through the same clone copies nothing again.
 check_get_mut_copies_on_write :: proc() {
-	m := types.shared_from(make(map[types.ObjectId]^types.GameObject))
-	obj := types.shared_from(types.GameObject{})
-	m^[7] = obj
-	original := types.ObjectMap{inner = m}
+	original: types.ObjectMap
+	for id in 1 ..= types.ObjectId(200) do types.ObjectMap_insert(&original, id, types.GameObject{})
+	before_7 := types.object_map_lookup(original, 7)
 	copy := types.clone_ObjectMap(original)
+	if !types.ObjectMap_ptr_eq(original, copy) do fail("FAIL: a clone doesn't share the trie")
 	p, ok := types.ObjectMap_get_mut(&copy, 7).?
-	if !ok {
-		fmt.eprintln("FAIL: get_mut found nothing")
-		os.exit(1)
-	}
+	if !ok do fail("FAIL: get_mut found nothing")
 	p.tapped = true
-	if original.inner^[7].tapped || original.inner == copy.inner || original.inner^[7] == copy.inner^[7] {
-		fmt.eprintln("FAIL: get_mut on a clone wrote into the original")
-		os.exit(1)
+	if types.object_map_lookup(original, 7).tapped || types.object_map_lookup(original, 7) != before_7 || types.ObjectMap_ptr_eq(original, copy) {
+		fail("FAIL: get_mut on a clone wrote into the original")
 	}
+	// Only object 7 is unshared; its neighbours in the copied leaf are still the original's allocations.
+	if !types.ObjectMap_shares_object_with(original, copy, 8) || types.ObjectMap_shares_object_with(original, copy, 7) {
+		fail("FAIL: get_mut unshared more (or less) than the written object")
+	}
+	unshared := types.ObjectMap_unshared_ids(original, copy)
+	if len(unshared) != 1 || unshared[0] != 7 do fail("FAIL: unshared_ids", unshared)
 	q, _ := types.ObjectMap_get_mut(&copy, 7).?
-	if q != p || !copy.inner^[7].tapped {
-		fmt.eprintln("FAIL: a second get_mut copied again or lost the write")
-		os.exit(1)
-	}
-	if _, none := types.ObjectMap_get_mut(&copy, 99).?; none {
-		fmt.eprintln("FAIL: get_mut found a missing id")
-		os.exit(1)
-	}
+	if q != p || !types.object_map_lookup(copy, 7).tapped do fail("FAIL: a second get_mut copied again or lost the write")
+	if _, found := types.ObjectMap_get_mut(&copy, 999).?; found do fail("FAIL: get_mut found a missing id")
+	if _, found := types.ObjectMap_get(copy, 0).?; found do fail("FAIL: get found id 0")
+	// The original's own write, after the clone wrote: copies again (its nodes were shared), the copy keeps its own.
+	r, _ := types.ObjectMap_get_mut(&original, 7).?
+	if r == p || r.tapped do fail("FAIL: the original's write saw the clone's object")
 	fmt.println("ok: ObjectMap.get_mut copies on write")
+}
+
+// Inserting into or removing from a clone leaves the original's objects and order alone; ids beyond the root's
+// range raise the trie.
+check_insert_remove_on_clones :: proc() {
+	original: types.ObjectMap
+	for id in 1 ..= types.ObjectId(70) do types.ObjectMap_insert(&original, id, types.GameObject{})
+	copy := types.clone_ObjectMap(original)
+	big := types.ObjectId(1) << 40
+	types.ObjectMap_insert(&copy, big, types.GameObject{tapped = true})
+	removed, had := types.ObjectMap_remove(&copy, 3).?
+	_ = removed
+	if !had do fail("FAIL: remove found nothing")
+	if types.ObjectMap_len(original) != 70 || types.ObjectMap_len(copy) != 70 do fail("FAIL: lengths", types.ObjectMap_len(original), types.ObjectMap_len(copy))
+	if !types.ObjectMap_contains_key(original, 3) || types.ObjectMap_contains_key(copy, 3) do fail("FAIL: remove reached the original")
+	if types.ObjectMap_contains_key(original, big) || !types.object_map_lookup(copy, big).tapped do fail("FAIL: insert reached the original")
+	if len(types.ObjectMap_keys(original)) != 70 || len(types.ObjectMap_keys(copy)) != 70 do fail("FAIL: order lengths")
+	replaced, had_big := types.ObjectMap_insert(&copy, big, types.GameObject{}).?
+	if !had_big || !replaced.tapped do fail("FAIL: insert didn't return the replaced object")
+	for id in types.ObjectMap_keys(copy) do if types.object_map_lookup(copy, id) == nil do fail("FAIL: an ordered id has no object", id)
+	fmt.println("ok: ObjectMap insert and remove on a clone leave the original alone")
 }

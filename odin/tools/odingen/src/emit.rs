@@ -172,6 +172,10 @@ pub struct Emitter<'a> {
     pub reg: &'a Registry,
     /// Types whose codecs are hand-written in Odin.
     pub hand: BTreeSet<String>,
+    /// Types written wholly by hand in Odin (type, codecs and `clone_<T>`), such as ObjectMap (object_map.odin), whose
+    /// layout is the state's copy speed. The generator emits nothing for them and calls theirs by name; their
+    /// `hand_deps` are emitted for them.
+    pub hand_types: BTreeSet<String>,
     /// Types whose codec is generated from another type's serde attributes (a Rust "repr" struct the hand-written
     /// impl delegates to, with the same fields).
     pub codec_as: BTreeMap<String, String>,
@@ -229,6 +233,7 @@ impl<'a> Emitter<'a> {
         Emitter {
             reg,
             hand,
+            hand_types: BTreeSet::new(),
             codec_as: BTreeMap::new(),
             computed: BTreeSet::new(),
             ignore_into: BTreeSet::new(),
@@ -1048,6 +1053,12 @@ impl<'a> Emitter<'a> {
                 }
             };
             self.current = name.clone();
+            if self.hand_types.contains(&name) {
+                for d in self.hand_deps.get(&name).cloned().unwrap_or_default() {
+                    self.require(&d);
+                }
+                continue;
+            }
             self.emit_type(def);
             self.emit_clone(def);
             let base = inst.as_ref().map(|(b, _)| b.clone()).unwrap_or(name.clone());

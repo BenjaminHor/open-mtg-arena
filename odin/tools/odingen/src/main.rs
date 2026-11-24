@@ -200,11 +200,6 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
         w.name = "ManaPool".into();
         reg.types.insert("ManaPool".into(), vec![w]);
     }
-    // ObjectMap serializes exactly as its inner map (`impl Serialize`: `self.inner.serialize`).
-    if let Some(d) = reg.types.get_mut("ObjectMap") {
-        d[0].serde.transparent = true;
-        d[0].derives.extend(["Serialize".to_string(), "Deserialize".to_string()]);
-    }
     // Types whose serialized form isn't derived get hand-written Odin codecs.
     let hand: BTreeSet<String> = reg
         .types
@@ -226,7 +221,11 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
     // ZoneOwner: `into = "ZoneOwnerRepr"`, whose written variants are ZoneOwner's own (the extra ones are legacy,
     // read-only).
     hand.remove("ZoneOwner");
+    // ObjectMap is written by hand, type and all (object_map.odin): a persistent trie indexed by id with the Rust
+    // order beside it (D-182, D-186). It serializes as its map of GameObjects.
+    hand.insert("ObjectMap".into());
     let mut e = emit::Emitter::new(&reg, hand);
+    e.hand_types.insert("ObjectMap".into());
     e.codec_as.insert("AbilityDefinition".into(), "AbilityDefinitionRepr".into());
     // Reading goes through AbilityDefinitionDe (`impl Deserialize`), whose defaults differ from the Repr's.
     e.decode_as.insert("AbilityDefinition".into(), "AbilityDefinitionDe".into());
@@ -239,6 +238,7 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
     e.codec_as.insert("ResolvedRulesJournal".into(), "ResolvedRulesJournalWire".into());
     // What each hand-written codec (hand_codecs.odin) calls through generated codecs.
     for (t, deps) in [
+        ("ObjectMap", &["GameObject", "ObjectId"][..]),
         ("CostPaidObjectRecord", &["CostPaidObjectSnapshot", "ObjectId"][..]),
         ("PendingCoinFlip", &["ObjectId", "PlayerId", "ResolvedAbility", "ResolvedCoinBranches", "PendingCoinFlipKind", "TargetRef", "FlipBranchContext", "ResolvingTriggerContext"][..]),
         ("LiminalEntrant", &["GameObject"][..]),

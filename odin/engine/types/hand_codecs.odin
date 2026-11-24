@@ -889,9 +889,6 @@ encode_with_snow_compat :: proc(b: ^strings.Builder, x: Maybe(ManaSupertype)) {
 	encode_bool(b, ok && s == .Snow)
 }
 
-// types/object_map.rs serialize_sorted: GameState.objects written as its map in ascending ObjectId order.
-encode_with_sorted :: proc(b: ^strings.Builder, x: ObjectMap) { encode_ObjectMap(b, x) }
-
 // phase-ast types/counter.rs counter_map_serde: a map keyed by the counter type's string; reading adds up
 // repeated keys (two spellings of one counter type).
 decode_with_counter_map_serde :: proc(v: json.Value, out: ^[dynamic]Tuple2(CounterType, u32)) -> bool {

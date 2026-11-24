@@ -3884,17 +3884,6 @@ clone_ActiveSearchDecisionControls :: proc(x: ActiveSearchDecisionControls) -> A
 	return cast(ActiveSearchDecisionControls)cln_map_PlayerId_ActiveSearchDecisionControl(cast(map[PlayerId]ActiveSearchDecisionControl)x)
 }
 
-cln_shared_map_ObjectId_ptr_GameObject :: proc(x: ^map[ObjectId]^GameObject) -> ^map[ObjectId]^GameObject {
-	shared_retain(x)
-	return x
-}
-
-clone_ObjectMap :: proc(x: ObjectMap) -> ObjectMap {
-	out := x
-	out.inner = cln_shared_map_ObjectId_ptr_GameObject(x.inner)
-	return out
-}
-
 clone_ResolvedRulesJournal :: proc(x: ResolvedRulesJournal) -> ResolvedRulesJournal {
 	out := x
 	out.entries = pvec_clone(x.entries)
