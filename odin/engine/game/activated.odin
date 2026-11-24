@@ -152,7 +152,7 @@ can_activate :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: i
 			mana = x.cost
 		}
 	}
-	for f in target_slots(a) do if len(legal_targets(s, f, p, o.id)) == 0 do return false
+	if !slots_fillable(s, slot_list(a)[:], p, o.id) do return false
 	if c, has := object_cost(g, p, o, a); has && len(c.choices) < c.count do return false
 	if mana == nil do return true // no mana in the cost ("Sacrifice a creature: ...")
 	_, payable := plan_payment(s, p, mana, o.id if taps_self else 0)
@@ -167,11 +167,7 @@ activate_ability :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, in
 	if o == nil || !can_activate(g, p, o, index) do return false
 	a := activated_ability(o, index)
 	g.pending = Pending_Cast{object = source, ability_index = index}
-	if len(target_slots(a)) > 0 {
-		ask_target(g, p)
-		return true
-	}
-	pay_activation(g, p)
+	next_target_or_finish(g, p)
 	return true
 }
 
@@ -228,7 +224,7 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 	// The chosen permanents are sacrificed and cards discarded after the mana is paid (CR 601.2g lets mana
 	// abilities be activated first, so a land tapped for mana can still be sacrificed).
 	for id in g.pending.cost_objects do move_object(g, id, .Graveyard)
-	push_ability(g, source, p, a, targets, false)
+	push_ability(g, source, p, a, targets, false, g.pending.counts[:])
 	// Sacrificing it last: the ability on the stack is independent of its source (CR 113.7a).
 	for part in parts do if sac, ok := part.(types.AbilityCost_Sacrifice); ok && is_self(sac._0.target) do move_object(g, source, .Graveyard)
 	s.priority_passes = nil

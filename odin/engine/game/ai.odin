@@ -42,11 +42,19 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		for r in ranked[:min(w.count, len(ranked))] do append(&out, r.id)
 		return types.GameAction_SelectCards{cards = out}, true
 	case types.WaitingFor_TargetSelection:
+		slot := w.selection.current_slot
+		if slot < len(w.target_slots) && w.target_slots[slot].optional {
+			// "Up to two": another target only if it's a good one.
+			t, good := chosen_target(g, p, w.selection.current_legal_targets[:], pending_ability(g))
+			return types.GameAction_ChooseTarget{target = t if good else nil}, true
+		}
 		return types.GameAction_ChooseTarget{target = best_target(g, p, w.selection.current_legal_targets[:])}, true
 	case types.WaitingFor_TriggerTargetSelection:
 		a: ^types.AbilityDefinition
 		if g.trigger_targets.definition != nil do a = g.trigger_targets.definition.execute
 		t, good := chosen_target(g, p, w.selection.current_legal_targets[:], a)
+		slot := w.selection.current_slot
+		if !good && slot < len(w.target_slots) && w.target_slots[slot].optional do return types.GameAction_ChooseTarget{target = nil}, true
 		if !good do t = w.selection.current_legal_targets[0]
 		return types.GameAction_ChooseTarget{target = t}, true
 	case types.WaitingFor_OptionalEffectChoice:
@@ -147,8 +155,9 @@ worth_casting :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool
 			if !sorcery_timing(s, p) do return false
 		}
 	}
-	for f in target_slots(a) {
-		_, good := chosen_target(g, p, legal_targets(s, f, p)[:], a)
+	for slot in slot_list(a) {
+		if slot.optional do continue
+		_, good := chosen_target(g, p, legal_targets(s, slot.filter, p)[:], a)
 		if !good do return false
 	}
 	return true
@@ -322,8 +331,9 @@ ability_worth_using :: proc(g: ^Game, p: types.PlayerId, a: ^types.AbilityDefini
 			return false
 		}
 	}
-	for f in target_slots(a) {
-		_, good := chosen_target(g, p, legal_targets(s, f, p)[:], a)
+	for slot in slot_list(a) {
+		if slot.optional do continue
+		_, good := chosen_target(g, p, legal_targets(s, slot.filter, p)[:], a)
 		if !good do return false
 	}
 	return true

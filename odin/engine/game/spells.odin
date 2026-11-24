@@ -84,7 +84,7 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false) -> 
 	// (Declaring a group is harmless while nothing reads it; reading one isn't supported.)
 	if a.player_scope != nil || a.reads_chosen_group != nil || a.starting_with != nil do return false
 	if a.target_chooser != nil || a.optional_player != nil || a.optional_for != nil do return false
-	if a.multi_target != nil || a.distribute != nil || a.repeat_for != nil || a.unless_pay != nil do return false
+	if !multi_target_supported(a) || a.distribute != nil || a.repeat_for != nil || a.unless_pay != nil do return false
 	if a.else_ability != nil do return false
 	if !effect_supported(a.effect^, a.duration) do return false
 	if refers_to_parent_target(a.effect^) && !after_target do return false
@@ -267,16 +267,22 @@ is_self :: proc(f: types.TargetFilter) -> bool {
 	return ok
 }
 
-// The targets of a spell: an Aura spell's single target from its enchant ability (CR 303.4a), or one per
-// targeting instruction.
-spell_target_slots :: proc(o: ^types.GameObject) -> [dynamic]types.TargetFilter {
+// The targets of a spell: an Aura spell's single target from its enchant ability (CR 303.4a), or its
+// instructions' slots.
+spell_slot_list :: proc(o: ^types.GameObject) -> [dynamic]Target_Slot {
 	if is_aura(o) {
-		out := make([dynamic]types.TargetFilter, context.temp_allocator)
+		out := make([dynamic]Target_Slot, context.temp_allocator)
 		f, _ := enchant_filter(o)
-		append(&out, f)
+		append(&out, Target_Slot{filter = f})
 		return out
 	}
-	return target_slots(spell_ability(o))
+	return slot_list(spell_ability(o))
+}
+
+spell_target_slots :: proc(o: ^types.GameObject) -> [dynamic]types.TargetFilter {
+	out := make([dynamic]types.TargetFilter, context.temp_allocator)
+	for slot in spell_slot_list(o) do append(&out, slot.filter)
+	return out
 }
 
 // The targets of a spell, one per targeting effect in its chain, in order.
@@ -368,7 +374,7 @@ castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c
 	// From the hand, or a commander from the command zone (CR 903.8).
 	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander)) do return false
 	if !object_supported(o, card_db) || !can_cast_now(s, p, o) do return false
-	for f in spell_target_slots(o) do if len(legal_targets(s, f, p, o.id)) == 0 do return false
+	if !slots_fillable(s, spell_slot_list(o)[:], p, o.id) do return false
 	_, payable := plan_payment(s, p, spell_cost(s, o, p))
 	return payable
 }
@@ -420,15 +426,19 @@ cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []t
 	s := &g.state
 	o := object(s, id)
 	if !castable(s, p, o, g.card_db) do return false
-	slots := spell_target_slots(o)
-	chosen: [dynamic]types.TargetRef
-	for t, i in targets {
-		if i >= len(slots) || !target_still_legal(s, t, slots[i], p, id) do return false
-		append(&chosen, t)
+	slots := spell_slot_list(o)
+	g.pending = Pending_Cast{object = id, ability_index = -1}
+	// Targets named with the action fill the slots in order.
+	for t in targets {
+		settle_choice(s, slots[:], &g.pending.choice, p, id)
+		if !slice.contains(slot_legal(s, slots[:], &g.pending.choice, p, id)[:], t) {
+			g.pending = {}
+			return false
+		}
+		take_target(slots[:], &g.pending.choice, t)
 	}
 	if has_x(o.mana_cost) {
 		// CR 601.2b, 107.3a: the value of X is announced first.
-		g.pending = Pending_Cast{object = id, targets = chosen, ability_index = -1}
 		pending := new(types.PendingCast)
 		pending.object_id = id
 		pending.card_id = o.card_id
@@ -436,14 +446,26 @@ cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []t
 		s.waiting_for = types.WaitingFor_ChooseXValue{player = p, min = 0, max = max_x(s, p, o), pending_cast = pending}
 		return true
 	}
-	if len(chosen) < len(slots) {
-		// CR 601.2c: ask for the next target.
-		g.pending = Pending_Cast{object = id, targets = chosen, ability_index = -1}
-		ask_target(g, p)
-		return true
-	}
-	finish_cast(g, p, id, chosen[:])
+	next_target_or_finish(g, p)
 	return true
+}
+
+// CR 601.2c: asks for the next target, or (all chosen) goes on to pay: the spell is cast, or the ability's costs
+// are paid.
+next_target_or_finish :: proc(g: ^Game, p: types.PlayerId) {
+	s := &g.state
+	slots := pending_slot_list(g)
+	settle_choice(s, slots[:], &g.pending.choice, p, g.pending.object)
+	if g.pending.slot < len(slots) {
+		ask_target(g, p)
+		return
+	}
+	if g.pending.ability_index >= 0 {
+		pay_activation(g, p)
+		return
+	}
+	finish_cast(g, p, g.pending.object, g.pending.targets[:])
+	g.pending = {}
 }
 
 has_x :: proc(cost: types.ManaCost) -> bool {
@@ -469,23 +491,15 @@ max_x :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject) -> u
 // CR 107.3a: the player announces X, then chooses the targets and pays.
 choose_x :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_ChooseXValue, value: u32) -> bool {
 	if g.pending.object == 0 || value < w.min || value > w.max do return false
-	s := &g.state
-	o := object(s, g.pending.object)
-	o.cost_x_paid = value
-	if len(g.pending.targets) < len(spell_target_slots(o)) {
-		ask_target(g, p)
-		return true
-	}
-	finish_cast(g, p, g.pending.object, g.pending.targets[:])
-	g.pending = {}
+	object(&g.state, g.pending.object).cost_x_paid = value
+	next_target_or_finish(g, p)
 	return true
 }
 
 Pending_Cast :: struct {
 	object:        types.ObjectId,
-	targets:       [dynamic]types.TargetRef,
+	using choice:  Target_Choice, // the targets chosen so far
 	ability_index: int, // an activated ability being activated, or -1 for a spell being cast
-	target_counts: [dynamic]int, // how many targets each targeting instruction took ("up to two"), in order
 	cost_objects:  [dynamic]types.ObjectId, // the permanents to sacrifice or cards to discard for the cost, once chosen
 	cost_chosen:   bool,
 }
@@ -498,26 +512,25 @@ pending_ability :: proc(g: ^Game) -> ^types.AbilityDefinition {
 }
 
 // The target slots of what's being cast or activated.
-pending_slots :: proc(g: ^Game) -> [dynamic]types.TargetFilter {
+pending_slot_list :: proc(g: ^Game) -> [dynamic]Target_Slot {
 	o := object(&g.state, g.pending.object)
-	if g.pending.ability_index >= 0 do return target_slots(activated_ability(o, g.pending.ability_index))
-	return spell_target_slots(o)
+	if g.pending.ability_index >= 0 do return slot_list(activated_ability(o, g.pending.ability_index))
+	return spell_slot_list(o)
 }
 
 ask_target :: proc(g: ^Game, p: types.PlayerId) {
 	s := &g.state
 	o := object(s, g.pending.object)
-	slots := pending_slots(g)
-	slot := len(g.pending.targets)
-	legal := legal_targets(s, slots[slot], p, o.id)
+	slots := pending_slot_list(g)
+	slot := g.pending.slot
+	legal := slot_legal(s, slots[:], &g.pending.choice, p, o.id)
 	pending := new(types.PendingCast)
 	pending.object_id = o.id
 	pending.card_id = o.card_id
 	pending.cost = o.mana_cost
 	pending.origin_zone = .Hand if g.pending.ability_index < 0 else .Battlefield
 	if g.pending.ability_index >= 0 do pending.activation_ability_index = g.pending.ability_index
-	target_slot_list: [dynamic]types.TargetSelectionSlot
-	for f in slots do append(&target_slot_list, types.TargetSelectionSlot{legal_targets = legal_targets(s, f, p, o.id)})
+	target_slot_list := selection_slots(s, slots[:], p, o.id)
 	selected: [dynamic]Maybe(types.TargetRef)
 	for t in g.pending.targets do append(&selected, t)
 	s.waiting_for = types.WaitingFor_TargetSelection {
@@ -530,20 +543,19 @@ ask_target :: proc(g: ^Game, p: types.PlayerId) {
 
 choose_target :: proc(g: ^Game, p: types.PlayerId, t: types.TargetRef) -> bool {
 	s := &g.state
-	slots := pending_slots(g)
-	slot := len(g.pending.targets)
-	if !target_still_legal(s, t, slots[slot], p, g.pending.object) do return false
-	append(&g.pending.targets, t)
-	if len(g.pending.targets) < len(slots) {
-		ask_target(g, p)
-		return true
-	}
-	if g.pending.ability_index >= 0 {
-		pay_activation(g, p)
-		return true
-	}
-	finish_cast(g, p, g.pending.object, g.pending.targets[:])
-	g.pending = {}
+	slots := pending_slot_list(g)
+	if g.pending.slot >= len(slots) || !slice.contains(slot_legal(s, slots[:], &g.pending.choice, p, g.pending.object)[:], t) do return false
+	take_target(slots[:], &g.pending.choice, t)
+	next_target_or_finish(g, p)
+	return true
+}
+
+// CR 115.6: declining an optional target ("up to two"): that instruction takes no more.
+decline_target :: proc(g: ^Game, p: types.PlayerId) -> bool {
+	slots := pending_slot_list(g)
+	if g.pending.slot >= len(slots) || !slots[g.pending.slot].optional do return false
+	skip_group(slots[:], &g.pending.choice)
+	next_target_or_finish(g, p)
 	return true
 }
 
@@ -559,7 +571,7 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	}
 	move_object(g, id, .Stack)
 	o.controller = p
-	resolved := resolved_tree(s, spell_ability(o), targets, g.pending.target_counts[:], p, id)
+	resolved := resolved_tree(s, spell_ability(o), targets, g.pending.counts[:], p, id)
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = id, controller = p, kind = types.StackEntryKind_Spell{card_id = o.card_id, ability = resolved}}, copy_entry)
 	append(&g.events, Event{kind = .Spell_Cast, object = id, controller = p}) // CR 601.2i
 	s.priority_passes = nil
@@ -799,7 +811,7 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 	if c, has := a.condition.?; has && !ability_condition_supported(c) do append(out, "spell:condition")
 	if a.optional || a.optional_targeting do append(out, "spell:optional")
 	if a.modal != nil do append(out, "spell:modal")
-	if a.multi_target != nil || a.distribute != nil do append(out, "spell:multiple targets")
+	if !multi_target_supported(a) || a.distribute != nil do append(out, "spell:multiple targets")
 	if a.repeat_for != nil || a.unless_pay != nil || a.else_ability != nil do append(out, "spell:other")
 	if a.effect != nil && !effect_supported(a.effect^, a.duration) {
 		full := fmt.tprintf("%v", reflect.union_variant_typeid(a.effect^))

@@ -114,7 +114,8 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		#partial switch a in action {
 		case types.GameAction_ChooseTarget:
 			t, ok := a.target.?
-			return ok && choose_target(g, p, t)
+			if !ok do return decline_target(g, p) // CR 115.6
+			return choose_target(g, p, t)
 		case types.GameAction_CancelCast:
 			if o := object(s, g.pending.object); o != nil do o.cost_x_paid = nil // CR 601.2: the cast is undone
 			g.pending = {}
@@ -125,7 +126,8 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		a, ok := action.(types.GameAction_ChooseTarget)
 		if !ok do return false
 		t, has := a.target.?
-		return has && choose_trigger_target(g, p, t)
+		if !has do return decline_trigger_target(g, p) // CR 115.6
+		return choose_trigger_target(g, p, t)
 	case types.WaitingFor_OptionalEffectChoice:
 		a, ok := action.(types.GameAction_DecideOptionalEffect)
 		return ok && decide_optional(g, p, a.accept)
@@ -288,8 +290,12 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		}
 	case types.WaitingFor_TargetSelection:
 		for t in w.selection.current_legal_targets do append(&out, types.GameAction_ChooseTarget{target = t})
+		slot := w.selection.current_slot
+		if slot < len(w.target_slots) && w.target_slots[slot].optional do append(&out, types.GameAction_ChooseTarget{}) // CR 115.6
 	case types.WaitingFor_TriggerTargetSelection:
 		for t in w.selection.current_legal_targets do append(&out, types.GameAction_ChooseTarget{target = t})
+		slot := w.selection.current_slot
+		if slot < len(w.target_slots) && w.target_slots[slot].optional do append(&out, types.GameAction_ChooseTarget{})
 	case types.WaitingFor_OptionalEffectChoice:
 		append(&out, types.GameAction_DecideOptionalEffect{accept = true})
 		append(&out, types.GameAction_DecideOptionalEffect{accept = false})

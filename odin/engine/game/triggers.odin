@@ -4,6 +4,7 @@
 // without targets, optional ("may") or not.
 package game
 
+import "core:slice"
 import types "../types"
 
 Event_Kind :: enum {
@@ -367,28 +368,31 @@ place_triggers :: proc(g: ^Game) -> bool {
 	for len(g.pending_triggers) > 0 {
 		index := next_trigger(g)
 		pt := g.pending_triggers[index]
-		slots := target_slots(pt.definition.execute)
-		targets := make([dynamic]types.TargetRef)
-		if g.trigger_targets.source == pt.source && g.trigger_targets.definition == pt.definition {
-			append(&targets, ..g.trigger_targets.targets[:])
+		slots := slot_list(pt.definition.execute)
+		if g.trigger_targets.source != pt.source || g.trigger_targets.definition != pt.definition {
+			g.trigger_targets = Trigger_Target_Choice{source = pt.source, definition = pt.definition}
 		}
-		for len(targets) < len(slots) {
-			legal := legal_targets(s, slots[len(targets)], pt.controller, pt.source)
-			if len(legal) == 0 do break
-			if len(legal) == 1 {
-				append(&targets, legal[0])
+		c := &g.trigger_targets.choice
+		for {
+			settle_choice(s, slots[:], c, pt.controller, pt.source)
+			if c.slot >= len(slots) do break
+			legal := slot_legal(s, slots[:], c, pt.controller, pt.source)
+			if len(legal) == 0 do break // a required target with none legal
+			if len(legal) == 1 && !slots[c.slot].optional {
+				take_target(slots[:], c, legal[0])
 				continue
 			}
 			// A real choice: ask the controller.
-			g.trigger_targets = Trigger_Target_Choice{source = pt.source, definition = pt.definition, targets = targets}
-			ask_trigger_target(g, pt, slots[:], len(targets), legal)
+			ask_trigger_target(g, pt, slots[:], c.slot, legal)
 			return false
 		}
+		complete := c.slot >= len(slots)
+		targets, counts := c.targets, c.counts
 		g.trigger_targets = {}
 		ordered_remove(&g.pending_triggers, index)
 		// CR 603.3d: an ability that needs a target and has none legal is removed from the stack.
-		if len(targets) < len(slots) do continue
-		id := push_ability(g, pt.source, pt.controller, pt.definition.execute, targets[:], true)
+		if !complete do continue
+		id := push_ability(g, pt.source, pt.controller, pt.definition.execute, targets[:], true, counts[:])
 		if pt.definition.condition != nil do g.stack_conditions[id] = pt.definition
 	}
 	return true
@@ -406,23 +410,21 @@ next_trigger :: proc(g: ^Game) -> int {
 }
 
 Trigger_Target_Choice :: struct {
-	source:     types.ObjectId,
-	definition: ^types.TriggerDefinition,
-	targets:    [dynamic]types.TargetRef,
+	source:       types.ObjectId,
+	definition:   ^types.TriggerDefinition,
+	using choice: Target_Choice,
 }
 
 @(private = "file")
-ask_trigger_target :: proc(g: ^Game, pt: Pending_Trigger, slots: []types.TargetFilter, slot: int, legal: [dynamic]types.TargetRef) {
+ask_trigger_target :: proc(g: ^Game, pt: Pending_Trigger, slots: []Target_Slot, slot: int, legal: [dynamic]types.TargetRef) {
 	s := &g.state
-	slot_list: [dynamic]types.TargetSelectionSlot
-	for f in slots do append(&slot_list, types.TargetSelectionSlot{legal_targets = legal_targets(s, f, pt.controller)})
 	selected: [dynamic]Maybe(types.TargetRef)
 	for t in g.trigger_targets.targets do append(&selected, t)
 	s.priority_player = pt.controller
 	s.waiting_for = types.WaitingFor_TriggerTargetSelection {
 		player = pt.controller,
 		trigger_controller = pt.controller,
-		target_slots = slot_list,
+		target_slots = selection_slots(s, slots, pt.controller, pt.source),
 		selection = {current_slot = slot, selected_slots = selected, current_legal_targets = legal},
 		source_id = pt.source,
 		description = pt.definition.description,
@@ -433,11 +435,20 @@ ask_trigger_target :: proc(g: ^Game, pt: Pending_Trigger, slots: []types.TargetF
 choose_trigger_target :: proc(g: ^Game, p: types.PlayerId, t: types.TargetRef) -> bool {
 	s := &g.state
 	w := s.waiting_for.(types.WaitingFor_TriggerTargetSelection)
-	legal := false
-	for l in w.selection.current_legal_targets do if l == t do legal = true
-	if !legal do return false
-	append(&g.trigger_targets.targets, t)
+	if g.trigger_targets.definition == nil || !slice.contains(w.selection.current_legal_targets[:], t) do return false
+	take_target(slot_list(g.trigger_targets.definition.execute)[:], &g.trigger_targets.choice, t)
 	give_priority(g, s.active_player)
+	return true
+}
+
+// CR 115.6: declining an optional target of a triggered ability.
+decline_trigger_target :: proc(g: ^Game, p: types.PlayerId) -> bool {
+	if g.trigger_targets.definition == nil do return false
+	slots := slot_list(g.trigger_targets.definition.execute)
+	c := &g.trigger_targets.choice
+	if c.slot >= len(slots) || !slots[c.slot].optional do return false
+	skip_group(slots[:], c)
+	give_priority(g, g.state.active_player)
 	return true
 }
 

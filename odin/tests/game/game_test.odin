@@ -859,3 +859,54 @@ support_gate_holes :: proc(t: ^testing.T) {
 	// - Blaze: the X of the spell's own mana cost is announced (CR 601.2b).
 	testing.expect(t, game.card_supported(&card(t, "Blaze").face), "X in a spell's mana cost")
 }
+
+@(test)
+up_to_two_targets :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 601.2c, 115.6: "up to two target creatures": zero, one or two; CR 115.3: not the same one twice.
+	g := new_game()
+	add(t, g, "Mountain", 0, .Battlefield)
+	assault := add(t, g, "Coordinated Assault", 0, .Hand) // up to two: +1/+0 and first strike until end of turn
+	a := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	b := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	c := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = assault.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{a.id}}))
+	w, asked := g.state.waiting_for.(types.WaitingFor_TargetSelection)
+	testing.expect(t, asked && w.target_slots[1].optional, "the second target is optional")
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{a.id}}), "not the same creature twice")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{b.id}}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, a.power.? == 3 && b.power.? == 3 && c.power.? == 2, "both targets, not the third")
+	testing.expect(t, game.keyword_in(a, types.Keyword_FirstStrike{}) && game.keyword_in(b, types.Keyword_FirstStrike{}))
+
+	// Declining the second: only one.
+	g2 := new_game()
+	add(t, g2, "Mountain", 0, .Battlefield)
+	assault2 := add(t, g2, "Coordinated Assault", 0, .Hand)
+	d := add(t, g2, "Grizzly Bears", 0, .Battlefield)
+	e := add(t, g2, "Grizzly Bears", 0, .Battlefield)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = assault2.id}))
+	testing.expect(t, game.apply(g2, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{d.id}}))
+	testing.expect(t, game.apply(g2, 0, types.GameAction_ChooseTarget{}), "declined")
+	testing.expect(t, assault2.zone == .Stack, "cast with one target")
+	game.apply(g2, 0, types.GameAction_PassPriority{})
+	game.apply(g2, 1, types.GameAction_PassPriority{})
+	testing.expect(t, d.power.? == 3 && e.power.? == 2)
+}
+
+@(test)
+two_targets_must_be_different :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 115.3, 601.2c: "Exile two target nonartifact creatures" needs two different ones.
+	g := new_game()
+	add(t, g, "Swamp", 0, .Battlefield)
+	add(t, g, "Swamp", 0, .Battlefield)
+	add(t, g, "Swamp", 0, .Battlefield)
+	ashes := add(t, g, "Ashes to Ashes", 0, .Hand)
+	add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, !game.castable(&g.state, 0, ashes, g.card_db), "one creature isn't enough")
+	add(t, g, "Hill Giant", 1, .Battlefield)
+	testing.expect(t, game.castable(&g.state, 0, ashes, g.card_db), "two are")
+}
