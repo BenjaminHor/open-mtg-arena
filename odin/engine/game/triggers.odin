@@ -442,16 +442,11 @@ choose_trigger_target :: proc(g: ^Game, p: types.PlayerId, t: types.TargetRef) -
 }
 
 // Puts an ability on the stack: a new stack object (CR 113.7a) whose definition the game keeps to resolve it.
-push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, a: ^types.AbilityDefinition, targets: []types.TargetRef, triggered: bool) -> types.ObjectId {
+push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, a: ^types.AbilityDefinition, targets: []types.TargetRef, triggered: bool, counts: []int = nil) -> types.ObjectId {
 	s := &g.state
 	id := types.ObjectId(s.next_object_id)
 	s.next_object_id += 1
-	resolved := new(types.ResolvedAbility)
-	resolved.source_id = source
-	resolved.controller = controller
-	if a.effect != nil do resolved.effect = a.effect^
-	for t in targets do append(&resolved.targets, t)
-	record_target_incarnations(s, resolved)
+	resolved := resolved_tree(s, a, targets, counts, controller, source)
 	g.stack_abilities[id] = a
 	src := object(s, source)
 	kind: types.StackEntryKind
@@ -468,8 +463,6 @@ push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerI
 
 // Resolves an ability from the stack. CR 603.5: an optional ("may") ability asks its controller as it resolves.
 resolve_ability :: proc(g: ^Game, entry: types.StackEntry, resolved: ^types.ResolvedAbility) {
-	a := g.stack_abilities[entry.id]
-	if a == nil do return // a restored game: its abilities on the stack aren't known to this engine
 	// CR 603.4: the intervening "if" is checked again as the ability resolves; if false, it does nothing.
 	if t, has := g.stack_conditions[entry.id]; has {
 		delete_key(&g.stack_conditions, entry.id)
@@ -478,15 +471,16 @@ resolve_ability :: proc(g: ^Game, entry: types.StackEntry, resolved: ^types.Reso
 			return
 		}
 	}
-	if a.optional && !g.optional_accepted {
+	if resolved == nil do return
+	if resolved.optional && !g.optional_accepted {
 		g.optional_entry = entry
 		s := &g.state
 		s.priority_player = entry.controller
-		s.waiting_for = types.WaitingFor_OptionalEffectChoice{player = entry.controller, source_id = entry.source_id, description = a.description}
+		s.waiting_for = types.WaitingFor_OptionalEffectChoice{player = entry.controller, source_id = entry.source_id, description = resolved.description}
 		return
 	}
 	g.optional_accepted = false
-	start_resolution(g, a, entry.controller, entry.source_id, resolved, stack_id = entry.id)
+	start_resolution(g, resolved, entry.controller, entry.source_id, stack_id = entry.id)
 }
 
 // CR 603.5: the controller decides whether to carry out a "may" ability.

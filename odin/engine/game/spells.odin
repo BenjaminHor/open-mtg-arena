@@ -485,6 +485,7 @@ Pending_Cast :: struct {
 	object:        types.ObjectId,
 	targets:       [dynamic]types.TargetRef,
 	ability_index: int, // an activated ability being activated, or -1 for a spell being cast
+	target_counts: [dynamic]int, // how many targets each targeting instruction took ("up to two"), in order
 	cost_objects:  [dynamic]types.ObjectId, // the permanents to sacrifice or cards to discard for the cost, once chosen
 	cost_chosen:   bool,
 }
@@ -558,12 +559,7 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	}
 	move_object(g, id, .Stack)
 	o.controller = p
-	resolved := new(types.ResolvedAbility)
-	resolved.source_id = id
-	resolved.controller = p
-	if a := spell_ability(o); a != nil && a.effect != nil do resolved.effect = a.effect^
-	for t in targets do append(&resolved.targets, t)
-	record_target_incarnations(s, resolved)
+	resolved := resolved_tree(s, spell_ability(o), targets, g.pending.target_counts[:], p, id)
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = id, controller = p, kind = types.StackEntryKind_Spell{card_id = o.card_id, ability = resolved}}, copy_entry)
 	append(&g.events, Event{kind = .Spell_Cast, object = id, controller = p}) // CR 601.2i
 	s.priority_passes = nil
@@ -607,8 +603,7 @@ resolve_top_of_stack :: proc(g: ^Game) {
 		return
 	}
 	// CR 608.2n: an instant or sorcery spell goes to its owner's graveyard as the final step of resolving.
-	if a := spell_ability(o); a != nil do start_resolution(g, a, entry.controller, o.id, spell.ability, spell = o.id)
-	else do move_object(g, o.id, .Graveyard)
+	start_resolution(g, spell.ability, entry.controller, o.id, spell = o.id)
 }
 
 is_permanent_card :: proc(o: ^types.GameObject) -> bool {
@@ -617,13 +612,13 @@ is_permanent_card :: proc(o: ^types.GameObject) -> bool {
 
 // One effect of a resolving spell.
 // One instruction of a resolving spell or ability. True when it asked a player to choose (resolution pauses).
-do_effect :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) -> (asked: bool) {
+do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration), controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) -> (asked: bool) {
 	s := &g.state
-	if _, known := more_effect_supported(a.effect^, a.duration); known {
-		do_more_effect(g, a.effect^, controller, source, target)
+	if _, known := more_effect_supported(effect, duration); known {
+		do_more_effect(g, effect, controller, source, target)
 		return
 	}
-	#partial switch x in a.effect^ {
+	#partial switch x in effect {
 	case types.Effect_Attach:
 		// CR 702.6a, 701.3: the source (an Equipment) becomes attached to the target.
 		equipment := object(s, source)
@@ -888,7 +883,7 @@ target_player :: proc(target: Maybe(types.TargetRef)) -> (types.PlayerId, bool) 
 amount :: proc(g: ^Game, q: types.QuantityExpr, controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) -> int {
 	first: types.ObjectId
 	if id, ok := target_object(target); ok do first = id
-	else do for t in g.resolution.targets do if o, is_object := t.(types.TargetRef_Object); is_object {
+	else do for t in g.resolution.all_targets do if o, is_object := t.(types.TargetRef_Object); is_object {
 		first = o._0
 		break
 	}
@@ -923,7 +918,8 @@ ability_condition_supported :: proc(c: types.AbilityCondition) -> bool {
 		// "If that creature is attacking": the target chosen for an earlier slot, as it is now.
 		typed, ok := x.filter.(types.TargetFilter_Typed)
 		_, of_target := x.subject.(types.ObjectScope_Target)
-		return ok && of_target && !x.use_lki && typed_supported(typed._0)
+		slot, has_slot := x.subject_slot.?
+		return ok && of_target && !x.use_lki && typed_supported(typed._0) && (!has_slot || slot == 0)
 	case types.AbilityCondition_SourceMatchesFilter:
 		typed, ok := x.filter.(types.TargetFilter_Typed)
 		return ok && typed_supported(typed._0)
@@ -932,15 +928,14 @@ ability_condition_supported :: proc(c: types.AbilityCondition) -> bool {
 }
 
 // Checked as the instruction is carried out.
-ability_condition_holds :: proc(s: ^types.GameState, c: types.AbilityCondition, controller: types.PlayerId, source: types.ObjectId, targets: []types.TargetRef, legal: []bool) -> bool {
+ability_condition_holds :: proc(s: ^types.GameState, c: types.AbilityCondition, controller: types.PlayerId, source: types.ObjectId, subjects: []types.TargetRef) -> bool {
 	#partial switch x in c {
 	case types.AbilityCondition_QuantityCheck:
 		return compare(quantity_value(s, x.lhs, controller, source, 0), x.comparator, quantity_value(s, x.rhs, controller, source, 0))
 	case types.AbilityCondition_TargetMatchesFilter:
-		slot := x.subject_slot.? or_else 0
-		// CR 608.2b: nothing can be learned from an illegal target.
-		if slot >= len(targets) || !legal[slot] do return false
-		id, is_object := target_object(targets[slot])
+		// The (legal) target the instruction acts on; CR 608.2b: nothing is learned from an illegal one.
+		if len(subjects) == 0 do return false
+		id, is_object := target_object(subjects[0])
 		if !is_object do return false
 		o := object(s, id)
 		return o != nil && object_matches(s, o, x.filter.(types.TargetFilter_Typed)._0, controller, source)

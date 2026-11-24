@@ -2,72 +2,125 @@
 // player to choose (scry, surveil); the resolution pauses there and continues once they answer.
 package game
 
+import "core:slice"
 import rng "../rng"
 import types "../types"
 
 Resolution :: struct {
-	active:     bool,
-	next:       ^types.AbilityDefinition, // the next instruction to carry out
-	controller: types.PlayerId,
-	source:     types.ObjectId,
-	targets:    []types.TargetRef,
-	legal:      []bool, // which targets are still legal (CR 608.2b)
-	slot:       int, // the next target slot
-	spell:      types.ObjectId, // an instant or sorcery to put into the graveyard at the end (CR 608.2n), or 0
-	stack_id:   types.ObjectId, // an ability's stack object, or 0
-	last_target: Maybe(types.TargetRef), // the most recent instruction's target, which "it" in the next refers to
+	active:       bool,
+	next:         ^types.ResolvedAbility, // the next instruction to carry out
+	controller:   types.PlayerId,
+	source:       types.ObjectId,
+	spell:        types.ObjectId, // an instant or sorcery to put into the graveyard at the end (CR 608.2n), or 0
+	stack_id:     types.ObjectId, // an ability's stack object, or 0
+	last_targets: [dynamic]types.TargetRef, // the latest targeting instruction's legal targets: "it", "they" next
+	all_targets:  [dynamic]types.TargetRef, // every target chosen for it, in order
+}
+
+// The spell or ability as it goes on the stack: one node per instruction, each with the targets chosen for it (CR
+// 601.2c), the way the Rust engine's state has it. It resolves from this alone, so a saved game's stack resolves
+// too. `counts` is how many targets each targeting instruction took (1 each when nil); targets left over (an Aura
+// spell's, CR 303.4a) stay on the first node.
+resolved_tree :: proc(s: ^types.GameState, a: ^types.AbilityDefinition, targets: []types.TargetRef, counts: []int, controller: types.PlayerId, source: types.ObjectId) -> ^types.ResolvedAbility {
+	top, prev: ^types.ResolvedAbility
+	next, k := 0, 0
+	for x := a; x != nil; x = x.sub_ability {
+		node := new(types.ResolvedAbility)
+		node.source_id = source
+		node.controller = controller
+		if x.effect != nil do node.effect = x.effect^
+		node.duration = x.duration
+		node.condition = x.condition
+		node.sub_link = x.sub_link
+		node.kind = x.kind
+		node.description = x.description
+		node.optional = x.optional
+		node.multi_target = x.multi_target
+		if x.effect != nil {
+			if _, targets_one := effect_target(x.effect^); targets_one {
+				n := counts[k] if k < len(counts) else 1
+				k += 1
+				for _ in 0 ..< n do if next < len(targets) {
+					append(&node.targets, targets[next])
+					next += 1
+				}
+			}
+		}
+		if top == nil do top = node
+		else do prev.sub_ability = node
+		prev = node
+	}
+	if top == nil {
+		top = new(types.ResolvedAbility)
+		top.source_id = source
+		top.controller = controller
+	}
+	for ; next < len(targets); next += 1 do append(&top.targets, targets[next])
+	for n := top; n != nil; n = n.sub_ability do record_target_incarnations(s, n)
+	return top
 }
 
 // Starts resolving: checks targets (CR 608.2b) and carries out the instructions. False while a player chooses.
-start_resolution :: proc(g: ^Game, a: ^types.AbilityDefinition, controller: types.PlayerId, source: types.ObjectId, resolved: ^types.ResolvedAbility, spell: types.ObjectId = 0, stack_id: types.ObjectId = 0) -> bool {
+start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: types.PlayerId, source: types.ObjectId, spell: types.ObjectId = 0, stack_id: types.ObjectId = 0) -> bool {
 	s := &g.state
-	slots := target_slots(a)
-	targets := make([]types.TargetRef, len(resolved.targets))
-	copy(targets, resolved.targets[:])
-	legal := make([]bool, len(targets))
-	any_legal := len(slots) == 0
-	for t, i in targets do if i < len(slots) && same_object_as_chosen(s, resolved, i) && target_still_legal(s, t, slots[i], controller, source) {
-		legal[i] = true
-		any_legal = true
+	any_target, any_legal := false, false
+	for n := top; n != nil; n = n.sub_ability {
+		clear(&n.illegal_target_slots)
+		f, targets_one := effect_target(n.effect)
+		for t, i in n.targets {
+			any_target = true
+			// CR 608.2b: a target that changed zones (a new object, CR 400.7) or no longer fits is illegal.
+			if targets_one && same_object_as_chosen(s, n, i) && target_still_legal(s, t, f, controller, source) do any_legal = true
+			else do append(&n.illegal_target_slots, i)
+		}
 	}
-	g.resolution = Resolution{true, a, controller, source, targets, legal, 0, spell, stack_id, nil}
+	g.resolution = Resolution{active = true, next = top, controller = controller, source = source, spell = spell, stack_id = stack_id}
+	g.resolution.last_targets = make([dynamic]types.TargetRef)
+	g.resolution.all_targets = make([dynamic]types.TargetRef)
+	for n := top; n != nil; n = n.sub_ability do append(&g.resolution.all_targets, ..n.targets[:])
 	// CR 608.2b: with every target illegal, the spell or ability does nothing.
-	if !any_legal do g.resolution.next = nil
+	if any_target && !any_legal do g.resolution.next = nil
 	return continue_resolution(g)
 }
 
 // Carries out the remaining instructions. False while a player chooses; true once resolved.
 continue_resolution :: proc(g: ^Game) -> bool {
+	s := &g.state
 	r := &g.resolution
 	for r.next != nil {
 		x := r.next
 		r.next = x.sub_ability
-		if x.effect == nil do continue
-		target: Maybe(types.TargetRef)
-		if _, targets_one := effect_target(x.effect^); targets_one {
-			if r.slot < len(r.targets) && r.legal[r.slot] do target = r.targets[r.slot]
-			r.slot += 1
-			r.last_target = target
-			if target == nil do continue // CR 608.2b: an illegal target is unaffected
-		} else if refers_to_parent_target(x.effect^) {
+		affected := make([dynamic]Maybe(types.TargetRef), context.temp_allocator)
+		if _, targets_one := effect_target(x.effect); targets_one {
+			clear(&r.last_targets)
+			for t, i in x.targets do if !slice.contains(x.illegal_target_slots[:], i) {
+				append(&r.last_targets, t)
+				append(&affected, t)
+			}
+			if len(affected) == 0 do continue // CR 608.2b: an illegal target is unaffected
+		} else if refers_to_parent_target(x.effect) {
 			// "Untap target creature. It gains flying": "it" is the previous instruction's target, and an illegal
 			// one is unaffected by the rest too (CR 608.2b).
-			target = r.last_target
-			if target == nil do continue
-			if _, of_controller := effect_target_filter(x.effect^).(types.TargetFilter_ParentTargetController); of_controller {
+			_, of_controller := effect_target_filter(x.effect).(types.TargetFilter_ParentTargetController)
+			for t in r.last_targets {
+				if !of_controller {
+					append(&affected, t)
+					continue
+				}
 				// "That creature's controller" (its last known controller if it has left, CR 608.2h).
-				id, is_object := target_object(target)
-				if !is_object do continue
-				target = types.TargetRef_Player{object(&g.state, id).controller}
+				if id, is_object := target_object(t); is_object do append(&affected, types.TargetRef(types.TargetRef_Player{object(s, id).controller}))
 			}
+			if len(affected) == 0 do continue
+		} else {
+			append(&affected, nil)
 		}
-		if c, has := x.condition.?; has && !ability_condition_holds(&g.state, c, r.controller, r.source, r.targets, r.legal) {
+		if c, has := x.condition.?; has && !ability_condition_holds(s, c, r.controller, r.source, r.last_targets[:]) {
 			// CR 608.2c: the instruction doesn't happen, nor what depends on it; an independent next instruction
 			// still does.
 			if sub := x.sub_ability; sub == nil || sub.sub_link != .SequentialSibling do r.next = nil
 			continue
 		}
-		if do_effect(g, x, r.controller, r.source, target) do return false // waiting for a choice
+		for t in affected do if do_effect(g, x.effect, x.duration, r.controller, r.source, t) do return false // waiting for a choice
 	}
 	if r.spell != 0 do move_object(g, r.spell, .Graveyard) // CR 608.2n
 	if r.stack_id != 0 do delete_key(&g.stack_abilities, r.stack_id)
