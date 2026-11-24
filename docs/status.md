@@ -8,6 +8,28 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
 **Rules version:** see `rules/VERSION.json`
 
 ## In progress
+- **Odin state performance (branch claude/odin-state-perf, D-185 stream 2): PAUSED by the owner (2026-11-24).**
+  Stopped mid-task; no PR opened. Done and pushed on the branch:
+  - ObjectMap is hand-written (odin/engine/types/object_map.odin; odingen's new `hand_types`): a persistent radix
+    trie indexed by id (64-slot shared nodes), with D-182's order kept as a shared id list beside it. Clone shares
+    the root; a write copies the path's nodes and the object. Its Rust-named methods are in hand_logic.odin.
+  - odingen generates `drop_<T>` (Rust's Drop for the counts; in generated_clone.odin, emitted after the queue
+    drains so types and codecs keep their order); `-define:COW_ORACLE=true` makes every copy-on-write copy.
+  - clone_bench measures both layouts (`-define:OLD_LAYOUT=true` for the old one).
+  - Checks green locally: type check, hand_codecs_test, hand_logic_test (+3 new ObjectMap checks), card data round
+    trip, game-state round trip (3 recordings, 1,085 states, 1,082 actions), committed model == `gen` output.
+  - Measured (`-o:speed`, plain arena, three recordings red-vs-green/elves-mirror/black-vs-blue seed 1, every
+    25th state, ~120 objects), old layout -> new: clone 10.0-25.6 -> 10.3-25.7 us (unchanged: not the map);
+    clone+write one object 21.3-32.0 -> 13.9-22.2 us; clone+drop 9.5-17.9 us, clone+write+drop 13.2-23.1 us;
+    lookup 3.2-3.7 -> 2.4-2.9 ns; stale-count round (discarded clone, parent appends to journal and writes)
+    60-113 us, 10.6-19.6 us when the clone is dropped. Rust's side not yet re-measured on these recordings.
+  - Not done: Rust clone-bench on the same recordings (build it in an optimized profile, e.g. server-release); the
+    per-field breakdown of the 10-26 us clone (a generated timing tool was being built; the earlier 5.7 us figure in
+    odin-port.md was on other states); im::HashMap/HashSet/OrdMap still whole-collection copy-on-write; docs in
+    odin-port.md and a D- entry (ObjectMap trie + drops) not yet written; merge main, PR.
+  - For the translator: `.clone()` -> `clone_<T>`; a clone that dies at scope end (not moved) -> `drop_<T>`;
+    `Arc::make_mut` -> `make_mut(&p, clone_<T>)`; ObjectMap only through hand_logic.odin's `ObjectMap_*`
+    (`Option<&GameObject>` as `Maybe(GameObject)` copies 8.9 KB; `object_map_lookup` returns the pointer).
 - **Odin port, the session goal (D-180):** remove all Rust from the engine, replace it with Odin, near-zero
   regressions in functionality and performance. Plan: docs/odin-port.md. O-0 done (go). Now O-1: generate the Odin
   data model and JSON codecs from the Rust types. odingen pass 1 (collect + report) done; design in odin-port.md
