@@ -2784,6 +2784,11 @@ Progress:
   the owner's choice to return is always taken, hand/library replacement 903.9b and commander damage 903.10a not
   yet). A rules-judge review of the core was fixed in full. Native rules tests: `odin test odin/tests/game
   -define:ODIN_TEST_TRACK_MEMORY=false` (15, each citing its rule). Pool coverage: 1,886 of 15,772.
+- Step 3 progress (2026-11-24, evening): damage triggers, scry/surveil on resumable resolution (608.2), amounts
+  worked out as effects happen (608.2h), rule-stating statics (can't block/attack, can't be blocked, doesn't
+  untap, must attack, extra land, no max hand size, flash), Auras and Equipment (303.4, 702.5-6, 704.5m-n), and
+  the AI for them. Rules tests: 23. Process note: background jobs only build and test; commits are made in the
+  foreground (a background commit once picked up half-finished edits).
 - Step 2/3 start: `odin/engine/game/setup.odin` starts a game from the CR (103: libraries shuffled with the seeded
   generator, starting life, seven-card hands, mulligan decisions in turn order); `game_calls.odin` serves
   `initialize_game` (decks checked against the format first, as Rust does), `get_game_state`,

@@ -455,3 +455,41 @@ creature_that_must_attack :: proc(t: ^testing.T) {
 	attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{cyclops.id, types.AttackTarget_Player{1}}}
 	testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
 }
+
+@(test)
+aura_enters_attached_and_leaves_with_its_host :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 303.4a, 608.3c: an Aura spell targets what it can enchant and enters attached to it. CR 704.5m: when the
+	// host leaves, the Aura goes to the graveyard.
+	g := new_game()
+	add(t, g, "Plains", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	aura := add(t, g, "Holy Strength", 0, .Hand) // enchanted creature gets +1/+2
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = aura.id}))
+	game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}})
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, aura.zone == .Battlefield && game.host_of(&g.state, aura) == bears, "attached to the Bears")
+	testing.expect(t, game.power_of(bears) == 3 && game.toughness_of(bears) == 4, "3/4")
+	game.destroy(g, bears)
+	game.check_state_based_actions(g)
+	testing.expect(t, aura.zone == .Graveyard, "the Aura went to the graveyard")
+}
+
+@(test)
+equip_moves_the_bonus :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.6a: equip attaches the Equipment to target creature you control; "equipped creature gets +2/+0".
+	g := new_game()
+	add(t, g, "Forest", 0, .Battlefield)
+	splitter := add(t, g, "Bonesplitter", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = splitter.id, ability_index = 0}))
+	game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}})
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, game.host_of(&g.state, splitter) == bears && game.power_of(bears) == 4, "the Bears are 4/2")
+	game.destroy(g, bears)
+	game.check_state_based_actions(g)
+	testing.expect(t, splitter.zone == .Battlefield && game.host_of(&g.state, splitter) == nil, "unattached, still in play")
+}

@@ -273,7 +273,7 @@ spell_ability :: proc(o: ^types.GameObject) -> ^types.AbilityDefinition {
 // any other spell only in their main phase, on their own turn, with the stack empty.
 can_cast_now :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject) -> bool {
 	if is_type(o, .Land) do return false
-	if is_type(o, .Instant) || has_keyword(o, types.Keyword_Flash) do return true
+	if is_type(o, .Instant) || has_keyword(o, types.Keyword_Flash) || has_own_flash_rule(o) do return true
 	return sorcery_timing(s, p)
 }
 
@@ -697,4 +697,11 @@ amount :: proc(g: ^Game, q: types.QuantityExpr, controller: types.PlayerId, sour
 		break
 	}
 	return quantity_value(&g.state, q, controller, source, first)
+}
+
+// "You may cast this spell as though it had flash" printed on the card itself (CR 702.8, 601.3b).
+has_own_flash_rule :: proc(o: ^types.GameObject) -> bool {
+	if o.static_definitions == nil do return false
+	for &st in o.static_definitions^ do if .Flash in rule_modes(st.mode) && static_mode_supported(st) do return true
+	return false
 }

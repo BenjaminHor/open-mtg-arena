@@ -65,6 +65,18 @@ priority_action :: proc(g: ^Game, p: types.PlayerId) -> types.GameAction {
 		if best == nil || mana_value(o.mana_cost) > mana_value(best.mana_cost) do best = o
 	}
 	if best != nil do return types.GameAction_CastSpell{object_id = best.id, card_id = best.card_id}
+	// Before combat, equip an unattached Equipment to its best creature.
+	if s.active_player == p && s.phase == .PreCombatMain && types.pvec_len(s.stack) == 0 {
+		for o in permanents_of(s, p) {
+			if !has_subtype(o, "Equipment") || host_of(s, o) != nil || o.abilities == nil do continue
+			for &a, i in o.abilities^ {
+				if a.effect == nil do continue
+				if _, attaches := a.effect^.(types.Effect_Attach); attaches && can_activate(g, p, o, i) {
+					return types.GameAction_ActivateAbility{source_id = o.id, ability_index = i}
+				}
+			}
+		}
+	}
 	// After combat on its own turn, use abilities that make cards, creatures or a good kill.
 	if s.active_player == p && s.phase == .PostCombatMain && types.pvec_len(s.stack) == 0 {
 		for o in permanents_of(s, p) {
@@ -80,6 +92,14 @@ priority_action :: proc(g: ^Game, p: types.PlayerId) -> types.GameAction {
 // A creature or other permanent is always worth casting; a spell only if it has a good target.
 worth_casting :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool {
 	s := &g.state
+	if is_aura(o) {
+		f, _ := enchant_filter(o)
+		mine := aura_helps(o)
+		for t in legal_targets(s, f, p, o.id) {
+			if id, is_object := t.(types.TargetRef_Object); is_object && (object(s, id._0).controller == p) == mine do return sorcery_timing(s, p)
+		}
+		return false
+	}
 	if is_permanent_card(o) do return sorcery_timing(s, p)
 	a := spell_ability(o)
 	if a == nil do return false
@@ -114,7 +134,7 @@ chosen_target :: proc(g: ^Game, p: types.PlayerId, legal: []types.TargetRef, a: 
 			tg, _ := e.toughness.(types.PtValue_Fixed)
 			helps = pw._0 + tg._0 >= 0
 			if !helps do damage = int(-tg._0)
-		case types.Effect_GenericEffect:
+		case types.Effect_GenericEffect, types.Effect_Attach:
 			helps = true
 		case types.Effect_ChangeZone:
 			// Getting a card back is good for its owner; exiling or bouncing a permanent is aimed at an opponent's.
@@ -151,6 +171,9 @@ best_target :: proc(g: ^Game, p: types.PlayerId, legal: []types.TargetRef) -> ty
 	s := &g.state
 	a: ^types.AbilityDefinition
 	if g.pending.object != 0 do a = pending_ability(g)
+	if o := object(s, g.pending.object); o != nil && g.pending.ability_index < 0 && is_aura(o) {
+		return aura_target(g, p, o, legal)
+	}
 	t, good := chosen_target(g, p, legal, a)
 	if !good && len(legal) > 0 do return legal[0]
 	return t
@@ -314,4 +337,38 @@ ai_keep_on_top :: proc(g: ^Game, p: types.PlayerId, cards: []types.ObjectId) -> 
 		}
 	}
 	return keep
+}
+
+// An Aura that adds power, toughness or keywords goes on its controller's best creature; one that restricts
+// ("can't attack or block") or shrinks goes on the opponent's best.
+aura_helps :: proc(o: ^types.GameObject) -> bool {
+	if o.static_definitions == nil do return true
+	for st in o.static_definitions^ {
+		if rule_modes(st.mode) != {} do return false
+		for m in st.modifications {
+			#partial switch k in m {
+			case types.ContinuousModification_AddPower:
+				if k.value < 0 do return false
+			case types.ContinuousModification_AddToughness:
+				if k.value < 0 do return false
+			}
+		}
+	}
+	return true
+}
+
+aura_target :: proc(g: ^Game, p: types.PlayerId, aura: ^types.GameObject, legal: []types.TargetRef) -> types.TargetRef {
+	s := &g.state
+	mine := aura_helps(aura)
+	best: types.TargetRef = legal[0]
+	best_score := -1
+	for t in legal {
+		o, is_object := t.(types.TargetRef_Object)
+		if !is_object do continue
+		target := object(s, o._0)
+		if (target.controller == p) != mine do continue
+		score := power_of(target) + mana_value(target.mana_cost)
+		if score > best_score do best, best_score = t, score
+	}
+	return best
 }
