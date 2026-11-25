@@ -18,6 +18,10 @@ event_amount: int
 // The trigger event's object while its ability resolves ("the spell that triggered it").
 @(thread_local)
 event_object_now: types.ObjectId
+// While an ability resolves: what its instruction before moved ("for each creature destroyed this way").
+@(thread_local)
+moved_now: ^[dynamic]types.ObjectId
+
 // The instruction before the one being checked, for "the life lost this way" (CR 608.2c): set by ability_supported.
 @(thread_local)
 previous_instruction: ^types.Effect
@@ -40,6 +44,13 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 		#partial switch r in x.qty {
 		case types.QuantityRef_PreviousEffectAmount:
 			return previous_amount_readable(r.channel) && r.aggregate == .Sum
+		case types.QuantityRef_TrackedSetSize:
+			return previous_instruction != nil && moves_cards(previous_instruction^)
+		case types.QuantityRef_FilteredTrackedSetSize:
+			if previous_instruction == nil || !moves_cards(previous_instruction^) || r.filter == nil do return false
+			if cause, has := r.caused_by.?; has && cause_zone(cause) == nil do return false
+			typed, is_typed := r.filter.(types.TargetFilter_Typed)
+			return is_typed && typed_supported(typed._0)
 		case types.QuantityRef_ObjectCount:
 			return mass_filter_supported(r.filter)
 		case types.QuantityRef_Power:
@@ -169,6 +180,25 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 		return max(quantity_value(s, x.inner^, controller, source, target), int(x.minimum))
 	case types.QuantityExpr_Ref:
 		#partial switch r in x.qty {
+		case types.QuantityRef_TrackedSetSize:
+			return len(moved_now^) if moved_now != nil else 0
+		case types.QuantityRef_FilteredTrackedSetSize:
+			// "For each creature destroyed this way": of what the instruction before moved, those that went where the
+			// words say, matching as they last existed where they were (CR 608.2h).
+			if moved_now == nil do return 0
+			typed := r.filter.(types.TargetFilter_Typed)._0
+			want: Maybe(types.Zone) = r.destination
+			if cause, has := r.caused_by.?; has do want = cause_zone(cause)
+			n := 0
+			for id in moved_now^ {
+				o := object(s, id)
+				if o == nil do continue
+				if zone, has := want.?; has && o.zone != zone do continue
+				as_was := o
+				if was := last_known(id); was != nil do as_was = was
+				if object_matches(s, as_was, typed, controller, source) do n += 1
+			}
+			return n
 		case types.QuantityRef_PreviousEffectAmount:
 			// CR 608.2c: what the instruction before produced (resolution.odin's note_amount).
 			if r.channel == .Excess do return int(s.last_effect_excess_amount.? or_else 0)
@@ -899,4 +929,18 @@ previous_amount_readable :: proc(channel: types.DamageChannel) -> bool {
 	if previous_instruction == nil do return false
 	total, excess := amount_producer(previous_instruction^)
 	return excess if channel == .Excess else total
+}
+
+// Where "destroyed / sacrificed / discarded / milled / exiled / returned this way" put the cards (CR 701.8a, 701.21a,
+// 701.9a, 701.17a, 701.13a); nil for the causes not read this way.
+cause_zone :: proc(c: types.ThisWayCause) -> Maybe(types.Zone) {
+	#partial switch c {
+	case .Exiled:
+		return .Exile
+	case .Destroyed, .Sacrificed, .Discarded, .Milled, .PutIntoGraveyard:
+		return .Graveyard
+	case .Returned, .Bounced:
+		return .Hand
+	}
+	return nil
 }

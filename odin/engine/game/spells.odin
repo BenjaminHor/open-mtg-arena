@@ -163,7 +163,7 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	if a.reads_chosen_group != nil || a.starting_with != nil do return false
 	if scope, has := a.player_scope.?; has && !player_scope_ok(scope, a) do return false
 	if a.target_chooser != nil || a.optional_player != nil || a.optional_for != nil do return false
-	if !multi_target_supported(a) || !distribute_supported(a) || a.repeat_for != nil || !unless_pay_supported(a) do return false
+	if !multi_target_supported(a) || !distribute_supported(a) || !repeat_supported(a) || !unless_pay_supported(a) do return false
 	if a.else_ability != nil do return false
 	if !effect_supported(a.effect^, a.duration) do return false
 	if refers_to_parent_target(a.effect^) && !after_target do return false
@@ -1533,7 +1533,7 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 	if a.modal != nil do append(out, "spell:modal")
 	if !multi_target_supported(a) do append(out, "spell:multiple targets")
 	if !distribute_supported(a) do append(out, "spell:divided")
-	if a.repeat_for != nil do append(out, "spell:repeat")
+	if !repeat_supported(a) do append(out, "spell:repeat")
 	if !unless_pay_supported(a) do append(out, "spell:unless pay")
 	if a.else_ability != nil do append(out, "spell:otherwise")
 	if a.effect != nil && !effect_supported(a.effect^, a.duration) {
@@ -2126,4 +2126,21 @@ activated_gap :: proc(a: types.AbilityDefinition) -> string {
 		return fmt.tprintf("activated: restriction %v", reflect.union_variant_typeid(r))
 	}
 	return "activated: other"
+}
+
+// "For each creature destroyed this way, create a 1/1 token", "investigate twice": the instruction carried out that
+// many times, the number worked out once, before the first. Only instructions that don't stop to ask a player.
+repeat_supported :: proc(a: types.AbilityDefinition) -> bool {
+	n, has := a.repeat_for.?
+	if !has do return true
+	if a.effect == nil || !quantity_supported(n) || quantity_reads_target(n) || a.player_scope != nil do return false
+	// "For each permanent destroyed this way, its controller creates a token": one per permanent, for that one's
+	// controller, which repeating the whole instruction over every earlier target doesn't give.
+	if refers_to_parent_target(a.effect^) do return false
+	#partial switch _ in a.effect^ {
+	case types.Effect_Token, types.Effect_Investigate, types.Effect_PutCounter, types.Effect_Draw, types.Effect_GainLife,
+	     types.Effect_LoseLife, types.Effect_CopyTokenOf:
+		return true
+	}
+	return false
 }

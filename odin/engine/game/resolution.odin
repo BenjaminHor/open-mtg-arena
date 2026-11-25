@@ -61,6 +61,7 @@ resolved_tree :: proc(s: ^types.GameState, a: ^types.AbilityDefinition, targets:
 		node.player_scope = x.player_scope
 		node.unless_pay = x.unless_pay
 		node.distribute = x.distribute
+		node.repeat_for = x.repeat_for
 		if x.effect != nil && !reflexive {
 			if _, targets_one := effect_target(x.effect^); targets_one {
 				n := counts[k] if k < len(counts) else 1
@@ -160,6 +161,8 @@ continue_resolution :: proc(g: ^Game) -> bool {
 	event_amount = r.event.amount // "that much", read by the instructions (quantities.odin)
 	event_object_now = r.event.object
 	source_was_now = r.source_was
+	moved_now = &r.moved
+	defer moved_now = nil
 	for r.next != nil {
 		// What the instruction just carried out moved, before the next one reads "this way". An instruction skipped
 		// for its condition carries nothing out, so "this way" still means the one before it.
@@ -294,7 +297,9 @@ continue_resolution :: proc(g: ^Game) -> bool {
 			}
 			continue
 		}
-		for t in affected do if do_effect(g, x.effect, x.duration, r.controller, r.source, t) do return false // waiting for a choice
+		times := 1
+		if n, repeats := x.repeat_for.?; repeats do times = amount(g, n, r.controller, r.source, nil) // repeat_supported
+		for _ in 0 ..< times do for t in affected do if do_effect(g, x.effect, x.duration, r.controller, r.source, t) do return false // waiting for a choice
 	}
 	if r.spell != 0 {
 		// CR 608.2n; exiled after flashback (CR 702.34a) or an Adventure that resolved (CR 716.3d).

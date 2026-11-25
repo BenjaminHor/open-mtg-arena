@@ -3195,6 +3195,11 @@ Progress:
   sacrificed (Thatcher Revolt, Explosive Getaway). Test: `sacrifice_those_tokens_at_the_next_end_step`. Coverage
   7,531. Still refused in this family: "whenever ... this turn" delayed triggers (36), "when it dies" (16), "the next
   time" (11), "at the beginning of that player's next ..." (9).
+- "For each creature destroyed this way" (FilteredTrackedSetSize, TrackedSetSize): of the cards the instruction
+  before moved, those now where the cause puts them, matched as they last existed (CR 608.2h). Instructions repeated
+  N times ("for each ..., create a token"; `repeat_supported`, only instructions that don't prompt, not over earlier
+  targets). Fixed: the resolved tree didn't copy `repeat_for`. Test: `for_each_creature_destroyed_this_way`
+  (Fumigate, Blood Money). Coverage 7,549.
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 

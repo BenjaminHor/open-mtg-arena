@@ -5602,3 +5602,42 @@ sacrifice_those_tokens_at_the_next_end_step :: proc(t: ^testing.T) {
 	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
 	testing.expect_value(t, humans(g), 3)
 }
+
+// Fumigate: "Destroy all creatures. You gain 1 life for each creature destroyed this way." An indestructible creature
+// isn't destroyed (CR 702.12b), so it isn't counted. Blood Money: "For each nontoken creature destroyed this way, you
+// create a tapped Treasure token": the destroyed creatures as they last existed (CR 608.2h), the token one left out;
+// the instruction repeated that many times.
+@(test)
+for_each_creature_destroyed_this_way :: proc(t: ^testing.T) {
+	if !load_db() do return
+	{
+		g := new_game()
+		for _ in 0 ..< 5 do add(t, g, "Plains", 0, .Battlefield)
+		fumigate := add(t, g, "Fumigate", 0, .Hand)
+		add(t, g, "Grizzly Bears", 0, .Battlefield)
+		add(t, g, "Grizzly Bears", 1, .Battlefield)
+		add(t, g, "Darksteel Myr", 1, .Battlefield) // indestructible
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = fumigate.id}))
+		settle_stack(g)
+		testing.expect_value(t, g.state.players[0].life, 22)
+	}
+	{
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 7 do add(t, g, "Swamp", 0, .Battlefield)
+		money := add(t, g, "Blood Money", 0, .Hand)
+		add(t, g, "Grizzly Bears", 0, .Battlefield)
+		add(t, g, "Grizzly Bears", 1, .Battlefield)
+		soldier := types.Effect_Token{name = "Soldier", power = types.PtValue_Fixed{1}, toughness = types.PtValue_Fixed{1}, count = types.QuantityExpr_Fixed{1}}
+		append(&soldier.types, "Creature", "Soldier")
+		game.create_token(g, soldier, 1)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = money.id}))
+		settle_stack(g)
+		treasures, tapped := 0, 0
+		for id in game.ids_of(s.battlefield) do if o := game.object(s, id); o.is_token && o.name == "Treasure" {
+			treasures += 1
+			if o.tapped do tapped += 1
+		}
+		testing.expect(t, treasures == 2 && tapped == 2, "two tapped Treasures: the token creature isn't counted")
+	}
+}

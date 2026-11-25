@@ -259,6 +259,8 @@ moves_cards :: proc(e: types.Effect) -> bool {
 		return true
 	case types.Effect_Token, types.Effect_CopyTokenOf:
 		return true // "those tokens": the ones it created (they entered the battlefield, a zone change)
+	case types.Effect_Destroy, types.Effect_DestroyAll, types.Effect_Sacrifice, types.Effect_Discard:
+		return true // to a graveyard
 	}
 	return false
 }
