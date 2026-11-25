@@ -39,3 +39,22 @@ prowess_triggers :: proc(g: ^Game, spell: ^types.GameObject, caster: types.Playe
 		}
 	}
 }
+
+// CR 701.16a: "Investigate" means "Create a Clue token" (CR 111.10f), the token the card data writes out for "create a
+// Clue token".
+@(private = "file")
+clue_token: types.Effect_Token
+@(private = "file")
+clue_once: sync.Once
+
+investigate_token :: proc() -> types.Effect {
+	sync.once_do(&clue_once, proc() {
+		clue_token.name = "Clue"
+		clue_token.power = types.PtValue_Fixed{0}
+		clue_token.toughness = types.PtValue_Fixed{0}
+		append(&clue_token.types, "Artifact", "Clue")
+		clue_token.count = types.QuantityExpr_Fixed{value = 1}
+		clue_token.owner = types.TargetFilter_Controller{}
+	})
+	return clue_token
+}

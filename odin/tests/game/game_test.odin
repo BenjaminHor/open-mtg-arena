@@ -3892,3 +3892,51 @@ convoke_taps_creatures_to_pay :: proc(t: ^testing.T) {
 		testing.expect(t, len(s.players[0].mana_pool.mana) == 0, "no mana left over")
 	}
 }
+
+@(test)
+investigate_makes_a_clue :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Thraben Inspector: "When this creature enters, investigate." CR 701.16a: create a Clue token, which has
+	// "{2}, Sacrifice this token: Draw a card." (CR 111.10f).
+	testing.expect(t, game.card_supported(&card(t, "Thraben Inspector").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Plains", 0, .Battlefield)
+	inspector := add(t, g, "Thraben Inspector", 0, .Hand) // {W}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = inspector.id}))
+	settle_stack(g)
+	clue: ^types.GameObject
+	for id in game.ids_of(s.battlefield) do if o := game.object(s, id); o.is_token && o.name == "Clue" do clue = o
+	testing.expect(t, clue != nil && game.is_type(clue, .Artifact), "a Clue artifact token")
+	if clue == nil do return
+	hand := types.pvec_len(s.players[0].hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = clue.id, ability_index = 0}))
+	settle_stack(g)
+	testing.expect(t, types.pvec_len(s.players[0].hand) == hand + 1, "sacrificed for a card")
+}
+
+@(test)
+amass_makes_or_grows_an_army :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Lazotep Reaver: "When this creature enters, amass Zombies 1." CR 701.47a: with no Army, a 0/0 black Zombie
+	// Army token is created first; then the Army gets the counters. A second amass grows the same Army.
+	testing.expect(t, game.card_supported(&card(t, "Lazotep Reaver").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 4 do add(t, g, "Swamp", 0, .Battlefield)
+	army :: proc(s: ^types.GameState) -> ^types.GameObject {
+		for id in game.ids_of(s.battlefield) do if o := game.object(s, id); o.is_token && slice.contains(o.card_types.subtypes[:], "Army") do return o
+		return nil
+	}
+	first := add(t, g, "Lazotep Reaver", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = first.id}))
+	settle_stack(g)
+	a := army(s)
+	testing.expect(t, a != nil && a.power.? == 1 && slice.contains(a.card_types.subtypes[:], "Zombie"), "a 1/1 Zombie Army")
+	second := add(t, g, "Lazotep Reaver", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = second.id}))
+	settle_stack(g)
+	tokens := 0
+	for id in game.ids_of(s.battlefield) do if o := game.object(s, id); o.is_token do tokens += 1
+	testing.expect(t, tokens == 1 && a != nil && a.power.? == 2, "the same Army, now 2/2")
+}

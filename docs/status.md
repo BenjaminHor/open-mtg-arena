@@ -2996,6 +2996,9 @@ Progress:
 - Convoke (CR 702.51): for a spell with convoke, the automatic payment may tap untapped creatures (summoning sick
   too) for {1} or one mana of their color, after lands; not mana, so no riders and nothing left in the pool.
   6,424 -> 6,471.
+- Investigate (CR 701.16a: a Clue token) and amass (CR 701.47a: a 0/0 black [subtype] Army token if there's none,
+  the player's choice of Army when there are several, its counters, and the subtype added for as long as it's on
+  the battlefield). 6,471 -> 6,534.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

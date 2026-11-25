@@ -264,6 +264,10 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return you && fixed && plain && (is_self(x.target) || (filter_supported(x.target) && !may_name_player(x.target)))
 	case types.Effect_Counter:
 		return counter_supported(x)
+	case types.Effect_Investigate:
+		return true // a Clue token (CR 701.16a)
+	case types.Effect_Amass:
+		return amass_supported(x) // amass.odin
 	case types.Effect_Shuffle:
 		return is_controller(x.target)
 	case types.Effect_Attach:
@@ -1119,6 +1123,10 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		targeted: ^types.GameObject
 		if id, ok := target_object(target); ok do targeted = object(s, id)
 		add_temp_effect(g, x, controller, source, targeted, duration)
+	case types.Effect_Investigate:
+		return do_effect(g, investigate_token(), duration, controller, source, target) // CR 701.16a
+	case types.Effect_Amass:
+		return do_amass(g, x, controller, source)
 	case types.Effect_Token:
 		n := amount(g, x.count, controller, source, target)
 		maker := controller
