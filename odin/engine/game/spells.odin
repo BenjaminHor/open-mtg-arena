@@ -202,6 +202,8 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		case types.TargetFilter_Controller, types.TargetFilter_Player, types.TargetFilter_Opponent,
 		     types.TargetFilter_DefendingPlayer, types.TargetFilter_ParentTargetController:
 			return true
+		case types.TargetFilter_TriggeringPlayer, types.TargetFilter_TriggeringSourceController:
+			return filter_supported(t) // "that player": the trigger event's (resolution.odin)
 		case types.TargetFilter_Typed:
 			_, is_player := player_typed(y._0)
 			return is_player
@@ -224,12 +226,9 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return quantity_supported(x.count) && pt_supported(x.power) && pt_supported(x.toughness) && you && x.attach_to == nil && predefined_token_supported(x) &&
 			len(x.enter_with_counters) == 0
 	case types.Effect_Draw:
-		// "Draw N cards", "target player draws N cards", "its controller draws a card".
-		#partial switch _ in x.target {
-		case types.TargetFilter_Controller, types.TargetFilter_Player, types.TargetFilter_ParentTargetController:
-			return quantity_supported(x.count)
-		}
-		return false
+		// "Draw N cards", "target player / target opponent draws N cards", "its controller draws a card", "that
+		// player draws".
+		return quantity_supported(x.count) && life_or_draw_player_supported(x.target)
 	case types.Effect_GenericEffect:
 		return generic_effect_supported(x, duration)
 	case types.Effect_SearchLibrary:
@@ -294,9 +293,8 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 	case types.Effect_Bounce:
 		return bounce_supported(x)
 	case types.Effect_GainLife:
-		fixed := quantity_supported(x.amount)
-		_, you := x.player.(types.TargetFilter_Controller)
-		return fixed && (you || x.player == nil)
+		// "You gain N life", "target player gains N life", "its controller gains N life", "that player gains".
+		return quantity_supported(x.amount) && (x.player == nil || life_or_draw_player_supported(x.player))
 	case types.Effect_Destroy:
 		return !x.cant_regenerate && filter_supported(x.target) && !may_name_player(x.target)
 	}
@@ -420,6 +418,21 @@ refers_to_parent_target :: proc(e: types.Effect) -> bool {
 	return false
 }
 
+// The player who draws or gains life: you, a target player (or opponent), the controller of the earlier target, or
+// the trigger event's player.
+life_or_draw_player_supported :: proc(f: types.TargetFilter) -> bool {
+	#partial switch y in f {
+	case types.TargetFilter_Controller, types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_ParentTargetController:
+		return true
+	case types.TargetFilter_TriggeringPlayer, types.TargetFilter_TriggeringSourceController:
+		return filter_supported(f)
+	case types.TargetFilter_Typed:
+		_, is_player := player_typed(y._0)
+		return is_player
+	}
+	return false
+}
+
 // The object or player an effect names, whether chosen as a target or not ("you", "this", "it").
 effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 	f: types.TargetFilter
@@ -434,6 +447,8 @@ effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 		f = x.target
 	case types.Effect_Draw:
 		f = x.target
+	case types.Effect_GainLife:
+		f = x.player
 	case types.Effect_TargetOnly:
 		f = x.target
 	case types.Effect_Fight:
@@ -1144,7 +1159,9 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		for _ in 0 ..< n do draw_card(s, player(s, who))
 	case types.Effect_GainLife:
 		n := amount(g, x.amount, controller, source, target)
-		gain_life(s, controller, n)
+		who := controller
+		if pid, ok := target_player(target); ok do who = pid // a target player, "its controller", "that player"
+		gain_life(s, who, n)
 	case types.Effect_Destroy:
 		if id, ok := target_object(target); ok do destroy(g, object(s, id))
 	}

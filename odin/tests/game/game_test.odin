@@ -3986,3 +3986,26 @@ if_you_cast_it_from_your_hand :: proc(t: ^testing.T) {
 	game.apply(g, 0, types.GameAction_PassPriority{})
 	testing.expect(t, types.pvec_len(s.stack) == 0 && other.zone == .Battlefield, "not cast: no trigger")
 }
+
+@(test)
+that_player_loses_life_when_they_draw :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Sheoldred, the Apocalypse: "Whenever you draw a card, you gain 2 life. Whenever an opponent draws a card, they
+	// lose 2 life." "They" is the trigger event's player (CR 603.2, 608.2c); each card drawn is its own event (CR
+	// 121.2).
+	testing.expect(t, game.card_supported(&card(t, "Sheoldred, the Apocalypse").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Sheoldred, the Apocalypse", 0, .Battlefield)
+	for _ in 0 ..< 6 do add(t, g, "Island", 0, .Battlefield)
+	divination := add(t, g, "Divination", 0, .Hand) // {2}{U}: draw two cards
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = divination.id}))
+	settle_stack(g, 12)
+	testing.expect(t, s.players[0].life == 24, "drew two: gained 4")
+	opportunity := add(t, g, "Opportunity", 0, .Hand) // {4}{U}{U}: target player draws four cards
+	for _ in 0 ..< 3 do add(t, g, "Island", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = opportunity.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	settle_stack(g, 16)
+	testing.expect(t, s.players[1].life == 12 && s.players[0].life == 24, "the opponent drew four: lost 8")
+}

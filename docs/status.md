@@ -3003,6 +3003,8 @@ Progress:
   is ..."): the count is taken when the ability is activated or the payment planned (CR 605.3b). 6,534 -> 6,550.
 - "When this enters, if you cast it (from your hand)": a spell that resolves into a permanent keeps the zone it was
   cast from (cast_from_zone), read by the intervening "if" (CR 603.4). 6,550 -> 6,560.
+- Who draws, gains or loses life: a target player or opponent, "its controller", or the trigger event's player
+  ("whenever an opponent draws a card, they lose 2 life"). 6,560 -> 6,582.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
