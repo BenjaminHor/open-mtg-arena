@@ -2758,3 +2758,26 @@ target_player_draws :: proc(t: ^testing.T) {
 	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
 	testing.expect(t, types.pvec_len(game.player(s, 1).hand) == before + 4, "the target player drew four")
 }
+
+@(test)
+gain_control_until_end_of_turn :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Act of Treason: "Gain control of target creature until end of turn. Untap that creature. It gains haste until
+	// end of turn." CR 613.1b (layer 2); CR 514.2: it ends in the cleanup step, and control goes back.
+	testing.expect(t, game.card_supported(&card(t, "Act of Treason").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Mountain", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	bears.tapped = true
+	spell := add(t, g, "Act of Treason", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+	if _, asked := s.waiting_for.(types.WaitingFor_TargetSelection); asked {
+		game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}})
+	}
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, bears.controller == 0 && !bears.tapped, "ours, untapped")
+	testing.expect(t, game.can_attack(g, bears), "with haste it can attack (CR 302.6)")
+	game.cleanup(g)
+	testing.expect(t, bears.controller == 1, "back to its controller at end of turn")
+}

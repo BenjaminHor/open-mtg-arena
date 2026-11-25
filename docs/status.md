@@ -2905,6 +2905,9 @@ Progress:
   111.2): the card's printed characteristics (copy effects on the original aren't carried yet), entering like any
   permanent. A copy token is checked for support like its card. 5,514 -> 5,527.
 - "Target player draws N", "its controller draws a card": 5,527 -> 5,535.
+- "Gain control of target creature until end of turn" (or for good): layer 2 (CR 613.1b), out of combat (CR
+  506.4), summoning sick for its new controller (CR 302.6), given back in the cleanup step (CR 514.2). The previous
+  controllers are kept in Game (control_changes), beside the state like the pumps. 5,535 -> 5,565.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

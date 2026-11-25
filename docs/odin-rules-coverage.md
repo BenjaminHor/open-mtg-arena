@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 267 of 2880 rules implemented (9%), 117 of them tested.**
+**In scope (100-799): 268 of 2880 rules implemented (9%), 119 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -52,7 +52,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 213 information below the text box | 8 | 0 (0%) | 0 |
 | 300 general | 4 | 0 (0%) | 0 |
 | 301 artifacts | 15 | 1 (7%) | 0 |
-| 302 creatures | 10 | 1 (10%) | 0 |
+| 302 creatures | 10 | 1 (10%) | 1 |
 | 303 enchantments | 20 | 3 (15%) | 1 |
 | 304 instants | 5 | 0 (0%) | 0 |
 | 305 lands | 11 | 3 (27%) | 1 |
@@ -102,7 +102,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 610 one shot effects | 13 | 0 (0%) | 0 |
 | 611 continuous effects | 13 | 5 (38%) | 4 |
 | 612 text changing effects | 11 | 0 (0%) | 0 |
-| 613 interaction of continuous effects | 41 | 8 (20%) | 2 |
+| 613 interaction of continuous effects | 41 | 9 (22%) | 3 |
 | 614 replacement effects | 36 | 2 (6%) | 2 |
 | 615 prevention effects | 15 | 0 (0%) | 0 |
 | 616 interaction of replacement and or prevention effects | 9 | 1 (11%) | 0 |
@@ -920,7 +920,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 302.4b A creature’s toughness is the amount of damage needed to destroy it.
 - ⬜ 302.4c To determine a creature’s power and toughness, start with the numbers printed in its lower right corner, th...
 - ⬜ 302.5 Creatures can attack and block. (See rule 508, “Declare Attackers Step,” and rule 509, “Declare Blockers St...
-- 🟡 302.6 A creature’s activated ability with the tap symbol or the untap symbol in its activation cost can’t be acti...
+- ✅ 302.6 A creature’s activated ability with the tap symbol or the untap symbol in its activation cost can’t be acti...
 - ⬜ 302.7 Damage dealt to a creature by a source with neither wither nor infect is marked on that creature (see rule ...
 
 ### 303 enchantments (3/20)
@@ -1651,11 +1651,11 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 612.9 A name sticker on a permanent or on a card not on the battlefield creates a continuous effect that adds a w...
 - ⬜ 612.10 A splice ability changes a spell’s text by adding the rules text of the card with splice to the spell, foll...
 
-### 613 interaction of continuous effects (8/41)
+### 613 interaction of continuous effects (9/41)
 
 - ⬜ 613.1 The values of an object’s characteristics are determined by starting with the actual object. For a card, th...
 - ⬜ 613.1a Layer 1: Rules and effects that modify copiable values are applied.
-- ⬜ 613.1b Layer 2: Control-changing effects are applied.
+- ✅ 613.1b Layer 2: Control-changing effects are applied.
 - ⬜ 613.1c Layer 3: Text-changing effects are applied. See rule 612, “Text-Changing Effects.”
 - 🟡 613.1d Layer 4: Type-changing effects are applied. These include effects that change an object’s card type, subtyp...
 - 🟡 613.1e Layer 5: Color-changing effects are applied.

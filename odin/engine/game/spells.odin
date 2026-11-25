@@ -182,6 +182,14 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return sacrifice_supported(x)
 	case types.Effect_CreateDelayedTrigger:
 		return delayed_trigger_supported(x)
+	case types.Effect_GainControl:
+		// "Gain control of target creature until end of turn" (Act of Treason), or for good.
+		ok_duration := true
+		if d, has := duration.?; has {
+			_, eot := d.(types.Duration_UntilEndOfTurn)
+			ok_duration = eot
+		}
+		return ok_duration && filter_supported(x.target) && !may_name_player(x.target)
 	case types.Effect_CopyTokenOf:
 		// "Create a token that's a copy of target creature you control" / "of this creature" (CR 707.2).
 		_, you := x.owner.(types.TargetFilter_Controller)
@@ -313,6 +321,8 @@ effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 	case types.Effect_Pump:
 		f = x.target
 	case types.Effect_CopyTokenOf:
+		f = x.target
+	case types.Effect_GainControl:
 		f = x.target
 	case types.Effect_Draw:
 		f = x.target
@@ -916,6 +926,11 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		return do_sacrifice(g, x, controller, source, target)
 	case types.Effect_CreateDelayedTrigger:
 		create_delayed_trigger(g, x, controller, source)
+	case types.Effect_GainControl:
+		if id, ok := target_object(target); ok {
+			_, eot := duration.?
+			if o := object(s, id); o != nil do gain_control(g, o, controller, eot)
+		}
 	case types.Effect_CopyTokenOf:
 		original: ^types.GameObject
 		if id, ok := target_object(target); ok do original = object(s, id)
@@ -1033,6 +1048,17 @@ pump :: proc(g: ^Game, o: ^types.GameObject, power, toughness: i32) {
 
 end_until_end_of_turn_effects :: proc(g: ^Game) {
 	clear(&g.pumps)
+	// CR 514.2: "until end of turn" control ends; the permanent goes back to who controlled it before, if it's still
+	// the same object.
+	kept := make([dynamic]Control_Change)
+	for c in g.control_changes {
+		if !c.until_eot {
+			append(&kept, c)
+			continue
+		}
+		if o := object(&g.state, c.object); o != nil && o.zone == .Battlefield && o.incarnation == c.incarnation do o.controller = c.previous
+	}
+	g.control_changes = kept
 	lasting := make([dynamic]Temp_Effect)
 	for e in g.temp_effects do if e.permanent do append(&lasting, e)
 	g.temp_effects = lasting
@@ -1246,6 +1272,18 @@ pump_value :: proc(g: ^Game, v: types.PtValue, controller: types.PlayerId, sourc
 		return -n if x._0 == "-X" else n
 	}
 	return 0
+}
+
+// CR 613.1b: a control-changing effect (layer 2). The permanent leaves combat (CR 506.4) and, as its new
+// controller hasn't controlled it continuously since their turn began, can't attack or {T} unless it has haste
+// (CR 302.6).
+gain_control :: proc(g: ^Game, o: ^types.GameObject, controller: types.PlayerId, until_eot: bool) {
+	if o.zone != .Battlefield || o.controller == controller do return
+	append(&g.control_changes, Control_Change{object = o.id, incarnation = o.incarnation, previous = o.controller, until_eot = until_eot})
+	o.controller = controller
+	o.summoning_sick = true
+	remove_from_combat(&g.state, o.id)
+	apply_continuous_effects(g)
 }
 
 // ---- Conditions on instructions ("if ...", CR 608.2c) ---------------------------------------------------------

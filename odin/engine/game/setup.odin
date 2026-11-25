@@ -44,6 +44,16 @@ Game :: struct {
 	// gets priority once they have (replacements.odin).
 	entry_choices:     [dynamic]types.ObjectId,
 	entry_after:       types.PlayerId,
+	// "Gain control of target creature until end of turn": who controlled it before, to give it back (kept beside
+	// the state like the pumps).
+	control_changes:   [dynamic]Control_Change,
+}
+
+Control_Change :: struct {
+	object:      types.ObjectId,
+	incarnation: u64,
+	previous:    types.PlayerId,
+	until_eot:   bool,
 }
 
 // CR 103: starts a two-player game. The first player (CR 103.1) is given; each library is shuffled with the game's
