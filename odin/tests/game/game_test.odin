@@ -2814,3 +2814,82 @@ exile_all_creatures :: proc(t: ^testing.T) {
 	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
 	testing.expect(t, mine.zone == .Exile && theirs.zone == .Exile, "both exiled")
 }
+
+@(test)
+prevent_all_combat_damage :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Fog: "Prevent all combat damage that would be dealt this turn" (CR 615.1a); noncombat damage still is.
+	testing.expect(t, game.card_supported(&card(t, "Fog").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Forest", 1, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	fog := add(t, g, "Fog", 1, .Hand)
+	game.begin_step(g, .DeclareAttackers)
+	attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{bears.id, types.AttackTarget_Player{1}}}
+	testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	testing.expect(t, game.apply(g, 1, types.GameAction_CastSpell{object_id = fog.id}), "Fog at instant speed")
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	for _ in 0 ..< 10 {
+		if s.phase >= .EndCombat do break
+		if _, priority := s.waiting_for.(types.WaitingFor_Priority); !priority {
+			a, _ := game.ai_action(g, s.priority_player)
+			game.apply(g, s.priority_player, a)
+			continue
+		}
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, game.player(s, 1).life == 20, "the Bears' combat damage was prevented")
+	game.deal_damage(g, bears.id, types.TargetRef_Player{1}, 2)
+	testing.expect(t, game.player(s, 1).life == 18, "noncombat damage isn't")
+}
+
+@(test)
+review_fixes_delayed_shield_shockland :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// A delayed "it" with no earlier target to name would do nothing (CR 608.2c): such cards are refused, as is an
+	// "if you do" inside a delayed ability; cards whose card data is wrong are refused too.
+	for name in ([]string{"Attack-in-the-Box", "Alora, Cheerful Assassin", "Phelia, Exuberant Shepherd", "Shallow Grave", "Vizier of Deferment"}) {
+		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s isn't supported yet", name)
+	}
+	testing.expect(t, game.card_supported(&card(t, "Flickerwisp").face), "an \"it\" an earlier target names is")
+
+	// CR 122.1c, 510.2: combat damage is dealt at once, so one shield counter prevents all of it. A shielded
+	// Grizzly Bears blocked by two Grizzly Bears takes no damage and loses one counter.
+	g := new_game()
+	s := &g.state
+	a := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	shield := types.CounterType(types.CounterType_Shield{})
+	game.add_counters(a, shield, 2)
+	b1 := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	b2 := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	game.begin_step(g, .DeclareAttackers)
+	attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{a.id, types.AttackTarget_Player{1}}}
+	testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	blocks: [dynamic]types.Tuple2(types.ObjectId, types.ObjectId)
+	append(&blocks, types.Tuple2(types.ObjectId, types.ObjectId){b1.id, a.id}, types.Tuple2(types.ObjectId, types.ObjectId){b2.id, a.id})
+	testing.expect(t, game.apply(g, 1, types.GameAction_DeclareBlockers{assignments = blocks}))
+	for _ in 0 ..< 6 {
+		if s.phase >= .EndCombat do break
+		if _, priority := s.waiting_for.(types.WaitingFor_Priority); !priority {
+			act, _ := game.ai_action(g, s.priority_player)
+			game.apply(g, s.priority_player, act)
+			continue
+		}
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, a.zone == .Battlefield && a.damage_marked == 0 && game.counter_count(a, shield) == 1, "all prevented, one counter removed")
+
+	// A shockland at 1 life: paying 2 life isn't offered (CR 119.4).
+	g2 := new_game()
+	game.player(&g2.state, 0).life = 1
+	crypt := add(t, g2, "Blood Crypt", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_PlayLand{object_id = crypt.id}))
+	acts := game.legal_actions(g2, 0)
+	testing.expect(t, len(acts) == 1, "only declining")
+	testing.expect(t, !game.apply(g2, 0, types.GameAction_ChooseReplacement{index = 0}))
+	testing.expect(t, game.apply(g2, 0, types.GameAction_ChooseReplacement{index = 1}) && crypt.tapped)
+}

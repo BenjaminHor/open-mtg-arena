@@ -47,6 +47,11 @@ Game :: struct {
 	// "Gain control of target creature until end of turn": who controlled it before, to give it back (kept beside
 	// the state like the pumps).
 	control_changes:   [dynamic]Control_Change,
+	preventions:       [dynamic]Prevention, // damage prevention shields lasting the turn (prevention.odin)
+	// Permanents whose shield counter already prevented damage in the combat damage being dealt now: the rest of
+	// that simultaneous damage is prevented too (CR 122.1c, 510.2).
+	shielded:          [dynamic]types.ObjectId,
+	dealing_combat:    bool,
 }
 
 Control_Change :: struct {

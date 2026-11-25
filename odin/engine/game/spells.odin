@@ -19,7 +19,21 @@ has_keyword :: proc(o: ^types.GameObject, $T: typeid) -> bool {
 // Whether this engine can carry out every part of a card: its spell or permanent, its mana abilities and its
 // keywords. Triggered, static and replacement abilities, and activated abilities other than mana abilities, come
 // later.
+// Cards whose card data says something other than the card (found in rules reviews): refused until the data is
+// fixed, rather than played wrong.
+MISPARSED_CARDS :: [?]string{
+	"Phelia, Exuberant Shepherd", // its +1/+1 counter sits outside the delayed ability and without its condition
+	"Shallow Grave", // "the top creature card of your graveyard" is read as a target
+	"Vizier of Deferment", // "if it attacked or blocked this turn" is dropped
+}
+
+misparsed :: proc(name: string) -> bool {
+	for n in MISPARSED_CARDS do if n == name do return true
+	return false
+}
+
 card_supported :: proc(face: ^types.CardFace) -> bool {
+	if misparsed(face.name) do return false
 	{
 		// CR 107.3m: "enters with X counters" uses the spell's X.
 		x_defined = has_x(face.mana_cost)
@@ -108,6 +122,7 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	if a.else_ability != nil do return false
 	if !effect_supported(a.effect^, a.duration) do return false
 	if refers_to_parent_target(a.effect^) && !after_target do return false
+	if d, delayed := a.effect^.(types.Effect_CreateDelayedTrigger); delayed && !delayed_trigger_supported(d, after_target) do return false
 	if moves_found_cards(a.effect^) && !after_search do return false
 	_, targets := effect_target(a.effect^)
 	_, searches := a.effect^.(types.Effect_SearchLibrary)
@@ -181,7 +196,9 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 	case types.Effect_Sacrifice:
 		return sacrifice_supported(x)
 	case types.Effect_CreateDelayedTrigger:
-		return delayed_trigger_supported(x)
+		return delayed_trigger_supported(x, true) // and with what came before it: ability_supported
+	case types.Effect_PreventDamage:
+		return prevention_supported(x)
 	case types.Effect_GainControl:
 		// "Gain control of target creature until end of turn" (Act of Treason), or for good.
 		ok_duration := true
@@ -297,6 +314,11 @@ refers_to_parent_target :: proc(e: types.Effect) -> bool {
 	if tok, is_token := e.(types.Effect_Token); is_token {
 		_, parent_controller := tok.owner.(types.TargetFilter_ParentTargetController)
 		return parent_controller
+	}
+	if prev, is_prevention := e.(types.Effect_PreventDamage); is_prevention {
+		// "Prevent all damage that would be dealt to it this turn."
+		_, parent := prev.target.(types.TargetFilter_ParentTarget)
+		return parent
 	}
 	if sac, is_sacrifice := e.(types.Effect_Sacrifice); is_sacrifice {
 		// "Sacrifice it" (not a targeted instruction: its other forms name a kind of permanent to choose).
@@ -926,6 +948,8 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		return do_sacrifice(g, x, controller, source, target)
 	case types.Effect_CreateDelayedTrigger:
 		create_delayed_trigger(g, x, controller, source)
+	case types.Effect_PreventDamage:
+		add_prevention(g, x, controller, source, target)
 	case types.Effect_GainControl:
 		if id, ok := target_object(target); ok {
 			_, eot := duration.?
@@ -980,12 +1004,18 @@ deal_damage :: proc(g: ^Game, source: types.ObjectId, target: types.TargetRef, n
 	if n <= 0 do return
 	s := &g.state
 	src := object(s, source)
+	if damage_prevented(g, target, combat) do return // CR 615.6
 	if t, is_object := target.(types.TargetRef_Object); is_object {
 		// CR 122.1c: "If damage would be dealt to this permanent, prevent that damage and remove a shield counter
 		// from it." Prevented damage isn't dealt: no event, no lifelink.
-		if o := object(s, t._0); o != nil && o.zone == .Battlefield && counter_count(o, types.CounterType_Shield{}) > 0 {
-			remove_counters(o, types.CounterType_Shield{}, 1)
-			return
+		if o := object(s, t._0); o != nil && o.zone == .Battlefield {
+			// Combat damage is dealt at once (CR 510.2): one shield counter prevents all of it to this permanent.
+			if g.dealing_combat && slice.contains(g.shielded[:], o.id) do return
+			if counter_count(o, types.CounterType_Shield{}) > 0 {
+				remove_counters(o, types.CounterType_Shield{}, 1)
+				if g.dealing_combat do append(&g.shielded, o.id)
+				return
+			}
 		}
 	}
 	// CR 603.2: damage dealt is an event abilities can trigger on.
@@ -1048,6 +1078,7 @@ pump :: proc(g: ^Game, o: ^types.GameObject, power, toughness: i32) {
 
 end_until_end_of_turn_effects :: proc(g: ^Game) {
 	clear(&g.pumps)
+	clear(&g.preventions) // CR 514.2: "this turn" prevention ends
 	// CR 514.2: "until end of turn" control ends; the permanent goes back to who controlled it before, if it's still
 	// the same object.
 	kept := make([dynamic]Control_Change)
@@ -1069,6 +1100,7 @@ end_until_end_of_turn_effects :: proc(g: ^Game) {
 // "effect:Token", "keyword:Ward", ...), for the coverage report to rank what to build next. Empty when supported.
 card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 	out := make([dynamic]string, context.temp_allocator)
+	if misparsed(face.name) do append(&out, "card data: misparsed")
 	name :: proc(prefix: string, v: any) -> string {
 		full := fmt.tprintf("%v", reflect.union_variant_typeid(v))
 		if i := strings.last_index_byte(full, '_'); i >= 0 do full = full[i + 1:]

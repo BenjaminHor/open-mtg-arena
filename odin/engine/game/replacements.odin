@@ -69,6 +69,11 @@ ask_entry_payment :: proc(g: ^Game, after: types.PlayerId) -> bool {
 	return false
 }
 
+entry_payment_of_ok :: proc(o: ^types.GameObject) -> bool {
+	_, ok := entry_payment_of(o)
+	return ok
+}
+
 entry_payment_of :: proc(o: ^types.GameObject) -> (types.ReplacementDefinition, bool) {
 	if o.replacement_definitions == nil do return {}, false
 	for r in (^[dynamic]types.ReplacementDefinition)(o.replacement_definitions)^ do if _, ok := entry_payment(r); ok do return r, true
@@ -78,8 +83,15 @@ entry_payment_of :: proc(o: ^types.GameObject) -> (types.ReplacementDefinition, 
 // The answer: 0 pays the life (CR 119.4: only with at least that much life), 1 declines and it's tapped.
 answer_entry_payment :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_ReplacementChoice, index: int) -> bool {
 	s := &g.state
-	if len(g.entry_choices) == 0 || p != w.player || index < 0 || index > 1 do return false
+	if p != w.player || index < 0 || index > 1 do return false
+	if len(g.entry_choices) == 0 {
+		// A restored game: the prompt in the state names the land; priority then goes to the active player.
+		if len(w.candidates) == 0 do return false
+		append(&g.entry_choices, w.candidates[0].source_id)
+		g.entry_after = s.active_player
+	}
 	o := object(s, g.entry_choices[0])
+	if o == nil || entry_payment_of_ok(o) == false do return false
 	r, _ := entry_payment_of(o)
 	life, _ := entry_payment(r)
 	if index == 0 {

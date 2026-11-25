@@ -2910,6 +2910,13 @@ Progress:
   controllers are kept in Game (control_changes), beside the state like the pumps. 5,535 -> 5,565.
 - "All" zone changes: "return all creatures to their owners' hands" (BounceAll), "exile all creatures",
   "return all land cards from your graveyard to the battlefield tapped": 5,565 -> 5,575.
+- Prevention shields for the turn (CR 615: Fog's "prevent all combat damage", "prevent all damage that would be
+  dealt to it"), kept in Game (preventions).
+- Second rules review (2026-11-25), fixed with tests: a delayed "it" with no earlier target to name is refused
+  (Attack-in-the-Box, The Locust God and others played wrong), as is a condition inside a delayed ability; three
+  cards whose card data is wrong are refused by name (MISPARSED_CARDS in spells.odin: Phelia, Shallow Grave,
+  Vizier of Deferment); one shield counter prevents all simultaneous combat damage to its permanent (D-188); a
+  shockland prompt answered after a restore finds its land from the prompt. 5,575 -> 5,578 (with Fog's gains).
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

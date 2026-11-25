@@ -74,7 +74,7 @@ more_effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) 
 		return fixed && players_ok && x.damage_source == nil && mass_filter_supported(x.target), true
 	case types.Effect_DamageEachPlayer:
 		// "This deals 1 damage to each opponent."
-		return quantity_supported(x.amount) && player_filter_simple(x.player_filter), true
+		return quantity_supported(x.amount) && !quantity_reads_target(x.amount) && player_filter_simple(x.player_filter), true
 	case types.Effect_PutCounterAll:
 		// "Put a +1/+1 counter on each creature you control."
 		return quantity_supported(x.count) && !quantity_reads_target(x.count) && counter_kind_supported(x.counter_type) && mass_filter_supported(x.target), true

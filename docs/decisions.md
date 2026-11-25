@@ -2978,3 +2978,13 @@ reference (owner, 2026-11-24)** · 2026-11-24 · accepted
   `initialize_game` decodes and re-encodes equal (3 ms and 2 ms natively), apart from `wire_projection`, which only
   the export adds, and the fields the engine derives (`WRITE_ONLY_FIELDS`), which the Odin engine computes as it
   grows. Game state gets its own allocator, as the card database has, outliving each call's scratch arena.
+
+**D-188: One shield counter prevents all the combat damage dealt to its permanent at once** · 2026-11-25 · accepted
+
+- Question (rules review): a creature with a shield counter blocked by two creatures. CR 122.1c makes the
+  counters "a single prevention effect": "If damage would be dealt to this permanent, prevent that damage and
+  remove a shield counter from it." CR 510.2 deals all combat damage simultaneously.
+- Found (D-080): no ruling on the exact case in the card data; Rhox Pummeler's ruling and judge and player
+  discussions read the simultaneous combat damage as one event the shield prevents, one counter removed.
+- Decision: the Odin engine prevents all combat damage dealt to the permanent in that damage step and removes one
+  counter; noncombat damage from separate effects is separate events. Revisit if an official ruling says otherwise.

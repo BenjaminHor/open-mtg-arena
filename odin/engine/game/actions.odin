@@ -380,8 +380,10 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		mode_sets(&out, available[:], 0, make([dynamic]int, context.temp_allocator), w.modal.min_choices, w.modal.max_choices)
 		append(&out, types.GameAction_CancelCast{})
 	case types.WaitingFor_ReplacementChoice:
-		if len(g.entry_choices) > 0 {
-			o := object(s, g.entry_choices[0])
+		land: types.ObjectId
+		if len(g.entry_choices) > 0 do land = g.entry_choices[0]
+		else if len(w.candidates) > 0 do land = w.candidates[0].source_id
+		if o := object(s, land); o != nil && entry_payment_of_ok(o) {
 			r, _ := entry_payment_of(o)
 			life, _ := entry_payment(r)
 			if int(player(s, p).life) >= life do append(&out, types.GameAction_ChooseReplacement{index = 0})

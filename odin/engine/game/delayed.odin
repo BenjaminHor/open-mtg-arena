@@ -7,7 +7,9 @@ import types "../types"
 
 // "At the beginning of the next end step / upkeep / end of combat", with an instruction this engine carries out on
 // "it" (the object the instruction before named) and no targets of its own.
-delayed_trigger_supported :: proc(x: types.Effect_CreateDelayedTrigger) -> bool {
+// `after_target`: an instruction before it chose a target, which "it" can name (CR 608.2c); with none, an "it"
+// would name nothing, so that's refused.
+delayed_trigger_supported :: proc(x: types.Effect_CreateDelayedTrigger, after_target: bool) -> bool {
 	if x.effect == nil || x.uses_tracked_set do return false
 	c, at_next := x.condition.(types.DelayedTriggerCondition_AtNextPhase)
 	if !at_next do return false
@@ -17,10 +19,10 @@ delayed_trigger_supported :: proc(x: types.Effect_CreateDelayedTrigger) -> bool 
 		return false
 	}
 	for a := x.effect; a != nil; a = a.sub_ability {
-		if a.effect == nil do return false
+		if a.effect == nil || a.condition != nil do return false // "if you do" there would read nothing done yet
 		if _, targets := effect_target(a.effect^); targets do return false
 	}
-	return ability_supported(x.effect^, after_target = true)
+	return ability_supported(x.effect^, after_target = after_target)
 }
 
 // CR 603.7a, 603.7d: the ability exists from now, controlled by the resolving spell or ability's controller; "it"
