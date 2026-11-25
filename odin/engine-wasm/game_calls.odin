@@ -193,7 +193,14 @@ write_outcome :: proc(b: ^strings.Builder, applied: bool) {
 	} else {
 		// The engine's reason, when it gave one, after the client's usual message.
 		strings.write_string(b, `{"ok":{"status":"rejected","rejection":{"code":"invalid_action","disposition":"invalid","message":"That action isn't legal now.","reason":`)
-		json.write_string(b, game.rejection)
+		reason := game.rejection
+		if game.rejection_object != 0 {
+			// What's missing, for the fixture replayer's ranking of what to build next.
+			if o := game.object(&current.state, game.rejection_object); o != nil {
+				reason = strings.concatenate({reason, ": ", strings.join(game.object_gaps(o)[:], ", ", context.temp_allocator)}, context.temp_allocator)
+			}
+		}
+		json.write_string(b, reason)
 		strings.write_string(b, `,"related_object_ids":[]}}}`)
 	}
 }

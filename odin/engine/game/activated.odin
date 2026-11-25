@@ -198,7 +198,7 @@ can_activate :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: i
 	s := &g.state
 	a := activated_ability(o, index)
 	if a == nil do return refuse("no such ability")
-	if !object_supported(o, g.card_db) do return refuse("card not supported")
+	if !object_supported(o, g.card_db) do return refuse_unsupported(o)
 	// CR 602.2: a permanent's ability, by its controller; a hand ability (cycling), by the card's owner from their
 	// hand (CR 702.29a).
 	if zone, from_hand := a.activation_zone.?; from_hand {

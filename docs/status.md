@@ -2835,7 +2835,13 @@ Progress:
   client taps through TapLandForMana, not built yet); a cast in progress lives outside the saved state, so saving
   mid-cast loses it (CLAUDE.md wants every pending decision in state); cleanup-step priority (CR 514.3a); tests
   still missing for cancelling at the mode/X/kicker prompts and for the this-turn amounts resetting.
-- Next: TapLandForMana; mana pool order and source ids; the cast in progress kept in state.
+- Full replay at 10b8258 (lockstep, cast-time stack entry, review fixes): 597 of 11,160 pass (5.3%). First
+  differences: card not supported 6,052 (CastSpell 4,445, ActivateAbility 1,607), stack 1,127, waiting_for 869,
+  phase 254, not castable from its zone 225, priority player 210, DeclareAttackers refused 161, Debug actions 141.
+  The refusal reason now lists the object's missing pieces, so these can be ranked by mechanic.
+- Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
+  (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
+  the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
 - Step 3 progress (2026-11-24, night 2): you may / if you do, library search and shuffle, sacrifice effects,
   counterspells, blink and graveyard either-or targets, each player / each opponent instructions, cycling,
   required additional costs, kicker, predefined tokens (Treasure, Food, Clue, Shard, Heartwood; others

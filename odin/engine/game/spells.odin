@@ -440,7 +440,7 @@ castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c
 	// From the hand, a commander from the command zone (CR 903.8), or a card with flashback from the graveyard
 	// (CR 702.34a).
 	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander) || flashback_castable(o, p)) do return refuse("not castable from its zone")
-	if !object_supported(o, card_db) do return refuse("card not supported")
+	if !object_supported(o, card_db) do return refuse_unsupported(o)
 	if !can_cast_now(s, p, o) do return refuse("not now (timing or priority)")
 	if is_modal(o) {
 		if !modes_castable(s, p, o) do return refuse("no castable modes")
@@ -455,9 +455,30 @@ castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c
 @(thread_local)
 rejection: string
 
+// The object whose support the last refusal was about, for the reply to list what's missing (object_gaps).
+@(thread_local)
+rejection_object: types.ObjectId
+
 refuse :: proc(why: string) -> bool {
 	rejection = why
+	rejection_object = 0
 	return false
+}
+
+refuse_unsupported :: proc(o: ^types.GameObject) -> bool {
+	rejection = "card not supported"
+	rejection_object = o.id
+	return false
+}
+
+// What the engine is missing to carry out this object (as card_gaps, from the object's own abilities).
+object_gaps :: proc(o: ^types.GameObject) -> [dynamic]string {
+	f := object_face(o)
+	if o.trigger_definitions != nil {
+		f.triggers = make([dynamic]types.TriggerDefinition, context.temp_allocator)
+		for e in o.trigger_definitions^ do append(&f.triggers, e.definition)
+	}
+	return card_gaps(&f)
 }
 
 // The total cost to cast it: its mana cost, plus {2} for each earlier cast of a commander from the command zone
