@@ -2908,6 +2908,8 @@ Progress:
 - "Gain control of target creature until end of turn" (or for good): layer 2 (CR 613.1b), out of combat (CR
   506.4), summoning sick for its new controller (CR 302.6), given back in the cleanup step (CR 514.2). The previous
   controllers are kept in Game (control_changes), beside the state like the pumps. 5,535 -> 5,565.
+- "All" zone changes: "return all creatures to their owners' hands" (BounceAll), "exile all creatures",
+  "return all land cards from your graveyard to the battlefield tapped": 5,565 -> 5,575.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

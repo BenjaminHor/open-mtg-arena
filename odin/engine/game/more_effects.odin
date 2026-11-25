@@ -78,8 +78,39 @@ more_effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) 
 	case types.Effect_PutCounterAll:
 		// "Put a +1/+1 counter on each creature you control."
 		return quantity_supported(x.count) && !quantity_reads_target(x.count) && counter_kind_supported(x.counter_type) && mass_filter_supported(x.target), true
+	case types.Effect_ChangeZoneAll:
+		return change_zone_all_supported(x), true
+	case types.Effect_BounceAll:
+		// "Return all creatures to their owners' hands."
+		if d, has := x.destination.?; has && d != .Hand do return false, true
+		return x.count == nil && mass_filter_supported(x.target), true
 	}
 	return false, false
+}
+
+// "Return all creatures to their owners' hands", "exile all cards from all graveyards", "return all land cards
+// from your graveyard to the battlefield tapped".
+change_zone_all_supported :: proc(x: types.Effect_ChangeZoneAll) -> bool {
+	if _, controller := x.actor.(types.LibraryInstructionActor_Controller); x.actor != nil && !controller do return false
+	if c, has := x.enters_under.?; has {
+		if _, you := c.(types.ControllerRef_You); !you do return false
+	}
+	if x.enters_attacking || len(x.enter_with_counters) > 0 || x.face_down_profile != nil || x.library_position != nil || x.random_order do return false
+	if x.enter_tapped == .Untapped || !mass_filter_supported(x.target) do return false
+	origin := x.origin.? or_else .Battlefield
+	#partial switch origin {
+	case .Battlefield:
+		#partial switch x.destination {
+		case .Hand, .Graveyard, .Exile:
+			return true
+		}
+	case .Graveyard:
+		#partial switch x.destination {
+		case .Hand, .Battlefield, .Exile:
+			return true
+		}
+	}
+	return false
 }
 
 // "Each opponent", "each player", "you": the players an each-player instruction reaches.
@@ -184,6 +215,31 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 		// CR 120.3: damage to each player the instruction names, from its source.
 		n := quantity_value(s, x.amount, controller, source, 0)
 		for p in s.players do if player_filter_matches(x.player_filter, p.id, controller) do deal_damage(g, source, types.TargetRef_Player{p.id}, n)
+	case types.Effect_ChangeZoneAll:
+		// All at once (CR 608.2c: those that match as it resolves).
+		origin := x.origin.? or_else .Battlefield
+		moving := make([dynamic]^types.GameObject, context.temp_allocator)
+		if origin == .Battlefield {
+			append(&moving, ..affected_permanents(s, x.target, controller, source)[:])
+		} else {
+			for &p in s.players do for id in ids_of(p.graveyard) {
+				if o := object(s, id); mass_filter_matches(s, o, x.target, controller, source) do append(&moving, o)
+			}
+		}
+		together := begin_together()
+		for o in moving {
+			move_object(g, o.id, x.destination)
+			if x.destination == .Battlefield {
+				if _, has := x.enters_under.?; has do o.controller = controller // CR 110.2a
+				if x.enter_tapped == .Tapped do o.tapped = true
+			}
+		}
+		end_together(together)
+	case types.Effect_BounceAll:
+		// To their owners' hands (CR 400.3), all at once.
+		together := begin_together()
+		for o in affected_permanents(s, x.target, controller, source) do move_object(g, o.id, .Hand)
+		end_together(together)
 	case types.Effect_PutCounterAll:
 		// CR 122.6: counters put on each matching permanent.
 		n := quantity_value(s, x.count, controller, source, 0)

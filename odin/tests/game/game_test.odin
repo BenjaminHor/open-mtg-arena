@@ -2781,3 +2781,36 @@ gain_control_until_end_of_turn :: proc(t: ^testing.T) {
 	game.cleanup(g)
 	testing.expect(t, bears.controller == 1, "back to its controller at end of turn")
 }
+
+@(test)
+return_all_creatures :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Evacuation: "Return all creatures to their owners' hands": each to its owner's hand (CR 400.3), all at once.
+	testing.expect(t, game.card_supported(&card(t, "Evacuation").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 5 do add(t, g, "Island", 0, .Battlefield)
+	mine := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	spell := add(t, g, "Evacuation", 0, .Hand) // {3}{U}{U}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, mine.zone == .Hand && theirs.zone == .Hand, "both returned")
+	testing.expect(t, slice.contains(game.ids_of(game.player(s, 1).hand), theirs.id), "to its owner's hand")
+}
+
+@(test)
+exile_all_creatures :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Beyond the Quiet: "Exile all creatures and Spacecraft": every permanent matching either, at once.
+	testing.expect(t, game.card_supported(&card(t, "Beyond the Quiet").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 6 do add(t, g, "Plains", 0, .Battlefield)
+	mine := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	spell := add(t, g, "Beyond the Quiet", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, mine.zone == .Exile && theirs.zone == .Exile, "both exiled")
+}

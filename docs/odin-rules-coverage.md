@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 268 of 2880 rules implemented (9%), 119 of them tested.**
+**In scope (100-799): 268 of 2880 rules implemented (9%), 120 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -66,7 +66,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 313 vanguards | 7 | 0 (0%) | 0 |
 | 314 schemes | 7 | 0 (0%) | 0 |
 | 315 conspiracies | 9 | 0 (0%) | 0 |
-| 400 general | 29 | 3 (10%) | 1 |
+| 400 general | 29 | 3 (10%) | 2 |
 | 401 library | 7 | 0 (0%) | 0 |
 | 402 hand | 3 | 1 (33%) | 0 |
 | 403 battlefield | 5 | 0 (0%) | 0 |
@@ -1101,7 +1101,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 
 - ⬜ 400.1 A zone is a place where objects can be during a game. There are normally seven zones: library, hand, battle...
 - ⬜ 400.2 Public zones are zones in which all players can see the cards’ faces, except for those cards that some rule...
-- 🟡 400.3 If an object would go to any library, graveyard, or hand other than its owner’s, it goes to its owner’s cor...
+- ✅ 400.3 If an object would go to any library, graveyard, or hand other than its owner’s, it goes to its owner’s cor...
 - ⬜ 400.4 Cards with certain card types can’t enter certain zones.
 - ⬜ 400.4a If an instant or sorcery card would enter the battlefield, it remains in its previous zone.
 - ⬜ 400.4b If a conspiracy, phenomenon, plane, scheme, or vanguard card would leave the command zone, it remains in th...
