@@ -113,7 +113,8 @@ mana_ability_option :: proc(a: types.AbilityDefinition, s: ^types.GameState = ni
 			return
 		}
 	}
-	if !taps && option.mana_cost == nil do return
+	// "Sacrifice this creature: Add {C}" (an Eldrazi Spawn): no {T}, activated by the player (CR 605.3a).
+	if !taps && option.mana_cost == nil && option.rider != .Sacrifice do return
 	option.taps = taps
 	colors, amount, counted := produced_mana(a, s, o)
 	option.colors, option.amount = colors, amount

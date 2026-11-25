@@ -542,6 +542,7 @@ collect_triggers :: proc(g: ^Game) {
 				t := &entry.definition
 				if _, either := t.mode.(types.TriggerMode_EntersOrAttacks); either && trigger_supported(t^) do add_trigger(g, o.id, o.controller, t)
 			}
+			decayed_triggers(g, o) // CR 702.147a
 			// "Whenever [this / equipped creature / a creature you control] attacks": each permanent watching.
 			for id in ids_of(s.battlefield) {
 				w := object(s, id)

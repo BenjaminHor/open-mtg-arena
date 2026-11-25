@@ -82,7 +82,8 @@ keyword_supported :: proc(k: types.Keyword) -> bool {
 	     types.Keyword_FirstStrike, types.Keyword_DoubleStrike, types.Keyword_Flash, types.Keyword_Menace,
 	     types.Keyword_Indestructible, types.Keyword_Hexproof, types.Keyword_Shroud, types.Keyword_Prowess,
 	     types.Keyword_Convoke, // CR 702.51a: paying with creatures (mana.odin)
-	     types.Keyword_Changeling, types.Keyword_Devoid, types.Keyword_Toxic: // CR 702.73a, 702.114a, 702.164c
+	     types.Keyword_Changeling, types.Keyword_Devoid, types.Keyword_Toxic, // CR 702.73a, 702.114a, 702.164c
+	     types.Keyword_Decayed: // CR 702.147a (keywords.odin)
 		return true
 	case types.Keyword_Crew:
 		return k.once_per_turn == nil // CR 702.122 (crew.odin)

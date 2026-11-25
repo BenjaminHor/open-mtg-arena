@@ -3064,6 +3064,9 @@ Progress:
 - "As this land enters, you may reveal a [kind of] card from your hand; if you don't, it enters tapped" (CR 614.12,
   701.20a; "an Island or Swamp card" too), and permanents entering with any counter the engine knows (oil, charge,
   ...: CR 122.1). 6,893 -> 6,909.
+- Mana abilities with a sacrifice cost and no {T} ("Sacrifice this creature: Add {C}", Eldrazi Spawn and Scion
+  tokens; activated by the player, CR 605.3a), and decayed (CR 702.147a: can't block; when it attacks, a delayed
+  trigger sacrifices it at end of combat). 6,909 -> 6,930.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

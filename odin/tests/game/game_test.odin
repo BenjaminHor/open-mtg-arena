@@ -4601,3 +4601,58 @@ reveal_a_card_or_enter_tapped :: proc(t: ^testing.T) {
 	_, asked := g.state.waiting_for.(types.WaitingFor_RevealChoice)
 	testing.expect(t, !asked && hovel.tapped, "tapped, nothing to reveal")
 }
+
+@(test)
+sacrifice_a_spawn_for_mana :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Brood Monitor: "When this creature enters, create three 1/1 colorless Eldrazi Scion creature tokens with
+	// 'Sacrifice this creature: Add {C}.'" CR 605.1a: a mana ability with no {T} in its cost, so a token that has just
+	// entered (summoning sick, CR 302.6) can be sacrificed for mana; the player activates it (CR 605.3a).
+	testing.expect(t, game.card_supported(&card(t, "Brood Monitor").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 6 do add(t, g, "Forest", 0, .Battlefield) // {4}{G}{G}
+	monitor := add(t, g, "Brood Monitor", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = monitor.id}))
+	settle_stack(g)
+	spawns := make([dynamic]^types.GameObject)
+	for id in game.ids_of(s.battlefield) do if o := game.object(s, id); o.is_token && o.name == "Eldrazi Scion" do append(&spawns, o)
+	testing.expectf(t, len(spawns) == 3, "three Scions: %d", len(spawns))
+	if len(spawns) == 0 do return
+	spawn := spawns[0]
+	index := -1
+	if spawn.abilities != nil do for a, i in spawn.abilities^ do if _, is_mana := a.effect.(types.Effect_Mana); is_mana do index = i
+	testing.expect(t, index >= 0, "it has the mana ability")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = spawn.id, ability_index = index}))
+	testing.expect(t, spawn.zone != .Battlefield, "sacrificed")
+	colorless := 0
+	for u in s.players[0].mana_pool.mana do if u.color == .Colorless do colorless += 1
+	testing.expect(t, colorless == 1, "added {C}")
+}
+
+@(test)
+decayed_cant_block_and_is_sacrificed_after_attacking :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.147a: decayed means "This creature can't block" and "When this creature attacks, sacrifice it at end
+	// of combat." Falcon Abomination's Zombie token has decayed; here a Grizzly Bears given the keyword.
+	g := new_game()
+	s := &g.state
+	zombie := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	append(&zombie.base_keywords, types.Keyword_Decayed{})
+	game.apply_continuous_effects(g)
+	attacker := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, !game.can_block(g, zombie, attacker), "can't block")
+	game.begin_step(g, .DeclareAttackers)
+	attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{zombie.id, types.AttackTarget_Player{1}}}
+	testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
+	for _ in 0 ..< 40 {
+		if zombie.zone != .Battlefield || s.phase == .PostCombatMain do break
+		if _, blocking := s.waiting_for.(types.WaitingFor_DeclareBlockers); blocking {
+			game.apply(g, 1, types.GameAction_DeclareBlockers{})
+			continue
+		}
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expectf(t, zombie.zone == .Graveyard, "sacrificed at end of combat, in %v", zombie.zone)
+	testing.expect(t, s.players[1].life == 18, "after dealing its damage")
+}

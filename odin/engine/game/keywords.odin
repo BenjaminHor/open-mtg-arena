@@ -58,3 +58,45 @@ investigate_token :: proc() -> types.Effect {
 	})
 	return clue_token
 }
+
+// CR 702.147a: Decayed, "This creature can't block" (combat.odin's can_block) and "When this creature attacks,
+// sacrifice it at end of combat": the triggered ability as the card data writes it out for "when ~ attacks,
+// sacrifice it at end of combat" (a delayed trigger, CR 603.7).
+@(private = "file")
+decayed_sacrifice: types.Effect
+@(private = "file")
+decayed_sacrifice_ability: types.AbilityDefinition
+@(private = "file")
+decayed_delayed: types.Effect
+@(private = "file")
+decayed_ability: types.AbilityDefinition
+@(private = "file")
+decayed_definition: types.TriggerDefinition
+@(private = "file")
+decayed_once: sync.Once
+
+@(private = "file")
+decayed_trigger :: proc() -> ^types.TriggerDefinition {
+	sync.once_do(&decayed_once, proc() {
+		decayed_sacrifice = types.Effect_Sacrifice{target = types.TargetFilter_SelfRef{}, count = types.QuantityExpr_Fixed{value = 1}}
+		decayed_sacrifice_ability.kind = .Spell
+		decayed_sacrifice_ability.effect = &decayed_sacrifice
+		decayed_delayed = types.Effect_CreateDelayedTrigger{condition = types.DelayedTriggerCondition_AtNextPhase{phase = .EndCombat}, effect = &decayed_sacrifice_ability}
+		decayed_ability.kind = .Spell
+		decayed_ability.effect = &decayed_delayed
+		decayed_ability.description = "Decayed"
+		decayed_definition.mode = types.TriggerMode_Attacks{}
+		decayed_definition.valid_card = types.TargetFilter_SelfRef{}
+		decayed_definition.execute = &decayed_ability
+		decayed_definition.description = "Decayed"
+	})
+	return &decayed_definition
+}
+
+// The decayed trigger of a creature that attacks (CR 702.147a): each instance triggers; the first sacrifice is the
+// only one that does anything (the others find a new object, CR 400.7).
+decayed_triggers :: proc(g: ^Game, attacker: ^types.GameObject) {
+	for k in attacker.keywords do if _, decayed := k.(types.Keyword_Decayed); decayed {
+		add_trigger(g, attacker.id, attacker.controller, decayed_trigger())
+	}
+}
