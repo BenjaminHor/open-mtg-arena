@@ -45,7 +45,7 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 		case types.QuantityRef_PreviousEffectAmount:
 			return previous_amount_readable(r.channel) && r.aggregate == .Sum
 		case types.QuantityRef_TrackedSetSize:
-			return previous_instruction != nil && moves_cards(previous_instruction^)
+			return previous_instruction != nil && moves_counted_cards(previous_instruction^)
 		case types.QuantityRef_PlayerCounter:
 			// "The number of poison counters you have" (CR 122.1f), experience, rad and ticket counters.
 			#partial switch r.scope {
@@ -58,7 +58,7 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			if k, has := r.counter_type.?; has && !counter_kind_supported(k) do return false
 			return mass_filter_supported(r.filter)
 		case types.QuantityRef_FilteredTrackedSetSize:
-			if previous_instruction == nil || !moves_cards(previous_instruction^) || r.filter == nil do return false
+			if previous_instruction == nil || !moves_counted_cards(previous_instruction^) || r.filter == nil do return false
 			if cause, has := r.caused_by.?; has && cause_zone(cause) == nil do return false
 			typed, is_typed := r.filter.(types.TargetFilter_Typed)
 			return is_typed && typed_supported(typed._0)

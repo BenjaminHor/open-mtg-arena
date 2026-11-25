@@ -5699,3 +5699,25 @@ preparation_card_casts_its_prepare_spell :: proc(t: ^testing.T) {
 	game.check_state_based_actions(g)
 	testing.expect(t, game.prepared_copy_of(s, second.id) == nil, "gone with the creature")
 }
+
+// The seventh rules review's fixes (2026-11-25). Refused until done right: Mysterio's tokens and "those tokens"
+// straight after them (the data lost "when Mysterio leaves the battlefield", CR 603.6c); "then return them" after two
+// exiles (CR 608.2c: both cards, which the last instruction alone didn't move); a mana ability whose mana comes after
+// another instruction (CR 605.1a: it doesn't use the stack); returning a permanent that could be an Aura (CR
+// 303.4f: what it enchants is chosen as it enters). Excess damage (CR 120.4a): beyond 1 from a deathtouch source,
+// beyond a planeswalker's loyalty, none to a player.
+@(test)
+seventh_review_fixes :: proc(t: ^testing.T) {
+	if !load_db() do return
+	for name in ([]string{"Mysterio, Master of Illusion", "Don & Leo, Problem Solvers", "Empowered Autogenerator", "Flicker"}) {
+		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s stays unsupported", name)
+	}
+	g := new_game()
+	s := &g.state
+	rats := add(t, g, "Typhoid Rats", 0, .Battlefield) // deathtouch
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect_value(t, game.excess_damage(s, rats, types.TargetRef_Object{bears.id}, 3), 2)
+	jace := add(t, g, "Jace Beleren", 1, .Battlefield)
+	testing.expect_value(t, game.excess_damage(s, nil, types.TargetRef_Object{jace.id}, int(jace.loyalty.? or_else 0) + 1), 1)
+	testing.expect_value(t, game.excess_damage(s, nil, types.TargetRef_Player{1}, 5), 0)
+}

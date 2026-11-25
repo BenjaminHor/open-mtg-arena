@@ -152,11 +152,12 @@ spell_ability_supported :: proc(a: types.AbilityDefinition) -> bool {
 // targets and (for triggered abilities, CR 603.5) whether to do it at all.
 // `after_target`: an earlier instruction of the same ability chose a target, which "it" or "that creature" can
 // refer to.
-ability_supported :: proc(a: types.AbilityDefinition, after_target := false, after_search := false, after_chosen_target := false, previous: ^types.Effect = nil) -> bool {
+ability_supported :: proc(a: types.AbilityDefinition, after_target := false, after_search := false, after_chosen_target := false, previous: ^types.Effect = nil, before_previous: ^types.Effect = nil) -> bool {
 	if a.effect == nil || a.optional_targeting || a.modal != nil do return false
-	outer := previous_instruction
+	outer, outer_before := previous_instruction, instruction_before_previous
+	instruction_before_previous = before_previous
 	previous_instruction = previous
-	defer previous_instruction = outer
+	defer previous_instruction, instruction_before_previous = outer, outer_before
 	if c, has := a.condition.?; has && !ability_condition_supported(c) do return false
 	// "Each player draws", "an opponent draws", "for each creature chosen": scopes and groups not carried out yet.
 	// (Declaring a group is harmless while nothing reads it; reading one isn't supported.)
@@ -194,7 +195,7 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	}
 	// A target chosen (not "enchanted creature", which names the one it's attached to).
 	chosen := targets && !names_attachment(effect_target_filter(a.effect^))
-	if a.sub_ability != nil do return ability_supported(a.sub_ability^, after_target || targets, after_search || searches, after_chosen_target || chosen, a.effect)
+	if a.sub_ability != nil do return ability_supported(a.sub_ability^, after_target || targets, after_search || searches, after_chosen_target || chosen, a.effect, previous)
 	return true
 }
 
@@ -1382,6 +1383,7 @@ excess_damage :: proc(s: ^types.GameState, src: ^types.GameObject, target: types
 		excess = max(excess, n - lethal)
 	}
 	if is_type(o, .Planeswalker) do excess = max(excess, n - int(o.loyalty.? or_else 0))
+	if is_type(o, .Battle) do excess = max(excess, n - int(o.defense.? or_else 0))
 	return max(excess, 0)
 }
 
@@ -1536,10 +1538,10 @@ static_gap :: proc(st: types.StaticDefinition) -> string {
 }
 
 @(private = "file")
-ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: string, previous: ^types.Effect = nil) {
-	outer := previous_instruction
-	previous_instruction = previous // "this way" reads the instruction before (as ability_supported checks it)
-	defer previous_instruction = outer
+ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: string, previous: ^types.Effect = nil, before_previous: ^types.Effect = nil) {
+	outer, outer_before := previous_instruction, instruction_before_previous
+	previous_instruction, instruction_before_previous = previous, before_previous // as ability_supported checks it
+	defer previous_instruction, instruction_before_previous = outer, outer_before
 	if c, has := a.condition.?; has && !ability_condition_supported(c) {
 		// Named by its kind ("spell:condition:IsYourTurn"); one made of others by the first part not supported.
 		inner := unsupported_condition_part(c)
@@ -1589,7 +1591,7 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 		}
 		append(out, strings.concatenate({"effect:", full, detail}, context.temp_allocator))
 	}
-	if a.sub_ability != nil do ability_gaps(out, a.sub_ability^, prefix, a.effect)
+	if a.sub_ability != nil do ability_gaps(out, a.sub_ability^, prefix, a.effect, previous)
 }
 
 is_land_face :: proc(face: ^types.CardFace) -> bool {

@@ -166,11 +166,13 @@ continue_resolution :: proc(g: ^Game) -> bool {
 	for r.next != nil {
 		// What the instruction just carried out moved, before the next one reads "this way". An instruction skipped
 		// for its condition carries nothing out, so "this way" still means the one before it.
-		if r.events_mark >= 0 && r.events_mark <= len(g.events) {
+		// A scoped instruction resuming after a player's choice: what it does for every player is noted once it's done.
+		resuming_scope_now := r.next != nil && r.next == r.scope_node
+		if !resuming_scope_now && r.events_mark >= 0 && r.events_mark <= len(g.events) {
 			note_moved(g, r.events_mark)
 			if r.current != nil do note_amount(g, r.current.effect, r.events_mark)
 		}
-		r.events_mark = -1
+		if !resuming_scope_now do r.events_mark = -1
 		x := r.next
 		r.next = x.sub_ability
 		previous := r.current

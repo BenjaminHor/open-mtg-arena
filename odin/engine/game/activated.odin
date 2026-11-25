@@ -16,7 +16,9 @@ activated_supported :: proc(a: types.AbilityDefinition) -> bool {
 	}
 	// An activated ability that adds mana is a mana ability (CR 605.1a): it doesn't use the stack, and it's carried out
 	// by mana.odin (mana_ability_option) or not at all.
+	// Anywhere in it: "{T}: Put a charge counter on this. Add X mana of any one color" is one too.
 	if _, adds_mana := a.effect.(types.Effect_Mana); adds_mana do return false
+	for x := a.sub_ability; x != nil; x = x.sub_ability do if x.effect != nil do if _, adds_mana := x.effect^.(types.Effect_Mana); adds_mana do return false
 	cost, has := a.cost.?
 	if !has || !cost_supported(cost) do return false
 	if a.activator_filter != nil || a.activation_mana_payment_restriction != nil do return false

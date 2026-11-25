@@ -11,6 +11,9 @@ import types "../types"
 // would name nothing, so that's refused.
 delayed_trigger_supported :: proc(x: types.Effect_CreateDelayedTrigger, after_target: bool) -> bool {
 	if x.effect == nil do return false
+	// "Those tokens" may name the tokens just made, for a delayed ability (zone_effects.odin's moves_cards).
+	checking_delayed = true
+	defer checking_delayed = false
 	// "Return those cards at the beginning of the next end step": the cards the instruction before moved, kept by
 	// the delayed ability (only a zone change reading them, after an instruction that moves cards).
 	// (The data sometimes names them as the earlier target, "it", which is the same card.)
@@ -26,7 +29,7 @@ delayed_trigger_supported :: proc(x: types.Effect_CreateDelayedTrigger, after_ta
 		if a.effect == nil || a.condition != nil do return false // "if you do" there would read nothing done yet
 		if _, targets := effect_target(a.effect^); targets do return false
 	}
-	if x.uses_tracked_set do return ability_supported(x.effect^, after_target = after_target, previous = previous_instruction)
+	if x.uses_tracked_set do return ability_supported(x.effect^, after_target = after_target, previous = previous_instruction, before_previous = instruction_before_previous)
 	return ability_supported(x.effect^, after_target = after_target)
 }
 

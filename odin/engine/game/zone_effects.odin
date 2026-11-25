@@ -54,10 +54,18 @@ change_zone_supported :: proc(x: types.Effect_ChangeZone) -> bool {
 	if is_self(x.target) do return true
 	if has_origin && origin == .Library && is_any(x.target) do return x.destination != .Library // the found cards
 	// "Return it to the battlefield": the earlier instruction's target, wherever that put it (CR 608.2c).
-	if _, parent := x.target.(types.TargetFilter_ParentTarget); parent do return true
+	if _, parent := x.target.(types.TargetFilter_ParentTarget); parent {
+		// An Aura returned would need what it enchants chosen as it enters (CR 303.4f): not yet.
+		if x.destination != .Battlefield do return true
+		return previous_instruction == nil || !may_match_aura(effect_target_filter(previous_instruction^))
+	}
 	// "Exile it, then return that card to the battlefield": what the instruction before moved (CR 400.7j), after one
 	// that moves cards.
-	if _, tracked := x.target.(types.TargetFilter_TrackedSet); tracked do return previous_instruction != nil && moves_cards(previous_instruction^)
+	if _, tracked := x.target.(types.TargetFilter_TrackedSet); tracked {
+		if previous_instruction == nil || !moves_cards(previous_instruction^) do return false
+		if instruction_before_previous != nil && moves_cards(instruction_before_previous^) do return false
+		return x.destination != .Battlefield || !may_match_aura(effect_target_filter(previous_instruction^))
+	}
 	if _, from_graveyard := graveyard_filter(x.target); from_graveyard do return !has_origin || origin == .Graveyard
 	if either, is_or := x.target.(types.TargetFilter_Or); is_or && has_origin && origin == .Graveyard {
 		// "Target instant or sorcery card from your graveyard".
@@ -252,15 +260,58 @@ change_zone_of :: proc(g: ^Game, x: types.Effect_ChangeZone, moved: ^types.GameO
 	}
 }
 
-// Instructions that move cards, which "that card" / "those cards" after them can read (resolution.odin's moved).
+// Instructions that move cards, which "that card" / "those cards" after them can name (resolution.odin's moved):
+// exiling, returning, milling. Tokens just made only within a delayed ability ("sacrifice those tokens at the
+// beginning of the next end step"): straight after the instruction that makes them, "those" is a leaves-the-
+// battlefield ability's (CR 603.6c) the data has lost.
 moves_cards :: proc(e: types.Effect) -> bool {
 	#partial switch _ in e {
 	case types.Effect_ChangeZone, types.Effect_ChangeZoneAll, types.Effect_ExileTop, types.Effect_Bounce, types.Effect_Mill:
 		return true
 	case types.Effect_Token, types.Effect_CopyTokenOf:
-		return true // "those tokens": the ones it created (they entered the battlefield, a zone change)
-	case types.Effect_Destroy, types.Effect_DestroyAll, types.Effect_Sacrifice, types.Effect_Discard:
-		return true // to a graveyard
+		return checking_delayed
 	}
 	return false
 }
+
+// Instructions whose moved cards a count can read ("for each creature destroyed this way"): any of the above, and
+// destroying, sacrificing, discarding (to a graveyard).
+moves_counted_cards :: proc(e: types.Effect) -> bool {
+	#partial switch _ in e {
+	case types.Effect_Destroy, types.Effect_DestroyAll, types.Effect_Sacrifice, types.Effect_Discard:
+		return true
+	}
+	return moves_cards(e)
+}
+
+// Whether a filter can match an Aura: one returned to the battlefield is attached as it enters (CR 303.4f), which
+// isn't done yet, so such returns are refused.
+may_match_aura :: proc(f: types.TargetFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Typed:
+		if len(x._0.type_filters) == 0 do return true
+		for t in x._0.type_filters {
+			#partial switch y in t {
+			case types.TypeFilter_Creature, types.TypeFilter_Land, types.TypeFilter_Artifact, types.TypeFilter_Planeswalker, types.TypeFilter_Battle, types.TypeFilter_Instant, types.TypeFilter_Sorcery:
+			case types.TypeFilter_Subtype:
+				if y._0 == "Aura" do return true
+			case:
+				return true // enchantment, permanent, card, any, "non-": could be an Aura
+			}
+		}
+		return false
+	case types.TargetFilter_Or:
+		for y in x.filters do if may_match_aura(y) do return true
+		return false
+	}
+	return true
+}
+
+// "Those cards" after two instructions that both moved cards ("exile target artifact and target creature, then
+// return them"): the data's last instruction alone moved only some of them, so this isn't read yet.
+@(thread_local)
+instruction_before_previous: ^types.Effect
+
+// While a delayed ability's instructions are checked (delayed.odin).
+@(thread_local)
+checking_delayed: bool

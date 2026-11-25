@@ -3207,6 +3207,14 @@ Progress:
   unprepared (704.5e, checked with the state-based actions). The AI casts it like a spell in hand. Test:
   `preparation_card_casts_its_prepare_spell`. Coverage 7,585 (+35). Also: player counters ("for each poison counter
   your opponents have") and counters on a group of permanents as amounts (7,550).
+- Seventh rules review (2026-11-25, after 7c93cd6..e19dc9b), fixed: Mysterio's "those tokens" straight after
+  making them refused (tokens count as moved only within a delayed ability); "then return them" after two moving
+  instructions refused (Don & Leo); an activated ability with mana anywhere in it is a mana ability, refused as an
+  ordinary one (Empowered Autogenerator, CR 605.1a); returns to the battlefield of what could be an Aura refused
+  until CR 303.4f is built (Flicker); a scoped instruction resuming after a choice notes its moves once done;
+  counts read destroyed/sacrificed/discarded cards, "those cards" doesn't; battles' excess damage. Test:
+  `seventh_review_fixes`. Not done (noted): the "X resolves" log line for a spell whose targets are all illegal;
+  the pending mana color amount lives outside the state.
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 
