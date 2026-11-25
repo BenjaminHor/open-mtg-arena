@@ -626,6 +626,7 @@ castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c
 	// From the hand, a commander from the command zone (CR 903.8), or a card with flashback from the graveyard
 	// (CR 702.34a).
 	_, from_exile := exile_permission(o, p)
+	if adventure_permission(o, p) do from_exile = true // CR 716.3d: the creature, after its Adventure
 	if is_type(o, .Land) do from_exile = false // a land is played, not cast
 	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander) || flashback_castable(o, p) || from_exile) do return refuse("not castable from its zone")
 	if !object_supported(o, card_db) do return refuse_unsupported(o)
@@ -729,6 +730,13 @@ layout_gap :: proc(e: ^types.CardExportEntry, name: string) -> (gap: string, has
 		if !card_supported(&back.face, back_face = true) do return "back face", true
 		return "", false
 	}
+	if has_layout && layout == "adventure" {
+		// An adventurer card (adventure.odin): supported when its Adventure is.
+		adventure := adventure_face(e)
+		if adventure == nil do return "layout:adventure (no Adventure)", true
+		if !card_supported(&adventure.face) do return "adventure", true
+		return "", false
+	}
 	if !has_layout || layout == "" do layout = "multi-face"
 	return strings.concatenate({"layout:", layout}, context.temp_allocator), true
 }
@@ -773,9 +781,14 @@ object_face :: proc(o: ^types.GameObject) -> types.CardFace {
 
 // CR 601.2: casting. The card moves to the stack (601.2a), its targets are chosen (601.2c; when the action didn't
 // name them, the player is asked, one target at a time), the cost is paid (601.2g-h) and the spell becomes cast.
-cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []types.TargetRef) -> bool {
+cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []types.TargetRef, adventure_decided := false) -> bool {
 	s := &g.state
 	o := object(s, id)
+	if o == nil do return false
+	if !adventure_decided && len(targets) == 0 {
+		// CR 716.3: the creature or its Adventure (adventure.odin).
+		if handled, ok := offer_adventure(g, p, o); handled do return ok
+	}
 	if !castable(s, p, o, g.card_db) do return false
 	slots := spell_slot_list(o)
 	g.pending = Pending_Cast{object = id, ability_index = -1}
@@ -813,14 +826,16 @@ announce_spell :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObj
 
 // The spell's entry while it's being cast, taken off the stack: the cast was reversed (CR 734), or it's done and its
 // full entry takes the place.
-withdraw_spell :: proc(s: ^types.GameState, id: types.ObjectId) {
+withdraw_spell :: proc(s: ^types.GameState, id: types.ObjectId, reversed := true) {
 	n := types.pvec_len(s.stack)
 	if n == 0 do return
 	top := types.pvec_get(s.stack, n - 1)
 	// CR 601.2a: it's the topmost object while it's cast; nothing can be put above it before it's cast.
 	if _, spell := top.kind.(types.StackEntryKind_Spell); !spell || top.id != id do return
-	if o := object(s, id); o == nil || o.zone == .Stack do return // already cast: not an announcement
+	o := object(s, id)
+	if o == nil || o.zone == .Stack do return // already cast: not an announcement
 	types.pvec_pop(&s.stack, copy_entry)
+	if reversed && showing_adventure(o) do show_creature(current_card_db, o) // a reversed Adventure: the creature (CR 716.4)
 }
 
 // CR 601.2b: the announcements in order: kicker, then X; then targets (601.2c) and paying (601.2h).
@@ -1001,14 +1016,16 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 		s.commander_cast_count[o.id] += 1
 		o.commander_tax = 2 * s.commander_cast_count[o.id]
 	}
-	withdraw_spell(s, id) // its full entry replaces the one it had while being cast (CR 601.2a)
+	withdraw_spell(s, id, reversed = false) // its full entry replaces the one it had while being cast (CR 601.2a)
 	move_object(g, id, .Stack)
 	o.cast_from_zone = from
 	o.controller = p
 	chain := chosen_mode_chain(o, g.pending.modes[:]) if is_modal(o) else spell_ability(o)
 	resolved := resolved_tree(s, chain, targets, g.pending.counts[:], p, id)
 	record_division(resolved, g.pending.division[:])
-	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = id, controller = p, kind = types.StackEntryKind_Spell{card_id = o.card_id, ability = resolved}}, copy_entry)
+	variant: types.CastingVariant = types.CastingVariant_Normal{}
+	if showing_adventure(o) do variant = types.CastingVariant_Adventure{} // CR 716.3b
+	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = id, controller = p, kind = types.StackEntryKind_Spell{card_id = o.card_id, ability = resolved, casting_variant = variant}}, copy_entry)
 	record_spell_cast(s, p, o, from)
 	note_targeted(g, id, p, targets) // CR 601.2c
 	append(&g.events, Event{kind = .Spell_Cast, object = id, controller = p}) // CR 601.2i

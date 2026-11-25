@@ -4063,3 +4063,46 @@ transform_only_if_not_transformed_since :: proc(t: ^testing.T) {
 	settle_stack(g)
 	testing.expect(t, captive.transformed && captive.name == "Ulvenwald Abomination", "transformed once")
 }
+
+@(test)
+adventure_then_the_creature_from_exile :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Giant Killer // Chop Down. CR 716.3: cast from the hand, the player chooses the creature or the Adventure;
+	// 716.3b: on the stack the Adventure has only its own characteristics; 716.3d: as it resolves it's exiled, and
+	// its controller may cast the creature from exile; 716.4: everywhere else it's the creature.
+	testing.expect(t, game.card_supported(&card(t, "Giant Killer").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 4 do add(t, g, "Plains", 0, .Battlefield)
+	wurm := add(t, g, "Craw Wurm", 1, .Battlefield) // 6/4
+	killer := add(t, g, "Giant Killer", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = killer.id}))
+	_, offered := s.waiting_for.(types.WaitingFor_CastOffer)
+	testing.expect(t, offered, "the creature or the Adventure")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseAdventureFace{creature = false}))
+	testing.expect(t, killer.name == "Chop Down", "the Adventure's characteristics while being cast")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{wurm.id}}))
+	testing.expect(t, killer.zone == .Stack, "cast as Chop Down")
+	settle_stack(g)
+	testing.expect(t, wurm.zone == .Graveyard, "power 4 or greater: destroyed")
+	testing.expect(t, killer.zone == .Exile && killer.name == "Giant Killer", "exiled, the creature again")
+	testing.expect(t, game.castable(s, 0, killer, g.card_db), "castable from exile")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = killer.id}))
+	_, offered_again := s.waiting_for.(types.WaitingFor_CastOffer)
+	testing.expect(t, !offered_again && killer.zone == .Stack, "from exile only the creature")
+	settle_stack(g)
+	testing.expect(t, killer.zone == .Battlefield, "Giant Killer on the battlefield")
+
+	// An Adventure whose target is gone doesn't resolve: it goes to the graveyard, the creature card (716.3d, 716.4).
+	g = new_game()
+	s = &g.state
+	for _ in 0 ..< 3 do add(t, g, "Plains", 0, .Battlefield)
+	wurm = add(t, g, "Craw Wurm", 1, .Battlefield)
+	killer = add(t, g, "Giant Killer", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = killer.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseAdventureFace{creature = false}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{wurm.id}}))
+	game.move_object(g, wurm.id, .Hand)
+	settle_stack(g)
+	testing.expect(t, killer.zone == .Graveyard && killer.name == "Giant Killer", "graveyard, as the creature")
+}

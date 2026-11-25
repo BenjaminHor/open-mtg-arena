@@ -28,6 +28,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_UnlessPayment:
 		return w.player, true
+	case types.WaitingFor_CastOffer:
+		return w.player, true
 	case types.WaitingFor_DistributeAmong:
 		return w.player, true
 	case types.WaitingFor_ReplacementChoice:
@@ -177,6 +179,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_DistributeAmong:
 		a, ok := action.(types.GameAction_DistributeAmong)
 		return ok && answer_division(g, p, w, a.distribution[:])
+	case types.WaitingFor_CastOffer:
+		a, ok := action.(types.GameAction_ChooseAdventureFace)
+		return ok && answer_adventure_offer(g, p, w, a.creature)
 	case types.WaitingFor_DeclareAttackers:
 		a, ok := action.(types.GameAction_DeclareAttackers)
 		return ok && declare_attackers(g, a.attacks[:])
@@ -378,7 +383,7 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 			o := object(s, id)
 			if can_play_land(g, p, o) && object_supported(o, g.card_db) {
 				append(&out, types.GameAction_PlayLand{object_id = id, card_id = o.card_id})
-			} else if castable(s, p, o, g.card_db) {
+			} else if castable(s, p, o, g.card_db) || adventure_castable(g, p, o) {
 				append(&out, types.GameAction_CastSpell{object_id = id, card_id = o.card_id})
 			}
 		}
@@ -447,6 +452,11 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		append(&out, types.GameAction_PayUnlessCost{pay = false})
 	case types.WaitingFor_DistributeAmong:
 		append(&out, types.GameAction_DistributeAmong{distribution = ai_division(w)})
+	case types.WaitingFor_CastOffer:
+		if k, adventure := w.kind.(types.CastOfferKind_Adventure); adventure {
+			append(&out, types.GameAction_ChooseAdventureFace{creature = true})
+			append(&out, types.GameAction_ChooseAdventureFace{creature = false})
+		}
 	case types.WaitingFor_DeclareAttackers:
 		append(&out, types.GameAction_DeclareAttackers{})
 	case types.WaitingFor_DeclareBlockers:
@@ -480,7 +490,10 @@ castable_zone_ids :: proc(s: ^types.GameState, p: types.PlayerId) -> [dynamic]ty
 	append(&out, ..ids_of(player(s, p).hand))
 	for id in ids_of(s.command_zone) do if object(s, id).owner == p do append(&out, id)
 	for id in ids_of(player(s, p).graveyard) do if flashback_castable(object(s, id), p) do append(&out, id) // CR 702.34a
-	for id in ids_of(s.exile) do if _, ok := exile_permission(object(s, id), p); ok do append(&out, id)
+	for id in ids_of(s.exile) {
+		o := object(s, id)
+		if _, ok := exile_permission(o, p); ok || adventure_permission(o, p) do append(&out, id) // CR 716.3d
+	}
 	return out
 }
 

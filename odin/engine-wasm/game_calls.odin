@@ -390,6 +390,7 @@ card_gaps :: proc(b: ^strings.Builder, names: json.Value) {
 			append(&gaps, gap)
 			// What its back face is missing, named as the front's gaps are.
 			if back := game.transform_back_face(e); back != nil do append(&gaps, ..game.card_gaps(&back.face, back_face = true)[:])
+			if adventure := game.adventure_face(e); adventure != nil do append(&gaps, ..game.card_gaps(&adventure.face)[:])
 		}
 		write_strings(b, gaps[:])
 	}

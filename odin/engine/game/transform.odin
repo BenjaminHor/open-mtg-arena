@@ -21,6 +21,7 @@ transform_back_face :: proc(e: ^types.CardExportEntry) -> ^types.CardExportEntry
 // The object made from a card remembers its back face (new_card_object).
 note_back_face :: proc(o: ^types.GameObject, card: ^types.CardExportEntry) {
 	if back := transform_back_face(card); back != nil do o.back_face = types.BackFaceData{name = back.face.name}
+	else if adventure := adventure_face(card); adventure != nil do o.back_face = types.BackFaceData{name = adventure.face.name, card_types = adventure.face.card_type}
 }
 
 transform_supported :: proc(x: types.Effect_Transform) -> bool {

@@ -3017,6 +3017,13 @@ Progress:
   the front face again (712.6a). A transform card counts as supported when both faces are. Not yet: "enters
   transformed", "whenever this transforms" triggers, transforming other permanents, day/night, casting
   transformed. 6,399 -> 6,430.
+- Adventurer cards (CR 716, adventure.odin): the object remembers its Adventure (back_face, linked like a back
+  face). Cast from the hand, the player chooses the creature or the Adventure (WaitingFor_CastOffer /
+  ChooseAdventureFace, the client's existing dialog; asked only when both can be cast); as an Adventure it has only
+  the Adventure's characteristics (716.3b) and goes on the stack as CastingVariant_Adventure; resolving, it's
+  exiled and its controller may cast the creature from there (CastingPermission_AdventureCreature, 716.3d); a
+  reversed, countered or fizzled Adventure is the creature card again (716.4). The AI casts the Adventure first.
+  6,430 -> 6,495.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

@@ -32,6 +32,7 @@ Resolution :: struct {
 	top:          ^types.ResolvedAbility, // the first instruction
 	unless_node:  ^types.ResolvedAbility, // an "unless [a player] pays" instruction whose payer was asked...
 	unless_paid:  bool, // ...and whether they paid
+	fizzled:      bool, // every target illegal: it didn't resolve (CR 608.2b)
 }
 
 // The spell or ability as it goes on the stack: one node per instruction, each with the targets chosen for it (CR
@@ -116,7 +117,10 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 		for t, i in top.targets do if same_object_as_chosen(s, top, i) do append(&g.resolution.last_targets, t)
 	}
 	// CR 608.2b: with every target illegal, the spell or ability does nothing.
-	if any_target && !any_legal do g.resolution.next = nil
+	if any_target && !any_legal {
+		g.resolution.next = nil
+		g.resolution.fizzled = true // it doesn't resolve (an Adventure goes to the graveyard, CR 716.3d)
+	}
 	return continue_resolution(g)
 }
 
@@ -278,7 +282,10 @@ continue_resolution :: proc(g: ^Game) -> bool {
 		}
 		for t in affected do if do_effect(g, x.effect, x.duration, r.controller, r.source, t) do return false // waiting for a choice
 	}
-	if r.spell != 0 do spell_leaves_stack(g, r.spell) // CR 608.2n (exile after flashback, CR 702.34a)
+	if r.spell != 0 {
+		// CR 608.2n; exiled after flashback (CR 702.34a) or an Adventure that resolved (CR 716.3d).
+		if r.fizzled || !adventure_resolved(g, object(&g.state, r.spell)) do spell_leaves_stack(g, r.spell)
+	}
 	if r.stack_id != 0 {
 		delete_key(&g.stack_abilities, r.stack_id)
 		delete_key(&g.stack_transforms, r.stack_id)
