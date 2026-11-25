@@ -4228,3 +4228,26 @@ attack_triggers_watching_other_attackers :: proc(t: ^testing.T) {
 	settle_stack(g)
 	testing.expect(t, bears.toughness.? == 3, "the attacking Bears get +0/+1")
 }
+
+@(test)
+multicolored_spell_trigger :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Hero of Precinct One: "Whenever you cast a multicolored spell, create a 1/1 white Human creature token."
+	// Multicolored: two or more colors (CR 105.4).
+	testing.expect(t, game.card_supported(&card(t, "Hero of Precinct One").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Hero of Precinct One", 0, .Battlefield)
+	add(t, g, "Mountain", 0, .Battlefield)
+	add(t, g, "Plains", 0, .Battlefield)
+	add(t, g, "Mountain", 0, .Battlefield)
+	shock := add(t, g, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	testing.expect(t, types.pvec_len(s.stack) == 1, "a red spell: no trigger")
+	settle_stack(g)
+	helix := add(t, g, "Lightning Helix", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = helix.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	testing.expect(t, types.pvec_len(s.stack) == 2, "red and white: the Hero triggers")
+}

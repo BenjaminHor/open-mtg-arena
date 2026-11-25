@@ -300,6 +300,10 @@ spell_filter_supported :: proc(f: types.TargetFilter) -> bool {
 	case types.TargetFilter_Or:
 		for y in x.filters do if !spell_filter_supported(y) || is_self(y) do return false
 		return true
+	case types.TargetFilter_And:
+		// "A creature spell that has an Adventure": each part.
+		for y in x.filters do if !spell_filter_supported(y) || is_self(y) do return false
+		return len(x.filters) > 0
 	}
 	return false
 }
@@ -312,6 +316,9 @@ spell_matches :: proc(s: ^types.GameState, spell: ^types.GameObject, f: types.Ta
 		return object_matches(s, spell, x._0, watcher.controller, watcher.id)
 	case types.TargetFilter_Or:
 		for y in x.filters do if spell_matches(s, spell, y, watcher) do return true
+	case types.TargetFilter_And:
+		for y in x.filters do if !spell_matches(s, spell, y, watcher) do return false
+		return true
 	}
 	return false
 }

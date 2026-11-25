@@ -3038,6 +3038,8 @@ Progress:
 - Attack triggers watching others: "whenever equipped/enchanted creature attacks", "whenever a creature you
   control attacks"; "attacks with at least N others" / "attacks alone" (MinCoAttackers) and EventTime conditions,
   settled when the ability triggers and not checked again as it resolves. 6,612 -> 6,679.
+- Spell filters: historic (CR 700.6), kicked (702.33d), multicolored and other color counts (105.4), "has an
+  Adventure" (716.2a), and "and" filters. 6,679 -> 6,729.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
@@ -3114,6 +3116,19 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   gap recordings only once the engine is fleshed out (ask then).
 
 ## Known issues
+- (2026-11-25, fourth rules review of the Odin engine, 973a688..82ce148) To fix, most severe first:
+  1. A triggered ability that divides damage or counters gives each target the whole amount: no division is asked
+     when it's put on the stack (CR 603.3d, 601.2d).
+  2. "Exile target creature. Its controller gains life equal to its power" (and "its controller draws") read the
+     controller and power after the zone change, not its last known information (CR 608.2h).
+  3. A transformed permanent is given the front face's mana cost; only its mana value is the front's (CR 712.6d,
+     202.3a): devotion counts it.
+  4. "When this enters, if you cast it" reads false on resolution if the permanent has left (CR 603.4, 608.2h).
+  5. Transforming doesn't give a new timestamp (CR 613.7g).
+  6. A creature with a mana ability can't convoke for its own color (CR 702.51a).
+  7. An MDFC's face, or an Adventure, can be chosen only from the hand, not when cast from exile by a permission
+     (CR 712.8b, 716.3d).
+  8. A token copy of a double-faced permanent isn't double-faced (CR 707.8a).
 - (2026-11-25, third rules review of the Odin engine, commits ab9fdef..2791da2) Fixed with tests: a Clone copy
   is its own card again once it leaves the battlefield (CR 400.7, 707.2); a modal trigger with too few choosable
   modes is removed (CR 700.2b); "you may have it fight" and other fights follow conditions and "you may" (CR

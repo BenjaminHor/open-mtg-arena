@@ -50,6 +50,9 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 		return false
 	case types.FilterProp_Attacking:
 		return x.defender == nil
+	case types.FilterProp_Historic, types.FilterProp_NotHistoric, types.FilterProp_WasKicked, types.FilterProp_ColorCount,
+	     types.FilterProp_HasAdventure:
+		return true
 	case types.FilterProp_WithKeyword:
 		return keyword_supported(x.value)
 	case types.FilterProp_WithoutKeyword:
@@ -89,6 +92,11 @@ has_subtype :: proc(o: ^types.GameObject, name: string) -> bool {
 	// CR 702.73a: changeling, "this object is every creature type", everywhere.
 	if has_keyword(o, types.Keyword_Changeling) && subtype_in_set(name, .Creature) do return true
 	return false
+}
+
+// CR 700.6: artifacts, legendaries and Sagas are historic.
+is_historic :: proc(o: ^types.GameObject) -> bool {
+	return is_type(o, .Artifact) || has_supertype(o, .Legendary) || has_subtype(o, "Saga")
 }
 
 has_supertype :: proc(o: ^types.GameObject, t: types.Supertype) -> bool {
@@ -219,6 +227,16 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 			c, in_combat := &s.combat.?
 			if !in_combat do return false
 			if _, blocking := c.blocker_to_attacker[o.id]; !blocking do return false
+		case types.FilterProp_Historic:
+			if !is_historic(o) do return false
+		case types.FilterProp_NotHistoric:
+			if is_historic(o) do return false
+		case types.FilterProp_WasKicked:
+			if !kicked(o) do return false // CR 702.33d
+		case types.FilterProp_ColorCount:
+			if !compare(len(o.color), x.comparator, int(x.count)) do return false // "multicolored": two or more (CR 105.4)
+		case types.FilterProp_HasAdventure:
+			if !has_adventure(o) && !showing_adventure(o) do return false // CR 716.2a
 		case types.FilterProp_EnchantedBy, types.FilterProp_EquippedBy:
 			// "Enchanted/equipped creature": the permanent the source is attached to.
 			src := object(s, source)
