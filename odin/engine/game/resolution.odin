@@ -30,6 +30,8 @@ Resolution :: struct {
 	did_something: bool, // that instruction moved, made or put counters on something: "when you do" after it
 	current:      ^types.ResolvedAbility, // the instruction being carried out (the one before, once the next starts)
 	top:          ^types.ResolvedAbility, // the first instruction
+	unless_node:  ^types.ResolvedAbility, // an "unless [a player] pays" instruction whose payer was asked...
+	unless_paid:  bool, // ...and whether they paid
 }
 
 // The spell or ability as it goes on the stack: one node per instruction, each with the targets chosen for it (CR
@@ -55,6 +57,7 @@ resolved_tree :: proc(s: ^types.GameState, a: ^types.AbilityDefinition, targets:
 		node.optional = x.optional
 		node.multi_target = x.multi_target
 		node.player_scope = x.player_scope
+		node.unless_pay = x.unless_pay
 		if x.effect != nil && !reflexive {
 			if _, targets_one := effect_target(x.effect^); targets_one {
 				n := counts[k] if k < len(counts) else 1
@@ -245,12 +248,58 @@ continue_resolution :: proc(g: ^Game) -> bool {
 			r.scope_node = nil
 			continue
 		}
+		if _, has := x.unless_pay.?; has {
+			if r.unless_node != x {
+				if ask_unless_payment(g, x, affected[0]) do return false // the payer decides
+			} else {
+				r.unless_node = nil
+				if r.unless_paid {
+					r.unless_paid = false
+					continue // CR 118.12a: paid, so the instruction isn't carried out
+				}
+			}
+		}
 		r.events_mark = len(g.events)
 		for t in affected do if do_effect(g, x.effect, x.duration, r.controller, r.source, t) do return false // waiting for a choice
 	}
 	if r.spell != 0 do spell_leaves_stack(g, r.spell) // CR 608.2n (exile after flashback, CR 702.34a)
 	if r.stack_id != 0 do delete_key(&g.stack_abilities, r.stack_id)
 	r^ = {}
+	return true
+}
+
+// ---- "Unless a player pays" (CR 118.12a) -----------------------------------------------------------------
+
+// Asks the target spell's controller whether to pay, if they can (a cost that can't be paid isn't, CR 118.3).
+// True while they decide.
+ask_unless_payment :: proc(g: ^Game, x: ^types.ResolvedAbility, target: Maybe(types.TargetRef)) -> bool {
+	s := &g.state
+	id, is_object := target_object(target)
+	if !is_object do return false
+	spell := object(s, id)
+	if spell == nil do return false
+	u := x.unless_pay.?
+	payer := spell.controller
+	cost := u.cost.(types.AbilityCost_Mana).cost
+	if _, payable := plan_payment(s, payer, cost); !payable do return false
+	g.resolution.unless_node = x
+	g.resolution.next = x // carried on once they've decided
+	s.priority_player = payer
+	s.waiting_for = types.WaitingFor_UnlessPayment{player = payer, cost = u.cost, pending_effect = x, effect_description = x.description, affected_object = id}
+	return true
+}
+
+// The payer's answer: pay the cost (CR 118.12a), or not, and the resolution goes on.
+answer_unless_payment :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_UnlessPayment, pay: bool) -> bool {
+	r := &g.resolution
+	if !r.active || p != w.player || r.unless_node == nil do return false
+	if pay {
+		cost := w.cost.(types.AbilityCost_Mana).cost
+		if !pay_mana(g, p, cost) do return false
+	}
+	r.unless_paid = pay
+	g.state.waiting_for = nil
+	if continue_resolution(g) do after_resolution(g)
 	return true
 }
 

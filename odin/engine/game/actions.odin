@@ -26,6 +26,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_OptionalEffectChoice:
 		return w.player, true
+	case types.WaitingFor_UnlessPayment:
+		return w.player, true
 	case types.WaitingFor_ReplacementChoice:
 		return w.player, true
 	case types.WaitingFor_CrewVehicle:
@@ -167,6 +169,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_OptionalEffectChoice:
 		a, ok := action.(types.GameAction_DecideOptionalEffect)
 		return ok && decide_optional(g, p, a.accept)
+	case types.WaitingFor_UnlessPayment:
+		a, ok := action.(types.GameAction_PayUnlessCost)
+		return ok && answer_unless_payment(g, p, w, a.pay)
 	case types.WaitingFor_DeclareAttackers:
 		a, ok := action.(types.GameAction_DeclareAttackers)
 		return ok && declare_attackers(g, a.attacks[:])
@@ -431,6 +436,9 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 	case types.WaitingFor_OptionalEffectChoice:
 		append(&out, types.GameAction_DecideOptionalEffect{accept = true})
 		append(&out, types.GameAction_DecideOptionalEffect{accept = false})
+	case types.WaitingFor_UnlessPayment:
+		append(&out, types.GameAction_PayUnlessCost{pay = true})
+		append(&out, types.GameAction_PayUnlessCost{pay = false})
 	case types.WaitingFor_DeclareAttackers:
 		append(&out, types.GameAction_DeclareAttackers{})
 	case types.WaitingFor_DeclareBlockers:

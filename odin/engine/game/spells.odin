@@ -124,7 +124,7 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	if a.reads_chosen_group != nil || a.starting_with != nil do return false
 	if scope, has := a.player_scope.?; has && !player_scope_ok(scope, a) do return false
 	if a.target_chooser != nil || a.optional_player != nil || a.optional_for != nil do return false
-	if !multi_target_supported(a) || a.distribute != nil || a.repeat_for != nil || a.unless_pay != nil do return false
+	if !multi_target_supported(a) || a.distribute != nil || a.repeat_for != nil || !unless_pay_supported(a) do return false
 	if a.else_ability != nil do return false
 	if !effect_supported(a.effect^, a.duration) do return false
 	if refers_to_parent_target(a.effect^) && !after_target do return false
@@ -1286,9 +1286,8 @@ static_gap :: proc(st: types.StaticDefinition) -> string {
 @(private = "file")
 ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: string) {
 	if c, has := a.condition.?; has && !ability_condition_supported(c) {
-		// Named by its kind ("spell:condition:IsYourTurn"; "If ..., instead" by the condition inside).
-		inner := c
-		if x, instead := c.(types.AbilityCondition_ConditionInstead); instead && x.inner != nil do inner = x.inner^
+		// Named by its kind ("spell:condition:IsYourTurn"); one made of others by the first part not supported.
+		inner := unsupported_condition_part(c)
 		full := fmt.tprintf("%v", reflect.union_variant_typeid(inner))
 		if i := strings.last_index_byte(full, '_'); i >= 0 do full = full[i + 1:]
 		append(out, strings.concatenate({"spell:condition:", full}, context.temp_allocator))
@@ -1296,7 +1295,9 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 	if a.optional_targeting do append(out, "spell:optional")
 	if a.modal != nil do append(out, "spell:modal")
 	if !multi_target_supported(a) || a.distribute != nil do append(out, "spell:multiple targets")
-	if a.repeat_for != nil || a.unless_pay != nil || a.else_ability != nil do append(out, "spell:other")
+	if a.repeat_for != nil do append(out, "spell:repeat")
+	if !unless_pay_supported(a) do append(out, "spell:unless pay")
+	if a.else_ability != nil do append(out, "spell:otherwise")
 	if a.effect != nil && !effect_supported(a.effect^, a.duration) {
 		full := fmt.tprintf("%v", reflect.union_variant_typeid(a.effect^))
 		if i := strings.last_index_byte(full, '_'); i >= 0 do full = full[i + 1:]
@@ -1503,6 +1504,37 @@ ability_condition_supported :: proc(c: types.AbilityCondition) -> bool {
 		return true
 	}
 	return false
+}
+
+// CR 118.12a: "[do something] unless [a player pays a cost]": supported for "counter target spell unless its
+// controller pays {N}", a mana cost the spell's controller chooses whether to pay as the counterspell resolves.
+unless_pay_supported :: proc(a: types.AbilityDefinition) -> bool {
+	u, has := a.unless_pay.?
+	if !has do return true
+	if a.effect == nil do return false
+	if _, counter := a.effect^.(types.Effect_Counter); !counter do return false
+	if _, of_controller := u.payer.(types.TargetFilter_ParentTargetController); !of_controller do return false
+	m, is_mana := u.cost.(types.AbilityCost_Mana)
+	if !is_mana do return false
+	c, is_cost := m.cost.(types.ManaCost_Cost)
+	if !is_cost do return false
+	for shard in c.shards do if _, _, ok := shard_payers(shard); !ok || shard == .X do return false
+	return true
+}
+
+// The innermost part of a condition that isn't supported, for the coverage report.
+unsupported_condition_part :: proc(c: types.AbilityCondition) -> types.AbilityCondition {
+	#partial switch x in c {
+	case types.AbilityCondition_ConditionInstead:
+		if x.inner != nil do return unsupported_condition_part(x.inner^)
+	case types.AbilityCondition_Not:
+		if x.condition != nil do return unsupported_condition_part(x.condition^)
+	case types.AbilityCondition_And:
+		for y in x.conditions do if !ability_condition_supported(y) do return unsupported_condition_part(y)
+	case types.AbilityCondition_Or:
+		for y in x.conditions do if !ability_condition_supported(y) do return unsupported_condition_part(y)
+	}
+	return c
 }
 
 // A filter read of one object already named ("if it had mana value 3 or less"): no types listed means any object.

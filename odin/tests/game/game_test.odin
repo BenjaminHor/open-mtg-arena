@@ -3523,3 +3523,38 @@ addendum_only_in_your_main_phase :: proc(t: ^testing.T) {
 		testing.expectf(t, drew == (1 if mine else 0), "your main phase: %v, cards drawn %d", mine, drew)
 	}
 }
+
+@(test)
+counter_unless_its_controller_pays :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Mana Leak: "Counter target spell unless its controller pays {3}." CR 118.12a: the spell's controller chooses
+	// whether to pay as Mana Leak resolves; one who can't pay isn't asked, and the spell is countered.
+	testing.expect(t, game.card_supported(&card(t, "Mana Leak").face))
+	for lands in ([]int{5, 2}) {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< lands do add(t, g, "Forest", 0, .Battlefield)
+		for _ in 0 ..< 2 do add(t, g, "Island", 1, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 0, .Hand)
+		leak := add(t, g, "Mana Leak", 1, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = bears.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_PassPriority{}))
+		testing.expect(t, game.apply(g, 1, types.GameAction_CastSpell{object_id = leak.id}))
+		testing.expect(t, game.apply(g, 1, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+		game.apply(g, 1, types.GameAction_PassPriority{})
+		game.apply(g, 0, types.GameAction_PassPriority{})
+		w, asked := s.waiting_for.(types.WaitingFor_UnlessPayment)
+		if lands == 5 {
+			testing.expect(t, asked && w.player == 0, "the Bears' controller is asked")
+			testing.expect(t, game.apply(g, 0, types.GameAction_PayUnlessCost{pay = true}))
+			settle_stack(g)
+			testing.expect(t, bears.zone == .Battlefield, "paid: the Bears resolve")
+			untapped := 0
+			for id in game.ids_of(s.battlefield) do if o := game.object(s, id); o.controller == 0 && o.id != bears.id && !o.tapped do untapped += 1
+			testing.expect(t, untapped == 0, "two Forests for the Bears, three for Mana Leak")
+		} else {
+			testing.expect(t, !asked, "can't pay: not asked")
+			testing.expect(t, bears.zone == .Graveyard, "countered")
+		}
+	}
+}

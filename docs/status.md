@@ -2981,6 +2981,9 @@ Progress:
   main phase": the phase it resolves in, CR 500.2), starting life amounts (CR 103.4); a spell's paragraphs are
   joined into one list of instructions when the card is decoded (CR 608.2c; carddb.join_spell_paragraphs; 80 pool
   cards have several). 6,243 -> 6,267.
+- "Counter target spell unless its controller pays {N}" (CR 118.12a): the spell's controller is asked as the
+  counterspell resolves (WaitingFor_UnlessPayment / PayUnlessCost, the client's existing prompt), only if they can
+  pay; the AI pays. Other "unless" forms (other payers, other costs) not yet. 6,267 -> 6,301.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
