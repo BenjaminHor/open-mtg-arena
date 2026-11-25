@@ -36,6 +36,7 @@ can_block :: proc(g: ^Game, blocker, attacker: ^types.GameObject) -> bool {
 	if has_rule(g, blocker, .Cant_Block) || has_rule(g, attacker, .Cant_Be_Blocked) do return false
 	if has_keyword(blocker, types.Keyword_Decayed) do return false // CR 702.147a
 	if cant_be_blocked_by(g, attacker, blocker) do return false // CR 509.1b
+	if !block_restriction_allows(g, blocker, attacker) do return false // CR 509.1b (static_modes.odin)
 	if has_keyword(attacker, types.Keyword_Flying) && !has_keyword(blocker, types.Keyword_Flying) && !has_keyword(blocker, types.Keyword_Reach) do return false
 	if protected_from(attacker, blocker) do return false // CR 702.16f
 	return true
@@ -403,6 +404,7 @@ check_state_based_actions :: proc(g: ^Game) {
 		if remove_departed_tokens(g) do changed = true
 		if remove_departed_copies(g) do changed = true // CR 704.5e (prepare.odin)
 		if attachment_state_actions(g) do changed = true
+		if role_state_actions(g) do changed = true // CR 704.5z (tokens.odin)
 		// CR 903.9a: a commander put into a graveyard or exile goes back to the command zone (its owner may choose
 		// this; this engine always does).
 		for list in ([?]^types.PVec(types.ObjectId){&s.exile, &s.players[0].graveyard, &s.players[len(s.players) - 1].graveyard}) {

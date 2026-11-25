@@ -1,12 +1,12 @@
-// Predefined tokens (CR 111.10): a Treasure, Food, Clue, Shard or Heartwood token has the abilities the CR gives
-// it; the card data names the token but doesn't list them. Other predefined tokens (Gold, Blood, Powerstone, Map,
-// Junk, Lander, Mutagen, Vibranium, Incubator, Roles) aren't made yet, so effects creating them are unsupported.
+// Predefined tokens (CR 111.10): a Treasure, Food, Gold, Clue, Shard, Blood, Powerstone, Lander, Mutagen, Vibranium
+// or Heartwood token has the abilities the CR gives it; the card data names the token but doesn't list them. Other
+// predefined tokens (Map, Junk, Incubator, Roles) aren't made yet, so effects creating them are unsupported.
 package game
 
 import types "../types"
 
 PREDEFINED_TOKENS :: [?]string{"Treasure", "Food", "Gold", "Shard", "Clue", "Blood", "Powerstone", "Incubator", "Role", "Map", "Junk", "Lander", "Mutagen", "Vibranium", "Heartwood"}
-MADE_TOKENS :: [?]string{"Treasure", "Food", "Clue", "Shard", "Heartwood", "Powerstone", "Blood", "Lander", "Mutagen"}
+MADE_TOKENS :: [?]string{"Treasure", "Food", "Gold", "Clue", "Shard", "Heartwood", "Powerstone", "Blood", "Lander", "Mutagen", "Vibranium"}
 
 // The predefined kind a token is, if any (by its subtypes).
 predefined_kind :: proc(subtypes: []string) -> string {
@@ -21,13 +21,16 @@ predefined_token_supported :: proc(e: types.Effect_Token) -> bool {
 	return false
 }
 
-// CR 111.10a, b, e, f, g, h, u, v, x.
+// CR 111.10a, b, c, e, f, g, h, u, v, w, x.
 predefined_abilities :: proc(kind: string) -> [dynamic]types.AbilityDefinition {
 	out: [dynamic]types.AbilityDefinition
 	switch kind {
 	case "Treasure":
 		// "{T}, Sacrifice this token: Add one mana of any color."
 		append(&out, ability(composite(tap(), sac_self()), types.Effect_Mana{produced = types.ManaProduction_AnyOneColor{count = fixed(1)}}))
+	case "Gold":
+		// CR 111.10c: "Sacrifice this token: Add one mana of any color."
+		append(&out, ability(sac_self(), types.Effect_Mana{produced = types.ManaProduction_AnyOneColor{count = fixed(1)}}))
 	case "Food":
 		// "{2}, {T}, Sacrifice this token: You gain 3 life."
 		append(&out, ability(composite(mana(2), tap(), sac_self()), types.Effect_GainLife{amount = fixed(3), player = types.TargetFilter_Controller{}}))
@@ -48,9 +51,10 @@ predefined_abilities :: proc(kind: string) -> [dynamic]types.AbilityDefinition {
 		p := types.ManaProduction_AnyOneColor{count = fixed(1)}
 		append(&p.color_options, types.ManaColor.Red, types.ManaColor.Green)
 		append(&out, ability(tap(), types.Effect_Mana{produced = p}))
-	case "Powerstone":
+	case "Powerstone", "Vibranium":
 		// CR 111.10h: "{T}: Add {C}. This mana can't be spent to cast a nonartifact spell": it pays for artifact
-		// spells and for abilities, nothing else.
+		// spells and for abilities, nothing else. CR 111.10w: a Vibranium token has it too (and indestructible,
+		// predefined_keywords).
 		m := types.Effect_Mana{produced = types.ManaProduction_Colorless{count = fixed(1)}}
 		append(&m.restrictions, types.ManaSpendRestriction(types.ManaSpendRestriction_SpellTypeOrAbilityActivation{spell_type = "Artifact", ability = .Any}))
 		append(&out, ability(tap(), m))
@@ -80,6 +84,13 @@ predefined_abilities :: proc(kind: string) -> [dynamic]types.AbilityDefinition {
 		append(&out, a)
 	}
 	return out
+}
+
+// The keyword a predefined token has (CR 111.10w: a Vibranium token has indestructible), for an effect whose data
+// leaves it out.
+predefined_keyword :: proc(kind: string) -> (types.Keyword, bool) {
+	if kind == "Vibranium" do return types.Keyword_Indestructible{}, true
+	return nil, false
 }
 
 @(private = "file")

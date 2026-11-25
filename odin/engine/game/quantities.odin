@@ -40,6 +40,9 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 		return x.inner != nil && quantity_supported(x.inner^)
 	case types.QuantityExpr_ClampMin:
 		return x.inner != nil && quantity_supported(x.inner^)
+	case types.QuantityExpr_DivideRounded:
+		// "Half X, rounded up" (CR 107.1a: the ability says which way).
+		return x.inner != nil && x.divisor > 0 && quantity_supported(x.inner^)
 	case types.QuantityExpr_Max:
 		// "The greatest power among creatures you control and creature cards in your graveyard".
 		for e in x.exprs do if !quantity_supported(e) do return false
@@ -67,6 +70,17 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			typed, is_typed := r.filter.(types.TargetFilter_Typed)
 			return is_typed && typed_supported(typed._0)
 		case types.QuantityRef_ObjectCount:
+			// Permanents, or "cards named Undead Servant in your graveyard" (graveyard_filter, zone_effects.odin): your
+			// graveyard, an opponent's or all of them.
+			if gf, in_graveyard := graveyard_filter(r.filter); in_graveyard {
+				c, has := gf.controller.?
+				if !has do return true
+				#partial switch _ in c {
+				case types.ControllerRef_You, types.ControllerRef_Opponent:
+					return true
+				}
+				return false
+			}
 			return mass_filter_supported(r.filter)
 		case types.QuantityRef_Power:
 			return scope_supported(r.scope)
@@ -204,6 +218,12 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 		return quantity_value(s, x.inner^, controller, source, target) * int(x.factor)
 	case types.QuantityExpr_ClampMin:
 		return max(quantity_value(s, x.inner^, controller, source, target), int(x.minimum))
+	case types.QuantityExpr_DivideRounded:
+		n, d := quantity_value(s, x.inner^, controller, source, target), int(x.divisor)
+		q := n / d // toward zero
+		if x.rounding == .Up && n % d > 0 do q += 1 // CR 107.1a
+		if x.rounding == .Down && n % d < 0 do q -= 1
+		return q
 	case types.QuantityExpr_Max:
 		n := 0
 		for e, i in x.exprs {
@@ -257,6 +277,14 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			if r.channel == .Excess do return int(s.last_effect_excess_amount.? or_else 0)
 			return int(s.last_effect_amount.? or_else 0)
 		case types.QuantityRef_ObjectCount:
+			if gf, in_graveyard := graveyard_filter(r.filter); in_graveyard {
+				// The ability's own card counts too, unless the words say "another".
+				another := false
+				for p in gf.properties do if _, is_another := p.(types.FilterProp_Another); is_another do another = true
+				cards := make([dynamic]types.TargetRef, context.temp_allocator)
+				graveyard_targets(s, gf, controller, source if another else 0, &cards)
+				return len(cards)
+			}
 			return len(affected_permanents(s, r.filter, controller, source, loc))
 		case types.QuantityRef_Power:
 			if o := scope_object(s, r.scope, source, target); o != nil do return power_of(o)

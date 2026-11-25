@@ -509,10 +509,37 @@ Copy_Exceptions :: struct {
 }
 
 // CR 707.9a-b: the exception changes the copy's values themselves (its printed values here), not a continuous
-// effect on top of them. The arrays are cloned: the copied card's own stay as they are.
-@(private = "file")
+// effect on top of them. The arrays are cloned: the copied card's own stay as they are. CR 707.9d: an exception
+// that gives a characteristic a specific value ("except it's a 1/1 green Frog") isn't joined by the copied
+// object's characteristic-defining ability for it (drop_defining_abilities).
 apply_copy_exception :: proc(o: ^types.GameObject, m: types.ContinuousModification) {
 	#partial switch x in m {
+	case types.ContinuousModification_SetPower:
+		o.power, o.base_power, o.layer_base_power = x.value, x.value, x.value
+		drop_defining_abilities(o, .Power_Toughness)
+	case types.ContinuousModification_SetToughness:
+		o.toughness, o.base_toughness, o.layer_base_toughness = x.value, x.value, x.value
+		drop_defining_abilities(o, .Power_Toughness)
+	case types.ContinuousModification_SetColor:
+		o.color = slice.clone_to_dynamic(x.colors[:])
+		o.base_color = o.color
+		drop_defining_abilities(o, .Color)
+	case types.ContinuousModification_AddColor:
+		if slice.contains(o.color[:], x.color) do return
+		colors := slice.clone_to_dynamic(o.color[:])
+		append(&colors, x.color)
+		o.color, o.base_color = colors, colors
+	case types.ContinuousModification_RemoveSupertype:
+		supertypes := make([dynamic]types.Supertype)
+		for t in o.card_types.supertypes do if t != x.supertype do append(&supertypes, t)
+		o.card_types.supertypes = supertypes
+	case types.ContinuousModification_RemoveAllSubtypes:
+		// "It's a Frog" (with the creature types the exception gives it next): no creature types of its own,
+		// changeling's included (CR 707.9d, 702.73a).
+		subtypes := make([dynamic]string)
+		for t in o.card_types.subtypes do if !subtype_in_set(t, x.set) do append(&subtypes, t)
+		o.card_types.subtypes = subtypes
+		if x.set == .Creature do drop_defining_abilities(o, .Creature_Types)
 	case types.ContinuousModification_AddSubtype:
 		if slice.contains(o.card_types.subtypes[:], x.subtype) do return
 		subtypes := slice.clone_to_dynamic(o.card_types.subtypes[:])
@@ -532,6 +559,50 @@ apply_copy_exception :: proc(o: ^types.GameObject, m: types.ContinuousModificati
 		append((^[dynamic]types.TriggerEntry)(o.trigger_definitions), types.TriggerEntry{definition = x.trigger^})
 	}
 	o.base_card_types = o.card_types
+}
+
+Defined_Characteristic :: enum {
+	Power_Toughness,
+	Color,
+	Creature_Types,
+}
+
+// CR 707.9d: the copied object's characteristic-defining abilities (CR 604.3) for a characteristic the exception
+// sets aren't copied ("its power is equal to ...", devoid's colorlessness, changeling's creature types).
+@(private = "file")
+drop_defining_abilities :: proc(o: ^types.GameObject, c: Defined_Characteristic) {
+	defines :: proc(st: types.StaticDefinition, c: Defined_Characteristic) -> bool {
+		if !st.characteristic_defining do return false
+		for m in st.modifications {
+			#partial switch _ in m {
+			case types.ContinuousModification_SetDynamicPower, types.ContinuousModification_SetDynamicToughness,
+			     types.ContinuousModification_SetPower, types.ContinuousModification_SetToughness:
+				if c == .Power_Toughness do return true
+			case types.ContinuousModification_SetColor:
+				if c == .Color do return true
+			case types.ContinuousModification_AddAllCreatureTypes:
+				if c == .Creature_Types do return true
+			}
+		}
+		return false
+	}
+	if o.static_definitions != nil {
+		kept := new([dynamic]types.StaticDefinition)
+		for st in o.static_definitions^ do if !defines(st, c) do append(kept, st)
+		o.static_definitions = types.Definitions_StaticDefinition(kept)
+		o.base_static_definitions = kept
+	}
+	keywords := make([dynamic]types.Keyword)
+	for k in o.keywords {
+		#partial switch _ in k {
+		case types.Keyword_Changeling:
+			if c == .Creature_Types do continue
+		case types.Keyword_Devoid:
+			if c == .Color do continue
+		}
+		append(&keywords, k)
+	}
+	o.keywords, o.base_keywords = keywords, keywords
 }
 
 // CR 707.2: the object's values become the copied card's, the values the layer pass starts from while it's on the

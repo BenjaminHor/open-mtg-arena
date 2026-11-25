@@ -52,6 +52,8 @@ PLAYER_MODES :: bit_set[Rule_Mode]{.No_Max_Hand_Size, .Extra_Land}
 
 static_mode_supported :: proc(st: types.StaticDefinition) -> bool {
 	if _, ok := blocked_by_filter(st); ok do return true
+	if _, ok := crew_contribution(st); ok do return true // crew.odin
+	if _, _, ok := block_restriction(st); ok do return true
 	modes := rule_modes(st.mode)
 	if modes == {} || st.per_player_condition != nil do return false
 	// "As long as ..." (CR 611.3a): checked wherever the rule is read (has_rule, player_rule_count).
@@ -152,4 +154,36 @@ cant_be_blocked_by :: proc(g: ^Game, attacker, blocker: ^types.GameObject) -> bo
 		}
 	}
 	return false
+}
+
+// "This creature can block only creatures with flying" (CR 509.1b: a restriction on blocking), on the creature
+// itself. Written as what it can block, or as what it can't ("only creatures that aren't non-Spirit creatures":
+// the Spirit tokens' "can't block ... non-Spirit creatures").
+block_restriction :: proc(st: types.StaticDefinition) -> (f: types.TypedFilter, negated: bool, ok: bool) {
+	m, is_restriction := st.mode.(types.StaticMode_BlockRestriction)
+	if !is_restriction || st.condition != nil || st.per_player_condition != nil do return
+	if st.affected_zone != nil || st.effect_zone != nil || len(st.active_zones) > 0 || len(st.modifications) > 0 do return
+	affected, has := st.affected.?
+	if !has || !is_self(affected) do return
+	filter := m.filter
+	if not, is_not := filter.(types.TargetFilter_Not); is_not {
+		if not.filter == nil do return
+		filter = not.filter^
+		negated = true
+	}
+	typed, is_typed := filter.(types.TargetFilter_Typed)
+	if !is_typed || typed._0.controller != nil || !typed_supported(typed._0) do return
+	return typed._0, negated, true
+}
+
+// Whether the blocker's own restriction lets it block this attacker (CR 509.1b).
+block_restriction_allows :: proc(g: ^Game, blocker, attacker: ^types.GameObject) -> bool {
+	s := &g.state
+	if blocker.static_definitions == nil do return true
+	for &st in blocker.static_definitions^ {
+		f, negated, ok := block_restriction(st)
+		if !ok do continue
+		if object_matches(s, attacker, f, blocker.controller, blocker.id) == negated do return false
+	}
+	return true
 }

@@ -65,6 +65,7 @@ Trigger_Event :: struct {
 	// Damage to a permanent: that permanent, as the object it was then ("destroy that creature", CR 400.7).
 	damaged:             types.ObjectId,
 	damaged_incarnation: u64,
+	lki:               ^types.GameObject, // the object as it last existed on the battlefield, if the event moved it from there (CR 608.2h)
 }
 
 // The event triggers are being collected for, while they are (collect_triggers).
@@ -105,6 +106,9 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	defer event_object_defined, event_player_defined = false, false
 	event_attack_defined, event_damaged_defined = trigger_has_attack(t), trigger_has_damaged(t)
 	defer event_attack_defined, event_damaged_defined = false, false
+	saved_filter := triggering_filter
+	triggering_filter = t.valid_card.? or_else (t.valid_source.? or_else nil) // what "that creature" can be (tokens.odin)
+	defer triggering_filter = saved_filter
 	if t.execute == nil do return false
 	if t.execute.modal != nil {
 		if !modal_trigger_supported(t.execute^) do return false
@@ -508,7 +512,7 @@ event_about :: proc(s: ^types.GameState, e: Event) -> Trigger_Event {
 	case .Zone_Change, .Spell_Cast, .Damage, .Attack, .Tapped, .Counter_Added, .Sacrificed, .Discarded:
 		if o := object(s, e.object); o != nil {
 			out.object, out.incarnation, out.object_controller = o.id, o.incarnation, o.controller
-			if e.kind == .Zone_Change || e.kind == .Sacrificed do out.object_controller = e.controller // as it last existed
+			if e.kind == .Zone_Change || e.kind == .Sacrificed do out.object_controller, out.lki = e.controller, e.lki // as it last existed
 		}
 	}
 	if e.kind == .Became_Target {
@@ -1295,7 +1299,9 @@ decide_optional :: proc(g: ^Game, p: types.PlayerId, accept: bool) -> bool {
 // ---- Tokens (CR 111) ----------------------------------------------------------------------------------------
 
 // CR 111.1-111.4: a token is created with the characteristics the effect gives it, under its creator's control.
-create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId, source: types.ObjectId = 0) {
+// A Role is created attached to `host` (CR 303.4i: not created at all if it can't legally enchant it). Returns the
+// token, or nil if none was created.
+create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId, source: types.ObjectId = 0, host: ^types.GameObject = nil) -> ^types.GameObject {
 	s := &g.state
 	o := new(types.GameObject)
 	o.id = types.ObjectId(s.next_object_id)
@@ -1313,6 +1319,7 @@ create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId
 	append(&o.card_types.supertypes, ..e.supertypes[:])
 	append(&o.color, ..e.colors[:])
 	append(&o.keywords, ..e.keywords[:])
+	if k, has := predefined_keyword(predefined_kind(o.card_types.subtypes[:])); has && !keyword_in(o, k) do append(&o.keywords, k) // CR 111.10w
 	pt :: proc(s: ^types.GameState, v: types.PtValue, controller: types.PlayerId, source: types.ObjectId) -> Maybe(i32) {
 		#partial switch x in v {
 		case types.PtValue_Fixed:
@@ -1350,6 +1357,9 @@ create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId
 	abilities^ = predefined_abilities(predefined_kind(o.card_types.subtypes[:])) // CR 111.10
 	append(abilities, ..own_abilities[:])
 	o.abilities = abilities
+	role := role_of(e)
+	if role != .None do role_characteristics(o, role) // CR 111.10j-r (tokens.odin)
+	if host != nil && !role_host_legal(s, o, host) do return nil // CR 303.4i
 	o.base_name, o.base_card_types, o.base_keywords, o.base_color = o.name, o.card_types, o.keywords, o.color
 	o.base_power, o.base_toughness, o.base_abilities = o.power, o.toughness, o.abilities
 	o.base_characteristics_initialized = true
@@ -1360,6 +1370,7 @@ create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId
 	s.next_timestamp += 1
 	s.objects.inner[o.id] = o
 	types.pvec_push(&s.battlefield, o.id, copy_id)
+	if host != nil do attach(s, o, host) // it enters attached (CR 303.4i)
 	if e.enters_attacking do enter_attacking(s, o)
 	// CR 111.10 (and 603.6a): a token entering the battlefield is an event like any other.
 	// Its own group of simultaneous zone changes, unless created with others at once (zones.odin).
@@ -1367,13 +1378,16 @@ create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId
 	append(&g.events, Event{kind = .Zone_Change, object = o.id, from = .Command, to = .Battlefield, controller = controller, group = event_group})
 	report(types.GameEvent_ZoneChanged{object_id = o.id, to = .Battlefield})
 	report(types.GameEvent_TokenCreated{object_id = o.id, name = o.name, source_id = source})
+	return o
 }
 
 // CR 707.2, 111.1: a token that's a copy of an object has its copiable values: for a card, the card's printed
-// characteristics (copy effects on the original aren't copied yet); for a token, the values it was created with.
-// It enters the battlefield like any permanent (its enters-with replacements apply, CR 614.12), owned and
-// controlled by its creator (CR 111.2).
-create_copy_token :: proc(g: ^Game, original: ^types.GameObject, controller: types.PlayerId, tapped: bool) {
+// characteristics, as modified by the exceptions of the copy effect that made it a copy (CR 707.9b; other copy
+// effects on it aren't carried yet); for a token, the values it was created with. CR 707.9a-b: the exceptions of
+// this copy effect ("except it isn't legendary", "except it's a 1/1 green Frog") become part of its copiable values
+// too, applied before it enters. It enters the battlefield like any permanent (its enters-with replacements apply,
+// CR 614.12), owned and controlled by its creator (CR 111.2).
+create_copy_token :: proc(g: ^Game, original: ^types.GameObject, controller: types.PlayerId, tapped: bool, exceptions: []types.ContinuousModification = nil) -> ^types.GameObject {
 	s := &g.state
 	o: ^types.GameObject
 	card: ^types.CardExportEntry
@@ -1383,8 +1397,13 @@ create_copy_token :: proc(g: ^Game, original: ^types.GameObject, controller: typ
 	if front, has := original.back_face.?; has && original.transformed do name = front.name
 	if !(original.is_token && original.printed_ref == nil) && g.card_db != nil do card = g.card_db(name)
 	back_up := original.transformed
+	all_exceptions := make([dynamic]types.ContinuousModification)
 	if card != nil {
 		o = new_card_object(s, card, controller, .Command)
+		// The original's own copy exceptions, part of its copiable values (CR 707.9b).
+		if rec, recorded := g.copy_exceptions[original.id]; recorded && rec.incarnation == original.incarnation && original.zone == .Battlefield {
+			append(&all_exceptions, ..rec.modifications[:])
+		}
 	} else {
 		o = new(types.GameObject)
 		o^ = original^
@@ -1397,15 +1416,34 @@ create_copy_token :: proc(g: ^Game, original: ^types.GameObject, controller: typ
 		o.damage_marked = 0
 		o.tapped = false
 		o.zone = .Command
+		o.is_token = false // made a token as it enters, below (move_object doesn't move a token outside the battlefield)
 		reset_characteristics(o)
+		// Its own ability lists, without what effects granted the original (CR 707.2: those aren't copied), and apart
+		// from the original's: an exception adding a trigger mustn't add it to the original's.
+		o.abilities = o.base_abilities
+		if original.trigger_definitions != nil {
+			triggers := new([dynamic]types.TriggerEntry)
+			for e in original.trigger_definitions^ do if _, granted := e.occurrence.(types.TriggerDefinitionOccurrenceRef_Granted); !granted do append(triggers, e)
+			o.trigger_definitions = types.Definitions_TriggerEntry(triggers)
+		}
+		if original.base_static_definitions != nil {
+			statics := new([dynamic]types.StaticDefinition)
+			statics^ = slice.clone_to_dynamic(original.base_static_definitions[:])
+			o.static_definitions = types.Definitions_StaticDefinition(statics)
+			o.base_static_definitions = statics
+		}
 		s.objects.inner[o.id] = o
 	}
+	append(&all_exceptions, ..exceptions)
+	for m in all_exceptions do apply_copy_exception(o, m) // replacements.odin
 	o.owner, o.controller, o.base_controller = controller, controller, controller
 	move_object(g, o.id, .Battlefield)
 	o.is_token = true
 	o.controller = controller
 	if tapped do o.tapped = true
 	if back_up && card != nil && !o.transformed do transform_permanent(g, o) // enters with its back face up (707.8a)
+	if len(all_exceptions) > 0 && card != nil do g.copy_exceptions[o.id] = Copy_Exceptions{incarnation = o.incarnation, modifications = all_exceptions}
+	return o
 }
 
 core_type_named :: proc(name: string) -> (types.CoreType, bool) {

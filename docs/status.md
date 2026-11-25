@@ -3295,6 +3295,13 @@ Progress:
   twice its power, defending player (CR 506.2), "the player or planeswalker it's attacking". "Can't be regenerated"
   accepted as a no-op while no supported effect regenerates (to honour once regeneration exists). New
   delayed_test.odin (25 tests). Coverage 8,091.
+- Tokens (agent, merged): Pilot crewing "as though its power were 2 greater" (CR 702.122a), block restrictions (509.1b),
+  tokens another player creates (111.2), Gold and Vibranium (111.10), copies with exceptions (707.9a-d; a copy of a
+  copy keeps them; a dies-copy as it last existed, 608.2h), Role tokens (111.10, 303.4i, 303.7a/704.5z: one Role per
+  controller per permanent), halves rounded up, graveyard counts; "a token" filters. Fixed: copying an effect-made token
+  never worked; a token copy took granted abilities (CR 707.2); "named X" filters now case-insensitive. Refused:
+  Extravagant Replication (a copy that could be an Aura, CR 303.4f, deliberate), 12 misparsed cards (lost "up to one
+  target", Chainer's Torment). New token_test.odin (17 tests). Coverage 8,195.
 - Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
   decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
   cards to be triaged against the CR (next step for the fixtures).

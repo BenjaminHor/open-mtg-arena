@@ -67,6 +67,19 @@ MISPARSED_CARDS :: [?]string{
 	// Damage (2026-11-25).
 	"Barret Wallace", // "the number of equipped creatures you control": EquippedBy would count those this one equips
 	"Tasha Yar, Out of Time", // "a copy of this card" exiled as the cost: CopyTokenOf reads "this" as it is now, no copy
+	// Role tokens (2026-11-25): "attached to up to one [other] target creature" read as exactly one target.
+	"Cut In",
+	"Eriette's Whisper",
+	"Gadwick's First Duel",
+	"Giant Inheritance",
+	"Living Lectern",
+	"Protective Parents",
+	"Ratatwotwo",
+	"Shatter the Oath",
+	"Splashy Spellcaster",
+	"Twisted Fealty",
+	"Witch's Mark",
+	"Chainer's Torment", // "It deals X damage to you": the token's damage read as the Saga's
 }
 
 misparsed :: proc(name: string) -> bool {
@@ -303,6 +316,11 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		_, you := x.owner.(types.TargetFilter_Controller)
 		_, parent_controller := x.owner.(types.TargetFilter_ParentTargetController)
 		you = you || parent_controller // "its controller creates ...": the earlier target's controller
+		// "Target opponent creates ...", "that player creates ..." (tokens.odin).
+		if !you && other_token_maker(x.owner) {
+			if !other_maker_token_supported(x) do return false
+			you = true
+		}
 		if x.enters_attacking {
 			// CR 508.4: attacking the defending player (planeswalker and battle choices aren't offered yet).
 			#partial switch _ in x.attack_destination {
@@ -313,7 +331,9 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		}
 		for st in x.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !own_grant_supported(st) do return false
 		for k in x.keywords do if !keyword_supported(k) do return false
-		return quantity_supported(x.count) && pt_supported(x.power) && pt_supported(x.toughness) && you && x.attach_to == nil && predefined_token_supported(x) &&
+		// "Create a Royal Role token attached to target creature you control" (tokens.odin).
+		if x.attach_to != nil do return role_token_supported(x)
+		return quantity_supported(x.count) && pt_supported(x.power) && pt_supported(x.toughness) && you && predefined_token_supported(x) &&
 			len(x.enter_with_counters) == 0
 	case types.Effect_Draw:
 		// "Draw N cards", "target player / target opponent draws N cards", "its controller draws a card", "that
@@ -349,8 +369,16 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		// "Create a token that's a copy of target creature you control" / "of this creature" (CR 707.2).
 		_, you := x.owner.(types.TargetFilter_Controller)
 		_, fixed := fixed_quantity(x.count)
-		plain := !x.enters_attacking && len(x.extra_keywords) == 0 && len(x.additional_modifications) == 0 && x.source_filter == nil
-		return you && fixed && plain && (is_self(x.target) || (filter_supported(x.target) && !may_name_player(x.target)))
+		// "Except ...": exceptions to the copying process (CR 707.9, tokens.odin).
+		for k in x.extra_keywords do if !keyword_supported(k) do return false
+		for m in x.additional_modifications do if !copy_token_exception_supported(m) do return false
+		if each, has := x.source_filter.?; has {
+			// "For each nontoken creature you control, create a token that's a copy of that creature."
+			_, no_target := x.target.(types.TargetFilter_None)
+			return you && fixed && !x.enters_attacking && no_target && mass_filter_supported(each) && !copy_may_be_aura(each)
+		}
+		if copy_may_be_aura(x.target) do return false // CR 303.4f (tokens.odin)
+		return you && fixed && !x.enters_attacking && (is_self(x.target) || (filter_supported(x.target) && !may_name_player(x.target)))
 	case types.Effect_Counter:
 		return counter_supported(x)
 	case types.Effect_Investigate:
@@ -587,6 +615,9 @@ effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 		f = x.target
 	case types.Effect_Counter:
 		f = x.target
+	case types.Effect_Token:
+		if other_token_maker(x.owner) do f = x.owner // "target opponent creates": a target player (tokens.odin)
+		else if host, attached := x.attach_to.?; attached do f = host // a Role's creature: a target, or "it"
 	}
 	return f
 }
@@ -1321,10 +1352,27 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		original: ^types.GameObject
 		if id, ok := target_object(target); ok do original = object(s, id)
 		else if is_self(x.target) do original = same_source(g, source)
-		// CR 608.2h: an object that left the battlefield is copied as it last existed there.
-		if original != nil && original.zone != .Battlefield do if was := last_known(original.id); was != nil do original = was
+		// CR 608.2h: an object that left the battlefield is copied as it last existed there: in this action, or in the
+		// trigger event ("whenever another creature dies, create a token that's a copy of it").
+		if original != nil && original.zone != .Battlefield {
+			if was := last_known(original.id); was != nil do original = was
+			else if ev := g.resolution.event; g.resolution.active && ev.object == original.id && ev.lki != nil do original = ev.lki
+		}
 		n, _ := fixed_quantity(x.count)
-		if original != nil do for _ in 0 ..< n do create_copy_token(g, original, controller, x.tapped)
+		if each, has := x.source_filter.?; has {
+			// One copy of each permanent the filter names as the effect begins, all created at once (CR 608.2c).
+			together := begin_together()
+			defer end_together(together)
+			for each_original in affected_permanents(s, each, controller, source) do for _ in 0 ..< n {
+				o := create_copy_token(g, each_original, controller, x.tapped, copy_token_exceptions(x)[:])
+				copy_token_entry_counters(o, x) // tokens.odin
+			}
+			break
+		}
+		if original != nil do for _ in 0 ..< n {
+			o := create_copy_token(g, original, controller, x.tapped, copy_token_exceptions(x)[:])
+			copy_token_entry_counters(o, x) // tokens.odin
+		}
 	case types.Effect_Counter:
 		if id, ok := target_object(target); ok do counter_spell(g, id)
 	case types.Effect_Shuffle:
@@ -1364,6 +1412,18 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 			id, is_object := target_object(target)
 			if !is_object do return
 			maker = object(s, id).controller
+		} else if other_token_maker(x.owner) {
+			// "Target opponent creates ...", "that player creates ...": that player (CR 111.2).
+			p, is_player := target_player(target)
+			if !is_player do return
+			maker = p
+		}
+		if x.attach_to != nil {
+			// A Role attached to the targeted creature, or to "it" (CR 303.4i, 608.2c).
+			id, is_object := target_object(target)
+			if !is_object do return
+			create_token(g, x, maker, source, object(s, id))
+			return
 		}
 		for _ in 0 ..< n do create_token(g, x, maker, source)
 	case types.Effect_Draw:
@@ -1565,9 +1625,11 @@ card_gaps :: proc(face: ^types.CardFace, back_face := false) -> [dynamic]string 
 			event_amount_defined = trigger_has_amount(t)
 			event_object_defined, event_player_defined = trigger_has_object(t), trigger_has_player(t)
 			event_attack_defined, event_damaged_defined = trigger_has_attack(t), trigger_has_damaged(t)
+			triggering_filter = t.valid_card.? or_else (t.valid_source.? or_else nil) // as trigger_supported reads it
 			if t.execute != nil && !ability_supported(t.execute^) do ability_gaps(&out, t.execute^, "trigger")
 			else do append(&out, name("trigger condition:", t.mode))
 			event_amount_defined, event_object_defined, event_player_defined, event_attack_defined, event_damaged_defined = false, false, false, false, false
+			triggering_filter = nil
 		case:
 			append(&out, name("trigger:", t.mode))
 		}

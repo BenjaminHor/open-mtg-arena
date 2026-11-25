@@ -142,7 +142,10 @@ event_reference :: proc(s: ^types.GameState, e: types.Effect, event: Trigger_Eve
 			if _, on_stack := stack_entry_of(s, event.object); on_stack do return types.TargetRef(types.TargetRef_Object{event.object}), true
 			return nil, true
 		}
-		if o.incarnation != event.incarnation do return nil, true
+		// "Create a token that's a copy of that creature" only needs its values: once a creature that died has moved
+		// on ("you may exile it. If you do, ..."), its last known information (CR 608.2h, Effect_CopyTokenOf).
+		_, copies := e.(types.Effect_CopyTokenOf)
+		if o.incarnation != event.incarnation && !(copies && event.lki != nil) do return nil, true
 		return types.TargetRef(types.TargetRef_Object{o.id}), true
 	case types.TargetFilter_TriggeringSourceController:
 		if event.object == 0 do return nil, true

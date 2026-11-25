@@ -181,7 +181,7 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		for id in ids {
 			if total >= int(w.crew_power) do break
 			append(&chosen, id)
-			total += power_of(object(s, id))
+			total += max(crew_value(object(s, id)), 0) // as answer_crew counts it (crew.odin)
 		}
 		return types.GameAction_CrewVehicle{vehicle_id = w.vehicle_id, creature_ids = chosen}, true
 	case types.WaitingFor_RevealChoice:

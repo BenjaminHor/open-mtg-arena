@@ -16,10 +16,52 @@ crew_candidates :: proc(s: ^types.GameState, p: types.PlayerId, vehicle: ^types.
 	for o in permanents_of(s, p) {
 		if o.id == vehicle.id || o.tapped || !is_type(o, .Creature) do continue // "other untapped creatures"
 		append(&ids, o.id)
-		append(&powers, i32(power_of(o)))
-		total += max(power_of(o), 0)
+		append(&powers, i32(crew_value(o)))
+		total += max(crew_value(o), 0)
 	}
 	return
+}
+
+// What a creature adds to a crew cost's total power (CR 702.122a): its power, or as its own static ability says
+// ("this token crews Vehicles as though its power were 2 greater", Pilot tokens; "crews Vehicles using its
+// toughness rather than its power").
+crew_value :: proc(o: ^types.GameObject) -> int {
+	value := power_of(o)
+	if o.static_definitions == nil do return value
+	for &st in o.static_definitions^ {
+		c, ok := crew_contribution(st)
+		if !ok do continue
+		switch k in c.kind {
+		case types.CrewContributionKind_PowerDelta:
+			value += int(k.delta)
+		case types.CrewContributionKind_ToughnessInsteadOfPower:
+			value += toughness_of(o) - power_of(o)
+		}
+	}
+	return value
+}
+
+// "This creature crews Vehicles as though ...": a creature's own ability, written as the rule itself or as a
+// continuous effect adding it to itself (the tokens "have" it). Saddle (CR 702.171) and station aren't carried out
+// by this engine at all (no card with them is supported), so the part of the ability that names them never
+// applies.
+crew_contribution :: proc(st: types.StaticDefinition) -> (types.StaticMode_CrewContribution, bool) {
+	if st.condition != nil || st.per_player_condition != nil || st.affected_zone != nil || st.effect_zone != nil || len(st.active_zones) > 0 do return {}, false
+	affected, has := st.affected.?
+	if !has || !is_self(affected) do return {}, false
+	mode := st.mode
+	if _, continuous := mode.(types.StaticMode_Continuous); continuous {
+		if len(st.modifications) != 1 do return {}, false
+		add, adds := st.modifications[0].(types.ContinuousModification_AddStaticMode)
+		if !adds do return {}, false
+		mode = add.mode
+	} else if len(st.modifications) > 0 {
+		return {}, false
+	}
+	c, ok := mode.(types.StaticMode_CrewContribution)
+	if !ok || c.kind == nil do return {}, false
+	for a in c.actions do if a == .Crew do return c, true
+	return {}, false
 }
 
 can_crew :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool {
@@ -50,7 +92,7 @@ answer_crew :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_CrewVehicle
 		if !slice.contains(w.eligible_creatures[:], id) do return false
 		o := object(s, id)
 		if o == nil || o.tapped do return false
-		total += max(power_of(o), 0)
+		total += max(crew_value(o), 0)
 	}
 	if total < int(w.crew_power) do return false
 	paid := make([dynamic]types.ObjectId)

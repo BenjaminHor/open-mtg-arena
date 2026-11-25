@@ -4,6 +4,7 @@
 package game
 
 import "core:reflect"
+import "core:strings"
 import types "../types"
 
 type_filter_supported :: proc(t: types.TypeFilter) -> bool {
@@ -90,8 +91,8 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 
 typed_supported :: proc(f: types.TypedFilter) -> bool {
 	// A typed filter naming no types (and controlled by someone) describes a player, which isn't modelled here;
-	// "a card named X" names a card by its name alone.
-	if len(f.type_filters) == 0 && !(len(f.properties) == 1 && is_named(f.properties[0]) && f.controller == nil) do return false
+	// "a card named X" names a card by its name alone, and "a token you control" a permanent by being a token.
+	if len(f.type_filters) == 0 && !(len(f.properties) == 1 && is_named(f.properties[0]) && f.controller == nil) && !names_token(f) do return false
 	for t in f.type_filters do if !type_filter_supported(t) do return false
 	for p in f.properties do if !property_supported(p) do return false
 	if c, has := f.controller.?; has {
@@ -102,6 +103,12 @@ typed_supported :: proc(f: types.TypedFilter) -> bool {
 		}
 	}
 	return true
+}
+
+// "Target token you control": a permanent (tokens exist only on the battlefield, CR 111.7, 111.8).
+names_token :: proc(f: types.TypedFilter) -> bool {
+	for p in f.properties do if _, token := p.(types.FilterProp_Token); token do return true
+	return false
 }
 
 is_named :: proc(p: types.FilterProp) -> bool {
@@ -240,7 +247,7 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 			t, chosen := chosen_card_type(chooser_of(s, source))
 			if !chosen || !is_type(o, t) do return false
 		case types.FilterProp_Named:
-			if o.name != x.name do return false // CR 201.2
+			if !strings.equal_fold(o.name, x.name) do return false // CR 201.2 (the card data writes some names in lowercase)
 		case types.FilterProp_Tapped:
 			if !o.tapped do return false
 		case types.FilterProp_Untapped:
