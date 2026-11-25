@@ -3377,11 +3377,12 @@ Progress:
   Life Trapping), "put onto the battlefield" without "owner's control" (Underworld Sentinel, CR 110.2a), Storrev
   (misparsed duration), Detention Sphere (same-name filter). Banishing Light and Cast Out now supported. Tests:
   exile_link_test.odin (26). Coverage 8,704. The return queue lives in Game, not the state (empty between actions).
-- In flight (2026-11-25, from ee6d94c): tenth rules review of bcaa6aa..ee6d94c; four coverage agents in worktrees
-  (brief: shared scratchpad agent-brief.md): named mechanics (Station, Connive, the Ring, Foretell, Warp, energy,
-  emblems); card faces (split, back faces, Omen fix); damage, life and replacements; zone instructions (ChangeZone,
-  library positions, draw/discard/mill, permissions outside exile). Next round: tokens and copies of tokens, delayed
-  triggers, "when you do"/"otherwise", multiple targets.
+- Stopped at the owner's pause (2026-11-25 ~16:05 UTC), before they had written anything: the tenth rules review
+  of bcaa6aa..ee6d94c and four coverage agents (named mechanics: Station, Connive, the Ring, Foretell, Warp, energy,
+  emblems; card faces: split, back faces, the Omen fix; damage, life and replacements; zone instructions:
+  ChangeZone, library positions, draw/discard/mill, permissions outside exile). Their brief is
+  docs/odin/agent-brief.md. Next round after those: tokens and token copies, delayed triggers, "when you
+  do"/"otherwise", multiple targets.
 - Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
   decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
   cards to be triaged against the CR (next step for the fixtures).
@@ -3392,6 +3393,16 @@ Rust baseline (measured 2026-11-24, this cloud container: 4 cores, 15 GB): `./sc
 cold compiled for 18 min 15 s, then wasm-bindgen was killed for lack of memory on the 260 MB debug-info module, so
 the dev engine build doesn't complete here without stripping `.debug_*` first. That is the loop the Odin engine
 replaces.
+
+## Paused (2026-11-25, ~16:05 UTC, owner's /goal pause)
+
+The owner paused the Odin engine goal (D-187). All agents were stopped and their worktrees removed (nothing
+uncommitted was lost); everything is committed and pushed on claude/eloquent-mayer-qcx0e1, PR #119 open, CI green
+at f7ed8a1. Where it stands: the Odin engine fully supports 8,704 of the 14,013 target (15,772 pool); 505 engine
+tests pass; 9/9 AI games finish; fixture replay 824/11,160 (as of e2b8187). To resume: rerun the tenth rules review
+of bcaa6aa..ee6d94c, then relaunch the four coverage families listed under "Stopped at the owner's pause" in the
+goal's Progress, using docs/odin/agent-brief.md; `node odin/engine-wasm/sup.mjs "Card"` checks support. Open
+question still waiting: aim for the whole pool after switching at 14,013 (Open questions).
 
 ## Paused (2026-11-24, ~17:25 UTC, owner's request)
 
