@@ -191,3 +191,14 @@ remove_from_combat :: proc(s: ^types.GameState, id: types.ObjectId) {
 		}
 	}
 }
+
+// The events of the action being carried out, for last known information (CR 608.2h) where only the state is at hand.
+@(thread_local)
+action_events: ^[dynamic]Event
+
+// The object as it last existed on the battlefield, if it left during this action (CR 608.2h); nil otherwise.
+last_known :: proc(id: types.ObjectId) -> ^types.GameObject {
+	if action_events == nil do return nil
+	#reverse for e in action_events^ do if e.kind == .Zone_Change && e.object == id && e.lki != nil do return e.lki
+	return nil
+}

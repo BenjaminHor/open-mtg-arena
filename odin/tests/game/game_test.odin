@@ -1853,3 +1853,29 @@ enters_trigger_with_a_targeted_effect :: proc(t: ^testing.T) {
 	}
 	testing.expect(t, game.player(s, 1).life == 19, "1 damage to the opponent")
 }
+
+@(test)
+condition_on_a_target_that_left :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 608.2h: "Exile target creature. If it had mana value 3 or less, surveil 2" reads the creature as it last
+	// existed on the battlefield. Consuming Ashes.
+	testing.expect(t, game.card_supported(&card(t, "Consuming Ashes").face))
+	for c in ([]struct {
+		name:    string,
+		surveil: bool,
+	}{{"Grizzly Bears", true}, {"Hill Giant", false}}) {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 4 do add(t, g, "Swamp", 0, .Battlefield)
+		victim := add(t, g, c.name, 1, .Battlefield)
+		ashes := add(t, g, "Consuming Ashes", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = ashes.id}))
+		if _, choosing := s.waiting_for.(types.WaitingFor_TargetSelection); choosing {
+			testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{victim.id}}))
+		}
+		game.apply(g, 0, types.GameAction_PassPriority{})
+		game.apply(g, 1, types.GameAction_PassPriority{})
+		_, surveilling := s.waiting_for.(types.WaitingFor_SurveilChoice)
+		testing.expectf(t, victim.zone == .Exile && surveilling == c.surveil, "%s: surveil %v", c.name, c.surveil)
+	}
+}

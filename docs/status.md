@@ -2888,6 +2888,10 @@ a216a17. Next when resuming: tuple field access (`f(..).0` on a returned tuple: 
 but reverted untested; then the executed-blocker list (`translate-report` with ODINGEN_EXECUTED).
 
 ## Working with the owner
+- Owner (2026-11-25): "keep running checklists of what rules have been marked completed in the comprehensive rule
+  set. Like a coverage report, like you're currently doing with the cards, but for the rule set as well." Keep a
+  CR coverage report for the Odin engine (tools: odin/engine-wasm/rules-coverage.mjs, report in
+  docs/odin-rules-coverage.md), regenerated with each engine change and reported alongside card coverage.
 - Owner (2026-11-24): "something I wanted to call out that I think is great is the fact that CR rules are cited
   heavily throughout the code - continue to do so because the CR is the source of truth on how MTG works". Keep
   citing the rule (looked up in rules/, never from memory) in every rules comment and test of the Odin engine.

@@ -1166,16 +1166,33 @@ ability_condition_supported :: proc(c: types.AbilityCondition) -> bool {
 	case types.AbilityCondition_QuantityCheck:
 		return quantity_supported(x.lhs) && quantity_supported(x.rhs)
 	case types.AbilityCondition_TargetMatchesFilter:
-		// "If that creature is attacking": the target chosen for an earlier slot, as it is now.
+		// "If that creature is attacking": the target chosen for an earlier slot, as it is now. Unset, the subject is
+		// the target (the card data leaves the default out).
 		typed, ok := x.filter.(types.TargetFilter_Typed)
 		_, of_target := x.subject.(types.ObjectScope_Target)
+		of_target = of_target || x.subject == nil
 		slot, has_slot := x.subject_slot.?
-		return ok && of_target && !x.use_lki && typed_supported(typed._0) && (!has_slot || slot == 0)
+		return ok && of_target && object_condition_filter_supported(typed._0) && (!has_slot || slot == 0)
 	case types.AbilityCondition_SourceMatchesFilter:
 		typed, ok := x.filter.(types.TargetFilter_Typed)
-		return ok && typed_supported(typed._0)
+		return ok && object_condition_filter_supported(typed._0)
 	}
 	return false
+}
+
+// A filter read of one object already named ("if it had mana value 3 or less"): no types listed means any object.
+@(private = "file")
+object_condition_filter_supported :: proc(f: types.TypedFilter) -> bool {
+	if len(f.type_filters) > 0 do return typed_supported(f)
+	for p in f.properties do if !property_supported(p) do return false
+	if c, has := f.controller.?; has {
+		#partial switch _ in c {
+		case types.ControllerRef_You, types.ControllerRef_Opponent:
+		case:
+			return false
+		}
+	}
+	return true
 }
 
 // Checked as the instruction is carried out.
@@ -1189,6 +1206,8 @@ ability_condition_holds :: proc(s: ^types.GameState, c: types.AbilityCondition, 
 		id, is_object := target_object(subjects[0])
 		if !is_object do return false
 		o := object(s, id)
+		// "If it had mana value 3 or less": once it has left the battlefield, as it last existed there (CR 608.2h).
+		if x.use_lki do if was := last_known(id); was != nil do o = was
 		return o != nil && object_matches(s, o, x.filter.(types.TargetFilter_Typed)._0, controller, source)
 	case types.AbilityCondition_SourceMatchesFilter:
 		o := object(s, source)
