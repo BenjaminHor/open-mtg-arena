@@ -5,6 +5,7 @@
 package game
 
 import "core:slice"
+import "core:strings"
 import types "../types"
 
 Target_Slot :: struct {
@@ -20,6 +21,10 @@ Target_Choice :: struct {
 	targets: [dynamic]types.TargetRef,
 	counts:  [dynamic]int,
 }
+
+// "Any number of target ...": the player chooses targets one at a time and stops when they decline one (CR 601.2c),
+// so the slots only need to outnumber the objects that could be chosen; no game has this many.
+ANY_NUMBER_OF_TARGETS :: 100
 
 // The slots of an ability's instructions, in order.
 slot_list :: proc(a: ^types.AbilityDefinition) -> [dynamic]Target_Slot {
@@ -40,7 +45,8 @@ slot_list :: proc(a: ^types.AbilityDefinition) -> [dynamic]Target_Slot {
 		least, most := 1, 1
 		if m, multi := x.multi_target.?; multi {
 			least, _ = fixed_quantity(m.min)
-			most, _ = fixed_quantity(m.max.?)
+			most = ANY_NUMBER_OF_TARGETS
+			if n, has_max := m.max.?; has_max do most, _ = fixed_quantity(n)
 		}
 		for i in 0 ..< most do append(&out, Target_Slot{filter = f, optional = i >= least, group = group})
 		group += 1
@@ -54,10 +60,24 @@ multi_target_supported :: proc(a: types.AbilityDefinition) -> bool {
 	m, multi := a.multi_target.?
 	if !multi do return true
 	least, fixed_min := fixed_quantity(m.min)
-	most_q, has_max := m.max.?
-	if !has_max || !fixed_min do return false
-	most, fixed_max := fixed_quantity(most_q)
-	if !fixed_max || least < 0 || most < max(least, 1) || most > 10 || a.effect == nil do return false
+	if !fixed_min do return false
+	most := ANY_NUMBER_OF_TARGETS // "any number of target creatures" (CR 115.1, 601.2c)
+	if _, has_max := m.max.?; !has_max {
+		// Chosen as it resolves isn't targeting; "each with a different mana value / name", "with total power N or
+		// less" put a condition on the group the data doesn't carry.
+		if a.target_choice_timing != .Stack || a.declares_chosen_group != nil do return false // "choose any number": not targets
+		// "Return any number of Mountains you control" (Sweep) isn't targeted: chosen as it resolves, not by slots.
+		if _, targeted := effect_target(a.effect^); !targeted do return false
+		// A filter naming no card type ("any number of target cards") is a lost type here (Agadeem's Awakening).
+		if f, ok := effect_target_filter(a.effect^).(types.TargetFilter_Typed); ok && len(f._0.type_filters) == 0 do return false
+		if d, has := a.description.?; has && (strings.contains(d, "different") || strings.contains(d, "total")) do return false
+	}
+	if most_q, has_max := m.max.?; has_max {
+		fixed_max: bool
+		most, fixed_max = fixed_quantity(most_q)
+		if !fixed_max || most > 10 do return false
+	}
+	if least < 0 || most < max(least, 1) || a.effect == nil do return false
 	#partial switch x in a.effect^ {
 	case types.Effect_DealDamage, types.Effect_Destroy, types.Effect_Pump, types.Effect_GenericEffect, types.Effect_ChangeZone,
 	     types.Effect_Bounce, types.Effect_PutCounter, types.Effect_SetTapState, types.Effect_TargetOnly:

@@ -5721,3 +5721,31 @@ seventh_review_fixes :: proc(t: ^testing.T) {
 	testing.expect_value(t, game.excess_damage(s, nil, types.TargetRef_Object{jace.id}, int(jace.loyalty.? or_else 0) + 1), 1)
 	testing.expect_value(t, game.excess_damage(s, nil, types.TargetRef_Player{1}, 5), 0)
 }
+
+// Paradoxical Outcome: "Return any number of target nonland, nontoken permanents you control to their owners' hands.
+// Draw a card for each card returned to your hand this way." Any number of targets (CR 601.2c, 115.1): the player
+// chooses one at a time and stops when they decline; zero is a legal number.
+@(test)
+any_number_of_targets :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Paradoxical Outcome").face))
+	for card_name in ([]string{"Battle for Bretagard", "Barrel Down Sokenzan", "Agadeem's Awakening"}) {
+		testing.expectf(t, !game.card_supported(&card(t, card_name).face), "%s: a group condition or a choice that isn't targeting", card_name)
+	}
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 4 do add(t, g, "Island", 0, .Battlefield)
+	outcome := add(t, g, "Paradoxical Outcome", 0, .Hand)
+	a := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	b := add(t, g, "Hill Giant", 0, .Battlefield)
+	c := add(t, g, "Gray Ogre", 0, .Battlefield)
+	hand_before := types.pvec_len(s.players[0].hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = outcome.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{a.id}}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{b.id}}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = nil}), "no more targets")
+	settle_stack(g)
+	testing.expect(t, a.zone == .Hand && b.zone == .Hand && c.zone == .Battlefield, "the two chosen returned")
+	// The spell left the hand; two permanents came back; two cards drawn for them.
+	testing.expect_value(t, types.pvec_len(s.players[0].hand), hand_before - 1 + 2 + 2)
+}

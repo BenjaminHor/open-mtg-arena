@@ -3215,6 +3215,11 @@ Progress:
   counts read destroyed/sacrificed/discarded cards, "those cards" doesn't; battles' excess damage. Test:
   `seventh_review_fixes`. Not done (noted): the "X resolves" log line for a spell whose targets are all illegal;
   the pending mana color amount lives outside the state.
+- "Any number of target ..." (CR 601.2c, 115.1): optional slots up to ANY_NUMBER_OF_TARGETS (100), the player
+  stopping when they decline one. Refused: chosen as it resolves or a chosen group (not targets), Sweep's untargeted
+  "return any number of Mountains", a target filter with no card type, or text with "different"/"total" (a group
+  condition the data drops); Kairi, Rampaging Yao Guai, Agadeem's Awakening added to MISPARSED_CARDS. Test:
+  `any_number_of_targets` (Paradoxical Outcome).
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 

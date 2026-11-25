@@ -22,6 +22,9 @@ has_keyword :: proc(o: ^types.GameObject, $T: typeid) -> bool {
 // Cards whose card data says something other than the card (found in rules reviews): refused until the data is
 // fixed, rather than played wrong.
 MISPARSED_CARDS :: [?]string{
+	"Kairi, the Swirling Sky", // "with total mana value 6 or less" is dropped from "any number of target ..."
+	"Rampaging Yao Guai", // "with total mana value X or less" is dropped from "any number of target ..."
+	"Agadeem's Awakening", // "creature cards that each have a different mana value X or less" is lost
 	"Phelia, Exuberant Shepherd", // its +1/+1 counter sits outside the delayed ability and without its condition
 	"Shallow Grave", // "the top creature card of your graveyard" is read as a target
 	"Vizier of Deferment", // "if it attacked or blocked this turn" is dropped
