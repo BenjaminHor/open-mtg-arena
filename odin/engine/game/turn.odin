@@ -41,6 +41,7 @@ begin_turn :: proc(g: ^Game, active: types.PlayerId) {
 		p.life_lost_this_turn = 0
 	}
 	player(s, active).turns_taken += 1
+	end_until_next_turn_delayed_triggers(g) // "until your next turn"
 	report(types.GameEvent_TurnStarted{player_id = active, turn_number = s.turn_number})
 	begin_step(g, .Untap)
 }
@@ -122,6 +123,7 @@ cleanup :: proc(g: ^Game) {
 	s := &g.state
 	for id in ids_of(s.battlefield) do object(s, id).damage_marked = 0
 	end_until_end_of_turn_effects(g)
+	end_this_turn_delayed_triggers(g) // CR 514.2
 	// CR 514.3a: state-based actions that would be performed now are (a creature whose "until end of turn" boost
 	// just ended dies); if any were, or abilities triggered, the active player gets priority in this cleanup step.
 	events_before := len(g.events)

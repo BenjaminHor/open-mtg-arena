@@ -151,6 +151,22 @@ event_reference :: proc(s: ^types.GameState, e: types.Effect, event: Trigger_Eve
 		p, has := event.player.?
 		if !has do return nil, true
 		return types.TargetRef(types.TargetRef_Player{p}), true
+	case types.TargetFilter_EventTarget:
+		// The permanent the trigger's damage was dealt to, while it's still that object (CR 400.7).
+		if event.damaged == 0 do return nil, true
+		o := object(s, event.damaged)
+		if o == nil || o.incarnation != event.damaged_incarnation do return nil, true
+		return types.TargetRef(types.TargetRef_Object{o.id}), true
+	case types.TargetFilter_AttackedPlayerOrPlaneswalker:
+		// The player or planeswalker the creature attacked; a planeswalker only while it's still that permanent
+		// (CR 400.7). Nothing for a battle.
+		t, has := event.attacked.?
+		if !has do return nil, true
+		if id, is_object := t.(types.TargetRef_Object); is_object {
+			pw := object(s, id._0)
+			if pw == nil || pw.zone != .Battlefield || pw.incarnation != event.attacked_incarnation do return nil, true
+		}
+		return t, true
 	}
 	return nil, false
 }
@@ -813,6 +829,13 @@ do_fight :: proc(g: ^Game, x: ^types.ResolvedAbility, fight: types.Effect_Fight,
 	if is_self(fight.subject) {
 		a = same_source(g, r.source)
 		b = legal(s, x, 0)
+		if _, fights_parent := fight.target.(types.TargetFilter_ParentTarget); fights_parent {
+			// "This creature fights that creature": the earlier instruction's (legal) target (CR 608.2c).
+			for t in parent_targets do if id, ok := target_object(t); ok {
+				b = object(s, id)
+				break
+			}
+		}
 	} else if !fight_subject_targeted(fight) {
 		// "It fights target creature": the earlier instruction's target (CR 608.2c).
 		for t in parent_targets do if id, ok := target_object(t); ok {

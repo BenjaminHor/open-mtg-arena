@@ -25,6 +25,10 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 	#partial switch x in p {
 	case types.FilterProp_EnchantedBy, types.FilterProp_EquippedBy:
 		return true
+	case types.FilterProp_WasDealtDamageThisTurn:
+		return true // "that was dealt damage this turn": the turn's damage record (dealt_damage_this_turn)
+	case types.FilterProp_DealtDamageThisTurn:
+		return x.kind == .Any && x.recipient == nil // "that dealt damage this turn"
 	case types.FilterProp_InZone:
 		return x.zone == .Battlefield // "you control" on the battlefield (graveyard filters are read by graveyard_filter)
 	case types.FilterProp_Targets:
@@ -92,7 +96,7 @@ typed_supported :: proc(f: types.TypedFilter) -> bool {
 	for p in f.properties do if !property_supported(p) do return false
 	if c, has := f.controller.?; has {
 		#partial switch _ in c {
-		case types.ControllerRef_You, types.ControllerRef_Opponent:
+		case types.ControllerRef_You, types.ControllerRef_Opponent, types.ControllerRef_DefendingPlayer:
 		case:
 			return false
 		}
@@ -200,6 +204,10 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 			if o.controller != chooser do return false
 		case types.ControllerRef_Opponent:
 			if o.controller == chooser do return false
+		case types.ControllerRef_DefendingPlayer:
+			// "A creature defending player controls": CR 506.2, in a two-player game the nonactive player, during
+			// combat (outside it there's no defending player).
+			if s.combat == nil || o.controller == s.active_player do return false
 		}
 	}
 	for p in f.properties {
@@ -306,6 +314,10 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 			if host == nil || host.id != o.id do return false
 		case types.FilterProp_Targets:
 			if !spell_targets_one(s, o.id, x.filter^, chooser, source) do return false
+		case types.FilterProp_WasDealtDamageThisTurn:
+			if !in_damage_record(s, o, dealt = false) do return false
+		case types.FilterProp_DealtDamageThisTurn:
+			if !in_damage_record(s, o, dealt = true) do return false
 		case types.FilterProp_InZone:
 			if o.zone != x.zone do return false
 		case types.FilterProp_Owned:
@@ -349,6 +361,21 @@ spell_targets_one :: proc(s: ^types.GameState, spell: types.ObjectId, f: types.T
 				if o := object(s, id._0); o != nil && object_matches(s, o, x._0, chooser, source) do return true
 			}
 		}
+	}
+	return false
+}
+
+// Whether this object (as the object it is now, CR 400.7) was dealt damage this turn, or (`dealt`) dealt damage this
+// turn: the turn's damage record (CR 120.3).
+in_damage_record :: proc(s: ^types.GameState, o: ^types.GameObject, dealt: bool) -> bool {
+	for i in 0 ..< types.pvec_len(s.damage_dealt_this_turn) {
+		rec := types.pvec_get(s.damage_dealt_this_turn, i)
+		if dealt {
+			if rec.source_id == o.id && (rec.source_incarnation.? or_else o.incarnation) == o.incarnation do return true
+			continue
+		}
+		t, is_object := rec.target.(types.TargetRef_Object)
+		if is_object && t._0 == o.id && (rec.target_incarnation.? or_else o.incarnation) == o.incarnation do return true
 	}
 	return false
 }

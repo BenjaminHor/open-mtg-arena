@@ -32,6 +32,7 @@ Game :: struct {
 	// the state like the pumps: a restored game loses abilities that were mid-flight.
 	events:            [dynamic]Event,
 	pending_triggers:  [dynamic]Pending_Trigger,
+	delayed_marks:     [dynamic]Delayed_Mark, // where each delayed ability created since then began (CR 603.7a)
 	trigger_targets:   Trigger_Target_Choice,
 	stack_abilities:   map[types.ObjectId]^types.AbilityDefinition,
 	stack_conditions:  map[types.ObjectId]Stack_Condition, // triggered abilities with an intervening "if" (CR 603.4)

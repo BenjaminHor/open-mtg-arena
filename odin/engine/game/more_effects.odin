@@ -76,7 +76,8 @@ more_effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) 
 		_, eot := d.(types.Duration_UntilEndOfTurn)
 		return pf && tf && has && eot && mass_filter_supported(x.target), true
 	case types.Effect_DestroyAll:
-		return !x.cant_regenerate && mass_filter_supported(x.target), true
+		// "They can't be regenerated": no regeneration shield exists to stop (as for Destroy, spells.odin).
+		return mass_filter_supported(x.target), true
 	case types.Effect_DamageAll:
 		_, fixed := fixed_quantity(x.amount)
 		players_ok := true

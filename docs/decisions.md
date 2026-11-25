@@ -3003,3 +3003,12 @@ reference (owner, 2026-11-24)** · 2026-11-24 · accepted
   marked as wrong) and not copied. The pass rate is a progress signal, not a correctness score; 100% isn't the aim.
 - Not yet done: the failures haven't been triaged this way (nearly all are still cards Odin refuses). A
   disagreement report for supported cards is the next step for the fixtures.
+
+**D-190: Where the card data drops a duration the Oracle text states, the engine may read the Oracle text** ·
+2026-11-25 · accepted
+- Case: "when that creature dies this turn" (delayed triggers) is parsed without "this turn", the same as a watch
+  that lasts for good. The Odin engine accepts such a delayed trigger only when the card's Oracle text says "dies this
+  turn" (checking_face, set while a card's support is checked), and ends the watch at cleanup (CR 514.2).
+- Why: refusing every such card loses correct ones; trusting the data plays some wrongly (The Deck of Many Things has
+  the same data and lasts for good). Reading the Oracle text for this one missing word is exact for both.
+- Limits: only to tell apart shapes the data merges; never to add behaviour the data doesn't describe.

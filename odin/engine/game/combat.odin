@@ -5,6 +5,19 @@ import "core:slice"
 import types "../types"
 
 power_of :: proc(o: ^types.GameObject) -> int {return int(o.power.? or_else 0)}
+
+// The player, planeswalker or battle a creature attacks, as a reference to it.
+attacked_ref :: proc(t: types.AttackTarget) -> types.TargetRef {
+	switch x in t {
+	case types.AttackTarget_Player:
+		return types.TargetRef_Player{x._0}
+	case types.AttackTarget_Planeswalker:
+		return types.TargetRef_Object{x._0}
+	case types.AttackTarget_Battle:
+		return types.TargetRef_Object{x._0}
+	}
+	return nil
+}
 toughness_of :: proc(o: ^types.GameObject) -> int {return int(o.toughness.? or_else 0)}
 
 // CR 508.1a, 702.3b: an untapped creature its controller has controlled since the turn began (or with haste), and
@@ -74,7 +87,8 @@ declare_attackers :: proc(g: ^Game, attacks: []types.Tuple2(types.ObjectId, type
 		if pw, attacks_pw := a._1.(types.AttackTarget_Planeswalker); attacks_pw {
 			if p := object(s, pw._0); p != nil do g.attacked_planeswalkers[p.id] = p.incarnation
 		}
-		append(&g.events, Event{kind = .Attack, object = a._0, controller = o.controller}) // CR 508.3a
+		// What it attacks: "the player or planeswalker it's attacking".
+		append(&g.events, Event{kind = .Attack, object = a._0, controller = o.controller, target = attacked_ref(a._1)}) // CR 508.3a
 		// "If you attacked this turn" (Raid): the attackers as they were declared.
 		rec := types.AttackDeclarationRecord{object_id = o.id, incarnation = o.incarnation, is_token = o.is_token, is_commander = o.is_commander}
 		rec.lki.name, rec.lki.controller, rec.lki.owner = o.name, o.controller, o.owner

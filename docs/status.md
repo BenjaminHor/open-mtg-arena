@@ -3286,6 +3286,15 @@ Progress:
   cards (f912b38): 7,813 Rust also plays, 175 Rust doesn't, 6,200 only Rust, 1,584 neither. The other 1,759 aren't
   in the plan yet beyond what comes along; proposed: switch the app at 14,013 as agreed, then keep going toward the
   whole pool (owner to decide; Open questions).
+- Delayed triggers and damage (agent, merged): "sacrifice/exile that token" at end step or end of combat; "exile
+  this, return it at the next end step" (only the same object, CR 400.7); "at the beginning of your next upkeep/end
+  step"; "when that creature dies this turn" (D-190); "whenever ... this turn" / "until your next turn, whenever ..."
+  for casts, deaths, entries, attacks, combat damage, tapping (CR 603.7a: not events earlier in the same
+  resolution). Fixed: delayed abilities lacked their trigger event ("that creature" read nothing); Kraul Harpooner's
+  fight never happened; Rienne now refused (its return did nothing). Damage: excess to the controller (CR 120.4a),
+  twice its power, defending player (CR 506.2), "the player or planeswalker it's attacking". "Can't be regenerated"
+  accepted as a no-op while no supported effect regenerates (to honour once regeneration exists). New
+  delayed_test.odin (25 tests). Coverage 8,091.
 - Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
   decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
   cards to be triaged against the CR (next step for the fixtures).

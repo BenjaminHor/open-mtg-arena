@@ -62,6 +62,11 @@ MISPARSED_CARDS :: [?]string{
 	// Entry replacements (2026-11-25).
 	"Grimdancer", // "two different counters ... from among menace, deathtouch, and lifelink" read as three choices
 	"Protean Raider", // "Raid — If you attacked this turn" lost from its copy replacement
+	// Delayed triggers (2026-11-25).
+	"Nahiri's Resolve", // "exile any number of ... you control" (chosen, not targeted) read as targets
+	// Damage (2026-11-25).
+	"Barret Wallace", // "the number of equipped creatures you control": EquippedBy would count those this one equips
+	"Tasha Yar, Out of Time", // "a copy of this card" exiled as the cost: CopyTokenOf reads "this" as it is now, no copy
 }
 
 misparsed :: proc(name: string) -> bool {
@@ -72,6 +77,9 @@ misparsed :: proc(name: string) -> bool {
 // `back_face`: a transforming card's back face, which isn't cast and has no mana cost of its own (CR 712.6d).
 card_supported :: proc(face: ^types.CardFace, back_face := false) -> bool {
 	if misparsed(face.name) do return false
+	outer_face := checking_face
+	checking_face = face // what its data drops, read from its Oracle text (delayed.odin)
+	defer checking_face = outer_face
 	{
 		// CR 107.3m: "enters with X counters" uses the spell's X.
 		x_defined = has_x(face.mana_cost)
@@ -203,7 +211,7 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	if dmg, is_damage := a.effect^.(types.Effect_DealDamage); is_damage {
 		if src, has := dmg.damage_source.?; has && src == .Target && !after_chosen_target do return false
 	}
-	if d, delayed := a.effect^.(types.Effect_CreateDelayedTrigger); delayed && !delayed_trigger_supported(d, after_target) do return false
+	if d, delayed := a.effect^.(types.Effect_CreateDelayedTrigger); delayed && !delayed_trigger_supported(d, after_target, followed = a.sub_ability != nil) do return false
 	if moves_found_cards(a.effect^) && !after_search do return false
 	_, targets := effect_target(a.effect^)
 	_, searches := a.effect^.(types.Effect_SearchLibrary)
@@ -244,12 +252,16 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		fixed := quantity_supported(x.amount)
 		// To a target, to "you", or to "that creature's controller". "Target creature you control deals damage
 		// equal to its power to target creature" (bite): the source is the first target, chosen by a TargetOnly.
+		// "Deals 1 damage to defending player" (CR 506.2: in a two-player game, the opponent of the attacking player).
 		_, parent_controller := x.target.(types.TargetFilter_ParentTargetController)
+		_, defending := x.target.(types.TargetFilter_DefendingPlayer)
 		if src, has := x.damage_source.?; has {
-			if src != .Target || !is_power_of_target(x.amount) do return false
+			// "Deals damage equal to [twice] its power".
+			if src != .Target || dealer_power_factor(x.amount) == 0 do return false
 			fixed = true
 		}
-		return fixed && x.excess == nil && (filter_supported(x.target) || is_controller(x.target) || parent_controller)
+		if excess, has := x.excess.?; has && !excess_to_controller_supported(x, excess) do return false
+		return fixed && (filter_supported(x.target) || is_controller(x.target) || parent_controller || defending)
 	case types.Effect_TargetOnly:
 		// "Choose target creature": a target for the instructions after it, doing nothing itself.
 		return filter_supported(x.target) && !may_name_player(x.target)
@@ -259,6 +271,10 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		// what it's attached to ("enchanted creature fights") isn't read yet.
 		_, parent := x.subject.(types.TargetFilter_ParentTarget)
 		subject_ok := is_self(x.subject) || parent || (fight_subject_targeted(x) && filter_supported(x.subject) && !may_name_player(x.subject) && !names_attachment(x.subject))
+		// "This creature fights that creature" (the earlier target, do_fight). "Target creature you control fights that
+		// creature" (Time to Feed) isn't read yet: its targets would be chosen as the fight's own two.
+		_, fights_parent := x.target.(types.TargetFilter_ParentTarget)
+		if fights_parent && !is_self(x.subject) do return false
 		return subject_ok && filter_supported(x.target) && !may_name_player(x.target)
 	case types.Effect_Pump:
 		pf, tf := pump_value_supported(x.power), pump_value_supported(x.toughness)
@@ -384,7 +400,9 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		// "You gain N life", "target player gains N life", "its controller gains N life", "that player gains".
 		return quantity_supported(x.amount) && (x.player == nil || life_or_draw_player_supported(x.player))
 	case types.Effect_Destroy:
-		return !x.cant_regenerate && filter_supported(x.target) && !may_name_player(x.target)
+		// "It can't be regenerated" (CR 701.19c) stops regeneration shields from applying. This engine makes none (no
+		// Regenerate effect is supported, CR 701.19a-b), so there's none to stop: once one is, destroy must honor it.
+		return filter_supported(x.target) && !may_name_player(x.target)
 	}
 	return false
 }
@@ -402,6 +420,10 @@ filter_supported :: proc(f: types.TargetFilter) -> bool {
 		return event_player_defined
 	case types.TargetFilter_TriggeringSourceController:
 		return event_object_defined
+	case types.TargetFilter_AttackedPlayerOrPlaneswalker:
+		return event_attack_defined // "the player or planeswalker it's attacking" (resolution.odin)
+	case types.TargetFilter_EventTarget:
+		return event_damaged_defined // "that creature": the permanent dealt damage (resolution.odin)
 	case types.TargetFilter_Typed:
 		if _, is_player := player_typed(x._0); is_player do return true
 		return typed_supported(x._0)
@@ -1235,16 +1257,24 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		n, _ := fixed_quantity(x.count)
 		return ask_scry(g, controller, n, true)
 	case types.Effect_DealDamage:
+		dealer_id := source
+		n: int
 		if src, has := x.damage_source.?; has && src == .Target {
-			// The first target deals it, its power as the amount (CR 608.2h): nothing if it's no longer legal.
+			// The first target deals it, [twice] its power as the amount (CR 608.2h): nothing if it's no longer legal.
 			dealer := first_target_object(g)
 			if dealer == nil do return
-			if t, ok := target.?; ok do deal_damage(g, dealer.id, t, power_of(dealer))
-			return
+			dealer_id = dealer.id
+			n = power_of(dealer) * dealer_power_factor(x.amount)
+		} else do n = amount(g, x.amount, controller, source, target)
+		if is_controller(x.target) do deal_damage(g, dealer_id, types.TargetRef_Player{controller}, n) // "to you"
+		else if _, defending := x.target.(types.TargetFilter_DefendingPlayer); defending do deal_damage(g, dealer_id, types.TargetRef_Player{opponent(s, controller)}, n) // CR 506.2
+		else if t, has := target.?; has {
+			if excess, redirected := x.excess.?; redirected && excess_redirected(g, excess, dealer_id) {
+				deal_damage_with_excess_to_controller(g, dealer_id, t, n)
+				return
+			}
+			deal_damage(g, dealer_id, t, n)
 		}
-		n := amount(g, x.amount, controller, source, target)
-		if is_controller(x.target) do deal_damage(g, source, types.TargetRef_Player{controller}, n) // "to you"
-		else if t, has := target.?; has do deal_damage(g, source, t, n)
 	case types.Effect_Pump:
 		pumped: ^types.GameObject
 		if id, ok := target_object(target); ok do pumped = object(s, id)
@@ -1504,6 +1534,9 @@ end_until_end_of_turn_effects :: proc(g: ^Game) {
 // "effect:Token", "keyword:Ward", ...), for the coverage report to rank what to build next. Empty when supported.
 card_gaps :: proc(face: ^types.CardFace, back_face := false) -> [dynamic]string {
 	out := make([dynamic]string, context.temp_allocator)
+	outer_face := checking_face
+	checking_face = face // as card_supported checks it
+	defer checking_face = outer_face
 	if misparsed(face.name) do append(&out, "card data: misparsed")
 	if !is_land_face(face) && !back_face {
 		// As card_supported: a spell needs a mana cost it can pay (CR 118.6, 107.4e-f).
@@ -1531,9 +1564,10 @@ card_gaps :: proc(face: ^types.CardFace, back_face := false) -> [dynamic]string 
 		     types.TriggerMode_BecomesTarget:
 			event_amount_defined = trigger_has_amount(t)
 			event_object_defined, event_player_defined = trigger_has_object(t), trigger_has_player(t)
+			event_attack_defined, event_damaged_defined = trigger_has_attack(t), trigger_has_damaged(t)
 			if t.execute != nil && !ability_supported(t.execute^) do ability_gaps(&out, t.execute^, "trigger")
 			else do append(&out, name("trigger condition:", t.mode))
-			event_amount_defined, event_object_defined, event_player_defined = false, false, false
+			event_amount_defined, event_object_defined, event_player_defined, event_attack_defined, event_damaged_defined = false, false, false, false, false
 		case:
 			append(&out, name("trigger:", t.mode))
 		}
@@ -1751,6 +1785,54 @@ gain_control :: proc(g: ^Game, o: ^types.GameObject, controller: types.PlayerId,
 	o.summoning_sick = true
 	remove_from_combat(&g.state, o.id)
 	apply_continuous_effects(g)
+}
+
+// "Damage equal to its power" (1), "equal to twice its power" (2): how many times the dealer's power; 0 for any other
+// amount.
+dealer_power_factor :: proc(q: types.QuantityExpr) -> int {
+	if is_power_of_target(q) do return 1
+	if m, multiplied := q.(types.QuantityExpr_Multiply); multiplied && m.inner != nil && m.factor > 0 && is_power_of_target(m.inner^) do return int(m.factor)
+	return 0
+}
+
+// "Excess damage is dealt to that creature's controller instead" (CR 120.4a), said of damage to a target creature;
+// "if the creature you control has trample, ..." of a creature dealing damage equal to its power.
+excess_to_controller_supported :: proc(x: types.Effect_DealDamage, e: types.ExcessRecipient) -> bool {
+	r, to_controller := e.(types.ExcessRecipient_TargetController)
+	if !to_controller do return false
+	typed, ok := x.target.(types.TargetFilter_Typed)
+	if !ok || len(typed._0.type_filters) != 1 || !typed_supported(typed._0) do return false
+	if _, creature := typed._0.type_filters[0].(types.TypeFilter_Creature); !creature do return false
+	if k, has := r.source_keyword.?; has {
+		src, has_src := x.damage_source.?
+		return k == .Trample && has_src && src == .Target
+	}
+	return true
+}
+
+// Whether the excess goes to the controller this time: always, or only while the dealer has the keyword named.
+excess_redirected :: proc(g: ^Game, e: types.ExcessRecipient, dealer: types.ObjectId) -> bool {
+	r := e.(types.ExcessRecipient_TargetController)
+	k, has := r.source_keyword.?
+	if !has do return true
+	o := object(&g.state, dealer)
+	return o != nil && k == .Trample && has_keyword(o, types.Keyword_Trample)
+}
+
+// CR 120.4a: the excess over lethal damage (counting damage already marked and deathtouch, not prevention or
+// indestructible) is dealt to the creature's controller instead, at the same time as the rest to the creature.
+deal_damage_with_excess_to_controller :: proc(g: ^Game, dealer: types.ObjectId, target: types.TargetRef, n: int) {
+	s := &g.state
+	id, is_object := target_object(target)
+	o := object(s, id) if is_object else nil
+	if o == nil || !is_type(o, .Creature) {
+		deal_damage(g, dealer, target, n)
+		return
+	}
+	excess := excess_damage(s, object(s, dealer), target, n)
+	controller := o.controller
+	deal_damage(g, dealer, target, n - excess)
+	deal_damage(g, dealer, types.TargetRef_Player{controller}, excess)
 }
 
 is_power_of_target :: proc(q: types.QuantityExpr) -> bool {

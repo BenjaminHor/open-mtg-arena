@@ -32,7 +32,7 @@ Event :: struct {
 	from, to:   types.Zone,
 	controller: types.PlayerId, // the object's controller as it last existed (CR 603.10)
 	step:       types.Phase,
-	target:     types.TargetRef, // Damage: what was dealt damage
+	target:     types.TargetRef, // Damage: what was dealt damage; Attack: the player, planeswalker or battle attacked
 	amount:     int,
 	combat:     bool,
 	lki:        ^types.GameObject, // Zone_Change from the battlefield: the permanent as it last existed (CR 608.2h)
@@ -58,6 +58,13 @@ Trigger_Event :: struct {
 	incarnation:       u64,
 	object_controller: types.PlayerId, // that object's controller then (its last known one, CR 608.2h)
 	player:            Maybe(types.PlayerId),
+	// An attack: the player or planeswalker the creature attacks (a planeswalker as the object it was then), even
+	// once the creature has left combat (as Raid Bombardment's ruling reads it). None when it attacks a battle.
+	attacked:             Maybe(types.TargetRef),
+	attacked_incarnation: u64,
+	// Damage to a permanent: that permanent, as the object it was then ("destroy that creature", CR 400.7).
+	damaged:             types.ObjectId,
+	damaged_incarnation: u64,
 }
 
 // The event triggers are being collected for, while they are (collect_triggers).
@@ -96,6 +103,8 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	defer event_amount_defined = false
 	event_object_defined, event_player_defined = trigger_has_object(t), trigger_has_player(t)
 	defer event_object_defined, event_player_defined = false, false
+	event_attack_defined, event_damaged_defined = trigger_has_attack(t), trigger_has_damaged(t)
+	defer event_attack_defined, event_damaged_defined = false, false
 	if t.execute == nil do return false
 	if t.execute.modal != nil {
 		if !modal_trigger_supported(t.execute^) do return false
@@ -509,6 +518,19 @@ event_about :: proc(s: ^types.GameState, e: Event) -> Trigger_Event {
 		out.player = e.controller
 		return out
 	}
+	if e.kind == .Damage {
+		if id, is_object := target_object(e.target); is_object {
+			if o := object(s, id); o != nil do out.damaged, out.damaged_incarnation = id, o.incarnation
+		}
+	}
+	if e.kind == .Attack {
+		switch t in e.target {
+		case types.TargetRef_Player:
+			out.attacked = e.target
+		case types.TargetRef_Object:
+			if pw := object(s, t._0); pw != nil && is_type(pw, .Planeswalker) do out.attacked, out.attacked_incarnation = e.target, pw.incarnation
+		}
+	}
 	#partial switch e.kind {
 	case .Spell_Cast, .Life_Gained, .Card_Drawn, .Zone_Change, .Sacrificed, .Attack, .Discarded:
 		out.player = e.controller
@@ -528,6 +550,22 @@ event_about :: proc(s: ^types.GameState, e: Event) -> Trigger_Event {
 event_object_defined: bool
 @(thread_local)
 event_player_defined: bool
+@(thread_local)
+event_attack_defined: bool // "the player or planeswalker it's attacking": an attack trigger's
+@(thread_local)
+event_damaged_defined: bool // "deals damage to a Dinosaur, destroy that creature": a damage trigger's recipient
+
+// "Whenever this deals damage to [a permanent]": the event names the permanent dealt damage.
+trigger_has_damaged :: proc(t: types.TriggerDefinition) -> bool {
+	_, damage := t.mode.(types.TriggerMode_DamageDone)
+	return damage
+}
+
+// "Whenever [a creature] attacks": the event names what the creature attacks.
+trigger_has_attack :: proc(t: types.TriggerDefinition) -> bool {
+	_, attacks := t.mode.(types.TriggerMode_Attacks)
+	return attacks
+}
 
 trigger_has_object :: proc(t: types.TriggerDefinition) -> bool {
 	#partial switch _ in t.mode {
@@ -585,6 +623,7 @@ collect_triggers :: proc(g: ^Game) {
 	defer collecting_event = {}
 	for e, index in g.events {
 		collecting_event = event_about(s, e)
+		delayed_event_triggers(g, e, index) // "when that creature dies this turn", "whenever ... this turn" (CR 603.7)
 		switch e.kind {
 		case .Zone_Change, .Sacrificed:
 			moved := object(s, e.object)
@@ -790,6 +829,7 @@ collect_triggers :: proc(g: ^Game) {
 		}
 	}
 	clear(&g.events)
+	clear(&g.delayed_marks)
 }
 
 @(private = "file")
@@ -1034,9 +1074,13 @@ place_triggers :: proc(g: ^Game) -> bool {
 		index := next_trigger(g)
 		pt := g.pending_triggers[index]
 		if pt.delayed != nil {
-			// CR 603.7: put on the stack like any triggered ability; it has no targets to choose.
+			// CR 603.7: put on the stack like any triggered ability; it has no targets to choose. "That creature",
+			// "that much": its trigger event's (a "whenever ... this turn" one).
 			ordered_remove(&g.pending_triggers, index)
-			push_resolved_trigger(g, pt.source, pt.controller, pt.delayed)
+			id := push_resolved_trigger(g, pt.source, pt.controller, pt.delayed)
+			event := pt.event
+			event.amount = pt.amount
+			if event != {} do g.stack_events[id] = event
 			continue
 		}
 		if a := pt.definition.execute; a != nil && a.modal != nil {
@@ -1183,7 +1227,7 @@ push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerI
 }
 
 // A triggered ability whose instructions are already worked out (a delayed one): onto the stack as it is.
-push_resolved_trigger :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, ability: ^types.ResolvedAbility) {
+push_resolved_trigger :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, ability: ^types.ResolvedAbility) -> types.ObjectId {
 	s := &g.state
 	id := types.ObjectId(s.next_object_id)
 	s.next_object_id += 1
@@ -1191,6 +1235,7 @@ push_resolved_trigger :: proc(g: ^Game, source: types.ObjectId, controller: type
 	kind := types.StackEntryKind_TriggeredAbility{source_id = source, ability = ability, source_name = src.name if src != nil else ""}
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = source, controller = controller, kind = kind}, copy_entry)
 	report(types.GameEvent_AbilityTriggered{stack_entry = id, source_id = source, controller = controller, origin = .Delayed})
+	return id
 }
 
 // ---- Resolving (CR 608.2) -----------------------------------------------------------------------------------
