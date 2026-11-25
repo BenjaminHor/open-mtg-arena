@@ -49,7 +49,7 @@ begin_step :: proc(g: ^Game, step: types.Phase) {
 		// CR 502.3: the active player untaps their permanents; nobody gets priority (CR 502.4).
 		for o in permanents_of(s, s.active_player) {
 			o.summoning_sick = false
-			if !has_rule(g, o, .Cant_Untap) do o.tapped = false // CR 502.3, "doesn't untap"
+			if !has_rule(g, o, .Cant_Untap) do untap(o) // CR 502.3, "doesn't untap"; stun counters (CR 122.1d)
 		}
 		begin_step(g, .Upkeep)
 		return

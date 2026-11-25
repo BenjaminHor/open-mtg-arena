@@ -2075,3 +2075,28 @@ return_this_card_from_the_graveyard :: proc(t: ^testing.T) {
 	game.apply(g, 1, types.GameAction_PassPriority{})
 	testing.expect(t, wanderer.zone == .Battlefield && wanderer.tapped, "back on the battlefield, tapped")
 }
+
+@(test)
+stun_and_keyword_counters :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 122.1d: a permanent with a stun counter that would untap loses a stun counter instead.
+	g := new_game()
+	s := &g.state
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	bears.tapped = true
+	game.add_counters(bears, types.CounterType_Stun{}, 1)
+	game.begin_turn(g, 0)
+	testing.expect(t, bears.tapped && len(bears.counters) == 0, "still tapped; the stun counter is gone")
+	game.begin_turn(g, 0)
+	testing.expect(t, !bears.tapped, "untaps the next time")
+	// Two stun counters of the same kind are one entry (CR 122.1: counters of a kind are counted together).
+	game.add_counters(bears, types.CounterType_Stun{}, 1)
+	game.add_counters(bears, types.CounterType_Stun{}, 1)
+	testing.expect(t, len(bears.counters) == 1 && bears.counters[0]._1 == 2)
+	// CR 122.1b, 613.1f: a flying counter gives flying.
+	testing.expect(t, !game.has_keyword(bears, types.Keyword_Flying))
+	game.add_counters(bears, types.CounterType_Keyword{.Flying}, 1)
+	game.apply_continuous_effects(g)
+	testing.expect(t, game.has_keyword(bears, types.Keyword_Flying), "flying from the counter")
+	_ = s
+}

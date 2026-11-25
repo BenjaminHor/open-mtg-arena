@@ -132,6 +132,10 @@ apply_continuous_effects :: proc(g: ^Game) {
 			for m in e.static.modifications do if k, ok := m.(types.ContinuousModification_AddKeyword); ok && !has_keyword_in(keywords[:], k.keyword) do append(&keywords, k.keyword)
 		}
 		for mods in temps do for m in mods do if k, ok := m.(types.ContinuousModification_AddKeyword); ok && !has_keyword_in(keywords[:], k.keyword) do append(&keywords, k.keyword)
+		// CR 122.1b, 613.1f: a keyword counter gives its keyword.
+		for c in o.counters do if kc, ok := c._0.(types.CounterType_Keyword); ok {
+			if k, known := keyword_of_counter(kc._0); known && !has_keyword_in(keywords[:], k) do append(&keywords, k)
+		}
 		// Layer 5 (CR 613.1e): color.
 		colors_set := false
 		for e in statics do if affects(s, e.source, e.static, o) {

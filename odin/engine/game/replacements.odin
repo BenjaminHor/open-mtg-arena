@@ -2,6 +2,7 @@
 // counters" (CR 614.1c, 614.12), which change how it enters rather than doing something after.
 package game
 
+import "core:reflect"
 import types "../types"
 
 replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
@@ -110,14 +111,72 @@ add_counters :: proc(o: ^types.GameObject, kind: types.CounterType, n: u32) {
 	append(&o.counters, types.Tuple2(types.CounterType, u32){kind, n})
 }
 
+// Whether two counters are of the same kind (CR 122.1): the same kind of counter, and for keyword and named
+// counters the same keyword or name.
 same_counter :: proc(a, b: types.CounterType) -> bool {
-	#partial switch _ in a {
-	case types.CounterType_Plus1Plus1:
-		_, ok := b.(types.CounterType_Plus1Plus1)
-		return ok
-	case types.CounterType_Minus1Minus1:
-		_, ok := b.(types.CounterType_Minus1Minus1)
-		return ok
+	if reflect.union_variant_typeid(a) != reflect.union_variant_typeid(b) do return false
+	#partial switch x in a {
+	case types.CounterType_Keyword:
+		return x._0 == b.(types.CounterType_Keyword)._0
+	case types.CounterType_Generic:
+		return x._0 == b.(types.CounterType_Generic)._0
+	case types.CounterType_PowerToughness:
+		y := b.(types.CounterType_PowerToughness)
+		return x.power == y.power && x.toughness == y.toughness
 	}
-	return false
+	return true
+}
+
+counter_count :: proc(o: ^types.GameObject, kind: types.CounterType) -> u32 {
+	for c in o.counters do if same_counter(c._0, kind) do return c._1
+	return 0
+}
+
+remove_counters :: proc(o: ^types.GameObject, kind: types.CounterType, n: u32) {
+	for c, i in o.counters do if same_counter(c._0, kind) {
+		if c._1 <= n do ordered_remove(&o.counters, i)
+		else do o.counters[i]._1 -= n
+		return
+	}
+}
+
+// Untapping a permanent (CR 701.26b). CR 122.1d: with a stun counter on it, a stun counter is removed instead.
+untap :: proc(o: ^types.GameObject) {
+	if !o.tapped do return
+	if counter_count(o, types.CounterType_Stun{}) > 0 {
+		remove_counters(o, types.CounterType_Stun{}, 1)
+		return
+	}
+	o.tapped = false
+}
+
+// The keyword a keyword counter gives (CR 122.1b), of those this engine carries out.
+keyword_of_counter :: proc(k: types.KeywordKind) -> (types.Keyword, bool) {
+	#partial switch k {
+	case .Flying:
+		return types.Keyword_Flying{}, true
+	case .FirstStrike:
+		return types.Keyword_FirstStrike{}, true
+	case .DoubleStrike:
+		return types.Keyword_DoubleStrike{}, true
+	case .Trample:
+		return types.Keyword_Trample{}, true
+	case .Deathtouch:
+		return types.Keyword_Deathtouch{}, true
+	case .Lifelink:
+		return types.Keyword_Lifelink{}, true
+	case .Vigilance:
+		return types.Keyword_Vigilance{}, true
+	case .Haste:
+		return types.Keyword_Haste{}, true
+	case .Reach:
+		return types.Keyword_Reach{}, true
+	case .Menace:
+		return types.Keyword_Menace{}, true
+	case .Indestructible:
+		return types.Keyword_Indestructible{}, true
+	case .Hexproof:
+		return types.Keyword_Hexproof{}, true
+	}
+	return nil, false
 }

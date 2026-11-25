@@ -37,9 +37,12 @@ may_name_player :: proc(f: types.TargetFilter) -> bool {
 }
 
 counter_kind_supported :: proc(c: types.CounterType) -> bool {
-	#partial switch _ in c {
-	case types.CounterType_Plus1Plus1, types.CounterType_Minus1Minus1:
+	#partial switch x in c {
+	case types.CounterType_Plus1Plus1, types.CounterType_Minus1Minus1, types.CounterType_Stun:
 		return true
+	case types.CounterType_Keyword:
+		_, ok := keyword_of_counter(x._0) // CR 122.1b
+		return ok
 	}
 	return false
 }
@@ -107,7 +110,8 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 	case types.Effect_SetTapState:
 		if is_self(x.target) do affected = same_source(g, source)
 		if affected == nil || affected.zone != .Battlefield do return
-		affected.tapped = x.state == .Tap
+		if x.state == .Tap do affected.tapped = true
+		else do untap(affected) // CR 122.1d
 	case types.Effect_Mill:
 		// CR 701.17a: the player puts the top N cards of their library into their graveyard.
 		who := controller
