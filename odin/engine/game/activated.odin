@@ -284,7 +284,7 @@ ask_cost_objects :: proc(g: ^Game, p: types.PlayerId, c: Object_Cost) {
 	g.state.waiting_for = types.WaitingFor_PayCost{player = p, kind = kind, choices = choices, count = c.count, min_count = c.count, resume = types.CostResume_Resolution{}}
 }
 
-// CR 602.2h: the costs are paid; the ability is activated and its controller gets priority (CR 117.3c).
+// CR 602.2b, 601.2h: the costs are paid; the ability is activated and its controller gets priority (CR 117.3c).
 finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, index: int, targets: []types.TargetRef) {
 	s := &g.state
 	o := object(s, source)
