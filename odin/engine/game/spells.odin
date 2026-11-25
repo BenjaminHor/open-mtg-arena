@@ -134,6 +134,8 @@ keyword_supported :: proc(k: types.Keyword) -> bool {
 		return mana // the cast from the graveyard and the exile are flashback.odin's
 	case types.Keyword_Kicker:
 		return true // carried out through the card's additional cost (kicker_cost), which card_supported checks
+	case types.Keyword_Entwine, types.Keyword_Spree, types.Keyword_Tiered:
+		return true // CR 702.42, 702.172, 702.183: rules of the modes, carried out (and checked) by modes.odin
 	case types.Keyword_Typecycling:
 		// CR 702.29e: "[type]cycling [cost]": the card data spells it out as an activated ability from the hand that
 		// searches for a card of that type, checked like any other.
@@ -750,6 +752,7 @@ spell_cost :: proc(s: ^types.GameState, o: ^types.GameObject, p: types.PlayerId)
 	if !is_cost do return base
 	add_kicker_cost(o, &c) // CR 702.33a: an additional cost
 	add_chosen_option_cost(o, &c) // "or pay {3}" (CR 601.2f)
+	add_mode_costs(o, &c) // spree, tiered, entwine (CR 700.2h, 702.42a)
 	generic := int(c.generic) + cost_change(s, p, o)
 	if has_x(o.mana_cost) {
 		// CR 107.3a: each {X} is the announced value (0 before it's announced).
@@ -850,6 +853,7 @@ object_face :: proc(o: ^types.GameObject) -> types.CardFace {
 	if e, ok := card_entry_of(o); ok {
 		f.casting_options = e.face.casting_options
 		f.solve_condition = e.face.solve_condition // a Case's "to solve" (CR 720.3a), not kept on objects either
+		f.oracle_text = e.face.oracle_text // the wording of a conditional number of modes (modal_supported)
 	}
 	return f
 }
@@ -918,6 +922,16 @@ withdraw_spell :: proc(s: ^types.GameState, id: types.ObjectId, reversed := true
 	if reversed && o.modal_back_face do mdfc_front_up(current_card_db, o) // the front face in the hand (CR 712.6a)
 }
 
+// CR 734.1: a cast that's reversed takes back what was announced for it (CR 601.2b): X, the additional costs
+// chosen, the modes.
+forget_cast_choices :: proc(o: ^types.GameObject) {
+	if o == nil do return
+	o.cost_x_paid = nil
+	o.additional_cost_payment_count = 0
+	clear(&o.additional_cost_payments)
+	o.chosen_modes = nil
+}
+
 // CR 601.2b: the announcements in order: kicker, then X; then targets (601.2c) and paying (601.2h).
 continue_casting :: proc(g: ^Game, p: types.PlayerId) {
 	s := &g.state
@@ -956,9 +970,7 @@ next_target_or_finish :: proc(g: ^Game, p: types.PlayerId) {
 		// CR 601.2h, 734.1: the targets chosen leave a cost it can't pay ("costs {3} less if it targets a tapped
 		// creature", with an untapped one chosen): the cast is reversed.
 		withdraw_spell(s, o.id)
-		o.cost_x_paid = nil
-		o.additional_cost_payment_count = 0
-		clear(&o.additional_cost_payments) // the additional cost chosen, with the cast
+		forget_cast_choices(o)
 		g.pending = {}
 		rejection = "the cost with those targets can't be paid"
 		give_priority(g, p)

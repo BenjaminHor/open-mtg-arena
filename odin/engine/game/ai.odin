@@ -543,17 +543,16 @@ generic_helps :: proc(e: types.Effect_GenericEffect) -> bool {
 	return true
 }
 
-// The modes to choose: the first available ones whose required targets are good ones (or that need none and
-// draw, make tokens or gain life), as many as the minimum.
+// The modes to choose, among the choices it may make and pay for: as many as it can of the modes whose required
+// targets are good ones (or that need none and draw, make tokens or gain life), and as few others as it must.
+// Good when every mode chosen is one of those.
 ai_modes :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> (modes: [dynamic]int, good: bool) {
 	s := &g.state
-	m := modal_of(o)
 	unavailable := unavailable_modes(s, p, o)
-	modes = make([dynamic]int)
-	fallback := make([dynamic]int, context.temp_allocator)
+	// Which modes do some good: each target slot has a good target, or it draws, makes tokens or gains life.
+	helps := make([]bool, len(mode_abilities(o)), context.temp_allocator)
 	for a, i in mode_abilities(o) {
 		if slice.contains(unavailable[:], i) do continue
-		append(&fallback, i)
 		ok := true
 		targets := 0
 		for slot in slot_list(a) do if !slot.optional {
@@ -567,12 +566,23 @@ ai_modes :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> (modes: [
 				ok = false
 			}
 		}
-		if ok && len(modes) < m.max_choices do append(&modes, i)
+		helps[i] = ok
 	}
-	good = len(modes) >= m.min_choices
-	for _, i in fallback do if len(modes) < m.min_choices && !slice.contains(modes[:], fallback[i]) do append(&modes, fallback[i])
-	slice.sort(modes[:])
-	return modes, good
+	// Among the choices it may make and pay for (entwined, more spree modes, a mode again): the fewest modes that do
+	// no good, then the most that do.
+	best: []int
+	best_useless, best_useful := max(int), -1
+	for set in allowed_mode_sets(s, p, o, unavailable[:]) {
+		useless, useful := 0, 0
+		for i in set {
+			if helps[i] do useful += 1
+			else do useless += 1
+		}
+		if useless < best_useless || (useless == best_useless && useful > best_useful) do best, best_useless, best_useful = set, useless, useful
+	}
+	modes = make([dynamic]int)
+	append(&modes, ..best)
+	return modes, best != nil && best_useless == 0
 }
 
 // Tokens first, then the lowest mana value.

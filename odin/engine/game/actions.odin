@@ -185,11 +185,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			if !ok do return decline_target(g, p) // CR 115.6
 			return choose_target(g, p, t)
 		case types.GameAction_CancelCast:
-			if o := object(s, g.pending.object); o != nil {
-				o.cost_x_paid = nil // CR 601.2: the cast is undone
-				o.additional_cost_payment_count = 0
-				clear(&o.additional_cost_payments) // the additional cost chosen, with the cast
-			}
+			if g.pending.ability_index < 0 do forget_cast_choices(object(s, g.pending.object)) // CR 601.2: the cast is undone
 			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed
 			g.pending = {}
 			give_priority(g, p)
@@ -248,10 +244,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			if _, is_choice := w.cost.(types.AdditionalCost_Choice); is_choice do return decide_additional_choice(g, p, a.index)
 			return decide_kicker(g, p, a.index)
 		case types.GameAction_CancelCast:
-			if o := object(s, g.pending.object); o != nil {
-				o.additional_cost_payment_count = 0
-				clear(&o.additional_cost_payments)
-			}
+			forget_cast_choices(object(s, g.pending.object))
 			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed
 			g.pending = {}
 			give_priority(g, p)
@@ -276,6 +269,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		case types.GameAction_SelectModes:
 			return select_modes(g, p, w, a.indices[:])
 		case types.GameAction_CancelCast:
+			forget_cast_choices(object(s, g.pending.object))
 			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed
 			g.pending = {}
 			give_priority(g, p)
@@ -305,7 +299,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		case types.GameAction_ChooseX:
 			return choose_x(g, p, w, a.value)
 		case types.GameAction_CancelCast:
-			if o := object(s, g.pending.object); o != nil do o.cost_x_paid = nil
+			forget_cast_choices(object(s, g.pending.object))
 			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed
 			g.pending = {}
 			give_priority(g, p)
@@ -318,11 +312,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		case types.GameAction_CancelCast:
 			// CR 734.1: an activation or cast that can't be finished is reversed entirely.
 			withdraw_spell(s, g.pending.object)
-			if o := object(s, g.pending.object); o != nil && g.pending.ability_index < 0 {
-				o.cost_x_paid = nil
-				o.additional_cost_payment_count = 0
-				clear(&o.additional_cost_payments) // the additional cost chosen, with the cast
-			}
+			if g.pending.ability_index < 0 do forget_cast_choices(object(s, g.pending.object))
 			g.pending = {}
 			give_priority(g, p)
 			return true
@@ -488,10 +478,10 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 			append(&out, types.GameAction_DecideOptionalCost{index = 0}, types.GameAction_DecideOptionalCost{index = 1})
 		}
 	case types.WaitingFor_ModeChoice:
-		// Every allowed set of modes (CR 700.2a), in printed order, from the minimum to the maximum number.
-		available := make([dynamic]int, context.temp_allocator)
-		for i in 0 ..< w.modal.mode_count do if !slice.contains(w.unavailable_modes[:], i) do append(&available, i)
-		mode_sets(&out, available[:], 0, make([dynamic]int, context.temp_allocator), w.modal.min_choices, w.modal.max_choices)
+		// Every allowed choice of modes the player can pay for (CR 700.2, 601.2f), in printed order.
+		if o := object(s, g.pending.object); o != nil && is_modal(o) {
+			for set in allowed_mode_sets(s, p, o, w.unavailable_modes[:]) do append(&out, types.GameAction_SelectModes{indices = slice.clone_to_dynamic(set)})
+		}
 		append(&out, types.GameAction_CancelCast{})
 	case types.WaitingFor_AbilityModeChoice:
 		available := make([dynamic]int, context.temp_allocator)

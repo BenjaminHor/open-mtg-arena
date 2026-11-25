@@ -126,6 +126,7 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 		o.cost_x_paid = nil
 		o.additional_cost_payment_count = 0 // CR 702.33d: "kicked" belongs to the spell and the permanent it became
 		clear(&o.additional_cost_payments) // the additional cost chosen, with the cast
+		o.chosen_modes = nil // the modes chosen as it was cast (CR 700.2), and the costs they added
 	}
 	// A permanent is controlled by whoever put it onto the battlefield; elsewhere its owner (CR 108.4, 110.2).
 	o.controller = o.owner

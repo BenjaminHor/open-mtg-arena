@@ -5779,3 +5779,282 @@ spells_cast_this_turn_of_a_type :: proc(t: ^testing.T) {
 	all := types.QuantityExpr(types.QuantityExpr_Ref{qty = types.QuantityRef_SpellsCast{scope = .Controller, window = .ThisTurn}})
 	testing.expect_value(t, game.quantity_value(s, all, 0, 0, 0), 2)
 }
+
+// ---- Modal spells: entwine, spree, tiered, modes chosen more than once, a conditional number ---------------------
+
+@(private = "file")
+mode_list :: proc(xs: ..int) -> [dynamic]int {
+	out: [dynamic]int
+	append(&out, ..xs)
+	return out
+}
+
+@(private = "file")
+tapped_lands :: proc(g: ^game.Game, p: types.PlayerId) -> int {
+	n := 0
+	for id in game.ids_of(g.state.battlefield) do if o := game.object(&g.state, id); o.controller == p && o.tapped && game.is_type(o, .Land) do n += 1
+	return n
+}
+
+// Whether the legal actions offer exactly this choice of modes.
+@(private = "file")
+modes_offered :: proc(g: ^game.Game, p: types.PlayerId, want: []int) -> bool {
+	for a in game.legal_actions(g, p) do if m, ok := a.(types.GameAction_SelectModes); ok && slice.equal(m.indices[:], want) do return true
+	return false
+}
+
+// Chooses each target asked for: `prefer` when it's legal, else player 1.
+@(private = "file")
+choose_targets :: proc(t: ^testing.T, g: ^game.Game, prefer: types.ObjectId, player: types.PlayerId = 1) {
+	for _ in 0 ..< 4 {
+		tw, targeting := g.state.waiting_for.(types.WaitingFor_TargetSelection)
+		if !targeting do return
+		target: types.TargetRef = types.TargetRef_Player{player}
+		if slice.contains(tw.selection.current_legal_targets[:], types.TargetRef(types.TargetRef_Object{prefer})) do target = types.TargetRef_Object{prefer}
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = target}))
+	}
+}
+
+@(test)
+entwine_chooses_every_mode :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.42a: Barbed Lightning ({2}{R}): "Choose one — 3 damage to target creature; 3 damage to target player or
+	// planeswalker. Entwine {2}": all the modes instead of one, for an additional {2} (CR 601.2f). CR 702.42b: then
+	// both are carried out, in the order written.
+	testing.expect(t, game.card_supported(&card(t, "Barbed Lightning").face))
+	run :: proc(t: ^testing.T, lands: int, modes: []int) -> (ok: bool, tapped: int, bears_dead: bool, life: i32) {
+		g := new_game()
+		for _ in 0 ..< lands do add(t, g, "Mountain", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		bolt := add(t, g, "Barbed Lightning", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = bolt.id}))
+		w, asked := g.state.waiting_for.(types.WaitingFor_ModeChoice)
+		testing.expect(t, asked && w.modal.max_choices == 2)
+		testing.expect(t, modes_offered(g, 0, []int{0}) && modes_offered(g, 0, []int{1}))
+		testing.expect(t, modes_offered(g, 0, []int{0, 1}) == (lands >= 5), "entwined only when {2} more can be paid")
+		if !game.apply(g, 0, types.GameAction_SelectModes{indices = mode_list(..modes)}) do return false, 0, false, 20
+		choose_targets(t, g, bears.id)
+		tapped = tapped_lands(g, 0)
+		settle_stack(g)
+		return true, tapped, bears.zone == .Graveyard, game.player(&g.state, 1).life
+	}
+	ok, tapped, dead, life := run(t, 3, []int{0, 1})
+	testing.expect(t, !ok, "with three lands, entwining ({2}{R} + {2}) can't be paid")
+	ok, tapped, dead, life = run(t, 3, []int{0})
+	testing.expect(t, ok && tapped == 3 && dead && life == 20, "not entwined: one mode, for {2}{R}")
+	ok, tapped, dead, life = run(t, 5, []int{0, 1})
+	testing.expect(t, ok && tapped == 5 && dead && life == 17, "entwined: both modes, for {2}{R} + {2}")
+}
+
+@(test)
+entwine_choice_by_the_ai :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.42a: the AI entwines Barbed Lightning when it can pay for it and both modes have a good target, and
+	// chooses one mode when it can't.
+	run :: proc(t: ^testing.T, lands: int) -> int {
+		g := new_game()
+		for _ in 0 ..< lands do add(t, g, "Mountain", 0, .Battlefield)
+		add(t, g, "Grizzly Bears", 1, .Battlefield)
+		bolt := add(t, g, "Barbed Lightning", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = bolt.id}))
+		a, _ := game.ai_action(g, 0)
+		m, ok := a.(types.GameAction_SelectModes)
+		testing.expect(t, ok && game.apply(g, 0, a), "the AI's modes are a legal choice")
+		return len(m.indices)
+	}
+	testing.expect_value(t, run(t, 5), 2)
+	testing.expect_value(t, run(t, 3), 1)
+}
+
+@(test)
+spree_pays_for_each_mode :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.172a: Explosive Derailment ({R}), "Spree: + {2} — 4 damage to target creature; + {2} — Destroy target
+	// artifact": one or more modes, each mode's cost an additional cost (CR 700.2h, 601.2f). The mana value stays 1
+	// (CR 202.3).
+	testing.expect(t, game.card_supported(&card(t, "Explosive Derailment").face))
+	run :: proc(t: ^testing.T, lands: int, modes: []int) -> (ok: bool, tapped: int, bears_dead, stone_dead: bool) {
+		g := new_game()
+		for _ in 0 ..< lands do add(t, g, "Mountain", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		stone := add(t, g, "Mind Stone", 1, .Battlefield)
+		spell := add(t, g, "Explosive Derailment", 0, .Hand)
+		if !game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}) do return false, 0, false, false
+		if !game.apply(g, 0, types.GameAction_SelectModes{indices = mode_list(..modes)}) {
+			testing.expect(t, game.apply(g, 0, types.GameAction_CancelCast{}))
+			testing.expect(t, len(spell.chosen_modes) == 0 && spell.zone == .Hand && types.pvec_len(g.state.stack) == 0, "the cast is taken back")
+			return false, 0, false, false
+		}
+		testing.expect_value(t, len(spell.chosen_modes), len(modes))
+		for _ in 0 ..< 2 {
+			tw, targeting := g.state.waiting_for.(types.WaitingFor_TargetSelection)
+			if !targeting do break
+			testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = tw.selection.current_legal_targets[0]}))
+		}
+		tapped = tapped_lands(g, 0)
+		testing.expect_value(t, game.object_mana_value(spell), 1)
+		settle_stack(g)
+		testing.expect(t, len(spell.chosen_modes) == 0, "the modes are forgotten in the graveyard")
+		return true, tapped, bears.zone == .Graveyard, stone.zone == .Graveyard
+	}
+	ok, tapped, bears, stone := run(t, 1, []int{0})
+	testing.expect(t, !ok, "{R} alone pays for no mode: it can't be cast")
+	ok, tapped, bears, stone = run(t, 3, []int{})
+	testing.expect(t, !ok, "no mode chosen: not a legal choice")
+	ok, tapped, bears, stone = run(t, 3, []int{0, 1})
+	testing.expect(t, !ok, "both modes cost {R} + {2} + {2}")
+	ok, tapped, bears, stone = run(t, 3, []int{0})
+	testing.expect(t, ok && tapped == 3 && bears && !stone, "the first mode, for {R} + {2}")
+	ok, tapped, bears, stone = run(t, 5, []int{0, 1})
+	testing.expect(t, ok && tapped == 5 && bears && stone, "both, for {R} + {2} + {2}")
+}
+
+@(test)
+tiered_pays_for_the_chosen_tier :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.183a: Thunder Magic ({R}), "Tiered: Thunder — {0} — 2 damage to target creature; Thundara — {3} — 4
+	// damage; Thundaga — {5}{R} — 8 damage": one mode, its cost an additional cost.
+	testing.expect(t, game.card_supported(&card(t, "Thunder Magic").face))
+	g := new_game()
+	for _ in 0 ..< 4 do add(t, g, "Mountain", 0, .Battlefield)
+	giant := add(t, g, "Hill Giant", 1, .Battlefield)
+	spell := add(t, g, "Thunder Magic", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+	testing.expect(t, modes_offered(g, 0, []int{0}) && modes_offered(g, 0, []int{1}) && !modes_offered(g, 0, []int{2}), "Thundaga's {5}{R} more can't be paid")
+	testing.expect(t, !game.apply(g, 0, types.GameAction_SelectModes{indices = mode_list(0, 1)}), "one tier only")
+	testing.expect(t, !game.apply(g, 0, types.GameAction_SelectModes{indices = mode_list(2)}), "Thundaga can't be paid")
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectModes{indices = mode_list(1)}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{giant.id}}))
+	testing.expect_value(t, tapped_lands(g, 0), 4)
+	settle_stack(g)
+	testing.expect(t, giant.zone == .Graveyard, "4 damage to the 3/3")
+}
+
+@(test)
+same_mode_chosen_more_than_once :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 700.2d: Fiery Confluence: "Choose three. You may choose the same mode more than once." — 1 damage to each
+	// creature; 2 damage to each opponent; destroy target artifact. A mode chosen three times is carried out three
+	// times. A mode whose target can't be chosen can't be chosen (CR 700.2a), and without that instruction no mode
+	// can be chosen twice.
+	testing.expect(t, game.card_supported(&card(t, "Fiery Confluence").face))
+	g := new_game()
+	for _ in 0 ..< 4 do add(t, g, "Mountain", 0, .Battlefield)
+	spell := add(t, g, "Fiery Confluence", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+	testing.expect(t, modes_offered(g, 0, []int{1, 1, 1}) && modes_offered(g, 0, []int{0, 1, 1}))
+	testing.expect(t, !game.apply(g, 0, types.GameAction_SelectModes{indices = mode_list(1, 1)}), "three, not two")
+	testing.expect(t, !game.apply(g, 0, types.GameAction_SelectModes{indices = mode_list(1, 1, 2)}), "no artifact to target")
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectModes{indices = mode_list(1, 1, 1)}))
+	settle_stack(g)
+	testing.expect_value(t, game.player(&g.state, 1).life, 14)
+
+	// Boros Charm says nothing of the kind: each of its modes once at most.
+	g2 := new_game()
+	add(t, g2, "Mountain", 0, .Battlefield)
+	add(t, g2, "Plains", 0, .Battlefield)
+	charm := add(t, g2, "Boros Charm", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = charm.id}))
+	testing.expect(t, !game.apply(g2, 0, types.GameAction_SelectModes{indices = mode_list(0, 0)}))
+}
+
+@(test)
+same_mode_twice_with_targets :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 700.2d: "If that mode requires a target, the same player or object may be chosen as the target for each of
+	// those modes." Fiery Confluence's "destroy target artifact" twice, both times the same Mind Stone, and
+	// "2 damage to each opponent" once.
+	g := new_game()
+	for _ in 0 ..< 4 do add(t, g, "Mountain", 0, .Battlefield)
+	stone := add(t, g, "Mind Stone", 1, .Battlefield)
+	spell := add(t, g, "Fiery Confluence", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectModes{indices = mode_list(2, 1, 2)}))
+	for _ in 0 ..< 2 do testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{stone.id}}), "the same artifact for each")
+	_, still := g.state.waiting_for.(types.WaitingFor_TargetSelection)
+	testing.expect(t, !still, "two targets, one for each time the mode was chosen")
+	settle_stack(g)
+	testing.expect(t, stone.zone == .Graveyard && game.player(&g.state, 1).life == 18)
+}
+
+@(test)
+more_modes_while_a_condition_holds :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Flame of Anor: "Choose one. If you control a Wizard as you cast this spell, you may choose two instead." —
+	// target player draws two cards; destroy target artifact; 5 damage to target creature. The number is read as the
+	// modes are chosen (CR 601.2b, 700.2a).
+	testing.expect(t, game.card_supported(&card(t, "Flame of Anor").face))
+	run :: proc(t: ^testing.T, wizard: bool) -> (two_allowed: bool, drawn: int, bears_dead: bool) {
+		g := new_game()
+		add(t, g, "Island", 0, .Battlefield)
+		for _ in 0 ..< 2 do add(t, g, "Mountain", 0, .Battlefield)
+		if wizard do add(t, g, "Prodigal Sorcerer", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		flame := add(t, g, "Flame of Anor", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = flame.id}))
+		w, _ := g.state.waiting_for.(types.WaitingFor_ModeChoice)
+		testing.expect_value(t, w.modal.max_choices, 2 if wizard else 1)
+		two_allowed = game.apply(g, 0, types.GameAction_SelectModes{indices = mode_list(0, 2)})
+		if !two_allowed do testing.expect(t, game.apply(g, 0, types.GameAction_SelectModes{indices = mode_list(2)}))
+		before := types.pvec_len(game.player(&g.state, 0).hand) // Flame of Anor still among them as it's cast
+		choose_targets(t, g, bears.id, player = 0)
+		settle_stack(g)
+		return two_allowed, types.pvec_len(game.player(&g.state, 0).hand) - (before - 1), bears.zone == .Graveyard
+	}
+	two, drawn, dead := run(t, false)
+	testing.expect(t, !two && drawn == 0 && dead, "no Wizard: one mode")
+	two, drawn, dead = run(t, true)
+	testing.expect(t, two && drawn == 2 && dead, "a Wizard: both, draw two and 5 damage")
+}
+
+@(test)
+same_mode_that_asks_while_resolving :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 700.2d: Verdant Confluence's "Search your library for a basic land card, put it onto the battlefield tapped,
+	// then shuffle" chosen three times: three searches, one after another, each with its own choice.
+	g := new_game()
+	for _ in 0 ..< 6 do add(t, g, "Forest", 0, .Battlefield)
+	spell := add(t, g, "Verdant Confluence", 0, .Hand)
+	testing.expect(t, game.card_supported(&card(t, "Verdant Confluence").face))
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectModes{indices = mode_list(2, 2, 2)}))
+	searches := 0
+	for _ in 0 ..< 12 {
+		// The spell is off the stack while it resolves: done when nothing's on it and nobody is asked anything.
+		_, priority := g.state.waiting_for.(types.WaitingFor_Priority)
+		if types.pvec_len(g.state.stack) == 0 && priority do break
+		if _, searching := g.state.waiting_for.(types.WaitingFor_SearchChoice); searching do searches += 1
+		who := g.state.priority_player
+		if w, ok := game.acting_player(&g.state); ok do who = w
+		a, _ := game.ai_action(g, who)
+		testing.expect(t, game.apply(g, who, a))
+	}
+	lands := 0
+	for id in game.ids_of(g.state.battlefield) do if o := game.object(&g.state, id); o.controller == 0 && game.is_type(o, .Land) do lands += 1
+	testing.expect_value(t, searches, 3)
+	testing.expect_value(t, lands, 9)
+	testing.expect_value(t, tapped_lands(g, 0), 9) // the six that paid, and the three put onto the battlefield tapped
+}
+
+@(test)
+same_mode_with_a_follow_up_instruction :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Eldrazi Confluence's second mode, "exile target nonland permanent, then return it to the battlefield tapped",
+	// could return an Aura, which needs what it enchants chosen as it enters (CR 303.4f): refused until that's built
+	// (seventh rules review). Repeated modes with a follow-up instruction are covered by Verdant Confluence's search.
+	testing.expect(t, !game.card_supported(&card(t, "Eldrazi Confluence").face))
+}
+
+@(test)
+entwine_is_the_number_specified_or_all :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.42a: "You may choose all modes of this spell instead of just the number specified." Kaya's Guile:
+	// "Choose two — ... Entwine {3}": two modes or all four, never three (nor one).
+	g := new_game()
+	guile := add(t, g, "Kaya's Guile", 0, .Hand)
+	testing.expect(t, game.modes_allowed(&g.state, guile, []int{0, 1}, nil))
+	testing.expect(t, game.modes_allowed(&g.state, guile, []int{0, 1, 2, 3}, nil))
+	testing.expect(t, !game.modes_allowed(&g.state, guile, []int{0, 1, 2}, nil))
+	testing.expect(t, !game.modes_allowed(&g.state, guile, []int{0}, nil))
+	testing.expect(t, !game.modes_allowed(&g.state, guile, []int{0, 0}, nil))
+}

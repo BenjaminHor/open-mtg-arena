@@ -3220,6 +3220,14 @@ Progress:
   "return any number of Mountains", a target filter with no card type, or text with "different"/"total" (a group
   condition the data drops); Kairi, Rampaging Yao Guai, Agadeem's Awakening added to MISPARSED_CARDS. Test:
   `any_number_of_targets` (Paradoxical Outcome).
+- Modal spells (modes.odin, done by a background agent in a worktree, merged and checked here): entwine (CR 702.42,
+  mana costs), Spree and tiered (CR 702.172, 702.183: each mode's cost added, 601.2f), the same mode chosen more
+  than once (CR 700.2d, exact counts of two or more), and a larger number of modes while a static condition holds
+  ("you may choose both instead"). The chosen modes live on the spell object (chosen_modes) so the cost sees them;
+  `forget_cast_choices` undoes X, additional costs and modes on every cast reversal. The AI picks affordable useful
+  modes. Refused: pawprint modes, non-mana entwine, conditions on additional costs, commander/And conditions,
+  mandatory "choose both instead", misparsed counts (Moment of Reckoning, Doomsday Confluence). 10 tests. Also:
+  spells cast this turn counted by type (`spells_cast_this_turn_of_a_type`). Coverage 7,613.
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 
