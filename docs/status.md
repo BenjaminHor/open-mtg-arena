@@ -2901,6 +2901,7 @@ Progress:
   the failures, 5,379 stop at an unsupported card (cast 3,962, activation 1,417); the pieces blocking the most
   fixtures: spell conditions 416, Moved replacements 325, spell "other" (repeat/unless/else) 316, ChangeZone 315,
   multiple targets 303, CreateDelayedTrigger 268, ChangeZoneAll 226, DealDamage 211.
+- Full replay at 3aff280 (2026-11-25): **760 of 11,160 pass** (from 724; 7 too large).
 - Delayed triggered abilities (CR 603.7): "at the beginning of the next end step / upkeep / end of combat", kept
   in the state's delayed_triggers with the object "it" names, triggering once (603.7b) and only on that same
   object (603.7c); "sacrifice it". A return to the battlefield is under the owner's control unless the
