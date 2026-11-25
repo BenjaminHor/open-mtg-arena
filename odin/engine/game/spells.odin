@@ -179,6 +179,12 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return sacrifice_supported(x)
 	case types.Effect_CreateDelayedTrigger:
 		return delayed_trigger_supported(x)
+	case types.Effect_CopyTokenOf:
+		// "Create a token that's a copy of target creature you control" / "of this creature" (CR 707.2).
+		_, you := x.owner.(types.TargetFilter_Controller)
+		_, fixed := fixed_quantity(x.count)
+		plain := !x.enters_attacking && len(x.extra_keywords) == 0 && len(x.additional_modifications) == 0 && x.source_filter == nil
+		return you && fixed && plain && (is_self(x.target) || (filter_supported(x.target) && !may_name_player(x.target)))
 	case types.Effect_Counter:
 		return counter_supported(x)
 	case types.Effect_Shuffle:
@@ -302,6 +308,8 @@ effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 	case types.Effect_DealDamage:
 		f = x.target
 	case types.Effect_Pump:
+		f = x.target
+	case types.Effect_CopyTokenOf:
 		f = x.target
 	case types.Effect_Destroy:
 		f = x.target
@@ -556,7 +564,8 @@ card_entry_of :: proc(o: ^types.GameObject) -> (^types.CardExportEntry, bool) {
 // card it came from).
 object_supported :: proc(o: ^types.GameObject, card_db: Card_Lookup) -> bool {
 	// A token is what a supported effect made: its abilities are ones the engine carries out (CR 111.10 included).
-	if o.is_token do return true
+	// A copy of a card (printed_ref set) has that card's abilities, checked like the card's.
+	if o.is_token && o.printed_ref == nil do return true
 	// Its triggers are checked where they are (object_face leaves them out, to allocate nothing: this runs for
 	// every card on every legal-action query).
 	if o.trigger_definitions != nil do for e in o.trigger_definitions^ do if !trigger_supported(e.definition) do return false
@@ -902,6 +911,14 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		return do_sacrifice(g, x, controller, source, target)
 	case types.Effect_CreateDelayedTrigger:
 		create_delayed_trigger(g, x, controller, source)
+	case types.Effect_CopyTokenOf:
+		original: ^types.GameObject
+		if id, ok := target_object(target); ok do original = object(s, id)
+		else if is_self(x.target) do original = same_source(g, source)
+		// CR 608.2h: an object that left the battlefield is copied as it last existed there.
+		if original != nil && original.zone != .Battlefield do if was := last_known(original.id); was != nil do original = was
+		n, _ := fixed_quantity(x.count)
+		if original != nil do for _ in 0 ..< n do create_copy_token(g, original, controller, x.tapped)
 	case types.Effect_Counter:
 		if id, ok := target_object(target); ok do counter_spell(g, id)
 	case types.Effect_Shuffle:

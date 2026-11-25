@@ -2901,6 +2901,9 @@ Progress:
   in the state's delayed_triggers with the object "it" names, triggering once (603.7b) and only on that same
   object (603.7c); "sacrifice it". A return to the battlefield is under the owner's control unless the
   instruction says "under your control" (CR 110.2a, as the card data and Rust read it). 5,498 -> 5,514.
+- Token copies ("create a token that's a copy of target creature you control" / "of this creature", CR 707.2,
+  111.2): the card's printed characteristics (copy effects on the original aren't carried yet), entering like any
+  permanent. A copy token is checked for support like its card. 5,514 -> 5,527.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

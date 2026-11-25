@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 266 of 2880 rules implemented (9%), 115 of them tested.**
+**In scope (100-799): 267 of 2880 rules implemented (9%), 117 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -23,7 +23,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 108 cards | 11 | 1 (9%) | 0 |
 | 109 objects | 16 | 2 (13%) | 0 |
 | 110 permanents | 14 | 3 (21%) | 0 |
-| 111 tokens | 35 | 12 (34%) | 5 |
+| 111 tokens | 35 | 12 (34%) | 6 |
 | 112 spells | 7 | 0 (0%) | 0 |
 | 113 abilities | 41 | 3 (7%) | 2 |
 | 114 emblems | 5 | 0 (0%) | 0 |
@@ -113,7 +113,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 704 state based actions | 40 | 12 (30%) | 7 |
 | 705 flipping a coin | 3 | 0 (0%) | 0 |
 | 706 rolling a die | 18 | 0 (0%) | 0 |
-| 707 copying objects | 33 | 0 (0%) | 0 |
+| 707 copying objects | 33 | 1 (3%) | 1 |
 | 708 face down spells and permanents | 14 | 0 (0%) | 0 |
 | 709 split cards | 22 | 0 (0%) | 0 |
 | 710 flip cards | 8 | 0 (0%) | 0 |
@@ -394,7 +394,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 ### 111 tokens (12/35)
 
 - 🟡 111.1 Some effects put tokens onto the battlefield. A token is a marker used to represent any permanent that isn’...
-- 🟡 111.2 The player who creates a token is its owner. The token enters the battlefield under that player’s control.
+- ✅ 111.2 The player who creates a token is its owner. The token enters the battlefield under that player’s control.
 - 🟡 111.3 The spell or ability that creates a token may define the values of any number of characteristics for the to...
 - ✅ 111.4 A spell or ability that creates a token sets both its name and its subtype(s). If the spell or ability does...
 - ⬜ 111.5 If a spell or ability would create a token, but a rule or effect states that a permanent with one or more o...
@@ -2981,10 +2981,10 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 706.8b To reroll one or more stored results of a permanent, roll one of the kind of die noted for each of them. If...
 - ⬜ 706.8c If a permanent has an ability that stores results on it and another ability that refers to the stored resul...
 
-### 707 copying objects (0/33)
+### 707 copying objects (1/33)
 
 - ⬜ 707.1 Some objects become or turn another object into a “copy” of a spell, permanent, or card. Some effects creat...
-- ⬜ 707.2 When copying an object, the copy acquires the copiable values of the original object’s characteristics and,...
+- ✅ 707.2 When copying an object, the copy acquires the copiable values of the original object’s characteristics and,...
 - ⬜ 707.2a A copy acquires the color of the object it’s copying because that value is derived from its mana cost or co...
 - ⬜ 707.2b Once an object has been copied, changing the copiable values of the original object won’t cause the copy to...
 - ⬜ 707.2c If a static ability generates a continuous effect that’s a copy effect, the copiable values that effect gra...

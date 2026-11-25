@@ -2713,3 +2713,30 @@ delayed_trigger_next_end_step :: proc(t: ^testing.T) {
 	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
 	testing.expect(t, bears.zone == .Battlefield && bears.controller == 1, "back under its owner's control")
 }
+
+@(test)
+token_copy_of_a_creature :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Cackling Counterpart: "Create a token that's a copy of target creature you control." CR 707.2: the token has
+	// the creature's copiable values (its printed characteristics), not its counters or damage; CR 111.2: its
+	// creator owns and controls it.
+	testing.expect(t, game.card_supported(&card(t, "Cackling Counterpart").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Island", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	game.add_counters(bears, types.CounterType_Plus1Plus1{}, 1)
+	bears.damage_marked = 1
+	spell := add(t, g, "Cackling Counterpart", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+	if _, asked := s.waiting_for.(types.WaitingFor_TargetSelection); asked {
+		game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}})
+	}
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	copy: ^types.GameObject
+	for id in game.ids_of(s.battlefield) do if o := game.object(s, id); o.is_token do copy = o
+	testing.expect(t, copy != nil, "a token")
+	if copy == nil do return
+	testing.expect(t, copy.name == "Grizzly Bears" && copy.power.? == 2 && copy.toughness.? == 2 && copy.damage_marked == 0, "a 2/2 Grizzly Bears, without the counter or damage")
+	testing.expect(t, copy.controller == 0 && copy.owner == 0)
+}

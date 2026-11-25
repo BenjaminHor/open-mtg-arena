@@ -926,6 +926,39 @@ create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId
 	append(&g.events, Event{kind = .Zone_Change, object = o.id, from = .Command, to = .Battlefield, controller = controller})
 }
 
+// CR 707.2, 111.1: a token that's a copy of an object has its copiable values: for a card, the card's printed
+// characteristics (copy effects on the original aren't copied yet); for a token, the values it was created with.
+// It enters the battlefield like any permanent (its enters-with replacements apply, CR 614.12), owned and
+// controlled by its creator (CR 111.2).
+create_copy_token :: proc(g: ^Game, original: ^types.GameObject, controller: types.PlayerId, tapped: bool) {
+	s := &g.state
+	o: ^types.GameObject
+	card: ^types.CardExportEntry
+	if !(original.is_token && original.printed_ref == nil) && g.card_db != nil do card = g.card_db(original.base_name if original.base_name != "" else original.name)
+	if card != nil {
+		o = new_card_object(s, card, controller, .Command)
+	} else {
+		o = new(types.GameObject)
+		o^ = original^
+		o.id = types.ObjectId(s.next_object_id)
+		s.next_object_id += 1
+		o.card_id = types.CardId(o.id)
+		o.counters = {}
+		o.attachments = {}
+		o.attached_to = nil
+		o.damage_marked = 0
+		o.tapped = false
+		o.zone = .Command
+		reset_characteristics(o)
+		s.objects.inner[o.id] = o
+	}
+	o.owner, o.controller, o.base_controller = controller, controller, controller
+	move_object(g, o.id, .Battlefield)
+	o.is_token = true
+	o.controller = controller
+	if tapped do o.tapped = true
+}
+
 core_type_named :: proc(name: string) -> (types.CoreType, bool) {
 	for t in types.CoreType do if name == fmt_core(t) do return t, true
 	return {}, false
