@@ -53,7 +53,10 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	_, is_cast := t.mode.(types.TriggerMode_SpellCast)
 	_, is_damage := t.mode.(types.TriggerMode_DamageDone)
 	if _, batched := t.mode.(types.TriggerMode_DamageDoneOnceByController); batched do is_damage = true
-	if !is_cast && !is_damage && t.valid_target != nil do return false
+	// A zone-change trigger's valid_target is the parser's note of its effect's target ("When this enters, it deals 1
+	// damage to target opponent"): the event is matched on the card alone, the target chosen by the effect.
+	_, is_zone_change := t.mode.(types.TriggerMode_ChangesZone)
+	if !is_cast && !is_damage && !is_zone_change && t.valid_target != nil do return false
 	if !is_damage && t.valid_source != nil do return false
 	if len(t.origin_zones) > 0 || len(t.zone_change_clauses) > 0 || t.counter_filter != nil || t.saga_chapter != nil do return false
 	if c, has := t.constraint.?; has {

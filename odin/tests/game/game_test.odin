@@ -1835,3 +1835,21 @@ a_creature_died_this_turn :: proc(t: ^testing.T) {
 	game.begin_turn(g, 1)
 	testing.expect(t, game.quantity_value(s, died, 0, 0, 0) == 0, "a new turn: none yet")
 }
+
+@(test)
+enters_trigger_with_a_targeted_effect :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 603.6a: "When this land enters, it deals 1 damage to target opponent" (Abraded Bluffs) triggers on its own
+	// entering; the effect's target is chosen as the ability is put on the stack (CR 603.3d).
+	g := new_game()
+	s := &g.state
+	testing.expect(t, game.card_supported(&card(t, "Abraded Bluffs").face))
+	bluffs := add(t, g, "Abraded Bluffs", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = bluffs.id}))
+	testing.expect(t, bluffs.tapped, "it enters tapped")
+	for _ in 0 ..< 4 {
+		if types.pvec_len(s.stack) == 0 do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, game.player(s, 1).life == 19, "1 damage to the opponent")
+}
