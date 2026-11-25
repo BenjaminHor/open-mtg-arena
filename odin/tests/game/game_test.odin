@@ -3258,3 +3258,26 @@ impulse_draw :: proc(t: ^testing.T) {
 	game.cleanup(g2) // the end of its controller's next turn
 	testing.expect(t, len(kept.casting_permissions) == 0 && kept.zone == .Exile, "gone, the card still exiled")
 }
+
+@(test)
+effect_without_duration_lasts :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Apprentice Necromancer: "{B}, {T}, Sacrifice this creature: Return target creature card from your graveyard to
+	// the battlefield. That creature gains haste. At the beginning of the next end step, sacrifice it." The haste has
+	// no stated duration, so it lasts (CR 611.2a); the delayed ability sacrifices it (CR 603.7).
+	testing.expect(t, game.card_supported(&card(t, "Apprentice Necromancer").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Swamp", 0, .Battlefield)
+	necro := add(t, g, "Apprentice Necromancer", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Graveyard)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = necro.id, ability_index = 0}))
+	if _, asked := s.waiting_for.(types.WaitingFor_TargetSelection); asked {
+		game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}})
+	}
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, bears.zone == .Battlefield && game.has_keyword(bears, types.Keyword_Haste), "back, with haste")
+	game.begin_step(g, .End)
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, bears.zone == .Graveyard, "sacrificed at the end step")
+}

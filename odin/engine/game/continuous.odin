@@ -258,9 +258,16 @@ Temp_Effect :: struct {
 	source:        types.ObjectId,
 }
 
-generic_effect_supported :: proc(e: types.Effect_GenericEffect) -> bool {
-	d, has := e.duration.?
-	if !has || e.end_cost != nil do return false
+// The effect's duration: its own, else the instruction's, else none stated: it lasts indefinitely (CR 611.2a).
+effect_duration :: proc(e: types.Effect_GenericEffect, instruction: Maybe(types.Duration)) -> types.Duration {
+	if d, has := e.duration.?; has do return d
+	if d, has := instruction.?; has do return d
+	return types.Duration_Permanent{}
+}
+
+generic_effect_supported :: proc(e: types.Effect_GenericEffect, instruction: Maybe(types.Duration) = nil) -> bool {
+	d := effect_duration(e, instruction)
+	if e.end_cost != nil do return false
 	#partial switch _ in d {
 	case types.Duration_UntilEndOfTurn, types.Duration_Permanent:
 	case:
@@ -291,9 +298,9 @@ generic_effect_supported :: proc(e: types.Effect_GenericEffect) -> bool {
 
 // Starts the effect on its objects: the target or the source for "it"/"this", or every permanent of a kind, fixed
 // as it begins (CR 611.2c).
-add_temp_effect :: proc(g: ^Game, e: types.Effect_GenericEffect, controller: types.PlayerId, source: types.ObjectId, target: ^types.GameObject) {
+add_temp_effect :: proc(g: ^Game, e: types.Effect_GenericEffect, controller: types.PlayerId, source: types.ObjectId, target: ^types.GameObject, instruction: Maybe(types.Duration) = nil) {
 	s := &g.state
-	d, _ := e.duration.?
+	d := effect_duration(e, instruction)
 	_, permanent := d.(types.Duration_Permanent)
 	for st in e.static_abilities {
 		mods := make([dynamic]types.ContinuousModification)

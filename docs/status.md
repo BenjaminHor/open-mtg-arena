@@ -2952,6 +2952,8 @@ Progress:
   it's exiled) you may play them". The permission is on the card in the state (casting_permissions, as Rust has
   it); lands are played from exile as the turn's land, spells cast; it ends in the cleanup step of its last turn
   (the end turn kept in Game, permission_ends) or when the card leaves exile. 5,952 -> 5,988.
+- An effect with no stated duration ("that creature gains haste") lasts indefinitely (CR 611.2a); the
+  instruction's own duration counts when the effect's is unset. 5,988 -> 5,991.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

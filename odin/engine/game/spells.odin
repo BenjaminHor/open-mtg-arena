@@ -221,7 +221,7 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		}
 		return false
 	case types.Effect_GenericEffect:
-		return generic_effect_supported(x)
+		return generic_effect_supported(x, duration)
 	case types.Effect_SearchLibrary:
 		return search_supported(x)
 	case types.Effect_Sacrifice:
@@ -1048,7 +1048,7 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 	case types.Effect_GenericEffect:
 		targeted: ^types.GameObject
 		if id, ok := target_object(target); ok do targeted = object(s, id)
-		add_temp_effect(g, x, controller, source, targeted)
+		add_temp_effect(g, x, controller, source, targeted, duration)
 	case types.Effect_Token:
 		n := amount(g, x.count, controller, source, target)
 		maker := controller
