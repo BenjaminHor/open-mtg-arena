@@ -52,6 +52,25 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return r.window == .ThisTurn && player_scope_supported(r.player)
 		case types.QuantityRef_CardsDrawnThisTurn:
 			return player_scope_supported(r.player)
+		case types.QuantityRef_SelfManaValue:
+			return true
+		case types.QuantityRef_PropertyAggregate:
+			_, special := r._0.property.(types.ObjectProperty_ManaSymbolCount)
+			return !special && card_set_supported(r._0.source)
+		case types.QuantityRef_Devotion:
+			_, fixed := r.colors.(types.DevotionColors_Fixed)
+			return fixed
+		case types.QuantityRef_DistinctCardTypes:
+			return card_set_supported(r.source)
+		case types.QuantityRef_PlayerCount:
+			#partial switch _ in r.filter {
+			case types.PlayerFilter_Controller, types.PlayerFilter_Opponent, types.PlayerFilter_All:
+				return true
+			}
+			return false
+		case types.QuantityRef_BasicLandTypeCount:
+			_, you := r.controller.(types.ControllerRef_You)
+			return you
 		case types.QuantityRef_ZoneChangeCountThisTurn:
 			// The record keeps types and controller, so the filter may ask only about those.
 			t, typed := r.filter.(types.TargetFilter_Typed)
@@ -148,6 +167,69 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 		case types.QuantityRef_CardsDrawnThisTurn:
 			// CR 121.1: the cards a player drew this turn.
 			return int(player(s, scope_player(s, r.player, controller)).cards_drawn_this_turn)
+		case types.QuantityRef_SelfManaValue:
+			if o := object(s, source); o != nil do return object_mana_value(o) // CR 202.3
+		case types.QuantityRef_PropertyAggregate:
+			// "The greatest power among creatures you control", "the total mana value of ...".
+			a := r._0
+			n, first := 0, true
+			for o in card_set(s, a.source, controller, source) {
+				v: int
+				#partial switch _ in a.property {
+				case types.ObjectProperty_Power:
+					v = power_of(o)
+				case types.ObjectProperty_Toughness:
+					v = toughness_of(o)
+				case types.ObjectProperty_ManaValue:
+					v = object_mana_value(o)
+				}
+				switch a.function {
+				case .Max:
+					n = v if first || v > n else n
+				case .Min:
+					n = v if first || v < n else n
+				case .Sum:
+					n += v
+				}
+				first = false
+			}
+			return n
+		case types.QuantityRef_Devotion:
+			// CR 700.5: the mana symbols of the colors among the mana costs of permanents the player controls, a
+			// hybrid symbol of two of them counted once.
+			colors: bit_set[types.ManaColor]
+			for c in r.colors.(types.DevotionColors_Fixed)._0 do colors += {c}
+			n := 0
+			for o in permanents_of(s, controller) {
+				c, ok := o.mana_cost.(types.ManaCost_Cost)
+				if !ok do continue
+				for shard in c.shards do if shard_colors(shard) & colors != {} do n += 1
+			}
+			return n
+		case types.QuantityRef_DistinctCardTypes:
+			// "The number of card types among cards in your graveyard" (CR 205.2a).
+			seen: bit_set[types.CoreType]
+			for o in card_set(s, r.source, controller, source) do for t in o.card_types.core_types do seen += {t}
+			return card(seen)
+		case types.QuantityRef_PlayerCount:
+			#partial switch _ in r.filter {
+			case types.PlayerFilter_Controller:
+				return 1
+			case types.PlayerFilter_Opponent:
+				return len(s.players) - 1
+			}
+			return len(s.players)
+		case types.QuantityRef_BasicLandTypeCount:
+			// Domain: the basic land types (CR 305.6) among lands the player controls.
+			BASIC :: [5]string{"Plains", "Island", "Swamp", "Mountain", "Forest"}
+			n := 0
+			for name in BASIC {
+				for o in permanents_of(s, controller) do if is_type(o, .Land) && has_subtype(o, name) {
+					n += 1
+					break
+				}
+			}
+			return n
 		case types.QuantityRef_ZoneChangeCountThisTurn:
 			// "If a creature died this turn" (CR 700.4: dies means put into a graveyard from the battlefield).
 			t := r.filter.(types.TargetFilter_Typed)._0
@@ -297,4 +379,45 @@ record_matches_type :: proc(r: types.ZoneChangeRecord, t: types.TypeFilter) -> b
 		for st in r.subtypes do if st == x._0 do return true
 	}
 	return false
+}
+
+// The objects an amount reads: permanents matching a filter, or the cards in a zone (a player's graveyard, hand,
+// library, or their cards in exile).
+@(private = "file")
+card_set_supported :: proc(src: types.CardTypeSetSource) -> bool {
+	#partial switch x in src {
+	case types.CardTypeSetSource_Objects:
+		return mass_filter_supported(x.filter)
+	case types.CardTypeSetSource_Zone:
+		#partial switch x.scope {
+		case .Controller, .All, .Opponents:
+			return true
+		}
+	}
+	return false
+}
+
+@(private = "file")
+card_set :: proc(s: ^types.GameState, src: types.CardTypeSetSource, controller: types.PlayerId, source: types.ObjectId) -> [dynamic]^types.GameObject {
+	#partial switch x in src {
+	case types.CardTypeSetSource_Objects:
+		return affected_permanents(s, x.filter, controller, source)
+	case types.CardTypeSetSource_Zone:
+		out := make([dynamic]^types.GameObject, context.temp_allocator)
+		for &p in s.players {
+			#partial switch x.scope {
+			case .Controller:
+				if p.id != controller do continue
+			case .Opponents:
+				if p.id == controller do continue
+			}
+			list := zone_list(s, zone_of_ref(x.zone), p.id)
+			for i in 0 ..< types.pvec_len(list^) {
+				o := object(s, types.pvec_get(list^, i))
+				if o.owner == p.id do append(&out, o)
+			}
+		}
+		return out
+	}
+	return make([dynamic]^types.GameObject, context.temp_allocator)
 }

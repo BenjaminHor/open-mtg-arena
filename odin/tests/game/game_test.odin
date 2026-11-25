@@ -2134,3 +2134,47 @@ put_a_land_from_your_hand :: proc(t: ^testing.T) {
 	testing.expect(t, grazer.zone == .Battlefield && len(game.ids_of(s.battlefield)) == lands_before + 2, "the Grazer and a land")
 	_ = hand
 }
+
+@(test)
+amounts_devotion_domain_aggregates :: proc(t: ^testing.T) {
+	if !load_db() do return
+	g := new_game()
+	s := &g.state
+	ref :: proc(q: types.QuantityRef) -> types.QuantityExpr {return types.QuantityExpr_Ref{q}}
+	// CR 700.5: devotion to green counts the green symbols among mana costs of permanents you control.
+	add(t, g, "Grizzly Bears", 0, .Battlefield) // {1}{G}
+	add(t, g, "Llanowar Elves", 0, .Battlefield) // {G}
+	add(t, g, "Hill Giant", 0, .Battlefield) // {3}{R}
+	add(t, g, "Llanowar Elves", 1, .Battlefield) // the opponent's
+	green: types.DevotionColors_Fixed
+	append(&green._0, types.ManaColor.Green)
+	devotion := ref(types.QuantityRef_Devotion{colors = green})
+	testing.expect(t, game.quantity_supported(devotion) && game.quantity_value(s, devotion, 0, 0, 0) == 2, "devotion to green 2")
+	// Domain (CR 305.6): basic land types among lands you control.
+	add(t, g, "Forest", 0, .Battlefield)
+	add(t, g, "Forest", 0, .Battlefield)
+	add(t, g, "Island", 0, .Battlefield)
+	domain := ref(types.QuantityRef_BasicLandTypeCount{controller = types.ControllerRef_You{}})
+	testing.expect(t, game.quantity_value(s, domain, 0, 0, 0) == 2, "two basic land types")
+	// The greatest power among creatures you control.
+	creature: types.TypedFilter
+	append(&creature.type_filters, types.TypeFilter(types.TypeFilter_Creature{}))
+	creature.controller = types.ControllerRef_You{}
+	greatest := ref(types.QuantityRef_PropertyAggregate{{function = .Max, property = types.ObjectProperty_Power{}, source = types.CardTypeSetSource_Objects{filter = types.TargetFilter_Typed{creature}}}})
+	testing.expect(t, game.quantity_supported(greatest) && game.quantity_value(s, greatest, 0, 0, 0) == 3, "Hill Giant's 3")
+	total := ref(types.QuantityRef_PropertyAggregate{{function = .Sum, property = types.ObjectProperty_Power{}, source = types.CardTypeSetSource_Objects{filter = types.TargetFilter_Typed{creature}}}})
+	testing.expect(t, game.quantity_value(s, total, 0, 0, 0) == 6, "2 + 1 + 3")
+	// Card types among cards in your graveyard (CR 205.2a): a creature, an instant and a land: three.
+	add(t, g, "Grizzly Bears", 0, .Graveyard)
+	add(t, g, "Shock", 0, .Graveyard)
+	add(t, g, "Forest", 0, .Graveyard)
+	add(t, g, "Hill Giant", 0, .Graveyard)
+	types_among := ref(types.QuantityRef_DistinctCardTypes{source = types.CardTypeSetSource_Zone{zone = .Graveyard, scope = .Controller}})
+	testing.expect(t, game.quantity_supported(types_among) && game.quantity_value(s, types_among, 0, 0, 0) == 3, "creature, instant, land")
+	// CR 202.3: this object's mana value.
+	giant := add(t, g, "Hill Giant", 0, .Battlefield)
+	mv := ref(types.QuantityRef_SelfManaValue{})
+	testing.expect(t, game.quantity_value(s, mv, 0, giant.id, 0) == 4)
+	opponents := ref(types.QuantityRef_PlayerCount{filter = types.PlayerFilter_Opponent{}})
+	testing.expect(t, game.quantity_value(s, opponents, 0, 0, 0) == 1, "one opponent")
+}
