@@ -25,6 +25,12 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 	case types.WaitingFor_DiscardToHandSize:
 		return types.GameAction_SelectCards{cards = worst_cards(g, p, w.count)}, true
 	case types.WaitingFor_EffectZoneChoice:
+		if w.effect_kind == .ChangeZone {
+			// A card to put onto the battlefield: the first offered.
+			one := make([dynamic]types.ObjectId, context.temp_allocator)
+			append(&one, w.cards[0])
+			return types.GameAction_SelectCards{cards = one}, true
+		}
 		// What to sacrifice: the least valuable.
 		return types.GameAction_SelectCards{cards = least_valuable(g, w.cards[:], w.count)}, true
 	case types.WaitingFor_SearchChoice:

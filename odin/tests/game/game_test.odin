@@ -2100,3 +2100,37 @@ stun_and_keyword_counters :: proc(t: ^testing.T) {
 	testing.expect(t, game.has_keyword(bears, types.Keyword_Flying), "flying from the counter")
 	_ = s
 }
+
+@(test)
+put_a_land_from_your_hand :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// "When this creature enters, you may put a land card from your hand onto the battlefield tapped." (Arboreal
+	// Grazer): the land is chosen from the hand as it resolves (CR 115.10a, 608.2d), not targeted.
+	g := new_game()
+	s := &g.state
+	testing.expect(t, game.card_supported(&card(t, "Arboreal Grazer").face))
+	add(t, g, "Forest", 0, .Battlefield)
+	grazer := add(t, g, "Arboreal Grazer", 0, .Hand)
+	hand := &game.player(s, 0).hand
+	lands_before := len(game.ids_of(s.battlefield))
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = grazer.id}))
+	for _ in 0 ..< 12 {
+		#partial switch w in s.waiting_for {
+		case types.WaitingFor_OptionalEffectChoice:
+			game.apply(g, w.player, types.GameAction_DecideOptionalEffect{accept = true})
+			continue
+		case types.WaitingFor_EffectZoneChoice:
+			testing.expect(t, w.zone == .Hand && w.min_count == 1, "a card from the hand")
+			one: [dynamic]types.ObjectId
+			append(&one, w.cards[0])
+			chosen := game.object(s, w.cards[0])
+			testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = one}))
+			testing.expect(t, chosen.zone == .Battlefield && chosen.tapped, "onto the battlefield tapped")
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, grazer.zone == .Battlefield && len(game.ids_of(s.battlefield)) == lands_before + 2, "the Grazer and a land")
+	_ = hand
+}

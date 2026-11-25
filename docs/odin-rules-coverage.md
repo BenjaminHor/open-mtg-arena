@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 239 of 2880 rules implemented (8%), 94 of them tested.**
+**In scope (100-799): 240 of 2880 rules implemented (8%), 95 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -27,7 +27,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 112 spells | 7 | 0 (0%) | 0 |
 | 113 abilities | 41 | 3 (7%) | 2 |
 | 114 emblems | 5 | 0 (0%) | 0 |
-| 115 targets | 26 | 5 (19%) | 4 |
+| 115 targets | 26 | 6 (23%) | 5 |
 | 116 special actions | 15 | 0 (0%) | 0 |
 | 117 timing and priority | 20 | 7 (35%) | 3 |
 | 118 costs | 39 | 1 (3%) | 1 |
@@ -491,7 +491,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 114.4 Abilities of emblems function in the command zone.
 - ⬜ 114.5 An emblem is neither a card nor a permanent. Emblem isn’t a card type.
 
-### 115 targets (5/26)
+### 115 targets (6/26)
 
 - ✅ 115.1 Some spells and abilities require their controller to choose one or more targets for them. The targets are ...
 - ⬜ 115.1a An instant or sorcery spell is targeted if its spell ability identifies something it will affect by using t...
@@ -517,7 +517,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 115.9b An object that looks for a “[spell or ability] that targets [something]” checks the current state of that s...
 - ⬜ 115.9c An object that looks for a “[spell or ability] that targets only [something]” checks the number of differen...
 - ⬜ 115.10 Spells and abilities can affect objects and players they don’t target. In general, those objects and player...
-- ⬜ 115.10a Just because an object or player is being affected by a spell or ability doesn’t make that object or player...
+- ✅ 115.10a Just because an object or player is being affected by a spell or ability doesn’t make that object or player...
 - ⬜ 115.10b In particular, the word “you” in an object’s text doesn’t indicate a target.
 
 ### 116 special actions (0/15)

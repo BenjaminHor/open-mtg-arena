@@ -182,7 +182,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		}
 	case types.WaitingFor_EffectZoneChoice:
 		a, ok := action.(types.GameAction_SelectCards)
-		return ok && answer_sacrifice(g, p, w, a.cards[:])
+		if !ok do return false
+		if w.effect_kind == .ChangeZone do return answer_hand_choice(g, p, w, a.cards[:])
+		return answer_sacrifice(g, p, w, a.cards[:])
 	case types.WaitingFor_SearchChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		return ok && answer_search(g, p, w, a.cards[:])

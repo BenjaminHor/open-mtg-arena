@@ -240,6 +240,9 @@ player_typed :: proc(f: types.TypedFilter) -> (types.ControllerRef, bool) {
 // chosen rather than "this" or "you").
 effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
 	if moves_found_cards(e) do return nil, false // "those cards" a search found
+	if x, zc := e.(types.Effect_ChangeZone); zc {
+		if _, from_hand := hand_choice(x); from_hand do return nil, false // chosen as it resolves, not targeted
+	}
 	f := effect_target_filter(e)
 	#partial switch _ in f {
 	case types.TargetFilter_Any, types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_Typed, types.TargetFilter_Or:
@@ -866,7 +869,9 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		lose_life(s, controller, n)
 	case types.Effect_ChangeZone:
 		if moves_found_cards(effect) do move_found_cards(g, x, controller)
-		else do do_change_zone(g, x, controller, source, target)
+		else if _, from_hand := hand_choice(x); from_hand {
+			if start_hand_choice(g, x, controller, source) do return true
+		} else do do_change_zone(g, x, controller, source, target)
 	case types.Effect_SearchLibrary:
 		start_search(g, x, controller, source)
 		return true

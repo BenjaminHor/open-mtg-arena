@@ -3,6 +3,7 @@
 // your hand / the battlefield", and the same for "this".
 package game
 
+import "core:slice"
 import types "../types"
 
 // A target in a graveyard: "target creature card in your graveyard" (CR 115.1, 400.3).
@@ -44,6 +45,7 @@ change_zone_supported :: proc(x: types.Effect_ChangeZone) -> bool {
 		return false
 	}
 	origin, has_origin := x.origin.?
+	if _, from_hand := hand_choice(x); from_hand do return x.destination != .Hand
 	if is_self(x.target) do return true
 	if has_origin && origin == .Library && is_any(x.target) do return x.destination != .Library // the found cards
 	// "Return it to the battlefield": the earlier instruction's target, wherever that put it (CR 608.2c).
@@ -99,6 +101,60 @@ graveyard_targets :: proc(s: ^types.GameState, f: types.TypedFilter, chooser: ty
 card_matches_type :: proc(o: ^types.GameObject, t: types.TypeFilter) -> bool {
 	if _, permanent := t.(types.TypeFilter_Permanent); permanent do return is_permanent_card(o)
 	return matches_type(o, t)
+}
+
+// "Put a land card from your hand onto the battlefield": a card the player chooses from their own hand as the
+// instruction is carried out, not a target (CR 115.10a: only what the text calls "target" is one; CR 608.2d).
+hand_choice :: proc(x: types.Effect_ChangeZone) -> (types.TypedFilter, bool) {
+	origin, has := x.origin.?
+	if !has || origin != .Hand do return {}, false
+	t, typed := x.target.(types.TargetFilter_Typed)
+	if !typed do return {}, false
+	in_hand := false
+	for p in t._0.properties {
+		#partial switch y in p {
+		case types.FilterProp_InZone:
+			if y.zone != .Hand do return {}, false
+			in_hand = true
+		case:
+			if !property_supported(p) do return {}, false
+		}
+	}
+	if c, has_c := t._0.controller.?; has_c {
+		if _, you := c.(types.ControllerRef_You); !you do return {}, false
+	}
+	for tf in t._0.type_filters do if !type_filter_supported(tf) do return {}, false
+	return t._0, in_hand
+}
+
+// Asks the player which card of their hand to move; false when there's none to choose (nothing happens).
+start_hand_choice :: proc(g: ^Game, x: types.Effect_ChangeZone, controller: types.PlayerId, source: types.ObjectId) -> bool {
+	s := &g.state
+	f, _ := hand_choice(x)
+	eligible: [dynamic]types.ObjectId
+	for id in ids_of(player(s, controller).hand) do if object_matches(s, object(s, id), f, controller, source) do append(&eligible, id)
+	if len(eligible) == 0 do return false
+	s.priority_player = controller
+	s.waiting_for = types.WaitingFor_EffectZoneChoice{player = controller, cards = eligible, count = 1, min_count = 1, source_id = source, effect_kind = .ChangeZone, zone = .Hand, destination = x.destination, enter_tapped = x.enter_tapped}
+	return true
+}
+
+// The chosen card goes where the instruction says, under its chooser's control (CR 110.2).
+answer_hand_choice :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_EffectZoneChoice, chosen: []types.ObjectId) -> bool {
+	if !g.resolution.active || len(chosen) < w.min_count || len(chosen) > w.count || has_duplicates(chosen) do return false
+	for id in chosen do if !slice.contains(w.cards[:], id) do return false
+	to := w.destination.? or_else .Battlefield
+	for id in chosen {
+		move_object(g, id, to)
+		if to == .Battlefield {
+			o := object(&g.state, id)
+			o.controller = p
+			if w.enter_tapped == .Tapped do o.tapped = true
+		}
+	}
+	g.state.waiting_for = nil
+	if continue_resolution(g) do after_resolution(g)
+	return true
 }
 
 // Moves the affected object; CR 400.7 makes it a new object in its new zone.
