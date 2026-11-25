@@ -3044,6 +3044,9 @@ Progress:
   each source's mana type on the spell (mana_spent_to_cast, colors_spent_to_cast; kept on the permanent it becomes,
   convoke not counted, CR 702.51c), read for the spell itself or the spell that triggered an ability. 6,729 ->
   6,763.
+- "The number of different names / mana values / powers / toughnesses among [objects]", on the battlefield or
+  among cards in a graveyard, exile or hand (zone_filter_objects; off the battlefield "your" is the owner's).
+  6,763 -> 6,795.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

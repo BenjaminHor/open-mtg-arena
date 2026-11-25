@@ -4404,3 +4404,18 @@ colors_of_mana_spent_to_cast :: proc(t: ^testing.T) {
 	settle_stack(g)
 	testing.expect(t, types.pvec_len(s.players[0].hand) == hand - 1 + 3 && s.players[0].life == 17, "drew 3, lost 3")
 }
+
+@(test)
+number_of_different_names :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Awakened Amalgam: "power and toughness are each equal to the number of differently named lands you control."
+	testing.expect(t, game.card_supported(&card(t, "Awakened Amalgam").face))
+	g := new_game()
+	amalgam := add(t, g, "Awakened Amalgam", 0, .Battlefield)
+	add(t, g, "Forest", 0, .Battlefield)
+	add(t, g, "Forest", 0, .Battlefield)
+	add(t, g, "Island", 0, .Battlefield)
+	add(t, g, "Plains", 1, .Battlefield) // the opponent's
+	game.apply_continuous_effects(g)
+	testing.expect(t, game.power_of(amalgam) == 2 && game.toughness_of(amalgam) == 2, "Forest and Island: 2/2")
+}

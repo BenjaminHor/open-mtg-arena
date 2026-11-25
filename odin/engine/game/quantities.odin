@@ -53,6 +53,8 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return player_scope_supported(r.player)
 		case types.QuantityRef_StartingLifeTotal:
 			return player_scope_supported(r.player)
+		case types.QuantityRef_ObjectCountDistinct:
+			return object_count_distinct_supported(r)
 		case types.QuantityRef_ManaSpentToCast:
 			// "The amount of mana spent to cast this spell", "if {R} was spent to cast it" (this spell or permanent, or
 			// the spell that triggered the ability).
@@ -174,6 +176,8 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			return int(player(s, scope_player(s, r.player, controller)).life)
 		case types.QuantityRef_StartingLifeTotal:
 			return starting_life(s) // CR 103.4: the same for every player in a two-player game
+		case types.QuantityRef_ObjectCountDistinct:
+			return object_count_distinct(s, r, controller, source)
 		case types.QuantityRef_ManaSpentToCast:
 			o := object(s, source)
 			if r.scope == .TriggeringSpell {
@@ -520,4 +524,94 @@ card_set :: proc(s: ^types.GameState, src: types.CardTypeSetSource, controller: 
 		return out
 	}
 	return make([dynamic]^types.GameObject, context.temp_allocator)
+}
+
+// ---- "The number of different [names / powers / mana values] among [objects]" ---------------------------------
+
+// Whether the engine can count the objects such a filter names: on the battlefield, or cards in a graveyard,
+// exile or hand (InZone), by kind, controller or owner.
+zone_filter_supported :: proc(f: types.TypedFilter) -> bool {
+	if len(f.type_filters) == 0 do return false
+	for t in f.type_filters do if !type_filter_supported(t) do return false
+	for p in f.properties {
+		if z, in_zone := p.(types.FilterProp_InZone); in_zone {
+			#partial switch z.zone {
+			case .Battlefield, .Graveyard, .Exile, .Hand:
+				continue
+			}
+			return false
+		}
+		if !property_supported(p) do return false
+	}
+	if c, has := f.controller.?; has {
+		#partial switch _ in c {
+		case types.ControllerRef_You, types.ControllerRef_Opponent:
+		case:
+			return false
+		}
+	}
+	return true
+}
+
+// The objects such a filter names, from `controller`'s point of view.
+zone_filter_objects :: proc(s: ^types.GameState, f: types.TypedFilter, controller: types.PlayerId, source: types.ObjectId) -> [dynamic]^types.GameObject {
+	out := make([dynamic]^types.GameObject, context.temp_allocator)
+	zone := types.Zone.Battlefield
+	for p in f.properties do if z, in_zone := p.(types.FilterProp_InZone); in_zone do zone = z.zone
+	ids := make([dynamic]types.ObjectId, context.temp_allocator)
+	#partial switch zone {
+	case .Battlefield:
+		append(&ids, ..ids_of(s.battlefield)[:])
+	case .Exile:
+		append(&ids, ..ids_of(s.exile)[:])
+	case .Graveyard:
+		for &pl in s.players do append(&ids, ..ids_of(pl.graveyard)[:])
+	case .Hand:
+		for &pl in s.players do append(&ids, ..ids_of(pl.hand)[:])
+	}
+	for id in ids {
+		o := object(s, id)
+		if o == nil || o.zone != zone do continue
+		// Off the battlefield, "your" and "an opponent's" are the owner's (CR 108.3, 404.2).
+		if c, has := f.controller.?; has && zone != .Battlefield {
+			_, you := c.(types.ControllerRef_You)
+			if (o.owner == controller) != you do continue
+			g := f
+			g.controller = nil
+			if object_matches(s, o, g, controller, source) do append(&out, o)
+			continue
+		}
+		if object_matches(s, o, f, controller, source) do append(&out, o)
+	}
+	return out
+}
+
+object_count_distinct_supported :: proc(r: types.QuantityRef_ObjectCountDistinct) -> bool {
+	typed, ok := r.filter.(types.TargetFilter_Typed)
+	if !ok || len(r.qualities) != 1 || !zone_filter_supported(typed._0) do return false
+	#partial switch r.qualities[0] {
+	case .Name, .ManaValue, .Power, .Toughness:
+		return true
+	}
+	return false
+}
+
+// CR 201.2 (names), 202.3 (mana values), 208 (power and toughness): how many different values among the objects.
+object_count_distinct :: proc(s: ^types.GameState, r: types.QuantityRef_ObjectCountDistinct, controller: types.PlayerId, source: types.ObjectId) -> int {
+	objects := zone_filter_objects(s, r.filter.(types.TargetFilter_Typed)._0, controller, source)
+	names := make(map[string]bool, context.temp_allocator)
+	values := make(map[int]bool, context.temp_allocator)
+	for o in objects {
+		#partial switch r.qualities[0] {
+		case .Name:
+			names[o.name] = true
+		case .ManaValue:
+			values[object_mana_value(o)] = true
+		case .Power:
+			values[power_of(o)] = true
+		case .Toughness:
+			values[toughness_of(o)] = true
+		}
+	}
+	return len(names) + len(values)
 }
