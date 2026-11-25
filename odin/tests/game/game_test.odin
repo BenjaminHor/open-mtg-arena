@@ -3497,3 +3497,29 @@ that_player_is_the_caster :: proc(t: ^testing.T) {
 	testing.expect(t, s.players[0].life == 18, "the caster took 2")
 	testing.expect(t, s.players[1].life == 18, "the Shock hit the Eidolon's controller")
 }
+
+@(test)
+addendum_only_in_your_main_phase :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Arrester's Admonition: "Return target creature to its owner's hand. Addendum — If you cast this spell during
+	// your main phase, draw a card." A spell resolves in the phase it was cast in (CR 500.2).
+	testing.expect(t, game.card_supported(&card(t, "Arrester's Admonition").face))
+	for mine in ([]bool{true, false}) {
+		g := new_game()
+		s := &g.state
+		if !mine {
+			// The opponent's turn: player 0 has priority in it.
+			s.active_player = 1
+		}
+		for _ in 0 ..< 3 do add(t, g, "Island", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		spell := add(t, g, "Arrester's Admonition", 0, .Hand) // {2}{U}
+		hand := types.pvec_len(s.players[0].hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+		settle_stack(g)
+		testing.expect(t, bears.zone == .Hand, "bounced")
+		drew := types.pvec_len(s.players[0].hand) - (hand - 1)
+		testing.expectf(t, drew == (1 if mine else 0), "your main phase: %v, cards drawn %d", mine, drew)
+	}
+}

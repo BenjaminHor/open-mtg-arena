@@ -1253,9 +1253,8 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 		switch a.kind {
 		case .Spell:
 			x_defined = has_x(face.mana_cost)
-			supported := spell_ability_supported(a)
+			if !spell_ability_supported(a) do ability_gaps(&out, a, "spell")
 			x_defined = false
-			if !supported do ability_gaps(&out, a, "spell")
 		case .Activated:
 			if _, _, ok := tap_mana_ability(a); !ok && !activated_supported(a) {
 				if a.effect != nil && !ability_supported(a) do ability_gaps(&out, a, "activated")
@@ -1492,6 +1491,16 @@ ability_condition_supported :: proc(c: types.AbilityCondition) -> bool {
 		// "If a card was exiled this way" (resolution.odin reads what the instruction before moved).
 		typed, ok := x.filter.(types.TargetFilter_Typed)
 		return ok && object_condition_filter_supported(typed._0)
+	case types.AbilityCondition_And:
+		for y in x.conditions do if !ability_condition_supported(y) do return false
+		return len(x.conditions) > 0
+	case types.AbilityCondition_Or:
+		for y in x.conditions do if !ability_condition_supported(y) do return false
+		return len(x.conditions) > 0
+	case types.AbilityCondition_Not:
+		return x.condition != nil && ability_condition_supported(x.condition^)
+	case types.AbilityCondition_IsYourTurn, types.AbilityCondition_CastDuringPhase:
+		return true
 	}
 	return false
 }
@@ -1532,6 +1541,20 @@ ability_condition_holds :: proc(s: ^types.GameState, c: types.AbilityCondition, 
 		return kicked(object(s, source)) // CR 702.33d
 	case types.AbilityCondition_ConditionInstead:
 		return ability_condition_holds(s, x.inner^, controller, source, subjects)
+	case types.AbilityCondition_IsYourTurn:
+		return s.active_player == controller
+	case types.AbilityCondition_CastDuringPhase:
+		// Addendum, "if you cast this spell during your main phase": a spell resolves in the turn and phase it was
+		// cast in, since a phase ends only once the stack is empty (CR 500.2), so it's whether it's that now.
+		return s.active_player == controller && slice.contains(x.phases[:], s.phase)
+	case types.AbilityCondition_And:
+		for y in x.conditions do if !ability_condition_holds(s, y, controller, source, subjects) do return false
+		return true
+	case types.AbilityCondition_Or:
+		for y in x.conditions do if ability_condition_holds(s, y, controller, source, subjects) do return true
+		return false
+	case types.AbilityCondition_Not:
+		return !ability_condition_holds(s, x.condition^, controller, source, subjects)
 	}
 	return false
 }

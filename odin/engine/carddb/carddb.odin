@@ -45,8 +45,36 @@ by_key :: proc(db: ^DB, key: string) -> (^types.CardExportEntry, bool) {
 		entry = new(types.CardExportEntry)
 		if !types.decode_CardExportEntry(tree, entry) do entry = nil
 	}
+	if entry != nil do join_spell_paragraphs(&entry.face)
 	db.decoded[strings.clone(key)] = entry
 	return entry, entry != nil
+}
+
+// A spell's text in several paragraphs ("Return target creature to its owner's hand. / Addendum — If you cast this
+// spell during your main phase, draw a card.") is one list of instructions, followed in order (CR 608.2c). The card
+// data lists each paragraph as a spell ability of its own; they're joined into one chain here, each later paragraph
+// an independent instruction after the ones before (its own condition skips only itself).
+join_spell_paragraphs :: proc(face: ^types.CardFace) {
+	if face.modal != nil do return
+	spells := 0
+	for a in face.abilities do if a.kind == .Spell do spells += 1
+	if spells < 2 do return
+	kept := make([dynamic]types.AbilityDefinition)
+	first := -1
+	for a in face.abilities {
+		if a.kind != .Spell || first < 0 {
+			if a.kind == .Spell do first = len(kept)
+			append(&kept, a)
+			continue
+		}
+		last := &kept[first]
+		for last.sub_ability != nil do last = last.sub_ability
+		next := new(types.AbilityDefinition)
+		next^ = a
+		next.sub_link = .SequentialSibling
+		last.sub_ability = next
+	}
+	face.abilities = kept
 }
 
 // A card by the name a deck list spells it: keys are lowercase, and a composite "Front // Back" spelling names its

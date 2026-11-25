@@ -440,6 +440,19 @@ choose_index :: proc(g: ^Game, n: int) -> int {
 @(private = "file")
 condition_holds_now :: proc(r: ^Resolution, s: ^types.GameState, c: types.AbilityCondition) -> bool {
 	if want, is_outcome := outcome_wanted(c); is_outcome do return r.performed == want
+	// Conditions made of others, any of which may read this resolution ("if you do", "this way").
+	#partial switch x in c {
+	case types.AbilityCondition_And:
+		for y in x.conditions do if !condition_holds_now(r, s, y) do return false
+		return true
+	case types.AbilityCondition_Or:
+		for y in x.conditions do if condition_holds_now(r, s, y) do return true
+		return false
+	case types.AbilityCondition_Not:
+		return !condition_holds_now(r, s, x.condition^)
+	case types.AbilityCondition_ConditionInstead:
+		return condition_holds_now(r, s, x.inner^)
+	}
 	if x, this_way := c.(types.AbilityCondition_ZoneChangedThisWay); this_way {
 		// "If a creature card was exiled this way": what the instruction before moved, as it is now.
 		typed := x.filter.(types.TargetFilter_Typed)._0

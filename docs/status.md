@@ -2977,6 +2977,10 @@ Progress:
   onto the stack (Game.stack_events, with the amount; to move into the state later) and are read as it resolves
   (CR 603.2, 608.2c). The object only while it's the same one (CR 400.7). Put counters: any count the engine can
   work out, on "that creature" or the token just made, and loyalty, time, age and named counters. 6,151 -> 6,243.
+- Conditions made of others (and / or / not), "if it's your turn", Addendum ("if you cast this spell during your
+  main phase": the phase it resolves in, CR 500.2), starting life amounts (CR 103.4); a spell's paragraphs are
+  joined into one list of instructions when the card is decoded (CR 608.2c; carddb.join_spell_paragraphs; 80 pool
+  cards have several). 6,243 -> 6,267.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

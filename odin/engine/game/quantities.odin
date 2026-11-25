@@ -48,6 +48,10 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return player_scope_supported(r.player)
 		case types.QuantityRef_LifeTotal:
 			return player_scope_supported(r.player)
+		case types.QuantityRef_StartingLifeTotal:
+			return player_scope_supported(r.player)
+		case types.QuantityRef_LifeAboveStarting:
+			return true
 		case types.QuantityRef_ObjectManaValue:
 			return scope_supported(r.scope)
 		case types.QuantityRef_AttackedThisTurn:
@@ -160,6 +164,11 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			return types.pvec_len(player(s, scope_player(s, r.player, controller)).graveyard)
 		case types.QuantityRef_LifeTotal:
 			return int(player(s, scope_player(s, r.player, controller)).life)
+		case types.QuantityRef_StartingLifeTotal:
+			return starting_life(s) // CR 103.4: the same for every player in a two-player game
+		case types.QuantityRef_LifeAboveStarting:
+			// "At least N life more than your starting life total" (Ajani, Strength of the Pride).
+			return max(int(player(s, controller).life) - starting_life(s), 0)
 		case types.QuantityRef_ObjectManaValue:
 			// CR 202.3: the mana value of the object.
 			if o := scope_object(s, r.scope, source, target); o != nil do return object_mana_value(o)
@@ -329,6 +338,11 @@ scope_object :: proc(s: ^types.GameState, scope: types.ObjectScope, source, targ
 }
 
 // "You" or "an opponent" (the only one, in a two-player game).
+// CR 103.4: each player's starting life total, 20 in the formats the app plays unless the format says otherwise.
+starting_life :: proc(s: ^types.GameState) -> int {
+	return int(s.format_config.starting_life) if s.format_config.starting_life > 0 else 20
+}
+
 player_scope_supported :: proc(p: types.PlayerScope) -> bool {
 	#partial switch _ in p {
 	case types.PlayerScope_Controller, types.PlayerScope_Opponent:
