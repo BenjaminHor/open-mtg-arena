@@ -7072,8 +7072,8 @@ encode_GameState_members :: proc(b: ^strings.Builder, x: GameState, first: ^bool
 }
 
 decode_GameAction :: proc(v: json.Value, out: ^GameAction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("GameAction")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("GameAction: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("GameAction: no tag")
@@ -8526,8 +8526,8 @@ encode_GameAction :: proc(b: ^strings.Builder, x: GameAction) {
 }
 
 decode_WaitingFor :: proc(v: json.Value, out: ^WaitingFor) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("WaitingFor")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("WaitingFor: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("WaitingFor: no tag")
@@ -11236,8 +11236,8 @@ encode_WaitingFor :: proc(b: ^strings.Builder, x: WaitingFor) {
 }
 
 decode_GameEvent :: proc(v: json.Value, out: ^GameEvent) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("GameEvent")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("GameEvent: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("GameEvent: no tag")
@@ -13316,8 +13316,8 @@ encode_BracketSignals_members :: proc(b: ^strings.Builder, x: BracketSignals, fi
 }
 
 decode_ManaCost :: proc(v: json.Value, out: ^ManaCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ManaCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ManaCost: no tag")
@@ -13399,8 +13399,8 @@ encode_CardType_members :: proc(b: ^strings.Builder, x: CardType, first: ^bool) 
 }
 
 decode_PtValue :: proc(v: json.Value, out: ^PtValue) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PtValue")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PtValue: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PtValue: no tag")
@@ -13423,8 +13423,8 @@ encode_PtValue :: proc(b: ^strings.Builder, x: PtValue) {
 }
 
 decode_Keyword :: proc(v: json.Value, out: ^Keyword) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("Keyword")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -14422,8 +14422,8 @@ encode_ModalChoice_members :: proc(b: ^strings.Builder, x: ModalChoice, first: ^
 }
 
 decode_AdditionalCost :: proc(v: json.Value, out: ^AdditionalCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AdditionalCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("AdditionalCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("AdditionalCost: no tag")
@@ -14468,8 +14468,8 @@ encode_AdditionalCost :: proc(b: ^strings.Builder, x: AdditionalCost) {
 }
 
 decode_CastingRestriction :: proc(v: json.Value, out: ^CastingRestriction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastingRestriction")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CastingRestriction: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CastingRestriction: no tag")
@@ -14574,8 +14574,8 @@ encode_SpellCastingOption_members :: proc(b: ^strings.Builder, x: SpellCastingOp
 }
 
 decode_SolveCondition :: proc(v: json.Value, out: ^SolveCondition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SolveCondition")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("SolveCondition: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("SolveCondition: no tag")
@@ -14642,8 +14642,8 @@ encode_SolveCondition_members :: proc(b: ^strings.Builder, x: SolveCondition, fi
 }
 
 decode_DeckCopyLimit :: proc(v: json.Value, out: ^DeckCopyLimit) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DeckCopyLimit")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DeckCopyLimit: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DeckCopyLimit: no tag")
@@ -14692,8 +14692,8 @@ encode_DeckSizeOverride_members :: proc(b: ^strings.Builder, x: DeckSizeOverride
 }
 
 decode_OracleDiagnostic :: proc(v: json.Value, out: ^OracleDiagnostic) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("OracleDiagnostic")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("OracleDiagnostic: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("OracleDiagnostic: no tag")
@@ -15215,8 +15215,8 @@ encode_ManaPipId :: proc(b: ^strings.Builder, x: ManaPipId) {
 }
 
 decode_RulesExecutionNodeRef :: proc(v: json.Value, out: ^RulesExecutionNodeRef) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RulesExecutionNodeRef")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -15645,8 +15645,8 @@ encode_LiminalEntry_members :: proc(b: ^strings.Builder, x: LiminalEntry, first:
 }
 
 decode_PendingLiminalEntryResume :: proc(v: json.Value, out: ^PendingLiminalEntryResume) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingLiminalEntryResume")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -15719,8 +15719,8 @@ encode_EnteringAuraAuthority_members :: proc(b: ^strings.Builder, x: EnteringAur
 }
 
 decode_AppliedReplacementKey :: proc(v: json.Value, out: ^AppliedReplacementKey) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AppliedReplacementKey")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("AppliedReplacementKey: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("AppliedReplacementKey: no tag")
@@ -16018,8 +16018,8 @@ encode_PendingTrigger_members :: proc(b: ^strings.Builder, x: PendingTrigger, fi
 }
 
 decode_TriggerFiring :: proc(v: json.Value, out: ^TriggerFiring) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerFiring")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -16541,8 +16541,8 @@ encode_TurnDirection :: proc(b: ^strings.Builder, x: TurnDirection) {
 }
 
 decode_TargetFilter :: proc(v: json.Value, out: ^TargetFilter) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TargetFilter")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("TargetFilter: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("TargetFilter: no tag")
@@ -17033,8 +17033,8 @@ encode_CommanderDamageEntry_members :: proc(b: ^strings.Builder, x: CommanderDam
 }
 
 decode_AutoPassMode :: proc(v: json.Value, out: ^AutoPassMode) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AutoPassMode")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("AutoPassMode: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("AutoPassMode: no tag")
@@ -17127,8 +17127,8 @@ encode_PriorityPassingMode :: proc(b: ^strings.Builder, x: PriorityPassingMode) 
 }
 
 decode_ResourceAxis :: proc(v: json.Value, out: ^ResourceAxis) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResourceAxis")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -17193,8 +17193,8 @@ encode_ResourceAxis :: proc(b: ^strings.Builder, x: ResourceAxis) {
 }
 
 decode_PersistentAxisMaterialization :: proc(v: json.Value, out: ^PersistentAxisMaterialization) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PersistentAxisMaterialization")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -18111,8 +18111,8 @@ encode_SpellCastReversal_members :: proc(b: ^strings.Builder, x: SpellCastRevers
 }
 
 decode_AttachTarget :: proc(v: json.Value, out: ^AttachTarget) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AttachTarget")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("AttachTarget: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("AttachTarget: no tag")
@@ -18453,8 +18453,8 @@ encode_PendingHeroEvent_members :: proc(b: ^strings.Builder, x: PendingHeroEvent
 }
 
 decode_PendingHordeReveal :: proc(v: json.Value, out: ^PendingHordeReveal) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingHordeReveal")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -18691,8 +18691,8 @@ encode_PendingScopedLibrarySearch_members :: proc(b: ^strings.Builder, x: Pendin
 }
 
 decode_LibrarySearchDeliveryResume :: proc(v: json.Value, out: ^LibrarySearchDeliveryResume) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LibrarySearchDeliveryResume")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("LibrarySearchDeliveryResume: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("LibrarySearchDeliveryResume: no tag")
@@ -19013,8 +19013,8 @@ encode_PendingBeginGameAbility_members :: proc(b: ^strings.Builder, x: PendingBe
 }
 
 decode_ChoiceValue :: proc(v: json.Value, out: ^ChoiceValue) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ChoiceValue")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ChoiceValue: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ChoiceValue: no tag")
@@ -19059,8 +19059,8 @@ encode_ChoiceValue :: proc(b: ^strings.Builder, x: ChoiceValue) {
 }
 
 decode_AppliedSticker :: proc(v: json.Value, out: ^AppliedSticker) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AppliedSticker")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("AppliedSticker: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("AppliedSticker: no tag")
@@ -19190,8 +19190,8 @@ encode_ChosenDamageSource_members :: proc(b: ^strings.Builder, x: ChosenDamageSo
 }
 
 decode_ParentTargetMissingReason :: proc(v: json.Value, out: ^ParentTargetMissingReason) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ParentTargetMissingReason")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -19528,8 +19528,8 @@ encode_ResolvedAbility_members :: proc(b: ^strings.Builder, x: ResolvedAbility, 
 }
 
 decode_GameRestriction :: proc(v: json.Value, out: ^GameRestriction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("GameRestriction")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("GameRestriction: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("GameRestriction: no tag")
@@ -19923,8 +19923,8 @@ encode_LinkedExileLki_members :: proc(b: ^strings.Builder, x: LinkedExileLki, fi
 }
 
 decode_ProductionOverride :: proc(v: json.Value, out: ^ProductionOverride) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ProductionOverride")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ProductionOverride: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ProductionOverride: no tag")
@@ -19945,8 +19945,8 @@ encode_ProductionOverride :: proc(b: ^strings.Builder, x: ProductionOverride) {
 }
 
 decode_PendingCostMoveResume :: proc(v: json.Value, out: ^PendingCostMoveResume) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingCostMoveResume")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -20219,8 +20219,8 @@ encode_PendingCostMoveResume :: proc(b: ^strings.Builder, x: PendingCostMoveResu
 }
 
 decode_DeferredLifeCostResume :: proc(v: json.Value, out: ^DeferredLifeCostResume) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DeferredLifeCostResume")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DeferredLifeCostResume: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DeferredLifeCostResume: no tag")
@@ -20505,8 +20505,8 @@ encode_DungeonProgress_members :: proc(b: ^strings.Builder, x: DungeonProgress, 
 }
 
 decode_TargetRef :: proc(v: json.Value, out: ^TargetRef) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TargetRef")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -20651,8 +20651,8 @@ encode_CompanionInfo_members :: proc(b: ^strings.Builder, x: CompanionInfo, firs
 }
 
 decode_ChosenAttribute :: proc(v: json.Value, out: ^ChosenAttribute) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ChosenAttribute")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ChosenAttribute: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ChosenAttribute: no tag")
@@ -21395,8 +21395,8 @@ encode_PendingEntersModifications_members :: proc(b: ^strings.Builder, x: Pendin
 }
 
 decode_PermissionGrant :: proc(v: json.Value, out: ^PermissionGrant) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PermissionGrant")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PermissionGrant: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PermissionGrant: no tag")
@@ -21447,8 +21447,8 @@ encode_PermissionGrant_members :: proc(b: ^strings.Builder, x: PermissionGrant, 
 }
 
 decode_AbilityCost :: proc(v: json.Value, out: ^AbilityCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AbilityCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("AbilityCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("AbilityCost: no tag")
@@ -21963,8 +21963,8 @@ encode_CastCostMode :: proc(b: ^strings.Builder, x: CastCostMode) {
 }
 
 decode_QuantityExpr :: proc(v: json.Value, out: ^QuantityExpr) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("QuantityExpr")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("QuantityExpr: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("QuantityExpr: no tag")
@@ -22220,8 +22220,8 @@ encode_Zone :: proc(b: ^strings.Builder, x: Zone) {
 }
 
 decode_CostObjectCount :: proc(v: json.Value, out: ^CostObjectCount) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CostObjectCount")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CostObjectCount: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CostObjectCount: no tag")
@@ -22291,8 +22291,8 @@ encode_AggregateFunction :: proc(b: ^strings.Builder, x: AggregateFunction) {
 }
 
 decode_ObjectProperty :: proc(v: json.Value, out: ^ObjectProperty) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ObjectProperty")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -22351,8 +22351,8 @@ encode_Comparator :: proc(b: ^strings.Builder, x: Comparator) {
 }
 
 decode_TapCreaturesRequirement :: proc(v: json.Value, out: ^TapCreaturesRequirement) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TapCreaturesRequirement")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("TapCreaturesRequirement: not an object")
 	tv, found := json.get(v, "requirement")
 	if !found || tv.kind != .String do return fail("TapCreaturesRequirement: no tag")
@@ -22409,8 +22409,8 @@ encode_TapCreaturesRequirement_members :: proc(b: ^strings.Builder, x: TapCreatu
 }
 
 decode_CounterMatch :: proc(v: json.Value, out: ^CounterMatch) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CounterMatch")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CounterMatch: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CounterMatch: no tag")
@@ -22527,8 +22527,8 @@ encode_NinjutsuVariant :: proc(b: ^strings.Builder, x: NinjutsuVariant) {
 }
 
 decode_Effect :: proc(v: json.Value, out: ^Effect) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("Effect")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("Effect: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("Effect: no tag")
@@ -26898,8 +26898,8 @@ encode_KeywordKind :: proc(b: ^strings.Builder, x: KeywordKind) {
 }
 
 decode_StackEntryKind :: proc(v: json.Value, out: ^StackEntryKind) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StackEntryKind")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("StackEntryKind: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("StackEntryKind: no tag")
@@ -27001,8 +27001,8 @@ encode_CardId :: proc(b: ^strings.Builder, x: CardId) {
 }
 
 decode_CastingVariant :: proc(v: json.Value, out: ^CastingVariant) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastingVariant")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -27157,8 +27157,8 @@ encode_CastingVariant :: proc(b: ^strings.Builder, x: CastingVariant) {
 }
 
 decode_TriggerCondition :: proc(v: json.Value, out: ^TriggerCondition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerCondition")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("TriggerCondition: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("TriggerCondition: no tag")
@@ -27959,8 +27959,8 @@ encode_TriggerCondition_members :: proc(b: ^strings.Builder, x: TriggerCondition
 }
 
 decode_SyntheticTriggerProvenance :: proc(v: json.Value, out: ^SyntheticTriggerProvenance) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SyntheticTriggerProvenance")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("SyntheticTriggerProvenance: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("SyntheticTriggerProvenance: no tag")
@@ -27987,8 +27987,8 @@ encode_SyntheticTriggerProvenance :: proc(b: ^strings.Builder, x: SyntheticTrigg
 }
 
 decode_KeywordAction :: proc(v: json.Value, out: ^KeywordAction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("KeywordAction")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("KeywordAction: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("KeywordAction: no tag")
@@ -28221,8 +28221,8 @@ encode_MeldSelection_members :: proc(b: ^strings.Builder, x: MeldSelection, firs
 }
 
 decode_AttackTarget :: proc(v: json.Value, out: ^AttackTarget) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AttackTarget")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("AttackTarget: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("AttackTarget: no tag")
@@ -28445,8 +28445,8 @@ encode_TargetSelectionProgress_members :: proc(b: ^strings.Builder, x: TargetSel
 }
 
 decode_CombatRequirement :: proc(v: json.Value, out: ^CombatRequirement) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CombatRequirement")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CombatRequirement: not an object")
 	tv, found := json.get(v, "kind")
 	if !found || tv.kind != .String do return fail("CombatRequirement: no tag")
@@ -28876,8 +28876,8 @@ encode_DigRestSplitScope :: proc(b: ^strings.Builder, x: DigRestSplitScope) {
 }
 
 decode_LibraryPlacementContinuation :: proc(v: json.Value, out: ^LibraryPlacementContinuation) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LibraryPlacementContinuation")
+	if v.kind == .Null do return true
 	// untagged: the first variant that decodes wins, as in serde.
 	{ tmp: LibraryPlacementContinuation_Requests; if decode_quiet_proc(v, &tmp._0, dec_ptr_BatchCompletion) { out^ = tmp; return true } }
 	if v.kind == .Object { tmp: LibraryPlacementContinuation_ApprovedBatch; if decode_quiet_proc(v, &tmp, proc(v: json.Value, out: ^LibraryPlacementContinuation_ApprovedBatch) -> bool {
@@ -28898,8 +28898,8 @@ encode_LibraryPlacementContinuation :: proc(b: ^strings.Builder, x: LibraryPlace
 }
 
 decode_ObjectSelectionCardinality :: proc(v: json.Value, out: ^ObjectSelectionCardinality) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ObjectSelectionCardinality")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -28998,8 +28998,8 @@ encode_PendingManaAbility_members :: proc(b: ^strings.Builder, x: PendingManaAbi
 }
 
 decode_SearchSelectionConstraint :: proc(v: json.Value, out: ^SearchSelectionConstraint) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SearchSelectionConstraint")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("SearchSelectionConstraint: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("SearchSelectionConstraint: no tag")
@@ -29135,8 +29135,8 @@ encode_OutsideGameChoiceEntry_members :: proc(b: ^strings.Builder, x: OutsideGam
 }
 
 decode_ChooseFromZoneConstraint :: proc(v: json.Value, out: ^ChooseFromZoneConstraint) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ChooseFromZoneConstraint")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ChooseFromZoneConstraint: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ChooseFromZoneConstraint: no tag")
@@ -29918,8 +29918,8 @@ encode_DiscardFrameId :: proc(b: ^strings.Builder, x: DiscardFrameId) {
 }
 
 decode_HeroEventKind :: proc(v: json.Value, out: ^HeroEventKind) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("HeroEventKind")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("HeroEventKind: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("HeroEventKind: no tag")
@@ -30030,8 +30030,8 @@ encode_WithEntryEffect_members :: proc(b: ^strings.Builder, x: WithEntryEffect, 
 }
 
 decode_LibraryPosition :: proc(v: json.Value, out: ^LibraryPosition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LibraryPosition")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("LibraryPosition: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("LibraryPosition: no tag")
@@ -30150,8 +30150,8 @@ encode_MassLibraryOrderBatch_members :: proc(b: ^strings.Builder, x: MassLibrary
 }
 
 decode_Duration :: proc(v: json.Value, out: ^Duration) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("Duration")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -30242,8 +30242,8 @@ encode_Duration :: proc(b: ^strings.Builder, x: Duration) {
 }
 
 decode_TargetSelectionConstraint :: proc(v: json.Value, out: ^TargetSelectionConstraint) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TargetSelectionConstraint")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("TargetSelectionConstraint: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("TargetSelectionConstraint: no tag")
@@ -30322,8 +30322,8 @@ encode_NamedChoiceSource_members :: proc(b: ^strings.Builder, x: NamedChoiceSour
 }
 
 decode_FreeEntry :: proc(v: json.Value, out: ^FreeEntry) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("FreeEntry")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("FreeEntry: not an object")
 	tv, found := json.get(v, "kind")
 	if !found || tv.kind != .String do return fail("FreeEntry: no tag")
@@ -30469,8 +30469,8 @@ encode_GiftKind_members :: proc(b: ^strings.Builder, x: GiftKind, first: ^bool) 
 }
 
 decode_CastOpponentChoicePurpose :: proc(v: json.Value, out: ^CastOpponentChoicePurpose) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastOpponentChoicePurpose")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CastOpponentChoicePurpose: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CastOpponentChoicePurpose: no tag")
@@ -30578,8 +30578,8 @@ encode_CostReductionOutcome_members :: proc(b: ^strings.Builder, x: CostReductio
 }
 
 decode_CastOfferKind :: proc(v: json.Value, out: ^CastOfferKind) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastOfferKind")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CastOfferKind: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CastOfferKind: no tag")
@@ -30888,8 +30888,8 @@ encode_AlternativeCastKeyword_members :: proc(b: ^strings.Builder, x: Alternativ
 }
 
 decode_AlternativeAdditionalCostDescription :: proc(v: json.Value, out: ^AlternativeAdditionalCostDescription) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AlternativeAdditionalCostDescription")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("AlternativeAdditionalCostDescription: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("AlternativeAdditionalCostDescription: no tag")
@@ -31104,8 +31104,8 @@ encode_ShortcutDecisionSchema_members :: proc(b: ^strings.Builder, x: ShortcutDe
 }
 
 decode_CountedTake :: proc(v: json.Value, out: ^CountedTake) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CountedTake")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -31338,8 +31338,8 @@ encode_RoomPreview_members :: proc(b: ^strings.Builder, x: RoomPreview, first: ^
 }
 
 decode_PayCostKind :: proc(v: json.Value, out: ^PayCostKind) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PayCostKind")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PayCostKind: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PayCostKind: no tag")
@@ -31521,8 +31521,8 @@ encode_PayCostKind_members :: proc(b: ^strings.Builder, x: PayCostKind, first: ^
 }
 
 decode_CostResume :: proc(v: json.Value, out: ^CostResume) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CostResume")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CostResume: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CostResume: no tag")
@@ -31667,8 +31667,8 @@ encode_ManaType :: proc(b: ^strings.Builder, x: ManaType) {
 }
 
 decode_ManaChoicePrompt :: proc(v: json.Value, out: ^ManaChoicePrompt) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaChoicePrompt")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ManaChoicePrompt: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ManaChoicePrompt: no tag")
@@ -31717,8 +31717,8 @@ encode_ManaChoicePrompt :: proc(b: ^strings.Builder, x: ManaChoicePrompt) {
 }
 
 decode_ManaChoiceContext :: proc(v: json.Value, out: ^ManaChoiceContext) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaChoiceContext")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ManaChoiceContext: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ManaChoiceContext: no tag")
@@ -31739,8 +31739,8 @@ encode_ManaChoiceContext :: proc(b: ^strings.Builder, x: ManaChoiceContext) {
 }
 
 decode_CollectEvidenceResume :: proc(v: json.Value, out: ^CollectEvidenceResume) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CollectEvidenceResume")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CollectEvidenceResume: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CollectEvidenceResume: no tag")
@@ -31859,8 +31859,8 @@ encode_ContestState_members :: proc(b: ^strings.Builder, x: ContestState, first:
 }
 
 decode_VoteActor :: proc(v: json.Value, out: ^VoteActor) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("VoteActor")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("VoteActor: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("VoteActor: no tag")
@@ -31881,8 +31881,8 @@ encode_VoteActor :: proc(b: ^strings.Builder, x: VoteActor) {
 }
 
 decode_VoteTally :: proc(v: json.Value, out: ^VoteTally) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("VoteTally")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("VoteTally: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("VoteTally: no tag")
@@ -31941,8 +31941,8 @@ encode_VoteVisibility_members :: proc(b: ^strings.Builder, x: VoteVisibility, fi
 }
 
 decode_PileSource :: proc(v: json.Value, out: ^PileSource) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PileSource")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PileSource: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PileSource: no tag")
@@ -32055,8 +32055,8 @@ encode_CategoryChooserScope :: proc(b: ^strings.Builder, x: CategoryChooserScope
 }
 
 decode_ContinuousModification :: proc(v: json.Value, out: ^ContinuousModification) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ContinuousModification")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ContinuousModification: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ContinuousModification: no tag")
@@ -32726,8 +32726,8 @@ encode_CopyScale_members :: proc(b: ^strings.Builder, x: CopyScale, first: ^bool
 }
 
 decode_CopyChooseScope :: proc(v: json.Value, out: ^CopyChooseScope) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CopyChooseScope")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CopyChooseScope: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CopyChooseScope: no tag")
@@ -32915,8 +32915,8 @@ encode_TrampleKind :: proc(b: ^strings.Builder, x: TrampleKind) {
 }
 
 decode_DistributionUnit :: proc(v: json.Value, out: ^DistributionUnit) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DistributionUnit")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DistributionUnit: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DistributionUnit: no tag")
@@ -32941,8 +32941,8 @@ encode_DistributionUnit :: proc(b: ^strings.Builder, x: DistributionUnit) {
 }
 
 decode_DistributionScope :: proc(v: json.Value, out: ^DistributionScope) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DistributionScope")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DistributionScope: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DistributionScope: no tag")
@@ -32971,8 +32971,8 @@ encode_DistributionScope :: proc(b: ^strings.Builder, x: DistributionScope) {
 }
 
 decode_PayableResource :: proc(v: json.Value, out: ^PayableResource) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PayableResource")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PayableResource: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PayableResource: no tag")
@@ -33019,8 +33019,8 @@ encode_PayableResource :: proc(b: ^strings.Builder, x: PayableResource) {
 }
 
 decode_RetargetScope :: proc(v: json.Value, out: ^RetargetScope) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RetargetScope")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("RetargetScope: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("RetargetScope: no tag")
@@ -33093,8 +33093,8 @@ encode_CombatTaxContext_members :: proc(b: ^strings.Builder, x: CombatTaxContext
 }
 
 decode_CombatTaxPending :: proc(v: json.Value, out: ^CombatTaxPending) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CombatTaxPending")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CombatTaxPending: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CombatTaxPending: no tag")
@@ -33329,8 +33329,8 @@ encode_InteractionId :: proc(b: ^strings.Builder, x: InteractionId) {
 }
 
 decode_ProposedEvent :: proc(v: json.Value, out: ^ProposedEvent) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ProposedEvent")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -33983,8 +33983,8 @@ encode_ZoneDeliveryExileTracking :: proc(b: ^strings.Builder, x: ZoneDeliveryExi
 }
 
 decode_ExcessRecipient :: proc(v: json.Value, out: ^ExcessRecipient) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ExcessRecipient")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ExcessRecipient: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ExcessRecipient: no tag")
@@ -34126,8 +34126,8 @@ encode_CoEntrants :: proc(b: ^strings.Builder, x: CoEntrants) {
 }
 
 decode_EntryOwnershipActor :: proc(v: json.Value, out: ^EntryOwnershipActor) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EntryOwnershipActor")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -34176,8 +34176,8 @@ encode_DrawEventStage :: proc(b: ^strings.Builder, x: DrawEventStage) {
 }
 
 decode_SearchFoundDisposition :: proc(v: json.Value, out: ^SearchFoundDisposition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SearchFoundDisposition")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -34232,8 +34232,8 @@ encode_DieRollIgnoreRule_members :: proc(b: ^strings.Builder, x: DieRollIgnoreRu
 }
 
 decode_CounterPlacement :: proc(v: json.Value, out: ^CounterPlacement) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CounterPlacement")
+	if v.kind == .Null do return true
 	// untagged: the first variant that decodes wins, as in serde.
 	if v.kind == .Object { tmp: CounterPlacement_Object; if decode_quiet_proc(v, &tmp, proc(v: json.Value, out: ^CounterPlacement_Object) -> bool {
 	if fv, found := get_any(v, "actor"); found { if !decode_PlayerId(fv, &out.actor) do return fail("CounterPlacement::Object.actor") }
@@ -34548,8 +34548,8 @@ encode_PendingCombatPhaseCRemnant_members :: proc(b: ^strings.Builder, x: Pendin
 }
 
 decode_EntryAttackDestination :: proc(v: json.Value, out: ^EntryAttackDestination) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EntryAttackDestination")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("EntryAttackDestination: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("EntryAttackDestination: no tag")
@@ -34580,8 +34580,8 @@ encode_EntryAttackDestination :: proc(b: ^strings.Builder, x: EntryAttackDestina
 }
 
 decode_LiminalEntryKind :: proc(v: json.Value, out: ^LiminalEntryKind) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LiminalEntryKind")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -34742,8 +34742,8 @@ encode_ProtectionStartSnapshot_members :: proc(b: ^strings.Builder, x: Protectio
 }
 
 decode_PerpetualModification :: proc(v: json.Value, out: ^PerpetualModification) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PerpetualModification")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PerpetualModification: not an object")
 	tv, found := json.get(v, "kind")
 	if !found || tv.kind != .String do return fail("PerpetualModification: no tag")
@@ -34864,8 +34864,8 @@ encode_PerpetualModification_members :: proc(b: ^strings.Builder, x: PerpetualMo
 }
 
 decode_PrintedLoyalty :: proc(v: json.Value, out: ^PrintedLoyalty) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PrintedLoyalty")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -35378,8 +35378,8 @@ encode_CleaveFormState_members :: proc(b: ^strings.Builder, x: CleaveFormState, 
 }
 
 decode_ManaPip :: proc(v: json.Value, out: ^ManaPip) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaPip")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ManaPip: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ManaPip: no tag")
@@ -35506,8 +35506,8 @@ encode_DisplaySource :: proc(b: ^strings.Builder, x: DisplaySource) {
 }
 
 decode_CastingPermission :: proc(v: json.Value, out: ^CastingPermission) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastingPermission")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CastingPermission: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CastingPermission: no tag")
@@ -35872,8 +35872,8 @@ encode_SpellAnnouncement :: proc(b: ^strings.Builder, x: SpellAnnouncement) {
 }
 
 decode_ExiledSpellRider :: proc(v: json.Value, out: ^ExiledSpellRider) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ExiledSpellRider")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -35956,8 +35956,8 @@ encode_ManaSpentSourceSnapshot_members :: proc(b: ^strings.Builder, x: ManaSpent
 }
 
 decode_PhaseStatus :: proc(v: json.Value, out: ^PhaseStatus) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PhaseStatus")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PhaseStatus: not an object")
 	tv, found := json.get(v, "status")
 	if !found || tv.kind != .String do return fail("PhaseStatus: no tag")
@@ -36004,8 +36004,8 @@ encode_LogicalZoneChangeGroupId :: proc(b: ^strings.Builder, x: LogicalZoneChang
 }
 
 decode_MatchedProtectionQuality :: proc(v: json.Value, out: ^MatchedProtectionQuality) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("MatchedProtectionQuality")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -36090,8 +36090,8 @@ encode_ProtectionPlayerScope :: proc(b: ^strings.Builder, x: ProtectionPlayerSco
 }
 
 decode_ParkedEntryState :: proc(v: json.Value, out: ^ParkedEntryState) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ParkedEntryState")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ParkedEntryState: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ParkedEntryState: no tag")
@@ -36174,8 +36174,8 @@ encode_ActivatedAbilityKind :: proc(b: ^strings.Builder, x: ActivatedAbilityKind
 }
 
 decode_ActivationTriggerState :: proc(v: json.Value, out: ^ActivationTriggerState) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ActivationTriggerState")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -36210,8 +36210,8 @@ encode_ActivationTriggerState :: proc(b: ^strings.Builder, x: ActivationTriggerS
 }
 
 decode_BoundActivationCost :: proc(v: json.Value, out: ^BoundActivationCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("BoundActivationCost")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -36469,8 +36469,8 @@ encode_TriggerSourceContext_members :: proc(b: ^strings.Builder, x: TriggerSourc
 }
 
 decode_UnTell :: proc(v: json.Value, out: ^UnTell) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UnTell")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("UnTell: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("UnTell: no tag")
@@ -36528,8 +36528,8 @@ encode_InstructionLead :: proc(b: ^strings.Builder, x: InstructionLead) {
 }
 
 decode_ControlChangeEvidence :: proc(v: json.Value, out: ^ControlChangeEvidence) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ControlChangeEvidence")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -36565,8 +36565,8 @@ encode_EndEffectGroupId :: proc(b: ^strings.Builder, x: EndEffectGroupId) {
 }
 
 decode_Targeter :: proc(v: json.Value, out: ^Targeter) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("Targeter")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("Targeter: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("Targeter: no tag")
@@ -36715,8 +36715,8 @@ encode_ContestKind :: proc(b: ^strings.Builder, x: ContestKind) {
 }
 
 decode_ContestResult :: proc(v: json.Value, out: ^ContestResult) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ContestResult")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -36765,8 +36765,8 @@ encode_ClashResult :: proc(b: ^strings.Builder, x: ClashResult) {
 }
 
 decode_ReplacementEvent :: proc(v: json.Value, out: ^ReplacementEvent) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ReplacementEvent")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -36875,8 +36875,8 @@ encode_ReplacementEvent :: proc(b: ^strings.Builder, x: ReplacementEvent) {
 }
 
 decode_StaticCondition :: proc(v: json.Value, out: ^StaticCondition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StaticCondition")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("StaticCondition: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("StaticCondition: no tag")
@@ -37532,8 +37532,8 @@ encode_EndEffectPermission_members :: proc(b: ^strings.Builder, x: EndEffectPerm
 }
 
 decode_PlayerScope :: proc(v: json.Value, out: ^PlayerScope) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PlayerScope")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PlayerScope: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PlayerScope: no tag")
@@ -37651,8 +37651,8 @@ encode_PossessionAxis :: proc(b: ^strings.Builder, x: PossessionAxis) {
 }
 
 decode_MayTriggerOrigin :: proc(v: json.Value, out: ^MayTriggerOrigin) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("MayTriggerOrigin")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("MayTriggerOrigin: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("MayTriggerOrigin: no tag")
@@ -37713,8 +37713,8 @@ encode_MayTriggerOrigin_members :: proc(b: ^strings.Builder, x: MayTriggerOrigin
 }
 
 decode_PlayerFilter :: proc(v: json.Value, out: ^PlayerFilter) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PlayerFilter")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PlayerFilter: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PlayerFilter: no tag")
@@ -37968,8 +37968,8 @@ encode_PlayerFilter_members :: proc(b: ^strings.Builder, x: PlayerFilter, first:
 }
 
 decode_ControllerRef :: proc(v: json.Value, out: ^ControllerRef) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ControllerRef")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -38070,8 +38070,8 @@ encode_AdditionalCostPaymentSource :: proc(b: ^strings.Builder, x: AdditionalCos
 }
 
 decode_NumberQuality :: proc(v: json.Value, out: ^NumberQuality) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("NumberQuality")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("NumberQuality: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("NumberQuality: no tag")
@@ -38092,8 +38092,8 @@ encode_NumberQuality :: proc(b: ^strings.Builder, x: NumberQuality) {
 }
 
 decode_SpentColor :: proc(v: json.Value, out: ^SpentColor) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SpentColor")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("SpentColor: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("SpentColor: no tag")
@@ -38181,8 +38181,8 @@ encode_RenownSubject :: proc(b: ^strings.Builder, x: RenownSubject) {
 }
 
 decode_AttackersDeclaredCountSubject :: proc(v: json.Value, out: ^AttackersDeclaredCountSubject) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AttackersDeclaredCountSubject")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("AttackersDeclaredCountSubject: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("AttackersDeclaredCountSubject: no tag")
@@ -38373,8 +38373,8 @@ encode_ChosenGroupId :: proc(b: ^strings.Builder, x: ChosenGroupId) {
 }
 
 decode_TypeFilter :: proc(v: json.Value, out: ^TypeFilter) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TypeFilter")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -38427,8 +38427,8 @@ encode_TypeFilter :: proc(b: ^strings.Builder, x: TypeFilter) {
 }
 
 decode_FilterProp :: proc(v: json.Value, out: ^FilterProp) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("FilterProp")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("FilterProp: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("FilterProp: no tag")
@@ -39430,8 +39430,8 @@ encode_ConsumedTriggerEventScope :: proc(b: ^strings.Builder, x: ConsumedTrigger
 }
 
 decode_ExileLinkKind :: proc(v: json.Value, out: ^ExileLinkKind) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ExileLinkKind")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -39510,8 +39510,8 @@ encode_ExileLinkKind :: proc(b: ^strings.Builder, x: ExileLinkKind) {
 }
 
 decode_LookGrant :: proc(v: json.Value, out: ^LookGrant) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LookGrant")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -39546,8 +39546,8 @@ encode_LookGrant :: proc(b: ^strings.Builder, x: LookGrant) {
 }
 
 decode_DelayedTriggerCondition :: proc(v: json.Value, out: ^DelayedTriggerCondition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DelayedTriggerCondition")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DelayedTriggerCondition: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DelayedTriggerCondition: no tag")
@@ -39756,8 +39756,8 @@ encode_DelayedTriggerKind :: proc(b: ^strings.Builder, x: DelayedTriggerKind) {
 }
 
 decode_DelayedInstallIdentity :: proc(v: json.Value, out: ^DelayedInstallIdentity) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DelayedInstallIdentity")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -39784,8 +39784,8 @@ encode_DelayedInstallIdentity :: proc(b: ^strings.Builder, x: DelayedInstallIden
 }
 
 decode_TurnGate :: proc(v: json.Value, out: ^TurnGate) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TurnGate")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -39814,8 +39814,8 @@ encode_TurnGate :: proc(b: ^strings.Builder, x: TurnGate) {
 }
 
 decode_DelayedTriggerPlayerBinding :: proc(v: json.Value, out: ^DelayedTriggerPlayerBinding) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DelayedTriggerPlayerBinding")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -39852,8 +39852,8 @@ encode_DelayedTriggerPlayerBinding :: proc(b: ^strings.Builder, x: DelayedTrigge
 }
 
 decode_WheneverEventExpiry :: proc(v: json.Value, out: ^WheneverEventExpiry) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("WheneverEventExpiry")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -40080,8 +40080,8 @@ encode_ControlWindow :: proc(b: ^strings.Builder, x: ControlWindow) {
 }
 
 decode_TurnSegment :: proc(v: json.Value, out: ^TurnSegment) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TurnSegment")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("TurnSegment: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("TurnSegment: no tag")
@@ -40130,8 +40130,8 @@ encode_PhaseGroup :: proc(b: ^strings.Builder, x: PhaseGroup) {
 }
 
 decode_DeckSizeRule :: proc(v: json.Value, out: ^DeckSizeRule) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DeckSizeRule")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DeckSizeRule: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DeckSizeRule: no tag")
@@ -40192,8 +40192,8 @@ encode_RangeOfInfluenceConfig_members :: proc(b: ^strings.Builder, x: RangeOfInf
 }
 
 decode_SideboardPolicy :: proc(v: json.Value, out: ^SideboardPolicy) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SideboardPolicy")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("SideboardPolicy: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("SideboardPolicy: no tag")
@@ -40570,8 +40570,8 @@ encode_DisplayOnly_ptr_DeckPrintingRecord :: proc(b: ^strings.Builder, x: Displa
 }
 
 decode_TriggerDefinitionOccurrenceRef :: proc(v: json.Value, out: ^TriggerDefinitionOccurrenceRef) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerDefinitionOccurrenceRef")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("TriggerDefinitionOccurrenceRef: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("TriggerDefinitionOccurrenceRef: no tag")
@@ -40673,8 +40673,8 @@ encode_TriggerGrantInstanceRef :: proc(b: ^strings.Builder, x: TriggerGrantInsta
 }
 
 decode_ActivationTargetFact :: proc(v: json.Value, out: ^ActivationTargetFact) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ActivationTargetFact")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ActivationTargetFact: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ActivationTargetFact: no tag")
@@ -40725,8 +40725,8 @@ encode_EntryTokenStatus :: proc(b: ^strings.Builder, x: EntryTokenStatus) {
 }
 
 decode_NextSpellModifier :: proc(v: json.Value, out: ^NextSpellModifier) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("NextSpellModifier")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("NextSpellModifier: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("NextSpellModifier: no tag")
@@ -40770,8 +40770,8 @@ encode_NextSpellModifier_members :: proc(b: ^strings.Builder, x: NextSpellModifi
 }
 
 decode_HexproofFilter :: proc(v: json.Value, out: ^HexproofFilter) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("HexproofFilter")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("HexproofFilter: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("HexproofFilter: no tag")
@@ -40796,8 +40796,8 @@ encode_HexproofFilter :: proc(b: ^strings.Builder, x: HexproofFilter) {
 }
 
 decode_BestowCost :: proc(v: json.Value, out: ^BestowCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("BestowCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("BestowCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("BestowCost: no tag")
@@ -40818,8 +40818,8 @@ encode_BestowCost :: proc(b: ^strings.Builder, x: BestowCost) {
 }
 
 decode_EmbalmCost :: proc(v: json.Value, out: ^EmbalmCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EmbalmCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("EmbalmCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("EmbalmCost: no tag")
@@ -40840,8 +40840,8 @@ encode_EmbalmCost :: proc(b: ^strings.Builder, x: EmbalmCost) {
 }
 
 decode_EternalizeCost :: proc(v: json.Value, out: ^EternalizeCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EternalizeCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("EternalizeCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("EternalizeCost: no tag")
@@ -40862,8 +40862,8 @@ encode_EternalizeCost :: proc(b: ^strings.Builder, x: EternalizeCost) {
 }
 
 decode_ProtectionTarget :: proc(v: json.Value, out: ^ProtectionTarget) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ProtectionTarget")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -40910,8 +40910,8 @@ encode_ProtectionTarget :: proc(b: ^strings.Builder, x: ProtectionTarget) {
 }
 
 decode_CyclingCost :: proc(v: json.Value, out: ^CyclingCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CyclingCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CyclingCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CyclingCost: no tag")
@@ -40932,8 +40932,8 @@ encode_CyclingCost :: proc(b: ^strings.Builder, x: CyclingCost) {
 }
 
 decode_FlashbackCost :: proc(v: json.Value, out: ^FlashbackCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("FlashbackCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("FlashbackCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("FlashbackCost: no tag")
@@ -40954,8 +40954,8 @@ encode_FlashbackCost :: proc(b: ^strings.Builder, x: FlashbackCost) {
 }
 
 decode_WardCost :: proc(v: json.Value, out: ^WardCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("WardCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("WardCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("WardCost: no tag")
@@ -41020,8 +41020,8 @@ encode_WardCost :: proc(b: ^strings.Builder, x: WardCost) {
 }
 
 decode_ActivationRestriction :: proc(v: json.Value, out: ^ActivationRestriction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ActivationRestriction")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ActivationRestriction: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ActivationRestriction: no tag")
@@ -41118,8 +41118,8 @@ encode_ActivationRestriction :: proc(b: ^strings.Builder, x: ActivationRestricti
 }
 
 decode_PartnerType :: proc(v: json.Value, out: ^PartnerType) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PartnerType")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PartnerType: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PartnerType: no tag")
@@ -41148,8 +41148,8 @@ encode_PartnerType :: proc(b: ^strings.Builder, x: PartnerType) {
 }
 
 decode_CompanionCondition :: proc(v: json.Value, out: ^CompanionCondition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CompanionCondition")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CompanionCondition: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CompanionCondition: no tag")
@@ -41186,8 +41186,8 @@ encode_CompanionCondition :: proc(b: ^strings.Builder, x: CompanionCondition) {
 }
 
 decode_MorphCost :: proc(v: json.Value, out: ^MorphCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("MorphCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("MorphCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("MorphCost: no tag")
@@ -41228,8 +41228,8 @@ encode_EmergeCost_members :: proc(b: ^strings.Builder, x: EmergeCost, first: ^bo
 }
 
 decode_EscapeCost :: proc(v: json.Value, out: ^EscapeCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EscapeCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("EscapeCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("EscapeCost: no tag")
@@ -41250,8 +41250,8 @@ encode_EscapeCost :: proc(b: ^strings.Builder, x: EscapeCost) {
 }
 
 decode_EvokeCost :: proc(v: json.Value, out: ^EvokeCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EvokeCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("EvokeCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("EvokeCost: no tag")
@@ -41272,8 +41272,8 @@ encode_EvokeCost :: proc(b: ^strings.Builder, x: EvokeCost) {
 }
 
 decode_DisguiseCost :: proc(v: json.Value, out: ^DisguiseCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DisguiseCost")
+	if v.kind == .Null do return true
 	// untagged: the first variant that decodes wins, as in serde.
 	{ tmp: DisguiseCost_Mana; if decode_quiet_proc(v, &tmp._0, decode_ManaCost) { out^ = tmp; return true } }
 	if v.kind == .Object { tmp: DisguiseCost_Reduced; if decode_quiet_proc(v, &tmp, proc(v: json.Value, out: ^DisguiseCost_Reduced) -> bool {
@@ -41296,8 +41296,8 @@ encode_DisguiseCost :: proc(b: ^strings.Builder, x: DisguiseCost) {
 }
 
 decode_BlitzCost :: proc(v: json.Value, out: ^BlitzCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("BlitzCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("BlitzCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("BlitzCost: no tag")
@@ -41318,8 +41318,8 @@ encode_BlitzCost :: proc(b: ^strings.Builder, x: BlitzCost) {
 }
 
 decode_BuybackCost :: proc(v: json.Value, out: ^BuybackCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("BuybackCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("BuybackCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("BuybackCost: no tag")
@@ -41340,8 +41340,8 @@ encode_BuybackCost :: proc(b: ^strings.Builder, x: BuybackCost) {
 }
 
 decode_EchoCost :: proc(v: json.Value, out: ^EchoCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EchoCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("EchoCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("EchoCost: no tag")
@@ -41362,8 +41362,8 @@ encode_EchoCost :: proc(b: ^strings.Builder, x: EchoCost) {
 }
 
 decode_EntwineCost :: proc(v: json.Value, out: ^EntwineCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EntwineCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("EntwineCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("EntwineCost: no tag")
@@ -41384,8 +41384,8 @@ encode_EntwineCost :: proc(b: ^strings.Builder, x: EntwineCost) {
 }
 
 decode_BloodthirstValue :: proc(v: json.Value, out: ^BloodthirstValue) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("BloodthirstValue")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("BloodthirstValue: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("BloodthirstValue: no tag")
@@ -41465,8 +41465,8 @@ encode_FrameVec :: proc(b: ^strings.Builder, x: FrameVec) {
 }
 
 decode_ResolutionFrame :: proc(v: json.Value, out: ^ResolutionFrame) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolutionFrame")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ResolutionFrame: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ResolutionFrame: no tag")
@@ -41711,8 +41711,8 @@ encode_UnlessPayModifier_members :: proc(b: ^strings.Builder, x: UnlessPayModifi
 }
 
 decode_SimultaneousUnlessPhase :: proc(v: json.Value, out: ^SimultaneousUnlessPhase) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SimultaneousUnlessPhase")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("SimultaneousUnlessPhase: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("SimultaneousUnlessPhase: no tag")
@@ -41740,8 +41740,8 @@ encode_SimultaneousUnlessPhase_members :: proc(b: ^strings.Builder, x: Simultane
 }
 
 decode_DiscardBatchCursor :: proc(v: json.Value, out: ^DiscardBatchCursor) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DiscardBatchCursor")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DiscardBatchCursor: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DiscardBatchCursor: no tag")
@@ -41805,8 +41805,8 @@ encode_DiscardBatchCursor_members :: proc(b: ^strings.Builder, x: DiscardBatchCu
 }
 
 decode_PendingDiscardBatchCompletion :: proc(v: json.Value, out: ^PendingDiscardBatchCompletion) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingDiscardBatchCompletion")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PendingDiscardBatchCompletion: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PendingDiscardBatchCompletion: no tag")
@@ -41892,8 +41892,8 @@ encode_PendingDiscardFanOut_members :: proc(b: ^strings.Builder, x: PendingDisca
 }
 
 decode_HeroEventApplyStep :: proc(v: json.Value, out: ^HeroEventApplyStep) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("HeroEventApplyStep")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -42130,8 +42130,8 @@ encode_DamageContextSnapshot_members :: proc(b: ^strings.Builder, x: DamageConte
 }
 
 decode_PendingMassLibraryOrderBatches :: proc(v: json.Value, out: ^PendingMassLibraryOrderBatches) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingMassLibraryOrderBatches")
+	if v.kind == .Null do return true
 	// untagged: the first variant that decodes wins, as in serde.
 	{ tmp: PendingMassLibraryOrderBatches_Typed; if decode_quiet_proc(v, &tmp._0, dec_dyn_MassLibraryOrderBatch) { out^ = tmp; return true } }
 	{ tmp: PendingMassLibraryOrderBatches_Legacy; if decode_quiet_proc(v, &tmp._0, dec_dyn_t2_PlayerId_dyn_ObjectId) { out^ = tmp; return true } }
@@ -42147,8 +42147,8 @@ encode_PendingMassLibraryOrderBatches :: proc(b: ^strings.Builder, x: PendingMas
 }
 
 decode_QuantityRef :: proc(v: json.Value, out: ^QuantityRef) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("QuantityRef")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("QuantityRef: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("QuantityRef: no tag")
@@ -43334,8 +43334,8 @@ encode_RoundingMode :: proc(b: ^strings.Builder, x: RoundingMode) {
 }
 
 decode_ObjectScope :: proc(v: json.Value, out: ^ObjectScope) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ObjectScope")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ObjectScope: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ObjectScope: no tag")
@@ -43440,8 +43440,8 @@ encode_CountScope :: proc(b: ^strings.Builder, x: CountScope) {
 }
 
 decode_NameStickerSet :: proc(v: json.Value, out: ^NameStickerSet) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("NameStickerSet")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("NameStickerSet: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("NameStickerSet: no tag")
@@ -43479,8 +43479,8 @@ encode_NameStickerSet_members :: proc(b: ^strings.Builder, x: NameStickerSet, fi
 }
 
 decode_LetterQuery :: proc(v: json.Value, out: ^LetterQuery) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LetterQuery")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("LetterQuery: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("LetterQuery: no tag")
@@ -43616,8 +43616,8 @@ encode_CountBinding :: proc(b: ^strings.Builder, x: CountBinding) {
 }
 
 decode_DevotionColors :: proc(v: json.Value, out: ^DevotionColors) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DevotionColors")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DevotionColors: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DevotionColors: no tag")
@@ -43638,8 +43638,8 @@ encode_DevotionColors :: proc(b: ^strings.Builder, x: DevotionColors) {
 }
 
 decode_CardTypeSetSource :: proc(v: json.Value, out: ^CardTypeSetSource) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CardTypeSetSource")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CardTypeSetSource: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CardTypeSetSource: no tag")
@@ -43961,8 +43961,8 @@ encode_CastManaObjectScope :: proc(b: ^strings.Builder, x: CastManaObjectScope) 
 }
 
 decode_CastManaSpentMetric :: proc(v: json.Value, out: ^CastManaSpentMetric) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastManaSpentMetric")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CastManaSpentMetric: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CastManaSpentMetric: no tag")
@@ -44016,8 +44016,8 @@ encode_CastManaSpentMetric_members :: proc(b: ^strings.Builder, x: CastManaSpent
 }
 
 decode_ScopedLibrarySearchPhase :: proc(v: json.Value, out: ^ScopedLibrarySearchPhase) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ScopedLibrarySearchPhase")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ScopedLibrarySearchPhase: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ScopedLibrarySearchPhase: no tag")
@@ -44126,8 +44126,8 @@ encode_BoundSearchFoundGrant_members :: proc(b: ^strings.Builder, x: BoundSearch
 }
 
 decode_PendingSearchFoundContinuation :: proc(v: json.Value, out: ^PendingSearchFoundContinuation) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingSearchFoundContinuation")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -44184,8 +44184,8 @@ encode_DieResultBranch_members :: proc(b: ^strings.Builder, x: DieResultBranch, 
 }
 
 decode_DieRollModifier :: proc(v: json.Value, out: ^DieRollModifier) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DieRollModifier")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DieRollModifier: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DieRollModifier: no tag")
@@ -44275,8 +44275,8 @@ encode_CapturedDeclarationPayload_members :: proc(b: ^strings.Builder, x: Captur
 }
 
 decode_DeclaredPlayerTarget :: proc(v: json.Value, out: ^DeclaredPlayerTarget) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DeclaredPlayerTarget")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -44305,8 +44305,8 @@ encode_DeclaredPlayerTarget :: proc(b: ^strings.Builder, x: DeclaredPlayerTarget
 }
 
 decode_MayTriggerAutoChoiceSelector :: proc(v: json.Value, out: ^MayTriggerAutoChoiceSelector) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("MayTriggerAutoChoiceSelector")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("MayTriggerAutoChoiceSelector: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("MayTriggerAutoChoiceSelector: no tag")
@@ -44381,8 +44381,8 @@ encode_AutoMayChoice_members :: proc(b: ^strings.Builder, x: AutoMayChoice, firs
 }
 
 decode_UnTellKind :: proc(v: json.Value, out: ^UnTellKind) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UnTellKind")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("UnTellKind: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("UnTellKind: no tag")
@@ -44438,8 +44438,8 @@ encode_ReplacementAutoChoiceId :: proc(b: ^strings.Builder, x: ReplacementAutoCh
 }
 
 decode_ReplacementAutoChoice :: proc(v: json.Value, out: ^ReplacementAutoChoice) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ReplacementAutoChoice")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ReplacementAutoChoice: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ReplacementAutoChoice: no tag")
@@ -44476,8 +44476,8 @@ encode_ReplacementAutoChoice :: proc(b: ^strings.Builder, x: ReplacementAutoChoi
 }
 
 decode_ReplacementAutoChoiceIdentity :: proc(v: json.Value, out: ^ReplacementAutoChoiceIdentity) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ReplacementAutoChoiceIdentity")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ReplacementAutoChoiceIdentity: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ReplacementAutoChoiceIdentity: no tag")
@@ -44526,8 +44526,8 @@ encode_ReplacementAutoChoiceIdentity :: proc(b: ^strings.Builder, x: Replacement
 }
 
 decode_PinnedDecision :: proc(v: json.Value, out: ^PinnedDecision) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PinnedDecision")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -44632,8 +44632,8 @@ encode_PinnedDecision :: proc(b: ^strings.Builder, x: PinnedDecision) {
 }
 
 decode_ReplayMode :: proc(v: json.Value, out: ^ReplayMode) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ReplayMode")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -44688,8 +44688,8 @@ encode_DecisionGroupKey_members :: proc(b: ^strings.Builder, x: DecisionGroupKey
 }
 
 decode_YieldTarget :: proc(v: json.Value, out: ^YieldTarget) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("YieldTarget")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -44784,8 +44784,8 @@ encode_Parity :: proc(b: ^strings.Builder, x: Parity) {
 }
 
 decode_CardPredicateChoice :: proc(v: json.Value, out: ^CardPredicateChoice) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CardPredicateChoice")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -44918,8 +44918,8 @@ encode_DelayedAbilityOrigin_members :: proc(b: ^strings.Builder, x: DelayedAbili
 }
 
 decode_ChosenTargetSlots :: proc(v: json.Value, out: ^ChosenTargetSlots) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ChosenTargetSlots")
+	if v.kind == .Null do return true
 	// untagged: the first variant that decodes wins, as in serde.
 	if v.kind == .Null { out^ = ChosenTargetSlots_Unrecorded{}; return true }
 	{ tmp: ChosenTargetSlots_Recorded; if decode_quiet_proc(v, &tmp._0, dec_dyn_int) { out^ = tmp; return true } }
@@ -45025,8 +45025,8 @@ encode_ResolvedCoinBranches_members :: proc(b: ^strings.Builder, x: ResolvedCoin
 }
 
 decode_AbilityCondition :: proc(v: json.Value, out: ^AbilityCondition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AbilityCondition")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("AbilityCondition: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("AbilityCondition: no tag")
@@ -45921,8 +45921,8 @@ encode_TargetSelectionMode_members :: proc(b: ^strings.Builder, x: TargetSelecti
 }
 
 decode_RepeatContinuation :: proc(v: json.Value, out: ^RepeatContinuation) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RepeatContinuation")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("RepeatContinuation: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("RepeatContinuation: no tag")
@@ -46045,8 +46045,8 @@ encode_InstructionJoin :: proc(b: ^strings.Builder, x: InstructionJoin) {
 }
 
 decode_ControlChangeInstructionCarrier :: proc(v: json.Value, out: ^ControlChangeInstructionCarrier) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ControlChangeInstructionCarrier")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -46171,8 +46171,8 @@ encode_RawDamagePortion_members :: proc(b: ^strings.Builder, x: RawDamagePortion
 }
 
 decode_EachDamageRecipient :: proc(v: json.Value, out: ^EachDamageRecipient) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EachDamageRecipient")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("EachDamageRecipient: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("EachDamageRecipient: no tag")
@@ -46203,8 +46203,8 @@ encode_EachDamageRecipient :: proc(b: ^strings.Builder, x: EachDamageRecipient) 
 }
 
 decode_CounterSourceRider :: proc(v: json.Value, out: ^CounterSourceRider) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CounterSourceRider")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CounterSourceRider: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CounterSourceRider: no tag")
@@ -46248,8 +46248,8 @@ encode_CounterSourceRider_members :: proc(b: ^strings.Builder, x: CounterSourceR
 }
 
 decode_SpellStackToGraveyardReplacement :: proc(v: json.Value, out: ^SpellStackToGraveyardReplacement) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SpellStackToGraveyardReplacement")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("SpellStackToGraveyardReplacement: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("SpellStackToGraveyardReplacement: no tag")
@@ -46290,8 +46290,8 @@ encode_SpellStackToGraveyardReplacement_members :: proc(b: ^strings.Builder, x: 
 }
 
 decode_TokenAttackDestination :: proc(v: json.Value, out: ^TokenAttackDestination) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TokenAttackDestination")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("TokenAttackDestination: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("TokenAttackDestination: no tag")
@@ -46394,8 +46394,8 @@ encode_TapStateChange_members :: proc(b: ^strings.Builder, x: TapStateChange, fi
 }
 
 decode_LibraryInstructionActor :: proc(v: json.Value, out: ^LibraryInstructionActor) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LibraryInstructionActor")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -46452,8 +46452,8 @@ encode_DigSource :: proc(b: ^strings.Builder, x: DigSource) {
 }
 
 decode_AttachSelection :: proc(v: json.Value, out: ^AttachSelection) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AttachSelection")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -46542,8 +46542,8 @@ encode_VoterScope_members :: proc(b: ^strings.Builder, x: VoterScope, first: ^bo
 }
 
 decode_VoteSubject :: proc(v: json.Value, out: ^VoteSubject) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("VoteSubject")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("VoteSubject: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("VoteSubject: no tag")
@@ -46615,8 +46615,8 @@ encode_EpicEffectId :: proc(b: ^strings.Builder, x: EpicEffectId) {
 }
 
 decode_CombineSource :: proc(v: json.Value, out: ^CombineSource) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CombineSource")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -46653,8 +46653,8 @@ encode_CombineSource :: proc(b: ^strings.Builder, x: CombineSource) {
 }
 
 decode_PermanentEntryMode :: proc(v: json.Value, out: ^PermanentEntryMode) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PermanentEntryMode")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PermanentEntryMode: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PermanentEntryMode: no tag")
@@ -46719,8 +46719,8 @@ encode_PermissionGrantee_members :: proc(b: ^strings.Builder, x: PermissionGrant
 }
 
 decode_CopyRecipient :: proc(v: json.Value, out: ^CopyRecipient) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CopyRecipient")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CopyRecipient: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CopyRecipient: no tag")
@@ -46781,8 +46781,8 @@ encode_GrantedAbilityScope :: proc(b: ^strings.Builder, x: GrantedAbilityScope) 
 }
 
 decode_CounterKindDomain :: proc(v: json.Value, out: ^CounterKindDomain) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CounterKindDomain")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CounterKindDomain: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CounterKindDomain: no tag")
@@ -46959,8 +46959,8 @@ encode_CounterMoveSelection :: proc(b: ^strings.Builder, x: CounterMoveSelection
 }
 
 decode_EventCounterReproductionCount :: proc(v: json.Value, out: ^EventCounterReproductionCount) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EventCounterReproductionCount")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -46987,8 +46987,8 @@ encode_EventCounterReproductionCount :: proc(b: ^strings.Builder, x: EventCounte
 }
 
 decode_ManaProduction :: proc(v: json.Value, out: ^ManaProduction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaProduction")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ManaProduction: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ManaProduction: no tag")
@@ -47244,8 +47244,8 @@ encode_ManaProduction_members :: proc(b: ^strings.Builder, x: ManaProduction, fi
 }
 
 decode_ManaSpendRestriction :: proc(v: json.Value, out: ^ManaSpendRestriction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaSpendRestriction")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -47356,8 +47356,8 @@ encode_ManaSpendRestriction :: proc(b: ^strings.Builder, x: ManaSpendRestriction
 }
 
 decode_ManaSpellGrant :: proc(v: json.Value, out: ^ManaSpellGrant) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaSpellGrant")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -47452,8 +47452,8 @@ encode_ManaExpiry :: proc(b: ^strings.Builder, x: ManaExpiry) {
 }
 
 decode_ManaTargetRole :: proc(v: json.Value, out: ^ManaTargetRole) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaTargetRole")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ManaTargetRole: not an object")
 	tv, found := json.get(v, "role")
 	if !found || tv.kind != .String do return fail("ManaTargetRole: no tag")
@@ -47547,8 +47547,8 @@ encode_OutsideGameSourcePool_members :: proc(b: ^strings.Builder, x: OutsideGame
 }
 
 decode_GuessSubject :: proc(v: json.Value, out: ^GuessSubject) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("GuessSubject")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("GuessSubject: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("GuessSubject: no tag")
@@ -47652,8 +47652,8 @@ encode_CardPlayMode :: proc(b: ^strings.Builder, x: CardPlayMode) {
 }
 
 decode_CastPermissionConstraint :: proc(v: json.Value, out: ^CastPermissionConstraint) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastPermissionConstraint")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CastPermissionConstraint: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CastPermissionConstraint: no tag")
@@ -47682,8 +47682,8 @@ encode_CastPermissionConstraint :: proc(b: ^strings.Builder, x: CastPermissionCo
 }
 
 decode_CastFromZoneDriver :: proc(v: json.Value, out: ^CastFromZoneDriver) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CastFromZoneDriver")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -47740,8 +47740,8 @@ encode_CastCostModifier_members :: proc(b: ^strings.Builder, x: CastCostModifier
 }
 
 decode_PreventionAmount :: proc(v: json.Value, out: ^PreventionAmount) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PreventionAmount")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -47810,8 +47810,8 @@ encode_CombatDamageScope :: proc(b: ^strings.Builder, x: CombatDamageScope) {
 }
 
 decode_DamageTargetFilter :: proc(v: json.Value, out: ^DamageTargetFilter) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DamageTargetFilter")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -47860,8 +47860,8 @@ encode_DamageTargetFilter :: proc(b: ^strings.Builder, x: DamageTargetFilter) {
 }
 
 decode_DamageModification :: proc(v: json.Value, out: ^DamageModification) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DamageModification")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DamageModification: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DamageModification: no tag")
@@ -48023,8 +48023,8 @@ encode_RedirectionLifetime_members :: proc(b: ^strings.Builder, x: RedirectionLi
 }
 
 decode_CoinFlipRun :: proc(v: json.Value, out: ^CoinFlipRun) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CoinFlipRun")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CoinFlipRun: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CoinFlipRun: no tag")
@@ -48102,8 +48102,8 @@ encode_StickerTicketCostPayment :: proc(b: ^strings.Builder, x: StickerTicketCos
 }
 
 decode_ZoneOwner :: proc(v: json.Value, out: ^ZoneOwner) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ZoneOwner")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -48138,8 +48138,8 @@ encode_ZoneOwner :: proc(b: ^strings.Builder, x: ZoneOwner) {
 }
 
 decode_ZoneChoiceChooser :: proc(v: json.Value, out: ^ZoneChoiceChooser) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ZoneChoiceChooser")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -48278,8 +48278,8 @@ encode_Chooser :: proc(b: ^strings.Builder, x: Chooser) {
 }
 
 decode_ForEachCategoryAction :: proc(v: json.Value, out: ^ForEachCategoryAction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ForEachCategoryAction")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ForEachCategoryAction: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ForEachCategoryAction: no tag")
@@ -48336,8 +48336,8 @@ encode_ForEachCategoryAction_members :: proc(b: ^strings.Builder, x: ForEachCate
 }
 
 decode_ObjectSelectionEligibility :: proc(v: json.Value, out: ^ObjectSelectionEligibility) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ObjectSelectionEligibility")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -48370,8 +48370,8 @@ encode_ObjectSelectionEligibility :: proc(b: ^strings.Builder, x: ObjectSelectio
 }
 
 decode_KeeperConstraint :: proc(v: json.Value, out: ^KeeperConstraint) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("KeeperConstraint")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("KeeperConstraint: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("KeeperConstraint: no tag")
@@ -48426,8 +48426,8 @@ encode_KeeperCounterMark_members :: proc(b: ^strings.Builder, x: KeeperCounterMa
 }
 
 decode_UntilCondition :: proc(v: json.Value, out: ^UntilCondition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UntilCondition")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("UntilCondition: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("UntilCondition: no tag")
@@ -48516,8 +48516,8 @@ encode_RevealUntilDisposition_members :: proc(b: ^strings.Builder, x: RevealUnti
 }
 
 decode_StepSkipTarget :: proc(v: json.Value, out: ^StepSkipTarget) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StepSkipTarget")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("StepSkipTarget: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("StepSkipTarget: no tag")
@@ -48558,8 +48558,8 @@ encode_SkipScope :: proc(b: ^strings.Builder, x: SkipScope) {
 }
 
 decode_ExtraPhaseRecipient :: proc(v: json.Value, out: ^ExtraPhaseRecipient) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ExtraPhaseRecipient")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ExtraPhaseRecipient: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ExtraPhaseRecipient: no tag")
@@ -48584,8 +48584,8 @@ encode_ExtraPhaseRecipient :: proc(b: ^strings.Builder, x: ExtraPhaseRecipient) 
 }
 
 decode_ExtraPhaseAnchor :: proc(v: json.Value, out: ^ExtraPhaseAnchor) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ExtraPhaseAnchor")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ExtraPhaseAnchor: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ExtraPhaseAnchor: no tag")
@@ -48618,8 +48618,8 @@ encode_ExtraPhaseAnchor :: proc(b: ^strings.Builder, x: ExtraPhaseAnchor) {
 }
 
 decode_XModification :: proc(v: json.Value, out: ^XModification) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("XModification")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("XModification: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("XModification: no tag")
@@ -48654,8 +48654,8 @@ encode_XModification_members :: proc(b: ^strings.Builder, x: XModification, firs
 }
 
 decode_DoubleTarget :: proc(v: json.Value, out: ^DoubleTarget) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DoubleTarget")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DoubleTarget: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DoubleTarget: no tag")
@@ -48776,8 +48776,8 @@ encode_ConjureCard_members :: proc(b: ^strings.Builder, x: ConjureCard, first: ^
 }
 
 decode_IntensityScope :: proc(v: json.Value, out: ^IntensityScope) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("IntensityScope")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("IntensityScope: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("IntensityScope: no tag")
@@ -48902,8 +48902,8 @@ encode_CombatHistoryScope :: proc(b: ^strings.Builder, x: CombatHistoryScope) {
 }
 
 decode_RestrictionExpiry :: proc(v: json.Value, out: ^RestrictionExpiry) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RestrictionExpiry")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("RestrictionExpiry: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("RestrictionExpiry: no tag")
@@ -48960,8 +48960,8 @@ encode_RestrictionExpiry_members :: proc(b: ^strings.Builder, x: RestrictionExpi
 }
 
 decode_RestrictionScope :: proc(v: json.Value, out: ^RestrictionScope) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RestrictionScope")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("RestrictionScope: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("RestrictionScope: no tag")
@@ -48984,8 +48984,8 @@ encode_RestrictionScope :: proc(b: ^strings.Builder, x: RestrictionScope) {
 }
 
 decode_RestrictionPlayerScope :: proc(v: json.Value, out: ^RestrictionPlayerScope) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RestrictionPlayerScope")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("RestrictionPlayerScope: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("RestrictionPlayerScope: no tag")
@@ -49020,8 +49020,8 @@ encode_RestrictionPlayerScope :: proc(b: ^strings.Builder, x: RestrictionPlayerS
 }
 
 decode_ProhibitedActivity :: proc(v: json.Value, out: ^ProhibitedActivity) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ProhibitedActivity")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ProhibitedActivity: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ProhibitedActivity: no tag")
@@ -49150,8 +49150,8 @@ encode_ActivationExemption :: proc(b: ^strings.Builder, x: ActivationExemption) 
 }
 
 decode_AttackTargetFilter :: proc(v: json.Value, out: ^AttackTargetFilter) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AttackTargetFilter")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -49209,8 +49209,8 @@ encode_ReplacementContinuationId :: proc(b: ^strings.Builder, x: ReplacementCont
 }
 
 decode_ReplacementMode :: proc(v: json.Value, out: ^ReplacementMode) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ReplacementMode")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ReplacementMode: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ReplacementMode: no tag")
@@ -49284,8 +49284,8 @@ encode_ReplacementChoiceAuthority :: proc(b: ^strings.Builder, x: ReplacementCho
 }
 
 decode_ReplacementCondition :: proc(v: json.Value, out: ^ReplacementCondition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ReplacementCondition")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ReplacementCondition: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ReplacementCondition: no tag")
@@ -49741,8 +49741,8 @@ encode_PlaneswalkReplacementScope :: proc(b: ^strings.Builder, x: PlaneswalkRepl
 }
 
 decode_ShieldKind :: proc(v: json.Value, out: ^ShieldKind) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ShieldKind")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -49797,8 +49797,8 @@ encode_ShieldKind :: proc(b: ^strings.Builder, x: ShieldKind) {
 }
 
 decode_QuantityModification :: proc(v: json.Value, out: ^QuantityModification) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("QuantityModification")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("QuantityModification: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("QuantityModification: no tag")
@@ -49887,8 +49887,8 @@ encode_ReplacementPlayerScope :: proc(b: ^strings.Builder, x: ReplacementPlayerS
 }
 
 decode_ManaModification :: proc(v: json.Value, out: ^ManaModification) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaModification")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ManaModification: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ManaModification: no tag")
@@ -50006,8 +50006,8 @@ encode_CounterReplacementSubject :: proc(b: ^strings.Builder, x: CounterReplacem
 }
 
 decode_StepEndManaAction :: proc(v: json.Value, out: ^StepEndManaAction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StepEndManaAction")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -50078,8 +50078,8 @@ encode_PhaseTransitionDrainState :: proc(b: ^strings.Builder, x: PhaseTransition
 }
 
 decode_PendingCostMoveCompletion :: proc(v: json.Value, out: ^PendingCostMoveCompletion) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingCostMoveCompletion")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -50146,8 +50146,8 @@ encode_PendingCostMoveCompletion :: proc(b: ^strings.Builder, x: PendingCostMove
 }
 
 decode_PendingSacrificeCostCompletion :: proc(v: json.Value, out: ^PendingSacrificeCostCompletion) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingSacrificeCostCompletion")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PendingSacrificeCostCompletion: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PendingSacrificeCostCompletion: no tag")
@@ -50207,8 +50207,8 @@ encode_PendingSacrificeCostCompletion_members :: proc(b: ^strings.Builder, x: Pe
 }
 
 decode_WardSacrificePaymentResume :: proc(v: json.Value, out: ^WardSacrificePaymentResume) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("WardSacrificePaymentResume")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("WardSacrificePaymentResume: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("WardSacrificePaymentResume: no tag")
@@ -50432,8 +50432,8 @@ encode_PlayerScopeUnlessSettlement_members :: proc(b: ^strings.Builder, x: Playe
 }
 
 decode_ManaAbilityResume :: proc(v: json.Value, out: ^ManaAbilityResume) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaAbilityResume")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -50688,8 +50688,8 @@ encode_CollectedTriggerContextBatch_members :: proc(b: ^strings.Builder, x: Coll
 }
 
 decode_ManaTriggerFixedPointResume :: proc(v: json.Value, out: ^ManaTriggerFixedPointResume) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaTriggerFixedPointResume")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ManaTriggerFixedPointResume: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ManaTriggerFixedPointResume: no tag")
@@ -50774,8 +50774,8 @@ encode_CostReductionElection_members :: proc(b: ^strings.Builder, x: CostReducti
 }
 
 decode_DeferredHandDiscardCost :: proc(v: json.Value, out: ^DeferredHandDiscardCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DeferredHandDiscardCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DeferredHandDiscardCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DeferredHandDiscardCost: no tag")
@@ -50833,8 +50833,8 @@ encode_PrepaidSpellFinalization_members :: proc(b: ^strings.Builder, x: PrepaidS
 }
 
 decode_DeferredLifeGainCost :: proc(v: json.Value, out: ^DeferredLifeGainCost) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DeferredLifeGainCost")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DeferredLifeGainCost: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DeferredLifeGainCost: no tag")
@@ -50987,8 +50987,8 @@ encode_SpellAlternativeCostElection :: proc(b: ^strings.Builder, x: SpellAlterna
 }
 
 decode_DeferredSpellSacrifice :: proc(v: json.Value, out: ^DeferredSpellSacrifice) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DeferredSpellSacrifice")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DeferredSpellSacrifice: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DeferredSpellSacrifice: no tag")
@@ -51059,8 +51059,8 @@ encode_DeferredSpellTap_members :: proc(b: ^strings.Builder, x: DeferredSpellTap
 }
 
 decode_AssistState :: proc(v: json.Value, out: ^AssistState) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AssistState")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -51284,8 +51284,8 @@ encode_EventOutcomes_members :: proc(b: ^strings.Builder, x: EventOutcomes, firs
 }
 
 decode_MulliganChoice :: proc(v: json.Value, out: ^MulliganChoice) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("MulliganChoice")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("MulliganChoice: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("MulliganChoice: no tag")
@@ -51340,8 +51340,8 @@ encode_CounterCostChoice_members :: proc(b: ^strings.Builder, x: CounterCostChoi
 }
 
 decode_OutsideGameSelection :: proc(v: json.Value, out: ^OutsideGameSelection) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("OutsideGameSelection")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("OutsideGameSelection: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("OutsideGameSelection: no tag")
@@ -51470,8 +51470,8 @@ encode_AlternativeCastDecision_members :: proc(b: ^strings.Builder, x: Alternati
 }
 
 decode_ResolutionOptionalPaymentChoice :: proc(v: json.Value, out: ^ResolutionOptionalPaymentChoice) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolutionOptionalPaymentChoice")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ResolutionOptionalPaymentChoice: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ResolutionOptionalPaymentChoice: no tag")
@@ -51530,8 +51530,8 @@ encode_MayTriggerAutoChoiceScope_members :: proc(b: ^strings.Builder, x: MayTrig
 }
 
 decode_UnlessCostBranch :: proc(v: json.Value, out: ^UnlessCostBranch) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UnlessCostBranch")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("UnlessCostBranch: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("UnlessCostBranch: no tag")
@@ -51560,8 +51560,8 @@ encode_UnlessCostBranch :: proc(b: ^strings.Builder, x: UnlessCostBranch) {
 }
 
 decode_CompanionDeclaration :: proc(v: json.Value, out: ^CompanionDeclaration) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CompanionDeclaration")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CompanionDeclaration: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CompanionDeclaration: no tag")
@@ -51632,8 +51632,8 @@ encode_MergeSide :: proc(b: ^strings.Builder, x: MergeSide) {
 }
 
 decode_AutoPassRequest :: proc(v: json.Value, out: ^AutoPassRequest) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AutoPassRequest")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("AutoPassRequest: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("AutoPassRequest: no tag")
@@ -51671,8 +51671,8 @@ encode_AutoPassRequest_members :: proc(b: ^strings.Builder, x: AutoPassRequest, 
 }
 
 decode_PriorityYieldOp :: proc(v: json.Value, out: ^PriorityYieldOp) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PriorityYieldOp")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PriorityYieldOp: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PriorityYieldOp: no tag")
@@ -51713,8 +51713,8 @@ encode_PriorityYieldOp :: proc(b: ^strings.Builder, x: PriorityYieldOp) {
 }
 
 decode_MayTriggerAutoChoiceOp :: proc(v: json.Value, out: ^MayTriggerAutoChoiceOp) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("MayTriggerAutoChoiceOp")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("MayTriggerAutoChoiceOp: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("MayTriggerAutoChoiceOp: no tag")
@@ -51743,8 +51743,8 @@ encode_MayTriggerAutoChoiceOp :: proc(b: ^strings.Builder, x: MayTriggerAutoChoi
 }
 
 decode_UnAction :: proc(v: json.Value, out: ^UnAction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UnAction")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("UnAction: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("UnAction: no tag")
@@ -51873,8 +51873,8 @@ encode_CounterRemoveChoice_members :: proc(b: ^strings.Builder, x: CounterRemove
 }
 
 decode_LearnOption :: proc(v: json.Value, out: ^LearnOption) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LearnOption")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("LearnOption: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("LearnOption: no tag")
@@ -51933,8 +51933,8 @@ encode_ShardChoice_members :: proc(b: ^strings.Builder, x: ShardChoice, first: ^
 }
 
 decode_ManaChoice :: proc(v: json.Value, out: ^ManaChoice) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaChoice")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ManaChoice: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ManaChoice: no tag")
@@ -51955,8 +51955,8 @@ encode_ManaChoice :: proc(b: ^strings.Builder, x: ManaChoice) {
 }
 
 decode_DebugAction :: proc(v: json.Value, out: ^DebugAction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DebugAction")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DebugAction: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DebugAction: no tag")
@@ -52383,8 +52383,8 @@ encode_DebugAction :: proc(b: ^strings.Builder, x: DebugAction) {
 }
 
 decode_IterationCount :: proc(v: json.Value, out: ^IterationCount) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("IterationCount")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -52411,8 +52411,8 @@ encode_IterationCount :: proc(b: ^strings.Builder, x: IterationCount) {
 }
 
 decode_ShortcutResponse :: proc(v: json.Value, out: ^ShortcutResponse) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ShortcutResponse")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -52447,8 +52447,8 @@ encode_ShortcutResponse :: proc(b: ^strings.Builder, x: ShortcutResponse) {
 }
 
 decode_PrecastCopyShortcutResponse :: proc(v: json.Value, out: ^PrecastCopyShortcutResponse) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PrecastCopyShortcutResponse")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PrecastCopyShortcutResponse: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PrecastCopyShortcutResponse: no tag")
@@ -52519,8 +52519,8 @@ encode_ResolveAllConsentDecision_members :: proc(b: ^strings.Builder, x: Resolve
 }
 
 decode_ManaSourceOutput :: proc(v: json.Value, out: ^ManaSourceOutput) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaSourceOutput")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ManaSourceOutput: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ManaSourceOutput: no tag")
@@ -52549,8 +52549,8 @@ encode_ManaSourceOutput :: proc(b: ^strings.Builder, x: ManaSourceOutput) {
 }
 
 decode_ManaRestriction :: proc(v: json.Value, out: ^ManaRestriction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaRestriction")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -52659,8 +52659,8 @@ encode_ManaRestriction :: proc(b: ^strings.Builder, x: ManaRestriction) {
 }
 
 decode_ManaSourcePenalty :: proc(v: json.Value, out: ^ManaSourcePenalty) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaSourcePenalty")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -52731,8 +52731,8 @@ encode_TapsForManaSelection_members :: proc(b: ^strings.Builder, x: TapsForManaS
 }
 
 decode_ManaSourceQuantity :: proc(v: json.Value, out: ^ManaSourceQuantity) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaSourceQuantity")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ManaSourceQuantity: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ManaSourceQuantity: no tag")
@@ -52753,8 +52753,8 @@ encode_ManaSourceQuantity :: proc(b: ^strings.Builder, x: ManaSourceQuantity) {
 }
 
 decode_CompanionChoiceSource :: proc(v: json.Value, out: ^CompanionChoiceSource) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CompanionChoiceSource")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CompanionChoiceSource: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CompanionChoiceSource: no tag")
@@ -52847,8 +52847,8 @@ encode_DebugCardCreationKind :: proc(b: ^strings.Builder, x: DebugCardCreationKi
 }
 
 decode_DebugTokenRequest :: proc(v: json.Value, out: ^DebugTokenRequest) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DebugTokenRequest")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DebugTokenRequest: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DebugTokenRequest: no tag")
@@ -52897,8 +52897,8 @@ encode_DebugTokenRequest :: proc(b: ^strings.Builder, x: DebugTokenRequest) {
 }
 
 decode_MulliganDecisionPhase :: proc(v: json.Value, out: ^MulliganDecisionPhase) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("MulliganDecisionPhase")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("MulliganDecisionPhase: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("MulliganDecisionPhase: no tag")
@@ -52939,8 +52939,8 @@ encode_MulliganDecisionPhase_members :: proc(b: ^strings.Builder, x: MulliganDec
 }
 
 decode_PendingMulliganAction :: proc(v: json.Value, out: ^PendingMulliganAction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingMulliganAction")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PendingMulliganAction: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PendingMulliganAction: no tag")
@@ -53008,8 +53008,8 @@ encode_MulliganDeclarationKind_members :: proc(b: ^strings.Builder, x: MulliganD
 }
 
 decode_TargetEffectDetail :: proc(v: json.Value, out: ^TargetEffectDetail) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TargetEffectDetail")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("TargetEffectDetail: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("TargetEffectDetail: no tag")
@@ -53142,8 +53142,8 @@ encode_EventObjectRelationSnapshot_members :: proc(b: ^strings.Builder, x: Event
 }
 
 decode_BatchCompletion :: proc(v: json.Value, out: ^BatchCompletion) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("BatchCompletion")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -53866,8 +53866,8 @@ encode_SharedQualityRelation :: proc(b: ^strings.Builder, x: SharedQualityRelati
 }
 
 decode_OutsideGameChoiceSource :: proc(v: json.Value, out: ^OutsideGameChoiceSource) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("OutsideGameChoiceSource")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("OutsideGameChoiceSource: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("OutsideGameChoiceSource: no tag")
@@ -53930,8 +53930,8 @@ encode_OutsideGameChoiceSource :: proc(b: ^strings.Builder, x: OutsideGameChoice
 }
 
 decode_PackOrigin :: proc(v: json.Value, out: ^PackOrigin) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PackOrigin")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PackOrigin: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PackOrigin: no tag")
@@ -54073,8 +54073,8 @@ encode_GuessOutcome :: proc(b: ^strings.Builder, x: GuessOutcome) {
 }
 
 decode_ChainStep :: proc(v: json.Value, out: ^ChainStep) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ChainStep")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -54158,8 +54158,8 @@ encode_TargetDamageSourceBinding :: proc(b: ^strings.Builder, x: TargetDamageSou
 }
 
 decode_AbilityProvenance :: proc(v: json.Value, out: ^AbilityProvenance) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AbilityProvenance")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("AbilityProvenance: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("AbilityProvenance: no tag")
@@ -54346,8 +54346,8 @@ encode_NamedChoiceSourceBinding :: proc(b: ^strings.Builder, x: NamedChoiceSourc
 }
 
 decode_ModalSelectionConstraint :: proc(v: json.Value, out: ^ModalSelectionConstraint) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ModalSelectionConstraint")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ModalSelectionConstraint: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ModalSelectionConstraint: no tag")
@@ -54417,8 +54417,8 @@ encode_AdditionalCostRepeatability :: proc(b: ^strings.Builder, x: AdditionalCos
 }
 
 decode_ReductionProvenance :: proc(v: json.Value, out: ^ReductionProvenance) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ReductionProvenance")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ReductionProvenance: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ReductionProvenance: no tag")
@@ -54539,8 +54539,8 @@ encode_ResolutionCastCleanup_members :: proc(b: ^strings.Builder, x: ResolutionC
 }
 
 decode_EmergeSacrificeQuality :: proc(v: json.Value, out: ^EmergeSacrificeQuality) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EmergeSacrificeQuality")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("EmergeSacrificeQuality: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("EmergeSacrificeQuality: no tag")
@@ -54720,8 +54720,8 @@ encode_SettledTail :: proc(b: ^strings.Builder, x: SettledTail) {
 }
 
 decode_ActivationCostLock :: proc(v: json.Value, out: ^ActivationCostLock) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ActivationCostLock")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ActivationCostLock: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ActivationCostLock: no tag")
@@ -54962,8 +54962,8 @@ encode_PeriodReach :: proc(b: ^strings.Builder, x: PeriodReach) {
 }
 
 decode_CountedBy :: proc(v: json.Value, out: ^CountedBy) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CountedBy")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -55126,8 +55126,8 @@ encode_ExileCostSourceZone :: proc(b: ^strings.Builder, x: ExileCostSourceZone) 
 }
 
 decode_TapCreaturesSelectionMode :: proc(v: json.Value, out: ^TapCreaturesSelectionMode) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TapCreaturesSelectionMode")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -55258,8 +55258,8 @@ encode_Contestant_members :: proc(b: ^strings.Builder, x: Contestant, first: ^bo
 }
 
 decode_ContestantConnection :: proc(v: json.Value, out: ^ContestantConnection) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ContestantConnection")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -55294,8 +55294,8 @@ encode_ContestantConnection :: proc(b: ^strings.Builder, x: ContestantConnection
 }
 
 decode_ContestOutcome :: proc(v: json.Value, out: ^ContestOutcome) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ContestOutcome")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -55378,8 +55378,8 @@ encode_ContestLossReason :: proc(b: ^strings.Builder, x: ContestLossReason) {
 }
 
 decode_TieResolution :: proc(v: json.Value, out: ^TieResolution) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TieResolution")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("TieResolution: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("TieResolution: no tag")
@@ -55424,8 +55424,8 @@ encode_DisplayIdentity_members :: proc(b: ^strings.Builder, x: DisplayIdentity, 
 }
 
 decode_TextSubstitutionSpec :: proc(v: json.Value, out: ^TextSubstitutionSpec) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TextSubstitutionSpec")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("TextSubstitutionSpec: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("TextSubstitutionSpec: no tag")
@@ -55504,8 +55504,8 @@ encode_CostBearingKeywordKind :: proc(b: ^strings.Builder, x: CostBearingKeyword
 }
 
 decode_CostDerivation :: proc(v: json.Value, out: ^CostDerivation) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CostDerivation")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CostDerivation: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CostDerivation: no tag")
@@ -55564,8 +55564,8 @@ encode_ColorChangeMode :: proc(b: ^strings.Builder, x: ColorChangeMode) {
 }
 
 decode_StaticMode :: proc(v: json.Value, out: ^StaticMode) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StaticMode")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -56746,8 +56746,8 @@ encode_DeckList_members :: proc(b: ^strings.Builder, x: DeckList, first: ^bool) 
 }
 
 decode_RecordedActionKind :: proc(v: json.Value, out: ^RecordedActionKind) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RecordedActionKind")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("RecordedActionKind: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("RecordedActionKind: no tag")
@@ -56785,8 +56785,8 @@ encode_RecordedActionKind_members :: proc(b: ^strings.Builder, x: RecordedAction
 }
 
 decode_TriggerMode :: proc(v: json.Value, out: ^TriggerMode) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerMode")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -57219,8 +57219,8 @@ encode_ZoneChangeClause_members :: proc(b: ^strings.Builder, x: ZoneChangeClause
 }
 
 decode_OriginConstraint :: proc(v: json.Value, out: ^OriginConstraint) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("OriginConstraint")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("OriginConstraint: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("OriginConstraint: no tag")
@@ -57245,8 +57245,8 @@ encode_OriginConstraint :: proc(b: ^strings.Builder, x: OriginConstraint) {
 }
 
 decode_TriggerConstraint :: proc(v: json.Value, out: ^TriggerConstraint) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerConstraint")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("TriggerConstraint: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("TriggerConstraint: no tag")
@@ -57390,8 +57390,8 @@ encode_CounterTriggerFilter_members :: proc(b: ^strings.Builder, x: CounterTrigg
 }
 
 decode_GotchaCondition :: proc(v: json.Value, out: ^GotchaCondition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("GotchaCondition")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("GotchaCondition: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("GotchaCondition: no tag")
@@ -57466,8 +57466,8 @@ encode_DamageAmountThreshold_members :: proc(b: ^strings.Builder, x: DamageAmoun
 }
 
 decode_DieResultFilter :: proc(v: json.Value, out: ^DieResultFilter) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DieResultFilter")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -57542,8 +57542,8 @@ encode_ControlChangeSide :: proc(b: ^strings.Builder, x: ControlChangeSide) {
 }
 
 decode_TriggerCause :: proc(v: json.Value, out: ^TriggerCause) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerCause")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -57758,8 +57758,8 @@ encode_PlayerCauseAction :: proc(b: ^strings.Builder, x: PlayerCauseAction) {
 }
 
 decode_ZoneChangeQualifier :: proc(v: json.Value, out: ^ZoneChangeQualifier) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ZoneChangeQualifier")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -57786,8 +57786,8 @@ encode_ZoneChangeQualifier :: proc(b: ^strings.Builder, x: ZoneChangeQualifier) 
 }
 
 decode_ParsedCondition :: proc(v: json.Value, out: ^ParsedCondition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ParsedCondition")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ParsedCondition: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ParsedCondition: no tag")
@@ -58702,8 +58702,8 @@ encode_SpecialAction :: proc(b: ^strings.Builder, x: SpecialAction) {
 }
 
 decode_CostPaymentProhibition :: proc(v: json.Value, out: ^CostPaymentProhibition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CostPaymentProhibition")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -58738,8 +58738,8 @@ encode_CostPaymentProhibition :: proc(b: ^strings.Builder, x: CostPaymentProhibi
 }
 
 decode_RequiredDefender :: proc(v: json.Value, out: ^RequiredDefender) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RequiredDefender")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("RequiredDefender: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("RequiredDefender: no tag")
@@ -58968,8 +58968,8 @@ encode_SuppressedTriggerEvent :: proc(b: ^strings.Builder, x: SuppressedTriggerE
 }
 
 decode_BlockExceptionKind :: proc(v: json.Value, out: ^BlockExceptionKind) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("BlockExceptionKind")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -59044,8 +59044,8 @@ encode_CombatAloneRequirement :: proc(b: ^strings.Builder, x: CombatAloneRequire
 }
 
 decode_CrewContributionKind :: proc(v: json.Value, out: ^CrewContributionKind) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CrewContributionKind")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -59102,8 +59102,8 @@ encode_CrewAction :: proc(b: ^strings.Builder, x: CrewAction) {
 }
 
 decode_HandSizeModification :: proc(v: json.Value, out: ^HandSizeModification) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("HandSizeModification")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -59193,8 +59193,8 @@ encode_OracleItemId :: proc(b: ^strings.Builder, x: OracleItemId) {
 }
 
 decode_ClauseGap :: proc(v: json.Value, out: ^ClauseGap) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ClauseGap")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ClauseGap: not an object")
 	tv, found := json.get(v, "kind")
 	if !found || tv.kind != .String do return fail("ClauseGap: no tag")
@@ -59404,8 +59404,8 @@ encode_ProtectionColorSet :: proc(b: ^strings.Builder, x: ProtectionColorSet) {
 }
 
 decode_EffectOutcomeSignal :: proc(v: json.Value, out: ^EffectOutcomeSignal) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EffectOutcomeSignal")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -59526,8 +59526,8 @@ encode_AttackedYouScope :: proc(b: ^strings.Builder, x: AttackedYouScope) {
 }
 
 decode_UnlessPayScaling :: proc(v: json.Value, out: ^UnlessPayScaling) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UnlessPayScaling")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("UnlessPayScaling: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("UnlessPayScaling: no tag")
@@ -59598,8 +59598,8 @@ encode_DamageAmountScope :: proc(b: ^strings.Builder, x: DamageAmountScope) {
 }
 
 decode_PreventionFormula :: proc(v: json.Value, out: ^PreventionFormula) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PreventionFormula")
+	if v.kind == .Null do return true
 	// untagged: the first variant that decodes wins, as in serde.
 	{ tmp: PreventionFormula_Fixed; if decode_quiet_proc(v, &tmp._0, decode_u32) { out^ = tmp; return true } }
 	if v.kind == .Object { tmp: PreventionFormula_Quantity; if decode_quiet_proc(v, &tmp, proc(v: json.Value, out: ^PreventionFormula_Quantity) -> bool {
@@ -59631,8 +59631,8 @@ encode_PreventionFormula :: proc(b: ^strings.Builder, x: PreventionFormula) {
 }
 
 decode_DamageTargetPlayerScope :: proc(v: json.Value, out: ^DamageTargetPlayerScope) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DamageTargetPlayerScope")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("DamageTargetPlayerScope: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("DamageTargetPlayerScope: no tag")
@@ -59693,8 +59693,8 @@ encode_TokenCharacteristics_members :: proc(b: ^strings.Builder, x: TokenCharact
 }
 
 decode_TokenAttackRequest :: proc(v: json.Value, out: ^TokenAttackRequest) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TokenAttackRequest")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -59731,8 +59731,8 @@ encode_TokenAttackRequest :: proc(b: ^strings.Builder, x: TokenAttackRequest) {
 }
 
 decode_TokenHostRequest :: proc(v: json.Value, out: ^TokenHostRequest) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TokenHostRequest")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -59761,8 +59761,8 @@ encode_TokenHostRequest :: proc(b: ^strings.Builder, x: TokenHostRequest) {
 }
 
 decode_ModalSelectionCondition :: proc(v: json.Value, out: ^ModalSelectionCondition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ModalSelectionCondition")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ModalSelectionCondition: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ModalSelectionCondition: no tag")
@@ -59865,8 +59865,8 @@ encode_LatchedCopiableSnapshot_members :: proc(b: ^strings.Builder, x: LatchedCo
 }
 
 decode_ActiveSearchDecisionAuthority :: proc(v: json.Value, out: ^ActiveSearchDecisionAuthority) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ActiveSearchDecisionAuthority")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ActiveSearchDecisionAuthority: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ActiveSearchDecisionAuthority: no tag")
@@ -59904,8 +59904,8 @@ encode_ActiveSearchDecisionAuthority_members :: proc(b: ^strings.Builder, x: Act
 }
 
 decode_ResolvedRulesCommand :: proc(v: json.Value, out: ^ResolvedRulesCommand) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedRulesCommand")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -60176,8 +60176,8 @@ encode_ResolvedDelayedTriggerCommand_members :: proc(b: ^strings.Builder, x: Res
 }
 
 decode_ResolvedContinuousEffectEdit :: proc(v: json.Value, out: ^ResolvedContinuousEffectEdit) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedContinuousEffectEdit")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -60644,8 +60644,8 @@ encode_ManaSupertype :: proc(b: ^strings.Builder, x: ManaSupertype) {
 }
 
 decode_RulesExecutionNodeKind :: proc(v: json.Value, out: ^RulesExecutionNodeKind) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RulesExecutionNodeKind")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -60706,8 +60706,8 @@ encode_RulesExecutionNodeKind :: proc(b: ^strings.Builder, x: RulesExecutionNode
 }
 
 decode_ManaPaymentRecipient :: proc(v: json.Value, out: ^ManaPaymentRecipient) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ManaPaymentRecipient")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -60734,8 +60734,8 @@ encode_ManaPaymentRecipient :: proc(b: ^strings.Builder, x: ManaPaymentRecipient
 }
 
 decode_DamageTarget :: proc(v: json.Value, out: ^DamageTarget) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DamageTarget")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -60762,8 +60762,8 @@ encode_DamageTarget :: proc(b: ^strings.Builder, x: DamageTarget) {
 }
 
 decode_StackResolutionEntryProvenance :: proc(v: json.Value, out: ^StackResolutionEntryProvenance) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StackResolutionEntryProvenance")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("StackResolutionEntryProvenance: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("StackResolutionEntryProvenance: no tag")
@@ -60934,8 +60934,8 @@ encode_PendingCombatDamageEntry_members :: proc(b: ^strings.Builder, x: PendingC
 }
 
 decode_PendingCombatLegProgress :: proc(v: json.Value, out: ^PendingCombatLegProgress) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingCombatLegProgress")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PendingCombatLegProgress: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PendingCombatLegProgress: no tag")
@@ -61164,8 +61164,8 @@ encode_Layer :: proc(b: ^strings.Builder, x: Layer) {
 }
 
 decode_EffectRef :: proc(v: json.Value, out: ^EffectRef) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("EffectRef")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("EffectRef: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("EffectRef: no tag")
@@ -61242,8 +61242,8 @@ encode_ChallengeDeck :: proc(b: ^strings.Builder, x: ChallengeDeck) {
 }
 
 decode_WaveTermination :: proc(v: json.Value, out: ^WaveTermination) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("WaveTermination")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("WaveTermination: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("WaveTermination: no tag")
@@ -61356,8 +61356,8 @@ encode_BossStages_members :: proc(b: ^strings.Builder, x: BossStages, first: ^bo
 }
 
 decode_WaveCount :: proc(v: json.Value, out: ^WaveCount) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("WaveCount")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("WaveCount: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("WaveCount: no tag")
@@ -61452,8 +61452,8 @@ encode_LegalityRules_members :: proc(b: ^strings.Builder, x: LegalityRules, firs
 }
 
 decode_CommandZoneMode :: proc(v: json.Value, out: ^CommandZoneMode) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CommandZoneMode")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -61566,8 +61566,8 @@ encode_GameLogEntry_members :: proc(b: ^strings.Builder, x: GameLogEntry, first:
 }
 
 decode_SpellCastUndo :: proc(v: json.Value, out: ^SpellCastUndo) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SpellCastUndo")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -61632,8 +61632,8 @@ encode_SpellCastUndo :: proc(b: ^strings.Builder, x: SpellCastUndo) {
 }
 
 decode_PendingPlayerScopeSacrificeFollowUp :: proc(v: json.Value, out: ^PendingPlayerScopeSacrificeFollowUp) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingPlayerScopeSacrificeFollowUp")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PendingPlayerScopeSacrificeFollowUp: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PendingPlayerScopeSacrificeFollowUp: no tag")
@@ -61843,8 +61843,8 @@ encode_FrozenScopedSearchFoundDisposition_members :: proc(b: ^strings.Builder, x
 }
 
 decode_TargetPin :: proc(v: json.Value, out: ^TargetPin) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TargetPin")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -62217,8 +62217,8 @@ encode_ReplacementSubtreeBoundary_members :: proc(b: ^strings.Builder, x: Replac
 }
 
 decode_UnpaidCostRemainder :: proc(v: json.Value, out: ^UnpaidCostRemainder) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UnpaidCostRemainder")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -62305,8 +62305,8 @@ encode_TriggerCollectionOverlay_members :: proc(b: ^strings.Builder, x: TriggerC
 }
 
 decode_TriggerCollectionOperation :: proc(v: json.Value, out: ^TriggerCollectionOperation) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerCollectionOperation")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -62503,8 +62503,8 @@ encode_PostReplacementDrain_members :: proc(b: ^strings.Builder, x: PostReplacem
 }
 
 decode_DrainStatus :: proc(v: json.Value, out: ^DrainStatus) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DrainStatus")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -62533,8 +62533,8 @@ encode_DrainStatus :: proc(b: ^strings.Builder, x: DrainStatus) {
 }
 
 decode_PostReplacementContinuation :: proc(v: json.Value, out: ^PostReplacementContinuation) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PostReplacementContinuation")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PostReplacementContinuation: not an object")
 	tv, found := json.get(v, "kind")
 	if !found || tv.kind != .String do return fail("PostReplacementContinuation: no tag")
@@ -62575,8 +62575,8 @@ encode_AbilityActivationScope :: proc(b: ^strings.Builder, x: AbilityActivationS
 }
 
 decode_SpellCostCriterion :: proc(v: json.Value, out: ^SpellCostCriterion) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SpellCostCriterion")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -62633,8 +62633,8 @@ encode_ZoneSpend_members :: proc(b: ^strings.Builder, x: ZoneSpend, first: ^bool
 }
 
 decode_ProtectionGrantOccurrence :: proc(v: json.Value, out: ^ProtectionGrantOccurrence) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ProtectionGrantOccurrence")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ProtectionGrantOccurrence: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ProtectionGrantOccurrence: no tag")
@@ -62671,8 +62671,8 @@ encode_ProtectionGrantOccurrence :: proc(b: ^strings.Builder, x: ProtectionGrant
 }
 
 decode_TriggerProducerOrigin :: proc(v: json.Value, out: ^TriggerProducerOrigin) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerProducerOrigin")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("TriggerProducerOrigin: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("TriggerProducerOrigin: no tag")
@@ -62715,8 +62715,8 @@ encode_TriggerProducerOrigin :: proc(b: ^strings.Builder, x: TriggerProducerOrig
 }
 
 decode_PerpetualGrantModification :: proc(v: json.Value, out: ^PerpetualGrantModification) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PerpetualGrantModification")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PerpetualGrantModification: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PerpetualGrantModification: no tag")
@@ -62907,8 +62907,8 @@ encode_AbilityBlockKind_members :: proc(b: ^strings.Builder, x: AbilityBlockKind
 }
 
 decode_CharacteristicSetRef :: proc(v: json.Value, out: ^CharacteristicSetRef) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CharacteristicSetRef")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("CharacteristicSetRef: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("CharacteristicSetRef: no tag")
@@ -63017,8 +63017,8 @@ encode_PhaseOutCause :: proc(b: ^strings.Builder, x: PhaseOutCause) {
 }
 
 decode_SacrificeRequirement :: proc(v: json.Value, out: ^SacrificeRequirement) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SacrificeRequirement")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("SacrificeRequirement: not an object")
 	tv, found := json.get(v, "requirement")
 	if !found || tv.kind != .String do return fail("SacrificeRequirement: no tag")
@@ -63131,8 +63131,8 @@ encode_NamedDefenderScope :: proc(b: ^strings.Builder, x: NamedDefenderScope) {
 }
 
 decode_AttachCardinality :: proc(v: json.Value, out: ^AttachCardinality) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AttachCardinality")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -63255,8 +63255,8 @@ encode_PerPlayerScope :: proc(b: ^strings.Builder, x: PerPlayerScope) {
 }
 
 decode_ConjureSource :: proc(v: json.Value, out: ^ConjureSource) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ConjureSource")
+	if v.kind == .Null do return true
 	// untagged: the first variant that decodes wins, as in serde.
 	if v.kind == .Object { tmp: ConjureSource_Named; if decode_quiet_proc(v, &tmp, proc(v: json.Value, out: ^ConjureSource_Named) -> bool {
 	if fv, found := get_any(v, "name"); found { if !decode_string(fv, &out.name) do return fail("ConjureSource::Named.name") } else { return fail("ConjureSource::Named.name missing") }
@@ -63293,8 +63293,8 @@ encode_ConjureSource_members :: proc(b: ^strings.Builder, x: ConjureSource, firs
 }
 
 decode_AssignedDamageRecipient :: proc(v: json.Value, out: ^AssignedDamageRecipient) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AssignedDamageRecipient")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("AssignedDamageRecipient: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("AssignedDamageRecipient: no tag")
@@ -63599,8 +63599,8 @@ encode_ResolutionMvRejectAction_members :: proc(b: ^strings.Builder, x: Resoluti
 }
 
 decode_ResolutionCastSuccessAction :: proc(v: json.Value, out: ^ResolutionCastSuccessAction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolutionCastSuccessAction")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ResolutionCastSuccessAction: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ResolutionCastSuccessAction: no tag")
@@ -63868,8 +63868,8 @@ encode_InstructedMill_members :: proc(b: ^strings.Builder, x: InstructedMill, fi
 }
 
 decode_DecisionPointKind :: proc(v: json.Value, out: ^DecisionPointKind) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DecisionPointKind")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -64000,8 +64000,8 @@ encode_RoomMarkerPoint_members :: proc(b: ^strings.Builder, x: RoomMarkerPoint, 
 }
 
 decode_TextSubstitution :: proc(v: json.Value, out: ^TextSubstitution) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TextSubstitution")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("TextSubstitution: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("TextSubstitution: no tag")
@@ -64095,8 +64095,8 @@ encode_EnterWithGrant_members :: proc(b: ^strings.Builder, x: EnterWithGrant, fi
 }
 
 decode_UnitDisposition :: proc(v: json.Value, out: ^UnitDisposition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("UnitDisposition")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -64167,8 +64167,8 @@ encode_PendingCombatLegChoice_members :: proc(b: ^strings.Builder, x: PendingCom
 }
 
 decode_TriggerGrantProducerKey :: proc(v: json.Value, out: ^TriggerGrantProducerKey) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TriggerGrantProducerKey")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("TriggerGrantProducerKey: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("TriggerGrantProducerKey: no tag")
@@ -64239,8 +64239,8 @@ encode_TriggerGrantProducerKey :: proc(b: ^strings.Builder, x: TriggerGrantProdu
 }
 
 decode_CombatRelation :: proc(v: json.Value, out: ^CombatRelation) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CombatRelation")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -64337,8 +64337,8 @@ encode_CrewRelation :: proc(b: ^strings.Builder, x: CrewRelation) {
 }
 
 decode_ParitySource :: proc(v: json.Value, out: ^ParitySource) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ParitySource")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ParitySource: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("ParitySource: no tag")
@@ -64361,8 +64361,8 @@ encode_ParitySource :: proc(b: ^strings.Builder, x: ParitySource) {
 }
 
 decode_AttachmentReferent :: proc(v: json.Value, out: ^AttachmentReferent) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AttachmentReferent")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("AttachmentReferent: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("AttachmentReferent: no tag")
@@ -65724,8 +65724,8 @@ encode_LogicalZoneChangeProspectiveMember_members :: proc(b: ^strings.Builder, x
 }
 
 decode_LogicalZoneChangeTerminalOutcome :: proc(v: json.Value, out: ^LogicalZoneChangeTerminalOutcome) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LogicalZoneChangeTerminalOutcome")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("LogicalZoneChangeTerminalOutcome: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("LogicalZoneChangeTerminalOutcome: no tag")
@@ -66018,8 +66018,8 @@ encode_PendingCounterMove_members :: proc(b: ^strings.Builder, x: PendingCounter
 }
 
 decode_PendingCounterAddition :: proc(v: json.Value, out: ^PendingCounterAddition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingCounterAddition")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -66272,8 +66272,8 @@ encode_ParkedOpponentMayPoll_members :: proc(b: ^strings.Builder, x: ParkedOppon
 }
 
 decode_PendingCoinFlipKind :: proc(v: json.Value, out: ^PendingCoinFlipKind) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingCoinFlipKind")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -66458,8 +66458,8 @@ encode_LogCategory :: proc(b: ^strings.Builder, x: LogCategory) {
 }
 
 decode_LogSegment :: proc(v: json.Value, out: ^LogSegment) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("LogSegment")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("LogSegment: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("LogSegment: no tag")
@@ -66534,8 +66534,8 @@ encode_LogPresentation_members :: proc(b: ^strings.Builder, x: LogPresentation, 
 }
 
 decode_PendingSacrificeMove :: proc(v: json.Value, out: ^PendingSacrificeMove) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingSacrificeMove")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -66651,8 +66651,8 @@ encode_UnionSources :: proc(b: ^strings.Builder, x: UnionSources) {
 }
 
 decode_TargetSchedule :: proc(v: json.Value, out: ^TargetSchedule) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("TargetSchedule")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -66690,8 +66690,8 @@ encode_Ranking :: proc(b: ^strings.Builder, x: Ranking) {
 }
 
 decode_AnnouncementSubject :: proc(v: json.Value, out: ^AnnouncementSubject) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("AnnouncementSubject")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -66828,8 +66828,8 @@ encode_ChangeZoneArrangementPlan :: proc(b: ^strings.Builder, x: ChangeZoneArran
 }
 
 decode_ChangeZoneCountPolicy :: proc(v: json.Value, out: ^ChangeZoneCountPolicy) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ChangeZoneCountPolicy")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -66956,8 +66956,8 @@ encode_PlayerDeckList_members :: proc(b: ^strings.Builder, x: PlayerDeckList, fi
 }
 
 decode_ComboDeclaration :: proc(v: json.Value, out: ^ComboDeclaration) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ComboDeclaration")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("ComboDeclaration: not an object")
 	tv, found := json.get(v, "kind")
 	if !found || tv.kind != .String do return fail("ComboDeclaration: no tag")
@@ -67018,8 +67018,8 @@ encode_ResolvedManaSpentUnit_members :: proc(b: ^strings.Builder, x: ResolvedMan
 }
 
 decode_ResolvedPlayerEdit :: proc(v: json.Value, out: ^ResolvedPlayerEdit) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedPlayerEdit")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -67106,8 +67106,8 @@ encode_ResolvedObjectStatus :: proc(b: ^strings.Builder, x: ResolvedObjectStatus
 }
 
 decode_ResolvedObjectCounterEdit :: proc(v: json.Value, out: ^ResolvedObjectCounterEdit) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedObjectCounterEdit")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -67200,8 +67200,8 @@ encode_ResolvedContinuousEffectRetirementCommand_members :: proc(b: ^strings.Bui
 }
 
 decode_ResolvedCombatMembershipEdit :: proc(v: json.Value, out: ^ResolvedCombatMembershipEdit) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedCombatMembershipEdit")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -67300,8 +67300,8 @@ encode_CombatParticipation_members :: proc(b: ^strings.Builder, x: CombatPartici
 }
 
 decode_ResolvedTokenBody :: proc(v: json.Value, out: ^ResolvedTokenBody) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedTokenBody")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -67348,8 +67348,8 @@ encode_ResolvedTokenBody :: proc(b: ^strings.Builder, x: ResolvedTokenBody) {
 }
 
 decode_ResolvedCopyBodyModifications :: proc(v: json.Value, out: ^ResolvedCopyBodyModifications) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedCopyBodyModifications")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -67396,8 +67396,8 @@ encode_ResolvedCopyBodyModifications :: proc(b: ^strings.Builder, x: ResolvedCop
 }
 
 decode_ResolvedInformationAudience :: proc(v: json.Value, out: ^ResolvedInformationAudience) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedInformationAudience")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -67424,8 +67424,8 @@ encode_ResolvedInformationAudience :: proc(b: ^strings.Builder, x: ResolvedInfor
 }
 
 decode_ResolvedInformationLifetime :: proc(v: json.Value, out: ^ResolvedInformationLifetime) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedInformationLifetime")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -67482,8 +67482,8 @@ encode_ResolvedInformationEdit :: proc(b: ^strings.Builder, x: ResolvedInformati
 }
 
 decode_ResolvedLedgerEdit :: proc(v: json.Value, out: ^ResolvedLedgerEdit) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedLedgerEdit")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -67634,8 +67634,8 @@ encode_ResolvedLedgerEdit :: proc(b: ^strings.Builder, x: ResolvedLedgerEdit) {
 }
 
 decode_ResolvedTriggerLedgerEdit :: proc(v: json.Value, out: ^ResolvedTriggerLedgerEdit) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedTriggerLedgerEdit")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -67692,8 +67692,8 @@ encode_ResolvedTriggerLedgerEdit :: proc(b: ^strings.Builder, x: ResolvedTrigger
 }
 
 decode_ResolvedOncePerTurnPermission :: proc(v: json.Value, out: ^ResolvedOncePerTurnPermission) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedOncePerTurnPermission")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -67760,8 +67760,8 @@ encode_RetainedStickerTimestamp_members :: proc(b: ^strings.Builder, x: Retained
 }
 
 decode_ResolvedFrameTransition :: proc(v: json.Value, out: ^ResolvedFrameTransition) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedFrameTransition")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -67908,8 +67908,8 @@ encode_FrameKind :: proc(b: ^strings.Builder, x: FrameKind) {
 }
 
 decode_ResolvedTriggerCollection :: proc(v: json.Value, out: ^ResolvedTriggerCollection) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("ResolvedTriggerCollection")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -68164,8 +68164,8 @@ encode_LogVisibility :: proc(b: ^strings.Builder, x: LogVisibility) {
 }
 
 decode_SimultaneousUnlessAnswer :: proc(v: json.Value, out: ^SimultaneousUnlessAnswer) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("SimultaneousUnlessAnswer")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("SimultaneousUnlessAnswer: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("SimultaneousUnlessAnswer: no tag")
@@ -68230,8 +68230,8 @@ encode_ExiledStopInput_members :: proc(b: ^strings.Builder, x: ExiledStopInput, 
 }
 
 decode_RepeatIterationChoice :: proc(v: json.Value, out: ^RepeatIterationChoice) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("RepeatIterationChoice")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -68340,8 +68340,8 @@ encode_PausedZoneChangeDeliveryCount :: proc(b: ^strings.Builder, x: PausedZoneC
 }
 
 decode_PendingBatchZoneChangeCause :: proc(v: json.Value, out: ^PendingBatchZoneChangeCause) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingBatchZoneChangeCause")
+	if v.kind == .Null do return true
 	if v.kind != .Object do return fail("PendingBatchZoneChangeCause: not an object")
 	tv, found := json.get(v, "type")
 	if !found || tv.kind != .String do return fail("PendingBatchZoneChangeCause: no tag")
@@ -68522,8 +68522,8 @@ encode_PendingEffectResolutionEvent :: proc(b: ^strings.Builder, x: PendingEffec
 }
 
 decode_PendingCounterPostAction :: proc(v: json.Value, out: ^PendingCounterPostAction) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("PendingCounterPostAction")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -69062,8 +69062,8 @@ encode_StagedBatchMemberState :: proc(b: ^strings.Builder, x: StagedBatchMemberS
 }
 
 decode_StagedMemberOutcome :: proc(v: json.Value, out: ^StagedMemberOutcome) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StagedMemberOutcome")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -69090,8 +69090,8 @@ encode_StagedMemberOutcome :: proc(b: ^strings.Builder, x: StagedMemberOutcome) 
 }
 
 decode_StagedMemberOperation :: proc(v: json.Value, out: ^StagedMemberOperation) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("StagedMemberOperation")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -69240,8 +69240,8 @@ encode_TokenEntryEventEmission :: proc(b: ^strings.Builder, x: TokenEntryEventEm
 }
 
 decode_CopyEntryResumeStage :: proc(v: json.Value, out: ^CopyEntryResumeStage) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("CopyEntryResumeStage")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -69301,8 +69301,8 @@ encode_DrawSequenceFrameId :: proc(b: ^strings.Builder, x: DrawSequenceFrameId) 
 }
 
 decode_DrawSequenceOrigin :: proc(v: json.Value, out: ^DrawSequenceOrigin) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DrawSequenceOrigin")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -69397,8 +69397,8 @@ encode_DrawDealer_members :: proc(b: ^strings.Builder, x: DrawDealer, first: ^bo
 }
 
 decode_DrawDealerStage :: proc(v: json.Value, out: ^DrawDealerStage) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("DrawDealerStage")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
@@ -69527,8 +69527,8 @@ encode_StagedDestroyOuterApproval :: proc(b: ^strings.Builder, x: StagedDestroyO
 }
 
 decode_HeldDecisionPrompt :: proc(v: json.Value, out: ^HeldDecisionPrompt) -> bool {
-	if v.kind == .Null do return true
 	when COVERAGE do cov_hit("HeldDecisionPrompt")
+	if v.kind == .Null do return true
 	variant: string
 	body: json.Value
 	#partial switch v.kind {
