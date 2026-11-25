@@ -47,6 +47,25 @@ pub fn proc_name(owner: Option<&str>, name: &str) -> String {
 thread_local! {
     /// The file of the function being translated (free calls resolve against it).
     pub static CURRENT_FILE: std::cell::RefCell<Option<std::path::PathBuf>> = const { std::cell::RefCell::new(None) };
+    /// The Rust types of the current procedure's parameters and annotated or constructed locals, by Rust name: the
+    /// model holds sets as Vecs, so set operations look here (and at field types) to know what they act on.
+    pub static RUST_TYPES: std::cell::RefCell<BTreeMap<String, String>> = std::cell::RefCell::new(BTreeMap::new());
+    /// The function being translated names a std set type: a collect whose destination isn't seen is refused.
+    pub static MENTIONS_SET: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+    /// The collect expression (by address) whose destination the context knows, and what that destination is.
+    pub static COLLECT_INTO: std::cell::RefCell<Option<(usize, SetKind)>> = const { std::cell::RefCell::new(None) };
+    /// Inside an inlined closure body: where `?` goes instead of returning (the block's label, the result variable,
+    /// the closure's result shape).
+    pub static TRY_EXIT: std::cell::RefCell<Option<(String, String, Shape)>> = const { std::cell::RefCell::new(None) };
+    /// The top-level function whose body (or nested helper) is being translated: the scope nested helpers resolve in.
+    pub static CURRENT_FN: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
+    /// Inside an inlined closure body: where `return` goes (the same block, result variable and shape as TRY_EXIT).
+    /// A closure's `return` gives the closure's value, not the enclosing procedure's.
+    pub static RETURN_EXIT: std::cell::RefCell<Option<(String, String, Shape)>> = const { std::cell::RefCell::new(None) };
+    /// Locals declared empty (`let mut v = Vec::new()`) whose element type only a later use shows (`v.push(id)` with
+    /// `id` bound further on): Odin name → (a map rather than a sequence, the shape once a use fixes it). The
+    /// declaration carries a placeholder type that the finished function's text gets in its place (body.rs).
+    pub static PENDING: std::cell::RefCell<BTreeMap<String, (bool, Option<Shape>)>> = const { std::cell::RefCell::new(BTreeMap::new()) };
     /// Set when translated code reads or writes a field the Rust engine doesn't serialize (`#[serde(skip)]`).
     pub static TOUCHES_UNLOGGED: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
     /// Procedures written by hand (hand_logic.odin and the runtime): callable even when the Rust one is generic.
@@ -83,7 +102,11 @@ pub fn proc_name_for(owner: Option<&str>, name: &str, f: &FnDef) -> String {
             } else {
                 stem
             };
-            format!("{stem}_{name}")
+            match &f.nested_in {
+                // A helper declared inside `outer`: `file_outer__name`, distinct from the file's other functions.
+                Some(outer) => format!("{stem}_{outer}__{name}"),
+                None => format!("{stem}_{name}"),
+            }
         }
     }
 }
@@ -149,6 +172,15 @@ impl<'a, 'b> Tx<'a, 'b> {
                 Some("crate") => defs.iter().filter(|d| file_module(&d.file) == "lib").collect(),
                 Some(m) => defs.iter().filter(|d| file_module(&d.file) == m).collect(),
             };
+            // Inside a function, its own nested helper of that name comes first (Rust's scoping), then the file's
+            // top-level function; other functions' helpers are out of scope.
+            let cands: Vec<&FnDef> = if cands.len() > 1 {
+                let scope = CURRENT_FN.with(|c| c.borrow().clone());
+                let own: Vec<&FnDef> = cands.iter().copied().filter(|d| d.nested_in.is_some() && d.nested_in == scope).collect();
+                if !own.is_empty() { own } else { cands.into_iter().filter(|d| d.nested_in.is_none()).collect() }
+            } else {
+                cands
+            };
             if cands.len() != 1 {
                 return None;
             }
@@ -175,13 +207,30 @@ impl<'a, 'b> Tx<'a, 'b> {
         let name = segs.last()?.clone();
         let owner = self.owner_of(segs);
         let c = self.e.reg.consts.get(&(owner.clone(), name.clone())).and_then(|v| v.first()).cloned()?;
-        let shape = self.e.shape(&c.ty, &[]);
+        let shape = self.const_shape(&c.ty, owner.as_deref());
         let shape = if matches!(shape, Shape::Named(ref n, _) if n == "Self") { want.clone() } else { shape };
         let next_self = owner.or(self.self_ty.clone());
         let saved = std::mem::replace(&mut self.self_ty, next_self);
         let r = self.expr(&c.expr, &shape);
         self.self_ty = saved;
         Some(r)
+    }
+
+    /// A constant's type, `Self` in it being the constant's own impl type (`[Self; 15]` in `LegalityFormat::ALL`),
+    /// not the type of the function reading it.
+    fn const_shape(&mut self, ty: &syn::Type, owner: Option<&str>) -> Shape {
+        let saved = self.e.subst.clone();
+        match owner {
+            Some(o) => {
+                self.e.subst.insert("Self".into(), Shape::Named(o.to_string(), vec![]));
+            }
+            None => {
+                self.e.subst.remove("Self");
+            }
+        }
+        let sh = self.e.shape(ty, &[]);
+        self.e.subst = saved;
+        sh
     }
 
     /// A call to a function whose body is one expression: its parameters bound to the (translated) arguments.
@@ -331,6 +380,19 @@ impl<'a, 'b> Tx<'a, 'b> {
                     _ => format!("&{v}"),
                 });
             }
+            // An `Option<Box<T>>` (a nil-able `^T`) read where an `Option<T>` is wanted (`.as_deref()` into a
+            // local): the value, copied, or nil.
+            Shape::Option(i) if !matches!(**i, Shape::MutRef(_) | Shape::Ptr(..)) => {
+                if let Some(Shape::OptPtr(inner, _)) = self.shape_of(ex) {
+                    if *inner == **i {
+                        let v = self.expr_raw(ex, &Shape::OptPtr(inner.clone(), false))?;
+                        let n = self.next_temp();
+                        self.pre.push(format!("op{n}_ := {v}"));
+                        return Ok(format!("(Maybe({})(op{n}_^) if op{n}_ != nil else nil)", self.e.odin(i)));
+                    }
+                }
+                self.expr_raw(ex, want)
+            }
             Shape::Ptr(..) | Shape::OptPtr(..) | Shape::Option(_) | Shape::Unit => self.expr_raw(ex, want),
             _ => {
                 // A Box/Arc where its contents are wanted: dereferenced.
@@ -395,6 +457,32 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let v = self.expr(&t.expr, &sh)?;
                 self.temps += 1;
                 let tmp = format!("t{}_", self.temps);
+                // Inside an inlined closure, `?` leaves the closure: its result becomes None/Err and its block ends.
+                if let Some((label, res, rshape)) = TRY_EXIT.with(|t| t.borrow().clone()) {
+                    return match (&sh, &rshape) {
+                        (Shape::Result(_, _), Shape::Result(..)) => {
+                            let rty = self.e.odin(&rshape);
+                            self.pre.push(format!("{tmp} := {v}"));
+                            self.pre.push(format!("if e_, failed := {tmp}.err.?; failed {{ {res} = {rty}{{err = e_}}; break {label} }}"));
+                            Ok(format!("{tmp}.ok"))
+                        }
+                        (Shape::Option(_), Shape::Option(_)) => {
+                            self.pre.push(format!("{tmp} := {v}"));
+                            self.pre.push(format!("if {tmp} == nil {{ {res} = nil; break {label} }}"));
+                            Ok(format!("{tmp}.?"))
+                        }
+                        // A dry run (the closure's result shape still unknown): the value only.
+                        (Shape::Option(_), Shape::Unknown(_)) => {
+                            self.pre.push(format!("{tmp} := {v}"));
+                            Ok(format!("{tmp}.?"))
+                        }
+                        (Shape::Result(_, _), Shape::Unknown(_)) => {
+                            self.pre.push(format!("{tmp} := {v}"));
+                            Ok(format!("{tmp}.ok"))
+                        }
+                        _ => Err("? between different kinds in a closure".into()),
+                    };
+                }
                 match (&sh, self.fn_ret.clone()) {
                     (Shape::Result(_, _), Shape::Result(..)) => {
                         let ret_ty = self.e.odin(&self.fn_ret.clone());
@@ -585,6 +673,28 @@ impl<'a, 'b> Tx<'a, 'b> {
                         }
                     }
                 }
+                // `mem::take(&mut x)` / `mem::replace(&mut x, v)`: the old value out, the default (or v) in.
+                if self.calls && matches!(last.as_str(), "take" | "replace") && segs.len() >= 2 && segs[segs.len() - 2] == "mem" {
+                    let Some(Expr::Reference(r)) = args.first() else { return Err(format!("call {}", segs.join("::"))) };
+                    if r.mutability.is_none() || args.len() != if last == "take" { 1 } else { 2 } {
+                        return Err(format!("call {}", segs.join("::")));
+                    }
+                    let sh = self.shape_of(&r.expr).ok_or("mem::take of an untyped place")?;
+                    let place = self.expr(&r.expr, &sh)?;
+                    let new = if last == "take" {
+                        match self.e.default_expr(&sh) {
+                            Some(d) => d,
+                            None if matches!(sh, Shape::Ptr(..)) => return Err("mem::take of a shared or boxed value".into()),
+                            None => format!("{}{{}}", self.e.odin(&sh)),
+                        }
+                    } else {
+                        self.expr(args[1], &sh)?
+                    };
+                    let n = self.next_temp();
+                    self.pre.push(format!("mt{n}_ := {place}"));
+                    self.pre.push(format!("{place} = {new}"));
+                    return Ok(format!("mt{n}_"));
+                }
                 let owner = self.owner_of(&segs);
                 if self.calls {
                     if let Some(f) = self.resolve_fn(owner.as_deref(), &segs, &last) {
@@ -666,6 +776,28 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
                 Ok(format!("({})", conds.join(" || ")))
             }
+            // An array literal: a Vec where one is wanted (`&[a, b]` passed as a slice, read the same way), else a
+            // fixed-size Odin array.
+            Expr::Array(a) => match want {
+                Shape::Vec(elem) => {
+                    if a.elems.is_empty() {
+                        return Ok("{}".into());
+                    }
+                    let mut parts = Vec::new();
+                    for it in &a.elems {
+                        parts.push(self.expr(it, elem)?);
+                    }
+                    Ok(format!("dynamic_from([]{}{{{}}})", self.e.odin(elem), parts.join(", ")))
+                }
+                Shape::Array(elem, _) => {
+                    let mut parts = Vec::new();
+                    for it in &a.elems {
+                        parts.push(self.expr(it, elem)?);
+                    }
+                    Ok(format!("{}{{{}}}", self.e.odin(want), parts.join(", ")))
+                }
+                _ => Err("array literal for a non-sequence".into()),
+            },
             Expr::Macro(m) if m.mac.path.is_ident("vec") => {
                 let Shape::Vec(elem) = want else { return Err("vec! for a non-vector".into()) };
                 let items: syn::punctuated::Punctuated<Expr, syn::Token![,]> =
@@ -742,19 +874,27 @@ impl<'a, 'b> Tx<'a, 'b> {
                             // Comparing a data enum with one of its unit variants: a variant test.
                             let segs = match &*b.right {
                                 Expr::Path(p) => path_segs(&p.path),
-                                _ => return Err("== on a data enum with a non-variant".into()),
+                                _ => vec![],
                             };
-                            let (e, v) = self.variant_of(&segs, &left_shape).ok_or("== variant")?;
+                            // Against a unit variant: a variant test; against another value: equality below.
+                            if let Some((e, v)) = self.variant_of(&segs, &left_shape).filter(|_| !segs.is_empty() && !(segs.len() == 1 && self.vars.contains_key(&segs[0]))) {
                             if !matches!(self.named_fields(&e, Some(&v)), Some(Fields::Unit)) {
                                 return Err("== with a data-carrying variant".into());
                             }
                             let neg = if op == "!=" { "!" } else { "" };
                             return Ok(format!("{neg}is_variant({l}, {e}_{v})"));
+                            }
                         }
                     }
                 }
                 if matches!(op, "==" | "!=") && !self.comparable(&left_shape) {
-                    return Err("== on a type Odin can't compare".into());
+                    // Rust's derived PartialEq, generated (emit.rs, equaler).
+                    if !self.calls {
+                        return Err("== on a type Odin can't compare".into());
+                    }
+                    let p = self.e.equaler(&left_shape)?.ok_or("== on a type Odin can't compare")?;
+                    let neg = if op == "!=" { "!" } else { "" };
+                    return Ok(format!("{neg}{p}({l}, {r})"));
                 }
                 Ok(format!("({l} {op} {r})"))
             }
@@ -817,10 +957,7 @@ impl<'a, 'b> Tx<'a, 'b> {
                                     return self.call_with_sig(&proc_name_for(Some(o), m, &f), &f, Some(recv), &args);
                                 }
                             }
-                            return Err(match m {
-                                "iter" | "get" | "into_iter" | "extend" | "as_deref" | "or_else" => format!("method .{m}() on {}", crate::body::shape_kind(&recv_shape)),
-                                _ => format!("method .{m}()"),
-                            });
+                            return Err(format!("method .{m}() on {}", crate::body::shape_kind(&recv_shape)));
                         }
                         match owner.and_then(|o| self.inline_call(Some(o), m, Some((recv.clone(), recv_shape.clone())), &args, want)) {
                             Some(v) => v,
@@ -836,7 +973,32 @@ impl<'a, 'b> Tx<'a, 'b> {
     /// The shape of a variable reference (parameters and `self`), for comparisons.
     fn shape_of(&mut self, ex: &Expr) -> Option<Shape> {
         match ex {
-            Expr::Path(p) if p.path.segments.len() == 1 => self.vars.get(&p.path.segments[0].ident.to_string()).map(|v| v.1.clone()),
+            Expr::Path(p) if p.path.segments.len() == 1 && self.vars.contains_key(&p.path.segments[0].ident.to_string()) => {
+                match self.vars.get(&p.path.segments[0].ident.to_string()).map(|v| v.1.clone()) {
+                    // A pending local: its shape once a use has fixed it.
+                    Some(Shape::Unknown(u)) if u.starts_with(PENDING_TAG) => PENDING.with(|m| m.borrow().get(&u[PENDING_TAG.len()..]).and_then(|e| e.1.clone())),
+                    other => other,
+                }
+            }
+            // A constant (`Axes::NONE`, `BASE_FLOOR`) has its declared type; a unit variant (`ZoneSpan::None`) its
+            // enum's.
+            Expr::Path(p) if p.qself.is_none() => {
+                let segs: Vec<String> = p.path.segments.iter().map(|s| s.ident.to_string()).collect();
+                let name = segs.last()?.clone();
+                let owner = self.owner_of(&segs);
+                if let Some(c) = self.e.reg.consts.get(&(owner.clone(), name.clone())).and_then(|v| v.first()).cloned() {
+                    let sh = self.const_shape(&c.ty, owner.as_deref());
+                    return match sh {
+                        Shape::Named(n, _) if n == "Self" => owner.map(|o| Shape::Named(o, vec![])),
+                        sh if shape_mentions_param(&sh) || matches!(sh, Shape::Unknown(_)) => None,
+                        sh => Some(sh),
+                    };
+                }
+                let o = owner?;
+                let (_, variants) = self.enum_variants(&o)?;
+                let v = variants.iter().find(|v| v.name == name)?;
+                matches!(v.fields, Fields::Unit).then(|| Shape::Named(o, vec![]))
+            }
             Expr::Unary(u) => self.shape_of(&u.expr),
             Expr::Reference(r) => self.shape_of(&r.expr),
             Expr::Paren(p) => self.shape_of(&p.expr),
@@ -860,7 +1022,18 @@ impl<'a, 'b> Tx<'a, 'b> {
                 let m = mc.method.to_string();
                 let Some(recv) = self.shape_of(&mc.receiver) else {
                     // An untyped receiver (an iterator chain): methods whose result doesn't depend on it.
+                    let n_args = mc.args.len();
                     return match m.as_str() {
+                        // Terminals of a chain: their result follows from the chain's item.
+                        "collect" if n_args == 0 => self.chain_item_shape(&mc.receiver).map(|i| Shape::Vec(Box::new(i))),
+                        "find" | "next" | "last" | "max_by_key" | "min_by_key" | "max_by" | "min_by" | "max" | "min" => {
+                            self.chain_item_shape(&mc.receiver).map(|i| Shape::Option(Box::new(i)))
+                        }
+                        "find_map" if n_args == 1 => {
+                            let item = self.chain_item_shape(&mc.receiver)?;
+                            let c = Self::closure_of(&mc.args[0]).ok()?;
+                            self.closure_shape(&c, "_", &item).filter(|s| matches!(s, Shape::Option(_)))
+                        }
                         "len" | "count" => Some(Shape::Int("int")),
                         "is_empty" | "is_some" | "is_none" | "contains" | "contains_key" | "any" | "all" | "is_some_and"
                         | "is_none_or" => Some(Shape::Bool),
@@ -888,6 +1061,17 @@ impl<'a, 'b> Tx<'a, 'b> {
                 if m == "find_map" && args.len() == 1 {
                     if let (Some(item), Ok(c)) = (self.chain_item_shape(&mc.receiver), Self::closure_of(args[0])) {
                         return self.closure_shape(&c, "_", &item).filter(|s| matches!(s, Shape::Option(_)));
+                    }
+                }
+                if matches!(m.as_str(), "iter_all" | "iter_unchecked" | "as_slice") && args.is_empty() {
+                    let named = match &recv {
+                        Shape::Ptr(i, _) => (**i).clone(),
+                        s => s.clone(),
+                    };
+                    if let Shape::Named(n, _) = &named {
+                        if let Some(item) = self.definitions_item(n) {
+                            return Some(Shape::Vec(Box::new(item)));
+                        }
                     }
                 }
                 match (m.as_str(), &recv, args.len()) {
@@ -921,7 +1105,19 @@ impl<'a, 'b> Tx<'a, 'b> {
                     ("then_some", Shape::Bool, 1) => return Some(Shape::Option(Box::new(self.shape_of(args[0])?))),
                     ("then", Shape::Bool, 1) => {
                         let Expr::Closure(c) = args[0] else { return None };
-                        return Some(Shape::Option(Box::new(self.shape_of(&c.body)?)));
+                        // A body with statements, or an if/match: a dry run finds its value's shape.
+                        let inner = match &*c.body {
+                            Expr::Block(b) => crate::body::infer_block_shape(self, &b.block),
+                            e @ (Expr::If(_) | Expr::Match(_)) => match self.shape_of(e) {
+                                Some(s) => Some(s),
+                                None => {
+                                    let block: syn::Block = syn::parse_quote!({ #e });
+                                    crate::body::infer_block_shape(self, &block)
+                                }
+                            },
+                            e => self.shape_of(e),
+                        }?;
+                        return Some(Shape::Option(Box::new(inner)));
                     }
                     ("as_deref" | "as_ref", Shape::OptPtr(..), 0) => return Some(recv.clone()),
                     ("get", Shape::Map(_, v), 1) => return Some(Shape::Option(v.clone())),
@@ -1049,6 +1245,8 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
                 Some(Shape::Tuple(es))
             }
+            // An array literal reads like a Vec (its first element's shape).
+            Expr::Array(a) => Some(Shape::Vec(Box::new(self.shape_of(a.elems.first()?)?))),
             Expr::Macro(m) if self.calls => {
                 let name = m.mac.path.segments.last()?.ident.to_string();
                 match name.as_str() {
@@ -1076,9 +1274,6 @@ impl<'a, 'b> Tx<'a, 'b> {
         let c = &info.closure;
         if c.inputs.len() != args.len() {
             return Err("closure called with a different number of arguments".into());
-        }
-        if has_try(&c.body) || crate::closures::has_return(&c.body) {
-            return Err("closure with ? or return".into());
         }
         if !crate::closures::simple_params(c) {
             return Err("closure parameter pattern".into());
@@ -1114,7 +1309,9 @@ impl<'a, 'b> Tx<'a, 'b> {
                 }
             }
         }
+        // A body using `?` or `return` goes the block way, so they can leave it.
         let single = match &*c.body {
+            _ if has_try(&c.body) || crate::closures::has_return(&c.body) => None,
             Expr::Block(b) if b.block.stmts.len() == 1 => match &b.block.stmts[0] {
                 Stmt::Expr(e, None) => Some(e.clone()),
                 _ => None,
@@ -1130,7 +1327,10 @@ impl<'a, 'b> Tx<'a, 'b> {
         let r = crate::closures::in_scope(info, || match (&single, &*c.body) {
             (Some(e), _) => self.expr(e, &out),
             (None, Expr::Block(b)) => crate::body::inline_block(self, &b.block, &out),
-            _ => Err("closure body".into()),
+            (None, e) => {
+                let block: syn::Block = syn::parse_quote!({ #e });
+                crate::body::inline_block(self, &block, &out)
+            }
         });
         self.unbind(saved);
         let r = r?;
@@ -1378,6 +1578,52 @@ impl<'a, 'b> Tx<'a, 'b> {
             self.pre.push(format!("if !{res} {{ {label}: {{\n{}\n}} }}", body.join("\n")));
         }
         Ok(res)
+    }
+
+    /// What a Vec-shaped value is in Rust: a Vec, a sorted set, or a hash set (None when the translator can't tell).
+    pub fn set_kind(&mut self, e: &Expr) -> Option<SetKind> {
+        Some(set_kind_of(&self.rust_type_text(e)?))
+    }
+
+    /// The Rust type of a variable or field, as written (None when the translator can't see it).
+    fn rust_type_text(&mut self, e: &Expr) -> Option<String> {
+        let ty = match e {
+            Expr::Paren(p) => return self.rust_type_text(&p.expr),
+            Expr::Reference(r) => return self.rust_type_text(&r.expr),
+            Expr::Unary(u) => return self.rust_type_text(&u.expr),
+            Expr::Path(p) if p.path.segments.len() == 1 => RUST_TYPES.with(|t| t.borrow().get(&p.path.segments[0].ident.to_string()).cloned())?,
+            Expr::Field(fe) => {
+                let base = match self.shape_of(&fe.base)? {
+                    Shape::Ptr(i, _) | Shape::MutRef(i) => *i,
+                    s => s,
+                };
+                let Shape::Named(tn, _) = base else { return None };
+                let syn::Member::Named(id) = &fe.member else { return None };
+                let Some(Fields::Named(fs)) = self.named_fields(&tn, None) else { return None };
+                let f = fs.iter().find(|f| f.name.as_deref() == Some(&id.to_string()))?;
+                let t = &f.ty;
+                quote::quote!(#t).to_string()
+            }
+            _ => return None,
+        };
+        Some(ty)
+    }
+
+    /// Key equality for a map held as pairs: Rust's derived PartialEq.
+    fn key_eq(&mut self, k: &Shape, a: &str, b: &str) -> R<String> {
+        Ok(match self.e.equaler(k)? {
+            None => format!("({a} == {b})"),
+            Some(p) => format!("{p}({a}, {b})"),
+        })
+    }
+
+    /// Whether Odin's `<` orders values of this shape as Rust's Ord does (numbers, strings, plain enums, newtypes).
+    fn ordered(&mut self, s: &Shape) -> bool {
+        match s {
+            Shape::Int(_) | Shape::Str | Shape::Char | Shape::Bool => true,
+            Shape::Named(n, _) => self.is_distinct_number(n) || self.enum_variants(n).is_some_and(|v| v.0),
+            _ => false,
+        }
     }
 
     fn next_temp(&mut self) -> u32 {
@@ -1756,12 +2002,21 @@ enum Stage {
     Filter(syn::ExprClosure),
     Map(syn::ExprClosure),
     FilterMap(syn::ExprClosure),
+    /// The item with its index among the items reaching this stage: `(int, T)`.
+    Enumerate,
+    /// Each item's closure result (a Vec or an Option) in turn: an inner loop.
+    FlatMap(syn::ExprClosure),
     Pass, // copied(), cloned(), iter(), into_iter()
 }
 
 impl<'a, 'b> Tx<'a, 'b> {
     fn chain_terminal(&self, mc: &syn::ExprMethodCall) -> bool {
-        matches!(mc.method.to_string().as_str(), "collect" | "any" | "all" | "find" | "position" | "count" | "sum" | "find_map")
+        let m = mc.method.to_string();
+        // `.next()` ends a chain only on a fresh iterator: a variable may be one advanced by several `next` calls.
+        if m == "next" && (!mc.args.is_empty() || matches!(&*mc.receiver, Expr::Path(_))) {
+            return false;
+        }
+        matches!(m.as_str(), "collect" | "any" | "all" | "find" | "position" | "count" | "sum" | "find_map" | "next")
             && self.chain_source(&mc.receiver).is_some()
     }
 
@@ -1770,8 +2025,11 @@ impl<'a, 'b> Tx<'a, 'b> {
         loop {
             match e {
                 Expr::MethodCall(m) => match m.method.to_string().as_str() {
-                    "iter" | "into_iter" | "copied" | "cloned" | "filter" | "map" | "filter_map" => e = &m.receiver,
-                    _ => return None,
+                    "iter" | "into_iter" | "copied" | "cloned" | "filter" | "map" | "filter_map" | "enumerate" | "flat_map" => e = &m.receiver,
+                    // Any other call is the source: an `impl Iterator` result is materialized as a Vec (an iterator
+                    // method on a Vec-shaped value can only be one: Vec and slices have no `any` or `map`). `chain`
+                    // refuses a source that isn't a Vec.
+                    _ => return Some(e),
                 },
                 Expr::Paren(p) => e = &p.expr,
                 _ => return Some(e),
@@ -1784,15 +2042,27 @@ impl<'a, 'b> Tx<'a, 'b> {
     fn chain_item_shape(&mut self, e: &Expr) -> Option<Shape> {
         match e {
             Expr::MethodCall(m) => match m.method.to_string().as_str() {
-                "iter" | "into_iter" | "copied" | "cloned" if m.args.is_empty() => match self.shape_of(&m.receiver)? {
-                    Shape::Vec(i) | Shape::PVec(i) | Shape::Array(i, _) => Some(*i),
-                    Shape::Ptr(p, _) => match *p {
+                "iter" | "into_iter" | "copied" | "cloned" if m.args.is_empty() => match self.shape_of(&m.receiver) {
+                    Some(Shape::Vec(i) | Shape::PVec(i) | Shape::Array(i, _)) => Some(*i),
+                    // An Option iterates its value, if any.
+                    Some(Shape::Option(i)) if m.method != "copied" && m.method != "cloned" => Some(*i),
+                    Some(Shape::Ptr(p, _)) => match *p {
                         Shape::Vec(i) => Some(*i),
                         _ => None,
                     },
+                    // An adapter's receiver is itself a chain (`v.iter().copied()`).
                     _ => self.chain_item_shape(&m.receiver),
                 },
                 "filter" => self.chain_item_shape(&m.receiver),
+                "enumerate" if m.args.is_empty() => Some(Shape::Tuple(vec![Shape::Int("int"), self.chain_item_shape(&m.receiver)?])),
+                "flat_map" => {
+                    let cur = self.chain_item_shape(&m.receiver)?;
+                    let c = Self::closure_of(m.args.first()?).ok()?;
+                    match self.closure_shape(&c, "_", &cur)? {
+                        Shape::Vec(i) | Shape::Option(i) => Some(*i),
+                        _ => None,
+                    }
+                }
                 "map" | "filter_map" => {
                     let cur = self.chain_item_shape(&m.receiver)?;
                     let c = Self::closure_of(m.args.first()?).ok()?;
@@ -1806,9 +2076,21 @@ impl<'a, 'b> Tx<'a, 'b> {
                         }
                     }
                 }
-                _ => None,
+                // A call as the source: a materialized `impl Iterator` (see `chain_source`).
+                _ => match self.shape_of(e)? {
+                    Shape::Vec(i) | Shape::PVec(i) => Some(*i),
+                    _ => None,
+                },
             },
             Expr::Paren(p) => self.chain_item_shape(&p.expr),
+            _ => None,
+        }
+    }
+
+    /// The item type of a `Definitions<T>` instance (`Definitions_TriggerDefinition`).
+    fn definitions_item(&self, n: &str) -> Option<Shape> {
+        match self.e.instances.get(n) {
+            Some((base, args)) if base == "Definitions" && args.len() == 1 => Some(args[0].clone()),
             _ => None,
         }
     }
@@ -1827,6 +2109,13 @@ impl<'a, 'b> Tx<'a, 'b> {
     fn bind_param(&mut self, pat: &Pat, value: &str, shape: &Shape) -> R<Vec<(String, Option<(String, Shape)>)>> {
         let mut saved = Vec::new();
         match pat {
+            // A `&mut` value (an Option<&mut T> combinator's) is a pointer, used through as `x^` with the pointee's
+            // shape, as the pattern compiler binds pointers; a `&mut x` argument then takes it back unchanged.
+            Pat::Ident(pi) if matches!(shape, Shape::MutRef(_)) => {
+                let Shape::MutRef(inner) = shape else { unreachable!() };
+                let n = pi.ident.to_string();
+                saved.push((n.clone(), self.vars.insert(n, (format!("{value}^"), (**inner).clone()))));
+            }
             Pat::Ident(pi) => {
                 let n = pi.ident.to_string();
                 saved.push((n.clone(), self.vars.insert(n, (value.to_string(), shape.clone()))));
@@ -1869,10 +2158,18 @@ impl<'a, 'b> Tx<'a, 'b> {
 
     /// A closure body as an expression, with its parameter bound to `value`.
     fn closure_expr(&mut self, c: &syn::ExprClosure, value: &str, shape: &Shape, want: &Shape) -> R<String> {
-        // `?` in a closure leaves the closure, but an inlined body has no closure to leave: it would return from the
-        // enclosing procedure (a filter_map closure's `?` must skip the item). Refused until closures are converted.
-        if has_try(&c.body) {
-            return Err("? inside a closure".into());
+        // `?` in a closure leaves the closure: the body goes the block way (inline_block), where `?` breaks out of it
+        // with None/Err as the closure's value instead of returning from the enclosing procedure.
+        if (has_try(&c.body) || crate::closures::has_return(&c.body)) && !matches!(&*c.body, Expr::Block(b) if b.block.stmts.len() != 1) {
+            let body = &*c.body;
+            let block: syn::Block = match body {
+                Expr::Block(b) => b.block.clone(),
+                e => syn::parse_quote!({ #e }),
+            };
+            let saved = self.bind_param(&c.inputs[0], value, shape)?;
+            let r = crate::body::inline_block(self, &block, want);
+            self.unbind(saved);
+            return r;
         }
         let saved = self.bind_param(&c.inputs[0], value, shape)?;
         let body = match &*c.body {
@@ -1885,10 +2182,6 @@ impl<'a, 'b> Tx<'a, 'b> {
             },
             // Statements: a block assigning the value, emitted where the closure runs (closure_in keeps them there).
             Expr::Block(b) => {
-                if crate::closures::has_return(&c.body) {
-                    self.unbind(saved);
-                    return Err("closure with return".into());
-                }
                 let r = crate::body::inline_block(self, &b.block, want);
                 self.unbind(saved);
                 return r;
@@ -1902,8 +2195,21 @@ impl<'a, 'b> Tx<'a, 'b> {
 
     fn closure_shape(&mut self, c: &syn::ExprClosure, value: &str, shape: &Shape) -> Option<Shape> {
         let saved = self.bind_param(&c.inputs[0], value, shape).ok()?;
+        if has_try(&c.body) && !matches!(&*c.body, Expr::Block(_)) {
+            let e = &*c.body;
+            let block: syn::Block = syn::parse_quote!({ #e });
+            let r = crate::body::infer_block_shape(self, &block);
+            self.unbind(saved);
+            return r;
+        }
         let body = match &*c.body {
-            Expr::Block(b) if b.block.stmts.len() == 1 => match &b.block.stmts[0] {
+            Expr::Block(b) if b.block.stmts.len() == 1 && !has_try(&c.body) => match &b.block.stmts[0] {
+                // `{ if let .. { Some(x) } else { None } }`: the branches' values, by a dry run.
+                Stmt::Expr(e @ (Expr::If(_) | Expr::Match(_)), None) if self.shape_of(e).is_none() => {
+                    let r = crate::body::infer_block_shape(self, &b.block);
+                    self.unbind(saved);
+                    return r;
+                }
                 Stmt::Expr(e, None) => e.clone(),
                 _ => {
                     self.unbind(saved);
@@ -1913,6 +2219,13 @@ impl<'a, 'b> Tx<'a, 'b> {
             // A body with statements: a dry run of them finds its value's shape.
             Expr::Block(b) => {
                 let r = crate::body::infer_block_shape(self, &b.block);
+                self.unbind(saved);
+                return r;
+            }
+            // An `if` or `match` body: its branches' values, by the same dry run.
+            e @ (Expr::If(_) | Expr::Match(_)) if self.shape_of(e).is_none() => {
+                let block: syn::Block = syn::parse_quote!({ #e });
+                let r = crate::body::infer_block_shape(self, &block);
                 self.unbind(saved);
                 return r;
             }
@@ -1935,7 +2248,10 @@ impl<'a, 'b> Tx<'a, 'b> {
                         "filter" => stages.push(Stage::Filter(Self::closure_of(m.args.first().ok_or("filter")?)?)),
                         "map" => stages.push(Stage::Map(Self::closure_of(m.args.first().ok_or("map")?)?)),
                         "filter_map" => stages.push(Stage::FilterMap(Self::closure_of(m.args.first().ok_or("filter_map")?)?)),
-                        _ => return Err("iterator adapter".into()),
+                        "enumerate" => stages.push(Stage::Enumerate),
+                        "flat_map" => stages.push(Stage::FlatMap(Self::closure_of(m.args.first().ok_or("flat_map")?)?)),
+                        // The source (see `chain_source`).
+                        _ => break,
                     }
                     e = &m.receiver;
                 }
@@ -1944,7 +2260,12 @@ impl<'a, 'b> Tx<'a, 'b> {
             }
         }
         stages.reverse();
-        let src_shape = self.shape_of(e).ok_or("iterator over an untyped collection")?;
+        let src_shape = self.shape_of(e).ok_or_else(|| match e {
+            Expr::MethodCall(m) => format!("iterator over an untyped collection: method .{}()", m.method),
+            Expr::Call(c) => format!("iterator over an untyped collection: call {}", quote::quote!(#c.func).to_string().replace(' ', "")),
+            Expr::Field(f) => format!("iterator over an untyped collection: field {}", quote::quote!(#f.member)),
+            _ => "iterator over an untyped collection".to_string(),
+        })?;
         self.temps += 1;
         let n = self.temps;
         let item = format!("it{n}_");
@@ -1952,18 +2273,45 @@ impl<'a, 'b> Tx<'a, 'b> {
         let (head, mut cur_shape) = match &src_shape {
             Shape::Vec(i) | Shape::Array(i, _) => {
                 let src = self.expr(e, &src_shape)?;
-                (format!("for {item} in {src}"), (**i).clone())
+                (format!("for {item} in {}", crate::body::header_safe(&src)), (**i).clone())
             }
             Shape::PVec(i) => {
                 let src = self.expr(e, &src_shape)?;
                 (format!("for i{n}_ in 0 ..< {src}.len {{ {item} := pvec_get({src}, i{n}_);"), (**i).clone())
             }
+            // An Option: its value, if any, as the one item.
+            Shape::Option(i) => {
+                let src = self.expr(e, &src_shape)?;
+                self.pre.push(format!("os{n}_ := {src}"));
+                (format!("for _ in 0 ..< (1 if os{n}_ != nil else 0) {{ {item} := os{n}_.?;"), (**i).clone())
+            }
+            // A Vec behind a pointer (a Box, or a shared Vec); nil holds nothing.
+            Shape::Ptr(p, _) if matches!(**p, Shape::Vec(_)) => {
+                let Shape::Vec(i) = &**p else { unreachable!() };
+                let src = self.expr(e, &src_shape)?;
+                self.pre.push(format!("s{n}_: [dynamic]{}", self.e.odin(i)));
+                self.pre.push(format!("if p{n}_ := {src}; p{n}_ != nil do s{n}_ = p{n}_^"));
+                (format!("for {item} in s{n}_"), (**i).clone())
+            }
             other => return Err(format!("iterator over a non-Vec: {}", crate::body::shape_kind(other))),
         };
-        let pvec = matches!(src_shape, Shape::PVec(_));
+        // Heads that bind the item inside the loop open one more block, closed after the step.
+        let pvec = matches!(src_shape, Shape::PVec(_) | Shape::Option(_));
+        // What the last stage must give, when the terminal fixes it: a collect's item, a find_map's Option. A map or
+        // filter_map closure whose own result can't be inferred takes it from here.
+        let last_hint: Option<Shape> = match (mc.method.to_string().as_str(), want) {
+            ("collect", Shape::Vec(i)) => Some((**i).clone()),
+            ("find_map", Shape::Option(i)) => Some((**i).clone()),
+            _ => None,
+        };
+        let last_stage = stages.len().saturating_sub(1);
         // Each stage refines the current value (`cur`) or skips the item.
         let mut body: Vec<String> = Vec::new();
         let mut cur = item.clone();
+        // Inner loops opened by flat_map, closed after the terminal's step; the terminals break out of the outer loop
+        // by its label.
+        let mut inner_loops = 0;
+        let outer = format!("ch{n}_");
         for (k, st) in stages.iter().enumerate() {
             match st {
                 Stage::Pass => {}
@@ -1972,7 +2320,10 @@ impl<'a, 'b> Tx<'a, 'b> {
                     body.push(format!("if !({cond}) do continue"));
                 }
                 Stage::Map(c) => {
-                    let out_shape = self.closure_shape(c, &cur, &cur_shape).ok_or("map closure of an untyped value")?;
+                    let out_shape = self
+                        .closure_shape(c, &cur, &cur_shape)
+                        .or_else(|| if k == last_stage && mc.method != "find_map" { last_hint.clone() } else { None })
+                        .ok_or("map closure of an untyped value")?;
                     let v = self.closure_in(&mut body, c, &cur, &cur_shape, &out_shape)?;
                     let next = format!("m{n}_{k}_");
                     body.push(format!("{next} := {v}"));
@@ -1980,7 +2331,10 @@ impl<'a, 'b> Tx<'a, 'b> {
                     cur_shape = out_shape;
                 }
                 Stage::FilterMap(c) => {
-                    let out_shape = self.closure_shape(c, &cur, &cur_shape).ok_or("filter_map closure of an untyped value")?;
+                    let out_shape = self
+                        .closure_shape(c, &cur, &cur_shape)
+                        .or_else(|| if k == last_stage && mc.method != "find_map" { last_hint.clone().map(|i| Shape::Option(Box::new(i))) } else { None })
+                        .ok_or("filter_map closure of an untyped value")?;
                     let Shape::Option(inner) = out_shape else { return Err("filter_map closure not returning Option".into()) };
                     let v = self.closure_in(&mut body, c, &cur, &cur_shape, &Shape::Option(inner.clone()))?;
                     let next = format!("m{n}_{k}_");
@@ -1989,6 +2343,34 @@ impl<'a, 'b> Tx<'a, 'b> {
                     cur = next;
                     cur_shape = *inner;
                 }
+                Stage::Enumerate => {
+                    let (count, next) = (format!("c{n}_{k}_"), format!("m{n}_{k}_"));
+                    self.pre.push(format!("{count} := 0"));
+                    let ty = self.e.odin(&cur_shape);
+                    body.push(format!("{next} := Tuple2(int, {ty}){{{count}, {cur}}}"));
+                    body.push(format!("{count} += 1"));
+                    cur = next;
+                    cur_shape = Shape::Tuple(vec![Shape::Int("int"), cur_shape]);
+                }
+                Stage::FlatMap(c) => {
+                    let out_shape = self.closure_shape(c, &cur, &cur_shape).ok_or("flat_map closure of an untyped value")?;
+                    let v = self.closure_in(&mut body, c, &cur, &cur_shape, &out_shape)?;
+                    let next = format!("m{n}_{k}_");
+                    match out_shape {
+                        Shape::Vec(i) => {
+                            body.push(format!("fv{n}_{k}_ := {v}"));
+                            body.push(format!("for {next} in fv{n}_{k}_ {{"));
+                            cur_shape = *i;
+                        }
+                        Shape::Option(i) => {
+                            body.push(format!("if {next}, {next}ok := ({v}).?; {next}ok {{"));
+                            cur_shape = *i;
+                        }
+                        _ => return Err("flat_map closure not returning a Vec or an Option".into()),
+                    }
+                    cur = next;
+                    inner_loops += 1;
+                }
             }
         }
         let res = format!("r{n}_");
@@ -1996,40 +2378,75 @@ impl<'a, 'b> Tx<'a, 'b> {
         let (init, step, value) = match mc.method.to_string().as_str() {
             "collect" => {
                 let ty = self.e.odin(want);
+                // Where it lands: a set collects differently (sorted and deduplicated, or deduplicated) though the
+                // model holds both as Vecs. The destination type comes from a turbofish or the context (a let's
+                // annotation, the function's result); unseen in a function that uses sets, it is refused.
+                let kind = match &mc.turbofish {
+                    Some(tf) => set_kind_of(&quote::quote!(#tf).to_string()),
+                    None => match COLLECT_INTO.with(|c| c.borrow().clone()) {
+                        Some((at, k)) if at == mc as *const syn::ExprMethodCall as usize => k,
+                        _ if MENTIONS_SET.with(|m| m.get()) => return Err("collect into a type the translator can't see, in a function using sets".into()),
+                        _ => SetKind::NotSet,
+                    },
+                };
                 match want {
-                    Shape::Vec(_) => (format!("{res}: {ty}"), format!("append(&{res}, {cur})"), res.clone()),
+                    Shape::Vec(i) => {
+                        let i = (**i).clone();
+                        match kind {
+                            SetKind::NotSet => (format!("{res}: {ty}"), format!("append(&{res}, {cur})"), res.clone()),
+                            SetKind::Hash if self.comparable(&i) => (format!("{res}: {ty}"), format!("if !vec_contains({res}[:], {cur}) do append(&{res}, {cur})"), res.clone()),
+                            SetKind::Sorted if self.comparable(&i) && self.ordered(&i) => {
+                                // Inserted in order, duplicates dropped: what a BTreeSet holds.
+                                let step = format!("if !vec_contains({res}[:], {cur}) {{ at{n}_ := len({res}); for e{n}_, k{n}_ in {res} {{ if {cur} < e{n}_ {{ at{n}_ = k{n}_; break }} }}; inject_at(&{res}, at{n}_, {cur}) }}");
+                                (format!("{res}: {ty}"), step, res.clone())
+                            }
+                            _ => return Err("collect into a set of a type Odin can't compare or order".into()),
+                        }
+                    }
                     _ => return Err("collect into something other than a Vec".into()),
                 }
             }
             "any" => {
                 let c = Self::closure_of(args.first().ok_or("any")?)?;
                 let cond = self.closure_in(&mut body, &c, &cur, &cur_shape, &Shape::Bool)?;
-                (format!("{res} := false"), format!("if {cond} {{ {res} = true; break }}"), res.clone())
+                (format!("{res} := false"), format!("if {cond} {{ {res} = true; break {outer} }}"), res.clone())
             }
             "all" => {
                 let c = Self::closure_of(args.first().ok_or("all")?)?;
                 let cond = self.closure_in(&mut body, &c, &cur, &cur_shape, &Shape::Bool)?;
-                (format!("{res} := true"), format!("if !({cond}) {{ {res} = false; break }}"), res.clone())
+                (format!("{res} := true"), format!("if !({cond}) {{ {res} = false; break {outer} }}"), res.clone())
             }
             "find" => {
                 let c = Self::closure_of(args.first().ok_or("find")?)?;
                 let cond = self.closure_in(&mut body, &c, &cur, &cur_shape, &Shape::Bool)?;
                 let ty = self.e.odin(&cur_shape);
-                (format!("{res}: Maybe({ty})"), format!("if {cond} {{ {res} = {cur}; break }}"), res.clone())
+                (format!("{res}: Maybe({ty})"), format!("if {cond} {{ {res} = {cur}; break {outer} }}"), res.clone())
+            }
+            // The first item that comes through the stages.
+            "next" if args.is_empty() => {
+                let ty = self.e.odin(&cur_shape);
+                (format!("{res}: Maybe({ty})"), format!("{res} = {cur}; break {outer}"), res.clone())
             }
             "find_map" => {
                 let c = Self::closure_of(args.first().ok_or("find_map")?)?;
-                let out_shape = self.closure_shape(&c, &cur, &cur_shape).ok_or("find_map closure of an untyped value")?;
+                let out_shape = self
+                    .closure_shape(&c, &cur, &cur_shape)
+                    .or_else(|| last_hint.clone().map(|i| Shape::Option(Box::new(i))))
+                    .ok_or("find_map closure of an untyped value")?;
                 let v = self.closure_in(&mut body, &c, &cur, &cur_shape, &out_shape)?;
                 let ty = self.e.odin(&out_shape);
-                (format!("{res}: {ty}"), format!("if fm_ := {v}; fm_ != nil {{ {res} = fm_; break }}"), res.clone())
+                (format!("{res}: {ty}"), format!("if fm_ := {v}; fm_ != nil {{ {res} = fm_; break {outer} }}"), res.clone())
             }
             "position" => {
                 let c = Self::closure_of(args.first().ok_or("position")?)?;
                 let cond = self.closure_in(&mut body, &c, &cur, &cur_shape, &Shape::Bool)?;
-                (format!("{res}: Maybe(int); p{n}_ := 0"), format!("if {cond} {{ {res} = p{n}_; break }}; p{n}_ += 1"), res.clone())
+                (format!("{res}: Maybe(int); p{n}_ := 0"), format!("if {cond} {{ {res} = p{n}_; break {outer} }}; p{n}_ += 1"), res.clone())
             }
-            "count" if args.is_empty() => (format!("{res} := 0"), format!("{res} += 1"), res.clone()),
+            // Typed by the destination where it is a number (`as u32` or a u32 result), else Rust's usize.
+            "count" if args.is_empty() => match want {
+                Shape::Int(_) => (format!("{res}: {} = 0", self.e.odin(want)), format!("{res} += 1"), res.clone()),
+                _ => (format!("{res} := 0"), format!("{res} += 1"), res.clone()),
+            },
             "sum" if args.is_empty() => {
                 let ty = self.e.odin(&cur_shape);
                 (format!("{res}: {ty}"), format!("{res} += {cur}"), res.clone())
@@ -2039,9 +2456,12 @@ impl<'a, 'b> Tx<'a, 'b> {
         self.pre.push(init);
         let close = if pvec { "}}" } else { "}" };
         let _ = close;
-        let mut lines = vec![format!("{head} {{")];
+        let mut lines = vec![format!("{outer}: {head} {{")];
         lines.extend(body);
         lines.push(step);
+        for _ in 0..inner_loops {
+            lines.push("}".into());
+        }
         if pvec {
             lines.push("}}".into());
         } else {
@@ -2051,8 +2471,51 @@ impl<'a, 'b> Tx<'a, 'b> {
         Ok(value)
     }
 
+    /// Types a pending local (see PENDING) from a use that fixes its element type: `push`, `insert`, `contains`,
+    /// `extend` on a sequence, a two-argument `insert` on a map.
+    fn resolve_pending(&mut self, mc: &syn::ExprMethodCall) {
+        let mut recv = &*mc.receiver;
+        loop {
+            match recv {
+                Expr::Reference(r) => recv = &r.expr,
+                Expr::Paren(p) => recv = &p.expr,
+                _ => break,
+            }
+        }
+        let Expr::Path(p) = recv else { return };
+        if p.path.segments.len() != 1 {
+            return;
+        }
+        let name = p.path.segments[0].ident.to_string();
+        let Some((odin, Shape::Unknown(u))) = self.vars.get(&name).cloned() else { return };
+        let Some(key) = u.strip_prefix(PENDING_TAG).map(str::to_string) else { return };
+        let Some((is_map, None)) = PENDING.with(|m| m.borrow().get(&key).cloned()) else { return };
+        let args: Vec<&Expr> = mc.args.iter().collect();
+        let m = mc.method.to_string();
+        let found = match (is_map, m.as_str(), args.len()) {
+            (false, "push" | "push_back" | "insert" | "contains", 1) => self.shape_of(args[0]).map(|s| Shape::Vec(Box::new(s))),
+            (false, "insert", 2) => self.shape_of(args[1]).map(|s| Shape::Vec(Box::new(s))),
+            (false, "extend", 1) => self.chain_item_shape(args[0]).or_else(|| match self.shape_of(args[0]) {
+                Some(Shape::Vec(i)) => Some(*i),
+                _ => None,
+            }).map(|s| Shape::Vec(Box::new(s))),
+            (true, "insert", 2) => match (self.shape_of(args[0]), self.shape_of(args[1])) {
+                (Some(k), Some(v)) => Some(Shape::Map(Box::new(k), Box::new(v))),
+                _ => None,
+            },
+            _ => None,
+        };
+        let Some(sh) = found.filter(|s| !shape_has_unknown(s)) else { return };
+        PENDING.with(|m| m.borrow_mut().insert(key, (is_map, Some(sh.clone()))));
+        let _ = odin;
+        if let Some(v) = self.vars.get_mut(&name) {
+            v.1 = sh;
+        }
+    }
+
     /// Library methods on collections and options, by receiver shape. None when the method isn't one of them.
     fn library_method(&mut self, mc: &syn::ExprMethodCall) -> Option<R<String>> {
+        self.resolve_pending(mc);
         let m = mc.method.to_string();
         let recv_shape = self.shape_of(&mc.receiver)?;
         let args: Vec<&Expr> = mc.args.iter().collect();
@@ -2078,9 +2541,48 @@ impl<'a, 'b> Tx<'a, 'b> {
                     let v = self.expr(args[0], i)?;
                     format!("vec_contains({recv}[:], {v})")
                 }
+                // Elements Odin's `==` can't compare: Rust's derived PartialEq, item by item.
+                ("contains", Shape::Vec(i), 1) if deref.is_empty() && !self.comparable(&i.clone()) => {
+                    let i = (**i).clone();
+                    let v = self.expr(args[0], &i)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("cv{n}_ := {v}"));
+                    let eq = self.key_eq(&i, &format!("ce{n}_"), &format!("cv{n}_"))?;
+                    self.pre.push(format!("cr{n}_ := false"));
+                    self.pre.push(format!("for ce{n}_ in {} {{ if {eq} {{ cr{n}_ = true; break }} }}", crate::body::header_safe(&recv)));
+                    format!("cr{n}_")
+                }
+                // Through a pointer that may be nil (an empty Vec behind a Box): nil holds nothing.
+                ("contains", Shape::Vec(i), 1) if self.comparable(&i.clone()) => {
+                    let v = self.expr(args[0], i)?;
+                    format!("({recv} != nil && vec_contains({recv}^[:], {v}))")
+                }
                 ("first", Shape::Vec(_), 0) if deref.is_empty() => format!("vec_first({recv}[:])"),
+                // `.next()` on a fresh iterator (a call's or adapter's result, materialized as a Vec): its first item.
+                // A variable is refused: it may be an iterator advanced by several `next` calls.
+                ("next", Shape::Vec(_), 0) if deref.is_empty() && !matches!(&*mc.receiver, Expr::Path(_)) => format!("vec_first({recv}[:])"),
                 ("last", Shape::Vec(_), 0) if deref.is_empty() => format!("vec_last({recv}[:])"),
                 ("unwrap" | "expect", Shape::Option(_), _) => format!("{recv}.?"),
+                // A Result's value; its error panics, as Rust's does.
+                ("unwrap" | "expect", Shape::Result(..), _) if deref.is_empty() => {
+                    let n = self.next_temp();
+                    self.pre.push(format!("ur{n}_ := {recv}"));
+                    self.pre.push(format!("if _, bad{n}_ := ur{n}_.err.?; bad{n}_ do panic(\"called `{m}` on an `Err` value\")"));
+                    format!("ur{n}_.ok")
+                }
+                // An `Option<Box<T>>` (nil-able pointer): the closure runs on the value when there is one.
+                ("is_some_and" | "is_none_or", Shape::OptPtr(i, _), 1) if deref.is_empty() => {
+                    let i = (**i).clone();
+                    let c = Self::closure_of(args[0])?;
+                    let n = self.next_temp();
+                    let (t, v, r) = (format!("o{n}_"), format!("v{n}_"), format!("r{n}_"));
+                    let mut body = Vec::new();
+                    let cond = self.closure_in(&mut body, &c, &format!("{v}^"), &i, &Shape::Bool)?;
+                    self.pre.push(format!("{t} := {recv}"));
+                    self.pre.push(format!("{r} := {}", if m == "is_some_and" { "false" } else { "true" }));
+                    self.pre.push(format!("if {v} := {t}; {v} != nil {{\n{}\n{r} = {cond}\n}}", body.join("\n")));
+                    r
+                }
                 ("unwrap_or", Shape::Option(i), 1) => {
                     let d = self.expr(args[0], i)?;
                     format!("({recv}.? or_else {d})")
@@ -2198,7 +2700,22 @@ impl<'a, 'b> Tx<'a, 'b> {
                     Some(c) => format!("{c}({recv})"),
                     None => recv,
                 },
+                // A set (a Vec in the model) removes by value and says whether it held it; a Vec removes by index.
+                ("remove", Shape::Vec(i), 1) if deref.is_empty() && self.set_kind(&mc.receiver).is_some_and(|k| k != SetKind::NotSet) => {
+                    if !self.comparable(&i.clone()) {
+                        return Err("set of a type Odin can't compare".into());
+                    }
+                    let v = self.expr(args[0], i)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("sv{n}_ := {v}"));
+                    self.pre.push(format!("sr{n}_ := false"));
+                    self.pre.push(format!("for e{n}_, k{n}_ in {recv} {{ if e{n}_ == sv{n}_ {{ ordered_remove(&{recv}, k{n}_); sr{n}_ = true; break }} }}"));
+                    format!("sr{n}_")
+                }
                 ("remove", Shape::Vec(_), 1) if deref.is_empty() => {
+                    if self.set_kind(&mc.receiver) != Some(SetKind::NotSet) {
+                        return Err("remove on a collection that may be a set".into());
+                    }
                     let ix = self.expr(args[0], &Shape::Int("int"))?;
                     let n = self.next_temp();
                     self.pre.push(format!("i{n}_ := {ix}"));
@@ -2230,6 +2747,61 @@ impl<'a, 'b> Tx<'a, 'b> {
                     self.pre.push(format!("if len({v}) > 0 do gm{n}_ = &{v}[{at}]"));
                     format!("gm{n}_")
                 }
+                // A map whose keys Odin can't hash (`HashMap<CounterType, u32>`) is a list of pairs in the model:
+                // lookups search it with Rust's key equality. A HashMap's order is Rust's hashing, never observed
+                // as such, so a new key is appended; a BTreeMap would need its order kept, which isn't done yet.
+                // Read through a pointer too (a shared map; nil holds nothing).
+                ("get" | "contains_key", Shape::Map(k, v), 1) if !self.e.simple_key(k) => {
+                    let (k, v) = ((**k).clone(), (**v).clone());
+                    let key = self.expr(args[0], &k)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("pk{n}_ := {key}"));
+                    let eq = self.key_eq(&k, &format!("p{n}_._0"), &format!("pk{n}_"))?;
+                    let src = crate::body::header_safe(&format!("{recv}{deref}"));
+                    let (decl, hit) = if m == "get" {
+                        (format!("g{n}_: Maybe({})", self.e.odin(&v)), format!("g{n}_ = p{n}_._1"))
+                    } else {
+                        (format!("g{n}_ := false"), format!("g{n}_ = true"))
+                    };
+                    self.pre.push(decl);
+                    let lookup = format!("for p{n}_ in {src} {{ if {eq} {{ {hit}; break }} }}");
+                    self.pre.push(if deref.is_empty() { lookup } else { format!("if {recv} != nil {{ {lookup} }}") });
+                    format!("g{n}_")
+                }
+                ("insert", Shape::Map(k, v), 2) if deref.is_empty() && !self.e.simple_key(k) => {
+                    if self.rust_type_text(&mc.receiver).is_none_or(|t| t.contains("BTreeMap") || t.contains("OrdMap")) {
+                        return Err("insert into a pair-held map of a kind whose order matters (or unseen)".into());
+                    }
+                    let (k, v) = ((**k).clone(), (**v).clone());
+                    let (key, val) = (self.expr(args[0], &k)?, self.expr(args[1], &v)?);
+                    let n = self.next_temp();
+                    self.pre.push(format!("pk{n}_, pv{n}_ := {key}, {val}"));
+                    let eq = self.key_eq(&k, &format!("p{n}_._0"), &format!("pk{n}_"))?;
+                    self.pre.push(format!("old{n}_: Maybe({})", self.e.odin(&v)));
+                    self.pre.push(format!("found{n}_ := false"));
+                    self.pre.push(format!("for &p{n}_ in {recv} {{ if {eq} {{ old{n}_ = p{n}_._1; p{n}_._1 = pv{n}_; found{n}_ = true; break }} }}"));
+                    self.pre.push(format!("if !found{n}_ do append(&{recv}, Tuple2({}, {}){{pk{n}_, pv{n}_}})", self.e.odin(&k), self.e.odin(&v)));
+                    format!("old{n}_")
+                }
+                ("remove", Shape::Map(k, v), 1) if deref.is_empty() && !self.e.simple_key(k) => {
+                    let (k, v) = ((**k).clone(), (**v).clone());
+                    let key = self.expr(args[0], &k)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("pk{n}_ := {key}"));
+                    let eq = self.key_eq(&k, &format!("p{n}_._0"), &format!("pk{n}_"))?;
+                    self.pre.push(format!("old{n}_: Maybe({})", self.e.odin(&v)));
+                    // Order kept: the rest stay as they were.
+                    self.pre.push(format!("for p{n}_, i{n}_ in {recv} {{ if {eq} {{ old{n}_ = p{n}_._1; ordered_remove(&{recv}, i{n}_); break }} }}"));
+                    format!("old{n}_")
+                }
+                ("contains_key", Shape::Map(k, _), 1) if self.e.simple_key(k) => {
+                    let key = self.expr(args[0], k)?;
+                    if deref.is_empty() {
+                        format!("(({key}) in {recv})")
+                    } else {
+                        format!("({recv} != nil && ({key}) in {recv}^)")
+                    }
+                }
                 // A map's insert returns the value it replaced.
                 ("insert", Shape::Map(k, v), 2) if deref.is_empty() => {
                     let (key, val) = (self.expr(args[0], k)?, self.expr(args[1], v)?);
@@ -2250,7 +2822,20 @@ impl<'a, 'b> Tx<'a, 'b> {
                     format!("old{n}_")
                 }
                 // A set (a Vec in the model) inserts only what it doesn't hold, and says whether it did.
-                ("insert", Shape::Vec(i), 1) if deref.is_empty() && self.comparable(&i.clone()) => {
+                // A BTreeSet stays sorted (its iteration order is observable); a HashSet's order isn't (random hashing
+                // in Rust), so insertion order stands in for it.
+                ("insert", Shape::Vec(i), 1) if deref.is_empty() && self.comparable(&i.clone()) && self.set_kind(&mc.receiver) == Some(SetKind::Sorted) => {
+                    if !self.ordered(&i.clone()) {
+                        return Err("sorted set of a type Odin can't order".into());
+                    }
+                    let v = self.expr(args[0], i)?;
+                    let n = self.next_temp();
+                    self.pre.push(format!("sv{n}_ := {v}"));
+                    self.pre.push(format!("si{n}_ := !vec_contains({recv}[:], sv{n}_)"));
+                    self.pre.push(format!("if si{n}_ {{ at{n}_ := len({recv}); for e{n}_, k{n}_ in {recv} {{ if sv{n}_ < e{n}_ {{ at{n}_ = k{n}_; break }} }}; inject_at(&{recv}, at{n}_, sv{n}_) }}"));
+                    format!("si{n}_")
+                }
+                ("insert", Shape::Vec(i), 1) if deref.is_empty() && self.comparable(&i.clone()) && self.set_kind(&mc.receiver) == Some(SetKind::Hash) => {
                     let v = self.expr(args[0], i)?;
                     let n = self.next_temp();
                     self.pre.push(format!("sv{n}_ := {v}"));
@@ -2279,7 +2864,19 @@ impl<'a, 'b> Tx<'a, 'b> {
                     }
                     let n = self.next_temp();
                     let outer = std::mem::take(&mut self.pre);
-                    let v = self.expr(&c.body, &i);
+                    // A body with statements goes the block way (a value-assigning block, `return` leaving it).
+                    let v = match &*c.body {
+                        Expr::Block(b) if b.block.stmts.len() != 1 || crate::closures::has_return(&c.body) => crate::body::inline_block(self, &b.block, &i),
+                        e @ (Expr::If(_) | Expr::Match(_)) if self.shape_of(e).is_none() => {
+                            let block: syn::Block = syn::parse_quote!({ #e });
+                            crate::body::inline_block(self, &block, &i)
+                        }
+                        Expr::Block(b) => match &b.block.stmts[0] {
+                            Stmt::Expr(e, None) => self.expr(e, &i),
+                            _ => crate::body::inline_block(self, &b.block, &i),
+                        },
+                        e => self.expr(e, &i),
+                    };
                     let inner = std::mem::replace(&mut self.pre, outer);
                     let v = v?;
                     self.pre.push(format!("tt{n}_: Maybe({})", self.e.odin(&i)));
@@ -2297,10 +2894,24 @@ impl<'a, 'b> Tx<'a, 'b> {
                     self.pre.push(format!("for {k} in 0 ..< len({recv}) {{\n{x} := {recv}[{k}]\n{}\nif {keep} {{ {recv}[{w}] = {recv}[{k}]; {w} += 1 }}\n}}", body.join("\n")));
                     format!("resize(&{recv}, {w})")
                 }
+                // `Definitions<T>` (`Arc<Vec<T>>`, a distinct `^[dynamic]T` in the model; nil reads as empty): its
+                // definitions, ungated, for reading.
+                ("iter_all" | "iter_unchecked" | "as_slice", Shape::Named(dn, _), 0) if self.definitions_item(dn).is_some() => {
+                    let item = self.definitions_item(dn).unwrap_or(Shape::Unit);
+                    let n = self.next_temp();
+                    self.pre.push(format!("d{n}_: [dynamic]{}", self.e.odin(&item)));
+                    self.pre.push(format!("if p{n}_ := {recv}{deref}; p{n}_ != nil do d{n}_ = p{n}_^"));
+                    format!("d{n}_")
+                }
                 // An iterator over a Vec, taken whole: the Vec (translated logic materializes iterators).
                 ("iter" | "into_iter", Shape::Vec(_), 0) if deref.is_empty() => recv,
                 ("as_deref" | "as_ref", Shape::OptPtr(..), 0) => recv,
-                ("extend", Shape::Vec(i), 1) if deref.is_empty() => {
+                // A Vec's kind unseen in a function that names no set type can't be a set.
+                ("extend", Shape::Vec(i), 1)
+                    if deref.is_empty()
+                        && (self.set_kind(&mc.receiver) == Some(SetKind::NotSet)
+                            || (self.set_kind(&mc.receiver).is_none() && !MENTIONS_SET.with(|m| m.get()))) =>
+                {
                     let items = self.expr(args[0], &Shape::Vec(i.clone()))?;
                     let n = self.next_temp();
                     self.pre.push(format!("x{n}_ := {items}"));
@@ -2323,6 +2934,25 @@ impl<'a, 'b> Tx<'a, 'b> {
                     let lookup = format!("if x{n}_, ok{n}_ := {m}[{key}]; ok{n}_ do g{n}_ = x{n}_");
                     self.pre.push(if deref.is_empty() { lookup } else { format!("if {recv} != nil {{\n{lookup}\n}}") });
                     format!("g{n}_")
+                }
+                // The closure runs only when the value is absent; its statements go inside the `if`.
+                ("unwrap_or_else", Shape::Option(i), 1) => {
+                    let Expr::Closure(c) = args[0] else { return Err("unwrap_or_else without a closure".into()) };
+                    if !c.inputs.is_empty() {
+                        return Err("unwrap_or_else closure with arguments".into());
+                    }
+                    if has_try(&c.body) || crate::closures::has_return(&c.body) {
+                        return Err("? or return inside a closure".into());
+                    }
+                    let n = self.next_temp();
+                    let ty = self.e.odin(i);
+                    let outer = std::mem::take(&mut self.pre);
+                    let d = self.expr(&c.body, i);
+                    let inner = std::mem::replace(&mut self.pre, outer);
+                    let d = d?;
+                    self.pre.push(format!("r{n}_: {ty}"));
+                    self.pre.push(format!("if v{n}_, ok{n}_ := {recv}.?; ok{n}_ {{\nr{n}_ = v{n}_\n}} else {{\n{}\nr{n}_ = {d}\n}}", inner.join("\n")));
+                    format!("r{n}_")
                 }
                 ("or_else", Shape::Option(_), 1) => {
                     let Expr::Closure(c) = args[0] else { return Err("or_else without a closure".into()) };
@@ -2367,6 +2997,19 @@ impl<'a, 'b> Tx<'a, 'b> {
             }
             other => Some(other),
         }
+    }
+}
+
+/// The prefix of a pending local's placeholder shape (`Shape::Unknown("pending:<odin name>")`).
+pub const PENDING_TAG: &str = "pending:";
+
+fn shape_has_unknown(s: &Shape) -> bool {
+    match s {
+        Shape::Unknown(_) | Shape::Param(_) => true,
+        Shape::Option(i) | Shape::OptPtr(i, _) | Shape::Ptr(i, _) | Shape::Vec(i) | Shape::PVec(i) | Shape::Array(i, _) | Shape::MutRef(i) => shape_has_unknown(i),
+        Shape::Result(a, b) | Shape::Map(a, b) => shape_has_unknown(a) || shape_has_unknown(b),
+        Shape::Tuple(v) | Shape::Named(_, v) => v.iter().any(shape_has_unknown),
+        _ => false,
     }
 }
 
@@ -2458,4 +3101,34 @@ fn unify(ty: &syn::Type, sh: &Shape, tparams: &[String], out: &mut BTreeMap<Stri
         }
         _ => {}
     }
+}
+
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum SetKind {
+    NotSet,
+    Sorted,
+    Hash,
+}
+
+/// The set kind a Rust type's text names (a sequence type is NotSet).
+pub fn set_kind_of(ty: &str) -> SetKind {
+    if ty.contains("BTreeSet") || ty.contains("OrdSet") {
+        SetKind::Sorted
+    } else if ty.contains("HashSet") || ty.contains("IndexSet") {
+        SetKind::Hash
+    } else {
+        SetKind::NotSet
+    }
+}
+
+/// Runs `f` with the destination of a collect that is exactly `e` known (a let's annotation, a function's result).
+pub fn with_collect_target<T>(e: &Expr, rust_ty: Option<&str>, f: impl FnOnce() -> T) -> T {
+    let target = match (e, rust_ty) {
+        (Expr::MethodCall(mc), Some(t)) if mc.method == "collect" => Some((mc as *const syn::ExprMethodCall as usize, set_kind_of(t))),
+        _ => None,
+    };
+    let saved = COLLECT_INTO.with(|c| std::mem::replace(&mut *c.borrow_mut(), target));
+    let r = f();
+    COLLECT_INTO.with(|c| *c.borrow_mut() = saved);
+    r
 }

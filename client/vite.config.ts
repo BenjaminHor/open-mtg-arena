@@ -210,9 +210,11 @@ export default defineConfig(() => {
   return {
   base: appBase,
   resolve: {
+    // ENGINE=odin builds the app against the Odin engine (D-187): the same interface, served by the glue that
+    // scripts/build-odin-engine.sh generates into src/wasm-odin/. One engine per build, never both.
     alias: {
-      "@wasm/engine": path.resolve(__dirname, "src/wasm/engine_wasm"),
-      "@wasm/draft": path.resolve(__dirname, "src/wasm/draft_wasm"),
+      "@wasm/engine": path.resolve(__dirname, process.env.ENGINE === "odin" ? "src/wasm-odin/engine_wasm" : "src/wasm/engine_wasm"),
+      "@wasm/draft": path.resolve(__dirname, process.env.ENGINE === "odin" ? "src/wasm-odin/draft_wasm" : "src/wasm/draft_wasm"),
     },
   },
   plugins: [

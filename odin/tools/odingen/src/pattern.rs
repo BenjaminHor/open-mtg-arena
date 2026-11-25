@@ -83,6 +83,15 @@ fn pat_into(tx: &mut Tx, pat: &Pat, s: &str, shape: &Shape, mode: Mode, c: &mut 
                 pat_into(tx, sp, s, shape, mode, c)?;
             }
             let by_ptr = mode == Mode::Mut || (pi.by_ref.is_some() && pi.mutability.is_some());
+            // A `&mut Box<T>` binding: the box is already a pointer to its contents, which is what Rust's deref
+            // coercion makes of it (`Some(pending_cast)` as `Option<&mut PendingCast>`); writes through it land in
+            // place. Not for a shared pointer (Arc): writing through one must copy first.
+            if by_ptr {
+                if let Shape::Ptr(inner, false) = shape {
+                    c.binds.push((name, s.to_string(), (**inner).clone(), true));
+                    return Ok(());
+                }
+            }
             if by_ptr {
                 c.binds.push((name, format!("&{s}"), shape.clone(), true));
             } else {

@@ -279,7 +279,7 @@ fn wrap(owner: Option<&str>, attrs: &[syn::Attribute], vis: &str, sig: &Signatur
         }
     }
     // The Odin procedure's name (the harness dispatches on it) and the file, which disambiguates clashes.
-    let fake = crate::model::FnDef { sig: sig.clone(), block: syn::parse_quote!({}), file: PathBuf::from(rel), self_ty: owner.map(str::to_string) };
+    let fake = crate::model::FnDef { sig: sig.clone(), block: syn::parse_quote!({}), file: PathBuf::from(rel), self_ty: owner.map(str::to_string), nested_in: None };
     let proc = proc_name_for(owner, &name, &fake);
     if only.is_some_and(|o| !o.contains(&proc)) {
         return;

@@ -128,6 +128,8 @@ struct Target {
 }
 
 thread_local! {
+    /// The Rust result type of the function being translated (a collect in a result lands there).
+    static RET_TEXT: std::cell::RefCell<Option<String>> = const { std::cell::RefCell::new(None) };
     /// Procedures whose translation Odin rejected (ODINGEN_DENY, a file of names, one per line): stubbed instead,
     /// until the translator handles what tripped them (odin/tools/translate-loop.sh).
     static DENY: std::collections::BTreeSet<String> = std::env::var("ODINGEN_DENY")
@@ -146,7 +148,34 @@ pub fn translate_fn(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef)
 }
 
 /// A function translated under another procedure name (a closure instance), with extra parameters at the end.
+/// Its own `?` returns from it, even when an instance is made from inside a closure body elsewhere.
 fn translate_fn_with(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, pname_override: Option<&str>, extra: &[String]) -> R<Translated> {
+    // Performance counters (game/perf_counters.rs) are thread-local diagnostics only tests read: recording into
+    // one changes no game. Their unit-returning procedures are translated with empty bodies.
+    let emptied;
+    let f = if f.file.to_string_lossy().ends_with("game/perf_counters.rs") && matches!(f.sig.output, ReturnType::Default) {
+        let mut g = f.clone();
+        g.block = syn::parse_quote!({});
+        emptied = g;
+        &emptied
+    } else {
+        f
+    };
+    let saved_exit = crate::translate::TRY_EXIT.with(|t| t.replace(None));
+    let saved_return = crate::translate::RETURN_EXIT.with(|t| t.replace(None));
+    let saved_pending = crate::translate::PENDING.with(|p| std::mem::take(&mut *p.borrow_mut()));
+    let saved_names = PROC_NAMES.with(|p| std::mem::take(&mut *p.borrow_mut()));
+    let saved_fn = crate::translate::CURRENT_FN.with(|c| c.borrow().clone());
+    let r = translate_fn_inner(e, owner, name, f, pname_override, extra);
+    crate::translate::TRY_EXIT.with(|t| t.replace(saved_exit));
+    crate::translate::RETURN_EXIT.with(|t| t.replace(saved_return));
+    crate::translate::PENDING.with(|p| *p.borrow_mut() = saved_pending);
+    PROC_NAMES.with(|p| *p.borrow_mut() = saved_names);
+    crate::translate::CURRENT_FN.with(|c| *c.borrow_mut() = saved_fn);
+    r
+}
+
+fn translate_fn_inner(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef, pname_override: Option<&str>, extra: &[String]) -> R<Translated> {
     if pname_override.is_some_and(|p| DENY.with(|d| d.contains(p))) {
         return Err("translation rejected by the Odin type check".into());
     }
@@ -157,6 +186,8 @@ fn translate_fn_with(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef
         return Err("procedure name shared by two functions".into());
     }
     crate::translate::CURRENT_FILE.with(|c| *c.borrow_mut() = Some(f.file.clone()));
+    // The scope nested helpers resolve in: the enclosing function for a helper, the function itself otherwise.
+    crate::translate::CURRENT_FN.with(|c| *c.borrow_mut() = Some(f.nested_in.clone().unwrap_or_else(|| f.sig.ident.to_string())));
     crate::translate::TOUCHES_UNLOGGED.with(|t| t.set(false));
     // Lifetime parameters don't exist in Odin; type and const parameters need monomorphizing (not done yet).
     if let Some(k) = generic_kind(&f.sig) {
@@ -168,8 +199,36 @@ fn translate_fn_with(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef
     if f.sig.asyncness.is_some() || f.sig.unsafety.is_some() {
         return Err("async or unsafe function".into());
     }
+    // The model holds sets as Vecs: a collect could land in a set (needing sorting or deduplication) through a
+    // type the translator doesn't see; refused rather than guessed.
+    let body_text = f.block.to_token_stream().to_string();
+    let sig_text = f.sig.to_token_stream().to_string();
+    let names_a_set = |t: &str| t.split(|c: char| !c.is_alphanumeric() && c != '_').any(|w| matches!(w, "BTreeSet" | "HashSet" | "IndexSet" | "OrdSet" | "FxHashSet"));
+    let saved_mentions = crate::translate::MENTIONS_SET.with(|m| m.replace(names_a_set(&body_text) || names_a_set(&sig_text)));
+    let saved_ret_text = RET_TEXT.with(|r| r.replace(match &f.sig.output {
+        ReturnType::Type(_, t) => Some(t.to_token_stream().to_string()),
+        ReturnType::Default => None,
+    }));
+    let mut rust_types = BTreeMap::new();
+    for input in &f.sig.inputs {
+        if let FnArg::Typed(pt) = input {
+            if let Pat::Ident(pi) = &*pt.pat {
+                rust_types.insert(pi.ident.to_string(), pt.ty.to_token_stream().to_string());
+            }
+        }
+    }
+    let saved_types = crate::translate::RUST_TYPES.with(|t| std::mem::replace(&mut *t.borrow_mut(), rust_types));
     let mut tx = Tx { e, vars: BTreeMap::new(), self_ty: owner.map(str::to_string), depth: 0, calls: true, pre: Vec::new(), fn_ret: Shape::Unit, temps: 0 };
-    let (sig, ret, mut_params) = signature_with(&mut tx, owner, f, extra)?;
+    let sig_r = signature_with(&mut tx, owner, f, extra);
+    let (sig, ret, mut_params) = match sig_r {
+        Ok(x) => x,
+        Err(e) => {
+            crate::translate::RUST_TYPES.with(|t| *t.borrow_mut() = saved_types);
+            crate::translate::MENTIONS_SET.with(|m| m.set(saved_mentions));
+            RET_TEXT.with(|r| r.replace(saved_ret_text));
+            return Err(e);
+        }
+    };
     tx.fn_ret = ret.clone();
     // Immutable parameters can't be pointed to: closures capture them by value (closures.rs).
     let by_value: BTreeSet<String> = tx
@@ -189,6 +248,7 @@ fn translate_fn_with(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef
     let mut b = Body { tx: &mut tx, out: String::new(), indent: 1, ret, declared: Default::default(), target: None, loops: Vec::new() };
     for (_, (odin, _)) in b.tx.vars.clone() {
         b.declared.insert(odin.trim_end_matches('^').to_string());
+        PROC_NAMES.with(|p| p.borrow_mut().insert(odin.trim_end_matches('^').to_string()));
     }
     // Odin parameters can't be assigned; a Rust `mut` parameter is a local copy.
     for p in &mut_params {
@@ -198,7 +258,22 @@ fn translate_fn_with(e: &mut Emitter, owner: Option<&str>, name: &str, f: &FnDef
     let out = std::mem::take(&mut b.out);
     tx.e.subst = saved_subst;
     crate::closures::BY_VALUE.with(|b| *b.borrow_mut() = saved_by_value);
+    crate::translate::RUST_TYPES.with(|t| *t.borrow_mut() = saved_types);
+    crate::translate::MENTIONS_SET.with(|m| m.set(saved_mentions));
+    RET_TEXT.with(|r| r.replace(saved_ret_text));
     r?;
+    // Pending locals (translate.rs, PENDING) get the type a use gave them; one no use typed is refused.
+    let mut out = out;
+    for (ident, (_, sh)) in crate::translate::PENDING.with(|p| p.borrow().clone()) {
+        let marker = pending_marker(&ident);
+        if !out.contains(&marker) {
+            continue;
+        }
+        match sh {
+            Some(sh) => out = out.replace(&marker, &tx.e.odin(&sh)),
+            None => return Err("let of an empty collection no use types".into()),
+        }
+    }
     let code = format!("{pname} :: proc{sig} {{\n{out}}}\n");
     let touches_unlogged = crate::translate::TOUCHES_UNLOGGED.with(|t| t.get());
     Ok(Translated { name: pname, code, touches_unlogged })
@@ -256,6 +331,8 @@ impl Body<'_, '_, '_> {
                 Stmt::Expr(e, _) => self.stmt_expr(e)?,
                 // A `use` inside a body changes nothing here: calls resolve by module path or file on their own.
                 Stmt::Item(syn::Item::Use(_)) => {}
+                // A nested `fn` is registered as a free function of the file (model.rs) and translated on its own.
+                Stmt::Item(syn::Item::Fn(_)) => {}
                 Stmt::Item(it) => {
                     let kind = match it {
                         syn::Item::Fn(_) => "fn",
@@ -290,6 +367,13 @@ impl Body<'_, '_, '_> {
             // A branch that leaves (`return`, `continue`, `break`, a panic) has no value.
             Expr::Return(_) | Expr::Continue(_) | Expr::Break(_) => self.stmt_expr(e),
             Expr::Macro(m) if is_panic_macro(m) => self.stmt_expr(e),
+            _ if self.target.is_none() => {
+                let ret = self.ret.clone();
+                let rt = RET_TEXT.with(|r| r.borrow().clone());
+                let v = crate::translate::with_collect_target(e, rt.as_deref(), || self.tx.expr(e, &ret))?;
+                self.line(&format!("return {v}"));
+                Ok(())
+            }
             _ => {
                 if let Some(t) = &self.target {
                     if t.infer {
@@ -322,12 +406,14 @@ impl Body<'_, '_, '_> {
     /// (pattern bindings and the branches' own locals are in scope there, unlike for `shape_of` on the whole).
     fn infer_tail_shape(&mut self, e: &Expr) -> Option<Shape> {
         let snap = (self.out.len(), self.tx.vars.clone(), self.declared.clone(), self.tx.pre.clone(), self.tx.temps, self.indent);
+        let names = PROC_NAMES.with(|p| p.borrow().clone());
         let loops = self.loops.clone();
         let saved = self.target.replace(Target { ident: String::new(), shape: None, weak: false, infer: true });
         let _ = self.tail_expr(e);
         let t = std::mem::replace(&mut self.target, saved).expect("target");
         self.out.truncate(snap.0);
         (self.tx.vars, self.declared, self.tx.pre, self.tx.temps, self.indent) = (snap.1, snap.2, snap.3, snap.4, snap.5);
+        PROC_NAMES.with(|p| *p.borrow_mut() = names);
         self.loops = loops;
         t.shape
     }
@@ -416,9 +502,48 @@ impl Body<'_, '_, '_> {
             crate::closures::register(&name, crate::closures::ClosureInfo { closure: c.clone(), env, args: None, ret: None, scope: crate::closures::scope_now() });
             return Ok(());
         }
-        if pi.by_ref.is_some() || self.mut_ref_source(&init.expr) {
+        // `let x = &mut place;`: a pointer to the place, used through as `x^` (writes land in place).
+        if let (None, Expr::Reference(r)) = (ty, &*init.expr) {
+            if r.mutability.is_some() && pi.by_ref.is_none() && is_place(&r.expr) {
+                let sh = self.shape_of(&r.expr).ok_or("binding to a mutable reference of an untyped place")?;
+                if !matches!(sh, Shape::MutRef(_)) {
+                    let place = self.tx.expr(&r.expr, &sh)?;
+                    let ident = self.fresh(&local_ident(&name));
+                    let ptr = match place.strip_suffix('^') {
+                        // Already a pointer read through (a `&mut` parameter): the pointer itself.
+                        Some(p) if !p.contains(['.', '[', '(']) => p.to_string(),
+                        _ => format!("&{place}"),
+                    };
+                    self.line(&format!("{ident} := {ptr}"));
+                    self.tx.vars.insert(name, (format!("{ident}^"), sh));
+                    return Ok(());
+                }
+            }
+        }
+        // A `&mut` the shapes know (`get_mut(..).expect(..)`, a MutRef) is bound as a pointer further down; any other
+        // mutable-reference source is refused.
+        let known_mut_ref = matches!(self.shape_of(&init.expr), Some(Shape::MutRef(_)));
+        if pi.by_ref.is_some() || (self.mut_ref_source(&init.expr) && !known_mut_ref) {
             return Err("binding to a mutable reference".into());
         }
+        // The Rust type, where the let shows it: an annotation, or a constructor (`Vec::new()`, `BTreeSet::new()`).
+        let rust_ty = match (ty, &*init.expr) {
+            (Some(t), _) => Some(t.to_token_stream().to_string()),
+            (None, Expr::Call(c)) => match &*c.func {
+                Expr::Path(p) if p.path.segments.len() >= 2 => Some(p.path.segments[p.path.segments.len() - 2].ident.to_string()),
+                _ => None,
+            },
+            (None, Expr::Macro(m)) if m.mac.path.is_ident("vec") => Some("Vec".to_string()),
+            _ => None,
+        };
+        crate::translate::RUST_TYPES.with(|t| match rust_ty {
+            Some(rt) => {
+                t.borrow_mut().insert(name.clone(), rt);
+            }
+            None => {
+                t.borrow_mut().remove(&name);
+            }
+        });
         let control = matches!(&*init.expr, Expr::If(_) | Expr::Match(_) | Expr::Block(_));
         let check = |tx: &mut Tx, sh: Shape| -> R<Shape> {
             // A local's type must be one Odin knows (not a lifetime-generic or out-of-model type).
@@ -441,8 +566,25 @@ impl Body<'_, '_, '_> {
                 None if control => self.infer_tail_shape(&init.expr),
                 None => self.forward_shape(&name, &init.expr, rest, tail),
             }
-            .ok_or_else(|| format!("let of an untyped value: {}", expr_kind(&init.expr)))?,
+            .map_or_else(
+                || match empty_ctor(&init.expr) {
+                    // An empty collection typed by a later use: declared with a placeholder (translate.rs, PENDING).
+                    Some(Ctor::Seq | Ctor::Map) => Ok(Shape::Unknown(crate::translate::PENDING_TAG.to_string())),
+                    _ => Err(format!("let of an untyped value: {}", expr_kind(&init.expr))),
+                },
+                Ok,
+            )?,
         };
+        if let Shape::Unknown(u) = &sh {
+            if u.starts_with(crate::translate::PENDING_TAG) {
+                let is_map = matches!(empty_ctor(&init.expr), Some(Ctor::Map));
+                let ident = self.fresh(&local_ident(&name));
+                self.line(&format!("{ident}: {}", pending_marker(&ident)));
+                crate::translate::PENDING.with(|p| p.borrow_mut().insert(ident.clone(), (is_map, None)));
+                self.tx.vars.insert(name, (ident.clone(), Shape::Unknown(format!("{}{ident}", crate::translate::PENDING_TAG))));
+                return Ok(());
+            }
+        }
         let sh = check(self.tx, sh)?;
         // A `&mut` result (`let o = state.objects.get_mut(&id).unwrap()`): a pointer, used through as `o^`, like a
         // `&mut` parameter, so writes land in place and matches through it bind pointers.
@@ -466,7 +608,8 @@ impl Body<'_, '_, '_> {
             self.tx.vars.insert(name, (ident, sh));
             return Ok(());
         }
-        let v = self.tx.expr(&init.expr, &sh)?;
+        let ann = ty.map(|t| t.to_token_stream().to_string());
+        let v = crate::translate::with_collect_target(&init.expr, ann.as_deref(), || self.tx.expr(&init.expr, &sh))?;
         let ident = self.fresh(&local_ident(&name));
         self.line(&format!("{ident}: {} = {v}", self.tx.e.odin(&sh)));
         self.tx.vars.insert(name, (ident, sh));
@@ -592,6 +735,8 @@ impl Body<'_, '_, '_> {
         }
         let tmp = self.fresh("ms");
         self.line(&format!("{tmp} := {v}"));
+        // A pattern that binds and tests nothing (`Some(_)` aside, `_`) leaves it unread, which Odin rejects.
+        self.line(&format!("_ = {tmp}"));
         Ok((tmp, sh, mode))
     }
 
@@ -616,10 +761,12 @@ impl Body<'_, '_, '_> {
     /// Runs an emitter and undoes everything it did if it fails (for trying a faster form first).
     fn attempt(&mut self, f: impl FnOnce(&mut Self) -> R<()>) -> R<()> {
         let snap = (self.out.len(), self.tx.vars.clone(), self.declared.clone(), self.tx.pre.clone(), self.tx.temps, self.indent, self.loops.clone());
+        let names = PROC_NAMES.with(|p| p.borrow().clone());
         let r = f(self);
         if r.is_err() {
             self.out.truncate(snap.0);
             (self.tx.vars, self.declared, self.tx.pre, self.tx.temps, self.indent, self.loops) = (snap.1, snap.2, snap.3, snap.4, snap.5, snap.6);
+            PROC_NAMES.with(|p| *p.borrow_mut() = names);
         }
         r
     }
@@ -688,11 +835,12 @@ impl Body<'_, '_, '_> {
     fn fresh(&mut self, base: &str) -> String {
         let mut n = base.to_string();
         let mut i = 2;
-        while self.declared.contains(&n) {
+        while self.declared.contains(&n) || PROC_NAMES.with(|p| p.borrow().contains(&n)) {
             n = format!("{base}_{i}");
             i += 1;
         }
         self.declared.insert(n.clone());
+        PROC_NAMES.with(|p| p.borrow_mut().insert(n.clone()));
         n
     }
 
@@ -704,11 +852,30 @@ impl Body<'_, '_, '_> {
         match e {
             Expr::If(i) => self.if_expr(i, false),
             Expr::Match(m) => self.match_expr(m, false),
+            // Inside an inlined closure body, `return` gives the closure's value and leaves its block.
+            Expr::Return(r) if crate::translate::RETURN_EXIT.with(|t| t.borrow().is_some()) => {
+                let Some((label, res, shape)) = crate::translate::RETURN_EXIT.with(|t| t.borrow().clone()) else { unreachable!() };
+                if label.is_empty() {
+                    // A dry run (infer_block_shape): nothing to emit.
+                    return Ok(());
+                }
+                match (&r.expr, res.is_empty()) {
+                    (Some(_), true) => return Err("return with a value from a closure without one".into()),
+                    (Some(v), false) => {
+                        let v = self.tx.expr(v, &shape)?;
+                        self.line(&format!("{res} = {v}"));
+                    }
+                    (None, _) => {}
+                }
+                self.line(&format!("break {label}"));
+                Ok(())
+            }
             Expr::Return(r) => {
                 match &r.expr {
                     Some(v) => {
                         let ret = self.ret.clone();
-                        let v = self.tx.expr(v, &ret)?;
+                        let rt = RET_TEXT.with(|r| r.borrow().clone());
+                        let v = crate::translate::with_collect_target(v, rt.as_deref(), || self.tx.expr(v, &ret))?;
                         self.line(&format!("return {v}"));
                     }
                     None => self.line("return"),
@@ -734,8 +901,27 @@ impl Body<'_, '_, '_> {
             }
             Expr::ForLoop(fl) => self.for_loop(fl),
             Expr::While(w) => {
-                if matches!(&*w.cond, Expr::Let(_)) {
-                    return Err("while let".into());
+                // `while let PAT = e { .. }`: each time round, the subject is evaluated and matched; a mismatch
+                // leaves the loop.
+                if let Expr::Let(l) = &*w.cond {
+                    let label = self.open_loop(w.label.as_ref());
+                    self.line(&format!("{label}: for {{"));
+                    self.indent += 1;
+                    let r = (|| -> R<()> {
+                        let (subj, sh, mode) = self.subject(&l.expr)?;
+                        let code = crate::pattern::compile(self.tx, &l.pat, &subj, &sh, mode)?;
+                        for st in &code.stmts {
+                            self.line(&st.replace(crate::pattern::FAIL, &format!("break {label}")));
+                        }
+                        let saved = self.bind_all(&code.binds);
+                        let r = self.block(&w.body, false);
+                        self.unbind_all(saved);
+                        r
+                    })();
+                    self.indent -= 1;
+                    self.line("}");
+                    self.loops.pop();
+                    return r;
                 }
                 // The condition is evaluated each time round, so statements it needs go inside the loop.
                 let label = self.open_loop(w.label.as_ref());
@@ -832,7 +1018,7 @@ impl Body<'_, '_, '_> {
             if pi.by_ref.is_some() || self.mut_ref_source(&l.expr) {
                 return Err("binding to a mutable reference".into());
             }
-            let sh = self.shape_of(&l.expr).ok_or("if let on an untyped value")?;
+            let sh = self.shape_of(&l.expr).ok_or_else(|| format!("if let on an untyped value: {}", source_kind(&l.expr)))?;
             let inner = match &sh {
                 Shape::Option(i) => (**i).clone(),
                 Shape::OptPtr(i, s) => Shape::Ptr(i.clone(), *s),
@@ -946,9 +1132,9 @@ impl Body<'_, '_, '_> {
         let Some((unit, _)) = self.tx.enum_variants_pub(&en) else { return Err("match on a non-enum".into()) };
         let subject = self.tx.expr(&m.expr, &sh)?;
         if unit {
-            self.line(&format!("#partial switch {subject} {{"));
+            self.line(&format!("#partial switch {} {{", header_safe(&subject)));
         } else {
-            self.line(&format!("#partial switch v_ in {subject} {{"));
+            self.line(&format!("#partial switch v_ in {} {{", header_safe(&subject)));
         }
         let mut has_default = false;
         let mut default_emitted = false;
@@ -1115,15 +1301,21 @@ impl Body<'_, '_, '_> {
             }
             e => e,
         };
-        let sh = self.shape_of(coll).ok_or("for over an untyped collection")?;
-        let elem = match &sh {
-            Shape::Vec(i) => (**i).clone(),
+        let sh = self.shape_of(coll).ok_or_else(|| format!("for over an untyped collection: {}", source_kind(coll)))?;
+        let (elem, src) = match &sh {
+            Shape::Vec(i) => ((**i).clone(), LoopSource::Vec),
+            Shape::PVec(i) if mode == Mode::Value => ((**i).clone(), LoopSource::PVec),
+            Shape::Ptr(p, _) if mode == Mode::Value && matches!(**p, Shape::Vec(_)) => {
+                let Shape::Vec(i) = &**p else { unreachable!() };
+                ((**i).clone(), LoopSource::VecPtr)
+            }
             other => return Err(format!("for over a non-Vec collection: {}", shape_kind(other))),
         };
         if mode == Mode::Mut && !is_place(coll) {
             return Err("mutable iteration over something that isn't a place".into());
         }
         let c = self.tx.expr(coll, &sh)?;
+        let c = self.hoist_pvec(c, src);
         let item = self.fresh("it");
         let idx = self.fresh("ix");
         let label = self.open_loop(fl.label.as_ref());
@@ -1132,8 +1324,11 @@ impl Body<'_, '_, '_> {
             bv.borrow_mut().insert(idx.clone());
         });
         let amp = if mode == Mode::Mut { "&" } else { "" };
-        self.line(&format!("{label}: for {amp}{item}, {idx} in {c} {{"));
+        self.loop_head(&label, &format!("{amp}{item}"), Some(&idx), &c, &elem, src);
         self.indent += 1;
+        if src == LoopSource::PVec {
+            self.line(&format!("{item} := pvec_get({c}, {idx})"));
+        }
         let (elem_pat, idx_pat): (&Pat, Option<&Pat>) = if enumerate {
             let Pat::Tuple(t) = &*fl.pat else { return Err("enumerate without a tuple pattern".into()) };
             if t.elems.len() != 2 {
@@ -1200,6 +1395,36 @@ impl Body<'_, '_, '_> {
         }
     }
 
+    /// An im::Vector loop source, read once into a local (a PVec value shares its chunks, so the copy is cheap).
+    fn hoist_pvec(&mut self, c: String, src: LoopSource) -> String {
+        if src != LoopSource::PVec {
+            return c;
+        }
+        let v = self.fresh("pv");
+        self.line(&format!("{v} := {c}"));
+        v
+    }
+
+    /// A `for` loop's head over a collection, the item named `item` (and the index `idx`). An im::Vector is walked by
+    /// index (the caller binds the item with `pvec_get` from the local `hoist_pvec` made); a Vec behind a nil-able
+    /// pointer reads as empty when nil.
+    fn loop_head(&mut self, label: &str, item: &str, idx: Option<&str>, c: &str, elem: &Shape, src: LoopSource) {
+        let ix = idx.map(|i| format!(", {i}")).unwrap_or_default();
+        match src {
+            LoopSource::Vec => self.line(&format!("{label}: for {item}{ix} in {} {{", header_safe(c))),
+            LoopSource::PVec => {
+                let i = idx.unwrap_or("_");
+                self.line(&format!("{label}: for {i} in 0 ..< {c}.len {{"));
+            }
+            LoopSource::VecPtr => {
+                let v = self.fresh("pv");
+                self.line(&format!("{v}: [dynamic]{}", self.tx.e.odin(elem)));
+                self.line(&format!("if p_ := {c}; p_ != nil do {v} = p_^"));
+                self.line(&format!("{label}: for {item}{ix} in {v} {{"));
+            }
+        }
+    }
+
     /// A new loop: its Odin label, pushed on the loop stack (the caller pops it).
     fn open_loop(&mut self, rust: Option<&syn::Label>) -> String {
         let label = self.fresh("loop");
@@ -1253,17 +1478,27 @@ impl Body<'_, '_, '_> {
             Expr::Reference(r) => &*r.expr,
             e => e,
         };
-        let sh = self.shape_of(coll).ok_or("for over an untyped collection")?;
-        let elem = match &sh {
-            Shape::Vec(i) => (**i).clone(),
+        let sh = self.shape_of(coll).ok_or_else(|| format!("for over an untyped collection: {}", source_kind(coll)))?;
+        let (elem, src) = match &sh {
+            Shape::Vec(i) => ((**i).clone(), LoopSource::Vec),
+            Shape::PVec(i) => ((**i).clone(), LoopSource::PVec),
+            Shape::Ptr(p, _) if matches!(**p, Shape::Vec(_)) => {
+                let Shape::Vec(i) = &**p else { unreachable!() };
+                ((**i).clone(), LoopSource::VecPtr)
+            }
             other => return Err(format!("for over a non-Vec collection: {}", shape_kind(other))),
         };
         let c = self.tx.expr(coll, &sh)?;
+        let c = self.hoist_pvec(c, src);
         let label = self.open_loop(fl.label.as_ref());
         crate::closures::BY_VALUE.with(|bv| bv.borrow_mut().insert(ident.clone()));
-        self.line(&format!("{label}: for {ident} in {c} {{"));
-        let saved = self.tx.vars.insert(name.clone(), (ident, elem));
+        let idx = self.fresh("ix");
+        self.loop_head(&label, &ident, Some(&idx), &c, &elem, src);
+        let saved = self.tx.vars.insert(name.clone(), (ident.clone(), elem));
         self.indent += 1;
+        if src == LoopSource::PVec {
+            self.line(&format!("{ident} := pvec_get({c}, {idx})"));
+        }
         self.block(&fl.body, false)?;
         self.indent -= 1;
         self.line("}");
@@ -1352,6 +1587,7 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
     crate::closures::INSTANCES.with(|i| *i.borrow_mut() = Default::default());
     let mut ok = Vec::new();
     let mut done: Vec<(String, Option<String>, String, FnDef, bool)> = Vec::new();
+    let mut why_by_proc: BTreeMap<String, String> = BTreeMap::new();
     let mut stubs = Vec::new();
     let mut reasons: BTreeMap<String, usize> = BTreeMap::new();
     // ODINGEN_EXECUTED: "file:line" of each function a profiled run executed (from an lcov report): the blockers
@@ -1369,10 +1605,16 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
     };
     let mut ex_reasons: BTreeMap<String, usize> = BTreeMap::new();
     let (mut ex_total, mut ex_ok) = (0usize, 0usize);
+    // Executed generic or closure-taking functions, refused alone (they exist only as per-call-site instances).
+    let mut ex_generic: Vec<String> = Vec::new();
     for ((owner, name), d) in &fns {
         let ex = is_executed(d);
         ex_total += ex as usize;
-        match translate_fn(e, owner.as_deref(), name, d) {
+        let tr = translate_fn(e, owner.as_deref(), name, d);
+        if let Err(r) = &tr {
+            why_by_proc.insert(proc_name_for(owner.as_deref(), name, d), r.clone());
+        }
+        match tr {
             Ok(t) => {
                 ex_ok += ex as usize;
                 done.push((t.name.clone(), owner.clone(), name.clone(), d.clone(), t.touches_unlogged));
@@ -1384,6 +1626,9 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
                 }
                 if ex {
                     *ex_reasons.entry(r.clone()).or_default() += 1;
+                    if r.starts_with("generic function") {
+                        ex_generic.push(proc_name_for(owner.as_deref(), name, d));
+                    }
                 }
                 // ODINGEN_WHY=<text>: name the functions refused for a reason containing it (debugging the translator).
                 if let Ok(w) = std::env::var("ODINGEN_WHY") {
@@ -1396,6 +1641,11 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
         }
     }
     println!("functions {}: translated {} ({:.1}%)", fns.len(), ok.len(), 100.0 * ok.len() as f64 / fns.len().max(1) as f64);
+    // ODINGEN_REACH=<procedure>: what that procedure can reach through calls (by name, so an over-approximation),
+    // how much of it translates, and what blocks the rest — the distance to running it in Odin.
+    if let Ok(root) = std::env::var("ODINGEN_REACH") {
+        reach_report(&fns, &root, &done.iter().map(|d| d.0.clone()).collect(), &why_by_proc);
+    }
     let mut rs: Vec<_> = reasons.into_iter().collect();
     rs.sort_by(|a, b| b.1.cmp(&a.1));
     let top: usize = std::env::var("ODINGEN_TOP").ok().and_then(|v| v.parse().ok()).unwrap_or(40);
@@ -1404,6 +1654,17 @@ pub fn report(e: &mut Emitter, only: Option<&str>, out_file: Option<&std::path::
     }
     if executed.is_some() {
         println!("executed functions {ex_total}: translated {ex_ok} ({:.1}%)", 100.0 * ex_ok as f64 / ex_total.max(1) as f64);
+        // Those with at least one instance made (and not rejected by the Odin type check): translated where the
+        // translated callers use them, though other call sites may still lack instances.
+        let instanced: std::collections::BTreeSet<String> = crate::closures::INSTANCES.with(|i| {
+            i.borrow().1.iter().filter(|(n, _)| !DENY.with(|d| d.contains(n))).filter_map(|(n, _)| n.split("__cl").next().map(|b| b.split("__g").next().unwrap_or(b).to_string())).collect()
+        });
+        let via = ex_generic.iter().filter(|g| instanced.contains(*g)).count();
+        println!(
+            "  plus {via} of {} executed generic/closure-taking functions translated as instances ({:.1}% counting them)",
+            ex_generic.len(),
+            100.0 * (ex_ok + via) as f64 / ex_total.max(1) as f64
+        );
         let mut rs: Vec<_> = ex_reasons.into_iter().collect();
         rs.sort_by(|a, b| b.1.cmp(&a.1));
         for (r, n) in rs.iter().take(top) {
@@ -1649,6 +1910,49 @@ enum Ctor {
 }
 
 /// An empty collection constructor, by the kind of shape it makes.
+/// An expression made safe for a control statement's header: a composite literal there (`for x in [2]T{a, b} {`)
+/// would have its `{` read as the body's, so one containing a brace is parenthesized.
+pub fn header_safe(e: &str) -> String {
+    if e.contains('{') { format!("({e})") } else { e.to_string() }
+}
+
+/// Where a `for` loop's items come from.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum LoopSource {
+    Vec,
+    PVec,
+    VecPtr,
+}
+
+/// A short name for an expression's kind in refusal messages: the method or function it calls, or its form.
+fn source_kind(e: &Expr) -> String {
+    match e {
+        Expr::MethodCall(m) => format!("method .{}()", m.method),
+        Expr::Call(c) => match &*c.func {
+            Expr::Path(p) => format!("call {}", p.path.segments.last().map(|s| s.ident.to_string()).unwrap_or_default()),
+            _ => "call".into(),
+        },
+        Expr::Reference(r) => source_kind(&r.expr),
+        Expr::Paren(p) => source_kind(&p.expr),
+        Expr::Field(_) => "field".into(),
+        Expr::Path(_) => "variable".into(),
+        Expr::Range(_) => "range".into(),
+        _ => "expression".into(),
+    }
+}
+
+thread_local! {
+    /// Every name declared in the procedure being translated, across the bodies inlined into it (closure blocks get
+    /// a Body of their own): Odin labels are procedure-wide, and a closure's local must not shadow a name its
+    /// captures are read through.
+    static PROC_NAMES: std::cell::RefCell<BTreeSet<String>> = std::cell::RefCell::new(BTreeSet::new());
+}
+
+/// The placeholder type of a pending local's declaration, replaced when the function is finished.
+fn pending_marker(ident: &str) -> String {
+    format!("«pending:{ident}»")
+}
+
 fn empty_ctor(e: &Expr) -> Option<Ctor> {
     match e {
         Expr::Call(c) => {
@@ -1901,33 +2205,45 @@ pub fn inline_block(tx: &mut Tx, block: &Block, shape: &Shape) -> R<String> {
     let unit = matches!(shape, Shape::Unit);
     tx.temps += 1;
     let res = format!("cr{}_", tx.temps);
+    let label = format!("cb{}_", tx.temps);
     let outer = std::mem::take(&mut tx.pre);
+    // `?` inside leaves this block with None/Err as the value (translate.rs, Expr::Try).
+    let saved_exit = crate::translate::TRY_EXIT.with(|t| t.replace(Some((label.clone(), res.clone(), shape.clone()))));
+    let saved_return = crate::translate::RETURN_EXIT.with(|t| t.replace(Some((label.clone(), if unit { String::new() } else { res.clone() }, shape.clone()))));
     let target = if unit { None } else { Some(Target { ident: res.clone(), shape: Some(shape.clone()), weak: false, infer: false }) };
     let mut b = Body { tx, out: String::new(), indent: 1, ret: Shape::Unit, declared: Default::default(), target, loops: Vec::new() };
     let r = b.block(block, !unit);
     let code = std::mem::take(&mut b.out);
     let tx = b.tx;
+    crate::translate::TRY_EXIT.with(|t| t.replace(saved_exit));
+    crate::translate::RETURN_EXIT.with(|t| t.replace(saved_return));
     tx.pre = outer;
     r?;
     if !unit {
         tx.pre.push(format!("{res}: {}", tx.e.odin(shape)));
     }
-    tx.pre.push(format!("{{\n{code}}}"));
+    tx.pre.push(format!("{label}: {{\n{code}}}"));
     Ok(if unit { String::new() } else { res })
 }
 
 /// The shape of a block's value, by a dry run of its statements (nothing is kept).
 pub fn infer_block_shape(tx: &mut Tx, block: &Block) -> Option<Shape> {
     let (vars, temps) = (tx.vars.clone(), tx.temps);
+    let names = PROC_NAMES.with(|p| p.borrow().clone());
     let outer = std::mem::take(&mut tx.pre);
+    let saved_exit = crate::translate::TRY_EXIT.with(|t| t.replace(Some((String::new(), String::new(), Shape::Unknown("dry run".into())))));
+    let saved_return = crate::translate::RETURN_EXIT.with(|t| t.replace(Some((String::new(), String::new(), Shape::Unknown("dry run".into())))));
     let target = Some(Target { ident: String::new(), shape: None, weak: false, infer: true });
     let mut b = Body { tx, out: String::new(), indent: 1, ret: Shape::Unit, declared: Default::default(), target, loops: Vec::new() };
     let _ = b.block(block, true);
     let shape = b.target.take().and_then(|t| t.shape);
     let tx = b.tx;
+    crate::translate::TRY_EXIT.with(|t| t.replace(saved_exit));
+    crate::translate::RETURN_EXIT.with(|t| t.replace(saved_return));
     tx.vars = vars;
     tx.temps = temps;
     tx.pre = outer;
+    PROC_NAMES.with(|p| *p.borrow_mut() = names);
     shape
 }
 
@@ -1949,4 +2265,67 @@ pub fn translate_generic_instance(e: &mut Emitter, owner: Option<&str>, name: &s
     crate::translate::TOUCHES_UNLOGGED.with(|t| t.set(saved_touch));
     e.subst = saved_subst;
     r.map(|t| t.code)
+}
+
+/// The call graph from a root (calls and method calls matched by name to every function of that name) and, over
+/// what it reaches, how much translates and what blocks the rest.
+fn reach_report(fns: &[((Option<String>, String), FnDef)], root: &str, translated: &BTreeSet<String>, why: &BTreeMap<String, String>) {
+    struct Calls(BTreeSet<String>);
+    impl<'ast> syn::visit::Visit<'ast> for Calls {
+        fn visit_expr_call(&mut self, c: &'ast syn::ExprCall) {
+            if let Expr::Path(p) = &*c.func {
+                if let Some(l) = p.path.segments.last() {
+                    self.0.insert(l.ident.to_string());
+                }
+            }
+            syn::visit::visit_expr_call(self, c);
+        }
+        fn visit_expr_method_call(&mut self, m: &'ast syn::ExprMethodCall) {
+            self.0.insert(m.method.to_string());
+            syn::visit::visit_expr_method_call(self, m);
+        }
+        fn visit_expr_path(&mut self, p: &'ast syn::ExprPath) {
+            // A function passed by name (`.map(helper)`).
+            if let Some(l) = p.path.segments.last() {
+                self.0.insert(l.ident.to_string());
+            }
+        }
+    }
+    let mut by_name: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    let mut calls: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
+    for ((owner, name), d) in fns {
+        let p = proc_name_for(owner.as_deref(), name, d);
+        by_name.entry(name.clone()).or_default().push(p.clone());
+        let mut v = Calls(BTreeSet::new());
+        syn::visit::visit_block(&mut v, &d.block);
+        calls.entry(p).or_default().extend(v.0);
+    }
+    let mut seen = BTreeSet::new();
+    let mut queue = vec![root.to_string()];
+    while let Some(p) = queue.pop() {
+        if !seen.insert(p.clone()) {
+            continue;
+        }
+        for n in calls.get(&p).into_iter().flatten() {
+            for q in by_name.get(n).into_iter().flatten() {
+                if !seen.contains(q) {
+                    queue.push(q.clone());
+                }
+            }
+        }
+    }
+    let reached: Vec<&String> = seen.iter().filter(|p| calls.contains_key(*p)).collect();
+    let ok = reached.iter().filter(|p| translated.contains(**p)).count();
+    println!("reach from {root}: {} functions, translated {ok} ({:.1}%)", reached.len(), 100.0 * ok as f64 / reached.len().max(1) as f64);
+    let mut reasons: BTreeMap<&str, usize> = BTreeMap::new();
+    for p in &reached {
+        if let Some(r) = why.get(*p) {
+            *reasons.entry(r.as_str()).or_default() += 1;
+        }
+    }
+    let mut rs: Vec<_> = reasons.into_iter().collect();
+    rs.sort_by(|a, b| b.1.cmp(&a.1));
+    for (r, n) in rs.iter().take(25) {
+        println!("  {n:>6}  {r}");
+    }
 }

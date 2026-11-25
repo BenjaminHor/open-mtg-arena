@@ -342,6 +342,8 @@ fn generate(roots_dirs: &[PathBuf], out_dir: &PathBuf, roots: &[&str]) {
         body::report(&mut e, filter.as_deref(), Some(&out_dir.join("translated.odin")), &codecs);
         // Translation asked for more clone helpers; the clone file is written again with them.
         std::fs::write(out_dir.join("generated_clone.odin"), format!("{HEADER}import \"../json\"\n\n_ :: json\n\n{}", e.clone_out)).unwrap();
+        // Equality procedures translated logic asked for (Rust's derived PartialEq).
+        std::fs::write(out_dir.join("generated_eq.odin"), format!("{HEADER}\n{}", e.eq_out)).unwrap();
     }
     for (n, users) in &e.unknown_shapes {
         println!("  unknown type {n} (in {})", users.iter().cloned().collect::<Vec<_>>().join(", "));

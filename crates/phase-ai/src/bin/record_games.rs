@@ -38,8 +38,8 @@ use rand::SeedableRng;
 use serde::Serialize;
 
 // Lines are written straight from the typed values, never through serde_json::Value: a Value's map keeps one
-// member per key, and serde writes some keys twice (an internally tagged enum holding another with the same tag,
-// TargetEffectDetail::Modification(PtDirection) is {"type": "Modification", "type": "Increase"}).
+// member per key, and serde would write a key twice wherever an internally tagged enum holds another with the same
+// tag (the case D-184 fixed was TargetEffectDetail::Modification(PtDirection)).
 #[derive(Serialize)]
 struct Header<'a> {
     matchup: &'a str,

@@ -19495,6 +19495,79 @@ mod tests {
         );
     }
 
+    /// D-184: a game paused on a P/T pump's target prompt survives the trip
+    /// through `serde_json::Value` (as through the client's `JSON.parse`), and a
+    /// game saved before D-184, which the client stored with the direction's
+    /// tag in place of `Modification`'s, still loads.
+    #[test]
+    fn paused_pump_target_prompt_round_trips_through_json_values() {
+        let mut state = GameState::new_two_player(42);
+        let source = create_object(
+            &mut state,
+            CardId(1),
+            PlayerId(0),
+            "Payload Source".to_string(),
+            Zone::Stack,
+        );
+        let creature = create_object(
+            &mut state,
+            CardId(2),
+            PlayerId(0),
+            "Bear".to_string(),
+            Zone::Battlefield,
+        );
+        state
+            .objects
+            .get_mut(&creature)
+            .unwrap()
+            .card_types
+            .core_types
+            .push(CoreType::Creature);
+        let pump = ResolvedAbility::new(
+            Effect::Pump {
+                power: PtValue::Fixed(3),
+                toughness: PtValue::Fixed(3),
+                target: TargetFilter::Typed(TypedFilter::creature()),
+            },
+            vec![],
+            source,
+            PlayerId(0),
+        );
+        let target_slots = build_target_slots(&state, &pump).expect("slots");
+        assert_eq!(
+            target_slots[0].effect_detail,
+            TargetEffectDetail::Modification(PtDirection::Increase)
+        );
+        state.waiting_for = WaitingFor::TargetSelection {
+            player: PlayerId(0),
+            pending_cast: Box::new(crate::types::game_state::PendingCast::new(
+                source,
+                CardId(1),
+                pump,
+                ManaCost::default(),
+            )),
+            target_slots,
+            mode_labels: vec![],
+            selection: Default::default(),
+        };
+
+        let value = serde_json::to_value(&state).expect("serialize");
+        let restored: GameState = serde_json::from_value(value.clone()).expect("deserialize");
+        assert_eq!(restored.waiting_for, state.waiting_for);
+
+        // Before D-184 the slot's detail was written with "type" twice, and
+        // the client kept only the last: {"type": "Increase"}.
+        let mut legacy = value;
+        let detail = &mut legacy["waiting_for"]["data"]["target_slots"][0]["effect_detail"];
+        assert_eq!(
+            *detail,
+            serde_json::json!({"type": "Modification", "direction": "Increase"})
+        );
+        *detail = serde_json::json!({"type": "Increase"});
+        let migrated: GameState = serde_json::from_value(legacy).expect("legacy form");
+        assert_eq!(migrated.waiting_for, state.waiting_for);
+    }
+
     #[test]
     fn search_library_collects_later_independent_stack_targets() {
         let mut state = GameState::new_two_player(42);

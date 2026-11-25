@@ -110,9 +110,33 @@ every exit criterion met or waived, D-142); tagging `m2` on `main` is the owner'
     pointer: `get_mut`, `last_mut`, functions returning `&mut T` / `Option<&mut T>`), with a hand-written
     `ObjectMap_get_mut` that copies on write like `Arc::make_mut` (tested in `hand_logic_test`), generic functions
     monomorphized per call site, a plain binding of a Box field binding the box (as Rust does), and Box values read
-    where their contents are wanted: 7,241 of 15,918 functions (45.5%), executed 45.9%. Next blockers (executed): type
+    where their contents are wanted: 7,241 of 15,918 functions (45.5%), executed 45.9%. **PR #118 merged**
+    (2026-11-24, squash efc4865). **PR #119** (open): sets kept as sets (sorted/deduplicated by their Rust type), `?`
+    inside inlined closures, derived equality for `==` on structs/enums/collections, a call returning `impl Iterator`
+    starting a chain, `enumerate`/`flat_map` stages (terminals break the chain's labelled outer loop),
+    `Definitions<T>` iteration, `unwrap_or_else`, Vec reads through nil-able pointers: 7,459 of 15,918 (46.9%),
+    executed 47.4%. Method refusals now name the receiver's shape. Then `while let`, empty collections typed by a
+    later use (a placeholder type filled in when the function is done), chain terminals typed over untyped receivers,
+    `for` over im::Vector (by index) and over a Vec behind a nil-able pointer, an Option as a chain's source, and
+    `return` inside inlined closures (leaves the closure's block, like `?`): 7,607 of 15,918 (47.8%), executed
+    48.6% (2,844 of 5,849). **Parallel streams (D-185, 2026-11-24):** sibling cloud sessions on D-183 (parse
+    precompute), Odin performance (state layout and copies) and O-2 (the replay harness), each on its own branch and
+    PR; this session keeps the translator. Sessions (started 16:02 UTC from claude/eloquent-mayer-qcx0e1; the
+    first three failed in setup because the environment's script ran pnpm at the repo root, now fixed to client/):
+    D-183 session_012gEsKbWYSyCrqCT1cYB66w (branch claude/odin-d183-parse-precompute), performance
+    session_012gEsKZntQHoXvuPbowys7j (claude/odin-state-perf), O-2 session_012gEsKakESMXjUS4u6b67dY
+    (claude/odin-o2-replay). Vector check on that translation (5,812 calls over 1,079 procedures): 684 pass, 26 pass
+    touching unlogged state, 0 unexplained failures, 0 crashes, 367 reach only untranslated code
+    (`controls_exact_fetchland` reads the skipped `layers_dirty`, explained). Later the same day: engine trait
+    methods registered, constants and unit variants typed, pair-held maps (non-hashable keys), `mem::take`/`replace`,
+    `next()` on fresh iterators, Box `&mut` bindings, `Option<Box<T>>` read as `Option<T>`; one name set per
+    procedure; brace-holding loop heads parenthesized; translate-loop now fails on a crashed check (a killed check
+    had read as clean). 8,109 of 16,030 functions (50.6%), executed 51.8% (3,052 of 5,889). Vector check: 728 pass,
+    27 touching unlogged state, 0 unexplained failures, 0 crashes, 386 reach only untranslated code. D-184 is done (Known issues). Next
+    blockers (executed): type
     parameters whose callers aren't translated yet (88), closure-parameter callees (87, translated as instances
-    through their callers), the type-check tail (80), closures/combinators of untyped values (~107). Next blockers
+    through their callers), the type-check tail (83), closures/combinators of untyped values (~130), lets of
+    untyped values (~200 across kinds). Older next blockers
     (executed): generic functions (196), iterating non-Vec collections (maps, sets, PVec, ranges: ~260), `get` on
     maps (78), `matches!` with field conditions (70), statement macros (66). Translator now: value
     `if`/`match`/block initializers (each branch assigns), empty collections typed by their later use, Option/Result
@@ -2583,6 +2607,42 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions
+
+- (2026-11-25) After the switch at 14,013 cards, aim for the whole 15,772-card pool (`game:arena in:paper`)? 1,584
+  of the 1,759 cards Rust doesn't play aren't supported by Odin either yet. Proposed: yes, as the next goal.
+- (2026-11-24, D-187) The card data comes from the Rust card-text parser (`./scripts/gen-card-data.sh`). After the
+  switch Rust stays as a build step for card data, not only as a test reference, unless an Odin parser becomes part
+  of the plan. Tell the owner (pending).
+
+- (2026-11-24, after the Odin port was paused) The owner on why the port started: the frontend client would have
+  taken longer than they liked, so they adopted phase.rs to borrow its frontend and strip what they don't want; Rust
+  is "really meh to work with" and they like Odin, so an AI-agent port seemed easy. **The real end goal: "a clean and
+  modern mtg client that I can customize via Claude code whenever I want."** Recommendation given: stop the Odin port
+  (a translation keeps the engine's size and convolution, takes weeks, and gains players nothing), keep the Rust
+  engine as a black box the client talks to, and make the codebase quick for Claude Code to customize (prebuilt engine
+  wasm so client work needs no Rust build, faster engine dev builds, a map of the engine). Keep D-184's fix. Waiting
+  on the owner's answer.
+- Owner (2026-11-24), asked about Rust's build times: **"I just want blazing fast iteration."** That is the
+  requirement the engine-language question gets judged by: a change, client or engine, visible in the running app in
+  seconds. Next step: measure today's loops (a client-only change; a small engine change) and what cheap build
+  settings buy, before choosing between keeping Rust and porting.
+- Owner (2026-11-24): "yeah go ahead with 1 and 2 and 3". Plan, in order (the Odin port stays paused meanwhile):
+  1. Client loop instant: client work needs no Rust build (a prebuilt engine fetched, not built) and a compact engine
+     file (the dev build is 263 MB); measure edit-to-screen.
+  2. Engine loop measured: a one-line engine change to a reloaded app, today and with cheap build settings.
+  3. Report the numbers and a recommendation on the engine (keep Rust, or port) for the owner to decide.
+- Owner (2026-11-24), during that work: "I also wonder if it's worthwhile to do an Odin port at a high level and not
+  necessarily a rust to Odin translation" (a clean Odin engine written from the rules, not translated). To be
+  answered in step 3 with the trade-off (card coverage against a small, fast, readable engine; what of today's Odin
+  work carries over: the data model, codecs and RNG do, the translator doesn't).
+- Owner (2026-11-24): the cards that matter are those from the Scryfall query **`game:arena in:paper`** (cards on
+  MTG Arena that also exist in paper). That pool sizes the engine options in step 3. Measured (2026-11-24): the
+  pool is 15,772 unique cards (Scryfall API); the Rust engine fully supports 14,013 of them (88.8%), 1,759 are
+  marked unsupported, none are missing from the card data (client/public/coverage-data.json, matched by name).
+- Owner (2026-11-24), on an Odin engine built from the rules behind the same wasm interface: **no running both
+  engines** in the app; "the only value I think we would get from the rust portions are the tests for mechanics and
+  cards". So if an Odin engine is built, the Rust engine serves as a test reference (its tests and recorded games),
+  not as a shipped fallback.
 - Settled (2026-11-24, D-183): runtime card-text parses are precomputed into the card data; the Odin engine
   never parses. Settled (2026-11-24, D-184): fix the saved-game `"type"` clash, changing that wire form.
 
@@ -2675,7 +2735,829 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   quieter run: no other work running, after PR #78's reviews; alternating base and head runs stay for close calls.
   Done: the median of five idle runs.)
 
+## Current goal: the new Odin engine (D-187, owner's /goal, 2026-11-24)
+
+Done when: the app runs on the Odin engine, it fully supports at least the 14,013 `game:arena in:paper` cards the
+Rust engine plays today, and an engine change rebuilds and shows in the app in seconds. Report to the owner only at
+milestones, decisions and problems.
+
+Plan (keep current):
+1. **Capture the Rust tests** as language-neutral files. `crates/engine/src/game/scenario_capture.rs`: with
+   `ENGINE_CAPTURE_DIR` set, every action a scenario test applies is appended to `<dir>/<test>.jsonl` (pre state or
+   null when unchanged, action, result, post state). Run the integration suite with it on; then recorded AI games
+   (`record-games`, decks from the pool). Corpus is generated, never committed; a script regenerates it.
+2. **Odin WASM shell**: every function in `client/src/wasm/engine_wasm.d.ts` (94) and `draft_wasm.d.ts` (39),
+   same names and JSON, behind a JS glue module matching wasm-bindgen's; data lookups real, game functions minimal;
+   the client loads against it (a build switch, not a dual engine).
+3. **Grow the engine** from the CR, mechanic by mechanic, with a simple AI; track the captured-test pass rate
+   (comparing a game-relevant projection, not Rust's bookkeeping) and pool cards fully supported.
+4. **Switch** the app to Odin at 14,013+ pool cards; Rust stays only as the test reference.
+
+Also in flight: the dev bundle (scripts/fetch-dev-bundle.sh; the Pages deploy publishes it).
+
+Progress:
+- Step 1: `scripts/capture-rust-tests.sh <dir> [filter]` captures the integration tests (one gzip JSONL file per
+  test, each step: starting state, the acting seat, action, accepted or not, result state). A slice of 8 tests: one
+  file per test at the default thread count, ~120 KB per test compressed (~25x). `odin/engine-wasm/run-captured.mjs
+  <rust|odin> <dir>` replays each step through the client's interface (restore, submit for the seat, export) and
+  compares `projection.mjs`'s game-relevant view (cards by name, not id; libraries as counts and contents, not order;
+  no timestamps). Rust against its own capture: 7/8 tests, 71/75 steps; the miss is a state Rust itself refuses to
+  restore ("current-turn ZoneChanged record has no ledger occurrence"), so such tests are fixtures to exclude.
+- Step 3 (2026-11-24): the Odin engine plays whole games. `odin/engine/game/`: turns and steps (CR 500-514),
+  priority (117), land plays (305), mana abilities and automatic payment (106, 601.2g-h, 605), casting with targets
+  (601, 115), the stack and resolving (405, 608), combat with flying/reach, first and double strike, trample,
+  deathtouch, lifelink, vigilance, menace, defender, haste (506-511, 702), state-based actions (704), London
+  mulligan (103.5), discard to hand size (514.1), and a simple AI. Spells supported: fixed damage, +N/+N until end of
+  turn, draw, gain life, destroy. AI-vs-AI games finish (three seeds, 14-22 turns, ~11 ms per action in the dev
+  build). In the app: the game page loads, the opening hand shows, Keep works, the steps advance.
+  Known simplifications: first-strike and regular damage happen in one combat damage step (SBAs between them);
+  "until end of turn" pumps live beside the state, so a save/restore forgets them; no game events yet (no
+  animations or log); the Commander format's command zone isn't set up (commanders are left out).
+  Coverage (`node odin/engine-wasm/coverage.mjs`): 582 of the 15,772 pool cards fully supported (Rust: 13,381 by
+  client/public/coverage-data.json's names; the goal's 14,013 came from the Scryfall-name match, to reconcile).
+  The report ranks missing pieces: triggered abilities lead (zone-change triggers block 3,623 cards and are the
+  only gap for 1,709), then continuous statics (1,623), "as it enters" replacements (883), step and attack triggers,
+  spell-cast triggers. Next: triggered abilities (CR 603).
+- Step 3 progress (2026-11-24, later): triggered abilities (CR 603: zone changes, steps, attacks, spell casts),
+  tokens (111), layers (613: static P/T and keyword effects, counters, until-end-of-turn grants), activated
+  abilities (602: mana, tap, sacrifice-self, pay-life costs), enters-tapped/with-counters replacements (614.1c),
+  zone-change effects (exile, bounce, graveyard returns), counters/tap/mill/mass pump/destroy all/damage each,
+  one object-filter matcher (types, subtypes, colors, keywords, mana value, P/T, attacking...), the attacker's
+  damage division (510.1c, 702.19b), target incarnations (400.7), commanders (903.6, 903.8 tax, 903.9a return;
+  the owner's choice to return is always taken, hand/library replacement 903.9b and commander damage 903.10a not
+  yet). A rules-judge review of the core was fixed in full. Native rules tests: `odin test odin/tests/game
+  -define:ODIN_TEST_TRACK_MEMORY=false` (15, each citing its rule). Pool coverage: 1,886 of 15,772.
+- Step 3 progress (2026-11-24, evening): damage triggers, scry/surveil on resumable resolution (608.2), amounts
+  worked out as effects happen (608.2h), rule-stating statics (can't block/attack, can't be blocked, doesn't
+  untap, must attack, extra land, no max hand size, flash), Auras and Equipment (303.4, 702.5-6, 704.5m-n), and
+  the AI for them. Rules tests: 23. Process note: background jobs only build and test; commits are made in the
+  foreground (a background commit once picked up half-finished edits).
+- Step 3 progress (2026-11-24, night): conditional and dynamic statics, CDAs, colors (layer 5), discard and dig
+  choices, "it"/"that creature" instructions acting on the earlier target (608.2c), resolved effects granting
+  rules for a duration (can't block, can't be blocked, doesn't untap; 611.2), tokens with statics and X/X sizes,
+  sacrifice-a-permanent and discard-a-card costs through the PayCost prompt (601.2h, 602.2b, 701.21a). Rules
+  tests: 30. Pool coverage: 2,765 of 15,772 (the owner asked; reported). `coverage.mjs --examples "<gap>"` lists
+  the cards one gap alone blocks.
+- Step 1 full capture (2026-11-24): 12,326 tests recorded (3.3 GB, in the session scratchpad, not committed;
+  ~100 min). Shards integration, integration_2 and integration_3 completed (one Rust test failed in the first);
+  integration_4 failed partway, likely killed in a memory squeeze (the container's processes share ~15 GB).
+  Rust self-replay done: 11,160 of 12,326 recordings replay cleanly on Rust (the usable fixtures); 1,074 differ on
+  Rust itself (mostly states it can't restore), 37 unreadable, 55 over 5 MB (loop tests, left out; replaying them
+  exhausted memory). The replayer restarts every few hundred tests (memory grows with each restore) and writes
+  each result as it goes.
+- First Odin replay over the 11,160 fixtures (2026-11-24, engine at 3221bf1, 571 s on three workers): 388 pass
+  (3.5%), 10,765 fail, 7 too large. Failures: CastSpell rejected 5,481, ActivateAbility rejected 1,839, stack
+  contents 1,058, waiting_for 663, phase 227. The 7,320 rejected casts and activations split three ways (scratchpad
+  cast-scan.mjs): 1,816 act on a synthetic test card (not in the card database: Odin's support check looks the card
+  up by name, while the fixture's object carries its own abilities); 4,963 on a real card Odin doesn't support yet
+  (top gaps: spell conditions 392, Moved replacements 372, ChangeZone 289, delayed triggers 270, multiple targets
+  262); 541 on a card Odin supports, to be explained (the replayer now records Odin's refusal reason). Most fixtures
+  are narrow regression tests for one mechanic each, so the pass rate grows with mechanics rather than with cards. Pool cards with all their fixtures passing on Odin: 19 of the 2,017 that appear in one.
+  Tools (scratchpad): fixture-reach.mjs (pass rate among fixtures whose real cards Odin supports: 152 of 2,165) and
+  reach-fails.txt. Next: rank the failing fixtures by the Odin gap that rejects them, and build by that ranking
+  alongside the static coverage ranking.
+- Mana pool (2026-11-25): Odin ignored mana in the pool. Now it pays from floating mana first (CR 106.4), the pool
+  empties as each step begins (CR 106.4), and a player with priority can activate a mana ability on its own
+  (CR 605.3a-b; a choice of color isn't offered yet, so such an activation is refused). Of the 541 fixtures that
+  acted on a supported card yet were refused, 15 now pass and "mana cost unpayable" fell from 392 to 52.
+- Support is judged on the object (2026-11-25): what Odin carries out is the object's own abilities, triggers,
+  statics, replacements, modes and costs (CR 109.3), not the card looked up by name, so fixtures built on
+  synthetic test cards can run (1,816 refusals). Cards with casting restrictions, strive, cleave or a solve
+  condition are now reported unsupported (they were played without those rules).
+- The spell is on the stack while it's cast (2026-11-25, CR 601.2a): its entry is pushed as casting begins, the
+  card keeps its place until it becomes cast (as Rust and the client show it), a cancel reverses it (CR 734).
+  The replayer now runs in lockstep: a step with no recorded starting state continues from the engine's own state
+  when the last step matched. On the 541 "supported but refused" fixtures: 49 pass (was 0).
+- Full replay at 605233d (mana pool, object support; before the stack and lockstep changes): 496 of 11,160 pass
+  (was 388).
+- Rules review of the mana pool, object support and the cast-time stack entry: fixed a mana ability activated on
+  its own skipping priority (CR 405.6c, 117.3c-5: Ancient Tomb at 2 life now loses at once), surplus mana from an
+  automatic payment being lost (CR 106.4: Sol Ring for {1} leaves {C}), a Case's solve condition never refused, a
+  flashback spell able to target itself (CR 115.5), cancelling at cost payment leaving X and kicker set
+  (CR 734.1), and three wrong citations. Open from it: mana abilities aren't offered in the legal actions (the
+  client taps through TapLandForMana, not built yet); a cast in progress lives outside the saved state, so saving
+  mid-cast loses it (CLAUDE.md wants every pending decision in state); cleanup-step priority (CR 514.3a); tests
+  still missing for cancelling at the mode/X/kicker prompts and for the this-turn amounts resetting.
+- Full replay at 10b8258 (lockstep, cast-time stack entry, review fixes): 597 of 11,160 pass (5.3%). First
+  differences: card not supported 6,052 (CastSpell 4,445, ActivateAbility 1,607), stack 1,127, waiting_for 869,
+  phase 254, not castable from its zone 225, priority player 210, DeclareAttackers refused 161, Debug actions 141.
+  The refusal reason now lists the object's missing pieces, so these can be ranked by mechanic.
+- CR coverage report (2026-11-25, owner's request): docs/odin-rules-coverage.md, generated by
+  `node odin/engine-wasm/rules-coverage.mjs --out docs/odin-rules-coverage.md`, a checklist of every rule and subrule
+  in 100-799 marked by whether the engine cites it and whether a test does. First run: 228 of 2,880 in-scope rules
+  cited (8%), 84 tested. Strict: a rule counts only if cited by number, so much behaviour written without its exact
+  subrule (keywords cite 702.9, not 702.9a-c) counts under its parent only. Regenerate and commit it with engine
+  changes; it also lists citations that aren't in the CR (fixed one: 602.2h).
+- Mechanics added 2026-11-25 (card coverage 4,439 -> 4,850; rules cited 228 -> 239): this-turn amounts and
+  control/tapped trigger conditions; enters-with-counters conditions and X counters; the turn's zone changes ("a
+  creature died this turn"); zone-change triggers with a targeted effect and "this or another"; conditions on a
+  target that left (last known information); mana abilities with mana costs and a color choice; restricted mana;
+  Powerstone, Blood, Lander and Mutagen tokens; graveyard abilities; "sacrifice an A or B" costs; stun and
+  keyword counters. Then (-> 5,076; rules 247): "that much" from a damage trigger; life-gain, draw, damage-received,
+  leaves and enters-or-attacks triggers; "whenever this becomes tapped"; "whenever you sacrifice" (CR 701.21a,
+  603.10a), with every sacrifice (costs, mana riders, effects) its own event. A trigger that works from a zone other
+  than the battlefield ("when you sacrifice a Clue, return this card from your graveyard") is refused unless it's
+  the object's own zone change: only the battlefield is watched for other objects' events.
+- Full replay at 53e766b: 624 of 11,160 pass (5.6%, from 597). First differences: card not supported (CastSpell
+  4,587, ActivateAbility 1,527), waiting_for and stack differences next. Sagas (CR 715, about 250 pool cards) are the
+  largest single gap among triggers and are next.
+- Sagas (-> 5,095; rules 255, 105 tested): a Saga enters with a lore counter (CR 715.3a), gets one as its
+  controller's precombat main phase begins (CR 505.4, 715.3c), its chapters trigger when the count passes N
+  (CR 715.2b), and it's sacrificed at its final chapter once no chapter ability of its own waits (CR 704.5s).
+  Putting counters is now an event ("whenever one or more +1/+1 counters are put on this"). Triggers are now
+  collected before state-based actions each time (CR 603.2), so an event's triggers see the board as it was. Read
+  ahead (CR 702.155) is refused. Most Sagas still wait on their chapter effects; the gap ranking shows which.
+- Reflexive triggers (-> 5,116): "you may X. When you do, Y" makes Y a triggered ability of its own (CR 603.12),
+  its targets chosen as it goes on the stack, not with X's. Read after a "you may" only; found again from the
+  source's own definition as it resolves. The card gaps now name the missing effect for every trigger kind the
+  engine handles, not just "trigger:<kind>".
+- Rules review of sacrifice triggers and Sagas (2026-11-25), all fixed with tests: a permanent's own "whenever a
+  player sacrifices a permanent" (Mayhem Devil) now sees its own sacrifice, and permanents that leave together
+  see each other leave (CR 603.10a; zone changes carry a group, shared by state-based actions, edicts, costs and
+  "destroy all", CR 704.3); state-based actions are checked again after a trigger is removed for want of a
+  target (a Saga whose last chapter had none, CR 603.3d, 704.5s); counter triggers follow the object by
+  incarnation (CR 400.7); "whenever a counter is put" triggers once per counter (CR 603.2c). Still open from it:
+  tests for a Saga played through real turns, an opponent's Saga in your main phase, a countered last chapter,
+  and Carrot Cake's own sacrifice.
+- Mana abilities with "activate only if / only once each turn" (CR 602.5; the Verges, Temple of the False God),
+  "add {W}{U}" (each symbol, CR 106.4; activated by the player, not by automatic payment yet), and "each/all" and
+  counts over "A or B" ("a Swamp or a Mountain", "artifacts and enchantments"): coverage 5,116 -> 5,182.
+- Raid ("if you attacked this turn": the turn's attacker declarations, kept in the state as Rust keeps them) and
+  "if an opponent controls more lands than you" (players counted by what they control): 5,182 -> 5,221.
+- Shocklands ("as this land enters, you may pay 2 life; if you don't, it enters tapped", CR 614.12): the
+  controller is asked with Rust's replacement prompt (ReplacementChoice, optional branch: 0 pays, 1 declines)
+  before the next player would get priority; the land waits untapped until then, and declining taps it without a
+  "becomes tapped" event. The waiting lands are kept in Game (entry_choices), beside the state like the other
+  in-flight pieces. Raid "enters with a counter if you attacked". 5,221 -> 5,235.
+- Shield counters (CR 122.1c: prevent damage to the permanent, replace its destruction by an effect, one counter
+  removed each time): 5,235 -> 5,243.
+- Library searches for "a Mountain or Plains card" (fetchlands, landscapes, monuments) and "a card named X"
+  (CR 201.2), and "named X" in filters generally: 5,243 -> 5,310.
+- "Deals N damage to each opponent / each player" (CR 120.3), "put a counter on each creature you control" (CR
+  122.6), and "each creature and each player" damage: 5,310 -> 5,442.
+- Pumps by an amount ("+X/+X where X is the number of ...", the spell's "-X/-X"), worked out once as they resolve
+  (CR 608.2h): 5,442 -> 5,498.
+- Full replay at 4e70ac4: 646 of 11,160 pass (from 624; 517 s on three cores). Fixtures blocked by one missing
+  piece, most first: CopyTokenOf 90, enters replacements 83, AddTargetReplacement 76, casting options 71, delayed
+  triggers 71, Draw forms 71, FlipCoins 64, DealDamage forms 62, GainControl 60.
+- Full replay at 2791da2 (2026-11-25): **724 of 11,160 pass** (from 646; 555 s on three cores, 7 too large). Of
+  the failures, 5,379 stop at an unsupported card (cast 3,962, activation 1,417); the pieces blocking the most
+  fixtures: spell conditions 416, Moved replacements 325, spell "other" (repeat/unless/else) 316, ChangeZone 315,
+  multiple targets 303, CreateDelayedTrigger 268, ChangeZoneAll 226, DealDamage 211.
+- Full replay at 3aff280 (2026-11-25): **760 of 11,160 pass** (from 724; 7 too large).
+- Delayed triggered abilities (CR 603.7): "at the beginning of the next end step / upkeep / end of combat", kept
+  in the state's delayed_triggers with the object "it" names, triggering once (603.7b) and only on that same
+  object (603.7c); "sacrifice it". A return to the battlefield is under the owner's control unless the
+  instruction says "under your control" (CR 110.2a, as the card data and Rust read it). 5,498 -> 5,514.
+- Token copies ("create a token that's a copy of target creature you control" / "of this creature", CR 707.2,
+  111.2): the card's printed characteristics (copy effects on the original aren't carried yet), entering like any
+  permanent. A copy token is checked for support like its card. 5,514 -> 5,527.
+- "Target player draws N", "its controller draws a card": 5,527 -> 5,535.
+- "Gain control of target creature until end of turn" (or for good): layer 2 (CR 613.1b), out of combat (CR
+  506.4), summoning sick for its new controller (CR 302.6), given back in the cleanup step (CR 514.2). The previous
+  controllers are kept in Game (control_changes), beside the state like the pumps. 5,535 -> 5,565.
+- "All" zone changes: "return all creatures to their owners' hands" (BounceAll), "exile all creatures",
+  "return all land cards from your graveyard to the battlefield tapped": 5,565 -> 5,575.
+- Prevention shields for the turn (CR 615: Fog's "prevent all combat damage", "prevent all damage that would be
+  dealt to it"), kept in Game (preventions).
+- Second rules review (2026-11-25), fixed with tests: a delayed "it" with no earlier target to name is refused
+  (Attack-in-the-Box, The Locust God and others played wrong), as is a condition inside a delayed ability; three
+  cards whose card data is wrong are refused by name (MISPARSED_CARDS in spells.odin: Phelia, Shallow Grave,
+  Vizier of Deferment); one shield counter prevents all simultaneous combat damage to its permanent (D-188); a
+  shockland prompt answered after a restore finds its land from the prompt. 5,575 -> 5,578 (with Fog's gains).
+- "If that creature would die this turn, exile it instead" (CR 614.6) on an earlier target, used once, ending
+  with the turn (kept in Game, exile_instead): 5,578 -> 5,603.
+- Life loss for a target player or opponent, the defending player (CR 506.2) and "its controller": 5,603 ->
+  5,638.
+- Bounce "this" (from the battlefield or the graveyard it went to) and "return a creature you control to its
+  owner's hand", chosen as it resolves (CR 608.2d), not targeted: 5,638 -> 5,684.
+- Crew (CR 702.122): CrewVehicle from priority opens WaitingFor_CrewVehicle (Rust's prompt: eligible creatures
+  and their power); the chosen creatures are tapped as the cost, the ability goes on the stack as a keyword
+  action, and the Vehicle is an artifact creature until end of turn. The AI answers the prompt but doesn't crew on
+  its own yet. "Once each turn" crew is refused. 5,684 -> 5,748.
+- Clone ("you may have this enter as a copy of any creature", CR 707.9): Rust's CopyTargetChoice prompt as it
+  enters (ChooseTarget, none to decline), the copied card's printed characteristics (CR 707.2). Copies with
+  exceptions are refused; the copied creature's own entering replacements don't apply yet. 5,748 -> 5,756.
+- Planeswalkers: they enter with their printed loyalty (CR 306.5b; o.loyalty, as the state has it), loyalty
+  abilities are paid in loyalty at sorcery speed once per turn per permanent (CR 606.3-606.6), and creatures can
+  attack them (CR 508.1b; combat damage to the planeswalker attacked, trample's excess too, none if it left). Most
+  planeswalkers still wait on their abilities' effects. 5,756 -> 5,762; rules 285.
+- "You may pay {N} / N life. If you do, ..." as an instruction (CR 118.3, 608.2d): offered only when payable,
+  mana paid from the player's sources the way automatic payment chooses them. 5,762 -> 5,807.
+- "If a creature card was exiled / put into a graveyard this way" (CR 608.2c): what the last instruction carried
+  out moved, kept on the resolution across choices; a skipped conditional instruction doesn't reset it.
+  5,807 -> 5,825.
+- "When you do" after a mandatory instruction (sacrifice, zone change, token, counters, mill, discard, destroy):
+  it triggers if that instruction did something (CR 603.12); the SNC tri-lands and others. 5,825 -> 5,834.
+- Fight (CR 701.14: "target creature you control fights target creature", "this creature fights"; neither
+  deals damage if either is gone or illegal) and bite ("deals damage equal to its power to target creature": the
+  first target, a TargetOnly, is the source). A fight's two targets are two parts of one instruction's slots.
+  5,834 -> 5,885.
+- Modal triggered abilities ("At the beginning of your end step, choose one -"): Rust's AbilityModeChoice as the
+  trigger goes on the stack, before its targets (CR 603.3c); modes with no legal target unavailable (CR 700.2a);
+  the chosen modes chained in printed order. Modal activated abilities aren't yet. 5,885 -> 5,952.
+- Impulse draw: "exile the top N cards of your library; until the end of your next turn (this turn, as long as
+  it's exiled) you may play them". The permission is on the card in the state (casting_permissions, as Rust has
+  it); lands are played from exile as the turn's land, spells cast; it ends in the cleanup step of its last turn
+  (the end turn kept in Game, permission_ends) or when the card leaves exile. 5,952 -> 5,988.
+- An effect with no stated duration ("that creature gains haste") lasts indefinitely (CR 611.2a); the
+  instruction's own duration counts when the effect's is unset. 5,988 -> 5,991.
+- Creature lands and other "becomes a [type] creature" effects: removing creature (or land) subtypes in the type
+  layer (CR 205.1b), with the subtype lists of CR 205.3g-i (anything else is a creature type). 5,991 -> 6,038.
+- Typecycling (CR 702.29e: spelled out in the card data as a hand ability), and attaching an Equipment to "the
+  token just created" or to a creature you control chosen as it resolves (CR 701.3a). 6,038 -> 6,098.
+- "Owned by" filters (CR 108.3: "target card from an opponent's graveyard"), and graveyard targets whose
+  instruction states no origin zone. 6,098 -> 6,115.
+- Costs that read the spell's targets (CR 601.2f): "costs {3} less if it targets a tapped creature" and "spells
+  your opponents cast that target this creature cost {2} more". The total cost reads the chosen targets; before
+  they're chosen (castable, max X, kicker) it's the best case (a reduction counts if some legal target earns it, an
+  increase doesn't). Targets that leave the cost unpayable reverse the cast (CR 601.2h, 734.1); the AI picks a last
+  target it can pay for. 6,115 -> 6,151. An increase every legal target would pay counts in that best case too
+  (Boreal Elemental as the only creature: Murder isn't castable).
+- The coverage target reads 14,013 again: coverage.mjs now matches split and double-faced cards by their front
+  face, as coverage-data.json lists them (it showed 13,381). Gap labels name the condition's kind
+  (`spell:condition:QuantityCheck`).
+- "That creature" / "that player" in a triggered ability: the trigger event's object and player go with the ability
+  onto the stack (Game.stack_events, with the amount; to move into the state later) and are read as it resolves
+  (CR 603.2, 608.2c). The object only while it's the same one (CR 400.7). Put counters: any count the engine can
+  work out, on "that creature" or the token just made, and loyalty, time, age and named counters. 6,151 -> 6,243.
+- Conditions made of others (and / or / not), "if it's your turn", Addendum ("if you cast this spell during your
+  main phase": the phase it resolves in, CR 500.2), starting life amounts (CR 103.4); a spell's paragraphs are
+  joined into one list of instructions when the card is decoded (CR 608.2c; carddb.join_spell_paragraphs; 80 pool
+  cards have several). 6,243 -> 6,267.
+- "Counter target spell unless its controller pays {N}" (CR 118.12a): the spell's controller is asked as the
+  counterspell resolves (WaitingFor_UnlessPayment / PayUnlessCost, the client's existing prompt), only if they can
+  pay; the AI pays. Other "unless" forms (other payers, other costs) not yet. 6,267 -> 6,301.
+- Third rules review fixed (Known issues); "fights up to one target creature" and "choose up to N targets" (6,308);
+  damage or counters divided among targets (CR 601.2d: WaitingFor_DistributeAmong after the targets, each at least
+  one; each legal target gets its share as it resolves; the AI gives one each and the rest to its first target).
+  6,300 -> 6,327.
+- Prowess (CR 702.108): the card data lists only the keyword; keywords.odin supplies the trigger, once per
+  instance (702.108b). 6,327 -> 6,371.
+- Ward with a mana cost (CR 702.21a): a Became_Target event when a spell is cast or an ability put on the stack
+  with targets; the ward trigger counters that spell or ability unless its controller pays (the "unless" prompt);
+  countering an ability removes it from the stack (CR 701.6a). X and non-mana ward costs not yet. 6,371 -> 6,424.
+- Convoke (CR 702.51): for a spell with convoke, the automatic payment may tap untapped creatures (summoning sick
+  too) for {1} or one mana of their color, after lands; not mana, so no riders and nothing left in the pool.
+  6,424 -> 6,471.
+- Investigate (CR 701.16a: a Clue token) and amass (CR 701.47a: a 0/0 black [subtype] Army token if there's none,
+  the player's choice of Army when there are several, its counters, and the subtype added for as long as it's on
+  the battlefield). 6,471 -> 6,534.
+- Mana abilities that add a counted amount ("Add {G} for each Elf you control", "X mana of any one color, where X
+  is ..."): the count is taken when the ability is activated or the payment planned (CR 605.3b). 6,534 -> 6,550.
+- "When this enters, if you cast it (from your hand)": a spell that resolves into a permanent keeps the zone it was
+  cast from (cast_from_zone), read by the intervening "if" (CR 603.4). 6,550 -> 6,560.
+- Who draws, gains or loses life: a target player or opponent, "its controller", or the trigger event's player
+  ("whenever an opponent draws a card, they lose 2 life"). 6,560 -> 6,582.
+- **Coverage correction (2026-11-25): 6,582 -> 6,399.** The count looked only at a card's first half, so 183 cards
+  whose other half the engine can't play (modal double-faced backs, adventures, split and aftermath halves, prepare
+  cards) were counted as supported. Now a card with two halves counts only once its layout works and both halves
+  are supported (game.layout_gap; the gap reads `layout:<kind>`). Earlier figures in this file were overstated by
+  up to about that much.
+- Transforming double-faced cards (CR 701.27, 712): carddb.other_face links a front face to its back by oracle id
+  (game.other_face_lookup, set by the host); an object knows its other face (back_face). "Transform this" turns the
+  other face up, the same object (701.27c), with the back face's characteristics and the front's mana value
+  (712.6d); only if it hasn't transformed since the ability went on the stack (701.27g); off the battlefield it's
+  the front face again (712.6a). A transform card counts as supported when both faces are. Not yet: "enters
+  transformed", "whenever this transforms" triggers, transforming other permanents, day/night, casting
+  transformed. 6,399 -> 6,430.
+- Adventurer cards (CR 716, adventure.odin): the object remembers its Adventure (back_face, linked like a back
+  face). Cast from the hand, the player chooses the creature or the Adventure (WaitingFor_CastOffer /
+  ChooseAdventureFace, the client's existing dialog; asked only when both can be cast); as an Adventure it has only
+  the Adventure's characteristics (716.3b) and goes on the stack as CastingVariant_Adventure; resolving, it's
+  exiled and its controller may cast the creature from there (CastingPermission_AdventureCreature, 716.3d); a
+  reversed, countered or fizzled Adventure is the creature card again (716.4). The AI casts the Adventure first.
+  6,430 -> 6,495.
+- Modal double-faced cards (CR 712.8b, 712.9, mdfc.odin): cast or played from the hand, the player chooses the
+  face (WaitingFor_ModalFaceChoice / ChooseModalFace, the client's dialog), asked only when both faces can be used;
+  the chosen face is up on the stack and battlefield (712.6e, modal_back_face) and the front face everywhere else
+  (712.6a). The AI picks the front face, and doesn't yet play a spell's land back as its land drop. 6,495 -> 6,534.
+- Keywords: affinity (CR 702.41a, a cost reduction per permanent you control that fits), devoid (702.114a,
+  colorless everywhere), changeling as a keyword (702.73a, every creature type; the static form "is every creature
+  type" not yet), toxic (702.164c, poison counters with combat damage to a player). 6,534 -> 6,600.
+- Protection from a color and from multicolored (CR 702.16, protection.odin): not targeted by spells or abilities
+  of sources with the quality (702.16b), their damage prevented (702.16e), not blocked by such creatures (702.16f),
+  such Auras and Equipment can't stay attached (702.16c-d). Other qualities (card types, players, everything) not
+  yet. 6,600 -> 6,612.
+- Attack triggers watching others: "whenever equipped/enchanted creature attacks", "whenever a creature you
+  control attacks"; "attacks with at least N others" / "attacks alone" (MinCoAttackers) and EventTime conditions,
+  settled when the ability triggers and not checked again as it resolves. 6,612 -> 6,679.
+- Spell filters: historic (CR 700.6), kicked (702.33d), multicolored and other color counts (105.4), "has an
+  Adventure" (716.2a), and "and" filters. 6,679 -> 6,729.
+- Mana spent to cast a spell (converge, adamant, "if {R} was spent", "the amount of mana spent"): payment records
+  each source's mana type on the spell (mana_spent_to_cast, colors_spent_to_cast; kept on the permanent it becomes,
+  convoke not counted, CR 702.51c), read for the spell itself or the spell that triggered an ability. 6,729 ->
+  6,763.
+- "The number of different names / mana values / powers / toughnesses among [objects]", on the battlefield or
+  among cards in a graveyard, exile or hand (zone_filter_objects; off the battlefield "your" is the owner's).
+  6,763 -> 6,795.
+- "Entered the battlefield under your control this turn" counts (landfall conditions), from the turn's zone change
+  records. 6,795 -> 6,806.
+- Party size (CR 700.8: the largest assignment of Cleric, Rogue, Warrior and Wizard) and "the number of colors among
+  [permanents]" (CR 105.2). 6,806 -> 6,835.
+- Zone changes onto the battlefield "with N counters" (CR 122.6) and "tapped and attacking" (CR 508.4: the engine
+  picks the defending player, not yet a planeswalker; never declared, so no attack triggers), the finality counter
+  (CR 122.1h: exiled instead of going to a graveyard from the battlefield). 6,835 -> 6,860.
+- "As this enters, choose a color / creature type / basic land type / card type / one of [labels]" (CR 614.12,
+  entry_choice.odin): asked before the next player gets priority (as the other entry choices), kept on the permanent
+  as its chosen attributes (forgotten on a zone change, CR 400.7), read by "mana of the chosen color", "creatures of
+  the chosen type / color", "is the chosen type in addition" and "as long as [label] was chosen". The AI picks the
+  color or type its cards show most. Not yet: chosen card names, opponents, odd or even; the trigger and ability
+  forms of "if [label] was chosen". 6,860 -> 6,893.
+- "As this land enters, you may reveal a [kind of] card from your hand; if you don't, it enters tapped" (CR 614.12,
+  701.20a; "an Island or Swamp card" too), and permanents entering with any counter the engine knows (oil, charge,
+  ...: CR 122.1). 6,893 -> 6,909.
+- Mana abilities with a sacrifice cost and no {T} ("Sacrifice this creature: Add {C}", Eldrazi Spawn and Scion
+  tokens; activated by the player, CR 605.3a), and decayed (CR 702.147a: can't block; when it attacks, a delayed
+  trigger sacrifices it at end of combat). 6,909 -> 6,930.
+- Proliferate (CR 701.34a, proliferate.odin): the player chooses any of the permanents and players with counters
+  (loyalty, poison, energy and player counters included); the AI picks its own permanents' counters other than
+  -1/-1, the opponent's -1/-1 counters and poison. 6,930 -> 6,976.
+- Mana added by a resolving spell or triggered ability ("Add {B}{B}{B}", "when this enters, add {R}{G}"; CR 605.5a-b:
+  not mana abilities, they use the stack; the mana goes to the pool, CR 106.4). Fixed and colorless amounts; any
+  color, restricted or lasting mana not yet. An activated ability that adds mana is never handled as an ordinary
+  activated ability (CR 605.1a). 6,976 -> 6,999.
+- "Whenever you draw your second (third) card each turn": each card drawn is its own event (CR 121.2) carrying the
+  drawer's count before it. 6,999 -> 7,035.
+- "Can't be blocked by [creatures with power N or less / Walls / artifact creatures / ...]" (CR 509.1b, a blocking
+  restriction; static_modes.odin). 7,035 -> 7,070.
+- Static prevention: "prevent all [combat] damage that would be dealt to [this / creatures / enchanted creature]"
+  and "... dealt by enchanted creature" (CR 615.1a, 615.6; prevention.odin). One whose limit the card data drops
+  ("3 or less damage") stays unsupported. 7,070 -> 7,078.
+- Fifth rules review fixed (Known issues), 7,078 -> 7,074 (refused cards); the app's "Pass to end of turn" button
+  works (auto_pass.odin). Fixture replay at 8a539ae: 792 of 11,160 pass (760 at 3aff280). Rules checklist: 354 of
+  2,880 in scope implemented, 180 tested.
+- Cost parts: "remove N [kind of] counters from this" (CR 118.3, 602.2b) and "exile N [kind of] cards from your
+  graveyard" (chosen as the cost is paid, CR 601.2h, 701.13a). 7,074 -> 7,118.
+- A permanent's own enters trigger reads the X its spell was cast with (CR 107.3m; Ajani's Anguish), and "it deals
+  damage equal to its power" said of an earlier target (bite). 7,118 -> 7,141.
+- Triggers: "sacrifice it unless you pay {1}" kept on the trigger (CR 118.12a: the controller may pay); "when
+  enchanted / equipped creature dies" (CR 603.10a). A permanent's last known information is now taken before it's
+  removed from combat and detached, so it keeps what was attached to it and what it was attached to. 7,141 ->
+  7,153.
+- "This ability triggers only once each turn": each object's ability is recorded as it triggers
+  (triggers_fired_this_turn, by object incarnation and ability occurrence; cleared as a turn begins). "Do this only
+  once each turn" (CR 603.2h, the indicated action) not yet. 7,153 -> 7,178.
+- Turn counts: "descended this turn" (CR 700.11), zone changes this turn by kind, controller and token or not, "a
+  player lost N life this turn" (the most any player lost). 7,178 -> 7,189.
+- "If you discarded a card this turn" (CR 701.9a: discards go through discard_card, which counts them) and "if
+  you sacrificed a [kind] this turn" (CR 701.21a: sacrifices recorded as the permanent last existed). 7,189 -> 7,204.
+- The turn's damage records ("if an opponent was dealt damage this turn", the most dealt to one opponent, damage
+  dealt to this creature); rule statics with a condition ("can't block as long as ...", CR 611.3b); "is every
+  creature type" (CR 205.3m), as a characteristic-defining ability in every zone (CR 604.3). 7,204 -> 7,256.
+- Granted abilities (CR 613.1f, layer 6): "creatures you control have '{T}: Add one mana of any color'",
+  "enchanted creature has 'whenever this creature attacks, ...'", "other enchantments have 'at the beginning of your
+  upkeep, ...'", from static abilities and from resolved effects. Each pass rebuilds a permanent's abilities as its
+  own (kept at their positions) and then the granted ones; granted triggers are marked as granted and a changed set
+  gets a new list (triggers waiting to go on the stack keep pointing at the old one). 7,256 -> 7,371.
+- "Put [target permanent / target card in a graveyard / it / this / the card the search found] on the top or the
+  bottom of its owner's library" (library_position.odin; CR 401.1). Not yet: Brainstorm's cards from hand, "Nth
+  from the top", an arranger. 7,371 -> 7,428.
+- "Exile a card from your graveyard" (any card) as a cost, and as a spell's additional cost (CR 601.2h). 7,428 ->
+  7,436.
+- Fixture replay at 8fbd5e6 (frozen engine, all 11,160): 807 pass (792 at 8a539ae), 7 too large, the rest fail.
+- A choice of additional costs ("sacrifice a creature or pay {3}", "discard a card or pay 3 life"): announced as the
+  spell is cast (CR 601.2b) through the optional-cost prompt, among those the player can pay (made for them when
+  only one can be); a mana choice adds to the cost (CR 601.2f). Kept as the spell's additional cost payment record.
+  7,436 -> 7,456.
+- Filter properties "any of" ("that's black or red") and "not" (the opposite of a property of the object itself).
+  7,456 -> 7,475.
+- Owner (2026-11-25): "each change only covers a handful of cards - are there any rules that cover hundreds from
+  the remaining pool?" Answer from the gap analysis (greedy.mjs at 7,456): no single rule does. About 6,550 of the
+  14,013 are left, and most of those cards lack two or more pieces. The largest family, zone changes ("return / exile /
+  put onto the battlefield", 74 cards lacking only it), is part of what 278 cards lack; finishing the top 30 families
+  together unlocks about 1,400 cards. Families still worth doing in bulk: zone changes (ChangeZone, ChangeZoneAll,
+  zone-change triggers and replacements, ~760 cards involved), tokens (142), delayed triggers (185), the back faces
+  of double-faced cards (210).
+- The app on the Odin engine, played by Playwright (Standard, random decks, the human only keeping, passing to end of
+  turn and discarding): a whole game to the AI's win, no engine errors (scratchpad pw/play.cjs). Known: the game log
+  panel is empty on the Odin engine (no log entries returned), and the home page's Card Coverage Dashboard reads
+  the Rust engine's coverage file. Next for step 4: the Odin WASM returns no events and no log entries
+  (game_calls.odin replies `"events":[],"log_entries":[]`), so the app has no game log, and no event-driven
+  animations or sounds; translate the engine's events into GameEvents and log entries.
+- Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
+  (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
+  the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
+- Step 3 progress (2026-11-24, night 2): you may / if you do, library search and shuffle, sacrifice effects,
+  counterspells, blink and graveyard either-or targets, each player / each opponent instructions, cycling,
+  required additional costs, kicker, predefined tokens (Treasure, Food, Clue, Shard, Heartwood; others
+  unsupported), whenever you attack, Nth spell and opponent-cast triggers, activation restrictions. Rules tests:
+  62. Coverage: 4,138 of 15,772.
+- Edit to app (measured 2026-11-24, 4-core container, one core busy with a replay): `scripts/build-odin-engine.sh
+  dev` 13.8 s, then the running `ENGINE=odin` dev server reloads the page 0.4 s later: about 14 s from an engine edit
+  to the app. LLVM code generation is 88% of the build (type check 1.1 s, which is the quick check after an edit);
+  `-o:none` and `-use-separate-modules` save little. Rust's dev build here: 18 min cold, then out of memory.
+- Step 3 progress (2026-11-24, late): X spells, modal spells (choose one), up to N targets, cost reductions,
+  intervening-if triggers, instruction conditions, painland/pay-life/sacrifice mana riders, conditional
+  enters-tapped lands; the stack now holds each instruction's targets (as Rust's state does), so it resolves after
+  a save/restore. Rules tests: 48. Coverage: 3,525 of 15,772. Rust self-replay of the capture: about 94% of
+  recordings replay cleanly on Rust (the usable fixtures); a sample of 200 of those on Odin: 9 pass, almost all
+  failures being cards the Odin engine reports unsupported.
+- Step 2/3 start: `odin/engine/game/setup.odin` starts a game from the CR (103: libraries shuffled with the seeded
+  generator, starting life, seven-card hands, mulligan decisions in turn order); `game_calls.odin` serves
+  `initialize_game` (decks checked against the format first, as Rust does), `get_game_state`,
+  `export_game_state_json` and `restore_game_state`. The card database is now indexed on load and each card decoded
+  on first use: load ~4 s instead of ~15, memory ~0.5 GB instead of 1.5 (the eager decode also overflowed 2 GB under
+  the comparison's 40,000 calls).
+- Step 2 (2026-11-24): `odin/engine-wasm/` serves the match setup page. Start Match enables in the app on the Odin
+  engine (`cd client && ENGINE=odin pnpm dev` after `scripts/build-odin-engine.sh dev`, ~5 s). Real: the card
+  database, the fixed tables (format registry, LLM catalog, bracket table, Horde decks, per-format deck supply and
+  best-of-three ceiling, embedded from `static.json`, which `snapshot-static.mjs` regenerates from the Rust build), the
+  sideboard policy, and the deck checks (`decks.odin`). `compare-rust.mjs` runs both engines in Node and compares:
+  the tables and lookups agree exactly; the deck checks agree on all 1,396 precon decks for the constructed formats
+  and Commander. Not yet: engine coverage in the deck check (omitted, not faked: it's step 3's number), the other
+  Commander variants, Brawl, Oathbreaker, Limited and the casual formats (the Odin engine answers "no opinion", null,
+  where Rust gives a verdict), the summary check's choice of first failure, unaccented name aliases, the bracket
+  estimate (null). Next: `initialize_game`.
+
+- Step 4 (2026-11-25): the Odin engine now reports what happened. `odin/engine/game/report.odin` records the
+  client's GameEvents (turns, steps, casts, resolutions, triggers, land plays, draws, zone changes, damage, life,
+  taps, counters, tokens, attacks and blocks, deaths, sacrifices, discards, losses, game over) and builds the game
+  log's lines from them; `initialize_game` and `submit_action` return both (they were empty). In the app the game
+  log fills ("Player 2 casts Cryogen Relic", "Cryogen Relic's ability triggers", "Player 1 discards ..."). Test:
+  `report_tells_what_happened`. An Odin compiler bug: a loop with a nested union switch inside `log_line`'s big
+  switch produced WebAssembly that doesn't validate; it lives in its own proc (`attacks_line`).
+- "This way" amounts (CR 608.2c, 120.4a, 120.10): after each instruction, the number it produced (life lost or
+  gained, damage dealt and its excess, cards drawn or discarded) is kept in `last_effect_amount` /
+  `last_effect_excess_amount` for the next ones ("you gain life equal to the life lost this way", "a Blood token for
+  each 1 excess damage dealt this way", "if a Werewolf was dealt damage this way"). Supported only when the
+  instruction before produces that number. Tests: `life_lost_this_way`, `excess_damage_dealt_this_way`. Coverage
+  7,491. Also fixed: `tools/rules/rule.mjs` couldn't find the rules file (its root was one level short).
+- "Add one mana of any color" while a spell or ability resolves (Lotus Cobra's landfall): its controller picks the
+  color on the existing ChooseManaColor prompt (CR 608.2d), with a ResolvingEffect context; the AI picks the color its
+  hand asks for most. Test: `mana_of_any_color_chosen_as_it_resolves`. Coverage 7,506. Still blocked for that gap:
+  spend restrictions of the chosen type (Cavern of Souls, Unclaimed Territory), mana riders (Delighted Halfling),
+  amounts read from a target (Sacrifice).
+- "Exile it, then return that card": a zone change whose target is what the instruction before moved
+  (TrackedSet) finds those cards while they're in a public zone (CR 400.7j), returning them under their owner's
+  control (CR 110.2a) or as stated. Tests: `exile_then_return_that_card` (Cloudshift, the ParentTarget form),
+  `return_the_card_the_instruction_before_moved` (Eldrazi Displacer). Coverage 7,522. Next in this family: "put up
+  to N of those cards into your hand" (TrackedSetFiltered, up_to: 18 cards).
+- Delayed abilities over "those cards" / "those tokens" (CR 603.7c): the cards or tokens the instruction before
+  moved or made are kept on the delayed ability with their identity, and only the same objects are returned or
+  sacrificed (Thatcher Revolt, Explosive Getaway). Test: `sacrifice_those_tokens_at_the_next_end_step`. Coverage
+  7,531. Still refused in this family: "whenever ... this turn" delayed triggers (36), "when it dies" (16), "the next
+  time" (11), "at the beginning of that player's next ..." (9).
+- "For each creature destroyed this way" (FilteredTrackedSetSize, TrackedSetSize): of the cards the instruction
+  before moved, those now where the cause puts them, matched as they last existed (CR 608.2h). Instructions repeated
+  N times ("for each ..., create a token"; `repeat_supported`, only instructions that don't prompt, not over earlier
+  targets). Fixed: the resolved tree didn't copy `repeat_for`. Test: `for_each_creature_destroyed_this_way`
+  (Fumigate, Blood Money). Coverage 7,549.
+- Preparation cards (CR 723, prepare.odin): the prepare spell is linked like an Adventure (back_face); "enters
+  prepared" / "becomes prepared" / "becomes unprepared"; as it becomes prepared a copy with the prepare spell's
+  characteristics is made in exile (723.3c), cast through the client's CastPreparedCopy action, unpreparing the
+  permanent as it becomes cast (601.2i); the copy ceases to exist off the stack, or when its permanent leaves or is
+  unprepared (704.5e, checked with the state-based actions). The AI casts it like a spell in hand. Test:
+  `preparation_card_casts_its_prepare_spell`. Coverage 7,585 (+35). Also: player counters ("for each poison counter
+  your opponents have") and counters on a group of permanents as amounts (7,550).
+- Seventh rules review (2026-11-25, after 7c93cd6..e19dc9b), fixed: Mysterio's "those tokens" straight after
+  making them refused (tokens count as moved only within a delayed ability); "then return them" after two moving
+  instructions refused (Don & Leo); an activated ability with mana anywhere in it is a mana ability, refused as an
+  ordinary one (Empowered Autogenerator, CR 605.1a); returns to the battlefield of what could be an Aura refused
+  until CR 303.4f is built (Flicker); a scoped instruction resuming after a choice notes its moves once done;
+  counts read destroyed/sacrificed/discarded cards, "those cards" doesn't; battles' excess damage. Test:
+  `seventh_review_fixes`. Not done (noted): the "X resolves" log line for a spell whose targets are all illegal;
+  the pending mana color amount lives outside the state.
+- "Any number of target ..." (CR 601.2c, 115.1): optional slots up to ANY_NUMBER_OF_TARGETS (100), the player
+  stopping when they decline one. Refused: chosen as it resolves or a chosen group (not targets), Sweep's untargeted
+  "return any number of Mountains", a target filter with no card type, or text with "different"/"total" (a group
+  condition the data drops); Kairi, Rampaging Yao Guai, Agadeem's Awakening added to MISPARSED_CARDS. Test:
+  `any_number_of_targets` (Paradoxical Outcome).
+- Modal spells (modes.odin, done by a background agent in a worktree, merged and checked here): entwine (CR 702.42,
+  mana costs), Spree and tiered (CR 702.172, 702.183: each mode's cost added, 601.2f), the same mode chosen more
+  than once (CR 700.2d, exact counts of two or more), and a larger number of modes while a static condition holds
+  ("you may choose both instead"). The chosen modes live on the spell object (chosen_modes) so the cost sees them;
+  `forget_cast_choices` undoes X, additional costs and modes on every cast reversal. The AI picks affordable useful
+  modes. Refused: pawprint modes, non-mana entwine, conditions on additional costs, commander/And conditions,
+  mandatory "choose both instead", misparsed counts (Moment of Reckoning, Doomsday Confluence). 10 tests. Also:
+  spells cast this turn counted by type (`spells_cast_this_turn_of_a_type`). Coverage 7,613.
+- Process (2026-11-25): coverage families now also go to background agents in their own git worktrees (one area
+  each: modal spells done; triggers, additional costs and "as it enters, choose" running), started from the
+  branch head; they don't commit. Their diffs are merged here with `git apply -3`, checked with the full verify,
+  reviewed, and committed with a status entry. Rules reviews still run on each batch.
+- Look at the top N (dig): "put it onto the battlefield (tapped)" for filters naming permanent types (CR 110.5b);
+  fixed: "the rest on the bottom in a random order" kept their order (now shuffled, CR 401.4). Known simplification:
+  "in any order" keeps the looked-at order (the player isn't asked). Test:
+  `look_and_put_a_land_onto_the_battlefield_tapped` (Elvish Rejuvenator).
+- Fixture replay at e2b8187: 824 of 11,160 pass (807 at 8fbd5e6), 10,329 fail, 7 too large.
+- Additional costs (agent, merged): behold (CR 701.4), blight (701.68), collect evidence (701.59), tapping
+  untapped permanents you control (118.3), kicker that sacrifices and other optional non-mana costs (702.33a),
+  "reveal a [kind] card or pay" (701.20); the AI pays the free ones. Refused: a paid-only instruction with its own
+  target (Hulk's Thunderclap), required behold read later, "behold and exile", total-power tap costs; six misparsed
+  cards added to MISPARSED_CARDS. Found and fixed here: mana-kicker spells whose kicked instruction has its own
+  target (Urborg Repossession, Bloodchief's Thirst, Tear Asunder, Expel the Unworthy, Blood Beckoning, Divine
+  Resilience) were accepted though the engine asks for every target (CR 601.2c, 702.33g); now refused. Tests:
+  behold/blight/evidence/tap/kicker/reveal tests, `targets_chosen_only_when_kicked`. Coverage 7,649. Known issue
+  (agent): a game restored mid blight/evidence prompt can't resume (the in-progress cast isn't saved).
+- Triggers (agent, merged): discards ("whenever you/a player discards", "one or more", first time each turn; a
+  .Discarded event), cycling (CR 702.29c-f, "cycle or discard" once per card), becomes the target (spells or
+  abilities, by controller; CR 115.1), batched "one or more creatures die / cards leave your graveyard" (CR 603.2c,
+  603.10a; one instruction's moves grouped as simultaneous), abilities that work from the graveyard (CR 113.6b:
+  Bloodghast, Arclight Phoenix). Also: cleanup-step triggers give priority and a new cleanup step (CR 514.3a); a
+  source that left during resolution read as it last existed (CR 608.2h). A permanent a spell targets twice
+  "becomes the target" once (ward too): confirmed by official rulings (eighth review). "For the
+  first time each turn" is read as "only once each turn" by older trigger modes: possible bug (known issue).
+  12 tests. Coverage 7,770.
+- Entry replacements (agent, merged): chains ("enters tapped with three stun counters", "if kicked, with counters
+  and haste"), new entry conditions (two or more other lands, colors spent, first three turns, cast from hand),
+  riot (CR 702.136a, ReplacementChoice), "your choice of a deathtouch or lifelink counter" (ChooseOneOfBranch),
+  reveal-or-control-or-tapped, copies of graveyard cards and with exceptions (CR 707.9b, copiable), copies then
+  asked the copied entry choices (707.6); +X/+Y counters (122.1a), "with a counter"/"modified" (700.9), convoke
+  records. Grimdancer, Protean Raider to MISPARSED_CARDS. 17 tests. Not checked in the client UI: the choose-branch
+  dialog and choosing a graveyard card to copy. Coverage 7,876.
+- Eighth rules review (f6d495c..3e88454), fixed: an instruction acting on several targets, and a player-scoped
+  instruction across the players' choices, is one event (begin_together; the scope keeps its event group, CR 101.4,
+  603.2c, 603.10a: Chainsaw + Violent Ultimatum gives one counter); the cleanup step performs state-based actions and
+  gives priority when it did (CR 514.3a); "the first time each turn" on life-gained and counter triggers refused
+  (Vanguard Seraph's ruling); abilities with target constraints (total mana value, single graveyard) refused.
+  Confirmed by the review: "becomes the target" once for a permanent one spell targets twice (official rulings:
+  Battle Mammoth, heroic). Noted: copy exceptions (copy_exceptions) live outside GameState. Test:
+  `eighth_review_fixes`. Coverage 7,863.
+- Activation costs (agent, merged): tapping untapped permanents (CR 701.26a, 302.6 not applying), "costs {1} less
+  to activate" (601.2f, 118.7a; one activation_mana_cost), power-up (702.193; hybrid refused), removing counters
+  (of a chosen kind, from a creature you control, distributed "from among"), exiling itself or a creature, blight
+  and evidence, returning permanents, putting a counter on itself. Fixed: every object chosen for a cost used to be
+  sacrificed (payment now by kind, pay_cost_objects); cancelling an activation's prompt cleared the source's X and
+  modes. Refused: exert, two chosen costs, a choice of costs, reductions reading the target; Daniels and Tetzimoc
+  misparsed. Mana abilities with these costs stay refused. Client prompts (CostTypeChoice, remove-counter
+  distribution) checked in its code only, not in the running app. Coverage 7,988.
+- Owner asked (2026-11-25): 14,013 is less than Scryfall's `game:arena in:paper` count; do we plan to support the
+  delta? Answer: the pool is 15,772; 14,013 is the Rust engine's count, the goal's finish line (D-187). At 7,988 Odin
+  cards (f912b38): 7,813 Rust also plays, 175 Rust doesn't, 6,200 only Rust, 1,584 neither. The other 1,759 aren't
+  in the plan yet beyond what comes along; proposed: switch the app at 14,013 as agreed, then keep going toward the
+  whole pool (owner to decide; Open questions).
+- Delayed triggers and damage (agent, merged): "sacrifice/exile that token" at end step or end of combat; "exile
+  this, return it at the next end step" (only the same object, CR 400.7); "at the beginning of your next upkeep/end
+  step"; "when that creature dies this turn" (D-190); "whenever ... this turn" / "until your next turn, whenever ..."
+  for casts, deaths, entries, attacks, combat damage, tapping (CR 603.7a: not events earlier in the same
+  resolution). Fixed: delayed abilities lacked their trigger event ("that creature" read nothing); Kraul Harpooner's
+  fight never happened; Rienne now refused (its return did nothing). Damage: excess to the controller (CR 120.4a),
+  twice its power, defending player (CR 506.2), "the player or planeswalker it's attacking". "Can't be regenerated"
+  accepted as a no-op while no supported effect regenerates (to honour once regeneration exists). New
+  delayed_test.odin (25 tests). Coverage 8,091.
+- Tokens (agent, merged): Pilot crewing "as though its power were 2 greater" (CR 702.122a), block restrictions (509.1b),
+  tokens another player creates (111.2), Gold and Vibranium (111.10), copies with exceptions (707.9a-d; a copy of a
+  copy keeps them; a dies-copy as it last existed, 608.2h), Role tokens (111.10, 303.4i, 303.7a/704.5z: one Role per
+  controller per permanent), halves rounded up, graveyard counts; "a token" filters. Fixed: copying an effect-made token
+  never worked; a token copy took granted abilities (CR 707.2); "named X" filters now case-insensitive. Refused:
+  Extravagant Replication (a copy that could be an Aura, CR 303.4f, deliberate), 12 misparsed cards (lost "up to one
+  target", Chainer's Torment). New token_test.odin (17 tests). Coverage 8,195.
+- Zone changes and attaching (agent, merged): equip is targeting (CR 702.6a; it wasn't), Equipment entering attached,
+  "attach it to that creature", "attach target Equipment to this", attach legality (CR 701.3b, 301.5, 303.4d,
+  702.16c-d); CR 303.4f built (an Aura entering other than by resolving: its controller chooses what it enchants,
+  ReturnAsAuraTarget; 303.4g stays put); ChangeZoneAll from graveyards ("return all land cards", "exile target
+  player's graveyard", shuffle graveyard into library); cards chosen as the instruction resolves from your graveyard
+  (no longer targets), "mill N, you may put a card from among them", "return that card" from a dies trigger. Fixed:
+  reflexive abilities carry the trigger event; "attacks alone" was inverted at resolution. Nine cards refused as
+  corrections; six misparsed. Found and fixed here: counters/damage chosen as the ability resolves were read as
+  targets (Ajani Fells the Godsire, Tilonalli's Crown): refused. Still to check: searches/digs putting a possible
+  Aura onto the battlefield (CR 303.4f). Coverage 8,258.
+- Ninth rules review (725636a..79c6967), fixed by refusal: "exile ... until this leaves the battlefield" never
+  returned the card (pre-existing, ~65 cards: Banishing Light, Cast Out, Portable Hole...; CR 610.3, to build with a
+  link to its exiler, CR 607, and the CR 303.4f host choice on return); searches and digs that could put an Aura onto
+  the battlefield (CR 303.4f: Planar Bridge, the Rebel searchers via Bound in Silence, United Battlefront); and 11
+  misparsed cards (Iridescent Drake and Nomad Mythmaker lost "attached to", Faerie Artisans, Advancing the Spirit,
+  Circle of Confinement, "and/or" read as one card: Sludge Titan and five others). Unverified: Ram Through's excess
+  damage dealt as two events (CR 120.4a: one modified event). Tool note: $SP/gapsof.mjs names gaps but isn't the
+  support verdict; $SP/sup.mjs (odin_supported_cards) is. Test: `ninth_review_refusals`. Coverage 8,188.
+- Choices made as an instruction resolves (agent, merged; resolution_choice.odin, tap_state.odin): counters, tap or
+  untap, damage and "exile enchanted creature" chosen as it resolves (CR 608.2d; hexproof doesn't stop them), one or
+  up to N; "enchanted/equipped creature" as the source's host, recorded on the stack (CR 608.2h, 400.7); sacrifice
+  with mixed filters, target player sacrifices, "with the greatest power", "that player"; "tap/untap all", "untap
+  those creatures". Fixed: "spell" abilities on permanent cards were silently never carried out (now refused, CR
+  113.3a). Five misparsed cards. Prompts (EffectZoneChoice Tap/Untap, ChooseFromZoneChoice) read from the client code,
+  not tried in the app. Coverage 8,291.
+- Mana abilities and library shapes (agent, merged; mana.odin, search.odin, resolution.odin `dig_supported`): mana
+  abilities with chosen costs and extra effects (painland-like extras ranked with painlands in automatic payment);
+  abilities that add mana but are loyalty, targeted or move library cards use the stack (CR 605.1a, 605.5a: not
+  mana abilities); split searches (new prompt SearchPartitionChoice) and digs that order the rest on the bottom
+  (DigBottomOrder); battlefield digs that could find an Aura still refused (CR 303.4f). Refused: Hatchery Spider,
+  Storm the Festival, United Battlefront, Neoform (misparsed). Prompts not tried in the app. Tests:
+  mana_library_test.odin. Coverage 8,370.
+- Casting, copies and counters (agent, merged; casting_options.odin, cast_during_resolution.odin, copy_spell.odin,
+  counter.odin, cost_modifiers.odin): alternative costs offered through OptionalCostChoice (CR 118.9: Force of Will's
+  exile-from-hand, life, sacrifice, tapping, returning; "if it's not your turn", "if you control ..."), conditional
+  flash and flash for {2} more (CR 601.3c-d); colored and conditional cost reductions (CR 118.7, 601.2f); free casts
+  while a spell resolves (CR 608.2g, prompt CastOffer FreeCastWindow: the Expertise cycle, Torrential Gearhulk with its
+  exile rider); copies of spells (CR 707.10: modes, X, additional costs and divided damage kept; permanent-spell copies
+  become tokens; new targets one at a time with prompt CopyRetarget; "copy that spell" uses a snapshot so a countered
+  spell is still copied, per Double Vision's rulings); counterspells by mana value, color, controller, "that
+  targets ...", abilities on the stack (Stifle), and "instead" destinations (Remand, Memory Lapse, Force of Negation's
+  exile as a replacement, CR 616.1f with flashback). Fixed: `cast_by_flashback` was true for any graveyard cast; two
+  crashes when a target was an ability on the stack. 11 misparsed cards refused (Dissonant Wave, Lucky Clover, Show
+  of Confidence...; Narset's Reversal parked: returning a spell from the stack isn't built). Two of its tests used
+  Mystical Tether, refused since the ninth review (until-leaves exile): moved to Rout and Ghitu Fire. Prompts not
+  tried in the app. Tests: casting_test.odin. Coverage 8,483.
+  Found, not fixed (Known issues): Omen cards (Chilling Screech and 15 others, "adventure" layout without the
+  Adventure subtype) count as supported but their Omen half can't be cast; an optional free cast asks twice; a free
+  cast always uses the main face; with several alternative costs only the first is offered.
+- Trigger conditions (agent, merged; attack_triggers.odin, trigger_conditions.odin, triggers.odin, quantities.odin,
+  filters.odin): "whenever you attack" batched forms (CR 508.3c-e, 603.2c); conditions of the trigger event recorded
+  as it triggers and read back as it resolves (CR 603.4; Not/And/Or now exact, no short-circuit); conditions on the
+  object that moved, from last known information (CR 603.10a; Pelt Collector's power rechecked per its rulings);
+  turn-record amounts (entered, left, cast, discarded this turn); "during your turn", first spell of a type each
+  turn, whose step a phase trigger fires on; once-each-turn batches; combat-damage-to-a-player batches (CR 510.2);
+  "a card leaves your graveyard"; noncombat damage triggers. Fixed: created tokens weren't recorded as entering the
+  battlefield this turn (Celebration and others read that record). 5 misparsed cards refused. Tests:
+  trigger_condition_test.odin (42). Coverage 8,640.
+  Known approximations (Known issues): "an opponent is dealt noncombat damage" triggers per source, not per event;
+  "another" in entry records compares ids, not incarnations; an entry record's controller is the previous zone's.
+  Found wrong in supported cards (Known issues): Ark of Hunger, Tablet of Discovery ("mill ... you may play that
+  card") and Mosswood Dreadknight ("cast it from your graveyard") do nothing: do_grant_permission grants only to
+  exiled cards; CR 704.5q (+1/+1 and -1/-1 counters cancel) isn't implemented.
+- Exile until it leaves, and linked "exiled with" abilities (agent, merged; exile_links.odin): CR 610.3 built with
+  the state's `exile_links` (link made only when an ability's exile instruction moves a nontoken card while its
+  source is the same object on the battlefield, so Fiend Hunter leaving in response exiles for good, per its
+  rulings); links end per CR 400.7 and move to `linked_exile_lki` when the source leaves (for leaves triggers and
+  sacrifice costs); returns under the owner's control (610.3c), together as one later event (610.3d), tokens never
+  (111.8), Auras with the owner choosing a host or staying exiled (303.4f-g, prompt ReturnAsAuraTarget); returns
+  during a resolution wait for the end of the current instruction. "Return the exiled cards" (CR 607.2a) to
+  battlefield, hand or graveyard. Fixed: Temporary Lockdown exiled for good (its duration was ignored). Refused:
+  linked exiles from costs or replacements (Fear of Abduction, CR 607.2q), "all other ... exiled with" (Mirror of
+  Life Trapping), "put onto the battlefield" without "owner's control" (Underworld Sentinel, CR 110.2a), Storrev
+  (misparsed duration), Detention Sphere (same-name filter). Banishing Light and Cast Out now supported. Tests:
+  exile_link_test.odin (26). Coverage 8,704. The return queue lives in Game, not the state (empty between actions).
+- Stopped at the owner's pause (2026-11-25 ~16:05 UTC), before they had written anything: the tenth rules review
+  of bcaa6aa..ee6d94c and four coverage agents (named mechanics: Station, Connive, the Ring, Foretell, Warp, energy,
+  emblems; card faces: split, back faces, the Omen fix; damage, life and replacements; zone instructions:
+  ChangeZone, library positions, draw/discard/mill, permissions outside exile). Their brief is
+  docs/odin/agent-brief.md. Next round after those: tokens and token copies, delayed triggers, "when you
+  do"/"otherwise", multiple targets.
+- Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
+  decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
+  cards to be triaged against the CR (next step for the fixtures).
+- Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
+  halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
+
+Rust baseline (measured 2026-11-24, this cloud container: 4 cores, 15 GB): `./scripts/build-wasm.sh wasm-dev` from
+cold compiled for 18 min 15 s, then wasm-bindgen was killed for lack of memory on the 260 MB debug-info module, so
+the dev engine build doesn't complete here without stripping `.debug_*` first. That is the loop the Odin engine
+replaces.
+
+## Paused (2026-11-25, ~16:05 UTC, owner's /goal pause)
+
+The owner paused the Odin engine goal (D-187). All agents were stopped and their worktrees removed (nothing
+uncommitted was lost); everything is committed and pushed on claude/eloquent-mayer-qcx0e1, PR #119 open, CI green
+at f7ed8a1. Where it stands: the Odin engine fully supports 8,704 of the 14,013 target (15,772 pool); 505 engine
+tests pass; 9/9 AI games finish; fixture replay 824/11,160 (as of e2b8187). To resume: rerun the tenth rules review
+of bcaa6aa..ee6d94c, then relaunch the four coverage families listed under "Stopped at the owner's pause" in the
+goal's Progress, using docs/odin/agent-brief.md; `node odin/engine-wasm/sup.mjs "Card"` checks support. Open
+question still waiting: aim for the whole pool after switching at 14,013 (Open questions).
+
+## Paused (2026-11-24, ~17:25 UTC, owner's request)
+
+The owner asked to pause all work. The three parallel sessions (D-185) were told to commit, push and stop;
+the scheduled check-in was deleted. PR #119 stays open, unmerged. Where the translator stood: 52.5% of engine
+functions translated, 54.2% of executed ones; vector check clean (728 pass, 0 unexplained failures) as of
+a216a17. Next when resuming: tuple field access (`f(..).0` on a returned tuple: `._0` in the model) was written
+but reverted untested; then the executed-blocker list (`translate-report` with ODINGEN_EXECUTED).
+
+## Working with the owner
+- Owner (2026-11-25): "keep running checklists of what rules have been marked completed in the comprehensive rule
+  set. Like a coverage report, like you're currently doing with the cards, but for the rule set as well." Keep a
+  CR coverage report for the Odin engine (tools: odin/engine-wasm/rules-coverage.mjs, report in
+  docs/odin-rules-coverage.md), regenerated with each engine change and reported alongside card coverage.
+- Owner (2026-11-24): "something I wanted to call out that I think is great is the fact that CR rules are cited
+  heavily throughout the code - continue to do so because the CR is the source of truth on how MTG works". Keep
+  citing the rule (looked up in rules/, never from memory) in every rules comment and test of the Odin engine.
+- Owner (2026-11-24) asked whether the Rust integration tests validate card coverage. Not yet: coverage is a static
+  check (every part of the card's parsed text is implemented). Plan: once the capture finishes, replay it on Rust
+  (keep the clean recordings), then on Odin (pass rate), and map tests to the cards they use, so a card counts as
+  validated only when its tests pass on Odin. Report that validated number as the coverage.
+- Owner (2026-11-24): "anything that can be ran in the background reasonably, do it". Builds, test runs, captures,
+  comparisons and browser checks run as background jobs; work continues meanwhile.
+
+- Owner (2026-11-24): the running progress messages had no value to them ("probably a lot of value to you, but
+  none to me"). Report only what matters to the owner, in plain terms and briefly: milestones reached (a recorded
+  game replaying in Odin, a PR merged, performance numbers), decisions or approvals needed, and problems that
+  change the plan. Keep translator internals, percentages and per-fix detail in this file and the commits.
+- Owner (2026-11-24), on whether the 11,160 usable fixtures are comprehensive: they aren't. Only 2,130 of the
+  15,772 pool cards appear in a usable fixture (2,449 in any captured one), so "all of a card's fixtures pass on
+  Odin" can't exceed about 2,100 cards. Proposed filling the gap with Rust AI-vs-AI games whose decks rotate through
+  the pool, recorded and replayed on Odin. Owner: "we can stick with the 11,000 fixtures for now. I think once the
+  engine is fully fleshed out, we can consider covering any gaps." So: grow the engine against the 11,160 fixtures
+  and the static coverage check; report both the fixture pass rate and fully supported pool cards; take up the
+  gap recordings only once the engine is fleshed out (ask then).
+
 ## Known issues
+- (Odin, 2026-11-25) Play/cast permissions granted to cards outside exile do nothing (do_grant_permission): Ark of
+  Hunger, Tablet of Discovery, Mosswood Dreadknight are marked supported but wrong. Refuse or build.
+- (Odin, 2026-11-25) CR 704.5q (+1/+1 and -1/-1 counters on one permanent cancel) isn't implemented.
+- (Odin, 2026-11-25) "An opponent is dealt noncombat damage" triggers once per source rather than once per event;
+  entry records compare object ids, not incarnations, for "another"; an entry record's controller is the one in
+  the previous zone (wrong for a card put onto the battlefield under another player's control).
+- (Odin, 2026-11-25) Omen cards (Chilling Screech and 15 others) come through as layout "adventure" without the
+  Adventure subtype; the creature is supported but the Omen half can never be cast (has_adventure). Should be
+  refused or built (CR 715 analogue for Omen; look up the rule).
+
+- (Odin, 2026-11-25) "Tap enchanted creature" with the data's Stack timing (Mesmerizing Dose, Sleep with the Fishes, So
+  Shiny) is treated as a target: ward triggers on it and hexproof makes it fizzle; the enchanted creature isn't
+  targeted. Damage from a source that has left reads the card in its new zone, not as it last existed (CR 608.2h;
+  Tilonalli's Crown destroyed in response). Both reported by the resolution-choices agent, to fix.
+- (2026-11-25, sixth rules review of the Odin engine, 5a5bc3d..8fbd5e6; all fixed, test sixth_review_fixes: the layer
+  pass runs before triggers are collected and a moved object drops its granted abilities; a triggered ability keeps
+  its source as it was (stack_sources) for "its power" and X after it left; the data-dropped cards refused, with
+  description checks for once-per-turn with "during your turn" and remove-counter costs not "from this") (1) granted triggers are
+  read from the wrong set: the layer pass runs after triggers are collected (an entering Sliver misses Dormant
+  Sliver's grant, CR 603.6b, 603.10) and a moved object keeps stale granted abilities; (2) Bind the Monster's "it
+  deals damage equal to its power" has no target to read; (3) a spell's own "can't be countered" isn't read on the
+  stack (CR 113.6g); (4) "its power" in a granted dies trigger reads the card in the graveyard (CR 608.2h); (5) an
+  enters trigger's X is 0 if the permanent left (CR 107.3m); (6) descended reads the stack/battlefield face, not the
+  graveyard face (Adventures, MDFC land faces); (7) data-dropped qualifiers: Tolls of War, Dionus, Stika, Danitha,
+  Draco, Rift Elemental (remove-counter cost "from a permanent you control"), Equinox, Arc Spitter, Fearsome Temper;
+  (8) once-per-turn records share one key for all of an object's printed triggers, and are taken before the
+  intervening if; (9) damage records match by id, not incarnation (CR 400.7); (10) layer 6 grants worked out before
+  layer 5 colour (CR 613.1e-f; lags one action); (11) granted abilities overwritten in place when the set changes
+  at the same size; (12) citations: 611.3a not 611.3b, 615.1 not 120.3.
+- (2026-11-25, fifth rules review of the Odin engine, 42be933..8a539ae; all fixed, tests fifth_review_fixes,
+  clone_makes_the_copied_cards_entry_choice, chosen_type_looks_back_when_its_source_dies; the data-dropped cards,
+  Gilraen and Dawn-Blessed Pennant refused in MISPARSED_CARDS, "chosen at random" refused, "enchanted creatures"
+  read only on an Aura or Equipment) Engine: (1) static prevention
+  checks a source's qualities only on the battlefield (CR 609.7c: also sources elsewhere, by last known info); (2)
+  "dealt by enchanted creatures" read as "the creature this is attached to" (Wall of Putrid Flesh, Enchanted Being);
+  (3) Guardian Naga's "during your turn" dropped by the data; (4) "of the chosen type" filters read the live source,
+  so a dies trigger that looks back (CR 603.10a) loses the choice (Species Specialist in a wrath); (5) a Clone
+  copying a card with "as this enters" (choose, enters tapped, with counters) skips it (CR 707.5, 707.6); (6)
+  Gilraen's delayed return never moves the exiled card (origin Battlefield in the data); (7) Dawn-Blessed Pennant
+  reads a chosen card type but chooses a creature type; (8) loyalty counters put by PutCounter go to o.counters, not
+  o.loyalty (Settle the Score, Ajani the Greathearted, ...); (9) a reveal-land prompt can't be answered in a restored
+  game. Data drops to refuse: Captivating Crossroads, Camato Scout, Buzzing Whack-a-Doodle, Riptide Replicator,
+  Volrath's Laboratory, Sarpadian Empires Vol. VII, Pompous Gadabout, Nick Fury Spymaster, Quicksilver Servitor.
+  Citations: 508.4 (not 508.4c) at combat.odin enter_attacking, 609.7c for static prevention, 614.12a for entry
+  choices, 614.12c/607 for chosen labels. Checked correct: triggered mana abilities (none supported that trigger
+  from mana abilities, CR 605.1b), Nth-draw reset, entry-choice timing, finality, decayed, sacrifice-only mana.
+- (2026-11-25, app on the Odin engine, Playwright) The "Pass" button (pass to the end of the turn) did nothing: the
+  engine ignored SetAutoPass, so a game never left the first main phase that way. Fixed: auto_pass.odin keeps the
+  standing passes and phase stops in the state and passes for the player (test pass_to_the_end_of_the_turn).
+- (2026-11-25, fourth rules review of the Odin engine, 973a688..82ce148) All eight fixed, each with a test: a
+  triggered ability divides damage or counters as it's put on the stack (CR 603.3d, 601.2d); "its controller" and
+  "its power" of a target that left read its last known information (608.2h); a transformed permanent has no mana
+  cost of its own, its mana value from the front face (712.6d, 202.3b); an intervening "if" whose source has left
+  reads the source as it was put on the stack (603.4, 608.2h); a new timestamp on transforming (613.7g); a mana
+  creature can convoke for its own color (702.51a); MDFC faces and Adventures can be chosen when cast from exile
+  by a permission (712.8b, 716.3); a token copy of a double-faced permanent is double-faced (707.8a).
+- (2026-11-25, third rules review of the Odin engine, commits ab9fdef..2791da2) Fixed with tests: a Clone copy
+  is its own card again once it leaves the battlefield (CR 400.7, 707.2); a modal trigger with too few choosable
+  modes is removed (CR 700.2b); "you may have it fight" and other fights follow conditions and "you may" (CR
+  608.2d); "it fights" reads the earlier target instead of becoming a target slot, and "enchanted creature fights"
+  is refused; Clone isn't offered a token (copying one isn't supported yet); crew and planeswalker combat damage
+  check it's the same object (CR 400.7, 506.4, and the attacked planeswalker's controller); "becomes a creature"
+  removes only CR 205.3m creature types; priority after a trigger's modes or targets goes back to the player who
+  had it (CR 117.3c). Still open: Clone chooses after entering instead of as it enters (CR 707.5, 614.12), so a
+  copied "enters with" doesn't apply and creatures entering with it are offered.
+- (2026-11-25, found while building the Odin engine) The Rust engine may read Book Devourer's "discard all the cards
+  in your hand. If you do, draw that many cards" as the combat damage: its "that many" (EventContextAmount)
+  checks the triggering event's amount before the preceding instruction's count (quantity.rs
+  event_context_amount). By the card's wording it's the number discarded. Unconfirmed in play; Odin refuses
+  "that much" after a first instruction until it tracks such counts.
+- (2026-11-25, owner: "CI is failing over and over on GitHub") Fixed in e45b75b: the Odin workflow's model check
+  failed on every push since a7e7ad1, which hand-edited the generated codecs in an order odingen doesn't emit.
+  Regenerated; run 112 (e45b75b) passed every step, both round trips included. Check CI after each push, not
+  only the local suite. Pending runs show as "cancelled" when a newer push replaces them in the queue: push in
+  batches.
+- (2026-11-25, Odin native tests) Fixed: the full native suite hung from 65c6e65 on: two tests emptied the hand
+  through a copy of its persistent vector, so the loop never ended and memory grew until the container killed it.
+  Runs reported in between as passing hadn't finished; the hang also hid two stale expectations (Ancient Tomb and
+  Karplusan Forest became supported with the mana riders; Wild Mongrel's color choice isn't). Now the suite (70
+  tests) runs in under a second; run it under a memory cap (ulimit -v) and check for "Finished N tests".
+- (2026-11-24, Odin engine, rules-judge review of 9ab9548..7429070) Fixed, with tests: (1) "sacrifice this" and
+  "exile this" acted on the new object after a blink (CR 400.7); (2) a blinked token came back (CR 111.8) and
+  exiled tokens never ceased to exist (CR 704.5d); (3) accepting an impossible "you may" counted as "if you do"
+  (CR 608.2d); (4) a Treasure could pay mana and be sacrificed for the same spell's additional cost (CR 601.2h);
+  (5) filter comparisons against a target's amount were evaluated with no target (Fell the Mighty); (6)
+  activation cost reductions were ignored (channel lands); (7) legal actions listed no choose-two modes; mode
+  order cited 700.2d instead of 608.2c; spell-cast records said "hand" for commanders; a scoped instruction's
+  condition was rechecked after each player.
+- (2026-11-24, Odin engine, rules-judge review of bdedbc4..cceba79) Fixed, with tests (1-5, 7, 8): (1) a dies trigger's intervening
+  "if" read the card in the graveyard, not the creature as it last existed (CR 603.10a, 608.2h; Deathknell
+  Berserker); (2) mana value ignored X on the stack (CR 202.3e); (3) a mass "creatures can't block this turn" was
+  locked to the creatures present on resolution (CR 611.2c); (4) heroic missed targets of a spell's later
+  instructions; (5) "pay life" mana riders didn't check the life total (CR 119.4); (7) a false instruction
+  condition dropped later independent instructions; (8) the gap report listed supported X spells. Open: (6) "that
+  creature's controller" should use last known information once control-changing effects exist; the intervening
+  "if" is first checked when triggers are collected, not at the event; the player doesn't choose which mana
+  abilities pay (CR 601.2g), so automatic payment may take painland damage or sacrifice a land. "Each player"
+  instructions are carried out player by player in turn order; CR 101.4 has the choices made in that order and
+  the actions happen at the same time (matters for triggers on those actions).
+- (2026-11-24, Odin engine, rules-judge review of odin/engine/game at f7800b5) Being fixed now: (1) only a permanent's
+  first mana ability was used (dual lands made one color; CR 605.3a); (2) mana-ability riders (damage, "activate only
+  if", spending restrictions, extra mana) ignored while the card counted as supported; (4) creatures that left the
+  battlefield stayed in combat (CR 506.4, 510.1d); (5) the engine tapped creatures for mana before lands; (6) greedy
+  color assignment called payable costs unpayable (CR 601.2h); (7) Phyrexian and {2/C} symbols had no alternate
+  payment (CR 107.4e-f): such cards now unsupported; (8) the support gate let through player scopes, chosen groups,
+  mass pumps parsed as single-target "any", typed filters without types; (9) duplicate ids in discard/bottom
+  choices, blocking with a card in hand, conceding for the other player; (10) no mana cost treated as free
+  (CR 118.6); (11) no priority in the declare attackers step when nobody attacks (CR 508.2); AI cast -N/-N on its own
+  creature. All fixed (22908e5, 75a7403), each with a
+  rules test in odin/tests/game: (3) the attacking player now divides damage among blockers and trample excess
+  (CR 510.1c, 702.19b); targets are checked against the incarnation they had when chosen (CR 400.7, 608.2b; landed
+  in 75a7403 with the damage division).
+- (2026-11-24, Odin port, translator) The model holds sets as Vecs, so set operations were translated as Vec ones:
+  `set.remove(&id)` became `Vec::remove(index)` (the vector check caught a crash; a small id would have removed the
+  wrong element silently), and collects into a `BTreeSet` would have kept neither its order nor its uniqueness. Fixed:
+  set operations and collects look up the Rust type (fields, parameters, a let's annotation or constructor, the
+  function's result, a turbofish); BTreeSets stay sorted, HashSets deduplicate (their Rust order is random, so not
+  observable); an unseen destination in a function using sets is refused.
 - (2026-11-24, Odin port, translator) Two silent mistranslations in code that type-checked cleanly, found by probes:
   (1) Odin's unlabelled `break` inside a `switch` leaves only the switch, so a Rust `break` in a `match` arm inside a
   loop was translated as a no-op; fixed: every translated loop is labelled and `break`/`continue` name it.
@@ -2687,6 +3569,17 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   `players::is_opponent`, which delegates to `topology::is_opponent`, called itself (now resolved by module path or
   the caller's file, ambiguous calls and shared procedure names refused); (4) `Some(Vec::new())`, `Some(None)` and
   `Err(Default::default())` became untyped `{}`/`nil`, which Odin reads as None/no error (now typed explicitly).
+- (2026-11-24, Odin port, to handle in O-2's state comparison) A HashMap whose keys Odin can't hash
+  (`HashMap<CounterType, u32>`, `im::HashMap<StaticGateKey, bool>`) is a list of pairs in the Odin model, and the
+  translation appends a new key, while Rust serializes such a map in its hashing order. Two pair lists with the same
+  entries in different orders are equal maps, so comparisons of these fields (the replay harness, the vector check)
+  must ignore order. BTreeMap inserts into pair lists are refused until sorted insertion is written.
+- Fixed (2026-11-24, D-184): PtDirection's tag is now `direction`, so a pump's slot detail reads
+  `{"type":"Modification","direction":"Increase"}`; TargetEffectDetail reads through a wire enum (`serde(from)`) that
+  also takes the form saved games already hold (`{"type":"Increase"}`, after the client's `JSON.parse`) as a
+  Modification. Test: `paused_pump_target_prompt_round_trips_through_json_values` (ability_utils.rs) round-trips a
+  state paused on a pump's target prompt through `serde_json::Value` and loads the legacy form. The Odin model was
+  regenerated. The original report:
 - (2026-11-24, found by the Odin port) A game state whose WaitingFor holds a target slot with
   `TargetEffectDetail::Modification(..)` can't round-trip through `serde_json::Value`: serde writes `"type"` twice
   (`{"type":"Modification","type":"Increase"}`, an internally tagged enum inside another with the same tag) and a

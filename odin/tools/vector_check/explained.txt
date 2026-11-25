@@ -1,2 +1,3 @@
 # Failures of the vector check that are understood and not translation bugs: "<procedure>: <why>".
 GameState_live_active_rules_execution_node: reads active_rules_execution_node, a #[serde(skip)] runtime field the log can't carry, so Odin sees its default
+prospective_mana_controls_exact_fetchland: reads layers_dirty, a #[serde(skip)] field read back as LayersDirty::full (dirty), so Odin returns true where Rust saw it clean

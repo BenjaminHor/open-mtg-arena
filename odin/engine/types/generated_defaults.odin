@@ -865,7 +865,11 @@ skip_Effect_LibraryPosition_is_top_LibraryPosition :: proc(x: LibraryPosition) -
 	return false
 }
 
-skip_Effect_ObjectSelectionCardinality_is_single_ObjectSelectionCardinality :: hand_ObjectSelectionCardinality_is_single
+skip_Effect_ObjectSelectionCardinality_is_single_ObjectSelectionCardinality :: proc(x: ObjectSelectionCardinality) -> bool {
+	_ = x
+	return (x == ObjectSelectionCardinality_Exactly{count = 1})
+}
+
 skip_Effect_RedirectionLifetime_is_one_opportunity_RedirectionLifetime :: proc(x: RedirectionLifetime) -> bool {
 	_ = x
 	return x == RedirectionLifetime.OneOpportunity
@@ -1055,7 +1059,11 @@ skip_GameObject_is_default_DisplaySource :: proc(x: DisplaySource) -> bool {
 }
 
 skip_GameObject_is_default_ManaCost :: hand_is_default
-skip_GameObject_is_default_PhaseStatus :: hand_is_default
+skip_GameObject_is_default_PhaseStatus :: proc(x: PhaseStatus) -> bool {
+	_ = x
+	return (x == PhaseStatus(PhaseStatus_PhasedIn{}))
+}
+
 skip_GameObject_is_default_TriggerOccurrenceState :: hand_is_default
 skip_GameObject_is_default_u64 :: proc(x: u64) -> bool {
 	_ = x

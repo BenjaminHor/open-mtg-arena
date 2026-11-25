@@ -208,6 +208,9 @@ pub struct Emitter<'a> {
     /// Generated `clone_<T>` procedures and their per-shape helpers (generated_clone.odin).
     pub clone_out: String,
     clone_names: BTreeMap<String, String>,
+    /// Generated `eq_<T>` procedures (Rust's derived PartialEq, for `==` on values Odin can't compare itself).
+    pub eq_out: String,
+    eq_names: BTreeMap<String, Result<Option<String>, String>>,
     plain_memo: BTreeMap<String, bool>,
     pub emitted: BTreeSet<String>,
     queue: VecDeque<String>,
@@ -244,6 +247,8 @@ impl<'a> Emitter<'a> {
             codec_out: String::new(),
             clone_out: String::new(),
             clone_names: BTreeMap::new(),
+            eq_out: String::new(),
+            eq_names: BTreeMap::new(),
             plain_memo: BTreeMap::new(),
             emitted: BTreeSet::new(),
             queue: VecDeque::new(),
@@ -1445,7 +1450,9 @@ impl<'a> Emitter<'a> {
             }
             Kind::Enum(vs) => {
                 let (d, e, m) = self.data_enum_codec(def, vs, &params);
-                dec = d;
+                // null decodes to an unset union, as the encoder writes one (D-187: the Odin engine leaves unions
+                // it doesn't use unset).
+                dec = if vs.iter().all(|v| matches!(v.fields, Fields::Unit)) { d } else { format!("\tif v.kind == .Null do return true\n{d}") };
                 enc = e;
                 members = m;
             }
@@ -1515,7 +1522,8 @@ impl<'a> Emitter<'a> {
         let generic_suffix = if params.is_empty() { String::new() } else { format!("({})", params.join(", ")) };
         let field_rule = s.rename_all_fields.clone();
         let mut dec = String::new();
-        let mut enc = String::from("\t#partial switch y in x {\n");
+        // An unset union (nil) writes null, so a value the engine hasn't filled in is still valid JSON.
+        let mut enc = String::from("\t#partial switch y in x {\n\tcase nil: strings.write_string(b, \"null\")\n");
         let mut mem = String::from("\t#partial switch y in x {\n");
         let internally = s.tag.is_some() && s.content.is_none();
         let adjacent = s.tag.is_some() && s.content.is_some();
@@ -1975,4 +1983,172 @@ fn iterator_item<'t>(bounds: impl Iterator<Item = &'t syn::TypeParamBound>) -> O
         }
     }
     None
+}
+
+impl Emitter<'_> {
+    /// Equality as Rust's derived PartialEq has it: None when Odin's `==` is that already, Some(procedure) for a
+    /// generated `eq_*`, Err when it can't be (a hand-written PartialEq, a type outside the model, a generic).
+    pub fn equaler(&mut self, s: &Shape) -> Result<Option<String>, String> {
+        match s {
+            Shape::Bool | Shape::Int(_) | Shape::Float(_) | Shape::Str | Shape::Char | Shape::Unit => return Ok(None),
+            Shape::Json | Shape::Extern(_) | Shape::Unknown(_) | Shape::Param(_) | Shape::MutRef(_) => {
+                return Err(format!("equality of a type outside the model ({})", format!("{s:?}").chars().take(40).collect::<String>()))
+            }
+            _ => {}
+        }
+        let ty = self.odin(s);
+        if let Some(r) = self.eq_names.get(&ty) {
+            return r.clone();
+        }
+        // Recursive types refer to themselves: the name is reserved first.
+        let name = match s {
+            Shape::Named(n, a) if a.is_empty() => format!("eq_{n}"),
+            Shape::Named(..) => return Err("equality of a generic type".into()),
+            _ => format!("eqs_{}", mangle(&ty)),
+        };
+        self.eq_names.insert(ty.clone(), Ok(Some(name.clone())));
+        let body = match self.eq_body(s, &ty) {
+            Ok(Some(b)) => b,
+            Ok(None) => {
+                self.eq_names.insert(ty, Ok(None));
+                return Ok(None);
+            }
+            Err(e) => {
+                self.eq_names.insert(ty, Err(e.clone()));
+                return Err(e);
+            }
+        };
+        let _ = writeln!(self.eq_out, "{name} :: proc(a, b: {ty}) -> bool {{\n{body}}}\n");
+        Ok(Some(name))
+    }
+
+    /// `x == y` for two Odin expressions of a shape.
+    fn eq_expr(&mut self, s: &Shape, x: &str, y: &str) -> Result<String, String> {
+        Ok(match self.equaler(s)? {
+            None => format!("{x} == {y}"),
+            Some(p) => format!("{p}({x}, {y})"),
+        })
+    }
+
+    fn eq_body(&mut self, s: &Shape, ty: &str) -> Result<Option<String>, String> {
+        Ok(Some(match s {
+            Shape::Option(i) => {
+                let e = self.eq_expr(i, "x", "y")?;
+                format!("\tx, xok := a.?\n\ty, yok := b.?\n\tif xok != yok do return false\n\treturn !xok || {e}\n")
+            }
+            // Rust compares a Box's or Arc's contents.
+            Shape::Ptr(i, _) | Shape::OptPtr(i, _) => {
+                let e = self.eq_expr(i, "a^", "b^")?;
+                format!("\tif a == nil || b == nil do return a == b\n\treturn {e}\n")
+            }
+            Shape::Vec(i) | Shape::Array(i, _) => {
+                let e = self.eq_expr(i, "a[k]", "b[k]")?;
+                format!("\tif len(a) != len(b) do return false\n\tfor k in 0 ..< len(a) do if !({e}) do return false\n\treturn true\n")
+            }
+            Shape::PVec(i) => {
+                let e = self.eq_expr(i, "pvec_get(a, k)", "pvec_get(b, k)")?;
+                format!("\tif a.len != b.len do return false\n\tfor k in 0 ..< a.len do if !({e}) do return false\n\treturn true\n")
+            }
+            Shape::Map(_, v) if ty.starts_with("map[") || ty.starts_with("^map[") => {
+                let deref = if ty.starts_with('^') { "^" } else { "" };
+                let e = self.eq_expr(v, "va", "vb")?;
+                let nil = if deref.is_empty() { String::new() } else { "\tif a == nil || b == nil do return (a == nil || len(a^) == 0) && (b == nil || len(b^) == 0)\n".to_string() };
+                format!("{nil}\tif len(a{deref}) != len(b{deref}) do return false\n\tfor k, va in a{deref} {{\n\t\tvb, ok := b{deref}[k]\n\t\tif !ok || !({e}) do return false\n\t}}\n\treturn true\n")
+            }
+            Shape::Map(..) => return Err("equality of an ordered map".into()),
+            Shape::Tuple(es) => {
+                let mut parts = Vec::new();
+                for (i, e) in es.clone().iter().enumerate() {
+                    parts.push(self.eq_expr(e, &format!("a._{i}"), &format!("b._{i}"))?);
+                }
+                format!("\treturn {}\n", if parts.is_empty() { "true".into() } else { parts.join(" && ") })
+            }
+            Shape::Result(t, er) => {
+                let (t, er) = ((**t).clone(), (**er).clone());
+                let ok = self.eq_expr(&t, "a.ok", "b.ok")?;
+                let err = self.eq_expr(&er, "x", "y")?;
+                format!("\tx, xf := a.err.?\n\ty, yf := b.err.?\n\tif xf != yf do return false\n\tif xf do return {err}\n\treturn {ok}\n")
+            }
+            Shape::Named(n, _) => {
+                let n = n.clone();
+                // A monomorphized instance (`Definitions_TriggerDefinition`): its base's definition, with the instance's
+                // arguments for the base's parameters while its fields' shapes are worked out.
+                let (def, inst_subst) = match self.def(&n) {
+                    Some(d) => (d.clone(), None),
+                    None => {
+                        let (base, args) = self.instances.get(&n).cloned().ok_or_else(|| format!("equality of a type without a definition ({n})"))?;
+                        let d = self.def(&base).ok_or_else(|| format!("equality of a type without a definition ({base})"))?.clone();
+                        let sub: BTreeMap<String, Shape> = d.generics.iter().cloned().zip(args).collect();
+                        (d, Some(sub))
+                    }
+                };
+                if !def.derives.iter().any(|d| d == "PartialEq") {
+                    return Err(format!("{n} has a hand-written PartialEq"));
+                }
+                if !def.generics.is_empty() && inst_subst.is_none() {
+                    return Err("equality of a generic type".into());
+                }
+                let saved_subst = self.subst.clone();
+                if let Some(sub) = &inst_subst {
+                    self.subst.extend(sub.clone());
+                }
+                let r = self.eq_named(&n, &def);
+                self.subst = saved_subst;
+                return r.map(Some);
+            }
+            _ => return Err("equality of this shape".into()),
+        }))
+    }
+
+    fn eq_named(&mut self, n: &str, def: &TypeDef) -> Result<String, String> {
+                let n = n.to_string();
+                let fields_eq = |e: &mut Self, fs: &Fields, x: &str, y: &str| -> Result<Vec<String>, String> {
+                    let mut out = Vec::new();
+                    match fs {
+                        Fields::Named(v) => {
+                            for f in v {
+                                let sh = e.shape(&f.ty, &[]);
+                                let id = field_ident(f.name.as_ref().unwrap());
+                                out.push(e.eq_expr(&sh, &format!("{x}.{id}"), &format!("{y}.{id}"))?);
+                            }
+                        }
+                        Fields::Tuple(v) => {
+                            for (i, f) in v.iter().enumerate() {
+                                let sh = e.shape(&f.ty, &[]);
+                                out.push(e.eq_expr(&sh, &format!("{x}._{i}"), &format!("{y}._{i}"))?);
+                            }
+                        }
+                        Fields::Unit => {}
+                    }
+                    Ok(out)
+                };
+                Ok(match &def.kind {
+                    // A newtype is a `distinct` of its inner type.
+                    Kind::Struct(Fields::Tuple(fs)) if fs.len() == 1 => {
+                        let inner = self.shape(&fs[0].ty, &[]);
+                        let it = self.odin(&inner);
+                        match self.equaler(&inner)? {
+                            None => "\treturn a == b\n".to_string(),
+                            Some(p) => format!("\treturn {p}(cast({it})a, cast({it})b)\n"),
+                        }
+                    }
+                    Kind::Struct(fs) => {
+                        let parts = fields_eq(self, fs, "a", "b")?;
+                        format!("\treturn {}\n", if parts.is_empty() { "true".into() } else { parts.join(" && ") })
+                    }
+                    Kind::Enum(vs) => {
+                        if vs.iter().all(|v| matches!(v.fields, Fields::Unit)) {
+                            return Ok("\treturn a == b\n".to_string());
+                        }
+                        let mut b = "\tswitch x in a {\n\tcase nil:\n\t\treturn b == nil\n".to_string();
+                        for v in vs {
+                            let parts = fields_eq(self, &v.fields, "x", "y")?;
+                            let all = if parts.is_empty() { "true".to_string() } else { parts.join(" && ") };
+                            b.push_str(&format!("\tcase {n}_{}:\n\t\ty, ok := b.({n}_{})\n\t\treturn ok && ({all})\n", v.name, v.name));
+                        }
+                        b.push_str("\t}\n\treturn false\n");
+                        b
+                    }
+                })
+    }
 }

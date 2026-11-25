@@ -114,6 +114,9 @@ pub struct FnDef {
     pub block: syn::Block,
     pub file: PathBuf,
     pub self_ty: Option<String>,
+    /// For a function declared inside another function's body: that function's name (its procedure name says so,
+    /// and a call from inside it resolves to it first).
+    pub nested_in: Option<String>,
 }
 
 pub fn lit(s: &LitStr) -> String {
@@ -364,7 +367,9 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
                     block: (*f.block).clone(),
                     file: file.to_path_buf(),
                     self_ty: None,
+                    nested_in: None,
                 });
+                register_nested_fns(&f.block, &f.sig.ident.to_string(), file, reg);
             }
             Item::Impl(i) => {
                 if i.trait_.is_none() && !is_cfg_test(&i.attrs) {
@@ -383,7 +388,9 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
                                     block: f.block.clone(),
                                     file: file.to_path_buf(),
                                     self_ty: Some(n.clone()),
+                                    nested_in: None,
                                 });
+                                register_nested_fns(&f.block, &f.sig.ident.to_string(), file, reg);
                             }
                         }
                     }
@@ -399,12 +406,32 @@ fn visit_items(items: &[Item], file: &Path, reg: &mut Registry) {
                                         block: f.block.clone(),
                                         file: file.to_path_buf(),
                                         self_ty: Some(n.clone()),
+                                        nested_in: None,
                                     });
                                 }
                             }
                         }
                     }
                     let tname = trait_path.segments.last().map(|s| s.ident.to_string()).unwrap_or_default();
+                    // An engine trait's methods (`impl ObjectIncarnationRefExt for ObjectIncarnationRef`) are
+                    // registered on the type like inherent ones; a name an inherent method or another trait also
+                    // gives the type is then ambiguous, which resolution refuses. Standard traits stay out: their
+                    // methods (`from`, `eq`, `fmt`, ...) are the language's, not engine logic.
+                    if !STD_TRAITS.contains(&tname.as_str()) && trait_path.segments.len() == 1 && !is_cfg_test(&i.attrs) {
+                        if let Some(n) = self_type_name(&i.self_ty) {
+                            for it in &i.items {
+                                if let syn::ImplItem::Fn(f) = it {
+                                    reg.fns.entry((Some(n.clone()), f.sig.ident.to_string())).or_default().push(FnDef {
+                                        sig: f.sig.clone(),
+                                        block: f.block.clone(),
+                                        file: file.to_path_buf(),
+                                        self_ty: Some(n.clone()),
+                                        nested_in: None,
+                                    });
+                                }
+                            }
+                        }
+                    }
                     if tname == "Serialize" || tname == "Deserialize" {
                         if let Some(n) = self_type_name(&i.self_ty) {
                             reg.custom_impls.entry(n).or_default().push(file.to_path_buf());
@@ -469,4 +496,47 @@ pub fn scan_file_type(path: &Path, name: &str) -> Option<TypeDef> {
     let mut reg = Registry::default();
     visit_items(&f.items, path, &mut reg);
     reg.types.remove(name)?.into_iter().next()
+}
+
+/// Traits of the standard library and serde whose impls aren't engine logic to translate.
+const STD_TRAITS: &[&str] = &[
+    "Default", "Serialize", "Deserialize", "PartialEq", "Eq", "PartialOrd", "Ord", "Hash", "Debug", "Display",
+    "Clone", "Copy", "From", "Into", "TryFrom", "TryInto", "Iterator", "IntoIterator", "DoubleEndedIterator",
+    "ExactSizeIterator", "Deref", "DerefMut", "AsRef", "AsMut", "Borrow", "BorrowMut", "FromStr", "Drop", "Add",
+    "Sub", "Mul", "Div", "Rem", "Neg", "Not", "BitAnd", "BitOr", "BitXor", "AddAssign", "SubAssign", "MulAssign",
+    "Index", "IndexMut", "Extend", "FromIterator", "Error", "Fn", "FnMut", "FnOnce", "Send", "Sync", "Visitor",
+    "Sum", "Product",
+];
+
+/// Functions declared inside a function body (`fn visit(..)` helpers) can't capture anything, so they are registered
+/// as free functions of the file: a bare call resolves to them like to the file's own functions, and two of one name
+/// in a file are ambiguous, which resolution refuses.
+fn register_nested_fns(block: &syn::Block, outer: &str, file: &std::path::Path, reg: &mut Registry) {
+    struct V<'r> {
+        file: &'r std::path::Path,
+        found: Vec<syn::ItemFn>,
+    }
+    impl<'ast> syn::visit::Visit<'ast> for V<'_> {
+        fn visit_item_fn(&mut self, f: &'ast syn::ItemFn) {
+            self.found.push(f.clone());
+            syn::visit::visit_item_fn(self, f);
+        }
+        // Items of a nested impl or module are not this function's helpers.
+        fn visit_item_impl(&mut self, _: &'ast syn::ItemImpl) {}
+        fn visit_item_mod(&mut self, _: &'ast syn::ItemMod) {}
+    }
+    let mut v = V { file, found: Vec::new() };
+    syn::visit::visit_block(&mut v, block);
+    for f in v.found {
+        if is_cfg_test(&f.attrs) {
+            continue;
+        }
+        reg.fns.entry((None, f.sig.ident.to_string())).or_default().push(FnDef {
+            sig: f.sig.clone(),
+            block: (*f.block).clone(),
+            file: v.file.to_path_buf(),
+            self_ty: None,
+            nested_in: Some(outer.to_string()),
+        });
+    }
 }

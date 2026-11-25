@@ -198,3 +198,18 @@ shuffle :: proc(r: ^Chacha20, s: []$T) {
 		s[i], s[index] = s[index], s[i]
 	}
 }
+
+// rand_chacha 0.9.0 chacha.rs `get_word_pos`: how many 32-bit words the generator has produced. A saved game stores
+// it so a restored game continues the same stream.
+word_pos :: proc(r: ^Chacha20) -> u128 {
+	if r.index >= BUF_WORDS do return u128(r.counter) * 16
+	return u128(r.counter - 4) * 16 + u128(r.index)
+}
+
+// rand_chacha 0.9.0 chacha.rs `set_word_pos`: continue the stream from a word position, generating the buffer that
+// holds it (set_block_pos, then generate_and_set at the offset within the block).
+set_word_pos :: proc(r: ^Chacha20, pos: u128) {
+	r.counter = u64(pos / 16)
+	refill(r)
+	r.index = int(pos % 16)
+}

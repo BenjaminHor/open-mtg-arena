@@ -2938,4 +2938,86 @@ owner's answer to the D-089 open question, option (a))
 - The fix renames one of the two tags (or adjacently tags the inner enum), with a migration that reads the old form
   in Rust's save loading, a test that a paused P/T-pump state round-trips through `serde_json::Value`, and the Odin
   model regenerated (D-181: the model reads only today's form).
+- Done (2026-11-24): PtDirection's tag is `direction` (`{"type":"Modification","direction":"Increase"}`). The
+  migration reads what saved games hold: the client stored states after `JSON.parse`, so an old pump slot reads
+  `{"type":"Increase"}`, which a wire enum behind `serde(from)` maps to `Modification(Increase)`. odingen ignores
+  `from` (it generates codecs for the written form). Test: `paused_pump_target_prompt_round_trips_through_json_values`.
 
+
+**D-185: Parallel sessions for the Odin port's independent streams (owner, 2026-11-24)** · 2026-11-24 · accepted
+- Owner (2026-11-24), asked whether the port could be parallelized: "yeah, start those sibling sessions if you
+  think they're worthwhile".
+- The translator (odingen's translate.rs/body.rs) stays in the main session: its fixes interact, and one 15 GB
+  container fits one patched-engine build at a time. Separate cloud sessions, each with its own container and branch,
+  take the streams that touch other files:
+  1. D-183: the census of runtime card-text parse calls, then moving them into the card data (Rust engine side).
+  2. Odin performance: the state layout and copy speed (Odin's copies measured 4-8x Rust's), with a benchmark.
+  3. O-2: the replay harness that steps a recorded game through the translated engine and reports the first
+     untranslated or differing step.
+- Each opens its own pull request and merges on green CI (D-027), merging main first. The main session reviews
+  their reports and keeps docs/status.md current.
+
+**D-187: A new Odin engine from the rules, behind the client's existing interface; Rust kept only as a test
+reference (owner, 2026-11-24)** · 2026-11-24 · accepted
+- Replaces the Rust-to-Odin translation of D-180 (paused 2026-11-24; its translator stays on the branch, unused).
+  (D-186 is taken on the D-183 session's branch, so this is D-187.)
+- Why: the owner's end goal is "a clean and modern mtg client that I can customize via Claude code whenever I
+  want" with "blazing fast iteration". A translation keeps the Rust engine's size and convolution; a new engine
+  written from the CR can be small, clean, and rebuild in seconds.
+- Shape: the Odin engine compiles to WebAssembly and exports the same functions the client calls today (94 engine,
+  39 draft; JSON in and out), so the client doesn't change. It reuses the Odin data model and codecs (states and
+  actions in the Rust wire form), the bit-exact RNG, and the parsed card data the Rust parser produces.
+- No dual engine (owner): the app switches from Rust to Odin once; until then it runs on Rust.
+- The Rust engine's value is its tests (owner): its integration tests and recorded AI games are captured as
+  language-neutral test files (starting state, actions, the game-relevant result), and the Odin engine must pass
+  them. Comparisons look at what matters in the game, not Rust's internal bookkeeping.
+- The card pool that matters: Scryfall `game:arena in:paper` (15,772 cards; the Rust engine plays 14,013).
+- State model (2026-11-24): the Odin engine holds the game in the generated data model (`odin/engine/types`), the
+  client's wire form, so the client, the captured tests' states and the parsed cards need no mapping in or out. The
+  rules logic is new, written from the CR; the types only give it its shape. Checked: the Rust engine's state after
+  `initialize_game` decodes and re-encodes equal (3 ms and 2 ms natively), apart from `wire_projection`, which only
+  the export adds, and the fields the engine derives (`WRITE_ONLY_FIELDS`), which the Odin engine computes as it
+  grows. Game state gets its own allocator, as the card database has, outliving each call's scratch arena.
+
+**D-188: One shield counter prevents all the combat damage dealt to its permanent at once** · 2026-11-25 · accepted
+
+- Question (rules review): a creature with a shield counter blocked by two creatures. CR 122.1c makes the
+  counters "a single prevention effect": "If damage would be dealt to this permanent, prevent that damage and
+  remove a shield counter from it." CR 510.2 deals all combat damage simultaneously.
+- Found (D-080): no ruling on the exact case in the card data; Rhox Pummeler's ruling and judge and player
+  discussions read the simultaneous combat damage as one event the shield prevents, one counter removed.
+- Decision: the Odin engine prevents all combat damage dealt to the permanent in that damage step and removes one
+  counter; noncombat damage from separate effects is separate events. Revisit if an official ruling says otherwise.
+
+**D-189: The captured Rust fixtures are a cross-check, not an oracle; a disagreement is settled by the CR** ·
+2026-11-25 · accepted
+- Question (owner, 2026-11-25): "how do we know that the fixtures actually capture the correct behavior for a given
+  card - just wondering because there could be bugs in behavior from the rust implementations".
+- We don't: a fixture records what the Rust engine did, right or wrong. Its integration tests were written (mostly by
+  LLM agents) to check rules, and the recorded AI games check nothing at all; both can hold Rust's bugs. Rust was
+  also accepted with known problems (D-177, docs/phase-rs-evaluation.md).
+- Decision: D-020 stands over D-187's "must pass them". The Odin engine's correctness comes from the CR (each rule
+  looked up and cited, a test per rule, rules-judge reviews of every batch). The fixtures are a second opinion: an
+  Odin/Rust disagreement on a card Odin supports is investigated against the CR (and the card's rulings, D-080),
+  and whichever engine is wrong is recorded: an Odin bug is fixed with a test; a Rust bug is noted (the fixture
+  marked as wrong) and not copied. The pass rate is a progress signal, not a correctness score; 100% isn't the aim.
+- Not yet done: the failures haven't been triaged this way (nearly all are still cards Odin refuses). A
+  disagreement report for supported cards is the next step for the fixtures.
+
+**D-190: Where the card data drops a duration the Oracle text states, the engine may read the Oracle text** ·
+2026-11-25 · accepted
+- Case: "when that creature dies this turn" (delayed triggers) is parsed without "this turn", the same as a watch
+  that lasts for good. The Odin engine accepts such a delayed trigger only when the card's Oracle text says "dies this
+  turn" (checking_face, set while a card's support is checked), and ends the watch at cleanup (CR 514.2).
+- Why: refusing every such card loses correct ones; trusting the data plays some wrongly (The Deck of Many Things has
+  the same data and lasts for good). Reading the Oracle text for this one missing word is exact for both.
+- Limits: only to tell apart shapes the data merges; never to add behaviour the data doesn't describe.
+
+**D-191: Which abilities that add mana are mana abilities, and how automatic payment ranks their extras** ·
+2026-11-25 · accepted
+- CR 605.1a: an activated ability is a mana ability only if it has no target, isn't a loyalty ability, could add
+  mana as it resolves, and its cost and effect move no card to or from a library. The Odin engine puts every other
+  ability that adds mana on the stack (CR 605.5a), so "Add one mana of any color. Draw a card" uses the stack.
+- Automatic payment prefers sources without harmful extras; a mana ability's harmful extra effect (life loss,
+  damage to you, sacrifice) ranks with the painlands, used only when nothing cleaner pays the cost. A preference, not
+  a rule: the player can always tap by hand.

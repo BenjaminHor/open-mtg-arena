@@ -369,3 +369,8 @@ each such failure is part of the check.
 Roughly 875k lines of production Rust (excluding the parser) is a very large port, even with most of it written by
 Claude. Expect it in many slices over months. O-0 to O-2 make every later slice measurable and safe, so they come first
 and are worth doing even before committing to the whole port.
+
+### Performance counters (2026-11-24)
+`game/perf_counters.rs` holds thread-local diagnostic counters that only tests read (`snapshot`/`reset` in test
+modules); recording into them changes no game. The translator gives their unit-returning procedures empty bodies,
+so a call to one is translated without porting the counters.
