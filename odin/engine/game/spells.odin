@@ -339,10 +339,12 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		keep, has_keep := x.keep_count.?
 		dest, has_dest := x.destination.?
 		rest, has_rest := x.rest_destination.?
+		// Onto the battlefield (tapped or not): only permanent cards can be taken (a filter naming permanent types).
+		to_battlefield := has_dest && dest == .Battlefield && filter_names_permanents(x.filter)
 		return is_controller(x.player) && quantity_supported(x.count) && has_keep && keep >= 1 && x.keep_count_expr == nil &&
-			has_dest && (dest == .Hand || dest == .Graveyard) && has_rest && (rest == .Library || rest == .Graveyard) &&
-			x.rest_remainder == .Route && x.rest_split_top_count == nil && x.source == .Library && !x.enter_tapped && !x.enters_attacking &&
-			(is_any(x.filter) || mass_filter_supported(x.filter) || spell_filter_supported(x.filter))
+			has_dest && (dest == .Hand || dest == .Graveyard || to_battlefield) && has_rest && (rest == .Library || rest == .Graveyard) &&
+			x.rest_remainder == .Route && x.rest_split_top_count == nil && x.source == .Library && !x.enters_attacking &&
+			(!x.enter_tapped || to_battlefield) && (is_any(x.filter) || mass_filter_supported(x.filter) || spell_filter_supported(x.filter))
 	case types.Effect_Scry:
 		_, fixed := fixed_quantity(x.count)
 		return fixed && (x.target == nil || is_controller(x.target))
@@ -2179,6 +2181,21 @@ repeat_supported :: proc(a: types.AbilityDefinition) -> bool {
 	case types.Effect_Token, types.Effect_Investigate, types.Effect_PutCounter, types.Effect_Draw, types.Effect_GainLife,
 	     types.Effect_LoseLife, types.Effect_CopyTokenOf:
 		return true
+	}
+	return false
+}
+
+// A filter every match of which is a permanent card: it names only permanent types (land, creature, artifact,
+// enchantment, planeswalker, battle, "permanent").
+filter_names_permanents :: proc(f: types.TargetFilter) -> bool {
+	typed, ok := f.(types.TargetFilter_Typed)
+	if !ok || len(typed._0.type_filters) == 0 do return false
+	for t in typed._0.type_filters {
+		#partial switch _ in t {
+		case types.TypeFilter_Land, types.TypeFilter_Creature, types.TypeFilter_Artifact, types.TypeFilter_Enchantment,
+		     types.TypeFilter_Planeswalker, types.TypeFilter_Battle, types.TypeFilter_Permanent:
+			return true
+		}
 	}
 	return false
 }

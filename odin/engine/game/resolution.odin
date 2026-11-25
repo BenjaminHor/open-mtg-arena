@@ -522,6 +522,8 @@ start_dig :: proc(g: ^Game, x: types.Effect_Dig, p: types.PlayerId, controller: 
 		selectable_cards = selectable,
 		kept_destination = x.destination,
 		rest_destination = x.rest_destination,
+		rest_order       = x.rest_order,
+		enter_tapped     = x.enter_tapped,
 		source_id        = source,
 	}
 	return true
@@ -554,7 +556,12 @@ answer_dig :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_DigChoice, k
 	pl := player(s, p)
 	kept_to, _ := w.kept_destination.?
 	rest_to := w.rest_destination.? or_else .Library
-	for id in kept do move_object(g, id, kept_to)
+	for id in kept {
+		move_object(g, id, kept_to)
+		// "Put it onto the battlefield tapped": it enters tapped as the ability says (CR 110.5b); it doesn't become
+		// tapped, so nothing triggers on that.
+		if kept_to == .Battlefield && w.enter_tapped do if o := object(s, id); o.zone == .Battlefield do o.tapped = true
+	}
 	rest := make([dynamic]types.ObjectId, context.temp_allocator)
 	for id in w.cards {
 		taken := false
@@ -569,6 +576,8 @@ answer_dig :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_DigChoice, k
 			for r in rest do if r == id do looked = true
 			if !looked do append(&others, id)
 		}
+		// "In a random order": the effect overrides the owner's choice of order (CR 401.4).
+		if w.rest_order == .Random do rng.shuffle(&g.rng, rest[:])
 		pl.library = {}
 		for id in rest do types.pvec_push(&pl.library, id, copy_id)
 		for id in others do types.pvec_push(&pl.library, id, copy_id)

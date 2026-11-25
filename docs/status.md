@@ -3232,6 +3232,10 @@ Progress:
   each: modal spells done; triggers, additional costs and "as it enters, choose" running), started from the
   branch head; they don't commit. Their diffs are merged here with `git apply -3`, checked with the full verify,
   reviewed, and committed with a status entry. Rules reviews still run on each batch.
+- Look at the top N (dig): "put it onto the battlefield (tapped)" for filters naming permanent types (CR 110.5b);
+  fixed: "the rest on the bottom in a random order" kept their order (now shuffled, CR 401.4). Known simplification:
+  "in any order" keeps the looked-at order (the player isn't asked). Test:
+  `look_and_put_a_land_onto_the_battlefield_tapped` (Elvish Rejuvenator).
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 

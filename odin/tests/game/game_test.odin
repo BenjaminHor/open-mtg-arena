@@ -6058,3 +6058,36 @@ entwine_is_the_number_specified_or_all :: proc(t: ^testing.T) {
 	testing.expect(t, !game.modes_allowed(&g.state, guile, []int{0}, nil))
 	testing.expect(t, !game.modes_allowed(&g.state, guile, []int{0, 0}, nil))
 }
+
+// Elvish Rejuvenator: "When this creature enters, look at the top five cards of your library. You may put a land card
+// from among them onto the battlefield tapped. Put the rest on the bottom of your library in a random order." The
+// land enters tapped (CR 110.5b); the other four go to the bottom (the order the effect says, CR 401.4).
+@(test)
+look_and_put_a_land_onto_the_battlefield_tapped :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Elvish Rejuvenator").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Forest", 0, .Battlefield)
+	elf := add(t, g, "Elvish Rejuvenator", 0, .Hand)
+	// The top five: four non-lands and a Plains (the top of a library is its last element).
+	s.players[0].library = {}
+	for _ in 0 ..< 10 do add(t, g, "Forest", 0, .Library) // below
+	top: [dynamic]^types.GameObject
+	for name in ([]string{"Grizzly Bears", "Shock", "Plains", "Hill Giant", "Gray Ogre"}) do append(&top, add(t, g, name, 0, .Library))
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = elf.id}))
+	for _ in 0 ..< 8 {
+		if _, digging := s.waiting_for.(types.WaitingFor_DigChoice); digging do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	w, digging := s.waiting_for.(types.WaitingFor_DigChoice)
+	testing.expect(t, digging, "looking at the top five")
+	if !digging do return
+	testing.expect_value(t, len(w.selectable_cards), 1)
+	plains := top[2]
+	testing.expect(t, !game.apply(g, 0, types.GameAction_SelectCards{cards = slice.clone_to_dynamic([]types.ObjectId{top[0].id})}), "only a land")
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = slice.clone_to_dynamic([]types.ObjectId{plains.id})}))
+	testing.expect(t, plains.zone == .Battlefield && plains.tapped, "the land entered tapped")
+	bottom := game.ids_of(s.players[0].library)[:4]
+	for o in top do if o != plains do testing.expectf(t, slice.contains(bottom, o.id), "%s is on the bottom", o.name)
+}
