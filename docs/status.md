@@ -3117,6 +3117,13 @@ Progress:
   spell is cast (CR 601.2b) through the optional-cost prompt, among those the player can pay (made for them when
   only one can be); a mana choice adds to the cost (CR 601.2f). Kept as the spell's additional cost payment record.
   7,436 -> 7,456.
+- Owner (2026-11-25): "each change only covers a handful of cards - are there any rules that cover hundreds from
+  the remaining pool?" Answer from the gap analysis (greedy.mjs at 7,456): no single rule does. About 6,550 of the
+  14,013 are left, and most of those cards lack two or more pieces. The largest family, zone changes ("return / exile /
+  put onto the battlefield", 74 cards lacking only it), is part of what 278 cards lack; finishing the top 30 families
+  together unlocks about 1,400 cards. Families still worth doing in bulk: zone changes (ChangeZone, ChangeZoneAll,
+  zone-change triggers and replacements, ~760 cards involved), tokens (142), delayed triggers (185), the back faces
+  of double-faced cards (210).
 - The app on the Odin engine, played by Playwright (Standard, random decks, the human only keeping, passing to end of
   turn and discarding): a whole game to the AI's win, no engine errors (scratchpad pw/play.cjs). Known: the game log
   panel is empty on the Odin engine (no log entries returned), and the home page's Card Coverage Dashboard reads
