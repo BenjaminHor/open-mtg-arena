@@ -41,6 +41,11 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		return types.GameAction_SelectModes{indices = modes}, true
 	case types.WaitingFor_ChooseXValue:
 		return types.GameAction_ChooseX{value = w.max}, true // as much as it can pay
+	case types.WaitingFor_ChooseManaColor:
+		// The first color offered (it doesn't activate these itself; this answers a prompt it finds itself in).
+		if prompt, single := w.choice.(types.ManaChoicePrompt_SingleColor); single && len(prompt.options) > 0 {
+			return types.GameAction_ChooseManaColor{choice = types.ManaChoice_SingleColor{prompt.options[0]}, count = 1}, true
+		}
 	case types.WaitingFor_PayCost:
 		// The least valuable: tokens first, then the lowest mana value.
 		Ranked :: struct {

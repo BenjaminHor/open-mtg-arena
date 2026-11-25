@@ -28,6 +28,10 @@ Mana_Option :: struct {
 	amount:       int,
 	rider:        Mana_Rider,
 	rider_amount: int,
+	taps:         bool,
+	// "{1}, {T}: Add one mana of any color": mana paid to activate it (CR 605.3a). Automatic payment doesn't use
+	// such abilities; the player activates them on their own.
+	mana_cost:    types.ManaCost,
 }
 
 // A {T} ability whose only effect is to add mana (CR 605.1a), and what it adds.
@@ -66,11 +70,16 @@ mana_ability_option :: proc(a: types.AbilityDefinition) -> (option: Mana_Option,
 			count, is_count := x._0.requirement.(types.SacrificeRequirement_Count)
 			if !is_self(x._0.target) || !is_count || count.count != 1 || option.rider != .None do return
 			option.rider = .Sacrifice
+		case types.AbilityCost_Mana:
+			if option.mana_cost != nil || has_x(x.cost) do return
+			if _, is_cost := x.cost.(types.ManaCost_Cost); !is_cost do return
+			option.mana_cost = x.cost
 		case:
 			return
 		}
 	}
-	if !taps do return
+	if !taps && option.mana_cost == nil do return
+	option.taps = taps
 	colors, amount := produced_mana(a)
 	option.colors, option.amount = colors, amount
 	return option, amount > 0
@@ -138,6 +147,7 @@ mana_sources :: proc(s: ^types.GameState, p: types.PlayerId, exclude: types.Obje
 		src := Mana_Source{object = o, options = make([dynamic]Mana_Option, context.temp_allocator)}
 		for a in o.abilities^ {
 			option, ok := mana_ability_option(a)
+			if ok && (option.mana_cost != nil || !option.taps) do ok = false // activated by the player, not here
 			// CR 119.4: life can be paid only up to the player's life total.
 			if ok && option.rider == .Life && int(player(s, p).life) < option.rider_amount do ok = false
 			if ok && option.rider <= worst {
@@ -294,21 +304,71 @@ mana_rider :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, option: Ma
 // CR 605.3a-b: a player with priority may activate a mana ability on its own; it doesn't use the stack and
 // resolves at once, its mana going into the player's mana pool (CR 106.4) until it's spent or the step ends.
 activate_mana_ability :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, a: ^types.AbilityDefinition) -> bool {
+	if !mana_ability_activatable(g, p, o, a) do return false
 	option, _ := mana_ability_option(a^)
-	if o.zone != .Battlefield || o.controller != p do return refuse("not activatable from its zone")
-	if !can_tap_for_cost(o) do return refuse("can't tap") // CR 302.6
-	if option.rider == .Life && int(player(&g.state, p).life) < option.rider_amount do return refuse("not enough life") // CR 119.4
-	if card(option.colors) != 1 do return refuse("choosing the mana's color isn't supported yet")
+	// CR 602.2b, 601.2h: the costs are paid: {T}, and mana for "{1}, {T}: Add ..." (from other sources, CR 605.3a).
+	if option.taps do o.tapped = true
+	if option.mana_cost != nil do pay_mana(g, p, option.mana_cost, o.id)
+	if card(option.colors) > 1 {
+		// "One mana of any color": the color is chosen as it resolves (CR 605.3b), which is at once.
+		pending := new(types.PendingManaAbility)
+		pending.player = p
+		pending.source_id = o.id
+		pending.ability_index = ability_index_of(o, a)
+		options := make([dynamic]types.ManaType)
+		for c in option.colors do append(&options, c)
+		g.state.waiting_for = types.WaitingFor_ChooseManaColor{player = p, choice = types.ManaChoicePrompt_SingleColor{options = options}, context_ = types.ManaChoiceContext_ManaAbility{pending}}
+		return true
+	}
 	color: types.ManaType
 	for c in option.colors do color = c
-	o.tapped = true
+	finish_mana_ability(g, p, o, option, color)
+	return true
+}
+
+// Whether the player can activate this mana ability now: they control it on the battlefield, can pay its costs.
+mana_ability_activatable :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, a: ^types.AbilityDefinition) -> bool {
+	option, is_mana := mana_ability_option(a^)
+	if !is_mana do return false
+	if o.zone != .Battlefield || o.controller != p do return refuse("not activatable from its zone")
+	if option.taps && !can_tap_for_cost(o) do return refuse("can't tap") // CR 302.6
+	if option.rider == .Life && int(player(&g.state, p).life) < option.rider_amount do return refuse("not enough life") // CR 119.4
+	if option.mana_cost != nil {
+		if _, payable := plan_payment(&g.state, p, option.mana_cost, o.id if option.taps else 0); !payable do return refuse("mana cost unpayable")
+	}
+	return true
+}
+
+// The mana ability's result: its mana into the pool (CR 106.4) and what else it does (CR 405.6c), then priority
+// back to its player after state-based actions and triggers (CR 405.6c, 117.3c, 117.5), earlier passes no longer
+// counting (CR 117.4).
+finish_mana_ability :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, option: Mana_Option, color: types.ManaType) {
 	add_pool_mana(&g.state, p, color, o.id, option.amount)
 	mana_rider(g, p, o, option)
-	// CR 405.6c, 117.3c: the player who had priority gets it again, after state-based actions and triggers (CR
-	// 117.5); having acted, earlier passes no longer count (CR 117.4).
 	g.state.priority_passes = nil
 	give_priority(g, p)
+}
+
+// The player's choice of color for a mana ability waiting on it.
+choose_mana_color :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_ChooseManaColor, choice: types.ManaChoice) -> bool {
+	ctx, of_ability := w.context_.(types.ManaChoiceContext_ManaAbility)
+	prompt, single := w.choice.(types.ManaChoicePrompt_SingleColor)
+	picked, is_single := choice.(types.ManaChoice_SingleColor)
+	if !of_ability || ctx._0 == nil || !single || !is_single || !slice.contains(prompt.options[:], picked._0) do return false
+	o := object(&g.state, ctx._0.source_id)
+	index, has := ctx._0.ability_index.?
+	if o == nil || !has do return false
+	a := activated_ability(o, index)
+	if a == nil do return false
+	option, _ := mana_ability_option(a^)
+	finish_mana_ability(g, p, o, option, picked._0)
 	return true
+}
+
+ability_index_of :: proc(o: ^types.GameObject, a: ^types.AbilityDefinition) -> int {
+	if o.abilities == nil do return -1
+	for &x, i in o.abilities^ do if &x == a do return i
+	return -1
 }
 
 // Backtracking: symbol k onward, each paid from a source that can make it and still has mana.

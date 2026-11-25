@@ -1684,9 +1684,15 @@ mana_pool_holds_and_empties :: proc(t: ^testing.T) {
 	wastes := add(t, g, "Adarkar Wastes", 0, .Battlefield)
 	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = wastes.id, ability_index = 0}))
 	testing.expect(t, len(pool) == 1 && pool[0].color == .Colorless && game.player(s, 0).life == 20)
-	// Its other ability makes one of two colors, a choice not offered yet: refused rather than guessed.
+	// Its other ability makes one of two colors: the player chooses as it resolves, and its damage happens then too
+	// (CR 405.6c).
 	wastes2 := add(t, g, "Adarkar Wastes", 0, .Battlefield)
-	testing.expect(t, !game.apply(g, 0, types.GameAction_ActivateAbility{source_id = wastes2.id, ability_index = 1}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = wastes2.id, ability_index = 1}))
+	_, choosing := s.waiting_for.(types.WaitingFor_ChooseManaColor)
+	testing.expect(t, choosing)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ChooseManaColor{choice = types.ManaChoice_SingleColor{.Red}, count = 1}), "not a color it makes")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseManaColor{choice = types.ManaChoice_SingleColor{.Blue}, count = 1}))
+	testing.expect(t, len(pool) == 2 && pool[1].color == .Blue && game.player(s, 0).life == 19, "{U} and 1 damage")
 }
 
 @(test)
@@ -1878,4 +1884,31 @@ condition_on_a_target_that_left :: proc(t: ^testing.T) {
 		_, surveilling := s.waiting_for.(types.WaitingFor_SurveilChoice)
 		testing.expectf(t, victim.zone == .Exile && surveilling == c.surveil, "%s: surveil %v", c.name, c.surveil)
 	}
+}
+
+@(test)
+mana_ability_with_a_mana_cost_and_a_color :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 605.3a-b: "{1}, {T}: Add one mana of any color" (Capital City) is activated with priority; its {1} is paid
+	// from another source, and the color is chosen as it resolves, at once (CR 405.6c).
+	g := new_game()
+	s := &g.state
+	testing.expect(t, game.card_supported(&card(t, "Capital City").face))
+	add(t, g, "Forest", 0, .Battlefield)
+	city := add(t, g, "Capital City", 0, .Battlefield) // {T}: Add {C}. {1}, {T}: Add one mana of any color.
+	offered := false
+	for a in game.legal_actions(g, 0) do if x, ok := a.(types.GameAction_ActivateAbility); ok && x.source_id == city.id && x.ability_index == 1 do offered = true
+	testing.expect(t, offered, "offered among the legal actions")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = city.id, ability_index = 1}))
+	w, choosing := s.waiting_for.(types.WaitingFor_ChooseManaColor)
+	testing.expect(t, choosing && city.tapped, "the color is asked for; the costs are paid")
+	if choosing do testing.expect(t, w.player == 0)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_PassPriority{}), "only the color can be chosen now")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseManaColor{choice = types.ManaChoice_SingleColor{.Red}, count = 1}))
+	pool := game.player(s, 0).mana_pool.mana
+	testing.expect(t, len(pool) == 1 && pool[0].color == .Red, "{R} in the pool")
+	_, prio := s.waiting_for.(types.WaitingFor_Priority)
+	testing.expect(t, prio && s.priority_player == 0, "priority back to its player")
+	shock := add(t, g, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}), "Shock paid with the {R}")
 }

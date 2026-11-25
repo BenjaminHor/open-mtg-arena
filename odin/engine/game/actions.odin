@@ -40,6 +40,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_ChooseXValue:
 		return w.player, true
+	case types.WaitingFor_ChooseManaColor:
+		return w.player, true
 	case types.WaitingFor_ModeChoice:
 		return w.player, true
 	case types.WaitingFor_SearchChoice:
@@ -194,6 +196,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			give_priority(g, p)
 			return true
 		}
+	case types.WaitingFor_ChooseManaColor:
+		a, ok := action.(types.GameAction_ChooseManaColor)
+		return ok && choose_mana_color(g, p, w, a.choice)
 	case types.WaitingFor_ChooseXValue:
 		#partial switch a in action {
 		case types.GameAction_ChooseX:
@@ -334,7 +339,14 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		}
 		for o in permanents_of(s, p) {
 			if o.abilities == nil do continue
-			for _, i in o.abilities^ do if can_activate(g, p, o, i) do append(&out, types.GameAction_ActivateAbility{source_id = o.id, ability_index = i})
+			for &a, i in o.abilities^ {
+				if can_activate(g, p, o, i) {
+					append(&out, types.GameAction_ActivateAbility{source_id = o.id, ability_index = i})
+				} else if option, is_mana := mana_ability_option(a); is_mana && (option.mana_cost != nil || !option.taps) && object_supported(o, g.card_db) && mana_ability_activatable(g, p, o, &a) {
+					// CR 605.3a: mana abilities automatic payment doesn't use ("{1}, {T}: Add one mana of any color").
+					append(&out, types.GameAction_ActivateAbility{source_id = o.id, ability_index = i})
+				}
+			}
 		}
 		// Abilities that work from the hand (cycling).
 		for id in ids_of(player(s, p).hand) {
