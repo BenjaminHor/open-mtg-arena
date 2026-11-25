@@ -186,6 +186,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		a, ok := action.(types.GameAction_SelectCards)
 		if !ok do return false
 		if w.effect_kind == .ChangeZone do return answer_hand_choice(g, p, w, a.cards[:])
+		if w.effect_kind == .Bounce do return answer_bounce(g, p, w, a.cards[:])
 		return answer_sacrifice(g, p, w, a.cards[:])
 	case types.WaitingFor_SearchChoice:
 		a, ok := action.(types.GameAction_SelectCards)

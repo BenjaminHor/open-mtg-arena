@@ -62,7 +62,47 @@ change_zone_supported :: proc(x: types.Effect_ChangeZone) -> bool {
 
 bounce_supported :: proc(x: types.Effect_Bounce) -> bool {
 	if d, has := x.destination.?; has && d != .Hand do return false
-	return x.selection == .Targeted && filter_supported(x.target) && !may_name_player(x.target)
+	if is_self(x.target) do return true // "return this to its owner's hand"
+	if x.selection == .Targeted do return filter_supported(x.target) && !may_name_player(x.target)
+	// "Return a creature you control to its owner's hand": chosen as it resolves (CR 608.2d), from the player's own.
+	typed, ok := x.target.(types.TargetFilter_Typed)
+	if !ok || !typed_supported(typed._0) do return false
+	c, has := typed._0.controller.?
+	_, you := c.(types.ControllerRef_You)
+	return has && you
+}
+
+// Returns true while the player chooses.
+do_bounce :: proc(g: ^Game, x: types.Effect_Bounce, controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) -> bool {
+	s := &g.state
+	if is_self(x.target) {
+		// CR 400.7: only while it's the same object, from the battlefield or the graveyard it went to.
+		if o := same_source(g, source); o != nil && (o.zone == .Battlefield || o.zone == .Graveyard) do move_object(g, o.id, .Hand)
+		return false
+	}
+	if x.selection == .Targeted {
+		if id, ok := target_object(target); ok && object(s, id).zone == .Battlefield do move_object(g, id, .Hand)
+		return false
+	}
+	typed := x.target.(types.TargetFilter_Typed)._0
+	eligible: [dynamic]types.ObjectId
+	for o in permanents_of(s, controller) do if object_matches(s, o, typed, controller, source) do append(&eligible, o.id)
+	if len(eligible) <= 1 {
+		for id in eligible do move_object(g, id, .Hand)
+		return false
+	}
+	s.priority_player = controller
+	s.waiting_for = types.WaitingFor_EffectZoneChoice{player = controller, cards = eligible, count = 1, min_count = 1, source_id = source, effect_kind = .Bounce, zone = .Battlefield, destination = .Hand}
+	return true
+}
+
+answer_bounce :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_EffectZoneChoice, chosen: []types.ObjectId) -> bool {
+	if !g.resolution.active || len(chosen) != w.count || has_duplicates(chosen) do return false
+	for id in chosen do if !slice.contains(w.cards[:], id) do return false
+	for id in chosen do move_object(g, id, .Hand)
+	g.state.waiting_for = nil
+	if continue_resolution(g) do after_resolution(g)
+	return true
 }
 
 // Graveyard cards matching a filter, as targets for the player choosing.

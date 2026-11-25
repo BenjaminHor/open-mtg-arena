@@ -2921,6 +2921,8 @@ Progress:
   with the turn (kept in Game, exile_instead): 5,578 -> 5,603.
 - Life loss for a target player or opponent, the defending player (CR 506.2) and "its controller": 5,603 ->
   5,638.
+- Bounce "this" (from the battlefield or the graveyard it went to) and "return a creature you control to its
+  owner's hand", chosen as it resolves (CR 608.2d), not targeted: 5,638 -> 5,684.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

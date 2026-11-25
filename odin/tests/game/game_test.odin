@@ -2943,3 +2943,30 @@ players_lose_life :: proc(t: ^testing.T) {
 	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
 	testing.expect(t, game.player(s, 1).life == 16 && game.player(s, 0).life == 21, "defending player loses 1, you gain 1")
 }
+
+@(test)
+return_a_creature_you_control :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Shrieking Drake: "When this creature enters, return a creature you control to its owner's hand." Chosen as
+	// the ability resolves (CR 608.2d), not targeted, from its controller's own creatures; the Drake itself counts.
+	testing.expect(t, game.card_supported(&card(t, "Shrieking Drake").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Island", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	drake := add(t, g, "Shrieking Drake", 0, .Hand) // {U}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = drake.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, types.pvec_len(s.stack) == 1, "the trigger, with no target to choose")
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	w, asked := s.waiting_for.(types.WaitingFor_EffectZoneChoice)
+	testing.expect(t, asked && len(w.cards) == 2 && !slice.contains(w.cards[:], theirs.id), "the Bears or the Drake, not the opponent's")
+	if !asked do return
+	chosen: [dynamic]types.ObjectId
+	append(&chosen, bears.id)
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen}))
+	testing.expect(t, bears.zone == .Hand && drake.zone == .Battlefield)
+}

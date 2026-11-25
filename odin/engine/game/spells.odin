@@ -374,7 +374,7 @@ effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 	case types.Effect_ChangeZone:
 		f = x.target
 	case types.Effect_Bounce:
-		f = x.target
+		if x.selection == .Targeted do f = x.target // a chosen one isn't targeted
 	case types.Effect_Attach:
 		f = x.target
 	case types.Effect_PutCounter:
@@ -995,7 +995,7 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 	case types.Effect_Shuffle:
 		shuffle_library(g, controller)
 	case types.Effect_Bounce:
-		if id, ok := target_object(target); ok && object(s, id).zone == .Battlefield do move_object(g, id, .Hand)
+		return do_bounce(g, x, controller, source, target)
 	case types.Effect_GenericEffect:
 		targeted: ^types.GameObject
 		if id, ok := target_object(target); ok do targeted = object(s, id)
