@@ -99,7 +99,14 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		if !ability_supported(t.execute.sub_ability^) do return false
 	}
 	if c, has := t.condition.?; has && !trigger_condition_supported(c) do return false
-	if t.unless_pay != nil || t.batched do return false
+	if t.batched do return false
+	if u, has := t.unless_pay.?; has {
+		// "When this land enters, sacrifice it unless you pay {1}": carried by the ability (unless_ability).
+		if t.execute == nil || t.execute.unless_pay != nil do return false
+		a := t.execute^
+		a.unless_pay = u
+		if !unless_pay_supported(a) do return false
+	}
 	// "you" as the one acting is read only by spell-cast triggers ("whenever you cast").
 	_, is_cast := t.mode.(types.TriggerMode_SpellCast)
 	_, is_damage := t.mode.(types.TriggerMode_DamageDone)
@@ -145,7 +152,13 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	}
 	#partial switch _ in t.mode {
 	case types.TriggerMode_ChangesZone:
-		if f, has := t.valid_card.?; has do return subject_filter_supported(f)
+		if f, has := t.valid_card.?; has {
+			// What it's attached to is watched only leaving the battlefield (zone_change_subject).
+			if _, attached := f.(types.TargetFilter_AttachedTo); attached {
+				if o, has_o := t.origin.?; !has_o || o != .Battlefield do return false
+			}
+			return subject_filter_supported(f)
+		}
 		return false
 	case types.TriggerMode_Phase:
 		_, has := t.phase.?
@@ -337,7 +350,7 @@ spell_matches :: proc(s: ^types.GameState, spell: ^types.GameObject, f: types.Ta
 // The objects a trigger watches: itself, or permanents of a kind (and controller).
 subject_filter_supported :: proc(f: types.TargetFilter) -> bool {
 	#partial switch x in f {
-	case types.TargetFilter_SelfRef:
+	case types.TargetFilter_SelfRef, types.TargetFilter_AttachedTo:
 		return true
 	case types.TargetFilter_Typed:
 		return filter_supported(f)
@@ -702,6 +715,15 @@ zone_change_subject :: proc(g: ^Game, source: ^types.GameObject, t: ^types.Trigg
 		as_was := e.lki^ if e.lki != nil else object(s, e.object)^
 		as_was.controller = e.controller
 		return controller, object_matches(s, &as_was, f._0, controller, source.id)
+	case types.TargetFilter_AttachedTo:
+		// "Whenever enchanted / equipped creature dies": the permanent this was attached to as it left the
+		// battlefield (CR 603.10a, looking back: the creature's last known attachments, or this Aura's own last
+		// known host when it left at the same time).
+		if is_self || e.from != .Battlefield do return
+		if e.lki != nil && slice.contains(e.lki.attachments[:], source.id) do return controller, true
+		if at, attached := source.attached_to.?; attached {
+			if h, on_object := at.(types.AttachTarget_Object); on_object && h._0 == e.object do return controller, true
+		}
 	case types.TargetFilter_Or:
 		for y in f.filters do if c, ok := zone_change_subject(g, source, t, y, e, is_self); ok do return c, true
 	}
@@ -720,7 +742,8 @@ turn_constraint_met :: proc(s: ^types.GameState, t: types.TriggerDefinition, con
 	return false
 }
 
-add_trigger :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, t: ^types.TriggerDefinition, lki: ^types.GameObject = nil, amount := 0) {
+add_trigger :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, trigger: ^types.TriggerDefinition, lki: ^types.GameObject = nil, amount := 0) {
+	t := unless_ability(trigger)
 	// CR 603.4: with an intervening "if", the ability triggers only if the condition is true now.
 	if c, has := t.condition.?; has && !condition_holds_as_was(&g.state, source, controller, c, lki) do return
 	append(&g.pending_triggers, Pending_Trigger{source = source, controller = controller, definition = t, lki = lki, amount = amount, event = collecting_event})
@@ -1317,4 +1340,19 @@ self_entering :: proc(t: types.TriggerDefinition) -> bool {
 	d, has_d := t.destination.?
 	f, has_f := t.valid_card.?
 	return has_d && d == .Battlefield && has_f && is_self(f)
+}
+
+// A trigger whose "unless [a player pays]" the card data keeps on the trigger: the same trigger with it on its
+// ability, where resolution reads it (CR 118.12a).
+unless_ability :: proc(t: ^types.TriggerDefinition) -> ^types.TriggerDefinition {
+	u, has := t.unless_pay.?
+	if !has || t.execute == nil do return t
+	a := new(types.AbilityDefinition)
+	a^ = t.execute^
+	a.unless_pay = u
+	moved := new(types.TriggerDefinition)
+	moved^ = t^
+	moved.execute = a
+	moved.unless_pay = nil
+	return moved
 }

@@ -1681,8 +1681,11 @@ unless_pay_supported :: proc(a: types.AbilityDefinition) -> bool {
 	u, has := a.unless_pay.?
 	if !has do return true
 	if a.effect == nil do return false
-	if _, counter := a.effect^.(types.Effect_Counter); !counter do return false
-	if _, of_controller := u.payer.(types.TargetFilter_ParentTargetController); !of_controller do return false
+	_, counter := a.effect^.(types.Effect_Counter)
+	_, of_controller := u.payer.(types.TargetFilter_ParentTargetController)
+	_, yours := u.payer.(types.TargetFilter_Controller)
+	// "Counter target spell unless its controller pays", or "[do this] unless you pay" (CR 118.12a).
+	if !(counter && of_controller) && !yours do return false
 	m, is_mana := u.cost.(types.AbilityCost_Mana)
 	if !is_mana do return false
 	c, is_cost := m.cost.(types.ManaCost_Cost)

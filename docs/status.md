@@ -3088,10 +3088,16 @@ Progress:
   graveyard" (chosen as the cost is paid, CR 601.2h, 701.13a). 7,074 -> 7,118.
 - A permanent's own enters trigger reads the X its spell was cast with (CR 107.3m; Ajani's Anguish), and "it deals
   damage equal to its power" said of an earlier target (bite). 7,118 -> 7,141.
+- Triggers: "sacrifice it unless you pay {1}" kept on the trigger (CR 118.12a: the controller may pay); "when
+  enchanted / equipped creature dies" (CR 603.10a). A permanent's last known information is now taken before it's
+  removed from combat and detached, so it keeps what was attached to it and what it was attached to. 7,141 ->
+  7,153.
 - The app on the Odin engine, played by Playwright (Standard, random decks, the human only keeping, passing to end of
   turn and discarding): a whole game to the AI's win, no engine errors (scratchpad pw/play.cjs). Known: the game log
   panel is empty on the Odin engine (no log entries returned), and the home page's Card Coverage Dashboard reads
-  the Rust engine's coverage file.
+  the Rust engine's coverage file. Next for step 4: the Odin WASM returns no events and no log entries
+  (game_calls.odin replies `"events":[],"log_entries":[]`), so the app has no game log, and no event-driven
+  animations or sounds; translate the engine's events into GameEvents and log entries.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

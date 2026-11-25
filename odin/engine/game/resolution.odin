@@ -306,12 +306,21 @@ continue_resolution :: proc(g: ^Game) -> bool {
 // True while they decide.
 ask_unless_payment :: proc(g: ^Game, x: ^types.ResolvedAbility, target: Maybe(types.TargetRef)) -> bool {
 	s := &g.state
-	id, is_object := target_object(target)
-	if !is_object do return false
-	entry, on_stack := stack_entry_of(s, id)
-	if !on_stack do return false
 	u := x.unless_pay.?
-	payer := entry.controller // the spell's or ability's controller
+	payer: types.PlayerId
+	id: types.ObjectId
+	if _, yours := u.payer.(types.TargetFilter_Controller); yours {
+		// "Sacrifice it unless you pay {1}": the ability's controller.
+		payer = x.controller
+		id = x.source_id
+	} else {
+		is_object: bool
+		id, is_object = target_object(target)
+		if !is_object do return false
+		entry, on_stack := stack_entry_of(s, id)
+		if !on_stack do return false
+		payer = entry.controller // the target spell's or ability's controller
+	}
 	cost := u.cost.(types.AbilityCost_Mana).cost
 	if _, payable := plan_payment(s, payer, cost); !payable do return false
 	g.resolution.unless_node = x

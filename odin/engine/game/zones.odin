@@ -79,22 +79,22 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 		if list := zone_list(s, o.zone, o.owner); list != nil do remove_id(list, id)
 	}
 	from := o.zone
+	lki: ^types.GameObject
 	if from == .Battlefield {
+		// CR 608.2h: its last known information, kept for abilities that look back at it: as it last existed on
+		// the battlefield, what was attached to it and what it was attached to included ("whenever enchanted
+		// creature dies", CR 603.10a).
+		lki = new(types.GameObject)
+		lki^ = o^
+		lki.counters = slice.clone_to_dynamic(o.counters[:])
+		lki.attachments = slice.clone_to_dynamic(o.attachments[:])
+		lki.chosen_attributes = slice.clone_to_dynamic(o.chosen_attributes[:])
 		remove_from_combat(s, id) // CR 506.4
 		detach_all_from(s, o)
 		unattach(s, o)
 	}
 	last_controller := o.controller // CR 603.10: a leaves-the-battlefield trigger looks back at the object as it was
 	record_zone_change(s, o, from, to)
-	lki: ^types.GameObject
-	if from == .Battlefield {
-		// CR 608.2h: its last known information, kept for abilities that look back at it.
-		lki = new(types.GameObject)
-		lki^ = o^
-		lki.counters = slice.clone_to_dynamic(o.counters[:])
-		lki.attachments = slice.clone_to_dynamic(o.attachments[:])
-		lki.chosen_attributes = slice.clone_to_dynamic(o.chosen_attributes[:])
-	}
 	if from == .Exile do clear(&o.casting_permissions) // CR 400.7: a new object, without the permission
 	o.zone = to
 	o.incarnation += 1

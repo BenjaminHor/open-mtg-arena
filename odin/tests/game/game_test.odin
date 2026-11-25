@@ -4963,3 +4963,62 @@ enters_trigger_reads_the_spells_x :: proc(t: ^testing.T) {
 	}
 	testing.expectf(t, s.players[1].life == 18, "2 damage, life %d", s.players[1].life)
 }
+
+@(test)
+sacrifice_it_unless_you_pay :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Archway Commons: "When this land enters, sacrifice it unless you pay {1}." CR 118.12a: its controller may pay;
+	// if they don't, it's sacrificed. With no mana to pay, it's sacrificed without asking (CR 118.3).
+	testing.expect(t, game.card_supported(&card(t, "Archway Commons").face))
+	for pay in ([]bool{true, false}) {
+		g := new_game()
+		s := &g.state
+		add(t, g, "Forest", 0, .Battlefield)
+		commons := add(t, g, "Archway Commons", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = commons.id}))
+		for _ in 0 ..< 8 {
+			if _, asked := s.waiting_for.(types.WaitingFor_UnlessPayment); asked {
+				testing.expect(t, game.apply(g, 0, types.GameAction_PayUnlessCost{pay = pay}))
+				continue
+			}
+			if types.pvec_len(s.stack) == 0 do break
+			game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+		}
+		testing.expectf(t, (commons.zone == .Battlefield) == pay, "paid %v: %v", pay, commons.zone)
+	}
+	g := new_game()
+	commons := add(t, g, "Archway Commons", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = commons.id}))
+	settle_stack(g)
+	testing.expect(t, commons.zone == .Graveyard, "nothing to pay with: sacrificed")
+}
+
+@(test)
+when_enchanted_creature_dies :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Angelic Destiny: "When enchanted creature dies, return this card to its owner's hand." The creature's last
+	// known information has the Aura attached (CR 603.10a); the Aura goes to the graveyard (CR 704.5m), and its
+	// ability returns it from there.
+	testing.expect(t, game.card_supported(&card(t, "Angelic Destiny").face))
+	g := new_game()
+	s := &g.state
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	destiny := add(t, g, "Angelic Destiny", 0, .Battlefield)
+	game.attach(s, destiny, bears)
+	other := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	game.move_object(g, bears.id, .Graveyard)
+	game.give_priority(g, 0)
+	settle_stack(g)
+	testing.expectf(t, destiny.zone == .Hand, "returned to hand: %v", destiny.zone)
+	// Another creature dying doesn't trigger it.
+	g2 := new_game()
+	host := add(t, g2, "Grizzly Bears", 0, .Battlefield)
+	d2 := add(t, g2, "Angelic Destiny", 0, .Battlefield)
+	game.attach(&g2.state, d2, host)
+	o2 := add(t, g2, "Grizzly Bears", 0, .Battlefield)
+	game.move_object(g2, o2.id, .Graveyard)
+	game.give_priority(g2, 0)
+	settle_stack(g2)
+	testing.expect(t, d2.zone == .Battlefield, "not for another creature")
+	_ = other
+}
