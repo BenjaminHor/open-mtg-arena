@@ -57,6 +57,8 @@ modification_supported :: proc(m: types.ContinuousModification) -> bool {
 	     types.ContinuousModification_SetPower, types.ContinuousModification_SetToughness,
 	     types.ContinuousModification_AddType, types.ContinuousModification_AddSubtype:
 		return true
+	case types.ContinuousModification_AddChosenSubtype:
+		return k.kind == .CreatureType
 	case types.ContinuousModification_AddKeyword:
 		return keyword_supported(k.keyword)
 	case types.ContinuousModification_AddStaticMode:
@@ -108,9 +110,14 @@ apply_continuous_effects :: proc(g: ^Game) {
 		card_types.core_types = slice.clone_to_dynamic(o.base_card_types.core_types[:], context.temp_allocator)
 		card_types.subtypes = slice.clone_to_dynamic(o.base_card_types.subtypes[:], context.temp_allocator)
 		types_changed := false
-		add_types :: proc(ct: ^types.CardType, mods: []types.ContinuousModification, changed: ^bool) {
+		add_types :: proc(ct: ^types.CardType, mods: []types.ContinuousModification, changed: ^bool, source: ^types.GameObject) {
 			for m in mods {
 				#partial switch k in m {
+				case types.ContinuousModification_AddChosenSubtype:
+					// "It's the chosen type in addition to its other types" (CR 614.12: chosen as its source entered).
+					if name, chosen := chosen_creature_type(source); chosen && k.kind == .CreatureType && !slice.contains(ct.subtypes[:], name) {
+						append(&ct.subtypes, name)
+					}
 				case types.ContinuousModification_AddType:
 					if !slice.contains(ct.core_types[:], k.core_type) do append(&ct.core_types, k.core_type)
 				case types.ContinuousModification_AddSubtype:
@@ -129,8 +136,8 @@ apply_continuous_effects :: proc(g: ^Game) {
 		// The effects of resolved spells and abilities still applying to this object, in the order they were created.
 		temps := make([dynamic][]types.ContinuousModification, context.temp_allocator)
 		for t in g.temp_effects do if t.object == o.id && t.incarnation == o.incarnation do append(&temps, t.modifications)
-		for e in statics do if affects(s, e.source, e.static, o) do add_types(&card_types, e.static.modifications[:], &types_changed)
-		for mods in temps do add_types(&card_types, mods, &types_changed)
+		for e in statics do if affects(s, e.source, e.static, o) do add_types(&card_types, e.static.modifications[:], &types_changed, e.source)
+		for mods in temps do add_types(&card_types, mods, &types_changed, nil)
 		o.card_types = o.base_card_types
 		if types_changed || len(card_types.core_types) != len(o.base_card_types.core_types) || len(card_types.subtypes) != len(o.base_card_types.subtypes) {
 			o.card_types.core_types = slice.clone_to_dynamic(card_types.core_types[:])
@@ -340,7 +347,7 @@ add_temp_effect :: proc(g: ^Game, e: types.Effect_GenericEffect, controller: typ
 
 condition_supported :: proc(c: types.StaticCondition) -> bool {
 	#partial switch x in c {
-	case types.StaticCondition_DuringYourTurn:
+	case types.StaticCondition_DuringYourTurn, types.StaticCondition_ChosenLabelIs:
 		return true
 	case types.StaticCondition_IsPresent:
 		f, has := x.filter.?
@@ -365,6 +372,10 @@ condition_holds :: proc(s: ^types.GameState, source: ^types.GameObject, c: Maybe
 	#partial switch x in cond {
 	case types.StaticCondition_DuringYourTurn:
 		return s.active_player == source.controller
+	case types.StaticCondition_ChosenLabelIs:
+		// "As long as Khans was chosen" (the Sieges, CR 614.12).
+		label, chosen := chosen_label(source)
+		return chosen && label == x.label
 	case types.StaticCondition_IsPresent:
 		f, _ := x.filter.?
 		return len(affected_permanents(s, f, source.controller, source.id)) > 0

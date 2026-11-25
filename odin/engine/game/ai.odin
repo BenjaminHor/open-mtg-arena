@@ -126,6 +126,8 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 			total += power_of(object(s, id))
 		}
 		return types.GameAction_CrewVehicle{vehicle_id = w.vehicle_id, creature_ids = chosen}, true
+	case types.WaitingFor_NamedChoice:
+		return types.GameAction_ChooseOption{choice = ai_entry_name(g, p, w)}, true
 	case types.WaitingFor_ReplacementChoice:
 		// A shockland: pay the life while there's plenty of it, else let it enter tapped.
 		return types.GameAction_ChooseReplacement{index = 0 if player(s, p).life > 10 else 1}, true

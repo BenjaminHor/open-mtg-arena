@@ -3055,6 +3055,12 @@ Progress:
 - Zone changes onto the battlefield "with N counters" (CR 122.6) and "tapped and attacking" (CR 508.4: the engine
   picks the defending player, not yet a planeswalker; never declared, so no attack triggers), the finality counter
   (CR 122.1h: exiled instead of going to a graveyard from the battlefield). 6,835 -> 6,860.
+- "As this enters, choose a color / creature type / basic land type / card type / one of [labels]" (CR 614.12,
+  entry_choice.odin): asked before the next player gets priority (as the other entry choices), kept on the permanent
+  as its chosen attributes (forgotten on a zone change, CR 400.7), read by "mana of the chosen color", "creatures of
+  the chosen type / color", "is the chosen type in addition" and "as long as [label] was chosen". The AI picks the
+  color or type its cards show most. Not yet: chosen card names, opponents, odd or even; the trigger and ability
+  forms of "if [label] was chosen". 6,860 -> 6,893.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

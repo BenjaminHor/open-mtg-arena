@@ -156,7 +156,21 @@ produced_mana :: proc(a: types.AbilityDefinition, s: ^types.GameState, o: ^types
 		for c in p.color_options do colors += {types.ManaType(c)}
 		if len(p.color_options) == 0 do colors = {.White, .Blue, .Black, .Red, .Green}
 		return colors, n, is_counted
-	case types.ManaProduction_Mixed, types.ManaProduction_AnyCombination, types.ManaProduction_ChosenColor,
+	case types.ManaProduction_ChosenColor:
+		// "Add one mana of the chosen color" (CR 614.12: chosen as the permanent entered); "add {R} or one mana of
+		// the chosen color". Checking support (no object), any color it could be.
+		if p.contribution != .Base do return {}, 0, false
+		n, is_counted, ok := how_many(p.count, s, o)
+		if !ok do return {}, 0, false
+		if alt, has := p.fixed_alternative.?; has do colors += {types.ManaType(alt)}
+		if o == nil {
+			colors += {.White}
+		} else if c, chosen := chosen_color(o); chosen {
+			colors += {types.ManaType(c)}
+		}
+		if colors == {} do return {}, 0, false
+		return colors, n, is_counted
+	case types.ManaProduction_Mixed, types.ManaProduction_AnyCombination,
 	     types.ManaProduction_NotedType, types.ManaProduction_OpponentLandColors,
 	     types.ManaProduction_AnyCombinationOfObjectColors, types.ManaProduction_AnyTypeProduceableBy,
 	     types.ManaProduction_ChoiceAmongExiledColors, types.ManaProduction_ChoiceAmongCombinations,

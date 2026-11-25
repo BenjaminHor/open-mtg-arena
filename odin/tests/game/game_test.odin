@@ -4520,3 +4520,55 @@ put_onto_the_battlefield_tapped_and_attacking :: proc(t: ^testing.T) {
 	for a in c.attackers do if a.object_id == elves.id do attacking = true
 	testing.expect(t, attacking, "and attacking")
 }
+
+@(test)
+as_it_enters_choose_a_color :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Coldsteel Heart: "This artifact enters tapped. As this artifact enters, choose a color. {T}: Add one mana of
+	// the chosen color." CR 614.12: the choice is made as it enters, and kept for its mana ability to read.
+	testing.expect(t, game.card_supported(&card(t, "Coldsteel Heart").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Forest", 0, .Battlefield)
+	add(t, g, "Forest", 0, .Battlefield)
+	heart := add(t, g, "Coldsteel Heart", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = heart.id}))
+	settle_stack(g)
+	w, asked := s.waiting_for.(types.WaitingFor_NamedChoice)
+	testing.expect(t, asked && len(w.options) == 5, "asked for one of the five colors")
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ChooseOption{choice = "Purple"}), "not a color")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseOption{choice = "Blue"}))
+	testing.expect(t, heart.zone == .Battlefield && heart.tapped, "entered tapped")
+	heart.tapped = false
+	found := false
+	for src in game.mana_sources(s, 0) do if src.object == heart {
+		found = true
+		for o in src.options do testing.expectf(t, o.colors == {.Blue}, "only blue: %v", o.colors)
+	}
+	testing.expect(t, found, "a mana source")
+	// CR 400.7: a new object after leaving the battlefield, without the choice.
+	game.move_object(g, heart.id, .Hand)
+	testing.expect(t, len(heart.chosen_attributes) == 0, "the choice is forgotten")
+}
+
+@(test)
+creatures_of_the_chosen_type :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Adaptive Automaton: "As this creature enters, choose a creature type. This creature is the chosen type in
+	// addition to its other types. Other creatures you control of the chosen type get +1/+1."
+	testing.expect(t, game.card_supported(&card(t, "Adaptive Automaton").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Forest", 0, .Battlefield)
+	elves := add(t, g, "Llanowar Elves", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	automaton := add(t, g, "Adaptive Automaton", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = automaton.id}))
+	settle_stack(g)
+	_, asked := s.waiting_for.(types.WaitingFor_NamedChoice)
+	testing.expect(t, asked, "asked for a creature type")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseOption{choice = "Elf"}))
+	testing.expect(t, game.has_subtype(automaton, "Elf"), "it's an Elf too")
+	testing.expect(t, game.power_of(elves) == 2 && game.power_of(bears) == 2, "the Elf gets +1/+1, the Bear doesn't")
+	testing.expect(t, game.power_of(automaton) == 2, "not itself (other creatures)")
+}

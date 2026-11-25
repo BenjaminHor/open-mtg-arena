@@ -53,6 +53,8 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 	case types.FilterProp_Historic, types.FilterProp_NotHistoric, types.FilterProp_WasKicked, types.FilterProp_ColorCount,
 	     types.FilterProp_HasAdventure:
 		return true
+	case types.FilterProp_IsChosenCreatureType, types.FilterProp_IsChosenColor, types.FilterProp_IsChosenCardType:
+		return true // the source's choice as it entered (entry_choice.odin)
 	case types.FilterProp_WithKeyword:
 		return keyword_supported(x.value)
 	case types.FilterProp_WithoutKeyword:
@@ -182,6 +184,16 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 		#partial switch x in p {
 		case types.FilterProp_Another:
 			if o.id == source do return false
+		case types.FilterProp_IsChosenCreatureType:
+			// "Creatures of the chosen type": the type chosen for the ability's source (CR 614.12); none chosen, none.
+			name, chosen := chosen_creature_type(object(s, source))
+			if !chosen || !has_subtype(o, name) do return false
+		case types.FilterProp_IsChosenColor:
+			c, chosen := chosen_color(object(s, source))
+			if !chosen || !has_color(o, c) do return false
+		case types.FilterProp_IsChosenCardType:
+			t, chosen := chosen_card_type(object(s, source))
+			if !chosen || !is_type(o, t) do return false
 		case types.FilterProp_Named:
 			if o.name != x.name do return false // CR 201.2
 		case types.FilterProp_Tapped:

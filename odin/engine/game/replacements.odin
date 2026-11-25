@@ -11,6 +11,7 @@ replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
 	if _, moved := r.event.(types.ReplacementEvent_Moved); !moved do return false
 	if _, may_pay := entry_payment(r); may_pay do return true
 	if _, copy := entry_copy_filter(r); copy do return true
+	if _, choice := entry_choice(r); choice do return true
 	if _, mandatory := r.mode.(types.ReplacementMode_Mandatory); !mandatory do return false
 	if c, has := r.condition.?; has && !entry_condition_supported(c) do return false
 	if r.execute == nil || r.execute.sub_ability != nil || r.execute.condition != nil do return false

@@ -48,6 +48,7 @@ Game :: struct {
 	// gets priority once they have (replacements.odin).
 	entry_choices:     [dynamic]types.ObjectId,
 	entry_copies:      [dynamic]types.ObjectId, // entered with "you may have this enter as a copy", still to choose
+	entry_names:       [dynamic]types.ObjectId, // entered with "as this enters, choose a color" (entry_choice.odin)
 	entry_after:       types.PlayerId,
 	// "Gain control of target creature until end of turn": who controlled it before, to give it back (kept beside
 	// the state like the pumps).

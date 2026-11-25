@@ -36,6 +36,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_ReplacementChoice:
 		return w.player, true
+	case types.WaitingFor_NamedChoice:
+		return w.player, true
 	case types.WaitingFor_CrewVehicle:
 		return w.player, true
 	case types.WaitingFor_CopyTargetChoice:
@@ -251,6 +253,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_ReplacementChoice:
 		a, ok := action.(types.GameAction_ChooseReplacement)
 		return ok && answer_entry_payment(g, p, w, a.index)
+	case types.WaitingFor_NamedChoice:
+		a, ok := action.(types.GameAction_ChooseOption)
+		return ok && answer_entry_name(g, p, w, a.choice)
 	case types.WaitingFor_AbilityModeChoice:
 		a, ok := action.(types.GameAction_SelectModes)
 		return ok && select_trigger_modes(g, p, w, a.indices[:])
@@ -460,6 +465,8 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 			if int(player(s, p).life) >= life do append(&out, types.GameAction_ChooseReplacement{index = 0})
 		}
 		append(&out, types.GameAction_ChooseReplacement{index = 1})
+	case types.WaitingFor_NamedChoice:
+		for name in w.options do append(&out, types.GameAction_ChooseOption{choice = name})
 	case types.WaitingFor_OptionalEffectChoice:
 		append(&out, types.GameAction_DecideOptionalEffect{accept = true})
 		append(&out, types.GameAction_DecideOptionalEffect{accept = false})
