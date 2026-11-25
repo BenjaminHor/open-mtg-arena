@@ -55,6 +55,18 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 		return true
 	case types.FilterProp_IsChosenCreatureType, types.FilterProp_IsChosenColor, types.FilterProp_IsChosenCardType:
 		return true // the source's choice as it entered (entry_choice.odin)
+	case types.FilterProp_AnyOf:
+		// "That's black or red": any one of them.
+		for q in x.props do if !property_supported(q) do return false
+		return len(x.props) > 0
+	case types.FilterProp_Not:
+		// "That isn't [...]": the opposite of a property this engine reads (one about the object itself).
+		if x.prop == nil do return false
+		#partial switch _ in x.prop^ {
+		case types.FilterProp_InZone, types.FilterProp_Another, types.FilterProp_Owned:
+			return false
+		}
+		return property_supported(x.prop^)
 	case types.FilterProp_WithKeyword:
 		return keyword_supported(x.value)
 	case types.FilterProp_WithoutKeyword:
@@ -190,6 +202,21 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 		#partial switch x in p {
 		case types.FilterProp_Another:
 			if o.id == source do return false
+		case types.FilterProp_AnyOf:
+			one := types.TypedFilter{properties = make([dynamic]types.FilterProp, 1, context.temp_allocator)}
+			fits := false
+			for q in x.props {
+				one.properties[0] = q
+				if object_matches(s, o, one, chooser, source) {
+					fits = true
+					break
+				}
+			}
+			if !fits do return false
+		case types.FilterProp_Not:
+			one := types.TypedFilter{properties = make([dynamic]types.FilterProp, 1, context.temp_allocator)}
+			one.properties[0] = x.prop^
+			if object_matches(s, o, one, chooser, source) do return false
 		case types.FilterProp_IsChosenCreatureType:
 			// "Creatures of the chosen type": the type chosen for the ability's source (CR 614.12, 607.2d); none chosen, none.
 			name, chosen := chosen_creature_type(chooser_of(s, source))

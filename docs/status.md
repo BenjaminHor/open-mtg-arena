@@ -3117,6 +3117,8 @@ Progress:
   spell is cast (CR 601.2b) through the optional-cost prompt, among those the player can pay (made for them when
   only one can be); a mana choice adds to the cost (CR 601.2f). Kept as the spell's additional cost payment record.
   7,436 -> 7,456.
+- Filter properties "any of" ("that's black or red") and "not" (the opposite of a property of the object itself).
+  7,456 -> 7,475.
 - Owner (2026-11-25): "each change only covers a handful of cards - are there any rules that cover hundreds from
   the remaining pool?" Answer from the gap analysis (greedy.mjs at 7,456): no single rule does. About 6,550 of the
   14,013 are left, and most of those cards lack two or more pieces. The largest family, zone changes ("return / exile /

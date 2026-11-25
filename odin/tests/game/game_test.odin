@@ -5286,3 +5286,36 @@ choose_between_additional_costs :: proc(t: ^testing.T) {
 		testing.expect(t, untapped == 3, "only {1}{G} paid")
 	}
 }
+
+@(test)
+any_of_and_not_properties :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Devout Decree: "Exile target creature or planeswalker that's black or red." A red creature is a legal target
+	// (CR 115.1: the targeting requirements), a green one isn't.
+	testing.expect(t, game.card_supported(&card(t, "Devout Decree").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Plains", 0, .Battlefield)
+	add(t, g, "Plains", 0, .Battlefield)
+	red := add(t, g, "Raging Goblin", 1, .Battlefield)
+	green := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	decree := add(t, g, "Devout Decree", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = decree.id}))
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{green.id}}), "not green")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{red.id}}), "red")
+	for _ in 0 ..< 6 {
+		if _, scry := s.waiting_for.(types.WaitingFor_ScryChoice); scry {
+			game.apply(g, 0, types.GameAction_SelectCards{})
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, red.zone == .Exile, "exiled")
+	// "Not": a filter property's opposite.
+	nonred := types.TypedFilter{properties = make([dynamic]types.FilterProp)}
+	inner := new(types.FilterProp)
+	inner^ = types.FilterProp_HasColor{color = .Red}
+	append(&nonred.properties, types.FilterProp_Not{prop = inner})
+	testing.expect(t, game.object_matches(s, green, nonred, 0, 0) && !game.object_matches(s, add(t, g, "Raging Goblin", 1, .Battlefield), nonred, 0, 0), "not red")
+}
