@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 260 of 2880 rules implemented (9%), 110 of them tested.**
+**In scope (100-799): 260 of 2880 rules implemented (9%), 111 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -34,7 +34,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 119 life | 17 | 4 (24%) | 3 |
 | 120 damage | 25 | 1 (4%) | 1 |
 | 121 drawing a card | 17 | 2 (12%) | 2 |
-| 122 counters | 20 | 5 (25%) | 4 |
+| 122 counters | 20 | 5 (25%) | 5 |
 | 123 stickers | 26 | 0 (0%) | 0 |
 | 200 general | 3 | 0 (0%) | 0 |
 | 201 name | 22 | 1 (5%) | 0 |
@@ -688,7 +688,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 122.3 If a permanent has both a +1/+1 counter and a -1/-1 counter on it, N +1/+1 and N -1/-1 counters are removed...
 - ⬜ 122.4 If a permanent with an ability that says it can’t have more than N counters of a certain kind on it has mor...
 - ⬜ 122.5 If an effect says to “move” a counter, it means to remove that counter from the object it’s currently on an...
-- 🟡 122.6 Some spells and abilities refer to counters being put on an object. This refers to putting counters on that...
+- ✅ 122.6 Some spells and abilities refer to counters being put on an object. This refers to putting counters on that...
 - ⬜ 122.6a If an object enters the battlefield with counters on it, the effect causing the object to be given counters...
 - ⬜ 122.7 An ability that triggers “When/Whenever the Nth [kind] counter” is put on an object triggers when one or mo...
 - ⬜ 122.8 If a triggered ability instructs a player to put one object’s counters on another object and that ability’s...

@@ -2628,3 +2628,40 @@ fetchland_search_either_type :: proc(t: ^testing.T) {
 	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen}))
 	testing.expect(t, plains.zone == .Battlefield && mesa.zone == .Graveyard && game.player(s, 0).life == 19)
 }
+
+@(test)
+damage_each_opponent_and_counters_on_each :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Guttersnipe: "Whenever you cast an instant or sorcery spell, this creature deals 2 damage to each opponent"
+	// (CR 120.3). Abzan Ascendancy: "When this enchantment enters, put a +1/+1 counter on each creature you
+	// control" (CR 122.6).
+	testing.expect(t, game.card_supported(&card(t, "Guttersnipe").face))
+	testing.expect(t, game.card_supported(&card(t, "Abzan Ascendancy").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Guttersnipe", 0, .Battlefield)
+	add(t, g, "Mountain", 0, .Battlefield)
+	shock := add(t, g, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	if _, asked := s.waiting_for.(types.WaitingFor_TargetSelection); asked {
+		game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}})
+	}
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, game.player(s, 1).life == 16 && game.player(s, 0).life == 20, "2 from Guttersnipe, 2 from Shock")
+
+	g2 := new_game()
+	s2 := &g2.state
+	bears := add(t, g2, "Grizzly Bears", 0, .Battlefield)
+	theirs := add(t, g2, "Grizzly Bears", 1, .Battlefield)
+	add(t, g2, "Plains", 0, .Battlefield)
+	add(t, g2, "Swamp", 0, .Battlefield)
+	add(t, g2, "Forest", 0, .Battlefield)
+	asc := add(t, g2, "Abzan Ascendancy", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = asc.id}))
+	for _ in 0 ..< 6 {
+		if types.pvec_len(s2.stack) == 0 do break
+		game.apply(g2, s2.priority_player, types.GameAction_PassPriority{})
+	}
+	p1 := types.CounterType(types.CounterType_Plus1Plus1{})
+	testing.expect(t, game.counter_count(bears, p1) == 1 && game.counter_count(theirs, p1) == 0, "a counter on each of yours only")
+}

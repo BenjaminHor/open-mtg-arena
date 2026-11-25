@@ -70,9 +70,36 @@ more_effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) 
 		return !x.cant_regenerate && mass_filter_supported(x.target), true
 	case types.Effect_DamageAll:
 		_, fixed := fixed_quantity(x.amount)
-		return fixed && x.player_filter == nil && x.damage_source == nil && mass_filter_supported(x.target), true
+		players_ok := true
+		if f, has := x.player_filter.?; has do players_ok = player_filter_simple(f)
+		return fixed && players_ok && x.damage_source == nil && mass_filter_supported(x.target), true
+	case types.Effect_DamageEachPlayer:
+		// "This deals 1 damage to each opponent."
+		return quantity_supported(x.amount) && player_filter_simple(x.player_filter), true
+	case types.Effect_PutCounterAll:
+		// "Put a +1/+1 counter on each creature you control."
+		return quantity_supported(x.count) && !quantity_reads_target(x.count) && counter_kind_supported(x.counter_type) && mass_filter_supported(x.target), true
 	}
 	return false, false
+}
+
+// "Each opponent", "each player", "you": the players an each-player instruction reaches.
+player_filter_simple :: proc(f: types.PlayerFilter) -> bool {
+	#partial switch _ in f {
+	case types.PlayerFilter_Opponent, types.PlayerFilter_All, types.PlayerFilter_Controller:
+		return true
+	}
+	return false
+}
+
+player_filter_matches :: proc(f: types.PlayerFilter, p, controller: types.PlayerId) -> bool {
+	#partial switch _ in f {
+	case types.PlayerFilter_Opponent:
+		return p != controller
+	case types.PlayerFilter_Controller:
+		return p == controller
+	}
+	return true
 }
 
 // "Each creature", "creatures you control": a typed filter applied to every permanent, not targeted.
@@ -151,5 +178,16 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 	case types.Effect_DamageAll:
 		n, _ := fixed_quantity(x.amount)
 		for o in affected_permanents(s, x.target, controller, source) do deal_damage(g, source, types.TargetRef_Object{o.id}, n)
+		// "... and each player" (CR 120.3).
+		if f, has := x.player_filter.?; has do for p in s.players do if player_filter_matches(f, p.id, controller) do deal_damage(g, source, types.TargetRef_Player{p.id}, n)
+	case types.Effect_DamageEachPlayer:
+		// CR 120.3: damage to each player the instruction names, from its source.
+		n := quantity_value(s, x.amount, controller, source, 0)
+		for p in s.players do if player_filter_matches(x.player_filter, p.id, controller) do deal_damage(g, source, types.TargetRef_Player{p.id}, n)
+	case types.Effect_PutCounterAll:
+		// CR 122.6: counters put on each matching permanent.
+		n := quantity_value(s, x.count, controller, source, 0)
+		if n > 0 do for o in affected_permanents(s, x.target, controller, source) do add_counters(o, x.counter_type, u32(n))
+		apply_continuous_effects(g)
 	}
 }

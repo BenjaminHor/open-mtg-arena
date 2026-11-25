@@ -2890,6 +2890,8 @@ Progress:
   removed each time): 5,235 -> 5,243.
 - Library searches for "a Mountain or Plains card" (fetchlands, landscapes, monuments) and "a card named X"
   (CR 201.2), and "named X" in filters generally: 5,243 -> 5,310.
+- "Deals N damage to each opponent / each player" (CR 120.3), "put a counter on each creature you control" (CR
+  122.6), and "each creature and each player" damage: 5,310 -> 5,442.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
