@@ -177,6 +177,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			if o := object(s, g.pending.object); o != nil {
 				o.cost_x_paid = nil // CR 601.2: the cast is undone
 				o.additional_cost_payment_count = 0
+				clear(&o.additional_cost_payments) // the additional cost chosen, with the cast
 			}
 			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed
 			g.pending = {}
@@ -233,9 +234,13 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_OptionalCostChoice:
 		#partial switch a in action {
 		case types.GameAction_DecideOptionalCost:
+			if _, is_choice := w.cost.(types.AdditionalCost_Choice); is_choice do return decide_additional_choice(g, p, a.index)
 			return decide_kicker(g, p, a.index)
 		case types.GameAction_CancelCast:
-			if o := object(s, g.pending.object); o != nil do o.additional_cost_payment_count = 0
+			if o := object(s, g.pending.object); o != nil {
+				o.additional_cost_payment_count = 0
+				clear(&o.additional_cost_payments)
+			}
 			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed
 			g.pending = {}
 			give_priority(g, p)
@@ -304,6 +309,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			if o := object(s, g.pending.object); o != nil && g.pending.ability_index < 0 {
 				o.cost_x_paid = nil
 				o.additional_cost_payment_count = 0
+				clear(&o.additional_cost_payments) // the additional cost chosen, with the cast
 			}
 			g.pending = {}
 			give_priority(g, p)
@@ -458,7 +464,12 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		slot := w.selection.current_slot
 		if slot < len(w.target_slots) && w.target_slots[slot].optional do append(&out, types.GameAction_ChooseTarget{})
 	case types.WaitingFor_OptionalCostChoice:
-		append(&out, types.GameAction_DecideOptionalCost{index = 0}, types.GameAction_DecideOptionalCost{index = 1})
+		if choice, is_choice := w.cost.(types.AdditionalCost_Choice); is_choice {
+			// One of the costs the player can pay.
+			if o := object(s, g.pending.object); o != nil do for _, i in choice._0 do if option_payable(s, p, o, i) do append(&out, types.GameAction_DecideOptionalCost{index = i})
+		} else {
+			append(&out, types.GameAction_DecideOptionalCost{index = 0}, types.GameAction_DecideOptionalCost{index = 1})
+		}
 	case types.WaitingFor_ModeChoice:
 		// Every allowed set of modes (CR 700.2a), in printed order, from the minimum to the maximum number.
 		available := make([dynamic]int, context.temp_allocator)

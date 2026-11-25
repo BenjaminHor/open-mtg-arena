@@ -49,6 +49,11 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		append(&out, ..cards[:min(w.count, len(cards))])
 		return types.GameAction_SelectCards{cards = out}, true
 	case types.WaitingFor_OptionalCostChoice:
+		if choice, is_choice := w.cost.(types.AdditionalCost_Choice); is_choice {
+			// The first cost it can pay.
+			if o := object(&g.state, g.pending.object); o != nil do for _, i in choice._0 do if option_payable(&g.state, p, o, i) do return types.GameAction_DecideOptionalCost{index = i}, true
+			return types.GameAction_CancelCast{}, true
+		}
 		return types.GameAction_DecideOptionalCost{index = 0}, true // kicked, since it can afford it
 	case types.WaitingFor_ModeChoice:
 		modes, _ := ai_modes(g, p, object(s, g.pending.object))

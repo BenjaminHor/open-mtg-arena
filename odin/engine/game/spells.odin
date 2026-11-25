@@ -720,6 +720,7 @@ spell_cost :: proc(s: ^types.GameState, o: ^types.GameObject, p: types.PlayerId)
 	c, is_cost := base.(types.ManaCost_Cost)
 	if !is_cost do return base
 	add_kicker_cost(o, &c) // CR 702.33a: an additional cost
+	add_chosen_option_cost(o, &c) // "or pay {3}" (CR 601.2f)
 	generic := int(c.generic) + cost_change(s, p, o)
 	if has_x(o.mana_cost) {
 		// CR 107.3a: each {X} is the announced value (0 before it's announced).
@@ -885,6 +886,7 @@ withdraw_spell :: proc(s: ^types.GameState, id: types.ObjectId, reversed := true
 continue_casting :: proc(g: ^Game, p: types.PlayerId) {
 	s := &g.state
 	o := object(s, g.pending.object)
+	if ask_additional_choice(g, p, o) do return
 	if ask_kicker(g, p, o) do return
 	if has_x(o.mana_cost) && o.cost_x_paid == nil {
 		// CR 107.3a: the value of X is announced.
@@ -920,6 +922,7 @@ next_target_or_finish :: proc(g: ^Game, p: types.PlayerId) {
 		withdraw_spell(s, o.id)
 		o.cost_x_paid = nil
 		o.additional_cost_payment_count = 0
+		clear(&o.additional_cost_payments) // the additional cost chosen, with the cast
 		g.pending = {}
 		rejection = "the cost with those targets can't be paid"
 		give_priority(g, p)
@@ -1854,9 +1857,48 @@ additional_cost :: proc(face: ^types.CardFace) -> (types.AbilityCost, bool) {
 	return req._0, true
 }
 
+// "As an additional cost to cast this spell, sacrifice a creature or pay {3}": the costs to choose between.
+additional_cost_options :: proc(face: ^types.CardFace) -> ([]types.AbilityCost, bool) {
+	a, has := face.additional_cost.?
+	if !has do return nil, false
+	choice, is_choice := a.(types.AdditionalCost_Choice)
+	if !is_choice || len(choice._0) < 2 do return nil, false
+	return choice._0[:], true
+}
+
+// A spell's additional cost that this engine pays: chosen objects (sacrificed, discarded, exiled from a graveyard),
+// life, or (for one of a choice) mana.
+additional_cost_part_supported :: proc(cost: types.AbilityCost, mana_ok: bool) -> bool {
+	if m, is_mana := cost.(types.AbilityCost_Mana); is_mana {
+		c, ok := m.cost.(types.ManaCost_Cost)
+		return mana_ok && ok && !has_x(m.cost)
+	}
+	if !cost_supported(cost) do return false
+	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
+	cost_parts_of(cost, &parts)
+	for part in parts {
+		#partial switch x in part {
+		case types.AbilityCost_Sacrifice:
+			if is_self(x._0.target) do return false
+		case types.AbilityCost_Discard:
+			if x.self_scope == .SourceCard do return false
+		case types.AbilityCost_PayLife:
+		case types.AbilityCost_Exile:
+			if f, has := x.filter.?; has && is_self(f) do return false
+		case:
+			return false
+		}
+	}
+	return true
+}
+
 additional_cost_supported :: proc(face: ^types.CardFace) -> bool {
 	if face.additional_cost == nil do return true
 	if _, kicker := kicker_cost(face); kicker do return true
+	if options, is_choice := additional_cost_options(face); is_choice {
+		for c in options do if !additional_cost_part_supported(c, true) do return false
+		return true
+	}
 	cost, ok := additional_cost(face)
 	if !ok || !cost_supported(cost) do return false
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
@@ -1880,12 +1922,99 @@ additional_cost_supported :: proc(face: ^types.CardFace) -> bool {
 
 spell_additional_cost :: proc(o: ^types.GameObject) -> (types.AbilityCost, bool) {
 	f := object_face(o)
+	if options, is_choice := additional_cost_options(&f); is_choice {
+		// The one chosen (CR 601.2b), once it is.
+		i, chosen := chosen_additional_option(o)
+		if !chosen || i >= len(options) do return nil, false
+		if _, is_mana := options[i].(types.AbilityCost_Mana); is_mana do return nil, false // part of the mana cost (spell_cost)
+		return options[i], true
+	}
 	return additional_cost(&f)
+}
+
+// Which of a choice of additional costs was chosen for the spell (kept as the spell's cost payment record).
+chosen_additional_option :: proc(o: ^types.GameObject) -> (int, bool) {
+	for r in o.additional_cost_payments do if r.origin == .Other do return int(r.origin_ordinal), true
+	return 0, false
+}
+
+// The chosen option's mana, added to the spell's cost (CR 601.2f).
+add_chosen_option_cost :: proc(o: ^types.GameObject, c: ^types.ManaCost_Cost) {
+	i, chosen := chosen_additional_option(o)
+	if !chosen do return
+	f := object_face(o)
+	options, is_choice := additional_cost_options(&f)
+	if !is_choice || i >= len(options) do return
+	m, is_mana := options[i].(types.AbilityCost_Mana)
+	if !is_mana do return
+	k := m.cost.(types.ManaCost_Cost)
+	c.generic += k.generic
+	shards := make([dynamic]types.ManaCostShard, context.temp_allocator)
+	append(&shards, ..c.shards[:])
+	append(&shards, ..k.shards[:])
+	c.shards = shards
+}
+
+// CR 601.2b: the player announces which additional cost they'll pay, among those they can.
+ask_additional_choice :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool {
+	f := object_face(o)
+	options, is_choice := additional_cost_options(&f)
+	if !is_choice do return false
+	if _, chosen := chosen_additional_option(o); chosen do return false
+	payable := make([dynamic]int, context.temp_allocator)
+	for _, i in options do if option_payable(&g.state, p, o, i) do append(&payable, i)
+	if len(payable) == 1 {
+		choose_additional_option(o, payable[0]) // the only one it can pay
+		return false
+	}
+	pending := new(types.PendingCast)
+	pending.object_id = o.id
+	pending.card_id = o.card_id
+	pending.cost = o.mana_cost
+	g.state.waiting_for = types.WaitingFor_OptionalCostChoice{player = p, cost = o.additional_cost.?, pending_cast = pending}
+	return true
+}
+
+choose_additional_option :: proc(o: ^types.GameObject, i: int) {
+	clear(&o.additional_cost_payments)
+	append(&o.additional_cost_payments, types.AdditionalCostInstancePayment{origin = .Other, origin_ordinal = u32(i), count = 1})
+}
+
+option_payable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, i: int) -> bool {
+	saved := slice.clone(o.additional_cost_payments[:], context.temp_allocator)
+	defer {
+		clear(&o.additional_cost_payments)
+		append(&o.additional_cost_payments, ..saved)
+	}
+	choose_additional_option(o, i)
+	if !additional_cost_payable(s, p, o) do return false
+	_, affordable := plan_payment(s, p, spell_cost(s, o, p), 0, nil, Payment{o, true})
+	return affordable
+}
+
+// The answer: the index of the cost to pay, one the player can pay.
+decide_additional_choice :: proc(g: ^Game, p: types.PlayerId, index: int) -> bool {
+	o := object(&g.state, g.pending.object)
+	if o == nil || index < 0 do return false
+	f := object_face(o)
+	options, is_choice := additional_cost_options(&f)
+	if !is_choice || index >= len(options) || !option_payable(&g.state, p, o, index) do return false
+	choose_additional_option(o, index)
+	continue_casting(g, p)
+	return true
 }
 
 // Whether the additional cost can be paid: enough to sacrifice or discard (not counting the spell itself), and the
 // life (CR 119.4).
 additional_cost_payable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject) -> bool {
+	f := object_face(o)
+	if options, is_choice := additional_cost_options(&f); is_choice {
+		if _, chosen := chosen_additional_option(o); !chosen {
+			// Not chosen yet: castable if any of them can be paid.
+			for _, i in options do if option_payable(s, p, o, i) do return true
+			return false
+		}
+	}
 	cost, has := spell_additional_cost(o)
 	if !has do return true
 	if c, chooses := object_cost_of(s, p, o, cost); chooses {

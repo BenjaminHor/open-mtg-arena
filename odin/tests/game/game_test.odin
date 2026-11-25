@@ -5246,3 +5246,43 @@ exile_from_graveyard_as_a_spells_additional_cost :: proc(t: ^testing.T) {
 	settle_stack(g)
 	testing.expect(t, lancer.zone == .Battlefield, "the Lancer resolves")
 }
+
+@(test)
+choose_between_additional_costs :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Bayou Groff ({1}{G}): "As an additional cost to cast this spell, sacrifice a creature or pay {3}." CR 601.2b:
+	// the player announces which, among those they can pay; CR 601.2f, 601.2h: then pays it.
+	testing.expect(t, game.card_supported(&card(t, "Bayou Groff").face))
+	// Paying {3}: five Forests, no creature to sacrifice. Only one choice can be paid, so it's made for them.
+	{
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 5 do add(t, g, "Forest", 0, .Battlefield)
+		groff := add(t, g, "Bayou Groff", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = groff.id}))
+		untapped := 0
+		for id in game.ids_of(s.battlefield) do if o := game.object(s, id); game.is_type(o, .Land) && !o.tapped do untapped += 1
+		testing.expectf(t, untapped == 0, "{1}{G} plus {3}: all five Forests, %d left", untapped)
+	}
+	// Both possible: the player chooses; sacrificing the Bears costs only {1}{G}.
+	{
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 5 do add(t, g, "Forest", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+		groff := add(t, g, "Bayou Groff", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = groff.id}))
+		_, asked := s.waiting_for.(types.WaitingFor_OptionalCostChoice)
+		testing.expect(t, asked, "asked which cost")
+		testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalCost{index = 0}), "sacrifice a creature")
+		if w, choosing := s.waiting_for.(types.WaitingFor_PayCost); choosing {
+			pick := make([dynamic]types.ObjectId)
+			append(&pick, w.choices[0])
+			testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = pick}))
+		}
+		testing.expect(t, bears.zone == .Graveyard, "sacrificed")
+		untapped := 0
+		for id in game.ids_of(s.battlefield) do if o := game.object(s, id); game.is_type(o, .Land) && !o.tapped do untapped += 1
+		testing.expect(t, untapped == 3, "only {1}{G} paid")
+	}
+}

@@ -3113,6 +3113,10 @@ Progress:
 - "Exile a card from your graveyard" (any card) as a cost, and as a spell's additional cost (CR 601.2h). 7,428 ->
   7,436.
 - Fixture replay at 8fbd5e6 (frozen engine, all 11,160): 807 pass (792 at 8a539ae), 7 too large, the rest fail.
+- A choice of additional costs ("sacrifice a creature or pay {3}", "discard a card or pay 3 life"): announced as the
+  spell is cast (CR 601.2b) through the optional-cost prompt, among those the player can pay (made for them when
+  only one can be); a mana choice adds to the cost (CR 601.2f). Kept as the spell's additional cost payment record.
+  7,436 -> 7,456.
 - The app on the Odin engine, played by Playwright (Standard, random decks, the human only keeping, passing to end of
   turn and discarding): a whole game to the AI's win, no engine errors (scratchpad pw/play.cjs). Known: the game log
   panel is empty on the Odin engine (no log entries returned), and the home page's Card Coverage Dashboard reads
