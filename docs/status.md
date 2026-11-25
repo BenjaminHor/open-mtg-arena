@@ -3270,6 +3270,9 @@ Progress:
   Confirmed by the review: "becomes the target" once for a permanent one spell targets twice (official rulings:
   Battle Mammoth, heroic). Noted: copy exceptions (copy_exceptions) live outside GameState. Test:
   `eighth_review_fixes`. Coverage 7,863.
+- Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
+  decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
+  cards to be triaged against the CR (next step for the fixtures).
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 

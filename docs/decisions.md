@@ -2988,3 +2988,18 @@ reference (owner, 2026-11-24)** · 2026-11-24 · accepted
   discussions read the simultaneous combat damage as one event the shield prevents, one counter removed.
 - Decision: the Odin engine prevents all combat damage dealt to the permanent in that damage step and removes one
   counter; noncombat damage from separate effects is separate events. Revisit if an official ruling says otherwise.
+
+**D-189: The captured Rust fixtures are a cross-check, not an oracle; a disagreement is settled by the CR** ·
+2026-11-25 · accepted
+- Question (owner, 2026-11-25): "how do we know that the fixtures actually capture the correct behavior for a given
+  card - just wondering because there could be bugs in behavior from the rust implementations".
+- We don't: a fixture records what the Rust engine did, right or wrong. Its integration tests were written (mostly by
+  LLM agents) to check rules, and the recorded AI games check nothing at all; both can hold Rust's bugs. Rust was
+  also accepted with known problems (D-177, docs/phase-rs-evaluation.md).
+- Decision: D-020 stands over D-187's "must pass them". The Odin engine's correctness comes from the CR (each rule
+  looked up and cited, a test per rule, rules-judge reviews of every batch). The fixtures are a second opinion: an
+  Odin/Rust disagreement on a card Odin supports is investigated against the CR (and the card's rulings, D-080),
+  and whichever engine is wrong is recorded: an Odin bug is fixed with a test; a Rust bug is noted (the fixture
+  marked as wrong) and not copied. The pass rate is a progress signal, not a correctness score; 100% isn't the aim.
+- Not yet done: the failures haven't been triaged this way (nearly all are still cards Odin refuses). A
+  disagreement report for supported cards is the next step for the fixtures.
