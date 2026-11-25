@@ -3015,10 +3015,9 @@ reference (owner, 2026-11-24)** · 2026-11-24 · accepted
 
 **D-191: Which abilities that add mana are mana abilities, and how automatic payment ranks their extras** ·
 2026-11-25 · accepted
-- CR 605.1a: an activated ability is a mana ability only if it has no target, isn't a loyalty ability, and could add
-  mana as it resolves. The Odin engine puts the others (loyalty, targeted) on the stack; it also puts there
-  abilities that add mana and move library cards, since the engine can't undo a library move made mid-payment
-  (CR 605.5a lets a mana ability be played while paying, which presumes it can be rolled back with the payment).
+- CR 605.1a: an activated ability is a mana ability only if it has no target, isn't a loyalty ability, could add
+  mana as it resolves, and its cost and effect move no card to or from a library. The Odin engine puts every other
+  ability that adds mana on the stack (CR 605.5a), so "Add one mana of any color. Draw a card" uses the stack.
 - Automatic payment prefers sources without harmful extras; a mana ability's harmful extra effect (life loss,
   damage to you, sacrifice) ranks with the painlands, used only when nothing cleaner pays the cost. A preference, not
   a rule: the player can always tap by hand.
