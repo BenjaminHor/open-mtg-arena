@@ -119,7 +119,8 @@ move_object :: proc(g: ^Game, id: types.ObjectId, to: types.Zone) {
 		types.pvec_push(list, id, copy_id)
 	}
 	// CR 603.2, 603.6: a zone change is an event abilities can trigger on.
-	append(&g.events, Event{kind = .Zone_Change, object = id, from = from, to = to, controller = last_controller, lki = lki})
+	if !moving_together do event_group += 1
+	append(&g.events, Event{kind = .Zone_Change, object = id, from = from, to = to, controller = last_controller, lki = lki, group = event_group})
 }
 
 // CR 701.21a: to sacrifice a permanent, its controller moves it from the battlefield to its owner's graveyard. That
@@ -210,6 +211,25 @@ remove_from_combat :: proc(s: ^types.GameState, id: types.ObjectId) {
 			break
 		}
 	}
+}
+
+// Zone changes that happen at the same time (CR 704.3: state-based actions; "sacrifice two creatures") share a
+// group, so that abilities of permanents leaving together see each other leave (CR 603.10a).
+@(thread_local)
+event_group: int
+@(thread_local)
+moving_together: bool
+
+// Starts a group of simultaneous zone changes; end it with end_together.
+begin_together :: proc() -> bool {
+	outer := moving_together
+	if !outer do event_group += 1
+	moving_together = true
+	return outer
+}
+
+end_together :: proc(outer: bool) {
+	moving_together = outer
 }
 
 // The events of the action being carried out, for last known information (CR 608.2h) where only the state is at hand.

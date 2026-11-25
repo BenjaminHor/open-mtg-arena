@@ -109,7 +109,7 @@ apply_entering_replacements :: proc(s: ^types.GameState, o: ^types.GameObject) {
 add_counters :: proc(o: ^types.GameObject, kind: types.CounterType, n: u32) {
 	if n == 0 do return
 	before := counter_count(o, kind)
-	if action_events != nil do append(action_events, Event{kind = .Counter_Added, object = o.id, controller = o.controller, counter = kind, amount = int(n), before = int(before)})
+	if action_events != nil do append(action_events, Event{kind = .Counter_Added, object = o.id, controller = o.controller, counter = kind, amount = int(n), before = int(before), incarnation = o.incarnation})
 	for &c in o.counters do if same_counter(c._0, kind) {
 		c._1 += n
 		return

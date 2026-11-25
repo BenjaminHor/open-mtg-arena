@@ -30,6 +30,8 @@ do_sacrifice :: proc(g: ^Game, x: types.Effect_Sacrifice, controller: types.Play
 	eligible: [dynamic]types.ObjectId
 	for o in permanents_of(s, controller) do if object_matches(s, o, typed, controller, source) do append(&eligible, o.id)
 	if len(eligible) <= n {
+		together := begin_together()
+		defer end_together(together)
 		for id in eligible do sacrifice_permanent(g, id)
 		return false
 	}
@@ -41,7 +43,9 @@ do_sacrifice :: proc(g: ^Game, x: types.Effect_Sacrifice, controller: types.Play
 answer_sacrifice :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_EffectZoneChoice, chosen: []types.ObjectId) -> bool {
 	if !g.resolution.active || w.effect_kind != .Sacrifice || len(chosen) != w.count || has_duplicates(chosen) do return false
 	for id in chosen do if !slice.contains(w.cards[:], id) do return false
+	together := begin_together()
 	for id in chosen do sacrifice_permanent(g, id)
+	end_together(together)
 	g.state.waiting_for = nil
 	if continue_resolution(g) do after_resolution(g)
 	return true

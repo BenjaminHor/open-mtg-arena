@@ -125,10 +125,12 @@ give_priority :: proc(g: ^Game, p: types.PlayerId) {
 		collect_triggers(g)
 		check_state_based_actions(g)
 		if game_over(s) do return
-		before := types.pvec_len(s.stack)
+		// Anything to put on the stack, even an ability then removed for want of a target (CR 603.3d), means the
+		// state-based actions are checked again (a Saga whose last chapter had no target, CR 704.5s).
+		had_triggers := len(g.pending_triggers) > 0 || len(g.events) > 0
 		if !place_triggers(g) do return // a player is choosing a trigger's target
 		collect_triggers(g)
-		if types.pvec_len(s.stack) == before && len(g.events) == 0 && len(g.pending_triggers) == 0 do break
+		if !had_triggers && len(g.events) == 0 && len(g.pending_triggers) == 0 do break
 	}
 	// CR 117.3c-d: after abilities are put on the stack, the active player gets priority, unless a player just acted.
 	s.priority_player = p

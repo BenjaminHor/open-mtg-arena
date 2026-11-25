@@ -35,6 +35,8 @@ Event :: struct {
 	lki:        ^types.GameObject, // Zone_Change from the battlefield: the permanent as it last existed (CR 608.2h)
 	counter:    types.CounterType, // Counter_Added
 	before:     int,
+	group:      int, // zone changes with the same group happened at the same time (state-based actions, CR 704.3)
+	incarnation: u64, // Counter_Added: the object as it was (CR 400.7)
 }
 
 // A triggered ability waiting to be put on the stack (CR 603.3).
@@ -328,7 +330,7 @@ has_zone :: proc(zones: []types.Zone, z: types.Zone) -> bool {
 collect_triggers :: proc(g: ^Game) {
 	s := &g.state
 	fired := make([dynamic]^types.TriggerDefinition, context.temp_allocator) // batched triggers already triggered
-	for e in g.events {
+	for e, index in g.events {
 		switch e.kind {
 		case .Zone_Change, .Sacrificed:
 			moved := object(s, e.object)
@@ -339,6 +341,14 @@ collect_triggers :: proc(g: ^Game) {
 				if id == e.object do continue
 				watcher := object(s, id)
 				for &entry in trigger_definitions(watcher) do zone_change_trigger(g, watcher, &entry.definition, e, false)
+			}
+			// Permanents that were on the battlefield for the event but have left since, or left at the same time
+			// (CR 603.10a: leaves-the-battlefield abilities look back; "whenever another creature dies" sees one
+			// that dies with it). Their abilities as they last existed.
+			for f, later in g.events {
+				if f.kind != .Zone_Change || f.from != .Battlefield || f.lki == nil || f.object == e.object do continue
+				if later <= index && !(f.group == e.group && e.from == .Battlefield) do continue
+				for &entry in trigger_definitions(f.lki) do zone_change_trigger(g, f.lki, &entry.definition, e, false, f.lki)
 			}
 		case .Step_Begin:
 			for id in ids_of(s.battlefield) {
@@ -430,8 +440,14 @@ collect_triggers :: proc(g: ^Game) {
 				}
 			}
 		case .Counter_Added:
+			// The permanent the counters were put on (CR 400.7): if it has left since, its abilities as it last existed.
 			o := object(s, e.object)
-			if o == nil || o.zone != .Battlefield do continue
+			if o == nil do continue
+			if o.zone != .Battlefield || o.incarnation != e.incarnation {
+				o = nil
+				for f in g.events do if f.kind == .Zone_Change && f.object == e.object && f.lki != nil && f.lki.incarnation == e.incarnation do o = f.lki
+				if o == nil do continue
+			}
 			for &entry in trigger_definitions(o) {
 				t := &entry.definition
 				if _, added := t.mode.(types.TriggerMode_CounterAdded); !added || !trigger_supported(t^) do continue
@@ -441,7 +457,13 @@ collect_triggers :: proc(g: ^Game) {
 				// least N.
 				if n, has := cf.threshold.?; has && !(e.before < int(n) && e.before + e.amount >= int(n)) do continue
 				if !turn_constraint_met(s, t^, o.controller) do continue
-				add_trigger(g, o.id, o.controller, t)
+				// "Whenever one or more counters are put" triggers once for the event; "whenever a counter is put",
+				// once for each counter (CR 603.2c).
+				times := 1
+				if _, has := cf.threshold.?; !has {
+					if d, has_d := t.description.?; has_d && !strings.contains(d, "one or more") do times = e.amount
+				}
+				for _ in 0 ..< times do add_trigger(g, o.id, o.controller, t)
 			}
 		case .Life_Gained, .Card_Drawn:
 			for id in ids_of(s.battlefield) {
@@ -484,7 +506,7 @@ collect_triggers :: proc(g: ^Game) {
 }
 
 @(private = "file")
-zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.TriggerDefinition, e: Event, is_self: bool) {
+zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.TriggerDefinition, e: Event, is_self: bool, watcher_gone: Maybe(^types.GameObject) = nil) {
 	s := &g.state
 	// A sacrifice is also a zone change (CR 701.21a); a sacrifice trigger sees only the sacrifice event, the others
 	// only the zone change.
@@ -509,7 +531,9 @@ zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.Trigg
 	if !matched do return
 	if !turn_constraint_met(s, t^, controller) do return
 	// CR 603.10a: a leaves-the-battlefield ability looks back at the permanent as it last existed.
-	add_trigger(g, source.id, controller, t, e.lki if is_self && e.from == .Battlefield else nil)
+	lki := e.lki if is_self && e.from == .Battlefield else nil
+	if gone, has := watcher_gone.?; has && !is_self do lki = gone
+	add_trigger(g, source.id, controller, t, lki)
 }
 
 // Whether the moved object is what the trigger watches, and who controls the ability.
@@ -525,12 +549,17 @@ zone_change_subject :: proc(g: ^Game, source: ^types.GameObject, t: ^types.Trigg
 		if e.from == .Battlefield do controller = e.controller
 		return controller, true
 	case types.TargetFilter_Typed:
-		if is_self || source.zone != .Battlefield do return
+		// The permanent sees its own entering ("whenever a creature enters", CR 603.6a) and, looking back, its own
+		// leaving ("whenever you sacrifice a permanent", CR 603.10a); any other object only from the battlefield.
+		if is_self {
+			if e.from != .Battlefield && e.to != .Battlefield do return
+			if e.from == .Battlefield do controller = e.controller
+		} else if source.zone != .Battlefield do return
 		// The moved object as it was for the event (CR 603.10a: one that left, as it last existed on the
 		// battlefield), with its controller then.
 		as_was := e.lki^ if e.lki != nil else object(s, e.object)^
 		as_was.controller = e.controller
-		return controller, object_matches(s, &as_was, f._0, source.controller, source.id)
+		return controller, object_matches(s, &as_was, f._0, controller, source.id)
 	case types.TargetFilter_Or:
 		for y in f.filters do if c, ok := zone_change_subject(g, source, t, y, e, is_self); ok do return c, true
 	}
@@ -1002,6 +1031,10 @@ chapter_waiting :: proc(g: ^Game, o: ^types.GameObject) -> bool {
 		entry := types.pvec_get(g.state.stack, i)
 		t, triggered := entry.kind.(types.StackEntryKind_TriggeredAbility)
 		if !triggered || t.source_id != o.id do continue
+		// This Saga, not an earlier object with its id (CR 400.7).
+		if t.ability != nil {
+			if inc, has := t.ability.source_incarnation.?; has && inc != o.incarnation do continue
+		}
 		a := g.stack_abilities[entry.id]
 		for &def in trigger_definitions(o) {
 			if def.definition.saga_chapter == nil do continue

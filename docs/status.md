@@ -2868,6 +2868,14 @@ Progress:
   its targets chosen as it goes on the stack, not with X's. Read after a "you may" only; found again from the
   source's own definition as it resolves. The card gaps now name the missing effect for every trigger kind the
   engine handles, not just "trigger:<kind>".
+- Rules review of sacrifice triggers and Sagas (2026-11-25), all fixed with tests: a permanent's own "whenever a
+  player sacrifices a permanent" (Mayhem Devil) now sees its own sacrifice, and permanents that leave together
+  see each other leave (CR 603.10a; zone changes carry a group, shared by state-based actions, edicts, costs and
+  "destroy all", CR 704.3); state-based actions are checked again after a trigger is removed for want of a
+  target (a Saga whose last chapter had none, CR 603.3d, 704.5s); counter triggers follow the object by
+  incarnation (CR 400.7); "whenever a counter is put" triggers once per counter (CR 603.2c). Still open from it:
+  tests for a Saga played through real turns, an opponent's Saga in your main phase, a countered last chapter,
+  and Carrot Cake's own sacrifice.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

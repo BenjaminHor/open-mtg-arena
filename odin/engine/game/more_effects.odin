@@ -128,7 +128,9 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 		for o in affected_permanents(s, x.target, controller, source) do pump(g, o, p, t)
 	case types.Effect_DestroyAll:
 		// CR 701.8: all at once.
+		together := begin_together() // "destroy all": at the same time
 		for o in affected_permanents(s, x.target, controller, source) do destroy(g, o)
+		end_together(together)
 	case types.Effect_DamageAll:
 		n, _ := fixed_quantity(x.amount)
 		for o in affected_permanents(s, x.target, controller, source) do deal_damage(g, source, types.TargetRef_Object{o.id}, n)

@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 256 of 2880 rules implemented (9%), 106 of them tested.**
+**In scope (100-799): 256 of 2880 rules implemented (9%), 107 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -110,7 +110,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 701 keyword actions | 305 | 26 (9%) | 9 |
 | 702 keyword abilities | 774 | 26 (3%) | 6 |
 | 703 turn based actions | 20 | 1 (5%) | 0 |
-| 704 state based actions | 40 | 12 (30%) | 5 |
+| 704 state based actions | 40 | 12 (30%) | 6 |
 | 705 flipping a coin | 3 | 0 (0%) | 0 |
 | 706 rolling a die | 18 | 0 (0%) | 0 |
 | 707 copying objects | 33 | 0 (0%) | 0 |
@@ -2916,7 +2916,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 704.1 State-based actions are game actions that happen automatically whenever certain conditions (listed below) a...
 - ⬜ 704.1a Abilities that watch for a specified game state are triggered abilities, not state-based actions. (See rule...
 - ⬜ 704.2 State-based actions are checked throughout the game and are not controlled by any player.
-- 🟡 704.3 Whenever a player would get priority (see rule 117, “Timing and Priority”), the game checks for any of the ...
+- ✅ 704.3 Whenever a player would get priority (see rule 117, “Timing and Priority”), the game checks for any of the ...
 - ⬜ 704.4 Unlike triggered abilities, state-based actions pay no attention to what happens during the resolution of a...
 - ⬜ 704.5 The state-based actions are as follows:
 - ✅ 704.5a If a player has 0 or less life, that player loses the game.

@@ -2401,3 +2401,56 @@ when_you_do :: proc(t: ^testing.T) {
 	run(t, true)
 	run(t, false)
 }
+
+@(test)
+look_back_at_leaving_together :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 603.10a: leaves-the-battlefield and sacrifice abilities look back in time. Mayhem Devil ("whenever a player
+	// sacrifices a permanent, it deals 1 damage to any target") sees its own sacrifice; Zulaport Cutthroat
+	// ("whenever this or another creature you control dies, each opponent loses 1 life and you gain 1 life") sees a
+	// creature that dies at the same time it does (CR 704.3: the state-based actions happen at once).
+	g := new_game()
+	s := &g.state
+	devil := add(t, g, "Mayhem Devil", 0, .Battlefield)
+	husk := add(t, g, "Nantuko Husk", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = husk.id, ability_index = 0}))
+	chosen: [dynamic]types.ObjectId
+	append(&chosen, devil.id)
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen}))
+	if _, asked := s.waiting_for.(types.WaitingFor_TriggerTargetSelection); asked {
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	}
+	testing.expect(t, types.pvec_len(s.stack) == 2, "the Husk's ability and the Devil's own sacrifice trigger")
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, game.player(s, 1).life == 19, "1 damage")
+
+	g2 := new_game()
+	s2 := &g2.state
+	add(t, g2, "Zulaport Cutthroat", 0, .Battlefield) // 1/1
+	add(t, g2, "Grizzly Bears", 0, .Battlefield)
+	for _ in 0 ..< 2 do add(t, g2, "Mountain", 0, .Battlefield)
+	wipe := add(t, g2, "Pyroclasm", 0, .Hand) // 2 damage to each creature
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = wipe.id}))
+	for _ in 0 ..< 8 {
+		if types.pvec_len(s2.stack) == 0 do break
+		game.apply(g2, s2.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, game.player(s2, 1).life == 18 && game.player(s2, 0).life == 22, "two triggers: its own death and the Bears'")
+}
+
+@(test)
+saga_last_chapter_without_target :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 603.3d: a chapter ability with no legal target is removed; CR 704.5s, 117.5: the Saga is then sacrificed
+	// before anyone gets priority, since no chapter ability of its own waits.
+	g := new_game()
+	s := &g.state
+	// Triumph of Gerrard III: "target creature you control with the greatest power gains flying, first strike, and
+	// lifelink until end of turn"; with no creature, it has no target.
+	testing.expect(t, game.card_supported(&card(t, "Triumph of Gerrard").face))
+	saga := add(t, g, "Triumph of Gerrard", 0, .Battlefield)
+	game.add_counters(saga, types.CounterType_Lore{}, 2)
+	game.begin_step(g, .PreCombatMain)
+	_, has_priority := s.waiting_for.(types.WaitingFor_Priority)
+	testing.expect(t, has_priority && types.pvec_len(s.stack) == 0 && saga.zone == .Graveyard, "gone before anyone has priority")
+}

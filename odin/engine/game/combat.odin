@@ -318,6 +318,8 @@ check_state_based_actions :: proc(g: ^Game) {
 	apply_continuous_effects(g)
 	for {
 		changed := false
+		together := begin_together() // CR 704.3: all at once
+		defer end_together(together)
 		for id in ids_of(s.battlefield) {
 			o := object(s, id)
 			if !is_type(o, .Creature) do continue

@@ -346,7 +346,9 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 	}
 	// The chosen permanents are sacrificed and cards discarded after the mana is paid (CR 601.2g lets mana
 	// abilities be activated first, so a land tapped for mana can still be sacrificed).
+	together := begin_together() // paid at once ("sacrifice two creatures")
 	for id in g.pending.cost_objects do pay_with_object(g, id)
+	end_together(together)
 	push_ability(g, source, p, a, targets, false, g.pending.counts[:])
 	record_activation(&s.activated_abilities_this_turn, o, index)
 	record_activation(&s.activated_abilities_this_game, o, index)
