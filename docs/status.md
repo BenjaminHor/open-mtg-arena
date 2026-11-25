@@ -2813,6 +2813,16 @@ Progress:
   Tools (scratchpad): fixture-reach.mjs (pass rate among fixtures whose real cards Odin supports: 152 of 2,165) and
   reach-fails.txt. Next: rank the failing fixtures by the Odin gap that rejects them, and build by that ranking
   alongside the static coverage ranking.
+- Mana pool (2026-11-25): Odin ignored mana in the pool. Now it pays from floating mana first (CR 106.4), the pool
+  empties as each step begins (CR 106.4), and a player with priority can activate a mana ability on its own
+  (CR 605.3a-b; a choice of color isn't offered yet, so such an activation is refused). Of the 541 fixtures that
+  acted on a supported card yet were refused, 15 now pass and "mana cost unpayable" fell from 392 to 52.
+- Support is judged on the object (2026-11-25): what Odin carries out is the object's own abilities, triggers,
+  statics, replacements, modes and costs (CR 109.3), not the card looked up by name, so fixtures built on
+  synthetic test cards can run (1,816 refusals). Cards with casting restrictions, strive, cleave or a solve
+  condition are now reported unsupported (they were played without those rules).
+- Next: CR 601.2a, 602.2a: a spell being cast is on the stack while its targets are chosen (Rust shows it there;
+  1,058 fixtures first differ on the stack); TapLandForMana; mana pool order and source ids.
 - Step 3 progress (2026-11-24, night 2): you may / if you do, library search and shuffle, sacrifice effects,
   counterspells, blink and graveyard either-or targets, each player / each opponent instructions, cycling,
   required additional costs, kicker, predefined tokens (Treasure, Food, Clue, Shard, Heartwood; others
@@ -2882,6 +2892,11 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   gap recordings only once the engine is fleshed out (ask then).
 
 ## Known issues
+- (2026-11-25, Odin native tests) Fixed: the full native suite hung from 65c6e65 on: two tests emptied the hand
+  through a copy of its persistent vector, so the loop never ended and memory grew until the container killed it.
+  Runs reported in between as passing hadn't finished; the hang also hid two stale expectations (Ancient Tomb and
+  Karplusan Forest became supported with the mana riders; Wild Mongrel's color choice isn't). Now the suite (70
+  tests) runs in under a second; run it under a memory cap (ulimit -v) and check for "Finished N tests".
 - (2026-11-24, Odin engine, rules-judge review of 9ab9548..7429070) Fixed, with tests: (1) "sacrifice this" and
   "exile this" acted on the new object after a blink (CR 400.7); (2) a blinked token came back (CR 111.8) and
   exiled tokens never ceased to exist (CR 704.5d); (3) accepting an impossible "you may" counted as "if you do"

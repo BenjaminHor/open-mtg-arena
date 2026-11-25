@@ -136,6 +136,12 @@ new_card_object :: proc(s: ^types.GameState, card: ^types.CardExportEntry, owner
 	replacements^ = slice.clone_to_dynamic(face.replacements[:])
 	o.replacement_definitions = types.Definitions_ReplacementDefinition(replacements)
 	if id, ok := face.scryfall_oracle_id.?; ok do o.printed_ref = types.PrintedCardRef{oracle_id = id, face_name = face.name}
+	// How it's cast: its modes (CR 700.2), additional costs (CR 601.2b) and casting rules, part of the object.
+	o.modal = face.modal
+	o.additional_cost = face.additional_cost
+	o.casting_restrictions = slice.clone_to_dynamic(face.casting_restrictions[:])
+	o.strive_cost = face.strive_cost
+	o.cleave_variant = face.cleave_variant
 
 	// The printed values, kept apart from the current ones that effects change (CR 613).
 	o.base_name = o.name

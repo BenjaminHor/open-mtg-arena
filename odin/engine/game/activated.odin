@@ -237,7 +237,11 @@ can_activate :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: i
 activate_ability :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, index: int) -> bool {
 	s := &g.state
 	o := object(s, source)
-	if o == nil || !can_activate(g, p, o, index) do return false
+	if o == nil do return false
+	if a := activated_ability(o, index); a != nil && object_supported(o, g.card_db) {
+		if _, is_mana := mana_ability_option(a^); is_mana do return activate_mana_ability(g, p, o, a)
+	}
+	if !can_activate(g, p, o, index) do return false
 	a := activated_ability(o, index)
 	g.pending = Pending_Cast{object = source, ability_index = index}
 	next_target_or_finish(g, p)

@@ -129,12 +129,13 @@ no_mana_cost_is_unpayable :: proc(t: ^testing.T) {
 @(test)
 unsupported_riders_and_alternate_payments :: proc(t: ^testing.T) {
 	if !load_db() do return
-	// Supported means every part is carried out: mana riders (CR 605.3b, 602.5), Phyrexian mana (CR 107.4f), and a
-	// mass pump misparsed as a single "any target" pump aren't yet.
-	for name in ([]string{"Ancient Tomb", "Karplusan Forest", "Temple of the False God", "Gut Shot", "Defensive Maneuvers"}) {
+	// Supported means every part is carried out: "activate only if" (CR 602.5), Phyrexian mana (CR 107.4f), and a
+	// mass pump misparsed as a single "any target" pump aren't yet. Damage to you as a mana ability resolves (CR
+	// 605.3b: Ancient Tomb, the painlands) is.
+	for name in ([]string{"Temple of the False God", "Gut Shot", "Defensive Maneuvers"}) {
 		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s isn't supported yet", name)
 	}
-	for name in ([]string{"Grizzly Bears", "Shock", "Scrubland", "Llanowar Elves"}) {
+	for name in ([]string{"Grizzly Bears", "Shock", "Scrubland", "Llanowar Elves", "Ancient Tomb", "Karplusan Forest"}) {
 		testing.expectf(t, game.card_supported(&card(t, name).face), "%s is supported", name)
 	}
 }
@@ -619,9 +620,9 @@ discard_a_card_as_a_cost :: proc(t: ^testing.T) {
 	// CR 602.2b, 601.2h: "Discard a card" is paid from the hand; with an empty hand it can't be paid (CR 602.2b
 	// via 601.2h: a cost that can't be paid can't be activated).
 	g := new_game()
-	mongrel := add(t, g, "Wild Mongrel", 0, .Battlefield) // Discard a card: +1/+1 and becomes the color of your choice
-	hand := game.player(&g.state, 0).hand
-	for types.pvec_len(hand) > 0 do game.move_object(g, types.pvec_get(hand, 0), .Library)
+	mongrel := add(t, g, "Noose Constrictor", 0, .Battlefield) // Discard a card: +1/+1 until end of turn
+	hand := &game.player(&g.state, 0).hand
+	for types.pvec_len(hand^) > 0 do game.move_object(g, types.pvec_get(hand^, 0), .Library) // the hand itself, not a copy
 	testing.expect(t, !game.can_activate(g, 0, mongrel, 0), "nothing to discard")
 	add(t, g, "Forest", 0, .Hand)
 	testing.expect(t, game.can_activate(g, 0, mongrel, 0), "a card to discard")
@@ -733,15 +734,15 @@ intervening_if_is_checked_twice :: proc(t: ^testing.T) {
 	// only if the condition is true, and does nothing if it's false as the ability resolves.
 	g := new_game()
 	add(t, g, "Ivory Crane Netsuke", 0, .Battlefield)
-	hand := game.player(&g.state, 0).hand
-	for types.pvec_len(hand) > 0 do game.move_object(g, types.pvec_get(hand, 0), .Library)
+	hand := &game.player(&g.state, 0).hand
+	for types.pvec_len(hand^) > 0 do game.move_object(g, types.pvec_get(hand^, 0), .Library) // the hand itself, not a copy
 	game.begin_step(g, .Upkeep)
 	testing.expect(t, types.pvec_len(g.state.stack) == 0, "an empty hand: no trigger")
 
 	for _ in 0 ..< 7 do add(t, g, "Forest", 0, .Hand)
 	game.begin_step(g, .Upkeep)
 	testing.expect(t, types.pvec_len(g.state.stack) == 1, "seven cards: it triggers")
-	game.move_object(g, types.pvec_get(hand, 0), .Graveyard) // down to six before it resolves
+	game.move_object(g, types.pvec_get(hand^, 0), .Graveyard) // down to six before it resolves
 	game.apply(g, 0, types.GameAction_PassPriority{})
 	game.apply(g, 1, types.GameAction_PassPriority{})
 	testing.expect(t, types.pvec_len(g.state.stack) == 0 && game.player(&g.state, 0).life == 20, "six cards on resolution: nothing")
@@ -1650,4 +1651,40 @@ amounts_this_turn_and_phase_conditions :: proc(t: ^testing.T) {
 	testing.expect(t, !game.trigger_condition_holds(s, bears.id, 0, tapped))
 	bears.tapped = true
 	testing.expect(t, game.trigger_condition_holds(s, bears.id, 0, tapped))
+}
+
+@(test)
+mana_pool_holds_and_empties :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 605.3a-b: with priority, a player may activate a mana ability on its own; it resolves at once and its mana
+	// goes into their mana pool (CR 106.4).
+	g := new_game()
+	s := &g.state
+	game.begin_step(g, .PreCombatMain)
+	forest := add(t, g, "Forest", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = forest.id, ability_index = 0}))
+	pool := &game.player(s, 0).mana_pool.mana
+	testing.expect(t, forest.tapped && len(pool) == 1 && pool[0].color == .Green, "{G} in the pool")
+	testing.expect(t, types.pvec_len(s.stack) == 0, "a mana ability doesn't use the stack (CR 605.3b)")
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ActivateAbility{source_id = forest.id, ability_index = 0}), "already tapped")
+
+	// The pool's mana pays a cost (CR 106.4): Llanowar Elves with the Forest tapped.
+	elves := add(t, g, "Llanowar Elves", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = elves.id}), "paid from the pool")
+	testing.expect(t, len(pool) == 0, "the mana was spent")
+
+	// Floating mana that isn't spent is lost as the step ends (CR 106.4).
+	mountain := add(t, g, "Mountain", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = mountain.id, ability_index = 0}))
+	testing.expect(t, len(pool) == 1)
+	game.begin_step(g, .BeginCombat)
+	testing.expect(t, len(pool) == 0, "the pool empties between steps")
+
+	// A painland's rider happens as the ability resolves (CR 605.3b): Adarkar Wastes' {C} ability has none.
+	wastes := add(t, g, "Adarkar Wastes", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = wastes.id, ability_index = 0}))
+	testing.expect(t, len(pool) == 1 && pool[0].color == .Colorless && game.player(s, 0).life == 20)
+	// Its other ability makes one of two colors, a choice not offered yet: refused rather than guessed.
+	wastes2 := add(t, g, "Adarkar Wastes", 0, .Battlefield)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ActivateAbility{source_id = wastes2.id, ability_index = 1}))
 }

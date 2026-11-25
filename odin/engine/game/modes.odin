@@ -21,13 +21,11 @@ modal_supported :: proc(face: ^types.CardFace) -> bool {
 }
 
 is_modal :: proc(o: ^types.GameObject) -> bool {
-	e, ok := card_entry_of(o)
-	return ok && e.face.modal != nil
+	return o.modal != nil
 }
 
 modal_of :: proc(o: ^types.GameObject) -> types.ModalChoice {
-	e, _ := card_entry_of(o)
-	return e.face.modal.?
+	return o.modal.?
 }
 
 // The spell abilities that are the modes, in printed order.

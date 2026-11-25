@@ -78,9 +78,8 @@ entry_condition_holds :: proc(s: ^types.GameState, o: ^types.GameObject, c: type
 
 // CR 614.12: as the permanent enters, its own replacement effects apply.
 apply_entering_replacements :: proc(s: ^types.GameState, o: ^types.GameObject) {
-	entry, ok := card_entry_of(o)
-	if !ok do return
-	for r in entry.face.replacements {
+	if o.replacement_definitions == nil do return
+	for r in (^[dynamic]types.ReplacementDefinition)(o.replacement_definitions)^ {
 		if !replacement_supported(r) do continue
 		if c, has := r.condition.?; has && !entry_condition_holds(s, o, c) do continue
 		#partial switch e in r.execute.effect^ {

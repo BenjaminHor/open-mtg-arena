@@ -24,6 +24,8 @@ card_supported :: proc(face: ^types.CardFace) -> bool {
 	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !cost_modifier_supported(st) do return false
 	for t in face.triggers do if !trigger_supported(t) do return false
 	if !additional_cost_supported(face) || len(face.casting_options) > 0 || !modal_supported(face) do return false
+	// Not yet: "cast only during ..." (CR 601.3), strive (CR 702.111), cleave (CR 702.148), solve (CR 719.2).
+	if len(face.casting_restrictions) > 0 || face.strive_cost != nil || face.cleave_variant != nil || face.solve_condition != nil do return false
 	// A spell needs a mana cost it can pay (CR 118.6, 107.4e-f); lands aren't cast.
 	if !is_land_face(face) {
 		c, is_cost := face.mana_cost.(types.ManaCost_Cost)
@@ -497,12 +499,38 @@ card_entry_of :: proc(o: ^types.GameObject) -> (^types.CardExportEntry, bool) {
 	return e, e != nil
 }
 
+// Whether this engine can carry out everything the object has (CR 109.3: its characteristics are its own, whatever
+// card it came from).
 object_supported :: proc(o: ^types.GameObject, card_db: Card_Lookup) -> bool {
 	// A token is what a supported effect made: its abilities are ones the engine carries out (CR 111.10 included).
 	if o.is_token do return true
-	if card_db == nil do return false
-	entry := card_db(o.base_name)
-	return entry != nil && card_supported(&entry.face)
+	// Its triggers are checked where they are (object_face leaves them out, to allocate nothing: this runs for
+	// every card on every legal-action query).
+	if o.trigger_definitions != nil do for e in o.trigger_definitions^ do if !trigger_supported(e.definition) do return false
+	f := object_face(o)
+	return card_supported(&f)
+}
+
+// The object's own abilities, costs and keywords as a card face, for the checks shared with whole cards (its
+// triggers aside: object_supported checks those). Casting options (alternative costs) aren't kept on an object,
+// so they come from its card.
+object_face :: proc(o: ^types.GameObject) -> types.CardFace {
+	f := types.CardFace {
+		name                 = o.name,
+		mana_cost            = o.mana_cost,
+		card_type            = o.card_types,
+		keywords             = o.keywords,
+		modal                = o.modal,
+		additional_cost      = o.additional_cost,
+		casting_restrictions = o.casting_restrictions,
+		strive_cost          = o.strive_cost,
+		cleave_variant       = o.cleave_variant,
+	}
+	if o.abilities != nil do f.abilities = o.abilities^
+	if o.static_definitions != nil do f.static_abilities = (^[dynamic]types.StaticDefinition)(o.static_definitions)^
+	if o.replacement_definitions != nil do f.replacements = (^[dynamic]types.ReplacementDefinition)(o.replacement_definitions)^
+	if e, ok := card_entry_of(o); ok do f.casting_options = e.face.casting_options
+	return f
 }
 
 // CR 601.2: casting. The card moves to the stack (601.2a), its targets are chosen (601.2c; when the action didn't
@@ -913,6 +941,10 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 	if !additional_cost_supported(face) do append(&out, "additional cost")
 	if !modal_supported(face) do append(&out, "modal")
 	if len(face.casting_options) > 0 do append(&out, "casting option")
+	if len(face.casting_restrictions) > 0 do append(&out, "casting restriction")
+	if face.strive_cost != nil do append(&out, "keyword:Strive")
+	if face.cleave_variant != nil do append(&out, "keyword:Cleave")
+	if face.solve_condition != nil do append(&out, "solve condition")
 	for a in face.abilities {
 		switch a.kind {
 		case .Spell:
@@ -1208,9 +1240,8 @@ additional_cost_supported :: proc(face: ^types.CardFace) -> bool {
 }
 
 spell_additional_cost :: proc(o: ^types.GameObject) -> (types.AbilityCost, bool) {
-	e, ok := card_entry_of(o)
-	if !ok do return nil, false
-	return additional_cost(&e.face)
+	f := object_face(o)
+	return additional_cost(&f)
 }
 
 // Whether the additional cost can be paid: enough to sacrifice or discard (not counting the spell itself), and the

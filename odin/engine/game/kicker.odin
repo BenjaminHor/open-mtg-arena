@@ -27,9 +27,8 @@ kicker_cost :: proc(face: ^types.CardFace) -> (types.ManaCost_Cost, bool) {
 }
 
 object_kicker_cost :: proc(o: ^types.GameObject) -> (types.ManaCost_Cost, bool) {
-	e, ok := card_entry_of(o)
-	if !ok do return {}, false
-	return kicker_cost(&e.face)
+	f := object_face(o)
+	return kicker_cost(&f)
 }
 
 kicked :: proc(o: ^types.GameObject) -> bool {return o != nil && o.additional_cost_payment_count > 0}
@@ -45,12 +44,11 @@ ask_kicker :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool {
 		g.pending.kicker_decided = true
 		return false
 	}
-	e, _ := card_entry_of(o)
 	pending := new(types.PendingCast)
 	pending.object_id = o.id
 	pending.card_id = o.card_id
 	pending.cost = o.mana_cost
-	g.state.waiting_for = types.WaitingFor_OptionalCostChoice{player = p, cost = e.face.additional_cost.?, pending_cast = pending}
+	g.state.waiting_for = types.WaitingFor_OptionalCostChoice{player = p, cost = o.additional_cost.?, pending_cast = pending}
 	return true
 }
 

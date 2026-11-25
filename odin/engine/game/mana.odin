@@ -4,9 +4,11 @@ package game
 import "core:slice"
 import types "../types"
 
-// One untapped permanent's {T}: add mana abilities, and the mana they can make.
+// One untapped permanent's {T}: add mana abilities, and the mana they can make; or one mana already in the
+// player's mana pool (CR 106.4), with no object.
 Mana_Source :: struct {
 	object:  ^types.GameObject,
+	pip:     types.ManaPipId, // the pool's mana, when object is nil
 	colors:  bit_set[types.ManaType], // the types it can produce (one of them per activation)
 	amount:  int,
 	options: [dynamic]Mana_Option, // its abilities usable in this payment
@@ -120,6 +122,15 @@ can_tap_for_cost :: proc(o: ^types.GameObject) -> bool {
 
 mana_sources :: proc(s: ^types.GameState, p: types.PlayerId, exclude: types.ObjectId = 0, worst: Mana_Rider = .None, others: []types.ObjectId = nil) -> [dynamic]Mana_Source {
 	out := make([dynamic]Mana_Source, context.temp_allocator)
+	// CR 106.4: mana in the pool can pay costs. Mana with a spending restriction or a rider (CR 106.6) isn't
+	// spent automatically yet.
+	for u in player(s, p).mana_pool.mana {
+		if len(u.restrictions) > 0 || len(u.grants) > 0 do continue
+		option := Mana_Option{colors = {u.color}, amount = 1}
+		src := Mana_Source{pip = u.pip_id, colors = {u.color}, amount = 1, options = make([dynamic]Mana_Option, context.temp_allocator)}
+		append(&src.options, option)
+		append(&out, src)
+	}
 	for o in permanents_of(s, p) {
 		if o.id == exclude || slice.contains(others, o.id) || !can_tap_for_cost(o) || o.abilities == nil do continue
 		// CR 605.3a: any of its mana abilities; each costs {T}, so one per tap. Only those whose rider is no worse
@@ -170,14 +181,15 @@ shard_payers :: proc(shard: types.ManaCostShard) -> (payers: bit_set[types.ManaT
 plan_payment :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0, others: []types.ObjectId = nil) -> (taps: [dynamic]^types.GameObject, ok: bool) {
 	taps = make([dynamic]^types.GameObject, context.temp_allocator)
 	plan, payable := plan_mana_taps(s, p, cost, exclude, others)
-	for t in plan do append(&taps, t.object)
+	for t in plan do if t.object != nil do append(&taps, t.object)
 	return taps, payable
 }
 
 // A permanent tapped for mana, and the rider of the ability used.
 Mana_Tap :: struct {
-	object: ^types.GameObject,
+	object: ^types.GameObject, // nil: mana from the pool, `pip`
 	option: Mana_Option,
+	pip:    types.ManaPipId,
 }
 
 // CR 601.2g-h: which permanents to tap, and with which abilities, to pay the cost. Abilities without a rider are
@@ -195,8 +207,11 @@ plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaC
 	for worst in Mana_Rider {
 		if worst == .Life do continue // tried together with Damage
 		sources := mana_sources(s, p, exclude, .Life if worst == .Damage else worst, others)
-		// Preference order: noncreatures first, then sources that make fewer kinds of mana.
+		// Preference order: mana already in the pool (it empties at the end of the step, CR 106.4), then
+		// noncreatures, then sources that make fewer kinds of mana.
 		slice.sort_by(sources[:], proc(a, b: Mana_Source) -> bool {
+			if (a.object == nil) != (b.object == nil) do return a.object == nil
+			if a.object == nil do return false
 			ac, bc := is_type(a.object, .Creature), is_type(b.object, .Creature)
 			if ac != bc do return !ac
 			return card(a.colors) < card(b.colors)
@@ -223,7 +238,7 @@ plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaC
 				if fits && (best < 0 || option.rider < src.options[best].rider) do best = j
 			}
 			if best < 0 do best = 0
-			append(&taps, Mana_Tap{src.object, src.options[best]})
+			append(&taps, Mana_Tap{src.object, src.options[best], src.pip})
 		}
 		return taps, true
 	}
@@ -235,18 +250,41 @@ plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaC
 pay_mana :: proc(g: ^Game, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0, others: []types.ObjectId = nil) -> bool {
 	taps, ok := plan_mana_taps(&g.state, p, cost, exclude, others)
 	if !ok do return false
-	for t in taps do t.object.tapped = true
 	for t in taps {
-		switch t.option.rider {
-		case .None:
-		case .Damage:
-			deal_damage(g, t.object.id, types.TargetRef_Player{p}, t.option.rider_amount)
-		case .Life:
-			lose_life(&g.state, p, t.option.rider_amount) // CR 119.4: paying life is losing it
-		case .Sacrifice:
-			move_object(g, t.object.id, .Graveyard)
-		}
+		if t.object == nil do spend_pool_mana(&g.state, p, t.pip)
+		else do t.object.tapped = true
 	}
+	for t in taps do if t.object != nil do mana_rider(g, p, t.object, t.option)
+	return true
+}
+
+// What a mana ability does besides adding mana: damage to its controller, life paid, the source sacrificed.
+@(private = "file")
+mana_rider :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, option: Mana_Option) {
+	switch option.rider {
+	case .None:
+	case .Damage:
+		deal_damage(g, o.id, types.TargetRef_Player{p}, option.rider_amount)
+	case .Life:
+		lose_life(&g.state, p, option.rider_amount) // CR 119.4: paying life is losing it
+	case .Sacrifice:
+		move_object(g, o.id, .Graveyard)
+	}
+}
+
+// CR 605.3a-b: a player with priority may activate a mana ability on its own; it doesn't use the stack and
+// resolves at once, its mana going into the player's mana pool (CR 106.4) until it's spent or the step ends.
+activate_mana_ability :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, a: ^types.AbilityDefinition) -> bool {
+	option, _ := mana_ability_option(a^)
+	if o.zone != .Battlefield || o.controller != p do return refuse("not activatable from its zone")
+	if !can_tap_for_cost(o) do return refuse("can't tap") // CR 302.6
+	if option.rider == .Life && int(player(&g.state, p).life) < option.rider_amount do return refuse("not enough life") // CR 119.4
+	if card(option.colors) != 1 do return refuse("choosing the mana's color isn't supported yet")
+	color: types.ManaType
+	for c in option.colors do color = c
+	o.tapped = true
+	add_pool_mana(&g.state, p, color, o.id, option.amount)
+	mana_rider(g, p, o, option)
 	return true
 }
 
@@ -291,4 +329,30 @@ object_mana_value :: proc(o: ^types.GameObject) -> int {
 		}
 	}
 	return n
+}
+
+// ---- The mana pool (CR 106.4) -----------------------------------------------------------------------------------
+
+// CR 106.4: mana a player adds goes into their mana pool.
+add_pool_mana :: proc(s: ^types.GameState, p: types.PlayerId, color: types.ManaType, source: types.ObjectId, n := 1) {
+	pl := player(s, p)
+	for _ in 0 ..< n {
+		// Each unit's id, for the client to follow it: from 1 up (0 means none).
+		if s.next_pip_id == 0 do s.next_pip_id = 1
+		append(&pl.mana_pool.mana, types.ManaUnit{color = color, source_id = source, pip_id = types.ManaPipId(s.next_pip_id)})
+		s.next_pip_id += 1
+	}
+}
+
+spend_pool_mana :: proc(s: ^types.GameState, p: types.PlayerId, pip: types.ManaPipId) {
+	pool := &player(s, p).mana_pool.mana
+	for u, i in pool do if u.pip_id == pip {
+		ordered_remove(pool, i)
+		return
+	}
+}
+
+// CR 106.4: each player's mana pool empties at the end of each step and phase.
+empty_mana_pools :: proc(s: ^types.GameState) {
+	for &pl in s.players do clear(&pl.mana_pool.mana)
 }
