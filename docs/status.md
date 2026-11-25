@@ -2958,6 +2958,8 @@ Progress:
   layer (CR 205.1b), with the subtype lists of CR 205.3g-i (anything else is a creature type). 5,991 -> 6,038.
 - Typecycling (CR 702.29e: spelled out in the card data as a hand ability), and attaching an Equipment to "the
   token just created" or to a creature you control chosen as it resolves (CR 701.3a). 6,038 -> 6,098.
+- "Owned by" filters (CR 108.3: "target card from an opponent's graveyard"), and graveyard targets whose
+  instruction states no origin zone. 6,098 -> 6,115.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

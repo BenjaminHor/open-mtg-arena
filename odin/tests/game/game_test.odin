@@ -3343,3 +3343,29 @@ attach_to_the_new_token :: proc(t: ^testing.T) {
 	testing.expect(t, soldier != nil && game.host_of(s, blade) == soldier, "attached to the Soldier")
 	if soldier != nil do testing.expect(t, soldier.power.? == 2 && soldier.toughness.? == 2, "a 2/2")
 }
+
+@(test)
+exile_from_an_opponents_graveyard :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Disposal Mummy: "When this creature enters, exile target card from an opponent's graveyard." Only a card an
+	// opponent owns (CR 108.3) in a graveyard can be the target (CR 115.1).
+	testing.expect(t, game.card_supported(&card(t, "Disposal Mummy").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Plains", 0, .Battlefield)
+	mine := add(t, g, "Grizzly Bears", 0, .Graveyard)
+	theirs := add(t, g, "Grizzly Bears", 1, .Graveyard)
+	mummy := add(t, g, "Disposal Mummy", 0, .Hand) // {2}{W}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = mummy.id}))
+	for _ in 0 ..< 8 {
+		if w, asked := s.waiting_for.(types.WaitingFor_TriggerTargetSelection); asked {
+			legal := w.selection.current_legal_targets
+			testing.expect(t, len(legal) == 1 && legal[0] == types.TargetRef(types.TargetRef_Object{theirs.id}), "only the opponent's card")
+			game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{theirs.id}})
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, theirs.zone == .Exile && mine.zone == .Graveyard)
+}

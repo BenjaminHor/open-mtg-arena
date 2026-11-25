@@ -41,6 +41,13 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 	     types.FilterProp_NonToken, types.FilterProp_HasColor, types.FilterProp_NotColor, types.FilterProp_HasSupertype,
 	     types.FilterProp_NotSupertype, types.FilterProp_Blocking, types.FilterProp_Named:
 		return true
+	case types.FilterProp_Owned:
+		// "A card an opponent owns", "from your graveyard" (CR 108.3).
+		#partial switch _ in x.controller {
+		case types.ControllerRef_You, types.ControllerRef_Opponent:
+			return true
+		}
+		return false
 	case types.FilterProp_Attacking:
 		return x.defender == nil
 	case types.FilterProp_WithKeyword:
@@ -221,7 +228,9 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 		case types.FilterProp_InZone:
 			if o.zone != x.zone do return false
 		case types.FilterProp_Owned:
-		// The owner is checked where the candidates are gathered (graveyard_targets).
+			// "A card an opponent owns" (CR 108.3).
+			_, you := x.controller.(types.ControllerRef_You)
+			if (o.owner == chooser) != you do return false
 		}
 	}
 	return true

@@ -50,7 +50,7 @@ change_zone_supported :: proc(x: types.Effect_ChangeZone) -> bool {
 	if has_origin && origin == .Library && is_any(x.target) do return x.destination != .Library // the found cards
 	// "Return it to the battlefield": the earlier instruction's target, wherever that put it (CR 608.2c).
 	if _, parent := x.target.(types.TargetFilter_ParentTarget); parent do return true
-	if _, from_graveyard := graveyard_filter(x.target); from_graveyard do return has_origin && origin == .Graveyard
+	if _, from_graveyard := graveyard_filter(x.target); from_graveyard do return !has_origin || origin == .Graveyard
 	if either, is_or := x.target.(types.TargetFilter_Or); is_or && has_origin && origin == .Graveyard {
 		// "Target instant or sorcery card from your graveyard".
 		for f in either.filters do if _, ok := graveyard_filter(f); !ok do return false
