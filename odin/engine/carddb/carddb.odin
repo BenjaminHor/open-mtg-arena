@@ -14,6 +14,8 @@ DB :: struct {
 	source:  map[string][]byte, // each card's JSON, by lowercase name, into text
 	decoded: map[string]^types.CardExportEntry,
 	arena:   runtime.Arena,
+	faces:   map[string][2]string, // by oracle id, each face's key by face_index (built on first use)
+	faces_built: bool,
 }
 
 // Indexes the card data (an object of cards by lowercase name). Replaces whatever the database held.
@@ -168,4 +170,45 @@ value_end :: proc(data: []byte, i: int) -> (end: int, ok: bool) {
 	j := i
 	for j < len(data) && data[j] != ',' && data[j] != '}' && data[j] != ']' && data[j] != ' ' && data[j] != '\n' do j += 1
 	return j, j > i
+}
+
+// The other face of a double-faced card (CR 712): the entry with the same oracle id and the other face index. The
+// card data lists each face as a card of its own, linked only by that id.
+other_face :: proc(db: ^DB, e: ^types.CardExportEntry) -> (^types.CardExportEntry, bool) {
+	oracle, has_oracle := e.face.scryfall_oracle_id.?
+	index, has_index := e.face_index.?
+	if !has_oracle || !has_index || index > 1 do return nil, false
+	if !db.faces_built {
+		context.allocator = runtime.arena_allocator(&db.arena)
+		db.faces = make(map[string][2]string)
+		for key, source in db.source {
+			text := string(source)
+			if !strings.contains(text, `"face_index":`) do continue
+			id := field_string(text, `"scryfall_oracle_id":"`)
+			at := strings.index(text, `"face_index":`)
+			if id == "" || at < 0 do continue
+			rest := strings.trim_left_space(text[at + len(`"face_index":`):])
+			if len(rest) == 0 || rest[0] < '0' || rest[0] > '1' do continue
+			pair := db.faces[id]
+			pair[rest[0] - '0'] = key
+			db.faces[id] = pair
+		}
+		db.faces_built = true
+	}
+	pair, ok := db.faces[oracle]
+	if !ok do return nil, false
+	key := pair[1 - index]
+	if key == "" do return nil, false
+	return by_key(db, key)
+}
+
+// The string value after a JSON key prefix (`"key":"`), or "".
+@(private = "file")
+field_string :: proc(text: string, prefix: string) -> string {
+	at := strings.index(text, prefix)
+	if at < 0 do return ""
+	rest := text[at + len(prefix):]
+	end := strings.index_byte(rest, '"')
+	if end < 0 do return ""
+	return rest[:end]
 }

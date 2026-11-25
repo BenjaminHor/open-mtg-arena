@@ -279,7 +279,10 @@ continue_resolution :: proc(g: ^Game) -> bool {
 		for t in affected do if do_effect(g, x.effect, x.duration, r.controller, r.source, t) do return false // waiting for a choice
 	}
 	if r.spell != 0 do spell_leaves_stack(g, r.spell) // CR 608.2n (exile after flashback, CR 702.34a)
-	if r.stack_id != 0 do delete_key(&g.stack_abilities, r.stack_id)
+	if r.stack_id != 0 {
+		delete_key(&g.stack_abilities, r.stack_id)
+		delete_key(&g.stack_transforms, r.stack_id)
+	}
 	r^ = {}
 	return true
 }

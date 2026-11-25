@@ -32,7 +32,8 @@ misparsed :: proc(name: string) -> bool {
 	return false
 }
 
-card_supported :: proc(face: ^types.CardFace) -> bool {
+// `back_face`: a transforming card's back face, which isn't cast and has no mana cost of its own (CR 712.6d).
+card_supported :: proc(face: ^types.CardFace, back_face := false) -> bool {
 	if misparsed(face.name) do return false
 	{
 		// CR 107.3m: "enters with X counters" uses the spell's X.
@@ -47,7 +48,7 @@ card_supported :: proc(face: ^types.CardFace) -> bool {
 	// Case's "to solve" (CR 720.3a).
 	if len(face.casting_restrictions) > 0 || face.strive_cost != nil || face.cleave_variant != nil || face.solve_condition != nil do return false
 	// A spell needs a mana cost it can pay (CR 118.6, 107.4e-f); lands aren't cast.
-	if !is_land_face(face) {
+	if !is_land_face(face) && !back_face {
 		c, is_cost := face.mana_cost.(types.ManaCost_Cost)
 		if !is_cost do return false
 		for shard in c.shards do if _, _, ok := shard_payers(shard); !ok do return false
@@ -267,6 +268,8 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return true // a Clue token (CR 701.16a)
 	case types.Effect_Amass:
 		return amass_supported(x) // amass.odin
+	case types.Effect_Transform:
+		return transform_supported(x) // transform.odin
 	case types.Effect_Shuffle:
 		return is_controller(x.target)
 	case types.Effect_Attach:
@@ -719,6 +722,13 @@ card_entry_of :: proc(o: ^types.GameObject) -> (^types.CardExportEntry, bool) {
 layout_gap :: proc(e: ^types.CardExportEntry, name: string) -> (gap: string, has_gap: bool) {
 	layout, has_layout := e.layout.?
 	if !has_layout && !strings.contains(name, "//") do return "", false
+	if has_layout && layout == "transform" {
+		// A transforming card (transform.odin): supported when its back face is.
+		back := transform_back_face(e)
+		if back == nil do return "layout:transform (no back face)", true
+		if !card_supported(&back.face, back_face = true) do return "back face", true
+		return "", false
+	}
 	if !has_layout || layout == "" do layout = "multi-face"
 	return strings.concatenate({"layout:", layout}, context.temp_allocator), true
 }
@@ -1152,6 +1162,13 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		return do_effect(g, investigate_token(), duration, controller, source, target) // CR 701.16a
 	case types.Effect_Amass:
 		return do_amass(g, x, controller, source)
+	case types.Effect_Transform:
+		// CR 701.27g: an ability of the permanent transforms it only if it hasn't transformed since the ability was
+		// put on the stack.
+		o := same_source(g, source)
+		if o == nil do break
+		if count, known := g.stack_transforms[g.resolution.stack_id]; known && count != o.transformation_count do break
+		transform_permanent(g, o)
 	case types.Effect_Token:
 		n := amount(g, x.count, controller, source, target)
 		maker := controller
@@ -1281,10 +1298,10 @@ end_until_end_of_turn_effects :: proc(g: ^Game) {
 
 // Why this engine can't fully support a card yet: one entry per missing piece ("trigger:ChangesZone",
 // "effect:Token", "keyword:Ward", ...), for the coverage report to rank what to build next. Empty when supported.
-card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
+card_gaps :: proc(face: ^types.CardFace, back_face := false) -> [dynamic]string {
 	out := make([dynamic]string, context.temp_allocator)
 	if misparsed(face.name) do append(&out, "card data: misparsed")
-	if !is_land_face(face) {
+	if !is_land_face(face) && !back_face {
 		// As card_supported: a spell needs a mana cost it can pay (CR 118.6, 107.4e-f).
 		c, is_cost := face.mana_cost.(types.ManaCost_Cost)
 		if !is_cost do append(&out, "mana cost: none")

@@ -38,6 +38,7 @@ Game :: struct {
 	stack_events: map[types.ObjectId]Trigger_Event,
 	priority_after: Maybe(types.PlayerId), // who gets priority once the triggers being put on the stack are (CR 117.3c)
 	stack_crews:  map[types.ObjectId]u64,
+	stack_transforms: map[types.ObjectId]u32, // an ability on the stack: its source's transformation count then (CR 701.27g)
 	attacked_planeswalkers: map[types.ObjectId]u64, // this combat's attacked planeswalkers, as they were (CR 506.4) // a crew ability on the stack: its Vehicle's incarnation then (CR 400.7) // a triggered ability's event: "that much damage", "that creature"
 	optional_entry:    types.StackEntry, // a "may" ability waiting for its controller's answer
 	optional_accepted: bool,
@@ -141,6 +142,7 @@ new_card_object :: proc(s: ^types.GameState, card: ^types.CardExportEntry, owner
 	o.incarnation = 1
 	o.phase_status = types.PhaseStatus_PhasedIn{} // CR 702.26: permanents are phased in unless something phases them out
 	set_card_characteristics(o, face)
+	note_back_face(o, card)
 	s.objects.inner[o.id] = o
 	return o
 }

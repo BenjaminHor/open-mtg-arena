@@ -25,6 +25,12 @@ load_db :: proc() -> bool {
 		data, err := os.read_entire_file(CARD_DATA, context.allocator)
 		if err != nil do return
 		db_ok = carddb.load(&db, string(data))
+		game.other_face_lookup = proc(e: ^types.CardExportEntry) -> ^types.CardExportEntry {
+			sync.mutex_lock(&db_lock)
+			defer sync.mutex_unlock(&db_lock)
+			f, _ := carddb.other_face(&db, e)
+			return f
+		}
 	})
 	return db_ok
 }
@@ -4008,4 +4014,52 @@ that_player_loses_life_when_they_draw :: proc(t: ^testing.T) {
 	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
 	settle_stack(g, 16)
 	testing.expect(t, s.players[1].life == 12 && s.players[0].life == 24, "the opponent drew four: lost 8")
+}
+
+@(test)
+transform_to_the_back_face_and_back :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Ulvenwald Captive // Ulvenwald Abomination: "{5}{G}{G}: Transform this creature." CR 701.27a, c: it turns its
+	// other face up and stays the same object; CR 712.6d: with its back face up it has only the back face's
+	// characteristics, its mana value the front face's; CR 712.6a: in the graveyard it's the front face again.
+	testing.expect(t, game.card_supported(&card(t, "Ulvenwald Captive").face))
+	g := new_game()
+	s := &g.state
+	captive := add(t, g, "Ulvenwald Captive", 0, .Battlefield)
+	testing.expect(t, captive.back_face != nil, "it knows its back face")
+	for _ in 0 ..< 7 do add(t, g, "Forest", 0, .Battlefield)
+	captive.damage_marked = 1
+	index := -1
+	for a, i in captive.abilities^ do if a.effect != nil {
+		if _, transform := a.effect^.(types.Effect_Transform); transform do index = i
+	}
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = captive.id, ability_index = index}))
+	settle_stack(g)
+	testing.expect(t, captive.name == "Ulvenwald Abomination" && captive.power.? == 4 && captive.toughness.? == 6, "a 4/6 Abomination")
+	testing.expect(t, captive.transformed && captive.damage_marked == 1, "the same object: its damage stays")
+	testing.expect(t, game.mana_value(captive.mana_cost) == 2, "mana value of {1}{G}")
+	testing.expect(t, !game.has_keyword(captive, types.Keyword_Defender), "the back face has no defender")
+	game.move_object(g, captive.id, .Graveyard)
+	testing.expect(t, captive.name == "Ulvenwald Captive" && !captive.transformed, "the front face in the graveyard")
+}
+
+@(test)
+transform_only_if_not_transformed_since :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 701.27g: an activated ability of a permanent transforms it only if it hasn't transformed since the ability
+	// was put on the stack. Two Ulvenwald Captive activations on the stack: the first transforms it, the second
+	// does nothing (it doesn't turn it back).
+	g := new_game()
+	s := &g.state
+	captive := add(t, g, "Ulvenwald Captive", 0, .Battlefield)
+	for _ in 0 ..< 14 do add(t, g, "Forest", 0, .Battlefield)
+	index := -1
+	for a, i in captive.abilities^ do if a.effect != nil {
+		if _, transform := a.effect^.(types.Effect_Transform); transform do index = i
+	}
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = captive.id, ability_index = index}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = captive.id, ability_index = index}))
+	testing.expect(t, types.pvec_len(s.stack) == 2, "both on the stack")
+	settle_stack(g)
+	testing.expect(t, captive.transformed && captive.name == "Ulvenwald Abomination", "transformed once")
 }

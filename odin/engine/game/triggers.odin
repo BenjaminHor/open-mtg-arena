@@ -900,6 +900,7 @@ push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerI
 	resolved := resolved_tree(s, a, targets, counts, controller, source)
 	record_division(resolved, division)
 	defer note_targeted(g, id, controller, targets) // CR 115.1: its targets become targets as it's put on the stack
+	if src := object(s, source); src != nil && src.back_face != nil do g.stack_transforms[id] = src.transformation_count
 	g.stack_abilities[id] = a
 	src := object(s, source)
 	kind: types.StackEntryKind

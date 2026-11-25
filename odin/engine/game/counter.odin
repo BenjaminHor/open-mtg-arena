@@ -86,6 +86,7 @@ counter_spell :: proc(g: ^Game, id: types.ObjectId) {
 		delete_key(&g.stack_abilities, id)
 		delete_key(&g.stack_events, id)
 		delete_key(&g.stack_conditions, id)
+		delete_key(&g.stack_transforms, id)
 		return
 	}
 	if o.zone != .Stack || has_rule(g, o, .Cant_Be_Countered) do return

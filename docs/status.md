@@ -3010,6 +3010,13 @@ Progress:
   cards) were counted as supported. Now a card with two halves counts only once its layout works and both halves
   are supported (game.layout_gap; the gap reads `layout:<kind>`). Earlier figures in this file were overstated by
   up to about that much.
+- Transforming double-faced cards (CR 701.27, 712): carddb.other_face links a front face to its back by oracle id
+  (game.other_face_lookup, set by the host); an object knows its other face (back_face). "Transform this" turns the
+  other face up, the same object (701.27c), with the back face's characteristics and the front's mana value
+  (712.6d); only if it hasn't transformed since the ability went on the stack (701.27g); off the battlefield it's
+  the front face again (712.6a). A transform card counts as supported when both faces are. Not yet: "enters
+  transformed", "whenever this transforms" triggers, transforming other permanents, day/night, casting
+  transformed. 6,399 -> 6,430.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
