@@ -3236,6 +3236,7 @@ Progress:
   fixed: "the rest on the bottom in a random order" kept their order (now shuffled, CR 401.4). Known simplification:
   "in any order" keeps the looked-at order (the player isn't asked). Test:
   `look_and_put_a_land_onto_the_battlefield_tapped` (Elvish Rejuvenator).
+- Fixture replay at e2b8187: 824 of 11,160 pass (807 at 8fbd5e6), 10,329 fail, 7 too large.
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 
