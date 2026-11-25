@@ -90,6 +90,8 @@ keyword_supported :: proc(k: types.Keyword) -> bool {
 		return ward_supported(k) // ward.odin
 	case types.Keyword_Affinity:
 		return typed_supported(k._0) // CR 702.41a (cost_modifiers.odin)
+	case types.Keyword_Protection:
+		return protection_supported(k) // protection.odin
 	case types.Keyword_Enchant:
 		// CR 702.5a: an Aura enchants a permanent of a kind (enchanting players isn't modelled yet).
 		t, typed := k._0.(types.TargetFilter_Typed)
@@ -555,7 +557,7 @@ legal_targets :: proc(s: ^types.GameState, f: types.TargetFilter, controller: ty
 		for id in ids_of(s.battlefield) {
 			o := object(s, id)
 			if is_type(o, .Creature) || is_type(o, .Planeswalker) || is_type(o, .Battle) {
-				if targetable_by(o, controller) do append(&out, types.TargetRef_Object{id})
+				if targetable_by(o, controller, object(s, source)) do append(&out, types.TargetRef_Object{id})
 			}
 		}
 		for p in s.players do append(&out, types.TargetRef_Player{p.id})
@@ -586,16 +588,17 @@ legal_targets :: proc(s: ^types.GameState, f: types.TargetFilter, controller: ty
 		for id in ids_of(s.battlefield) {
 			o := object(s, id)
 			if !object_matches(s, o, x._0, controller, source) do continue
-			if targetable_by(o, controller) do append(&out, types.TargetRef_Object{id})
+			if targetable_by(o, controller, object(s, source)) do append(&out, types.TargetRef_Object{id})
 		}
 	}
 	return out
 }
 
 // CR 702.18 (shroud) and 702.11 (hexproof): objects that can't be the target of spells, or of an opponent's.
-targetable_by :: proc(o: ^types.GameObject, controller: types.PlayerId) -> bool {
+targetable_by :: proc(o: ^types.GameObject, controller: types.PlayerId, source: ^types.GameObject = nil) -> bool {
 	if has_keyword(o, types.Keyword_Shroud) do return false
 	if o.controller != controller && has_keyword(o, types.Keyword_Hexproof) do return false
+	if protected_from(o, source) do return false // CR 702.16b
 	return true
 }
 
@@ -1235,6 +1238,7 @@ deal_damage :: proc(g: ^Game, source: types.ObjectId, target: types.TargetRef, n
 	s := &g.state
 	src := object(s, source)
 	if damage_prevented(g, target, combat) do return // CR 615.6
+	if t, is_object := target.(types.TargetRef_Object); is_object && protected_from(object(s, t._0), src) do return // CR 702.16e
 	if t, is_object := target.(types.TargetRef_Object); is_object {
 		// CR 122.1c: "If damage would be dealt to this permanent, prevent that damage and remove a shield counter
 		// from it." Prevented damage isn't dealt: no event, no lifelink.

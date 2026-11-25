@@ -119,12 +119,14 @@ attachment_state_actions :: proc(g: ^Game) -> bool {
 		if is_aura(o) {
 			host := host_of(s, o)
 			f, _ := enchant_filter(o)
-			if host == nil || host.zone != .Battlefield || !aura_can_enchant(s, o, f, host) {
+			// CR 702.16c: a host with protection from the Aura can't be enchanted by it.
+			if host == nil || host.zone != .Battlefield || !aura_can_enchant(s, o, f, host) || protected_from(host, o) {
 				move_object(g, id, .Graveyard)
 				changed = true
 			}
 		} else if has_subtype(o, "Equipment") {
-			if host := host_of(s, o); host != nil && (host.zone != .Battlefield || !is_type(host, .Creature) || host.id == o.id) {
+			// CR 702.16d: nor equipped by Equipment it has protection from.
+			if host := host_of(s, o); host != nil && (host.zone != .Battlefield || !is_type(host, .Creature) || host.id == o.id || protected_from(host, o)) {
 				unattach(s, o)
 				changed = true
 			}

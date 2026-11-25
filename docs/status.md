@@ -3031,6 +3031,10 @@ Progress:
 - Keywords: affinity (CR 702.41a, a cost reduction per permanent you control that fits), devoid (702.114a,
   colorless everywhere), changeling as a keyword (702.73a, every creature type; the static form "is every creature
   type" not yet), toxic (702.164c, poison counters with combat damage to a player). 6,534 -> 6,600.
+- Protection from a color and from multicolored (CR 702.16, protection.odin): not targeted by spells or abilities
+  of sources with the quality (702.16b), their damage prevented (702.16e), not blocked by such creatures (702.16f),
+  such Auras and Equipment can't stay attached (702.16c-d). Other qualities (card types, players, everything) not
+  yet. 6,600 -> 6,612.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

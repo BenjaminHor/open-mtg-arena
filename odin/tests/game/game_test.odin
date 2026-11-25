@@ -4163,3 +4163,30 @@ affinity_devoid_and_toxic :: proc(t: ^testing.T) {
 	game.deal_damage(g, sentry.id, types.TargetRef_Player{1}, 1)
 	testing.expect(t, s.players[1].poison_counters == 1, "one poison counter, from the combat damage only")
 }
+
+@(test)
+protection_from_a_color :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// White Knight: first strike, protection from black. CR 702.16b: black spells can't target it; 702.16e: damage
+	// from black sources is prevented; 702.16f: black creatures can't block it.
+	testing.expect(t, game.card_supported(&card(t, "White Knight").face))
+	g := new_game()
+	s := &g.state
+	knight := add(t, g, "White Knight", 1, .Battlefield)
+	murder := add(t, g, "Murder", 0, .Hand)
+	shock := add(t, g, "Shock", 0, .Hand)
+	in_list :: proc(list: [dynamic]types.TargetRef, id: types.ObjectId) -> bool {
+		for t in list do if o, ok := t.(types.TargetRef_Object); ok && o._0 == id do return true
+		return false
+	}
+	murder_slots := game.spell_target_slots(murder)
+	shock_slots := game.spell_target_slots(shock)
+	testing.expect(t, !in_list(game.legal_targets(s, murder_slots[0], 0, murder.id), knight.id), "Murder can't target it")
+	testing.expect(t, in_list(game.legal_targets(s, shock_slots[0], 0, shock.id), knight.id), "Shock can")
+	vampire := add(t, g, "Vampire Nighthawk", 0, .Battlefield) // black
+	game.deal_damage(g, vampire.id, types.TargetRef_Object{knight.id}, 2)
+	testing.expect(t, knight.damage_marked == 0, "damage from a black source is prevented")
+	testing.expect(t, !game.can_block(g, vampire, knight), "a black creature can't block it")
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	testing.expect(t, game.can_block(g, bears, knight), "a green one can")
+}
