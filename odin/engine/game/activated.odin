@@ -122,11 +122,27 @@ cost_supported :: proc(c: types.AbilityCost) -> bool {
 		return fixed
 	case types.AbilityCost_Loyalty:
 		return true // CR 606.4 (checked and paid below)
+	case types.AbilityCost_RemoveCounter:
+		// "Remove two +1/+1 counters from this creature": counters of one kind from the ability's own permanent.
+		if t, has := x.target.?; has && !is_self(t) do return false
+		kind, of_type := x.counter_type.(types.CounterMatch_OfType)
+		return of_type && x.selection == .SingleObject && x.count >= 1 && counter_kind_supported(kind._0)
 	case types.AbilityCost_Exile:
-		// "Exile this card from your graveyard."
+		// "Exile this card from your graveyard", or "exile N [kind of] cards from your graveyard" (chosen).
 		f, has := x.filter.?
 		zone, has_zone := x.zone.?
-		return has && is_self(f) && has_zone && zone == .Graveyard && x.count == 1
+		if !has || !has_zone || zone != .Graveyard do return false
+		if is_self(f) do return x.count == 1
+		typed, ok := f.(types.TargetFilter_Typed)
+		if !ok || x.count < 1 || x.count > 10 do return false
+		if c, has_c := typed._0.controller.?; has_c {
+			if _, you := c.(types.ControllerRef_You); !you do return false
+		}
+		for p in typed._0.properties do if z, in_zone := p.(types.FilterProp_InZone); in_zone && z.zone != .Graveyard do return false
+		plain := typed._0
+		plain.controller = nil
+		plain.properties = nil
+		return typed_supported(plain) && graveyard_props_supported(typed._0)
 	case types.AbilityCost_Composite:
 		// At most one part that has the player choose objects (object_cost asks for one).
 		chosen := 0
@@ -137,6 +153,8 @@ cost_supported :: proc(c: types.AbilityCost) -> bool {
 				if !is_self(y._0.target) do chosen += 1
 			case types.AbilityCost_Discard:
 				if y.self_scope != .SourceCard do chosen += 1
+			case types.AbilityCost_Exile:
+				if f, has := y.filter.?; has && !is_self(f) do chosen += 1
 			}
 		}
 		return chosen <= 1
@@ -181,6 +199,7 @@ Object_Cost :: struct {
 	kind:    enum {
 		Sacrifice,
 		Discard,
+		Exile_From_Graveyard,
 	},
 	count:   int,
 	choices: [dynamic]types.ObjectId,
@@ -202,6 +221,15 @@ object_cost_of :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObj
 			c := Object_Cost{kind = .Sacrifice, count = int(x._0.requirement.(types.SacrificeRequirement_Count).count)}
 			c.choices = make([dynamic]types.ObjectId, context.temp_allocator)
 			for perm in permanents_of(s, p) do if sacrifice_filter_matches(s, x._0.target, perm, p, o.id) do append(&c.choices, perm.id)
+			return c, true
+		case types.AbilityCost_Exile:
+			if f, has := x.filter.?; !has || is_self(f) do continue // "exile this card": no choice
+			// "Exile a creature card from your graveyard": the player's own graveyard (CR 404.1), the source excluded.
+			c := Object_Cost{kind = .Exile_From_Graveyard, count = int(x.count)}
+			c.choices = make([dynamic]types.ObjectId, context.temp_allocator)
+			f := x.filter.?.(types.TargetFilter_Typed)._0
+			f.controller = nil
+			for id in ids_of(player(s, p).graveyard) do if id != o.id && object_matches(s, object(s, id), f, p, o.id) do append(&c.choices, id)
 			return c, true
 		case types.AbilityCost_Discard:
 			if x.self_scope == .SourceCard do continue // the card itself: no choice
@@ -270,6 +298,10 @@ can_activate :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: i
 			if loyalty_ability_used(s, o) do return refuse("a loyalty ability of it was activated this turn")
 			// CR 606.6: removing counters it doesn't have can't be paid.
 			if x.amount < 0 && int(o.loyalty.? or_else 0) < int(-x.amount) do return refuse("not enough loyalty")
+		case types.AbilityCost_RemoveCounter:
+			// CR 118.3: counters it doesn't have can't be removed to pay.
+			kind := x.counter_type.(types.CounterMatch_OfType)._0
+			if counter_count(o, kind) < x.count do return refuse("not enough counters")
 		case types.AbilityCost_Mana:
 			mana = x.cost
 		}
@@ -330,6 +362,7 @@ ask_cost_objects :: proc(g: ^Game, p: types.PlayerId, c: Object_Cost) {
 	append(&choices, ..c.choices[:])
 	kind: types.PayCostKind = types.PayCostKind_Sacrifice{}
 	if c.kind == .Discard do kind = types.PayCostKind_Discard{}
+	if c.kind == .Exile_From_Graveyard do kind = types.PayCostKind_ExileFromZone{zone = .Graveyard}
 	g.state.waiting_for = types.WaitingFor_PayCost{player = p, kind = kind, choices = choices, count = c.count, min_count = c.count, resume = types.CostResume_Resolution{}}
 }
 
@@ -356,6 +389,8 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 			// CR 606.4: put on or remove that many loyalty counters.
 			l := int(o.loyalty.? or_else 0) + int(x.amount)
 			o.loyalty = u32(max(l, 0))
+		case types.AbilityCost_RemoveCounter:
+			remove_counters(o, x.counter_type.(types.CounterMatch_OfType)._0, x.count) // CR 602.2b, 601.2h
 		}
 	}
 	// The chosen permanents are sacrificed and cards discarded after the mana is paid (CR 601.2g lets mana
@@ -374,7 +409,7 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 		case types.AbilityCost_Discard:
 			if x.self_scope == .SourceCard do move_object(g, source, .Graveyard) // "discard this card" (CR 702.29a)
 		case types.AbilityCost_Exile:
-			move_object(g, source, .Exile) // "exile this card from your graveyard" (CR 701.13a)
+			if f, has := x.filter.?; has && is_self(f) do move_object(g, source, .Exile) // "exile this card from your graveyard" (CR 701.13a)
 		}
 	}
 	s.priority_passes = nil
@@ -459,4 +494,21 @@ loyalty_ability_used :: proc(s: ^types.GameState, o: ^types.GameObject) -> bool 
 		for part in parts do if _, loyalty := part.(types.AbilityCost_Loyalty); loyalty && activations(s.activated_abilities_this_turn, o, i) > 0 do return true
 	}
 	return false
+}
+
+// The properties a graveyard cost filter may have: "in your graveyard", and those object_matches reads off the
+// battlefield.
+@(private = "file")
+graveyard_props_supported :: proc(f: types.TypedFilter) -> bool {
+	for p in f.properties {
+		#partial switch _ in p {
+		case types.FilterProp_InZone:
+		case types.FilterProp_Another, types.FilterProp_HasColor, types.FilterProp_NotColor, types.FilterProp_Named,
+		     types.FilterProp_HasSupertype, types.FilterProp_NotSupertype, types.FilterProp_Cmc:
+			if !property_supported(p) do return false
+		case:
+			return false
+		}
+	}
+	return true
 }

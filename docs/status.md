@@ -3084,6 +3084,14 @@ Progress:
 - Fifth rules review fixed (Known issues), 7,078 -> 7,074 (refused cards); the app's "Pass to end of turn" button
   works (auto_pass.odin). Fixture replay at 8a539ae: 792 of 11,160 pass (760 at 3aff280). Rules checklist: 354 of
   2,880 in scope implemented, 180 tested.
+- Cost parts: "remove N [kind of] counters from this" (CR 118.3, 602.2b) and "exile N [kind of] cards from your
+  graveyard" (chosen as the cost is paid, CR 601.2h, 701.13a). 7,074 -> 7,118.
+- A permanent's own enters trigger reads the X its spell was cast with (CR 107.3m; Ajani's Anguish), and "it deals
+  damage equal to its power" said of an earlier target (bite). 7,118 -> 7,141.
+- The app on the Odin engine, played by Playwright (Standard, random decks, the human only keeping, passing to end of
+  turn and discarding): a whole game to the AI's win, no engine errors (scratchpad pw/play.cjs). Known: the game log
+  panel is empty on the Odin engine (no log entries returned), and the home page's Card Coverage Dashboard reads
+  the Rust engine's coverage file.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

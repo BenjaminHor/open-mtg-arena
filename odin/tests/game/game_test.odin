@@ -4890,3 +4890,76 @@ chosen_type_looks_back_when_its_source_dies :: proc(t: ^testing.T) {
 	}
 	testing.expectf(t, types.pvec_len(s.players[0].hand) == hand, "drew for the Bears (the wrath left the hand): %d vs %d", types.pvec_len(s.players[0].hand), hand)
 }
+
+@(test)
+remove_counters_and_exile_from_graveyard_as_costs :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Barkhide Troll: "{1}, Remove a +1/+1 counter from this creature: This creature gains hexproof until end of
+	// turn." CR 118.3: with no counter, the cost can't be paid; CR 602.2b, 601.2h: paying removes it.
+	testing.expect(t, game.card_supported(&card(t, "Barkhide Troll").face))
+	{
+		g := new_game()
+		add(t, g, "Forest", 0, .Battlefield)
+		add(t, g, "Forest", 0, .Battlefield)
+		troll := add(t, g, "Barkhide Troll", 0, .Battlefield)
+		testing.expect(t, !game.apply(g, 0, types.GameAction_ActivateAbility{source_id = troll.id, ability_index = 0}), "no counter to remove")
+		game.add_counters(troll, types.CounterType_Plus1Plus1{}, 1)
+		testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = troll.id, ability_index = 0}))
+		testing.expect(t, game.counter_count(troll, types.CounterType_Plus1Plus1{}) == 0, "the counter is removed as a cost")
+	}
+	// Dread Rider: "{1}{B}, {T}, Exile a creature card from your graveyard: Target opponent loses 3 life." The
+	// player chooses a creature card of their own graveyard (CR 404.1); it's exiled as the cost is paid (701.13a).
+	testing.expect(t, game.card_supported(&card(t, "Dread Rider").face))
+	{
+		g := new_game()
+		s := &g.state
+		add(t, g, "Swamp", 0, .Battlefield)
+		add(t, g, "Swamp", 0, .Battlefield)
+		rider := add(t, g, "Dread Rider", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 0, .Graveyard)
+		add(t, g, "Shock", 0, .Graveyard) // not a creature card
+		add(t, g, "Grizzly Bears", 1, .Graveyard) // not theirs
+		testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = rider.id, ability_index = 0}))
+		for _ in 0 ..< 4 {
+			#partial switch w in s.waiting_for {
+			case types.WaitingFor_TargetSelection, types.WaitingFor_TriggerTargetSelection:
+				game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}})
+				continue
+			case types.WaitingFor_PayCost:
+				testing.expectf(t, len(w.choices) == 1 && w.choices[0] == bears.id, "only their creature card: %v", w.choices)
+				pick := make([dynamic]types.ObjectId)
+				append(&pick, bears.id)
+				testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = pick}))
+				continue
+			}
+			break
+		}
+		testing.expect(t, bears.zone == .Exile, "exiled as the cost")
+		settle_stack(g)
+		testing.expect(t, s.players[1].life == 17, "the opponent loses 3")
+	}
+}
+
+@(test)
+enters_trigger_reads_the_spells_x :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Ajani's Anguish ({X}{R}): "When this enchantment enters, it deals X damage to any target." CR 107.3m: an
+	// enters-the-battlefield ability of the permanent uses the X its spell was cast with.
+	testing.expect(t, game.card_supported(&card(t, "Ajani's Anguish").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Mountain", 0, .Battlefield)
+	anguish := add(t, g, "Ajani's Anguish", 0, .Hand)
+	testing.expectf(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = anguish.id}), "cast: %s", game.rejection)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseX{value = 2}))
+	for _ in 0 ..< 10 {
+		#partial switch _ in s.waiting_for {
+		case types.WaitingFor_TriggerTargetSelection, types.WaitingFor_TargetSelection:
+			game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}})
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 && anguish.zone == .Battlefield do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expectf(t, s.players[1].life == 18, "2 damage, life %d", s.players[1].life)
+}

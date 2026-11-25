@@ -79,6 +79,11 @@ Stack_Condition :: struct {
 // ---- What's supported --------------------------------------------------------------------------------------
 
 trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
+	// CR 107.3m: only an enters-the-battlefield ability of the permanent itself reads the X of the spell it was (0
+	// when it wasn't cast with one).
+	saved_x := x_defined
+	x_defined = self_entering(t)
+	defer x_defined = saved_x
 	event_amount_defined = trigger_has_amount(t)
 	defer event_amount_defined = false
 	event_object_defined, event_player_defined = trigger_has_object(t), trigger_has_player(t)
@@ -1304,4 +1309,12 @@ chapter_waiting :: proc(g: ^Game, o: ^types.GameObject) -> bool {
 		}
 	}
 	return false
+}
+
+// "When this enters": the permanent's own enters-the-battlefield trigger.
+self_entering :: proc(t: types.TriggerDefinition) -> bool {
+	if _, zc := t.mode.(types.TriggerMode_ChangesZone); !zc do return false
+	d, has_d := t.destination.?
+	f, has_f := t.valid_card.?
+	return has_d && d == .Battlefield && has_f && is_self(f)
 }

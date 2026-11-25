@@ -170,8 +170,11 @@ sacrifice_permanent :: proc(g: ^Game, id: types.ObjectId) {
 
 // A permanent or card chosen to pay a cost goes to the graveyard: sacrificed from the battlefield, discarded from
 // the hand (CR 701.21a, 701.9a).
+// A card in a graveyard goes to exile ("exile a creature card from your graveyard", CR 701.13a).
 pay_with_object :: proc(g: ^Game, id: types.ObjectId) {
-	if o := object(&g.state, id); o != nil && o.zone == .Battlefield do sacrifice_permanent(g, id)
+	o := object(&g.state, id)
+	if o != nil && o.zone == .Battlefield do sacrifice_permanent(g, id)
+	else if o != nil && o.zone == .Graveyard do move_object(g, id, .Exile)
 	else do move_object(g, id, .Graveyard)
 }
 

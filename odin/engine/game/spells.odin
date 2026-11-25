@@ -1613,8 +1613,10 @@ is_power_of_target :: proc(q: types.QuantityExpr) -> bool {
 	if !is_ref do return false
 	p, is_power := r.qty.(types.QuantityRef_Power)
 	if !is_power do return false
+	// "Its power": the target's, or, said of the creature an earlier instruction targeted, that one's (CR 608.2c).
 	_, of_target := p.scope.(types.ObjectScope_Target)
-	return of_target
+	_, anaphoric := p.scope.(types.ObjectScope_Anaphoric)
+	return of_target || anaphoric
 }
 
 // The resolving spell's or ability's first target, while it's still a legal one on the battlefield (CR 608.2b).
