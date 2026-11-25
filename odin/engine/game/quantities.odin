@@ -30,6 +30,15 @@ previous_instruction: ^types.Effect
 @(thread_local)
 source_was_now: ^types.GameObject
 
+// "The sacrificed creature's mana value" (Eldritch Evolution, Prime Speaker Vannifar): defined while a spell or
+// ability whose cost sacrifices one permanent is checked (cost_sacrifices_one), and its value while that spell or
+// ability resolves: the permanent's mana value as it last existed on the battlefield (CR 608.2h), noted as the cost
+// was paid (note_cost_paid).
+@(thread_local)
+cost_paid_defined: bool
+@(thread_local)
+cost_paid_mana_value: int
+
 quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 	#partial switch x in q {
 	case types.QuantityExpr_Fixed:
@@ -133,6 +142,7 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 		case types.QuantityRef_ConvokedCreatureCount:
 			return true // "for each creature that convoked it" (CR 702.51c): this spell or the permanent it became
 		case types.QuantityRef_ObjectManaValue:
+			if _, paid := r.scope.(types.ObjectScope_CostPaidObject); paid do return cost_paid_defined
 			return scope_supported(r.scope)
 		case types.QuantityRef_AttackedThisTurn:
 			// Raid, "if you attacked this turn": creatures declared as attackers this turn, by whoever controlled them.
@@ -395,7 +405,8 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			// "At least N life more than your starting life total" (Ajani, Strength of the Pride).
 			return max(int(player(s, controller).life) - starting_life(s), 0)
 		case types.QuantityRef_ObjectManaValue:
-			// CR 202.3: the mana value of the object.
+			// CR 202.3: the mana value of the object; of the one sacrificed for the cost, as it last existed.
+			if _, paid := r.scope.(types.ObjectScope_CostPaidObject); paid do return cost_paid_mana_value
 			if o := scope_object(s, r.scope, source, target); o != nil do return object_mana_value(o)
 		case types.QuantityRef_AttackedThisTurn:
 			// CR 508.1: a creature attacked when it was declared as an attacker (CR 508.3a); counted by its controller then.

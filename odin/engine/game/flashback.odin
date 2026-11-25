@@ -28,7 +28,9 @@ cast_by_flashback :: proc(o: ^types.GameObject) -> bool {
 // Where a spell goes as it leaves the stack (CR 608.2n, 701.6a): its owner's graveyard, or exile after flashback.
 spell_leaves_stack :: proc(g: ^Game, id: types.ObjectId) {
 	o := object(&g.state, id)
-	if o != nil && cast_by_flashback(o) {
+	exiles_itself := g.spell_exiles_itself == id // "Exile [this spell]" (zone_effects.odin)
+	g.spell_exiles_itself = 0
+	if o != nil && (cast_by_flashback(o) || exiles_itself) {
 		move_object(g, id, .Exile)
 		return
 	}

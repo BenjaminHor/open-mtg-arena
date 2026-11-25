@@ -533,7 +533,12 @@ do_change_zone :: proc(g: ^Game, x: types.Effect_ChangeZone, controller: types.P
 		else if is_self(x.target) do moved = same_source(g, source)
 		if moved == nil do return false
 		if origin, has := x.origin.?; has && moved.zone != origin do return false // it left that zone: nothing to move
-		if is_self(x.target) && moved.zone == .Stack do return false
+		if is_self(x.target) && moved.zone == .Stack {
+			// "Exile Genesis Ultimatum": the spell stays on the stack until it has resolved, then goes to exile
+			// instead of its owner's graveyard (CR 608.2n; spell_leaves_stack).
+			if x.destination == .Exile && g.resolution.spell == moved.id do g.spell_exiles_itself = moved.id
+			return false
+		}
 		if _, event := x.target.(types.TargetFilter_TriggeringSource); event {
 			// The trigger event's card is found only in a public zone (CR 400.7e), and isn't put where it already is.
 			if moved.zone == .Hand || moved.zone == .Library || moved.zone == .Stack || moved.zone == x.destination do return false

@@ -48,11 +48,20 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		least := 0 if w.up_to else w.count
 		return types.GameAction_SelectCards{cards = ai_resolution_choice(g, p, w.cards[:], least, w.count)}, true
 	case types.WaitingFor_SearchChoice:
-		// As many as allowed, the first ones found.
+		// As many as allowed, the first ones found; "with different names", one of each name.
 		cards := slice.clone(w.cards[:], context.temp_allocator)
 		slice.sort_by(cards, proc(a, b: types.ObjectId) -> bool {return a < b})
 		out := make([dynamic]types.ObjectId, context.temp_allocator)
-		append(&out, ..cards[:min(w.count, len(cards))])
+		for id in cards {
+			if len(out) >= w.count do break
+			append(&out, id)
+			if !names_differ(s, w.constraint, out[:]) do pop(&out)
+		}
+		return types.GameAction_SelectCards{cards = out}, true
+	case types.WaitingFor_SearchPartitionChoice:
+		// Which found cards go where the first part says: the first ones.
+		out := make([dynamic]types.ObjectId, context.temp_allocator)
+		append(&out, ..w.cards[:min(int(w.primary_count), len(w.cards))])
 		return types.GameAction_SelectCards{cards = out}, true
 	case types.WaitingFor_OptionalCostChoice:
 		if choice, is_choice := w.cost.(types.AdditionalCost_Choice); is_choice {
@@ -223,6 +232,11 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		picks: [dynamic]types.ObjectId
 		for id in w.selectable_cards do if len(picks) < w.keep_count do append(&picks, id)
 		return types.GameAction_SelectCards{cards = picks}, true
+	case types.WaitingFor_DigBottomOrder:
+		// The rest on the bottom in the order offered.
+		order := make([dynamic]types.ObjectId, context.temp_allocator)
+		append(&order, ..w.cards[:])
+		return types.GameAction_SelectCards{cards = order}, true
 	case types.WaitingFor_SurveilChoice:
 		return types.GameAction_SelectCards{cards = ai_keep_on_top(g, p, w.cards[:])}, true
 	case types.WaitingFor_AssignCombatDamage:

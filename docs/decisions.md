@@ -3012,3 +3012,13 @@ reference (owner, 2026-11-24)** · 2026-11-24 · accepted
 - Why: refusing every such card loses correct ones; trusting the data plays some wrongly (The Deck of Many Things has
   the same data and lasts for good). Reading the Oracle text for this one missing word is exact for both.
 - Limits: only to tell apart shapes the data merges; never to add behaviour the data doesn't describe.
+
+**D-191: Which abilities that add mana are mana abilities, and how automatic payment ranks their extras** ·
+2026-11-25 · accepted
+- CR 605.1a: an activated ability is a mana ability only if it has no target, isn't a loyalty ability, and could add
+  mana as it resolves. The Odin engine puts the others (loyalty, targeted) on the stack; it also puts there
+  abilities that add mana and move library cards, since the engine can't undo a library move made mid-payment
+  (CR 605.5a lets a mana ability be played while paying, which presumes it can be rolled back with the payment).
+- Automatic payment prefers sources without harmful extras; a mana ability's harmful extra effect (life loss,
+  damage to you, sacrifice) ranks with the painlands, used only when nothing cleaner pays the cost. A preference, not
+  a rule: the player can always tap by hand.

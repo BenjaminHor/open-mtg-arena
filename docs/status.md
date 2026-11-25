@@ -3327,6 +3327,13 @@ Progress:
   those creatures". Fixed: "spell" abilities on permanent cards were silently never carried out (now refused, CR
   113.3a). Five misparsed cards. Prompts (EffectZoneChoice Tap/Untap, ChooseFromZoneChoice) read from the client code,
   not tried in the app. Coverage 8,291.
+- Mana abilities and library shapes (agent, merged; mana.odin, search.odin, resolution.odin `dig_supported`): mana
+  abilities with chosen costs and extra effects (painland-like extras ranked with painlands in automatic payment);
+  abilities that add mana but are loyalty, targeted or move library cards use the stack (CR 605.1a, 605.5a: not
+  mana abilities); split searches (new prompt SearchPartitionChoice) and digs that order the rest on the bottom
+  (DigBottomOrder); battlefield digs that could find an Aura still refused (CR 303.4f). Refused: Hatchery Spider,
+  Storm the Festival, United Battlefront, Neoform (misparsed). Prompts not tried in the app. Tests:
+  mana_library_test.odin. Coverage 8,370.
 - Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
   decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
   cards to be triaged against the CR (next step for the fixtures).

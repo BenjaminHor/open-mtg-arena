@@ -106,6 +106,8 @@ MISPARSED_CARDS :: [?]string{
 	"Riptide Chronologist", // "untap all creatures of the creature type of your choice" read as "untap all creatures"
 	"Wasitora, Nekoru Queen", // "if the player can't" lost: the token is made every time
 	"The Promise of Kahless", // "all other" read as other than the spell: the sacrificed card comes back too
+	// Library effects and mana abilities (2026-11-25).
+	"Neoform", // "with an additional +1/+1 counter on it" lost from the card it puts onto the battlefield
 }
 
 misparsed :: proc(name: string) -> bool {
@@ -155,8 +157,10 @@ card_supported :: proc(face: ^types.CardFace, back_face := false) -> bool {
 			spells += 1
 			if spells > 1 do return false
 			x_defined = has_x(face.mana_cost)
+			cost, sacrifices := additional_cost(face)
+			cost_paid_defined = sacrifices && cost_sacrifices_one(cost) // "the sacrificed creature's mana value"
 			ok := spell_ability_supported(a)
-			x_defined = false
+			x_defined, cost_paid_defined = false, false
 			if !ok do return false
 		case .Activated:
 			if _, _, ok := tap_mana_ability(a); !ok && !activated_supported(a) do return false
@@ -257,6 +261,7 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	if !sacrifice_scope_supported(a) do return false // "they": the scoped player or the event's (sacrifice.odin)
 	if !attach_host_timing_supported(a) || !zone_choice_timing_supported(a) || !after_event_card_returned_supported(a) do return false
 	if !effect_supported(a.effect^, a.duration) do return false
+	if !dig_rest_settled(a) do return false // resolution.odin
 	if refers_to_parent_target(a.effect^) && !after_target do return false
 	// "It deals damage equal to its power": the creature an earlier instruction targeted (CR 608.2c); with none
 	// ("tap enchanted creature. It deals ..."), not read yet.
@@ -444,16 +449,7 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		// "You discard N" or "target player discards N", chosen by the discarder or at random.
 		return quantity_supported(x.count) && x.unless_filter == nil && x.filter == nil && (is_controller(x.target) || is_player_filter(x.target))
 	case types.Effect_Dig:
-		keep, has_keep := x.keep_count.?
-		dest, has_dest := x.destination.?
-		rest, has_rest := x.rest_destination.?
-		// Onto the battlefield (tapped or not): only permanent cards can be taken (a filter naming permanent types).
-		// An Aura put onto the battlefield needs what it enchants chosen (CR 303.4f), which digs don't do yet.
-		to_battlefield := has_dest && dest == .Battlefield && filter_names_permanents(x.filter) && !copy_may_be_aura(x.filter)
-		return is_controller(x.player) && quantity_supported(x.count) && has_keep && keep >= 1 && x.keep_count_expr == nil &&
-			has_dest && (dest == .Hand || dest == .Graveyard || to_battlefield) && has_rest && (rest == .Library || rest == .Graveyard) &&
-			x.rest_remainder == .Route && x.rest_split_top_count == nil && x.source == .Library && !x.enters_attacking &&
-			(!x.enter_tapped || to_battlefield) && (is_any(x.filter) || mass_filter_supported(x.filter) || spell_filter_supported(x.filter))
+		return dig_supported(x)
 	case types.Effect_Scry:
 		_, fixed := fixed_quantity(x.count)
 		return fixed && (x.target == nil || is_controller(x.target))
@@ -1718,11 +1714,20 @@ card_gaps :: proc(face: ^types.CardFace, back_face := false) -> [dynamic]string 
 				continue
 			}
 			x_defined = has_x(face.mana_cost)
+			cost, sacrifices := additional_cost(face)
+			cost_paid_defined = sacrifices && cost_sacrifices_one(cost) // as card_supported checks it
 			if !spell_ability_supported(a) do ability_gaps(&out, a, "spell")
-			x_defined = false
+			x_defined, cost_paid_defined = false, false
 		case .Activated:
 			if _, _, ok := tap_mana_ability(a); !ok && !activated_supported(a) {
-				if a.effect != nil && !ability_supported(a) do ability_gaps(&out, a, "activated")
+				if is_mana_ability(a) {
+					append(&out, mana_ability_gap(a)) // mana.odin
+				} else if a.effect != nil && !activated_ability_supported(a) {
+					cost, has_cost := a.cost.?
+					cost_paid_defined = has_cost && cost_sacrifices_one(cost) // as activated_supported checks it
+					ability_gaps(&out, a, "activated")
+					cost_paid_defined = false
+				}
 				else if cost, has := a.cost.?; has && !cost_supported(cost) do append(&out, name("cost:", cost))
 				else do append(&out, activated_gap(a))
 			}
@@ -1779,6 +1784,7 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 	if a.effect != nil && !attach_host_timing_supported(a) do append(out, "effect:Attach (host chosen as it resolves)")
 	if a.effect != nil && !zone_choice_timing_supported(a) do append(out, "effect:ChangeZone (card chosen as it resolves)")
 	if a.effect != nil && !after_event_card_returned_supported(a) do append(out, "spell:that creature after it returned")
+	if a.effect != nil && !dig_rest_settled(a) do append(out, "effect:Dig (the rest stay, no shuffle)")
 	if a.effect != nil && !effect_supported(a.effect^, a.duration) {
 		full := fmt.tprintf("%v", reflect.union_variant_typeid(a.effect^))
 		if i := strings.last_index_byte(full, '_'); i >= 0 do full = full[i + 1:]
@@ -2480,6 +2486,8 @@ additional_cost_payable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^type
 pay_additional_cost :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) {
 	cost, has := spell_additional_cost(o)
 	if !has do return
+	// "The sacrificed creature's mana value" as the spell resolves (start_resolution).
+	if snapshot, sacrificed := cost_paid_snapshot(g).?; sacrificed do o.cast_cost_paid_object = snapshot
 	pay_cost_objects(g, p, cost)
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
 	cost_parts_of(cost, &parts)
@@ -2492,7 +2500,7 @@ pay_additional_cost :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) {
 // Why an activated ability whose effect and cost are supported still isn't: for the gap report.
 @(private = "file")
 activated_gap :: proc(a: types.AbilityDefinition) -> string {
-	if adds_mana(a) do return "activated: mana ability (its cost or extra effect)" // mana.odin's mana_ability_option
+	if is_mana_ability(a) do return "activated: mana ability (its cost or extra effect)" // mana.odin's mana_ability_option
 	if a.activator_filter != nil do return "activated: another player activates"
 	if a.activation_mana_payment_restriction != nil do return "activated: mana payment restriction"
 	if a.cost_reduction != nil do return "activated: cost reduction"

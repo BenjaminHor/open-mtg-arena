@@ -58,6 +58,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_DigChoice:
 		return w.player, true
+	case types.WaitingFor_DigBottomOrder:
+		return w.player, true
 	case types.WaitingFor_SurveilChoice:
 		return w.player, true
 	case types.WaitingFor_PayCost:
@@ -69,6 +71,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 	case types.WaitingFor_ModeChoice:
 		return w.player, true
 	case types.WaitingFor_SearchChoice:
+		return w.player, true
+	case types.WaitingFor_SearchPartitionChoice:
 		return w.player, true
 	case types.WaitingFor_EffectZoneChoice:
 		return w.player, true
@@ -247,6 +251,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_DigChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		return ok && answer_dig(g, p, w, a.cards[:])
+	case types.WaitingFor_DigBottomOrder:
+		a, ok := action.(types.GameAction_SelectCards)
+		return ok && answer_dig_bottom_order(g, p, w, a.cards[:])
 	case types.WaitingFor_SurveilChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		return ok && answer_scry(g, p, w.cards[:], a.cards[:], true)
@@ -282,6 +289,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_SearchChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		return ok && answer_search(g, p, w, a.cards[:])
+	case types.WaitingFor_SearchPartitionChoice:
+		a, ok := action.(types.GameAction_SelectCards)
+		return ok && answer_search_partition(g, p, w, a.cards[:])
 	case types.WaitingFor_ModeChoice:
 		#partial switch a in action {
 		case types.GameAction_SelectModes:
@@ -500,7 +510,7 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 			for &a, i in o.abilities^ {
 				if can_activate(g, p, o, i) {
 					append(&out, types.GameAction_ActivateAbility{source_id = o.id, ability_index = i})
-				} else if option, is_mana := mana_ability_option(a); is_mana && (option.mana_cost != nil || !option.taps || option.each) && object_supported(o, g.card_db) && mana_ability_activatable(g, p, o, &a) {
+				} else if option, is_mana := mana_ability_option(a); is_mana && player_activated_only(option) && object_supported(o, g.card_db) && mana_ability_activatable(g, p, o, &a) {
 					// CR 605.3a: mana abilities automatic payment doesn't use ("{1}, {T}: Add one mana of any color").
 					append(&out, types.GameAction_ActivateAbility{source_id = o.id, ability_index = i})
 				}

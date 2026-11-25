@@ -10,16 +10,21 @@ import "core:strings"
 import types "../types"
 
 activated_supported :: proc(a: types.AbilityDefinition) -> bool {
-	if a.kind != .Activated || !ability_supported(a) do return false
+	if a.kind != .Activated do return false
+	// A mana ability's instructions are mana.odin's to read (mana_ability_effects): the mana it adds, what may be
+	// spent of it on what, what else it does.
+	if !is_mana_ability(a) && !activated_ability_supported(a) do return false
 	// "Remove a counter from this": a remove-counter cost the data writes with no object is read as this one's; a
 	// description naming another ("from a permanent you control") isn't.
 	if d, has := a.description.?; has && strings.contains(d, "Remove ") && !strings.contains(d, "from this") && !strings.contains(d, "from ~") && !strings.contains(d, "from it") {
 		if c, has_cost := a.cost.?; has_cost && has_unnamed_remove_counter(c) do return false
 	}
-	// An activated ability that adds mana is a mana ability (CR 605.1a): it doesn't use the stack, and it's carried out
-	// by mana.odin (mana_ability_option) or not at all.
-	// Anywhere in it: "{T}: Put a charge counter on this. Add X mana of any one color" is one too.
-	if adds_mana(a) do return false
+	// An activated ability that adds mana anywhere in it ("{T}: Put a charge counter on this. Add X mana of any one
+	// color") is a mana ability unless it targets, is a loyalty ability, or moves cards to or from a library (CR
+	// 605.1a). A mana ability doesn't use the stack: it's carried out by mana.odin, either paying its own costs
+	// (mana_ability_option) or activated like this one and then resolved at once (mana_ability_by_activation), or not
+	// at all. Any other ability that adds mana goes on the stack and adds it as it resolves (CR 605.5a).
+	if is_mana_ability(a) && !mana_ability_by_activation(a) do return false
 	cost, has := a.cost.?
 	if !has || !cost_supported(cost) do return false
 	if a.activator_filter != nil || a.activation_mana_payment_restriction != nil do return false
@@ -40,6 +45,42 @@ activated_supported :: proc(a: types.AbilityDefinition) -> bool {
 	return true
 }
 
+// The ability's instructions, which may read "the sacrificed creature's mana value" when its cost sacrifices one
+// permanent.
+activated_ability_supported :: proc(a: types.AbilityDefinition) -> bool {
+	cost, has := a.cost.?
+	outer := cost_paid_defined
+	cost_paid_defined = has && cost_sacrifices_one(cost)
+	defer cost_paid_defined = outer
+	return ability_supported(a)
+}
+
+// "Sacrifice a creature", "sacrifice another artifact": one permanent the player chooses, which "the sacrificed
+// creature" then names.
+cost_sacrifices_one :: proc(cost: types.AbilityCost) -> bool {
+	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
+	cost_parts(cost, &parts)
+	n := 0
+	for part in parts {
+		x, sacrifices := part.(types.AbilityCost_Sacrifice)
+		if !sacrifices || is_self(x._0.target) do continue
+		count, is_count := x._0.requirement.(types.SacrificeRequirement_Count)
+		if !is_count || count.count != 1 do return false
+		n += 1
+	}
+	return n == 1
+}
+
+// The permanent chosen to be sacrificed for the cost, as it is before it goes (CR 608.2h: its last known
+// information), for "the sacrificed creature's mana value" as the spell or ability resolves. Nil when the cost
+// sacrifices no single chosen permanent.
+cost_paid_snapshot :: proc(g: ^Game) -> Maybe(types.CostPaidObjectSnapshot) {
+	if g.pending.cost_kind != .Sacrifice || len(g.pending.cost_objects) != 1 do return nil
+	o := object(&g.state, g.pending.cost_objects[0])
+	if o == nil do return nil
+	return types.CostPaidObjectSnapshot{object_id = o.id, incarnation = o.incarnation, lki = {name = o.name, mana_value = u32(object_mana_value(o)), controller = o.controller, owner = o.owner}}
+}
+
 // Whether an instruction of the ability adds mana: then it's a mana ability (CR 605.1a).
 adds_mana :: proc(a: types.AbilityDefinition) -> bool {
 	if _, mana := a.effect.(types.Effect_Mana); mana do return true
@@ -56,11 +97,37 @@ restriction_supported :: proc(r: types.ActivationRestriction) -> bool {
 		return true
 	case types.ActivationRestriction_RequiresCondition:
 		c, has := x.condition.?
-		if !has do return false
-		#partial switch y in c {
-		case types.ParsedCondition_QuantityComparison:
-			return quantity_supported(y.lhs) && quantity_supported(y.rhs)
-		}
+		return has && activation_condition_supported(c)
+	}
+	return false
+}
+
+// "Activate only if you control three or more artifacts", "only if this land entered this turn or if you control a
+// basic land" (CR 602.5: an ability prohibited from being activated can't be).
+@(private = "file")
+activation_condition_supported :: proc(c: types.ParsedCondition) -> bool {
+	#partial switch y in c {
+	case types.ParsedCondition_QuantityComparison:
+		return quantity_supported(y.lhs) && quantity_supported(y.rhs)
+	case types.ParsedCondition_SourceEnteredThisTurn:
+		return true
+	case types.ParsedCondition_Or:
+		for z in y.conditions do if !activation_condition_supported(z) do return false
+		return len(y.conditions) > 0
+	}
+	return false
+}
+
+@(private = "file")
+activation_condition_holds :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c: types.ParsedCondition) -> bool {
+	#partial switch y in c {
+	case types.ParsedCondition_QuantityComparison:
+		return compare(quantity_value(s, y.lhs, p, o.id, 0), y.comparator, quantity_value(s, y.rhs, p, o.id, 0))
+	case types.ParsedCondition_SourceEnteredThisTurn:
+		turn, entered := o.entered_battlefield_turn.?
+		return entered && turn == s.turn_number
+	case types.ParsedCondition_Or:
+		for z in y.conditions do if activation_condition_holds(s, p, o, z) do return true
 	}
 	return false
 }
@@ -80,8 +147,7 @@ restriction_met :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameOb
 	case types.ActivationRestriction_BeforeAttackersDeclared:
 		return s.phase < .DeclareAttackers
 	case types.ActivationRestriction_RequiresCondition:
-		c := x.condition.?.(types.ParsedCondition_QuantityComparison)
-		return compare(quantity_value(s, c.lhs, p, o.id, 0), c.comparator, quantity_value(s, c.rhs, p, o.id, 0))
+		return activation_condition_holds(s, p, o, x.condition.?)
 	}
 	return true
 }
@@ -870,10 +936,22 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 			}
 		}
 	}
+	paid := cost_paid_snapshot(g)
 	pay_cost_objects(g, p, cost)
-	push_ability(g, source, p, a, targets, false, g.pending.counts[:], division = g.pending.division[:])
 	record_activation(&s.activated_abilities_this_turn, o, index)
 	record_activation(&s.activated_abilities_this_game, o, index)
+	if is_mana_ability(a^) {
+		// CR 605.3b: a mana ability doesn't go on the stack; with its costs paid, it resolves at once
+		// (mana_ability_by_activation: its cost doesn't take the permanent away).
+		resolve_mana_ability(g, p, o, index)
+		return
+	}
+	stack_id := push_ability(g, source, p, a, targets, false, g.pending.counts[:], division = g.pending.division[:])
+	if snapshot, has := paid.?; has {
+		// "The sacrificed creature's mana value", as the ability resolves (start_resolution).
+		top := types.pvec_get(s.stack, types.pvec_len(s.stack) - 1)
+		if entry, is_ability := top.kind.(types.StackEntryKind_ActivatedAbility); is_ability && top.id == stack_id do entry.ability.cost_paid_object = snapshot
+	}
 	// Sacrificing it last: the ability on the stack is independent of its source (CR 113.7a).
 	for part in parts {
 		#partial switch x in part {

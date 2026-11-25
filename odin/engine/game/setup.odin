@@ -55,6 +55,8 @@ Game :: struct {
 	entry_reveals:     [dynamic]types.ObjectId, // entered with "you may reveal a Goblin card from your hand"
 	copy_exceptions:   map[types.ObjectId]Copy_Exceptions, // a copy's exceptions, for copies of it (CR 707.9b)
 	mana_color_choice: Mana_Color_Choice, // mana of one color being added while an ability resolves (mana.odin)
+	search_split:      Maybe(types.SearchDestinationSplit), // where a search's found cards go, split two ways (search.odin)
+	spell_exiles_itself: types.ObjectId, // the resolving spell said "Exile [this spell]" (CR 608.2n, spell_leaves_stack)
 	entry_after:       types.PlayerId,
 	// "Gain control of target creature until end of turn": who controlled it before, to give it back (kept beside
 	// the state like the pumps).

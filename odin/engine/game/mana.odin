@@ -2,6 +2,7 @@
 package game
 
 import "core:fmt"
+import "core:reflect"
 import "core:slice"
 import "core:strings"
 import types "../types"
@@ -17,12 +18,13 @@ Mana_Source :: struct {
 }
 
 // What else a mana ability does or costs, besides {T}, from the most to the least welcome: "This land deals 1
-// damage to you" (painlands), "Pay 1 life", "Sacrifice this".
+// damage to you" (painlands), "Pay 1 life", "Sacrifice this", "Exile this" (Abyssal Lotus).
 Mana_Rider :: enum {
 	None,
 	Damage,
 	Life,
 	Sacrifice,
+	Exile,
 }
 
 Mana_Option :: struct {
@@ -40,9 +42,68 @@ Mana_Option :: struct {
 	// "Add {W}{U}": every listed symbol at once, not one of them. The player activates such abilities on their own;
 	// automatic payment doesn't use them yet.
 	each:         bool,
+	symbols:      []types.ManaColor, // those symbols, in order, when `each`
 	// CR 702.51a: convoke, tapping a creature instead of paying {1} or one mana of its color. Not mana, and not a
 	// mana ability: no rider, nothing recorded, nothing left in the pool.
 	convoke:      bool,
+	// What else the ability does as it resolves (CR 605.3b), after its mana: "You gain 1 life", "put a stash counter
+	// on this" (mana_extras). The instructions after the mana, nil when there are none.
+	extras:       ^types.AbilityDefinition,
+	// Whether one of those does the player harm ("each player loses 1 life", "each opponent gains 1 life"):
+	// automatic payment then ranks the ability with the painlands (option_rank).
+	harmful:      bool,
+}
+
+// How unwelcome an ability is to automatic payment: its rider, or a painland's if what else it does harms its
+// player.
+option_rank :: proc(option: Mana_Option) -> Mana_Rider {
+	if option.harmful && option.rider < .Damage do return .Damage
+	return option.rider
+}
+
+// The mana abilities the player activates on their own, which automatic payment doesn't use (CR 605.3a): those that
+// cost mana ("{1}, {T}: Add one mana of any color"), that don't tap their permanent ("Sacrifice this creature: Add
+// {C}"), and those that add several symbols at once ("Add {W}{U}").
+player_activated_only :: proc(option: Mana_Option) -> bool {
+	return option.mana_cost != nil || !option.taps || option.each || option.rider == .Exile
+}
+
+// CR 605.1a: an activated ability is a mana ability if it doesn't require a target, could add mana as it resolves,
+// isn't a loyalty ability, and its cost and effect don't move a card to or from a library. Any other ability that
+// adds mana ("[+1]: Add {R}{R}", "{T}: Exile target land card from a graveyard. Add one mana of any color", "Add one
+// mana of any color. Draw a card") goes on the stack like other activated abilities (CR 605.5a).
+is_mana_ability :: proc(a: types.AbilityDefinition) -> bool {
+	if a.kind != .Activated || !adds_mana(a) do return false
+	if cost, has := a.cost.?; has {
+		parts := make([dynamic]types.AbilityCost, context.temp_allocator)
+		cost_parts_of(cost, &parts)
+		for part in parts {
+			#partial switch _ in part {
+			case types.AbilityCost_Loyalty, types.AbilityCost_Mill:
+				return false
+			}
+		}
+	}
+	if a.effect != nil && !mana_instruction_allowed(a.effect^, a.target_choice_timing) do return false
+	for x := a.sub_ability; x != nil; x = x.sub_ability {
+		if x.effect != nil && !mana_instruction_allowed(x.effect^, x.target_choice_timing) do return false
+	}
+	return true
+}
+
+// An instruction a mana ability may have (CR 605.1a): one that targets nothing and moves no card to or from a library.
+@(private = "file")
+mana_instruction_allowed :: proc(e: types.Effect, timing: types.TargetChoiceTiming) -> bool {
+	if _, targets := instruction_target(e, timing); targets do return false
+	#partial switch x in e {
+	case types.Effect_Draw, types.Effect_Dig, types.Effect_SearchLibrary, types.Effect_Mill, types.Effect_PutAtLibraryPosition,
+	     types.Effect_ExileTop:
+		return false
+	case types.Effect_ChangeZone:
+		if origin, has := x.origin.?; has && origin == .Library do return false
+		return x.destination != .Library
+	}
+	return true
 }
 
 // Whether a mana ability's "activate only ..." restrictions allow it now (CR 602.5).
@@ -71,23 +132,15 @@ tap_mana_ability :: proc(a: types.AbilityDefinition) -> (colors: bit_set[types.M
 	return o.colors, o.amount, is_mana
 }
 
+// A mana ability whose costs mana_ability_option pays itself ({T}, mana, life, sacrificing the permanent), and what
+// it makes and does. Abilities whose cost has the player choose ("{T}, Tap an untapped creature you control",
+// "Sacrifice a Goblin") or removes counters are activated like other abilities (mana_ability_by_activation).
 // `s` and `o`: the state and the ability's object, to work out an amount that's counted ("Add X mana of any one
 // color, where X is ..."); without them (checking support) it's assumed to be at least one.
 mana_ability_option :: proc(a: types.AbilityDefinition, s: ^types.GameState = nil, o: ^types.GameObject = nil) -> (option: Mana_Option, ok: bool) {
-	if a.kind != .Activated || a.effect == nil do return
-	// "Activate only if you control a Swamp", "only once each turn" (CR 602.5): checked where the ability is used,
-	// with the state at hand (mana_restrictions_met). Not yet: conditions, other zones, extra effects other than
-	// damage to you. Such abilities aren't supported rather than half done.
-	for r in a.activation_restrictions do if !restriction_supported(r) do return
-	if a.condition != nil || a.activation_zone != nil do return
-	if sub := a.sub_ability; sub != nil {
-		// "This land deals 1 damage to you."
-		if sub.sub_ability != nil || sub.condition != nil || sub.effect == nil do return
-		dmg, is_damage := sub.effect^.(types.Effect_DealDamage)
-		n, fixed := fixed_quantity(dmg.amount)
-		if !is_damage || !fixed || !is_controller(dmg.target) || dmg.damage_source != nil do return
-		option.rider, option.rider_amount = .Damage, n
-	}
+	produced: bool
+	option, produced = mana_ability_effects(a, s, o)
+	if !produced do return option, false
 	cost, has_cost := a.cost.?
 	if !has_cost do return
 	taps := false
@@ -105,6 +158,11 @@ mana_ability_option :: proc(a: types.AbilityDefinition, s: ^types.GameState = ni
 			count, is_count := x._0.requirement.(types.SacrificeRequirement_Count)
 			if !is_self(x._0.target) || !is_count || count.count != 1 || option.rider != .None do return
 			option.rider = .Sacrifice
+		case types.AbilityCost_Exile:
+			// "Exile this artifact" from the battlefield (CR 701.13a), paid as the sacrifice is.
+			f, has_filter := x.filter.?
+			if !has_filter || !is_self(f) || x.zone != nil || x.count != 1 || option.rider != .None do return
+			option.rider = .Exile
 		case types.AbilityCost_Mana:
 			if option.mana_cost != nil || has_x(x.cost) do return
 			if _, is_cost := x.cost.(types.ManaCost_Cost); !is_cost do return
@@ -116,17 +174,226 @@ mana_ability_option :: proc(a: types.AbilityDefinition, s: ^types.GameState = ni
 	// "Sacrifice this creature: Add {C}" (an Eldrazi Spawn): no {T}, activated by the player (CR 605.3a).
 	if !taps && option.mana_cost == nil && option.rider != .Sacrifice do return
 	option.taps = taps
+	return option, true
+}
+
+// What a mana ability (CR 605.1a) makes and does as it resolves, whatever it costs: the mana it adds (CR 106.4), "...
+// instead" if a condition holds then (CR 608.2c), what may be spent of it on what (CR 106.6), and what else it does
+// (CR 605.3b): damage to its controller (the painlands' rider), life gained or lost, counters put on it. Not ok when
+// this engine can't carry all of it out.
+mana_ability_effects :: proc(a: types.AbilityDefinition, s: ^types.GameState = nil, o: ^types.GameObject = nil) -> (option: Mana_Option, ok: bool) {
+	if !is_mana_ability(a) || a.effect == nil do return
+	// "Activate only if you control a Swamp", "only once each turn" (CR 602.5): checked where the ability is used,
+	// with the state at hand (mana_restrictions_met). Not yet: conditions on the ability itself, other zones.
+	for r in a.activation_restrictions do if !restriction_supported(r) do return
+	if a.condition != nil || a.activation_zone != nil do return
+	effect, is_mana := a.effect.(types.Effect_Mana)
+	if !is_mana do return
 	colors, amount, counted := produced_mana(a, s, o)
-	option.colors, option.amount = colors, amount
-	if effect, is_mana := a.effect.(types.Effect_Mana); is_mana {
-		if fixed, is_fixed := effect.produced.(types.ManaProduction_Fixed); is_fixed && card(colors) > 1 do option.each = true
+	if colors == {} do return
+	next := a.sub_ability
+	// "Add {G}. If you control four or more creatures, add {G}{G} instead": the second instruction replaces the first
+	// when its condition holds as the ability resolves (CR 608.2c).
+	if next != nil && is_mana_instead(next^) {
+		up_colors, up_amount, up_counted := produced_mana(next^, s, o)
+		if up_colors == {} do return
+		if s != nil && o != nil && ability_condition_holds(s, next.condition.?, o.controller, o.id, nil) {
+			colors, amount, counted = up_colors, up_amount, up_counted
+			effect = next.effect.(types.Effect_Mana)
+		}
+		next = next.sub_ability
 	}
-	if effect, is_mana := a.effect.(types.Effect_Mana); is_mana && len(effect.restrictions) > 0 {
+	option.colors, option.amount = colors, amount
+	if fixed, is_fixed := effect.produced.(types.ManaProduction_Fixed); is_fixed && card(colors) > 1 {
+		option.each = true
+		option.symbols = fixed.colors[:]
+	}
+	if len(effect.restrictions) > 0 {
 		rs := make([]types.ManaRestriction, len(effect.restrictions), context.temp_allocator)
-		for r, i in effect.restrictions do rs[i] = pool_restriction(r)
+		for r, i in effect.restrictions do rs[i] = pool_restriction(r, o)
 		option.restrictions = rs
 	}
+	option.extras = next
+	for x := next; x != nil; x = x.sub_ability {
+		if x.effect == nil do return
+		if dmg, is_damage := x.effect^.(types.Effect_DealDamage); is_damage {
+			// "This land deals 1 damage to you": the painlands' rider, at most one.
+			n, fixed := fixed_quantity(dmg.amount)
+			if !fixed || !is_controller(dmg.target) || dmg.damage_source != nil || option.rider != .None || x.condition != nil || x.player_scope != nil || x.optional do return
+			option.rider, option.rider_amount = .Damage, n
+			continue
+		}
+		harmful, extra_ok := mana_extra_supported(x^)
+		if !extra_ok do return
+		if harmful do option.harmful = true
+	}
 	return option, amount > 0 || (counted && colors != {}) // a counted amount can be 0 now (CR 106.4)
+}
+
+// "Add {G}{G} instead": a mana instruction that replaces the one before when its condition holds.
+@(private = "file")
+is_mana_instead :: proc(x: types.AbilityDefinition) -> bool {
+	if x.effect == nil do return false
+	if _, is_mana := x.effect.(types.Effect_Mana); !is_mana do return false
+	c, has := x.condition.?
+	if !has do return false
+	instead, is_instead := c.(types.AbilityCondition_ConditionInstead)
+	return is_instead && instead.inner != nil && ability_condition_supported(instead.inner^) && !depends_on_cost_paid(instead.inner^) &&
+		x.sub_link != .SequentialSibling && !x.optional && x.player_scope == nil
+}
+
+// The instructions a mana ability may do besides adding mana, carried out at once (mana_extras): "you gain N
+// life" or "each opponent gains N life", "each player loses N life", "put N [kind] counters on this", possibly "if"
+// a condition holds. `harmful`: it costs its player life or gives an opponent some.
+@(private = "file")
+mana_extra_supported :: proc(x: types.AbilityDefinition) -> (harmful: bool, ok: bool) {
+	if x.effect == nil || x.optional || x.multi_target != nil || x.repeat_for != nil || x.unless_pay != nil || x.modal != nil do return
+	if x.distribute != nil || x.else_ability != nil || x.duration != nil do return
+	if c, has := x.condition.?; has {
+		_, is_outcome := outcome_wanted(c)
+		#partial switch _ in c {
+		case types.AbilityCondition_ConditionInstead, types.AbilityCondition_AdditionalCostPaidInstead, types.AbilityCondition_WhenYouDo:
+			return
+		}
+		if is_outcome || !ability_condition_supported(c) || depends_on_cost_paid(c) do return
+	}
+	opponents := false
+	if scope, has := x.player_scope.?; has {
+		#partial switch _ in scope {
+		case types.PlayerFilter_All:
+		case types.PlayerFilter_Opponent:
+			opponents = true
+		case:
+			return
+		}
+	}
+	#partial switch e in x.effect^ {
+	case types.Effect_GainLife:
+		_, fixed := fixed_quantity(e.amount)
+		if !fixed || (e.player != nil && !is_controller(e.player)) do return
+		return opponents, true
+	case types.Effect_LoseLife:
+		_, fixed := fixed_quantity(e.amount)
+		if t, has := e.target.?; !fixed || (has && !is_controller(t)) do return
+		return true, true
+	case types.Effect_PutCounter:
+		_, fixed := fixed_quantity(e.count)
+		if !fixed || !is_self(e.target) || !counter_kind_supported(e.counter_type) || x.player_scope != nil do return
+		return false, true
+	}
+	return
+}
+
+// What else the mana ability does as it resolves (CR 605.3b), in order. Carried out here rather than by do_effect:
+// a mana ability can resolve while a spell or ability is resolving (paying for "unless"), and do_effect reads that
+// one's source as "this".
+@(private = "file")
+mana_extras :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, option: Mana_Option) {
+	s := &g.state
+	for x := option.extras; x != nil; x = x.sub_ability {
+		if x.effect == nil do continue
+		if _, is_damage := x.effect^.(types.Effect_DealDamage); is_damage do continue // the rider (mana_rider)
+		// CR 608.2c: "if you control another Mutant, you gain 1 life".
+		if c, has := x.condition.?; has && !ability_condition_holds(s, c, p, o.id, nil) do continue
+		players := make([dynamic]types.PlayerId, context.temp_allocator)
+		if scope, scoped := x.player_scope.?; scoped do append(&players, ..scope_players(s, scope, p)[:])
+		else do append(&players, p)
+		#partial switch e in x.effect^ {
+		case types.Effect_GainLife:
+			n, _ := fixed_quantity(e.amount)
+			for who in players do gain_life(s, who, n)
+		case types.Effect_LoseLife:
+			n, _ := fixed_quantity(e.amount)
+			for who in players do lose_life(s, who, n) // CR 119.3
+		case types.Effect_PutCounter:
+			// On this permanent, while it's still there (CR 400.7).
+			n, _ := fixed_quantity(e.count)
+			if o.zone == .Battlefield && n > 0 {
+				add_counters(o, e.counter_type, u32(n))
+				apply_continuous_effects(g)
+			}
+		}
+	}
+}
+
+// A mana ability activated like other activated abilities: its cost has the player choose what to tap, sacrifice
+// or exile ("{T}, Tap an untapped creature you control", "Sacrifice a Goblin", "{T}, Exile a card from your
+// graveyard"), collect evidence, or remove counters from it. Its costs are paid as any ability's (CR 602.2b,
+// 601.2h); then it resolves at once instead of going on the stack (CR 605.3b, resolve_mana_ability). Its mana is a
+// fixed amount, and its cost doesn't take the permanent itself away, so what it makes is the same before and after
+// the cost is paid.
+mana_ability_by_activation :: proc(a: types.AbilityDefinition) -> bool {
+	if _, simple := mana_ability_option(a); simple do return false
+	option, ok := mana_ability_effects(a)
+	if !ok do return false
+	if effect, is_mana := a.effect.(types.Effect_Mana); is_mana && !mana_amount_fixed(effect) do return false
+	if next := a.sub_ability; next != nil && is_mana_instead(next^) && !mana_amount_fixed(next.effect.(types.Effect_Mana)) do return false
+	if option.rider != .None do return false // a painland's damage with a chosen cost: none known yet
+	cost, has := a.cost.?
+	if !has || !cost_supported(cost) do return false
+	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
+	cost_parts_of(cost, &parts)
+	for part in parts {
+		#partial switch x in part {
+		case types.AbilityCost_Sacrifice:
+			if is_self(x._0.target) do return false
+		case types.AbilityCost_Exile:
+			if f, has_filter := x.filter.?; has_filter && is_self(f) do return false
+		case types.AbilityCost_Discard:
+			if x.self_scope == .SourceCard do return false
+		case types.AbilityCost_ReturnToHand, types.AbilityCost_EffectCost:
+			return false
+		}
+	}
+	return true
+}
+
+// Why a mana ability isn't supported, for the gap report: the part of it mana_ability_effects or the cost reading
+// refuses.
+mana_ability_gap :: proc(a: types.AbilityDefinition) -> string {
+	variant :: proc(v: any) -> string {
+		full := fmt.tprintf("%v", reflect.union_variant_typeid(v))
+		if i := strings.last_index_byte(full, '_'); i >= 0 do full = full[i + 1:]
+		return full
+	}
+	prefix :: "activated: mana ability"
+	for r in a.activation_restrictions do if !restriction_supported(r) do return fmt.tprintf("%s (restriction %s)", prefix, variant(r))
+	if a.activation_zone != nil do return fmt.tprintf("%s (from %v)", prefix, a.activation_zone)
+	if a.condition != nil do return fmt.tprintf("%s (condition)", prefix)
+	if effect, is_mana := a.effect.(types.Effect_Mana); is_mana {
+		if len(effect.grants) > 0 do return fmt.tprintf("%s (mana that grants %s)", prefix, variant(effect.grants[0]))
+		if effect.expiry != nil do return fmt.tprintf("%s (mana that lasts)", prefix)
+		for r in effect.restrictions do if !spend_restriction_supported(r, a.description.? or_else "") do return fmt.tprintf("%s (spend restriction %s)", prefix, variant(r))
+		if colors, _, _ := produced_mana(a, nil, nil); colors == {} do return fmt.tprintf("%s (%s)", prefix, variant(effect.produced))
+	} else {
+		return fmt.tprintf("%s (mana added after another instruction)", prefix)
+	}
+	for x := a.sub_ability; x != nil; x = x.sub_ability {
+		if x.effect == nil || is_mana_instead(x^) do continue
+		if _, is_damage := x.effect^.(types.Effect_DealDamage); is_damage do continue
+		if _, ok := mana_extra_supported(x^); !ok do return fmt.tprintf("%s (extra effect %s)", prefix, variant(x.effect^))
+	}
+	if cost, has := a.cost.?; has {
+		parts := make([dynamic]types.AbilityCost, context.temp_allocator)
+		cost_parts_of(cost, &parts)
+		for part in parts do if !cost_supported(part) do return fmt.tprintf("%s (cost %s)", prefix, variant(part))
+	}
+	return fmt.tprintf("%s (its cost or amount)", prefix)
+}
+
+@(private = "file")
+mana_amount_fixed :: proc(e: types.Effect_Mana) -> bool {
+	#partial switch p in e.produced {
+	case types.ManaProduction_Fixed:
+		return true
+	case types.ManaProduction_Colorless:
+		_, fixed := fixed_quantity(p.count)
+		return fixed
+	case types.ManaProduction_AnyOneColor:
+		_, fixed := fixed_quantity(p.count)
+		return fixed
+	}
+	return false
 }
 
 @(private = "file")
@@ -140,7 +407,7 @@ produced_mana :: proc(a: types.AbilityDefinition, s: ^types.GameState, o: ^types
 	}
 	effect, is_mana := a.effect.(types.Effect_Mana)
 	if !is_mana || len(effect.grants) > 0 || effect.expiry != nil || effect.target != nil do return
-	for r in effect.restrictions do if !spend_restriction_supported(r) do return
+	for r in effect.restrictions do if !spend_restriction_supported(r, a.description.? or_else "") do return
 	switch p in effect.produced {
 	case types.ManaProduction_Fixed:
 		// "Add {G}" (one color, once per symbol) or "Add {W}{U}" (each listed symbol).
@@ -213,12 +480,12 @@ mana_sources :: proc(s: ^types.GameState, p: types.PlayerId, exclude: types.Obje
 		for a, index in o.abilities^ {
 			option, ok := mana_ability_option(a, s, o)
 			option.index = index
-			if ok && (option.mana_cost != nil || !option.taps || option.each) do ok = false // activated by the player, not here
+			if ok && player_activated_only(option) do ok = false // activated by the player, not here
 			if ok && !mana_restrictions_met(s, p, o, index, a) do ok = false
 			if ok && !restrictions_allow(s, option.restrictions, paying) do ok = false
 			// CR 119.4: life can be paid only up to the player's life total.
 			if ok && option.rider == .Life && int(player(s, p).life) < option.rider_amount do ok = false
-			if ok && option.rider <= worst {
+			if ok && option_rank(option) <= worst {
 				src.colors += option.colors
 				src.amount = option.amount if src.amount == 0 else min(src.amount, option.amount)
 				append(&src.options, option)
@@ -346,7 +613,7 @@ plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaC
 			for option, j in src.options {
 				fits := true
 				for k in 0 ..< len(colored) do if assigned[k] == i && option.colors & colored[k] == {} do fits = false
-				if fits && (best < 0 || option.rider < src.options[best].rider) do best = j
+				if fits && (best < 0 || option_rank(option) < option_rank(src.options[best])) do best = j
 			}
 			if best < 0 do best = 0
 			color: types.ManaType
@@ -397,18 +664,20 @@ pay_mana :: proc(g: ^Game, p: types.PlayerId, cost: types.ManaCost, exclude: typ
 	return true
 }
 
-// What a mana ability does besides adding mana: damage to its controller, life paid, the source sacrificed.
+// What a mana ability does besides adding mana: damage to its controller, life paid, what else it does
+// (mana_extras), the source sacrificed last (it may put a counter on itself first).
 @(private = "file")
 mana_rider :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, option: Mana_Option) {
 	switch option.rider {
-	case .None:
+	case .None, .Sacrifice, .Exile:
 	case .Damage:
 		deal_damage(g, o.id, types.TargetRef_Player{p}, option.rider_amount)
 	case .Life:
 		lose_life(&g.state, p, option.rider_amount) // CR 119.4: paying life is losing it
-	case .Sacrifice:
-		sacrifice_permanent(g, o.id)
 	}
+	mana_extras(g, p, o, option)
+	if option.rider == .Sacrifice do sacrifice_permanent(g, o.id)
+	if option.rider == .Exile do move_object(g, o.id, .Exile)
 }
 
 // CR 605.3a-b: a player with priority may activate a mana ability on its own; it doesn't use the stack and
@@ -420,30 +689,44 @@ activate_mana_ability :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject,
 	// CR 602.2b, 601.2h: the costs are paid: {T}, and mana for "{1}, {T}: Add ..." (from other sources, CR 605.3a).
 	if option.taps do tap_permanent(o)
 	if option.mana_cost != nil do pay_mana(g, p, option.mana_cost, o.id, nil, Payment{o, false})
+	produce_mana(g, p, o, ability_index_of(o, a), option)
+	return true
+}
+
+// CR 605.3b: the mana ability resolves at once, its costs paid: its mana into the pool, the player choosing the
+// color of "one mana of any color" first.
+@(private = "file")
+produce_mana :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: int, option: Mana_Option) {
 	if option.each {
 		// "Add {W}{U}": the mana of each symbol, into the mana pool (CR 106.4).
-		fixed := a.effect.(types.Effect_Mana).produced.(types.ManaProduction_Fixed)
-		for c in fixed.colors do add_pool_mana(&g.state, p, types.ManaType(c), o.id, 1, option.restrictions)
+		for c in option.symbols do add_pool_mana(&g.state, p, types.ManaType(c), o.id, 1, option.restrictions)
 		mana_rider(g, p, o, option)
 		g.state.priority_passes = nil
 		give_priority(g, p)
-		return true
+		return
 	}
 	if card(option.colors) > 1 {
 		// "One mana of any color": the color is chosen as it resolves (CR 605.3b), which is at once.
 		pending := new(types.PendingManaAbility)
 		pending.player = p
 		pending.source_id = o.id
-		pending.ability_index = ability_index_of(o, a)
+		pending.ability_index = index
 		options := make([dynamic]types.ManaType)
 		for c in option.colors do append(&options, c)
 		g.state.waiting_for = types.WaitingFor_ChooseManaColor{player = p, choice = types.ManaChoicePrompt_SingleColor{options = options}, context_ = types.ManaChoiceContext_ManaAbility{pending}}
-		return true
+		return
 	}
 	color: types.ManaType
 	for c in option.colors do color = c
 	finish_mana_ability(g, p, o, option, color)
-	return true
+}
+
+// A mana ability activated like other abilities (mana_ability_by_activation), once its costs are paid: it doesn't go
+// on the stack but resolves at once (CR 605.3b), and its player gets priority back.
+resolve_mana_ability :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: int) {
+	a := activated_ability(o, index)
+	option, _ := mana_ability_effects(a^, &g.state, o)
+	produce_mana(g, p, o, index, option)
 }
 
 // Whether the player can activate this mana ability now: they control it on the battlefield, can pay its costs.
@@ -481,7 +764,10 @@ choose_mana_color :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_Choos
 	if o == nil || !has do return false
 	a := activated_ability(o, index)
 	if a == nil do return false
-	option, _ := mana_ability_option(a^, &g.state, o)
+	// The costs are paid by now: for an ability activated like others (mana_ability_by_activation), only what it
+	// makes and does is left.
+	option, simple := mana_ability_option(a^, &g.state, o)
+	if !simple do option, _ = mana_ability_effects(a^, &g.state, o)
 	finish_mana_ability(g, p, o, option, picked._0)
 	return true
 }
@@ -547,7 +833,10 @@ add_pool_mana :: proc(s: ^types.GameState, p: types.PlayerId, color: types.ManaT
 		// Each unit's id, for the client to follow it: from 1 up (0 means none). Restricted mana keeps what it may
 		// be spent on (CR 106.6).
 		if s.next_pip_id == 0 do s.next_pip_id = 1
-		append(&pl.mana_pool.mana, types.ManaUnit{color = color, source_id = source, pip_id = types.ManaPipId(s.next_pip_id), restrictions = slice.clone_to_dynamic(restrictions)})
+		kept := slice.clone_to_dynamic(restrictions)
+		// A phrase made for the restriction (pool_restriction) lives only until this call into the engine returns.
+		for &r in kept do if kind, is_kind := r.(types.ManaRestriction_OnlyForSpellType); is_kind do r = types.ManaRestriction_OnlyForSpellType{strings.clone(kind._0)}
+		append(&pl.mana_pool.mana, types.ManaUnit{color = color, source_id = source, pip_id = types.ManaPipId(s.next_pip_id), restrictions = kept})
 		s.next_pip_id += 1
 	}
 }
@@ -595,25 +884,44 @@ empty_mana_pools :: proc(s: ^types.GameState) {
 // ---- Restricted mana (CR 106.6) --------------------------------------------------------------------------------
 
 // The spending restrictions this engine reads: "only to cast [a kind of] spell(s)", optionally "or activate
-// abilities [of that kind]".
-spend_restriction_supported :: proc(r: types.ManaSpendRestriction) -> bool {
+// abilities [of that kind]"; "only to cast a creature spell of the chosen type". `description`: the ability's text,
+// since the data writes the chosen type's restriction the same way for wider ones ("or activate an ability of a
+// creature source of the chosen type"), which aren't read yet.
+spend_restriction_supported :: proc(r: types.ManaSpendRestriction, description := "") -> bool {
 	#partial switch x in r {
 	case types.ManaSpendRestriction_SpellType:
 		return spell_type_phrase_supported(x._0)
 	case types.ManaSpendRestriction_SpellTypeOrAbilityActivation:
 		return spell_type_phrase_supported(x.spell_type)
+	case types.ManaSpendRestriction_ChosenCreatureType:
+		return strings.has_suffix(description, "Spend this mana only to cast a creature spell of the chosen type.")
+	case types.ManaSpendRestriction_Any:
+		// "Only to cast a Dragon spell or an Omen spell": kinds of spell, any of them.
+		for y in x._0 {
+			kind, is_kind := y.(types.ManaSpendRestriction_SpellType)
+			if !is_kind || !spell_type_phrase_supported(kind._0) do return false
+		}
+		return len(x._0) > 0
 	}
 	return false
 }
 
-// The card's wording of a restriction as the mana in the pool carries it (only the supported kinds).
+// The card's wording of a restriction as the mana in the pool carries it (only the supported kinds). `o`: the
+// permanent whose ability made it, for "the chosen type" (CR 614.12: chosen as it entered).
 @(private = "file")
-pool_restriction :: proc(r: types.ManaSpendRestriction) -> types.ManaRestriction {
+pool_restriction :: proc(r: types.ManaSpendRestriction, o: ^types.GameObject) -> types.ManaRestriction {
 	#partial switch x in r {
 	case types.ManaSpendRestriction_SpellType:
 		return types.ManaRestriction_OnlyForSpellType{x._0}
 	case types.ManaSpendRestriction_SpellTypeOrAbilityActivation:
 		return types.ManaRestriction_OnlyForTypeSpellsOrAbilities{spell_type = x.spell_type, ability = x.ability}
+	case types.ManaSpendRestriction_ChosenCreatureType:
+		if o != nil do for c in o.chosen_attributes do if t, is_type := c.(types.ChosenAttribute_CreatureType); is_type do return types.ManaRestriction_OnlyForCreatureType{t._0}
+	case types.ManaSpendRestriction_Any:
+		// The kinds as one phrase of alternatives ("Dragon or Omen"); add_pool_mana keeps a copy with the mana.
+		kinds := make([dynamic]string, context.temp_allocator)
+		for y in x._0 do append(&kinds, y.(types.ManaSpendRestriction_SpellType)._0)
+		return types.ManaRestriction_OnlyForSpellType{strings.join(kinds[:], " or ", context.temp_allocator)}
 	}
 	return types.ManaRestriction_Impossible{}
 }
@@ -632,6 +940,9 @@ restrictions_allow :: proc(s: ^types.GameState, rs: []types.ManaRestriction, pay
 			} else if x.ability == .OfSpellType && !spell_type_phrase_matches(paying.object, x.spell_type) {
 				return false
 			}
+		case types.ManaRestriction_OnlyForCreatureType:
+			// "A creature spell of the chosen type".
+			if !paying.is_spell || !is_type(paying.object, .Creature) || !has_subtype(paying.object, x._0) do return false
 		case:
 			return false
 		}
@@ -645,7 +956,7 @@ restrictions_allow :: proc(s: ^types.GameState, rs: []types.ManaRestriction, pay
 spell_type_phrase_supported :: proc(phrase: string) -> bool {
 	for alt in phrase_alternatives(phrase) {
 		for word in strings.fields(alt, context.temp_allocator) {
-			w := strings.trim_prefix(word, "Non")
+			w, _ := phrase_word(word)
 			switch w {
 			case "Historic", "Outlaw", "Party", "Colorless", "Monocolored", "Permanent":
 				return false // kinds that aren't a type or supertype: not read yet
@@ -661,8 +972,7 @@ spell_type_phrase_matches :: proc(o: ^types.GameObject, phrase: string) -> bool 
 	for alt in phrase_alternatives(phrase) {
 		all := true
 		for word in strings.fields(alt, context.temp_allocator) {
-			negated := strings.has_prefix(word, "Non") && len(word) > 3 && word[3] >= 'A' && word[3] <= 'Z'
-			w := word[3:] if negated else word
+			w, negated := phrase_word(word)
 			if word_matches(o, w) == negated do all = false
 		}
 		if all do return true
@@ -681,6 +991,17 @@ word_matches :: proc(o: ^types.GameObject, w: string) -> bool {
 	for c in o.card_types.core_types do if fmt.tprintf("%v", c) == w do return true
 	for st in o.card_types.supertypes do if fmt.tprintf("%v", st) == w do return true
 	return has_subtype(o, w)
+}
+
+// A word of the phrase, and whether it's negated: "NonDragon" or "Noncreature" (as the data writes it) is "not a
+// Creature".
+@(private = "file")
+phrase_word :: proc(word: string) -> (w: string, negated: bool) {
+	if !strings.has_prefix(word, "Non") || len(word) <= 3 do return word, false
+	rest := word[3:]
+	if rest[0] >= 'A' && rest[0] <= 'Z' do return rest, true
+	if rest[0] >= 'a' && rest[0] <= 'z' do return strings.concatenate({strings.to_upper(rest[:1], context.temp_allocator), rest[1:]}, context.temp_allocator), true
+	return word, false
 }
 
 // "Instant or Sorcery", "Instant and Sorcery" (either kind of spell): the alternatives.

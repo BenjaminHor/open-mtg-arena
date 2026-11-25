@@ -112,6 +112,13 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 		}
 	}
 	g.resolution = Resolution{active = true, next = top, controller = controller, source = source, spell = spell, stack_id = stack_id, event = event, source_was = source_was}
+	// "The sacrificed creature's mana value" (quantities.odin): the permanent sacrificed for its cost, noted as the
+	// cost was paid (an activated ability's, or a spell's additional cost).
+	cost_paid_mana_value = 0
+	if paid, has := top.cost_paid_object.?; has do cost_paid_mana_value = int(paid.lki.mana_value)
+	else if o := object(s, spell); spell != 0 && o != nil {
+		if paid, cast_paid := o.cast_cost_paid_object.?; cast_paid do cost_paid_mana_value = int(paid.lki.mana_value)
+	}
 	g.resolution.source_incarnation = top.source_incarnation
 	g.resolution.last_targets = make([dynamic]types.TargetRef)
 	g.resolution.all_targets = make([dynamic]types.TargetRef)
@@ -556,6 +563,59 @@ answer_discard :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_DiscardC
 
 // ---- Look at the top cards and take some ("dig") ------------------------------------------------------------
 
+// The dig shapes read: "Look at the top N cards of your library. Put K of them [matching] into your hand [onto the
+// battlefield (tapped), into your graveyard, back on top of your library] and the rest on the bottom of your library
+// [in a random order, in any order], [into your graveyard], [into your hand]"; "put any number of [kind] cards from
+// among them onto the battlefield. Then shuffle" (the rest stay in the library, then shuffled: dig_rest_settled).
+// K may be "any number", or "X" worked out as it resolves ("put X cards from among them into your hand").
+dig_supported :: proc(x: types.Effect_Dig) -> bool {
+	dest, has_dest := x.destination.?
+	rest, has_rest := x.rest_destination.?
+	if !is_controller(x.player) || !quantity_supported(x.count) || x.source != .Library || x.enters_attacking do return false
+	if x.rest_split_top_count != nil || !has_dest do return false
+	if keep, has_keep := x.keep_count.?; has_keep {
+		if keep < 1 || x.keep_count_expr != nil do return false
+	} else {
+		keep_expr, has_expr := x.keep_count_expr.?
+		if !has_expr || !quantity_supported(keep_expr) || quantity_reads_target(keep_expr) do return false
+	}
+	// Onto the battlefield (tapped or not): only permanent cards can be taken (a filter naming permanent types), and
+	// not an Aura, whose host would be chosen as it enters (CR 303.4f): not asked yet.
+	to_battlefield := dest == .Battlefield && filter_names_permanents(x.filter) && !may_match_aura(x.filter)
+	#partial switch dest {
+	case .Hand, .Graveyard, .Library:
+	case .Battlefield:
+		if !to_battlefield do return false
+	case:
+		return false
+	}
+	if x.enter_tapped && !to_battlefield do return false
+	switch x.rest_remainder {
+	case .Route:
+		if !has_rest do return false
+		#partial switch rest {
+		case .Library, .Graveyard, .Hand:
+		case:
+			return false
+		}
+	case .StayInLibrary:
+		if has_rest do return false
+	}
+	return is_any(x.filter) || mass_filter_supported(x.filter) || spell_filter_supported(x.filter)
+}
+
+// "Put any number of land cards from among them onto the battlefield tapped, then shuffle": what wasn't taken stays
+// in the library, and the shuffle after makes where it was not matter. The data writes "the rest stay" for cards
+// that say otherwise ("one into your graveyard and one on the bottom"), so it's read only before a shuffle.
+dig_rest_settled :: proc(a: types.AbilityDefinition) -> bool {
+	dig, is_dig := a.effect.(types.Effect_Dig)
+	if !is_dig || dig.rest_remainder != .StayInLibrary do return true
+	next := a.sub_ability
+	if next == nil || next.effect == nil || next.condition != nil || next.optional do return false
+	shuffle, is_shuffle := next.effect.(types.Effect_Shuffle)
+	return is_shuffle && is_controller(shuffle.target)
+}
+
 // "Look at the top N cards of your library. Put K of them [matching] into your hand and the rest on the bottom of
 // your library [or into your graveyard]."
 start_dig :: proc(g: ^Game, x: types.Effect_Dig, p: types.PlayerId, controller: types.PlayerId, source: types.ObjectId) -> (asked: bool) {
@@ -565,17 +625,22 @@ start_dig :: proc(g: ^Game, x: types.Effect_Dig, p: types.PlayerId, controller: 
 	if len(cards) == 0 do return false
 	selectable: [dynamic]types.ObjectId
 	for id in cards do if dig_matches(s, x.filter, object(s, id), controller, source) do append(&selectable, id)
-	keep, _ := x.keep_count.?
+	// "Any number" is written as the largest u32, which wouldn't fit an int in 32-bit WebAssembly: no more than the
+	// cards that can be taken. "X cards" is worked out now (CR 608.2h).
+	keep := len(selectable)
+	if k, fixed := x.keep_count.?; fixed do keep = int(min(k, u32(len(selectable))))
+	else if e, counted := x.keep_count_expr.?; counted do keep = clamp(quantity_value(s, e, controller, source, 0), 0, len(selectable))
 	s.priority_player = p
 	s.waiting_for = types.WaitingFor_DigChoice {
 		player           = p,
 		library_owner    = p,
 		cards            = cards,
-		keep_count       = int(keep),
+		keep_count       = keep,
 		up_to            = x.up_to,
 		selectable_cards = selectable,
 		kept_destination = x.destination,
 		rest_destination = x.rest_destination,
+		rest_remainder   = x.rest_remainder,
 		rest_order       = x.rest_order,
 		enter_tapped     = x.enter_tapped,
 		source_id        = source,
@@ -607,12 +672,12 @@ answer_dig :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_DigChoice, k
 		for c in w.selectable_cards do if c == id do found = true
 		if !found do return false
 	}
-	pl := player(s, p)
 	kept_to, _ := w.kept_destination.?
 	rest_to := w.rest_destination.? or_else .Library
 	// One instruction puts the cards where they go at the same time (CR 603.2c: one event).
 	together := begin_together()
 	for id in kept {
+		if kept_to == .Library do continue // back on top, once the rest have gone (below)
 		move_object(g, id, kept_to)
 		// "Put it onto the battlefield tapped": it enters tapped as the ability says (CR 110.5b); it doesn't become
 		// tapped, so nothing triggers on that.
@@ -624,24 +689,53 @@ answer_dig :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_DigChoice, k
 		for k in kept do if k == id do taken = true
 		if !taken do append(&rest, id)
 	}
-	if rest_to == .Library {
-		// The rest go to the bottom (the front of the list), in the order they were.
-		others := make([dynamic]types.ObjectId, context.temp_allocator)
-		for id in ids_of(pl.library) {
-			looked := false
-			for r in rest do if r == id do looked = true
-			if !looked do append(&others, id)
-		}
-		// "In a random order": the effect overrides the owner's choice of order (CR 401.4).
+	order_rest := false
+	if w.rest_remainder == .StayInLibrary {
+		// They stay where they are (a shuffle follows: dig_rest_settled).
+	} else if rest_to == .Library {
+		// "In a random order": the effect overrides the owner's choice of order (CR 401.4); "in any order", the
+		// owner chooses it (asked below); otherwise, the order they were.
 		if w.rest_order == .Random do rng.shuffle(&g.rng, rest[:])
-		pl.library = {}
-		for id in rest do types.pvec_push(&pl.library, id, copy_id)
-		for id in others do types.pvec_push(&pl.library, id, copy_id)
+		put_on_bottom(g, p, rest[:])
+		order_rest = w.rest_order == .PlayerChoice && len(rest) > 1
 	} else {
 		for id in rest do move_object(g, id, rest_to)
 	}
+	// "You may put one of those cards back on top of your library": on top of what's left.
+	if kept_to == .Library do for id in kept do put_in_library(g, id, true)
 	end_together(together)
+	if order_rest {
+		cards := make([dynamic]types.ObjectId)
+		#reverse for id in rest do append(&cards, id) // top of the pile first
+		s.priority_player = p
+		s.waiting_for = types.WaitingFor_DigBottomOrder{player = p, source_id = w.source_id.? or_else 0, cards = cards}
+		return true
+	}
 	s.waiting_for = nil
+	if continue_resolution(g) do after_resolution(g)
+	return true
+}
+
+// The cards to the bottom of the player's library (the front of the list), the first of them the bottommost.
+@(private = "file")
+put_on_bottom :: proc(g: ^Game, p: types.PlayerId, cards: []types.ObjectId) {
+	pl := player(&g.state, p)
+	others := make([dynamic]types.ObjectId, context.temp_allocator)
+	for id in ids_of(pl.library) do if !slice.contains(cards, id) do append(&others, id)
+	pl.library = {}
+	for id in cards do types.pvec_push(&pl.library, id, copy_id)
+	for id in others do types.pvec_push(&pl.library, id, copy_id)
+}
+
+// CR 401.4: "put the rest on the bottom of your library in any order": the owner's order, the first card named the
+// top of those cards and the last the bottommost (as the client's prompt shows them).
+answer_dig_bottom_order :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_DigBottomOrder, order: []types.ObjectId) -> bool {
+	if p != w.player || len(order) != len(w.cards) || has_duplicates(order) do return false
+	for id in order do if !slice.contains(w.cards[:], id) do return false
+	bottom_first := make([dynamic]types.ObjectId, context.temp_allocator)
+	#reverse for id in order do append(&bottom_first, id)
+	put_on_bottom(g, p, bottom_first[:])
+	g.state.waiting_for = nil
 	if continue_resolution(g) do after_resolution(g)
 	return true
 }

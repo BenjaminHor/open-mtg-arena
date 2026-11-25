@@ -9,11 +9,63 @@ import types "../types"
 
 search_supported :: proc(x: types.Effect_SearchLibrary) -> bool {
 	for z in x.source_zones do if z != .Library do return false
-	if x.target_player != nil || x.split != nil do return false
-	if _, plain := x.selection_constraint.(types.SearchSelectionConstraint_None); x.selection_constraint != nil && !plain do return false
+	if x.target_player != nil do return false
+	if split, has := x.split.?; has && !search_split_supported(split, x) do return false
+	if !search_constraint_supported(x.selection_constraint) do return false
 	if !search_filter_supported(x.filter) do return false
 	_, _, counted := search_count(x)
 	return counted
+}
+
+// "With different names" (CR 701.23a: the cards found must fit the search's description, taken together): the only
+// constraint on the cards together read yet.
+@(private = "file")
+search_constraint_supported :: proc(c: types.SearchSelectionConstraint) -> bool {
+	switch x in c {
+	case types.SearchSelectionConstraint_None:
+		return true
+	case types.SearchSelectionConstraint_SharesQualities:
+		return x.relation == .DoesNotShare && len(x.qualities) == 1 && x.qualities[0] == .Name
+	case types.SearchSelectionConstraint_TotalManaValue, types.SearchSelectionConstraint_MatchEachFilter:
+		return false
+	}
+	return true // none
+}
+
+// Whether the chosen cards have different names, when the search asks for that.
+names_differ :: proc(s: ^types.GameState, c: types.SearchSelectionConstraint, chosen: []types.ObjectId) -> bool {
+	if _, differ := c.(types.SearchSelectionConstraint_SharesQualities); !differ do return true
+	for a, i in chosen do for b in chosen[i + 1:] do if object(s, a).name == object(s, b).name do return false
+	return true
+}
+
+// "Put one onto the battlefield tapped and the other into your hand" (Cultivate), "put one into your hand and the
+// other into your graveyard" (Final Parting): the found cards split between two zones, chosen after the search.
+@(private = "file")
+search_split_supported :: proc(split: types.SearchDestinationSplit, x: types.Effect_SearchLibrary) -> bool {
+	n, _, ok := search_count(x)
+	if !ok || split.primary_count < 1 || int(split.primary_count) >= n do return false
+	for z in ([]types.Zone{split.primary_destination, split.rest_destination}) {
+		#partial switch z {
+		case .Hand, .Graveyard, .Battlefield:
+		case:
+			return false
+		}
+	}
+	// Onto the battlefield: only permanent cards can be put there (a filter naming permanent types), and not an Aura,
+	// whose host would be chosen as it enters (CR 303.4f): not asked yet.
+	if (split.primary_destination == .Battlefield || split.rest_destination == .Battlefield) && (!filter_names_permanents_or(x.filter) || may_match_aura(x.filter)) do return false
+	return true
+}
+
+// filter_names_permanents, for any of several kinds ("a basic land card or a Gate card").
+@(private = "file")
+filter_names_permanents_or :: proc(f: types.TargetFilter) -> bool {
+	if or, is_or := f.(types.TargetFilter_Or); is_or {
+		for y in or.filters do if !filter_names_permanents(y) do return false
+		return len(or.filters) > 0
+	}
+	return filter_names_permanents(f)
 }
 
 // "A basic land card", "a Mountain or Plains card", "a card named X".
@@ -29,15 +81,18 @@ search_filter_supported :: proc(f: types.TargetFilter) -> bool {
 	return false
 }
 
-// How many cards to find, whether it's "up to", and whether the count is one the engine reads.
-search_count :: proc(x: types.Effect_SearchLibrary) -> (n: int, up_to: bool, ok: bool) {
+// How many cards to find, whether it's "up to", and whether the count is one the engine reads. "Up to X, where X is
+// the greatest power among creatures you control" is worked out as the search begins (CR 608.2h); without a state
+// (checking support) it's 0.
+search_count :: proc(x: types.Effect_SearchLibrary, s: ^types.GameState = nil, controller: types.PlayerId = 0, source: types.ObjectId = 0) -> (n: int, up_to: bool, ok: bool) {
 	#partial switch q in x.count {
 	case types.QuantityExpr_Fixed:
 		return int(q.value), false, true
 	case types.QuantityExpr_UpTo:
 		if q.max == nil do return
-		m, fixed := fixed_quantity(q.max^)
-		return m, true, fixed
+		if m, fixed := fixed_quantity(q.max^); fixed do return m, true, true
+		if s != nil do return max(quantity_value(s, q.max^, controller, source, 0), 0), true, true
+		return 0, true, quantity_supported(q.max^) && !quantity_reads_target(q.max^)
 	}
 	return
 }
@@ -57,7 +112,8 @@ moves_found_cards :: proc(e: types.Effect) -> bool {
 start_search :: proc(g: ^Game, x: types.Effect_SearchLibrary, controller: types.PlayerId, source: types.ObjectId) {
 	s := &g.state
 	clear(&g.resolution.found)
-	n, up_to, _ := search_count(x)
+	n, up_to, _ := search_count(x, s, controller, source)
+	g.search_split = x.split
 	cards: [dynamic]types.ObjectId
 	for id in ids_of(player(s, controller).library) {
 		if mass_filter_matches(s, object(s, id), x.filter, controller, source) do append(&cards, id)
@@ -73,6 +129,8 @@ start_search :: proc(g: ^Game, x: types.Effect_SearchLibrary, controller: types.
 		reveal              = x.reveal,
 		up_to               = up_to,
 		allows_partial_find = !any_card,
+		constraint          = x.selection_constraint,
+		split               = x.split,
 	}
 }
 
@@ -88,10 +146,67 @@ answer_search :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_SearchCho
 	if !g.resolution.active || len(chosen) > w.count || has_duplicates(chosen) do return false
 	for id in chosen do if !slice.contains(w.cards[:], id) do return false
 	if !w.up_to && !w.allows_partial_find && len(chosen) < min(w.count, len(w.cards)) do return false
+	if !names_differ(&g.state, w.constraint, chosen) do return false // "with different names"
 	append(&g.resolution.found, ..chosen)
+	g.state.waiting_for = nil
+	if split, has := g.search_split.?; has {
+		// CR 608.2c: "put one onto the battlefield tapped and the other into your hand": the player chooses which,
+		// when more than one was found; fewer go where the first part says (the rulings on Cultivate and Jarad's
+		// Orders).
+		if len(chosen) > int(split.primary_count) {
+			cards := make([dynamic]types.ObjectId)
+			append(&cards, ..chosen)
+			g.state.priority_player = p
+			g.state.waiting_for = types.WaitingFor_SearchPartitionChoice {
+				player               = p,
+				cards                = cards,
+				primary_destination  = split.primary_destination,
+				primary_count        = split.primary_count,
+				primary_enter_tapped = split.primary_enter_tapped,
+				rest_destination     = split.rest_destination,
+				source_id            = g.resolution.source,
+			}
+			return true
+		}
+		place_split(g, p, split, chosen, nil)
+	}
+	if continue_resolution(g) do after_resolution(g)
+	return true
+}
+
+// The player's choice of which found cards go where the split's first part says: exactly that many of them.
+answer_search_partition :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_SearchPartitionChoice, primary: []types.ObjectId) -> bool {
+	split, has := g.search_split.?
+	if !g.resolution.active || !has || len(primary) != int(w.primary_count) || has_duplicates(primary) do return false
+	for id in primary do if !slice.contains(w.cards[:], id) do return false
+	rest := make([dynamic]types.ObjectId, context.temp_allocator)
+	for id in w.cards do if !slice.contains(primary, id) do append(&rest, id)
+	place_split(g, p, split, primary, rest[:])
 	g.state.waiting_for = nil
 	if continue_resolution(g) do after_resolution(g)
 	return true
+}
+
+// Puts the found cards where the split says, at the same time (one event, CR 603.2c): onto the battlefield under
+// the searcher's control (CR 110.2), tapped if it says so (CR 110.5b: it enters tapped; it doesn't become tapped).
+@(private = "file")
+place_split :: proc(g: ^Game, p: types.PlayerId, split: types.SearchDestinationSplit, primary: []types.ObjectId, rest: []types.ObjectId) {
+	together := begin_together()
+	defer end_together(together)
+	for id in primary do put_found_card(g, p, id, split.primary_destination, split.primary_enter_tapped == .Tapped)
+	for id in rest do put_found_card(g, p, id, split.rest_destination, false)
+	g.search_split = nil
+}
+
+@(private = "file")
+put_found_card :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, zone: types.Zone, tapped: bool) {
+	o := object(&g.state, id)
+	if o == nil || o.zone != .Library do return
+	move_object(g, id, zone)
+	if zone == .Battlefield && o.zone == .Battlefield {
+		o.controller = p
+		if tapped do o.tapped = true
+	}
 }
 
 // Moves the found cards (CR 608.2c: "put it onto the battlefield tapped", "put that card into your hand").

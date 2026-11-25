@@ -7389,8 +7389,8 @@ tap_untapped_creatures_as_a_cost :: proc(t: ^testing.T) {
 tap_cost_besides_tap_symbol_needs_another :: proc(t: ^testing.T) {
 	if !load_db() do return
 	// Town Gossipmonger: "{T}, Tap an untapped creature you control: Transform this creature." Paying {T} taps it, so
-	// it can't also be the untapped creature tapped (CR 118.3, 701.26a); alone, it can't pay. A mana ability with
-	// such a cost (Springleaf Drum) isn't carried out yet.
+	// it can't also be the untapped creature tapped (CR 118.3, 701.26a); alone, it can't pay. (A mana ability with
+	// such a cost: mana_library_test.odin, Jaspera Sentinel.)
 	g := new_game()
 	s := &g.state
 	gossip := add(t, g, "Town Gossipmonger", 0, .Battlefield)
@@ -7399,7 +7399,6 @@ tap_cost_besides_tap_symbol_needs_another :: proc(t: ^testing.T) {
 	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = gossip.id, ability_index = 0}))
 	w, asked := s.waiting_for.(types.WaitingFor_PayCost)
 	testing.expect(t, asked && len(w.choices) == 1 && w.choices[0] == bears.id, "only the Bears is a choice")
-	testing.expect(t, !game.card_supported(&card(t, "Springleaf Drum").face), "a mana ability with a tap cost isn't yet")
 }
 
 @(test)
