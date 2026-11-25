@@ -2970,3 +2970,27 @@ return_a_creature_you_control :: proc(t: ^testing.T) {
 	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen}))
 	testing.expect(t, bears.zone == .Hand && drake.zone == .Battlefield)
 }
+
+@(test)
+crew_a_vehicle :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.122a: "Crew N": tap other untapped creatures you control with total power N or more; the Vehicle becomes
+	// an artifact creature until end of turn. Funeral Longboat: a 3/3 Vehicle with vigilance, crew 1.
+	testing.expect(t, game.card_supported(&card(t, "Funeral Longboat").face))
+	g := new_game()
+	s := &g.state
+	skiff := add(t, g, "Funeral Longboat", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	testing.expect(t, !game.is_type(skiff, .Creature), "not a creature yet")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CrewVehicle{vehicle_id = skiff.id}))
+	w, asked := s.waiting_for.(types.WaitingFor_CrewVehicle)
+	testing.expect(t, asked && w.crew_power == 1 && len(w.eligible_creatures) == 1, "the Bears can crew it")
+	crew: [dynamic]types.ObjectId
+	append(&crew, bears.id)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CrewVehicle{vehicle_id = skiff.id, creature_ids = crew}))
+	testing.expect(t, bears.tapped && types.pvec_len(s.stack) == 1, "tapped to pay; the ability on the stack")
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, game.is_type(skiff, .Creature) && skiff.power.? == 3, "an artifact creature, 3/3")
+	game.cleanup(g)
+	testing.expect(t, !game.is_type(skiff, .Creature), "until end of turn")
+}

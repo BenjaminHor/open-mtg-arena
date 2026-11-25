@@ -85,6 +85,18 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		return types.GameAction_ChooseTarget{target = t}, true
 	case types.WaitingFor_OptionalEffectChoice:
 		return types.GameAction_DecideOptionalEffect{accept = true}, true
+	case types.WaitingFor_CrewVehicle:
+		// The fewest creatures, weakest first, that add up to the crew power.
+		ids := slice.clone(w.eligible_creatures[:], context.temp_allocator)
+		slice.sort_by(ids, proc(a, b: types.ObjectId) -> bool {return a < b})
+		chosen := make([dynamic]types.ObjectId, context.temp_allocator)
+		total := 0
+		for id in ids {
+			if total >= int(w.crew_power) do break
+			append(&chosen, id)
+			total += power_of(object(s, id))
+		}
+		return types.GameAction_CrewVehicle{vehicle_id = w.vehicle_id, creature_ids = chosen}, true
 	case types.WaitingFor_ReplacementChoice:
 		// A shockland: pay the life while there's plenty of it, else let it enter tapped.
 		return types.GameAction_ChooseReplacement{index = 0 if player(s, p).life > 10 else 1}, true

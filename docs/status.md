@@ -2923,6 +2923,10 @@ Progress:
   5,638.
 - Bounce "this" (from the battlefield or the graveyard it went to) and "return a creature you control to its
   owner's hand", chosen as it resolves (CR 608.2d), not targeted: 5,638 -> 5,684.
+- Crew (CR 702.122): CrewVehicle from priority opens WaitingFor_CrewVehicle (Rust's prompt: eligible creatures
+  and their power); the chosen creatures are tapped as the cost, the ability goes on the stack as a keyword
+  action, and the Vehicle is an artifact creature until end of turn. The AI answers the prompt but doesn't crew on
+  its own yet. "Once each turn" crew is refused. 5,684 -> 5,748.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

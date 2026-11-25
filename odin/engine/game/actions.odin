@@ -28,6 +28,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_ReplacementChoice:
 		return w.player, true
+	case types.WaitingFor_CrewVehicle:
+		return w.player, true
 	case types.WaitingFor_AssignCombatDamage:
 		return w.player, true
 	case types.WaitingFor_ScryChoice:
@@ -124,6 +126,17 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			return cast_spell(g, p, a.object_id, targets[:])
 		case types.GameAction_ActivateAbility:
 			return activate_ability(g, p, a.source_id, a.ability_index)
+		case types.GameAction_CrewVehicle:
+			return start_crew(g, p, a.vehicle_id)
+		}
+	case types.WaitingFor_CrewVehicle:
+		#partial switch a in action {
+		case types.GameAction_CrewVehicle:
+			return answer_crew(g, p, w, a.creature_ids[:])
+		case types.GameAction_CancelCast:
+			// CR 602.2b: nothing was paid yet; back to priority.
+			s.waiting_for = types.WaitingFor_Priority{player = p}
+			return true
 		}
 	case types.WaitingFor_TargetSelection:
 		#partial switch a in action {
@@ -345,6 +358,7 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 				append(&out, types.GameAction_CastSpell{object_id = id, card_id = o.card_id})
 			}
 		}
+		for o in permanents_of(s, p) do if can_crew(g, p, o) do append(&out, types.GameAction_CrewVehicle{vehicle_id = o.id})
 		for o in permanents_of(s, p) {
 			if o.abilities == nil do continue
 			for &a, i in o.abilities^ {
@@ -379,6 +393,10 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		available := make([dynamic]int, context.temp_allocator)
 		for i in 0 ..< w.modal.mode_count do if !slice.contains(w.unavailable_modes[:], i) do append(&available, i)
 		mode_sets(&out, available[:], 0, make([dynamic]int, context.temp_allocator), w.modal.min_choices, w.modal.max_choices)
+		append(&out, types.GameAction_CancelCast{})
+	case types.WaitingFor_CrewVehicle:
+		// The client picks the creatures (any set with enough power); every eligible one is a valid answer to offer.
+		append(&out, types.GameAction_CrewVehicle{vehicle_id = w.vehicle_id, creature_ids = slice.clone_to_dynamic(w.eligible_creatures[:], context.temp_allocator)})
 		append(&out, types.GameAction_CancelCast{})
 	case types.WaitingFor_ReplacementChoice:
 		land: types.ObjectId

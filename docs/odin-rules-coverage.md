@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 272 of 2880 rules implemented (9%), 123 of them tested.**
+**In scope (100-799): 276 of 2880 rules implemented (10%), 124 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -51,7 +51,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 212 life modifier | 1 | 0 (0%) | 0 |
 | 213 information below the text box | 8 | 0 (0%) | 0 |
 | 300 general | 4 | 0 (0%) | 0 |
-| 301 artifacts | 15 | 1 (7%) | 0 |
+| 301 artifacts | 15 | 2 (13%) | 0 |
 | 302 creatures | 10 | 1 (10%) | 1 |
 | 303 enchantments | 20 | 3 (15%) | 1 |
 | 304 instants | 5 | 0 (0%) | 0 |
@@ -108,7 +108,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 616 interaction of replacement and or prevention effects | 9 | 1 (11%) | 0 |
 | 700 general | 36 | 6 (17%) | 4 |
 | 701 keyword actions | 305 | 26 (9%) | 9 |
-| 702 keyword abilities | 774 | 26 (3%) | 6 |
+| 702 keyword abilities | 774 | 29 (4%) | 7 |
 | 703 turn based actions | 20 | 1 (5%) | 0 |
 | 704 state based actions | 40 | 12 (30%) | 7 |
 | 705 flipping a coin | 3 | 0 (0%) | 0 |
@@ -892,7 +892,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 300.2a An object that’s both a land and another card type (for example, an artifact land) can only be played as a ...
 - ⬜ 300.2b Each kindred card has another card type. Casting and resolving a kindred card follow the rules for casting ...
 
-### 301 artifacts (1/15)
+### 301 artifacts (2/15)
 
 - ⬜ 301.1 A player who has priority may cast an artifact card from their hand during a main phase of their turn when ...
 - ⬜ 301.2 When an artifact spell resolves, its controller puts it onto the battlefield under their control.
@@ -908,7 +908,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 301.6 Some artifacts have the subtype “Fortification.” A Fortification can be attached to a land. It can’t legall...
 - ⬜ 301.7 Some artifacts have the subtype “Vehicle.” Most Vehicles have a crew ability which allows them to become ar...
 - ⬜ 301.7a Each Vehicle has a printed power and toughness, but it has these characteristics only if it’s also a creatu...
-- ⬜ 301.7b If a Vehicle becomes a creature, it immediately has its printed power and toughness. Other effects, includi...
+- 🟡 301.7b If a Vehicle becomes a creature, it immediately has its printed power and toughness. Other effects, includi...
 
 ### 302 creatures (1/10)
 
@@ -2111,7 +2111,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 701.72b To assimilate a permanent card that’s in a zone other than the battlefield, put it onto the battlefield und...
 - ⬜ 701.72c An object may have an ability printed on it that assimilates another object and another ability that refers...
 
-### 702 keyword abilities (26/774)
+### 702 keyword abilities (29/774)
 
 - ⬜ 702.1 Most abilities describe exactly what they do in the card’s rules text. Some, though, are very common or wou...
 - ⬜ 702.1a If an effect refers to a “[keyword ability] cost,” it refers only to the variable costs for that keyword.
@@ -2604,9 +2604,9 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 702.121 Melee
 - ⬜ 702.121a Melee is a triggered ability. “Melee” means “Whenever this creature attacks, it gets +1/+1 until end of tur...
 - ⬜ 702.121b If a creature has multiple instances of melee, each triggers separately.
-- ⬜ 702.122 Crew
-- ⬜ 702.122a Crew is an activated ability of Vehicle cards. “Crew N” means “Tap any number of other untapped creatures y...
-- ⬜ 702.122b A creature “crews a Vehicle” when it’s tapped to pay the cost to activate a Vehicle’s crew ability.
+- 🟡 702.122 Crew
+- ✅ 702.122a Crew is an activated ability of Vehicle cards. “Crew N” means “Tap any number of other untapped creatures y...
+- 🟡 702.122b A creature “crews a Vehicle” when it’s tapped to pay the cost to activate a Vehicle’s crew ability.
 - ⬜ 702.122c A Vehicle is “crewed by” a creature if that creature was tapped to pay the cost to activate that Vehicle’s ...
 - ⬜ 702.122d If an effect states that a creature “can’t crew Vehicles,” that creature can’t be tapped to pay the crew co...
 - ⬜ 702.122e Some Vehicles have abilities that trigger when they become crewed. “Whenever [this Vehicle] becomes crewed”...

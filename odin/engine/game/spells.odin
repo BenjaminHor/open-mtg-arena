@@ -81,6 +81,8 @@ keyword_supported :: proc(k: types.Keyword) -> bool {
 	     types.Keyword_FirstStrike, types.Keyword_DoubleStrike, types.Keyword_Flash, types.Keyword_Menace,
 	     types.Keyword_Indestructible, types.Keyword_Hexproof, types.Keyword_Shroud:
 		return true
+	case types.Keyword_Crew:
+		return k.once_per_turn == nil // CR 702.122 (crew.odin)
 	case types.Keyword_Enchant:
 		// CR 702.5a: an Aura enchants a permanent of a kind (enchanting players isn't modelled yet).
 		t, typed := k._0.(types.TargetFilter_Typed)
@@ -885,6 +887,9 @@ resolve_top_of_stack :: proc(g: ^Game) {
 		return
 	case types.StackEntryKind_ActivatedAbility:
 		resolve_ability(g, entry, k.ability)
+		return
+	case types.StackEntryKind_KeywordAction:
+		if crew, is_crew := k.action.(types.KeywordAction_Crew); is_crew do resolve_crew(g, crew)
 		return
 	}
 	spell, is_spell := entry.kind.(types.StackEntryKind_Spell)
