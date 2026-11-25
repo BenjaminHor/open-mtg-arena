@@ -102,6 +102,7 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 	o.attached_to = nil
 	if from == .Battlefield && o.transformed do turn_front_face_up(g, o) // CR 712.6a
 	if from == .Stack && showing_adventure(o) do show_creature(g.card_db, o) // CR 716.4
+	if o.modal_back_face && to != .Stack && to != .Battlefield do mdfc_front_up(g.card_db, o) // CR 712.6a
 	if own, is_copy := copying(o); is_copy && from == .Battlefield && g.card_db != nil {
 		// A copy that leaves the battlefield is a new object with its own card's values again (CR 400.7, 707.2).
 		if card := g.card_db(own); card != nil do set_card_characteristics(o, &card.face)

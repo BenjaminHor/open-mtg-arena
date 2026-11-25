@@ -30,6 +30,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_CastOffer:
 		return w.player, true
+	case types.WaitingFor_ModalFaceChoice:
+		return w.player, true
 	case types.WaitingFor_DistributeAmong:
 		return w.player, true
 	case types.WaitingFor_ReplacementChoice:
@@ -182,6 +184,14 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_CastOffer:
 		a, ok := action.(types.GameAction_ChooseAdventureFace)
 		return ok && answer_adventure_offer(g, p, w, a.creature)
+	case types.WaitingFor_ModalFaceChoice:
+		#partial switch a in action {
+		case types.GameAction_ChooseModalFace:
+			return answer_modal_face(g, p, w, a.back_face)
+		case types.GameAction_CancelCast:
+			g.state.waiting_for = types.WaitingFor_Priority{player = p}
+			return true
+		}
 	case types.WaitingFor_DeclareAttackers:
 		a, ok := action.(types.GameAction_DeclareAttackers)
 		return ok && declare_attackers(g, a.attacks[:])
@@ -356,9 +366,13 @@ can_play_land :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool
 }
 
 // CR 305.1: playing a land puts it onto the battlefield; it doesn't use the stack.
-play_land :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId) -> bool {
+play_land :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, face_decided := false) -> bool {
 	s := &g.state
 	o := object(s, id)
+	if o != nil && !face_decided {
+		// CR 712.9: a modal double-faced card's land face (mdfc.odin).
+		if handled, ok := offer_modal_face(g, p, o); handled do return ok
+	}
 	if o == nil || !can_play_land(g, p, o) || !object_supported(o, g.card_db) do return false
 	move_object(g, id, .Battlefield)
 	player(s, p).lands_played_this_turn += 1
@@ -385,6 +399,8 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 				append(&out, types.GameAction_PlayLand{object_id = id, card_id = o.card_id})
 			} else if castable(s, p, o, g.card_db) || adventure_castable(g, p, o) {
 				append(&out, types.GameAction_CastSpell{object_id = id, card_id = o.card_id})
+			} else if _, back := mdfc_faces_usable(g, p, o); back {
+				append(&out, types.GameAction_CastSpell{object_id = id, card_id = o.card_id}) // its back face (CR 712.8b, 712.9)
 			}
 		}
 		for o in permanents_of(s, p) do if can_crew(g, p, o) do append(&out, types.GameAction_CrewVehicle{vehicle_id = o.id})
@@ -452,6 +468,13 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		append(&out, types.GameAction_PayUnlessCost{pay = false})
 	case types.WaitingFor_DistributeAmong:
 		append(&out, types.GameAction_DistributeAmong{distribution = ai_division(w)})
+	case types.WaitingFor_ModalFaceChoice:
+		if o := object(s, w.object_id); o != nil {
+			front, back := mdfc_faces_usable(g, p, o)
+			if front do append(&out, types.GameAction_ChooseModalFace{back_face = false})
+			if back do append(&out, types.GameAction_ChooseModalFace{back_face = true})
+		}
+		append(&out, types.GameAction_CancelCast{})
 	case types.WaitingFor_CastOffer:
 		if k, adventure := w.kind.(types.CastOfferKind_Adventure); adventure {
 			append(&out, types.GameAction_ChooseAdventureFace{creature = true})

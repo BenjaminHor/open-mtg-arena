@@ -4106,3 +4106,34 @@ adventure_then_the_creature_from_exile :: proc(t: ^testing.T) {
 	settle_stack(g)
 	testing.expect(t, killer.zone == .Graveyard && killer.name == "Giant Killer", "graveyard, as the creature")
 }
+
+@(test)
+modal_double_faced_cards :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 712.9: played as a land, the player chooses a face that's a land; it enters with that face up (712.6e).
+	// CR 712.6a: in other zones it's its front face.
+	testing.expect(t, game.card_supported(&card(t, "Barkchannel Pathway").face))
+	g := new_game()
+	s := &g.state
+	pathway := add(t, g, "Barkchannel Pathway", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = pathway.id}))
+	_, asked := s.waiting_for.(types.WaitingFor_ModalFaceChoice)
+	testing.expect(t, asked, "which face")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseModalFace{back_face = true}))
+	testing.expect(t, pathway.zone == .Battlefield && pathway.name == "Tidechannel Pathway", "Tidechannel Pathway, back face up")
+	game.move_object(g, pathway.id, .Graveyard)
+	testing.expect(t, pathway.name == "Barkchannel Pathway" && !pathway.modal_back_face, "the front face in the graveyard")
+
+	// Akoum Warrior // Akoum Teeth with no mana: only the land face can be used, so it's played without asking.
+	g = new_game()
+	s = &g.state
+	warrior := add(t, g, "Akoum Warrior", 0, .Hand)
+	has_action := false
+	for a in game.legal_actions(g, 0) {
+		if c, is_cast := a.(types.GameAction_CastSpell); is_cast && c.object_id == warrior.id do has_action = true
+	}
+	testing.expect(t, has_action, "offered for its land face")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = warrior.id}))
+	testing.expect(t, warrior.zone == .Battlefield && warrior.name == "Akoum Teeth" && warrior.tapped, "Akoum Teeth, entering tapped")
+	testing.expect(t, s.players[0].lands_played_this_turn == 1, "the turn's land")
+}

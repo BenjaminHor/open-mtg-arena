@@ -730,6 +730,13 @@ layout_gap :: proc(e: ^types.CardExportEntry, name: string) -> (gap: string, has
 		if !card_supported(&back.face, back_face = true) do return "back face", true
 		return "", false
 	}
+	if has_layout && layout == "modal_dfc" {
+		// A modal double-faced card (mdfc.odin): supported when its back face is.
+		back := modal_back_face(e)
+		if back == nil do return "layout:modal_dfc (no back face)", true
+		if !card_supported(&back.face) do return "back face", true
+		return "", false
+	}
 	if has_layout && layout == "adventure" {
 		// An adventurer card (adventure.odin): supported when its Adventure is.
 		adventure := adventure_face(e)
@@ -781,10 +788,14 @@ object_face :: proc(o: ^types.GameObject) -> types.CardFace {
 
 // CR 601.2: casting. The card moves to the stack (601.2a), its targets are chosen (601.2c; when the action didn't
 // name them, the player is asked, one target at a time), the cost is paid (601.2g-h) and the spell becomes cast.
-cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []types.TargetRef, adventure_decided := false) -> bool {
+cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []types.TargetRef, adventure_decided := false, face_decided := false) -> bool {
 	s := &g.state
 	o := object(s, id)
 	if o == nil do return false
+	if !face_decided && len(targets) == 0 {
+		// CR 712.8b, 712.9: a modal double-faced card's face (mdfc.odin).
+		if handled, ok := offer_modal_face(g, p, o); handled do return ok
+	}
 	if !adventure_decided && len(targets) == 0 {
 		// CR 716.3: the creature or its Adventure (adventure.odin).
 		if handled, ok := offer_adventure(g, p, o); handled do return ok
@@ -836,6 +847,7 @@ withdraw_spell :: proc(s: ^types.GameState, id: types.ObjectId, reversed := true
 	if o == nil || o.zone == .Stack do return // already cast: not an announcement
 	types.pvec_pop(&s.stack, copy_entry)
 	if reversed && showing_adventure(o) do show_creature(current_card_db, o) // a reversed Adventure: the creature (CR 716.4)
+	if reversed && o.modal_back_face do mdfc_front_up(current_card_db, o) // the front face in the hand (CR 712.6a)
 }
 
 // CR 601.2b: the announcements in order: kicker, then X; then targets (601.2c) and paying (601.2h).

@@ -3024,6 +3024,10 @@ Progress:
   exiled and its controller may cast the creature from there (CastingPermission_AdventureCreature, 716.3d); a
   reversed, countered or fizzled Adventure is the creature card again (716.4). The AI casts the Adventure first.
   6,430 -> 6,495.
+- Modal double-faced cards (CR 712.8b, 712.9, mdfc.odin): cast or played from the hand, the player chooses the
+  face (WaitingFor_ModalFaceChoice / ChooseModalFace, the client's dialog), asked only when both faces can be used;
+  the chosen face is up on the stack and battlefield (712.6e, modal_back_face) and the front face everywhere else
+  (712.6a). The AI picks the front face, and doesn't yet play a spell's land back as its land drop. 6,495 -> 6,534.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

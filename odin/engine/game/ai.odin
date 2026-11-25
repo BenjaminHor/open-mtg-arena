@@ -96,6 +96,9 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		return types.GameAction_DecideOptionalEffect{accept = true}, true
 	case types.WaitingFor_DistributeAmong:
 		return types.GameAction_DistributeAmong{distribution = ai_division(w)}, true
+	case types.WaitingFor_ModalFaceChoice:
+		// The front face: a modal double-faced card's main face (its back is often a land).
+		return types.GameAction_ChooseModalFace{back_face = false}, true
 	case types.WaitingFor_CastOffer:
 		// The Adventure first: the creature can be cast from exile afterwards (CR 716.3d).
 		return types.GameAction_ChooseAdventureFace{creature = false}, true
