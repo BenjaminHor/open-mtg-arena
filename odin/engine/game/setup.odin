@@ -36,6 +36,7 @@ Game :: struct {
 	stack_abilities:   map[types.ObjectId]^types.AbilityDefinition,
 	stack_conditions:  map[types.ObjectId]Stack_Condition, // triggered abilities with an intervening "if" (CR 603.4)
 	stack_events: map[types.ObjectId]Trigger_Event,
+	stack_sources: map[types.ObjectId]^types.GameObject, // a triggered ability's source as it was put on the stack (CR 608.2h)
 	priority_after: Maybe(types.PlayerId), // who gets priority once the triggers being put on the stack are (CR 117.3c)
 	stack_crews:  map[types.ObjectId]u64,
 	stack_transforms: map[types.ObjectId]u32, // an ability on the stack: its source's transformation count then (CR 701.27g)

@@ -3208,6 +3208,21 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   gap recordings only once the engine is fleshed out (ask then).
 
 ## Known issues
+- (2026-11-25, sixth rules review of the Odin engine, 5a5bc3d..8fbd5e6; all fixed, test sixth_review_fixes: the layer
+  pass runs before triggers are collected and a moved object drops its granted abilities; a triggered ability keeps
+  its source as it was (stack_sources) for "its power" and X after it left; the data-dropped cards refused, with
+  description checks for once-per-turn with "during your turn" and remove-counter costs not "from this") (1) granted triggers are
+  read from the wrong set: the layer pass runs after triggers are collected (an entering Sliver misses Dormant
+  Sliver's grant, CR 603.6b, 603.10) and a moved object keeps stale granted abilities; (2) Bind the Monster's "it
+  deals damage equal to its power" has no target to read; (3) a spell's own "can't be countered" isn't read on the
+  stack (CR 113.6g); (4) "its power" in a granted dies trigger reads the card in the graveyard (CR 608.2h); (5) an
+  enters trigger's X is 0 if the permanent left (CR 107.3m); (6) descended reads the stack/battlefield face, not the
+  graveyard face (Adventures, MDFC land faces); (7) data-dropped qualifiers: Tolls of War, Dionus, Stika, Danitha,
+  Draco, Rift Elemental (remove-counter cost "from a permanent you control"), Equinox, Arc Spitter, Fearsome Temper;
+  (8) once-per-turn records share one key for all of an object's printed triggers, and are taken before the
+  intervening if; (9) damage records match by id, not incarnation (CR 400.7); (10) layer 6 grants worked out before
+  layer 5 colour (CR 613.1e-f; lags one action); (11) granted abilities overwritten in place when the set changes
+  at the same size; (12) citations: 611.3a not 611.3b, 615.1 not 120.3.
 - (2026-11-25, fifth rules review of the Odin engine, 42be933..8a539ae; all fixed, tests fifth_review_fixes,
   clone_makes_the_copied_cards_entry_choice, chosen_type_looks_back_when_its_source_dies; the data-dropped cards,
   Gilraen and Dawn-Blessed Pennant refused in MISPARSED_CARDS, "chosen at random" refused, "enchanted creatures"

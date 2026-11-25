@@ -91,6 +91,8 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 		remove_from_combat(s, id) // CR 506.4
 		detach_all_from(s, o)
 		unattach(s, o)
+		// Abilities granted on the battlefield stay with its last known information, not the new object (CR 400.7).
+		set_granted_abilities(o, nil, nil)
 	}
 	last_controller := o.controller // CR 603.10: a leaves-the-battlefield trigger looks back at the object as it was
 	record_zone_change(s, o, from, to)

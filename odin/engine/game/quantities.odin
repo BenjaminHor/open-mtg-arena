@@ -18,6 +18,9 @@ event_amount: int
 // The trigger event's object while its ability resolves ("the spell that triggered it").
 @(thread_local)
 event_object_now: types.ObjectId
+// The resolving ability's source as it last existed, when it has left since (CR 608.2h, 107.3m).
+@(thread_local)
+source_was_now: ^types.GameObject
 
 quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 	#partial switch x in q {
@@ -179,7 +182,9 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 		case types.QuantityRef_Variable, types.QuantityRef_CostXPaid:
 			// CR 107.3a, 107.3m: X is the value announced for the spell (an enters ability of the permanent it became
 			// uses that too).
-			if o := object(s, source); o != nil do return int(o.cost_x_paid.? or_else 0)
+			o := object(s, source)
+			if source_was_now != nil && source_was_now.id == source do o = source_was_now
+			if o != nil do return int(o.cost_x_paid.? or_else 0)
 		case types.QuantityRef_GraveyardSize:
 			return types.pvec_len(player(s, scope_player(s, r.player, controller)).graveyard)
 		case types.QuantityRef_LifeTotal:
@@ -305,7 +310,12 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			n := 0
 			for i in 0 ..< types.pvec_len(s.zone_changes_this_turn) {
 				rec := types.pvec_get(s.zone_changes_this_turn, i)
-				if rec.to_zone == .Graveyard && rec.owner == controller && !rec.is_token && record_matches_type(rec, types.TypeFilter_Permanent{}) do n += 1
+				if rec.to_zone != .Graveyard || rec.owner != controller || rec.is_token do continue
+				// A permanent card in the graveyard: the face it has there (an Adventure or a modal face goes back to its
+				// main face, CR 716.4, 712.6a), while it's still there; else as it was recorded.
+				if o := object(s, rec.object_id); o != nil && o.zone == .Graveyard {
+					if is_permanent_card(o) do n += 1
+				} else if record_matches_type(rec, types.TypeFilter_Permanent{}) do n += 1
 			}
 			return n
 
@@ -431,6 +441,7 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 scope_object :: proc(s: ^types.GameState, scope: types.ObjectScope, source, target: types.ObjectId) -> ^types.GameObject {
 	#partial switch _ in scope {
 	case types.ObjectScope_Source:
+		if source_was_now != nil && source_was_now.id == source do return source_was_now
 		return object(s, source)
 	case types.ObjectScope_Target:
 		if target == 0 do return nil
@@ -775,8 +786,8 @@ record_matches :: proc(rec: types.ZoneChangeRecord, f: types.TargetFilter, contr
 }
 
 // "If an opponent was dealt damage this turn", "the damage dealt to this creature this turn", "if an opponent was
-// dealt 3 or more damage this turn" (the most dealt to one of them): the turn's damage records (CR 120.3: damage
-// dealt, after prevention).
+// dealt 3 or more damage this turn" (the most dealt to one of them): the turn's damage records (damage
+// dealt, after prevention: CR 615.1, 615.6).
 damage_record_query_supported :: proc(r: types.QuantityRef_DamageDealtThisTurn) -> bool {
 	if r.channel != .Total || r.source == nil || r.target == nil do return false
 	if _, has := r.group_by.?; has && r.aggregate == .Min do return false
@@ -820,6 +831,11 @@ damaged_player_side :: proc(f: types.TargetFilter) -> (you: bool, ok: bool) {
 damage_dealt_this_turn :: proc(s: ^types.GameState, r: types.QuantityRef_DamageDealtThisTurn, controller: types.PlayerId, source: types.ObjectId) -> int {
 	groups := make(map[u64]int, allocator = context.temp_allocator)
 	total := 0
+	// "This creature": the object it is now (CR 400.7: damage dealt by or to it before a zone change was another's).
+	this: Maybe(u64)
+	// (A dies trigger reads the creature as it last existed: its last known object, CR 603.10a.)
+	if source_was_now != nil && source_was_now.id == source do this = source_was_now.incarnation
+	else if o := object(s, source); o != nil do this = o.incarnation
 	for i in 0 ..< types.pvec_len(s.damage_dealt_this_turn) {
 		rec := types.pvec_get(s.damage_dealt_this_turn, i)
 		#partial switch r.damage_kind {
@@ -830,7 +846,7 @@ damage_dealt_this_turn :: proc(s: ^types.GameState, r: types.QuantityRef_DamageD
 		}
 		#partial switch x in r.source^ {
 		case types.TargetFilter_SelfRef:
-			if rec.source_id != source do continue
+			if rec.source_id != source || rec.source_incarnation != this do continue
 		case types.TargetFilter_Typed:
 			if rec.source_controller != controller do continue
 		}
@@ -838,7 +854,7 @@ damage_dealt_this_turn :: proc(s: ^types.GameState, r: types.QuantityRef_DamageD
 		#partial switch x in r.target^ {
 		case types.TargetFilter_SelfRef:
 			id, is_object := rec.target.(types.TargetRef_Object)
-			if !is_object || id._0 != source do continue
+			if !is_object || id._0 != source || rec.target_incarnation != this do continue
 		case types.TargetFilter_Any:
 		case:
 			you, _ := damaged_player_side(r.target^)

@@ -135,7 +135,10 @@ give_priority :: proc(g: ^Game, p: types.PlayerId) {
 	// happens, before a player receives priority.
 	for {
 		// CR 603.2: abilities trigger when their event happens, so the events so far are seen before state-based
-		// actions change the board (a Saga's last chapter triggers before CR 704.5s would sacrifice it).
+		// actions change the board (a Saga's last chapter triggers before CR 704.5s would sacrifice it). The
+		// continuous effects that exist then decide what triggers (CR 603.10): a permanent that just entered has the
+		// abilities granted to it (CR 603.6b).
+		apply_continuous_effects(g)
 		collect_triggers(g)
 		check_state_based_actions(g)
 		if game_over(s) do return

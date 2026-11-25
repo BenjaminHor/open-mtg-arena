@@ -54,7 +54,7 @@ static_mode_supported :: proc(st: types.StaticDefinition) -> bool {
 	if _, ok := blocked_by_filter(st); ok do return true
 	modes := rule_modes(st.mode)
 	if modes == {} || st.per_player_condition != nil do return false
-	// "As long as ..." (CR 611.3b): checked wherever the rule is read (has_rule, player_rule_count).
+	// "As long as ..." (CR 611.3a): checked wherever the rule is read (has_rule, player_rule_count).
 	if c, has := st.condition.?; has && (.Flash in modes || !condition_supported(c)) do return false
 	if st.affected_zone != nil || st.effect_zone != nil || len(st.active_zones) > 0 || len(st.modifications) > 0 do return false
 	affected, has := st.affected.?
@@ -87,6 +87,12 @@ has_rule :: proc(g: ^Game, o: ^types.GameObject, mode: Rule_Mode) -> bool {
 	// A card's own "as though it had flash" works from the hand.
 	if mode == .Flash && o.static_definitions != nil {
 		for &st in o.static_definitions^ do if .Flash in rule_modes(st.mode) && static_mode_supported(st) do return true
+	}
+	// A spell's own "this spell can't be countered" works on the stack (CR 113.6g), its condition read there.
+	if o.zone == .Stack && o.static_definitions != nil {
+		for &st in o.static_definitions^ {
+			if mode in rule_modes(st.mode) && static_mode_supported(st) && condition_holds(s, o, st.condition) do return true
+		}
 	}
 	for t in g.temp_effects do if f, is_rule := t.filter.?; is_rule && o.zone == .Battlefield && object_matches(s, o, f, t.controller, t.source) {
 		if mode in t.modes do return true

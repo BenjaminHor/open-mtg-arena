@@ -21,6 +21,7 @@ Resolution :: struct {
 	performed:    bool, // whether the latest "you may" instruction was done: "if you do" (CR 608.2c)
 	found:        [dynamic]types.ObjectId, // the cards a library search found: "those cards" next
 	source_incarnation: Maybe(u64), // the source as the ability was put on the stack: "this" means that object
+	source_was:   ^types.GameObject, // that source as it last was, when it has since changed zones (CR 608.2h)
 	event:        Trigger_Event, // a triggered ability's event: "that much damage", "that creature"
 	scope_node:   ^types.ResolvedAbility, // an instruction carried out for each player in a scope...
 	scope:        [dynamic]types.PlayerId, // ...for these players...
@@ -85,7 +86,7 @@ resolved_tree :: proc(s: ^types.GameState, a: ^types.AbilityDefinition, targets:
 }
 
 // Starts resolving: checks targets (CR 608.2b) and carries out the instructions. False while a player chooses.
-start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: types.PlayerId, source: types.ObjectId, spell: types.ObjectId = 0, stack_id: types.ObjectId = 0, event := Trigger_Event{}) -> bool {
+start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: types.PlayerId, source: types.ObjectId, spell: types.ObjectId = 0, stack_id: types.ObjectId = 0, event := Trigger_Event{}, source_was: ^types.GameObject = nil) -> bool {
 	s := &g.state
 	any_target, any_legal := false, false
 	for n := top; n != nil; n = n.sub_ability {
@@ -103,7 +104,7 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 			else do append(&n.illegal_target_slots, i)
 		}
 	}
-	g.resolution = Resolution{active = true, next = top, controller = controller, source = source, spell = spell, stack_id = stack_id, event = event}
+	g.resolution = Resolution{active = true, next = top, controller = controller, source = source, spell = spell, stack_id = stack_id, event = event, source_was = source_was}
 	g.resolution.source_incarnation = top.source_incarnation
 	g.resolution.last_targets = make([dynamic]types.TargetRef)
 	g.resolution.all_targets = make([dynamic]types.TargetRef)
@@ -155,6 +156,7 @@ continue_resolution :: proc(g: ^Game) -> bool {
 	r := &g.resolution
 	event_amount = r.event.amount // "that much", read by the instructions (quantities.odin)
 	event_object_now = r.event.object
+	source_was_now = r.source_was
 	for r.next != nil {
 		// What the instruction just carried out moved, before the next one reads "this way". An instruction skipped
 		// for its condition carries nothing out, so "this way" still means the one before it.
@@ -297,6 +299,7 @@ continue_resolution :: proc(g: ^Game) -> bool {
 	}
 	r^ = {}
 	event_object_now = 0
+	source_was_now = nil
 	return true
 }
 

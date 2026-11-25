@@ -165,7 +165,24 @@ apply_continuous_effects :: proc(g: ^Game) {
 			for m in e.static.modifications do if k, ok := m.(types.ContinuousModification_AddKeyword); ok && !has_keyword_in(keywords[:], k.keyword) do append(&keywords, k.keyword)
 		}
 		for mods in temps do for m in mods do if k, ok := m.(types.ContinuousModification_AddKeyword); ok && !has_keyword_in(keywords[:], k.keyword) do append(&keywords, k.keyword)
-		// Abilities granted ("equipped creature has '{T}: ...'", "creatures you control have 'whenever ...'"): its
+		// CR 122.1b, 613.1f: a keyword counter gives its keyword.
+		for c in o.counters do if kc, ok := c._0.(types.CounterType_Keyword); ok {
+			if k, known := keyword_of_counter(kc._0); known && !has_keyword_in(keywords[:], k) do append(&keywords, k)
+		}
+		// Layer 5 (CR 613.1e): color.
+		colors_set := false
+		for e in statics do if affects(s, e.source, e.static, o) {
+			for m in e.static.modifications do if k, ok := m.(types.ContinuousModification_SetColor); ok {
+				o.color = k.colors
+				colors_set = true
+			}
+		}
+		for mods in temps do for m in mods do if k, ok := m.(types.ContinuousModification_SetColor); ok {
+			o.color = k.colors
+			colors_set = true
+		}
+		if !colors_set do o.color = o.base_color
+		// Layer 6 (CR 613.1f), after layer 5's colour (CR 613.1e): abilities granted ("equipped creature has '{T}: ...'", "creatures you control have 'whenever ...'"): its
 		// own, then the granted ones.
 		{
 			granted := make([dynamic]types.AbilityDefinition, context.temp_allocator)
@@ -184,23 +201,6 @@ apply_continuous_effects :: proc(g: ^Game) {
 			for mods in temps do grants(mods, &granted, &granted_triggers)
 			set_granted_abilities(o, granted[:], granted_triggers[:])
 		}
-		// CR 122.1b, 613.1f: a keyword counter gives its keyword.
-		for c in o.counters do if kc, ok := c._0.(types.CounterType_Keyword); ok {
-			if k, known := keyword_of_counter(kc._0); known && !has_keyword_in(keywords[:], k) do append(&keywords, k)
-		}
-		// Layer 5 (CR 613.1e): color.
-		colors_set := false
-		for e in statics do if affects(s, e.source, e.static, o) {
-			for m in e.static.modifications do if k, ok := m.(types.ContinuousModification_SetColor); ok {
-				o.color = k.colors
-				colors_set = true
-			}
-		}
-		for mods in temps do for m in mods do if k, ok := m.(types.ContinuousModification_SetColor); ok {
-			o.color = k.colors
-			colors_set = true
-		}
-		if !colors_set do o.color = o.base_color
 		// Layer 7a (CR 613.4a): characteristic-defining abilities, then layer 7b (613.4b): set to a value.
 		for pass in 0 ..< 2 {
 			for e in statics do if e.static.characteristic_defining == (pass == 0) && affects(s, e.source, e.static, o) {
@@ -379,7 +379,7 @@ add_temp_effect :: proc(g: ^Game, e: types.Effect_GenericEffect, controller: typ
 	apply_continuous_effects(g)
 }
 
-// ---- Conditions ("as long as ...", CR 611.3b) -----------------------------------------------------------------
+// ---- Conditions ("as long as ...", CR 611.3a: applied at each moment to what it says) ---------------------
 
 condition_supported :: proc(c: types.StaticCondition) -> bool {
 	#partial switch x in c {
@@ -476,13 +476,20 @@ set_granted_abilities :: proc(o: ^types.GameObject, granted: []types.AbilityDefi
 	if base != nil {
 		if len(granted) == 0 {
 			o.abilities = base
-		} else if o.abilities == base || o.abilities == nil || len(o.abilities^) != len(base^) + len(granted) {
-			all := new([dynamic]types.AbilityDefinition)
-			append(all, ..base[:])
-			append(all, ..granted)
-			o.abilities = all
 		} else {
-			for a, i in granted do o.abilities^[len(base^) + i] = a
+			// The same grants as before: keep the list (abilities on the stack and activation records point into
+			// it); any change: a new list.
+			same := o.abilities != base && o.abilities != nil && len(o.abilities^) == len(base^) + len(granted)
+			if same do for a, i in granted do if o.abilities^[len(base^) + i].effect != a.effect || o.abilities^[len(base^) + i].sub_ability != a.sub_ability {
+				same = false
+				break
+			}
+			if !same {
+				all := new([dynamic]types.AbilityDefinition)
+				append(all, ..base[:])
+				append(all, ..granted)
+				o.abilities = all
+			}
 		}
 	}
 	if o.trigger_definitions == nil {
@@ -493,8 +500,12 @@ set_granted_abilities :: proc(o: ^types.GameObject, granted: []types.AbilityDefi
 	own := 0
 	for e in list^ do if _, is_granted := e.occurrence.(types.TriggerDefinitionOccurrenceRef_Granted); !is_granted do own += 1
 	if len(list^) == own + len(granted_triggers) {
-		for t, i in granted_triggers do list^[own + i].definition = t^
-		return
+		same := true
+		for t, i in granted_triggers do if list^[own + i].definition.execute != t.execute {
+			same = false
+			break
+		}
+		if same do return
 	}
 	// A new list: triggers waiting to go on the stack point into the old one, which stays as it was.
 	fresh := new([dynamic]types.TriggerEntry)

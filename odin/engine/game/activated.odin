@@ -4,10 +4,16 @@ package game
 
 import "core:fmt"
 import "core:slice"
+import "core:strings"
 import types "../types"
 
 activated_supported :: proc(a: types.AbilityDefinition) -> bool {
 	if a.kind != .Activated || !ability_supported(a) do return false
+	// "Remove a counter from this": a remove-counter cost the data writes with no object is read as this one's; a
+	// description naming another ("from a permanent you control") isn't.
+	if d, has := a.description.?; has && strings.contains(d, "Remove ") && !strings.contains(d, "from this") && !strings.contains(d, "from ~") && !strings.contains(d, "from it") {
+		if c, has_cost := a.cost.?; has_cost && has_remove_counter(c) do return false
+	}
 	// An activated ability that adds mana is a mana ability (CR 605.1a): it doesn't use the stack, and it's carried out
 	// by mana.odin (mana_ability_option) or not at all.
 	if _, adds_mana := a.effect.(types.Effect_Mana); adds_mana do return false
@@ -521,4 +527,15 @@ graveyard_props_supported :: proc(f: types.TypedFilter) -> bool {
 		}
 	}
 	return true
+}
+
+@(private = "file")
+has_remove_counter :: proc(c: types.AbilityCost) -> bool {
+	#partial switch x in c {
+	case types.AbilityCost_RemoveCounter:
+		return true
+	case types.AbilityCost_Composite:
+		for part in x.costs do if has_remove_counter(part) do return true
+	}
+	return false
 }

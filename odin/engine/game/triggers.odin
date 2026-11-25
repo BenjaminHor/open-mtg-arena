@@ -144,8 +144,10 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 			// "Whenever you cast your second spell each turn": the caster's count, any spell.
 			if !is_cast || x.filter != nil do return false
 		case types.TriggerConstraint_OncePerTurn:
-			// "This ability triggers only once each turn" (the card's own limit; add_trigger keeps the record).
+			// "This ability triggers only once each turn" (the card's own limit; add_trigger keeps the record). The data
+			// has one constraint: a "during your turn" beside it would be lost.
 			if x.spent_by != .Triggering do return false
+			if d, has := t.description.?; has && (strings.contains(d, "during your turn") || strings.contains(d, "during an opponent's turn") || strings.contains(d, "during each opponent's turn")) do return false
 		case types.TriggerConstraint_NthDrawThisTurn:
 			// "Whenever you draw your second card each turn" (CR 121.2: each card drawn is its own event).
 			if _, drawn := t.mode.(types.TriggerMode_Drawn); !drawn do return false
@@ -748,10 +750,11 @@ turn_constraint_met :: proc(s: ^types.GameState, t: types.TriggerDefinition, con
 }
 
 add_trigger :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, trigger: ^types.TriggerDefinition, lki: ^types.GameObject = nil, amount := 0) {
-	if !first_time_this_turn(g, source, trigger) do return
 	t := unless_ability(trigger)
 	// CR 603.4: with an intervening "if", the ability triggers only if the condition is true now.
 	if c, has := t.condition.?; has && !condition_holds_as_was(&g.state, source, controller, c, lki) do return
+	// "Only once each turn": counted when it does trigger.
+	if !first_time_this_turn(g, source, trigger) do return
 	append(&g.pending_triggers, Pending_Trigger{source = source, controller = controller, definition = t, lki = lki, amount = amount, event = collecting_event})
 }
 
@@ -947,6 +950,16 @@ place_triggers :: proc(g: ^Game) -> bool {
 		event := pt.event
 		event.amount = pt.amount
 		if event != {} do g.stack_events[id] = event
+		// The source as it was: read if it has left by the time the ability resolves ("its power", the X it was cast
+		// with: CR 608.2h, 107.3m).
+		if pt.lki != nil {
+			g.stack_sources[id] = pt.lki
+		} else if src := object(s, pt.source); src != nil {
+			was := new(types.GameObject)
+			was^ = src^
+			was.counters = slice.clone_to_dynamic(src.counters[:])
+			g.stack_sources[id] = was
+		}
 	}
 	return true
 }
@@ -1058,8 +1071,11 @@ resolve_ability :: proc(g: ^Game, entry: types.StackEntry, resolved: ^types.Reso
 	if resolved == nil do return
 	event := g.stack_events[entry.id]
 	delete_key(&g.stack_events, entry.id)
+	was := g.stack_sources[entry.id]
+	delete_key(&g.stack_sources, entry.id)
+	if src := object(&g.state, entry.source_id); was != nil && src != nil && src.incarnation == was.incarnation && src.zone == was.zone do was = nil // still the same: read it as it is
 	// A "may" ability asks its controller as that instruction is carried out (CR 603.5, 608.2d).
-	start_resolution(g, resolved, entry.controller, entry.source_id, stack_id = entry.id, event = event)
+	start_resolution(g, resolved, entry.controller, entry.source_id, stack_id = entry.id, event = event, source_was = was)
 }
 
 // CR 603.5: the controller decides whether to carry out a "may" ability.
@@ -1375,8 +1391,10 @@ first_time_this_turn :: proc(g: ^Game, source: types.ObjectId, t: ^types.Trigger
 	if o == nil do return true
 	ref := types.TriggerDefinitionRef{source = types.ObjectIncarnationRef{object_id = o.id, incarnation = o.incarnation}}
 	found := false
-	for &e in trigger_definitions(o) do if &e.definition == t {
+	// Each of its abilities has its own limit: a printed one by its position, a granted one by its grant.
+	for &e, i in trigger_definitions(o) do if &e.definition == t {
 		ref.occurrence = e.occurrence
+		if _, granted := e.occurrence.(types.TriggerDefinitionOccurrenceRef_Granted); !granted do ref.occurrence = types.TriggerDefinitionOccurrenceRef_Printed{printed_index = i}
 		found = true
 	}
 	if !found do return true // an ability made for the occasion (a keyword's), with no limit of its own

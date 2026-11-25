@@ -37,6 +37,16 @@ MISPARSED_CARDS :: [?]string{
 	"Quicksilver Servitor", // "from among cards put into your hand this turn"
 	"Dawn-Blessed Pennant", // reads a chosen card type; the card chooses a creature type
 	"Gilraen, Dúnedain Protector", // the delayed return's origin (battlefield) contradicts the exiled card
+	// Sixth rules review (2026-11-25).
+	"Tolls of War", // "during your turn" lost beside "only once each turn"
+	"Dionus, Elvish Archdruid", // the same
+	"Stika, Playtestress", // "playtest card" lost: any spell triggers it
+	"Danitha, Sword of Hope", // "or a spell that targets a creature you control" lost
+	"Draco", // "costs {2} less for each basic land type" lost
+	"Rift Elemental", // "from a permanent you control or suspended card you own" read as "from this"
+	"Equinox", // "if it would destroy a land you control" lost
+	"Arc Spitter", // "that's blocking it" lost
+	"Fearsome Temper", // "can't block this creature" read as "can't block"
 }
 
 misparsed :: proc(name: string) -> bool {
@@ -142,7 +152,7 @@ spell_ability_supported :: proc(a: types.AbilityDefinition) -> bool {
 // targets and (for triggered abilities, CR 603.5) whether to do it at all.
 // `after_target`: an earlier instruction of the same ability chose a target, which "it" or "that creature" can
 // refer to.
-ability_supported :: proc(a: types.AbilityDefinition, after_target := false, after_search := false) -> bool {
+ability_supported :: proc(a: types.AbilityDefinition, after_target := false, after_search := false, after_chosen_target := false) -> bool {
 	if a.effect == nil || a.optional_targeting || a.modal != nil do return false
 	if c, has := a.condition.?; has && !ability_condition_supported(c) do return false
 	// "Each player draws", "an opponent draws", "for each creature chosen": scopes and groups not carried out yet.
@@ -154,6 +164,11 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	if a.else_ability != nil do return false
 	if !effect_supported(a.effect^, a.duration) do return false
 	if refers_to_parent_target(a.effect^) && !after_target do return false
+	// "It deals damage equal to its power": the creature an earlier instruction targeted (CR 608.2c); with none
+	// ("tap enchanted creature. It deals ..."), not read yet.
+	if dmg, is_damage := a.effect^.(types.Effect_DealDamage); is_damage {
+		if src, has := dmg.damage_source.?; has && src == .Target && !after_chosen_target do return false
+	}
 	if d, delayed := a.effect^.(types.Effect_CreateDelayedTrigger); delayed && !delayed_trigger_supported(d, after_target) do return false
 	if moves_found_cards(a.effect^) && !after_search do return false
 	_, targets := effect_target(a.effect^)
@@ -174,7 +189,9 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 		reflex.condition = nil
 		return ability_supported(reflex)
 	}
-	if a.sub_ability != nil do return ability_supported(a.sub_ability^, after_target || targets, after_search || searches)
+	// A target chosen (not "enchanted creature", which names the one it's attached to).
+	chosen := targets && !names_attachment(effect_target_filter(a.effect^))
+	if a.sub_ability != nil do return ability_supported(a.sub_ability^, after_target || targets, after_search || searches, after_chosen_target || chosen)
 	return true
 }
 

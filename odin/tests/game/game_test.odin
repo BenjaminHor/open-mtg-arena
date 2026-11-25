@@ -506,7 +506,7 @@ equip_moves_the_bonus :: proc(t: ^testing.T) {
 characteristic_defining_and_conditional_statics :: proc(t: ^testing.T) {
 	if !load_db() do return
 	// CR 604.3, 613.4a: a */* creature's power and toughness come from its characteristic-defining ability.
-	// CR 611.3b: a static ability with "as long as" applies only while the condition holds.
+	// CR 611.3a: a static ability with "as long as" applies only while the condition holds.
 	g := new_game()
 	for _ in 0 ..< 3 do add(t, g, "Forest", 0, .Battlefield)
 	wurm := add(t, g, "Molimo, Maro-Sorcerer", 0, .Battlefield) // */* equal to the number of lands you control
@@ -5122,7 +5122,7 @@ every_creature_type :: proc(t: ^testing.T) {
 cant_block_as_long_as :: proc(t: ^testing.T) {
 	if !load_db() do return
 	// Childhood Horror: "Threshold — As long as there are seven or more cards in your graveyard, this creature gets
-	// +2/+2 and can't block." CR 611.3b: the rule applies only while the condition holds.
+	// +2/+2 and can't block." CR 611.3a: the rule applies only while the condition holds.
 	testing.expect(t, game.card_supported(&card(t, "Childhood Horror").face))
 	g := new_game()
 	horror := add(t, g, "Childhood Horror", 0, .Battlefield)
@@ -5318,4 +5318,82 @@ any_of_and_not_properties :: proc(t: ^testing.T) {
 	inner^ = types.FilterProp_HasColor{color = .Red}
 	append(&nonred.properties, types.FilterProp_Not{prop = inner})
 	testing.expect(t, game.object_matches(s, green, nonred, 0, 0) && !game.object_matches(s, add(t, g, "Raging Goblin", 1, .Battlefield), nonred, 0, 0), "not red")
+}
+
+@(test)
+sixth_review_fixes :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Dormant Sliver: "All Slivers have 'When this permanent enters, draw a card.'" The Sliver entering has the
+	// granted ability as it enters (CR 603.6b, 603.10): casting it draws a card; a second one with the first there
+	// draws two (each has both grants).
+	{
+		g := new_game()
+		s := &g.state
+		for name in ([]string{"Forest", "Forest", "Island", "Island", "Forest", "Forest", "Island", "Island"}) do add(t, g, name, 0, .Battlefield)
+		hand := types.pvec_len(s.players[0].hand)
+		first := add(t, g, "Dormant Sliver", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = first.id}))
+		settle_stack(g)
+		testing.expectf(t, types.pvec_len(s.players[0].hand) == hand + 1, "added one, cast it, drew one: %d", types.pvec_len(s.players[0].hand) - hand)
+		second := add(t, g, "Dormant Sliver", 0, .Hand)
+		hand = types.pvec_len(s.players[0].hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = second.id}))
+		settle_stack(g)
+		testing.expectf(t, types.pvec_len(s.players[0].hand) == hand + 1, "cast one, drew two: %d", types.pvec_len(s.players[0].hand) - hand)
+		// A Sliver that leaves keeps none of the grants (CR 400.7).
+		game.move_object(g, first.id, .Hand)
+		testing.expect(t, first.trigger_definitions == nil || len(first.trigger_definitions^) == 0, "no granted trigger in the hand")
+	}
+	// Hunter's Mark: "This spell can't be countered." CR 113.6g: it works on the stack.
+	{
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 4 do add(t, g, "Forest", 0, .Battlefield)
+		add(t, g, "Grizzly Bears", 0, .Battlefield)
+		target := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		mark := add(t, g, "Hunter's Mark", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = mark.id}))
+		for _ in 0 ..< 4 {
+			if _, choosing := s.waiting_for.(types.WaitingFor_TargetSelection); !choosing do break
+			w := s.waiting_for.(types.WaitingFor_TargetSelection)
+			_ = w
+			ids := game.ids_of(s.battlefield)
+			// First our creature, then theirs.
+			ours: types.ObjectId
+			for id in ids do if o := game.object(s, id); game.is_type(o, .Creature) && o.controller == 0 do ours = id
+			if !game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{ours}}) do game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{target.id}})
+		}
+		testing.expect(t, mark.zone == .Stack, "on the stack")
+		game.counter_spell(g, mark.id)
+		testing.expect(t, mark.zone == .Stack, "not countered")
+	}
+	// Ajani's Anguish destroyed in response: its enters trigger still deals the X it was cast with (CR 107.3m,
+	// 608.2h).
+	{
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 3 do add(t, g, "Mountain", 0, .Battlefield)
+		anguish := add(t, g, "Ajani's Anguish", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = anguish.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseX{value = 2}))
+		left := false
+		for _ in 0 ..< 12 {
+			#partial switch _ in s.waiting_for {
+			case types.WaitingFor_TriggerTargetSelection, types.WaitingFor_TargetSelection:
+				game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}})
+				continue
+			}
+			if !left && anguish.zone == .Battlefield && types.pvec_len(s.stack) == 1 {
+				game.move_object(g, anguish.id, .Graveyard) // destroyed in response to its trigger
+				left = true
+			}
+			if types.pvec_len(s.stack) == 0 && left do break
+			game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+		}
+		testing.expectf(t, left && s.players[1].life == 18, "2 damage from the X it was cast with: life %d", s.players[1].life)
+	}
+	// Refused: "it deals damage equal to its power" with no target before it, and data-dropped qualifiers.
+	for name in ([]string{"Bind the Monster", "Tolls of War", "Rift Elemental", "Equinox"}) {
+		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s refused", name)
+	}
 }
