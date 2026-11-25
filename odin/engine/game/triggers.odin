@@ -688,6 +688,15 @@ condition_holds_as_was :: proc(s: ^types.GameState, source: types.ObjectId, cont
 
 trigger_condition_supported :: proc(c: types.TriggerCondition) -> bool {
 	#partial switch x in c {
+	case types.TriggerCondition_WasCast:
+		// "If you cast it": the caster is the permanent's controller as it enters; "from your hand" also its owner.
+		if ctl, has := x.controller.?; has {
+			if _, you := ctl.(types.ControllerRef_You); !you do return false
+		}
+		if own, has := x.owner.?; has {
+			if _, you := own.(types.ControllerRef_You); !you do return false
+		}
+		return true
 	case types.TriggerCondition_QuantityComparison:
 		return quantity_supported(x.lhs) && quantity_supported(x.rhs)
 	case types.TriggerCondition_HasCounters:
@@ -721,6 +730,14 @@ trigger_condition_supported :: proc(c: types.TriggerCondition) -> bool {
 trigger_condition_holds :: proc(s: ^types.GameState, source: types.ObjectId, controller: types.PlayerId, c: types.TriggerCondition) -> bool {
 	src := object(s, source)
 	#partial switch x in c {
+	case types.TriggerCondition_WasCast:
+		// "If you cast it (from your hand)": the permanent came from a spell its controller cast.
+		if src == nil do return false
+		z, was_cast := src.cast_from_zone.?
+		if !was_cast do return false
+		if want, has := x.zone.?; has && z != want do return false
+		if _, has := x.owner.?; has && src.owner != controller do return false
+		return true
 	case types.TriggerCondition_QuantityComparison:
 		return compare(quantity_value(s, x.lhs, controller, source, 0), x.comparator, quantity_value(s, x.rhs, controller, source, 0))
 	case types.TriggerCondition_HasCounters:

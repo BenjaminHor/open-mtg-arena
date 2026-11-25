@@ -3965,3 +3965,24 @@ mana_counted_as_it_is_added :: proc(t: ^testing.T) {
 	wurm := add(t, g, "Craw Wurm", 0, .Hand) // {4}{G}{G}
 	testing.expect(t, game.castable(s, 0, wurm, g.card_db), "3 + 1 + 1 + 1 mana")
 }
+
+@(test)
+if_you_cast_it_from_your_hand :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Wakening Sun's Avatar: "When this creature enters, if you cast it from your hand, destroy all non-Dinosaur
+	// creatures." An intervening "if" (CR 603.4): cast, it triggers; put onto the battlefield, it doesn't.
+	testing.expect(t, game.card_supported(&card(t, "Wakening Sun's Avatar").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 8 do add(t, g, "Plains", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	avatar := add(t, g, "Wakening Sun's Avatar", 0, .Hand) // {5}{W}{W}{W}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = avatar.id}))
+	settle_stack(g)
+	testing.expect(t, avatar.zone == .Battlefield && bears.zone == .Graveyard, "cast from the hand: the Bears are destroyed")
+	other := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	second := add(t, g, "Wakening Sun's Avatar", 0, .Hand)
+	game.move_object(g, second.id, .Battlefield)
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	testing.expect(t, types.pvec_len(s.stack) == 0 && other.zone == .Battlefield, "not cast: no trigger")
+}

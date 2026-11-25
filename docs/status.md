@@ -3001,6 +3001,8 @@ Progress:
   the battlefield). 6,471 -> 6,534.
 - Mana abilities that add a counted amount ("Add {G} for each Elf you control", "X mana of any one color, where X
   is ..."): the count is taken when the ability is activated or the payment planned (CR 605.3b). 6,534 -> 6,550.
+- "When this enters, if you cast it (from your hand)": a spell that resolves into a permanent keeps the zone it was
+  cast from (cast_from_zone), read by the intervening "if" (CR 603.4). 6,550 -> 6,560.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
