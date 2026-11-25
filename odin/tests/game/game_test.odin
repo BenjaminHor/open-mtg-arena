@@ -4441,3 +4441,22 @@ landfall_this_turn :: proc(t: ^testing.T) {
 		testing.expectf(t, game.power_of(bears) == (6 if landfall else 4), "landfall %v: power %d", landfall, game.power_of(bears))
 	}
 }
+
+@(test)
+party_size_counts_the_largest_party :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 700.8a-b: up to one Cleric, Rogue, Warrior and Wizard; a creature with two of those types fills one role,
+	// whichever makes the party largest. A Cleric Wizard, a Cleric and a Rogue: 3.
+	g := new_game()
+	with_types :: proc(t: ^testing.T, g: ^game.Game, subtypes: ..string) {
+		o := add(t, g, "Grizzly Bears", 0, .Battlefield)
+		o.base_card_types.subtypes = make([dynamic]string)
+		append(&o.base_card_types.subtypes, ..subtypes)
+		o.card_types.subtypes = o.base_card_types.subtypes
+	}
+	with_types(t, g, "Human", "Cleric", "Wizard")
+	with_types(t, g, "Cleric")
+	with_types(t, g, "Rogue")
+	testing.expectf(t, game.party_size(&g.state, 0) == 3, "Cleric, Wizard, Rogue: got %d", game.party_size(&g.state, 0))
+	testing.expect(t, game.party_size(&g.state, 1) == 0, "the opponent has none")
+}

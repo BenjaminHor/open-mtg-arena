@@ -3050,6 +3050,8 @@ Progress:
   6,763 -> 6,795.
 - "Entered the battlefield under your control this turn" counts (landfall conditions), from the turn's zone change
   records. 6,795 -> 6,806.
+- Party size (CR 700.8: the largest assignment of Cleric, Rogue, Warrior and Wizard) and "the number of colors among
+  [permanents]" (CR 105.2). 6,806 -> 6,835.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

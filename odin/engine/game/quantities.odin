@@ -55,6 +55,10 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return player_scope_supported(r.player)
 		case types.QuantityRef_ObjectCountDistinct:
 			return object_count_distinct_supported(r)
+		case types.QuantityRef_PartySize:
+			return player_scope_supported(r.player)
+		case types.QuantityRef_DistinctColorsAmong:
+			return card_set_supported(r.source)
 		case types.QuantityRef_BattlefieldEntriesThisTurn:
 			// "The number of creatures that entered the battlefield under your control this turn": the turn's zone
 			// change records, by kind and controller.
@@ -185,6 +189,13 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			return starting_life(s) // CR 103.4: the same for every player in a two-player game
 		case types.QuantityRef_ObjectCountDistinct:
 			return object_count_distinct(s, r, controller, source)
+		case types.QuantityRef_PartySize:
+			return party_size(s, scope_player(s, r.player, controller))
+		case types.QuantityRef_DistinctColorsAmong:
+			// "The number of colors among permanents you control" (CR 105.2).
+			seen: bit_set[types.ManaColor]
+			for o in card_set(s, r.source, controller, source) do for c in o.color do seen += {c}
+			return card(seen)
 		case types.QuantityRef_BattlefieldEntriesThisTurn:
 			who := scope_player(s, r.player, controller)
 			t := r.filter.(types.TargetFilter_Typed)._0
@@ -633,4 +644,36 @@ object_count_distinct :: proc(s: ^types.GameState, r: types.QuantityRef_ObjectCo
 		}
 	}
 	return len(names) + len(values)
+}
+
+// CR 700.8: a player's party is up to one each of a Cleric, a Rogue, a Warrior and a Wizard they control, a creature
+// counting for one type only, the count as large as it can be (700.8a-b).
+party_size :: proc(s: ^types.GameState, p: types.PlayerId) -> int {
+	ROLES :: [4]string{"Cleric", "Rogue", "Warrior", "Wizard"}
+	creatures := make([dynamic]^types.GameObject, context.temp_allocator)
+	for o in permanents_of(s, p) {
+		if !is_type(o, .Creature) do continue
+		roles := ROLES
+		for r in roles do if has_subtype(o, r) {
+			append(&creatures, o)
+			break
+		}
+	}
+	best := 0
+	used := make([]bool, len(creatures), context.temp_allocator)
+	fill :: proc(creatures: []^types.GameObject, used: []bool, role: int, count: int, best: ^int) {
+		roles := ROLES
+		if role == len(roles) {
+			best^ = max(best^, count)
+			return
+		}
+		fill(creatures, used, role + 1, count, best) // nobody in this role
+		for o, i in creatures do if !used[i] && has_subtype(o, roles[role]) {
+			used[i] = true
+			fill(creatures, used, role + 1, count + 1, best)
+			used[i] = false
+		}
+	}
+	fill(creatures[:], used, 0, 0, &best)
+	return best
 }
