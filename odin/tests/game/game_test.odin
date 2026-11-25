@@ -8425,16 +8425,20 @@ zone_change_shapes_still_refused :: proc(t: ^testing.T) {
 	}
 }
 
-// "Put a +1/+1 counter on a creature you control" chosen as the ability resolves isn't a target (CR 115.1, 608.2d);
-// this engine reads only zone changes that way, so such abilities stay refused (Ajani Fells the Godsire,
-// Tilonalli's Crown), while "return a creature card from your graveyard" chosen as it resolves is carried out.
+// "Put a +1/+1 counter on a creature you control" chosen as the ability resolves isn't a target (CR 115.10a, 608.2d):
+// carried out as a choice (resolution_choice.odin, tests in resolution_choice_test.odin), as is "return a creature
+// card from your graveyard". Still refused: "tap any number of untapped creatures you control" (Ledev Champion, no
+// upper bound), "each opponent may tap an untapped creature" (Reservoir Kraken, chosen by other players), and a card
+// whose data reads "each creature you control" as one chosen creature (Nykthos Paragon, MISPARSED_CARDS).
 @(test)
 choices_made_as_it_resolves_are_not_targets :: proc(t: ^testing.T) {
 	if !load_db() do return
-	for name in ([]string{"Ajani Fells the Godsire", "Tilonalli's Crown"}) {
+	for name in ([]string{"Ajani Fells the Godsire", "Tilonalli's Crown", "Corpse Churn"}) {
+		testing.expectf(t, game.card_supported(&card(t, name).face), "%s is supported", name)
+	}
+	for name in ([]string{"Ledev Champion", "Reservoir Kraken", "Nykthos Paragon"}) {
 		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s stays unsupported", name)
 	}
-	testing.expect(t, game.card_supported(&card(t, "Corpse Churn").face))
 }
 
 // Ninth rules review's refusals (2026-11-25): "exile ... until this leaves the battlefield" without its return (CR

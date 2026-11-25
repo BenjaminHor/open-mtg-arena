@@ -67,7 +67,7 @@ division_of :: proc(chain: ^types.AbilityDefinition, all_targets: []types.Target
 	for x := chain; x != nil; x = x.sub_ability {
 		if x != chain && is_reflexive(x) do break
 		if x.effect == nil do continue
-		if _, targets_one := effect_target(x.effect^); !targets_one do continue
+		if _, targets_one := instruction_target(x.effect^, x.target_choice_timing); !targets_one do continue // as slot_list counts them
 		n := counts[group] if group < len(counts) else 1
 		if x.distribute != nil {
 			end := min(start + n, len(all_targets))

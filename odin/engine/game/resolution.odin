@@ -36,6 +36,8 @@ Resolution :: struct {
 	unless_paid:  bool, // ...and whether they paid
 	fizzled:      bool, // every target illegal: it didn't resolve (CR 608.2b)
 	aura_hosts:   [dynamic]Aura_Host, // what each Aura the current instruction returns will enchant (zone_effects.odin)
+	choosing:     ^types.ResolvedAbility, // an instruction waiting for the permanents it acts on to be chosen (resolution_choice.odin)
+	mass_affected: [dynamic]Same_Object, // what the latest "creatures you control get +1/+1" acted on: "those creatures" next
 }
 
 // The spell or ability as it goes on the stack: one node per instruction, each with the targets chosen for it (CR
@@ -321,6 +323,11 @@ continue_resolution :: proc(g: ^Game) -> bool {
 			}
 		}
 		r.events_mark = len(g.events)
+		if chosen_as_it_resolves(x.effect, x.target_choice_timing) {
+			// "Put a +1/+1 counter on a creature you control": chosen now (CR 608.2d), then carried out.
+			if start_resolution_choice(g, x) do return false
+			continue
+		}
 		// CR 603.2c, 603.10a: one instruction acts on all its objects at the same time ("destroy two target creatures"
 		// is one event for "whenever one or more creatures die", and each dying creature sees the others die).
 		together := begin_together()
@@ -347,6 +354,7 @@ continue_resolution :: proc(g: ^Game) -> bool {
 	if r.stack_id != 0 {
 		delete_key(&g.stack_abilities, r.stack_id)
 		delete_key(&g.stack_transforms, r.stack_id)
+		delete_key(&g.stack_hosts, r.stack_id)
 	}
 	r^ = {}
 	s.last_effect_amount, s.last_effect_excess_amount = nil, nil // "this way" means this resolution's instructions
@@ -735,12 +743,12 @@ optional_possible :: proc(g: ^Game, x: ^types.ResolvedAbility, controller: types
 			o := same_source(g, source)
 			return o != nil && o.zone == .Battlefield && o.controller == controller
 		}
-		typed, ok := e.target.(types.TargetFilter_Typed)
-		if !ok do return false
-		for o in permanents_of(s, controller) do if object_matches(s, o, typed._0, controller, source) do return true
-		return false
+		return len(sacrifice_choices(s, e, controller, source, context.temp_allocator)) > 0 // "you may sacrifice an artifact or creature"
 	case types.Effect_PayCost:
 		return cost_payable_now(g, e, controller, source)
+	}
+	if chosen_as_it_resolves(x.effect, x.target_choice_timing) do return resolution_choice_possible(g, x, controller, source)
+	#partial switch e in x.effect {
 	case types.Effect_ChangeZone:
 		return graveyard_choice_possible(g, x, controller, source) // "you may exile a creature card from your graveyard"
 	}

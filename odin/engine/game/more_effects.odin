@@ -64,6 +64,11 @@ more_effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) 
 		count_ok := quantity_supported(x.count) && !quantity_reads_target(x.count)
 		return count_ok && counter_kind_supported(x.counter_type) && (last || permanent_or_self(x.target)), true
 	case types.Effect_SetTapState:
+		// "Tap all creatures your opponents control", "untap all lands you control": each permanent that fits as it
+		// resolves (CR 608.2c). "Untap those creatures": the ones the instruction before acted on (tap_state.odin).
+		if f, of_target := mass_tap_of_target_opponent(x); of_target do return typed_supported(f), true
+		if x.scope == .All do return mass_filter_supported(x.target), true
+		if _, tracked := x.target.(types.TargetFilter_TrackedSet); tracked do return x.scope == .Single && after_mass_instruction(), true
 		return x.scope == .Single && permanent_or_self(x.target), true
 	case types.Effect_Mill:
 		_, fixed := fixed_quantity(x.count)
@@ -315,6 +320,22 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 		add_counters(affected, x.counter_type, u32(n))
 		apply_continuous_effects(g)
 	case types.Effect_SetTapState:
+		if f, of_target := mass_tap_of_target_opponent(x); of_target {
+			// The target opponent's permanents of that kind (a target made illegal left it undone, CR 608.2b).
+			p, is_player := target_player(target)
+			if !is_player do return
+			for o in permanents_of(s, p) do if object_matches(s, o, f, controller, source) do set_tap_state(o, x.state)
+			return
+		}
+		if x.scope == .All {
+			// CR 701.26: all of them (an untapped one can't be tapped, nor a tapped one untapped: nothing happens to it).
+			for o in affected_permanents(s, x.target, controller, source) do set_tap_state(o, x.state)
+			return
+		}
+		if _, tracked := x.target.(types.TargetFilter_TrackedSet); tracked {
+			for o in mass_affected_now(g) do set_tap_state(o, x.state)
+			return
+		}
 		if is_self(x.target) do affected = same_source(g, source)
 		if affected == nil || affected.zone != .Battlefield do return
 		if x.state == .Tap do tap_permanent(affected)
@@ -335,7 +356,9 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 	case types.Effect_PumpAll:
 		// CR 608.2h: worked out once, then the same for each creature.
 		p, t := pump_value(g, x.power, controller, source, nil), pump_value(g, x.toughness, controller, source, nil)
-		for o in affected_permanents(s, x.target, controller, source) do pump(g, o, p, t)
+		pumped := affected_permanents(s, x.target, controller, source)
+		for o in pumped do pump(g, o, p, t)
+		note_mass_affected(g, pumped[:]) // "untap those creatures" next
 	case types.Effect_DestroyAll:
 		// CR 701.8: all at once.
 		together := begin_together() // "destroy all": at the same time
@@ -378,7 +401,9 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 	case types.Effect_PutCounterAll:
 		// CR 122.6: counters put on each matching permanent.
 		n := quantity_value(s, x.count, controller, source, 0)
-		if n > 0 do for o in affected_permanents(s, x.target, controller, source) do add_counters(o, x.counter_type, u32(n))
+		each := affected_permanents(s, x.target, controller, source)
+		if n > 0 do for o in each do add_counters(o, x.counter_type, u32(n))
+		note_mass_affected(g, each[:]) // "untap those creatures" next
 		apply_continuous_effects(g)
 	}
 }

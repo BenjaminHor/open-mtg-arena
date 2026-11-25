@@ -72,6 +72,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_EffectZoneChoice:
 		return w.player, true
+	case types.WaitingFor_ChooseFromZoneChoice:
+		return w.player, true
 	case types.WaitingFor_ProliferateChoice:
 		return w.player, true
 	case types.WaitingFor_OptionalCostChoice:
@@ -270,7 +272,13 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		if w.effect_kind == .Bounce do return answer_bounce(g, p, w, a.cards[:])
 		if w.effect_kind == .Attach do return answer_attach(g, p, w, a.cards[:])
 		if w.effect_kind == .Amass do return answer_amass(g, p, w, a.cards[:])
+		if w.effect_kind == .Tap || w.effect_kind == .Untap do return p == w.player && answer_resolution_choice(g, p, w.cards[:], w.min_count, w.count, a.cards[:])
 		return answer_sacrifice(g, p, w, a.cards[:])
+	case types.WaitingFor_ChooseFromZoneChoice:
+		// A permanent chosen as an instruction resolves (resolution_choice.odin).
+		a, ok := action.(types.GameAction_SelectCards)
+		least := 0 if w.up_to else w.count
+		return ok && p == w.player && answer_resolution_choice(g, p, w.cards[:], least, w.count, a.cards[:])
 	case types.WaitingFor_SearchChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		return ok && answer_search(g, p, w, a.cards[:])

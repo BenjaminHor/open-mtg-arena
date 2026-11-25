@@ -1147,6 +1147,7 @@ place_triggers :: proc(g: ^Game) -> bool {
 		// with: CR 608.2h, 107.3m).
 		if pt.lki != nil {
 			g.stack_sources[id] = pt.lki
+			remember_attached_host(g, id, pt.source, pt.lki) // "exile equipped creature" (resolution_choice.odin)
 		} else if src := object(s, pt.source); src != nil {
 			was := new(types.GameObject)
 			was^ = src^
@@ -1223,6 +1224,7 @@ push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerI
 	defer note_targeted(g, id, controller, targets) // CR 115.1: its targets become targets as it's put on the stack
 	if src := object(s, source); src != nil && src.back_face != nil do g.stack_transforms[id] = src.transformation_count
 	g.stack_abilities[id] = a
+	remember_attached_host(g, id, source) // "enchanted creature" once the Aura has left (CR 608.2h)
 	src := object(s, source)
 	kind: types.StackEntryKind
 	if triggered {

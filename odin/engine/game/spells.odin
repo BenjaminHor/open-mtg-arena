@@ -100,6 +100,12 @@ MISPARSED_CARDS :: [?]string{
 	"Twisted Fealty",
 	"Witch's Mark",
 	"Chainer's Torment", // "It deals X damage to you": the token's damage read as the Saga's
+	// Chosen as it resolves (2026-11-25).
+	"Nykthos Paragon", // "on each creature you control" read as on one creature you control
+	"Feint", // "tap all creatures blocking target attacking creature" read as "tap all creatures"
+	"Riptide Chronologist", // "untap all creatures of the creature type of your choice" read as "untap all creatures"
+	"Wasitora, Nekoru Queen", // "if the player can't" lost: the token is made every time
+	"The Promise of Kahless", // "all other" read as other than the spell: the sacrificed card comes back too
 }
 
 misparsed :: proc(name: string) -> bool {
@@ -141,6 +147,10 @@ card_supported :: proc(face: ^types.CardFace, back_face := false) -> bool {
 		switch a.kind {
 		case .Spell:
 			if face.modal != nil do continue // the modes, checked by modal_supported
+			// CR 113.3a: only instants and sorceries have spell abilities. On a permanent card the data's "spell"
+			// ability is a static ability it didn't recognise ("untap all green and/or blue creatures you control during
+			// each other player's untap step"), which nothing would carry out.
+			if !instant_or_sorcery_face(face) do return false
 			// One spell ability is what casting carries out (spell_ability); a second paragraph isn't yet.
 			spells += 1
 			if spells > 1 do return false
@@ -237,12 +247,14 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	// the targets together (CR 115.1, 601.2c) this engine doesn't check yet.
 	if len(a.target_constraints) > 0 do return false
 	// "Put a +1/+1 counter on a creature you control", chosen as it resolves (the data's Resolution timing): not a
-	// target (CR 115.1, 608.2d), so it can't be read as one. Only the zone changes that choose as they resolve
-	// (instruction_target) are carried out that way.
+	// target (CR 115.10a, 608.2d), so it can't be read as one. Only the zone changes and the instructions on
+	// permanents that choose as they resolve (instruction_target, resolution_choice.odin) are carried out that way.
 	if a.target_choice_timing == .Resolution && a.effect != nil {
 		if _, targeted := instruction_target(a.effect^, a.target_choice_timing); targeted do return false
+		if chosen_as_it_resolves(a.effect^, a.target_choice_timing) && !resolution_choice_supported(a) do return false
 	}
 	if a.else_ability != nil do return false
+	if !sacrifice_scope_supported(a) do return false // "they": the scoped player or the event's (sacrifice.odin)
 	if !attach_host_timing_supported(a) || !zone_choice_timing_supported(a) || !after_event_card_returned_supported(a) do return false
 	if !effect_supported(a.effect^, a.duration) do return false
 	if refers_to_parent_target(a.effect^) && !after_target do return false
@@ -648,13 +660,16 @@ effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 	case types.Effect_PutAtLibraryPosition:
 		f = x.target
 	case types.Effect_SetTapState:
-		f = x.target
+		if x.scope == .Single do f = x.target // "tap all creatures ..." names no one object
+		else if _, of_target := mass_tap_of_target_opponent(x); of_target do f = types.TargetFilter_Opponent{} // tap_state.odin
 	case types.Effect_Mill:
 		f = x.target
 	case types.Effect_Discard:
 		f = x.target
 	case types.Effect_Counter:
 		f = x.target
+	case types.Effect_Sacrifice:
+		if player, edict := edict_player(x.target); edict do f = player // "target opponent sacrifices a creature"
 	case types.Effect_Token:
 		if other_token_maker(x.owner) do f = x.owner // "target opponent creates": a target player (tokens.odin)
 		else if host, attached := x.attach_to.?; attached do f = host // a Role's creature: a target, or "it"
@@ -1698,6 +1713,10 @@ card_gaps :: proc(face: ^types.CardFace, back_face := false) -> [dynamic]string 
 	for a in face.abilities {
 		switch a.kind {
 		case .Spell:
+			if face.modal == nil && !instant_or_sorcery_face(face) {
+				append(&out, "spell ability on a permanent")
+				continue
+			}
 			x_defined = has_x(face.mana_cost)
 			if !spell_ability_supported(a) do ability_gaps(&out, a, "spell")
 			x_defined = false
@@ -1749,12 +1768,14 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 	if !multi_target_supported(a) do append(out, "spell:multiple targets")
 	if len(a.target_constraints) > 0 do append(out, "spell:target constraints")
 	if a.target_choice_timing == .Resolution && a.effect != nil {
-		if _, targeted := instruction_target(a.effect^, a.target_choice_timing); targeted do append(out, "spell:chosen as it resolves")
+		_, targeted := instruction_target(a.effect^, a.target_choice_timing)
+		if targeted || (chosen_as_it_resolves(a.effect^, a.target_choice_timing) && !resolution_choice_supported(a)) do append(out, "spell:chosen as it resolves")
 	}
 	if !distribute_supported(a) do append(out, "spell:divided")
 	if !repeat_supported(a) do append(out, "spell:repeat")
 	if !unless_pay_supported(a) do append(out, "spell:unless pay")
 	if a.else_ability != nil do append(out, "spell:otherwise")
+	if !sacrifice_scope_supported(a) do append(out, "effect:Sacrifice (scoped player)")
 	if a.effect != nil && !attach_host_timing_supported(a) do append(out, "effect:Attach (host chosen as it resolves)")
 	if a.effect != nil && !zone_choice_timing_supported(a) do append(out, "effect:ChangeZone (card chosen as it resolves)")
 	if a.effect != nil && !after_event_card_returned_supported(a) do append(out, "spell:that creature after it returned")
@@ -1794,6 +1815,11 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 		append(out, strings.concatenate({"effect:", full, detail}, context.temp_allocator))
 	}
 	if a.sub_ability != nil do ability_gaps(out, a.sub_ability^, prefix, a.effect, previous)
+}
+
+instant_or_sorcery_face :: proc(face: ^types.CardFace) -> bool {
+	for t in face.card_type.core_types do if t == .Instant || t == .Sorcery do return true
+	return false
 }
 
 is_land_face :: proc(face: ^types.CardFace) -> bool {

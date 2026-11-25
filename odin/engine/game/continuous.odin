@@ -383,6 +383,7 @@ add_temp_effect :: proc(g: ^Game, e: types.Effect_GenericEffect, controller: typ
 				continue
 			}
 			append(&objects, ..affected_permanents(s, affected, controller, source)[:])
+			note_mass_affected(g, objects[:]) // "untap those creatures" next (tap_state.odin)
 		}
 		for o in objects do if o.zone == .Battlefield {
 			append(&g.temp_effects, Temp_Effect{object = o.id, incarnation = o.incarnation, modifications = mods[:], permanent = permanent, modes = rule_modes(st.mode)})

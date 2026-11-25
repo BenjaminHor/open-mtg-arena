@@ -32,6 +32,10 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 			append(&some, ..w.cards[:n])
 			return types.GameAction_SelectCards{cards = some}, true
 		}
+		if w.effect_kind == .Tap || w.effect_kind == .Untap {
+			// Permanents to tap or untap as an instruction resolves (resolution_choice.odin).
+			return types.GameAction_SelectCards{cards = ai_resolution_choice(g, p, w.cards[:], w.min_count, w.count)}, true
+		}
 		if w.effect_kind == .Attach {
 			// Which Equipment to attach ("attach an Equipment you control to it"): the first offered.
 			one := make([dynamic]types.ObjectId, context.temp_allocator)
@@ -40,6 +44,9 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		}
 		// What to sacrifice: the least valuable.
 		return types.GameAction_SelectCards{cards = least_valuable(g, w.cards[:], w.count)}, true
+	case types.WaitingFor_ChooseFromZoneChoice:
+		least := 0 if w.up_to else w.count
+		return types.GameAction_SelectCards{cards = ai_resolution_choice(g, p, w.cards[:], least, w.count)}, true
 	case types.WaitingFor_SearchChoice:
 		// As many as allowed, the first ones found.
 		cards := slice.clone(w.cards[:], context.temp_allocator)

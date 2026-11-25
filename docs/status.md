@@ -3320,6 +3320,13 @@ Progress:
   Circle of Confinement, "and/or" read as one card: Sludge Titan and five others). Unverified: Ram Through's excess
   damage dealt as two events (CR 120.4a: one modified event). Tool note: $SP/gapsof.mjs names gaps but isn't the
   support verdict; $SP/sup.mjs (odin_supported_cards) is. Test: `ninth_review_refusals`. Coverage 8,188.
+- Choices made as an instruction resolves (agent, merged; resolution_choice.odin, tap_state.odin): counters, tap or
+  untap, damage and "exile enchanted creature" chosen as it resolves (CR 608.2d; hexproof doesn't stop them), one or
+  up to N; "enchanted/equipped creature" as the source's host, recorded on the stack (CR 608.2h, 400.7); sacrifice
+  with mixed filters, target player sacrifices, "with the greatest power", "that player"; "tap/untap all", "untap
+  those creatures". Fixed: "spell" abilities on permanent cards were silently never carried out (now refused, CR
+  113.3a). Five misparsed cards. Prompts (EffectZoneChoice Tap/Untap, ChooseFromZoneChoice) read from the client code,
+  not tried in the app. Coverage 8,291.
 - Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
   decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
   cards to be triaged against the CR (next step for the fixtures).
@@ -3367,6 +3374,11 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   gap recordings only once the engine is fleshed out (ask then).
 
 ## Known issues
+
+- (Odin, 2026-11-25) "Tap enchanted creature" with the data's Stack timing (Mesmerizing Dose, Sleep with the Fishes, So
+  Shiny) is treated as a target: ward triggers on it and hexproof makes it fizzle; the enchanted creature isn't
+  targeted. Damage from a source that has left reads the card in its new zone, not as it last existed (CR 608.2h;
+  Tilonalli's Crown destroyed in response). Both reported by the resolution-choices agent, to fix.
 - (2026-11-25, sixth rules review of the Odin engine, 5a5bc3d..8fbd5e6; all fixed, test sixth_review_fixes: the layer
   pass runs before triggers are collected and a moved object drops its granted abilities; a triggered ability keeps
   its source as it was (stack_sources) for "its power" and X after it left; the data-dropped cards refused, with

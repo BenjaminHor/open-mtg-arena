@@ -265,10 +265,11 @@ start_graveyard_choice :: proc(g: ^Game, x: types.Effect_ChangeZone, n: ^types.R
 	return true
 }
 
-// The target an instruction of an ability takes (as effect_target), none for cards chosen from a graveyard as it
-// resolves: the ability's choice timing tells the two apart.
+// The target an instruction of an ability takes (as effect_target), none for cards chosen from a graveyard or
+// permanents chosen as it resolves (resolution_choice.odin): the ability's choice timing tells the two apart.
 instruction_target :: proc(e: types.Effect, timing: types.TargetChoiceTiming) -> (types.TargetFilter, bool) {
 	if x, zc := e.(types.Effect_ChangeZone); zc && chosen_from_graveyard(x, timing) do return nil, false
+	if chosen_as_it_resolves(e, timing) do return nil, false
 	return effect_target(e)
 }
 
