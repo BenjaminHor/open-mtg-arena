@@ -45,6 +45,7 @@ search_count :: proc(x: types.Effect_SearchLibrary) -> (n: int, up_to: bool, ok:
 // "Move those cards": a zone change from the library of the cards the search found (its target is written as
 // "any").
 moves_found_cards :: proc(e: types.Effect) -> bool {
+	if p, positions := e.(types.Effect_PutAtLibraryPosition); positions do return is_any(p.target) // "put that card on top"
 	x, ok := e.(types.Effect_ChangeZone)
 	if !ok do return false
 	origin, has := x.origin.?

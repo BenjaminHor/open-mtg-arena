@@ -5173,3 +5173,51 @@ granted_abilities :: proc(t: ^testing.T) {
 	testing.expectf(t, other.zone == .Graveyard, "the other enchantment is sacrificed: %v", other.zone)
 	testing.expect(t, flux.zone == .Battlefield, "Aura Flux itself stays")
 }
+
+@(test)
+put_on_top_or_bottom_of_library :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Condemn: "Put target attacking creature on the bottom of its owner's library. Its controller gains life equal
+	// to its toughness." The bottom is the far end from the top the player draws from (CR 401.1).
+	testing.expect(t, game.card_supported(&card(t, "Condemn").face))
+	g, bears := attack_with_bears(t)
+	s := &g.state
+	add(t, g, "Plains", 1, .Battlefield)
+	condemn := add(t, g, "Condemn", 1, .Hand)
+	s.priority_player = 1
+	s.waiting_for = types.WaitingFor_Priority{player = 1}
+	testing.expect(t, game.apply(g, 1, types.GameAction_CastSpell{object_id = condemn.id}))
+	if _, choosing := s.waiting_for.(types.WaitingFor_TargetSelection); choosing {
+		testing.expect(t, game.apply(g, 1, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	}
+	settle_stack(g)
+	lib := s.players[0].library
+	testing.expect(t, bears.zone == .Library && types.pvec_get(lib, 0) == bears.id, "at the bottom of its owner's library")
+	testing.expect(t, s.players[0].life == 22, "its controller gains 2")
+
+	// Boggart Harbinger: "you may search your library for a Goblin card, reveal it, then shuffle and put that card on
+	// top." The found card ends on top.
+	testing.expect(t, game.card_supported(&card(t, "Boggart Harbinger").face))
+	g2 := new_game()
+	s2 := &g2.state
+	goblin := add(t, g2, "Raging Goblin", 0, .Library)
+	for _ in 0 ..< 3 do add(t, g2, "Swamp", 0, .Battlefield)
+	harbinger := add(t, g2, "Boggart Harbinger", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = harbinger.id}))
+	for _ in 0 ..< 12 {
+		#partial switch w in s2.waiting_for {
+		case types.WaitingFor_OptionalEffectChoice:
+			game.apply(g2, 0, types.GameAction_DecideOptionalEffect{accept = true})
+			continue
+		case types.WaitingFor_SearchChoice:
+			one := make([dynamic]types.ObjectId)
+			append(&one, goblin.id)
+			testing.expect(t, game.apply(g2, 0, types.GameAction_SelectCards{cards = one}))
+			continue
+		}
+		if types.pvec_len(s2.stack) == 0 && harbinger.zone == .Battlefield do break
+		game.apply(g2, s2.priority_player, types.GameAction_PassPriority{})
+	}
+	lib2 := s2.players[0].library
+	testing.expect(t, types.pvec_get(lib2, types.pvec_len(lib2) - 1) == goblin.id, "the Goblin on top")
+}

@@ -3107,6 +3107,9 @@ Progress:
   upkeep, ...'", from static abilities and from resolved effects. Each pass rebuilds a permanent's abilities as its
   own (kept at their positions) and then the granted ones; granted triggers are marked as granted and a changed set
   gets a new list (triggers waiting to go on the stack keep pointing at the old one). 7,256 -> 7,371.
+- "Put [target permanent / target card in a graveyard / it / this / the card the search found] on the top or the
+  bottom of its owner's library" (library_position.odin; CR 401.1). Not yet: Brainstorm's cards from hand, "Nth
+  from the top", an arranger. 7,371 -> 7,428.
 - The app on the Odin engine, played by Playwright (Standard, random decks, the human only keeping, passing to end of
   turn and discarding): a whole game to the AI's win, no engine errors (scratchpad pw/play.cjs). Known: the game log
   panel is empty on the Odin engine (no log entries returned), and the home page's Card Coverage Dashboard reads

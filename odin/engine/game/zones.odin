@@ -29,7 +29,6 @@ ids_of :: proc(v: types.PVec(types.ObjectId), allocator := context.temp_allocato
 	return out
 }
 
-@(private = "file")
 remove_id :: proc(v: ^types.PVec(types.ObjectId), id: types.ObjectId) -> bool {
 	n := types.pvec_len(v^)
 	for i in 0 ..< n do if types.pvec_get(v^, i) == id {

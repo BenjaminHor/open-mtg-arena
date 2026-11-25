@@ -290,6 +290,8 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return true // a Clue token (CR 701.16a)
 	case types.Effect_Proliferate:
 		return true // CR 701.34a (proliferate.odin)
+	case types.Effect_PutAtLibraryPosition:
+		return library_position_supported(x)
 	case types.Effect_Mana:
 		return resolving_mana_supported(x)
 	case types.Effect_Amass:
@@ -495,6 +497,8 @@ effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 	case types.Effect_Attach:
 		if _, chosen := x.selection.(types.AttachSelection_AtResolution); !chosen do f = x.target // chosen as it resolves: not targeted
 	case types.Effect_PutCounter:
+		f = x.target
+	case types.Effect_PutAtLibraryPosition:
 		f = x.target
 	case types.Effect_SetTapState:
 		f = x.target
@@ -1212,6 +1216,8 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		return do_bounce(g, x, controller, source, target)
 	case types.Effect_Proliferate:
 		return start_proliferate(g, controller)
+	case types.Effect_PutAtLibraryPosition:
+		do_library_position(g, x, source, target)
 	case types.Effect_Mana:
 		add_resolving_mana(g, x, controller, source)
 	case types.Effect_GenericEffect:
