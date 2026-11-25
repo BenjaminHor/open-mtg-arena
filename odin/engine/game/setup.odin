@@ -40,6 +40,10 @@ Game :: struct {
 	optional_accepted: bool,
 	damage_progress:   Combat_Damage_Progress, // a combat damage step waiting on damage divisions
 	resolution:        Resolution, // a spell or ability partway through resolving, waiting on a choice
+	// Permanents that entered with "as this enters, you may pay N life" whose controller hasn't chosen yet, and who
+	// gets priority once they have (replacements.odin).
+	entry_choices:     [dynamic]types.ObjectId,
+	entry_after:       types.PlayerId,
 }
 
 // CR 103: starts a two-player game. The first player (CR 103.1) is given; each library is shuffled with the game's

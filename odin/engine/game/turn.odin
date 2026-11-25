@@ -119,6 +119,7 @@ cleanup :: proc(g: ^Game) {
 
 give_priority :: proc(g: ^Game, p: types.PlayerId) {
 	s := &g.state
+	if ask_entry_payment(g, p) do return // a choice made as a permanent entered, first (CR 614.12)
 	// CR 117.5: state-based actions are checked, then triggered abilities go on the stack, repeating until neither
 	// happens, before a player receives priority.
 	for {

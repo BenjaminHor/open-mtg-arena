@@ -2881,6 +2881,11 @@ Progress:
   counts over "A or B" ("a Swamp or a Mountain", "artifacts and enchantments"): coverage 5,116 -> 5,182.
 - Raid ("if you attacked this turn": the turn's attacker declarations, kept in the state as Rust keeps them) and
   "if an opponent controls more lands than you" (players counted by what they control): 5,182 -> 5,221.
+- Shocklands ("as this land enters, you may pay 2 life; if you don't, it enters tapped", CR 614.12): the
+  controller is asked with Rust's replacement prompt (ReplacementChoice, optional branch: 0 pays, 1 declines)
+  before the next player would get priority; the land waits untapped until then, and declining taps it without a
+  "becomes tapped" event. The waiting lands are kept in Game (entry_choices), beside the state like the other
+  in-flight pieces. Raid "enters with a counter if you attacked". 5,221 -> 5,235.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

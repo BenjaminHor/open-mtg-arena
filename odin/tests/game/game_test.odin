@@ -2547,3 +2547,29 @@ opponent_controls_more_lands :: proc(t: ^testing.T) {
 	testing.expect(t, run(t, 3) == 1, "three lands to two: it triggers")
 	testing.expect(t, run(t, 2) == 0, "two to two: it doesn't")
 }
+
+@(test)
+shockland_pay_or_tapped :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Blood Crypt: "As this land enters, you may pay 2 life. If you don't, it enters tapped." Its controller chooses
+	// as it enters (CR 614.12); paying life is losing it (CR 119.4).
+	testing.expect(t, game.card_supported(&card(t, "Blood Crypt").face))
+	run :: proc(t: ^testing.T, pay: bool) -> (^types.GameObject, int) {
+		g := new_game()
+		s := &g.state
+		crypt := add(t, g, "Blood Crypt", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = crypt.id}))
+		_, asked := s.waiting_for.(types.WaitingFor_ReplacementChoice)
+		testing.expect(t, asked, "asked as it enters")
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseReplacement{index = 0 if pay else 1}))
+		_, priority := s.waiting_for.(types.WaitingFor_Priority)
+		testing.expect(t, priority && s.priority_player == 0, "then priority back to its player")
+		return crypt, int(game.player(s, 0).life)
+	}
+	crypt, life := run(t, true)
+	testing.expect(t, !crypt.tapped && life == 18, "paid: untapped, 2 life")
+	crypt, life = run(t, false)
+	testing.expect(t, crypt.tapped && life == 20, "declined: tapped")
+	// Raid: "This creature enters with a +1/+1 counter on it if you attacked this turn."
+	testing.expect(t, game.card_supported(&card(t, "Goblin Boarders").face))
+}

@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 257 of 2880 rules implemented (9%), 109 of them tested.**
+**In scope (100-799): 258 of 2880 rules implemented (9%), 109 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -105,7 +105,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 613 interaction of continuous effects | 41 | 8 (20%) | 2 |
 | 614 replacement effects | 36 | 2 (6%) | 2 |
 | 615 prevention effects | 15 | 0 (0%) | 0 |
-| 616 interaction of replacement and or prevention effects | 9 | 0 (0%) | 0 |
+| 616 interaction of replacement and or prevention effects | 9 | 1 (11%) | 0 |
 | 700 general | 36 | 6 (17%) | 4 |
 | 701 keyword actions | 305 | 26 (9%) | 9 |
 | 702 keyword abilities | 774 | 26 (3%) | 6 |
@@ -1752,9 +1752,9 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 615.12a A prevention effect is applied to any particular unpreventable damage event just once. It won’t invoke itse...
 - ⬜ 615.13 Some triggered abilities trigger when damage that would be dealt is prevented. Such an ability triggers eac...
 
-### 616 interaction of replacement and or prevention effects (0/9)
+### 616 interaction of replacement and or prevention effects (1/9)
 
-- ⬜ 616.1 If two or more replacement and/or prevention effects are attempting to modify the way an event affects an o...
+- 🟡 616.1 If two or more replacement and/or prevention effects are attempting to modify the way an event affects an o...
 - ⬜ 616.1a If any of the replacement and/or prevention effects are self-replacement effects (see rule 614.15), one of ...
 - ⬜ 616.1b If any of the replacement and/or prevention effects would modify under whose control an object would enter ...
 - ⬜ 616.1c If any of the replacement and/or prevention effects would cause an object to become a copy of another objec...

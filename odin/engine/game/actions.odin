@@ -26,6 +26,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_OptionalEffectChoice:
 		return w.player, true
+	case types.WaitingFor_ReplacementChoice:
+		return w.player, true
 	case types.WaitingFor_AssignCombatDamage:
 		return w.player, true
 	case types.WaitingFor_ScryChoice:
@@ -198,6 +200,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			give_priority(g, p)
 			return true
 		}
+	case types.WaitingFor_ReplacementChoice:
+		a, ok := action.(types.GameAction_ChooseReplacement)
+		return ok && answer_entry_payment(g, p, w, a.index)
 	case types.WaitingFor_ChooseManaColor:
 		a, ok := action.(types.GameAction_ChooseManaColor)
 		return ok && choose_mana_color(g, p, w, a.choice)
@@ -374,6 +379,14 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		for i in 0 ..< w.modal.mode_count do if !slice.contains(w.unavailable_modes[:], i) do append(&available, i)
 		mode_sets(&out, available[:], 0, make([dynamic]int, context.temp_allocator), w.modal.min_choices, w.modal.max_choices)
 		append(&out, types.GameAction_CancelCast{})
+	case types.WaitingFor_ReplacementChoice:
+		if len(g.entry_choices) > 0 {
+			o := object(s, g.entry_choices[0])
+			r, _ := entry_payment_of(o)
+			life, _ := entry_payment(r)
+			if int(player(s, p).life) >= life do append(&out, types.GameAction_ChooseReplacement{index = 0})
+		}
+		append(&out, types.GameAction_ChooseReplacement{index = 1})
 	case types.WaitingFor_OptionalEffectChoice:
 		append(&out, types.GameAction_DecideOptionalEffect{accept = true})
 		append(&out, types.GameAction_DecideOptionalEffect{accept = false})

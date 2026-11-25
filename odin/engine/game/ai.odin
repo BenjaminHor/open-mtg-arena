@@ -85,6 +85,9 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		return types.GameAction_ChooseTarget{target = t}, true
 	case types.WaitingFor_OptionalEffectChoice:
 		return types.GameAction_DecideOptionalEffect{accept = true}, true
+	case types.WaitingFor_ReplacementChoice:
+		// A shockland: pay the life while there's plenty of it, else let it enter tapped.
+		return types.GameAction_ChooseReplacement{index = 0 if player(s, p).life > 10 else 1}, true
 	case types.WaitingFor_ScryChoice:
 		return types.GameAction_SelectCards{cards = ai_keep_on_top(g, p, w.cards[:])}, true
 	case types.WaitingFor_DiscardChoice:

@@ -7,6 +7,7 @@ import types "../types"
 
 replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
 	if _, moved := r.event.(types.ReplacementEvent_Moved); !moved do return false
+	if _, may_pay := entry_payment(r); may_pay do return true
 	if _, mandatory := r.mode.(types.ReplacementMode_Mandatory); !mandatory do return false
 	if c, has := r.condition.?; has && !entry_condition_supported(c) do return false
 	if r.execute == nil || r.execute.sub_ability != nil || r.execute.condition != nil do return false
@@ -28,6 +29,71 @@ replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
 	return false
 }
 
+// "As this land enters, you may pay 2 life. If you don't, it enters tapped" (the shocklands): the life to pay.
+entry_payment :: proc(r: types.ReplacementDefinition) -> (life: int, ok: bool) {
+	m, may := r.mode.(types.ReplacementMode_MayCost)
+	if !may || r.execute != nil || r.condition != nil || m.decline == nil do return
+	if dest, has := r.destination_zone.?; !has || dest != .Battlefield do return
+	if f, has := r.valid_card.?; !has || !is_self(f) do return
+	pay, is_life := m.cost.(types.AbilityCost_PayLife)
+	n, fixed := fixed_quantity(pay.amount)
+	if !is_life || !fixed do return
+	d := m.decline
+	if d.sub_ability != nil || d.condition != nil || d.effect == nil do return
+	tap, is_tap := d.effect^.(types.Effect_SetTapState)
+	if !is_tap || !is_self(tap.target) || tap.state != .Tap || tap.scope != .Single do return
+	return n, true
+}
+
+// CR 614.12, 616.1: the controller of a permanent entering with "as this enters, you may pay N life" chooses as it
+// enters. The choice is asked before the next player would receive priority, the permanent still untapped until
+// then (nothing can be done with it in between); declining taps it without its becoming tapped (it entered so).
+ask_entry_payment :: proc(g: ^Game, after: types.PlayerId) -> bool {
+	s := &g.state
+	for len(g.entry_choices) > 0 {
+		o := object(s, g.entry_choices[0])
+		if o == nil || o.zone != .Battlefield {
+			ordered_remove(&g.entry_choices, 0)
+			continue
+		}
+		r, _ := entry_payment_of(o)
+		g.entry_after = after
+		cands := make([dynamic]types.ReplacementCandidateSummary)
+		desc, _ := r.description.?
+		append(&cands, types.ReplacementCandidateSummary{source_id = o.id, source_name = o.name, description = desc})
+		append(&cands, types.ReplacementCandidateSummary{source_id = o.id, source_name = o.name, description = "Decline"})
+		s.priority_player = o.controller
+		s.waiting_for = types.WaitingFor_ReplacementChoice{player = o.controller, candidate_count = 2, candidates = cands, kind = .OptionalBranch}
+		return true
+	}
+	return false
+}
+
+entry_payment_of :: proc(o: ^types.GameObject) -> (types.ReplacementDefinition, bool) {
+	if o.replacement_definitions == nil do return {}, false
+	for r in (^[dynamic]types.ReplacementDefinition)(o.replacement_definitions)^ do if _, ok := entry_payment(r); ok do return r, true
+	return {}, false
+}
+
+// The answer: 0 pays the life (CR 119.4: only with at least that much life), 1 declines and it's tapped.
+answer_entry_payment :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_ReplacementChoice, index: int) -> bool {
+	s := &g.state
+	if len(g.entry_choices) == 0 || p != w.player || index < 0 || index > 1 do return false
+	o := object(s, g.entry_choices[0])
+	r, _ := entry_payment_of(o)
+	life, _ := entry_payment(r)
+	if index == 0 {
+		if int(player(s, p).life) < life do return false
+		lose_life(s, p, life)
+	} else {
+		o.tapped = true
+	}
+	ordered_remove(&g.entry_choices, 0)
+	s.waiting_for = nil
+	give_priority(g, g.entry_after)
+	return true
+}
+
 // "Enters tapped unless ...": the conditions lands check as they enter.
 entry_condition_supported :: proc(c: types.ReplacementCondition) -> bool {
 	#partial switch x in c {
@@ -37,7 +103,8 @@ entry_condition_supported :: proc(c: types.ReplacementCondition) -> bool {
 		// "Enters with a +1/+1 counter if an opponent lost life this turn" (CR 614.1c).
 		return x.active_player_req == nil && quantity_supported(x.lhs) && quantity_supported(x.rhs)
 	case types.ReplacementCondition_UnlessControlsSubtype, types.ReplacementCondition_UnlessPlayerLifeAtMost,
-	     types.ReplacementCondition_UnlessMultipleOpponents, types.ReplacementCondition_UnlessYourTurn:
+	     types.ReplacementCondition_UnlessMultipleOpponents, types.ReplacementCondition_UnlessYourTurn,
+	     types.ReplacementCondition_YouAttackedThisTurn:
 		return true
 	case types.ReplacementCondition_UnlessControlsOtherLeq:
 		return typed_supported(x.filter)
@@ -81,6 +148,10 @@ entry_condition_holds :: proc(s: ^types.GameState, o: ^types.GameObject, c: type
 		return len(s.players) <= 2 // a two-player game has one opponent
 	case types.ReplacementCondition_UnlessYourTurn:
 		return s.active_player != o.controller
+	case types.ReplacementCondition_YouAttackedThisTurn:
+		// Raid: "enters with a +1/+1 counter if you attacked this turn" (CR 508.1).
+		for rec in s.attacker_declarations_this_turn do if rec.lki.controller == o.controller do return true
+		return false
 	case types.ReplacementCondition_OnlyIfQuantity:
 		// CR 614.12: read as it's about to enter; it isn't among the permanents counted (not yet on the battlefield).
 		return compare(quantity_value(s, x.lhs, o.controller, o.id, 0), x.comparator, quantity_value(s, x.rhs, o.controller, o.id, 0))
@@ -97,7 +168,7 @@ apply_entering_replacements :: proc(s: ^types.GameState, o: ^types.GameObject) {
 	x_defined = has_x(o.mana_cost)
 	defer x_defined = false
 	for r in (^[dynamic]types.ReplacementDefinition)(o.replacement_definitions)^ {
-		if !replacement_supported(r) do continue
+		if !replacement_supported(r) || r.execute == nil do continue // "you may pay": asked later (ask_entry_payment)
 		if c, has := r.condition.?; has && !entry_condition_holds(s, o, c) do continue
 		#partial switch e in r.execute.effect^ {
 		case types.Effect_SetTapState:
