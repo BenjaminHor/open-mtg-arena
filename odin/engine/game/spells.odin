@@ -764,7 +764,7 @@ object_supported :: proc(o: ^types.GameObject, card_db: Card_Lookup) -> bool {
 	// every card on every legal-action query).
 	if o.trigger_definitions != nil do for e in o.trigger_definitions^ do if !trigger_supported(e.definition) do return false
 	f := object_face(o)
-	return card_supported(&f)
+	return card_supported(&f, back_face = o.transformed) // a transformed permanent's back face has no mana cost
 }
 
 // The object's own abilities, costs and keywords as a card face, for the checks shared with whole cards (its

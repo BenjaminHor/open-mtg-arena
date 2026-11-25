@@ -51,16 +51,25 @@ show_creature :: proc(card_db: Card_Lookup, o: ^types.GameObject) {
 
 // Whether the Adventure could be cast now (CR 716.3a: only its characteristics are evaluated).
 adventure_castable :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool {
-	if o.zone != .Hand || !has_adventure(o) do return false
+	if !adventure_zone_ok(o, p) || !has_adventure(o) do return false
 	if !show_adventure(g, o) do return false
 	defer show_creature(g.card_db, o)
 	return castable(&g.state, p, o, g.card_db)
 }
 
+// Where it can be cast as an Adventure: the hand, or exile with an effect's permission to play it, but not the
+// permission its own Adventure gave (CR 716.3d: the creature only).
+@(private = "file")
+adventure_zone_ok :: proc(o: ^types.GameObject, p: types.PlayerId) -> bool {
+	if o.zone == .Hand do return true
+	_, from_exile := exile_permission(o, p)
+	return from_exile
+}
+
 // CR 716.3: casting an adventurer card from the hand, the player chooses the creature or the Adventure; asked only
 // when both can be cast. True when the cast was handled here (asked, or started as the Adventure).
 offer_adventure :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> (handled: bool, ok: bool) {
-	if o.zone != .Hand || !has_adventure(o) do return false, false
+	if !adventure_zone_ok(o, p) || !has_adventure(o) do return false, false
 	adventure := adventure_castable(g, p, o)
 	if !adventure do return false, false
 	if !castable(&g.state, p, o, g.card_db) do return true, cast_as_adventure(g, p, o)

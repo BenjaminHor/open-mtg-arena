@@ -3116,19 +3116,13 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   gap recordings only once the engine is fleshed out (ask then).
 
 ## Known issues
-- (2026-11-25, fourth rules review of the Odin engine, 973a688..82ce148) To fix, most severe first:
-  1. A triggered ability that divides damage or counters gives each target the whole amount: no division is asked
-     when it's put on the stack (CR 603.3d, 601.2d).
-  2. "Exile target creature. Its controller gains life equal to its power" (and "its controller draws") read the
-     controller and power after the zone change, not its last known information (CR 608.2h).
-  3. A transformed permanent is given the front face's mana cost; only its mana value is the front's (CR 712.6d,
-     202.3a): devotion counts it.
-  4. "When this enters, if you cast it" reads false on resolution if the permanent has left (CR 603.4, 608.2h).
-  5. Transforming doesn't give a new timestamp (CR 613.7g).
-  6. A creature with a mana ability can't convoke for its own color (CR 702.51a).
-  7. An MDFC's face, or an Adventure, can be chosen only from the hand, not when cast from exile by a permission
-     (CR 712.8b, 716.3d).
-  8. A token copy of a double-faced permanent isn't double-faced (CR 707.8a).
+- (2026-11-25, fourth rules review of the Odin engine, 973a688..82ce148) All eight fixed, each with a test: a
+  triggered ability divides damage or counters as it's put on the stack (CR 603.3d, 601.2d); "its controller" and
+  "its power" of a target that left read its last known information (608.2h); a transformed permanent has no mana
+  cost of its own, its mana value from the front face (712.6d, 202.3b); an intervening "if" whose source has left
+  reads the source as it was put on the stack (603.4, 608.2h); a new timestamp on transforming (613.7g); a mana
+  creature can convoke for its own color (702.51a); MDFC faces and Adventures can be chosen when cast from exile
+  by a permission (712.8b, 716.3); a token copy of a double-faced permanent is double-faced (707.8a).
 - (2026-11-25, third rules review of the Odin engine, commits ab9fdef..2791da2) Fixed with tests: a Clone copy
   is its own card again once it leaves the battlefield (CR 400.7, 707.2); a modal trigger with too few choosable
   modes is removed (CR 700.2b); "you may have it fight" and other fights follow conditions and "you may" (CR

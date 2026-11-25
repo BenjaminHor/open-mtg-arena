@@ -71,6 +71,9 @@ Pending_Trigger :: struct {
 Stack_Condition :: struct {
 	definition: ^types.TriggerDefinition,
 	lki:        ^types.GameObject,
+	// The source as it was put on the stack, read instead if it has changed zones by the time it resolves (CR
+	// 608.2h: "when this enters, if you cast it" with the permanent gone).
+	snapshot:   ^types.GameObject,
 }
 
 // ---- What's supported --------------------------------------------------------------------------------------
@@ -881,13 +884,22 @@ place_triggers :: proc(g: ^Game) -> bool {
 			return false
 		}
 		complete := c.slot >= len(slots)
-		targets, counts := c.targets, c.counts
+		if complete && ask_trigger_division(g, pt.controller, pt.definition.execute, &g.trigger_targets) do return false // CR 603.3d, 601.2d
+		targets, counts, division := c.targets, c.counts, g.trigger_targets.division
 		g.trigger_targets = {}
 		ordered_remove(&g.pending_triggers, index)
 		// CR 603.3d: an ability that needs a target and has none legal is removed from the stack.
 		if !complete do continue
-		id := push_ability(g, pt.source, pt.controller, pt.definition.execute, targets[:], true, counts[:], pt.definition.description)
-		if pt.definition.condition != nil do g.stack_conditions[id] = Stack_Condition{pt.definition, pt.lki}
+		id := push_ability(g, pt.source, pt.controller, pt.definition.execute, targets[:], true, counts[:], pt.definition.description, division[:])
+		if pt.definition.condition != nil {
+			snapshot: ^types.GameObject
+			if src := object(s, pt.source); src != nil && pt.lki == nil {
+				snapshot = new(types.GameObject)
+				snapshot^ = src^
+				snapshot.counters = slice.clone_to_dynamic(src.counters[:])
+			}
+			g.stack_conditions[id] = Stack_Condition{pt.definition, pt.lki, snapshot}
+		}
 		event := pt.event
 		event.amount = pt.amount
 		if event != {} do g.stack_events[id] = event
@@ -909,6 +921,9 @@ Trigger_Target_Choice :: struct {
 	source:       types.ObjectId,
 	definition:   ^types.TriggerDefinition,
 	using choice: Target_Choice,
+	dividing:     bool, // asked to divide its damage or counters (distribute.odin)...
+	division:     [dynamic]u32, // ...each target's share...
+	division_decided: bool, // ...once answered
 }
 
 @(private = "file")
@@ -987,7 +1002,9 @@ resolve_ability :: proc(g: ^Game, entry: types.StackEntry, resolved: ^types.Reso
 	if t, has := g.stack_conditions[entry.id]; has {
 		delete_key(&g.stack_conditions, entry.id)
 		rechecking_on_resolution = true
-		holds := condition_holds_as_was(&g.state, entry.source_id, entry.controller, t.definition.condition.?, t.lki)
+		lki := t.lki
+		if src := object(&g.state, entry.source_id); lki == nil && t.snapshot != nil && (src == nil || src.incarnation != t.snapshot.incarnation) do lki = t.snapshot
+		holds := condition_holds_as_was(&g.state, entry.source_id, entry.controller, t.definition.condition.?, lki)
 		rechecking_on_resolution = false
 		if !holds {
 			delete_key(&g.stack_abilities, entry.id)
@@ -1113,7 +1130,12 @@ create_copy_token :: proc(g: ^Game, original: ^types.GameObject, controller: typ
 	s := &g.state
 	o: ^types.GameObject
 	card: ^types.CardExportEntry
-	if !(original.is_token && original.printed_ref == nil) && g.card_db != nil do card = g.card_db(original.base_name if original.base_name != "" else original.name)
+	name := original.base_name if original.base_name != "" else original.name
+	// CR 707.8a: a copy of a double-faced permanent is a double-faced token, made from its front face and turned to
+	// the face the original has up.
+	if front, has := original.back_face.?; has && original.transformed do name = front.name
+	if !(original.is_token && original.printed_ref == nil) && g.card_db != nil do card = g.card_db(name)
+	back_up := original.transformed
 	if card != nil {
 		o = new_card_object(s, card, controller, .Command)
 	} else {
@@ -1136,6 +1158,7 @@ create_copy_token :: proc(g: ^Game, original: ^types.GameObject, controller: typ
 	o.is_token = true
 	o.controller = controller
 	if tapped do o.tapped = true
+	if back_up && card != nil && !o.transformed do transform_permanent(g, o) // enters with its back face up (707.8a)
 }
 
 core_type_named :: proc(name: string) -> (types.CoreType, bool) {

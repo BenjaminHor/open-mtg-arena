@@ -50,7 +50,9 @@ face_usable :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool {
 }
 
 mdfc_faces_usable :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> (front, back: bool) {
-	if o.zone != .Hand || o.modal_back_face || !is_mdfc(o) do return
+	// From the hand, or exile with a permission to play it (CR 712.8b, 712.9 apply however it's cast or played).
+	_, from_exile := exile_permission(o, p)
+	if !(o.zone == .Hand || from_exile) || o.modal_back_face || !is_mdfc(o) do return
 	front = face_usable(g, p, o)
 	if turn_other_face_up(g.card_db, o) {
 		back = face_usable(g, p, o)

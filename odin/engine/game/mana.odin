@@ -216,13 +216,20 @@ mana_sources :: proc(s: ^types.GameState, p: types.PlayerId, exclude: types.Obje
 	if paying.is_spell && paying.object != nil && has_keyword(paying.object, types.Keyword_Convoke) {
 		for o in permanents_of(s, p) {
 			if o.id == exclude || o.id == paying.object.id || slice.contains(others, o.id) || o.tapped || !is_type(o, .Creature) do continue
-			already := false
-			for src in out do if src.object == o do already = true
-			if already do continue
 			colors: bit_set[types.ManaType]
 			for c in o.color do colors += {types.ManaType(c)}
+			convoke := Mana_Option{colors = colors, amount = 1, taps = true, convoke = true}
+			// A creature that's a mana source too: one more way to tap it (for its mana, or to convoke for its
+			// color), each payment choosing one.
+			existing := -1
+			for src, i in out do if src.object == o do existing = i
+			if existing >= 0 {
+				out[existing].colors += colors
+				append(&out[existing].options, convoke)
+				continue
+			}
 			src := Mana_Source{object = o, colors = colors, amount = 1, options = make([dynamic]Mana_Option, context.temp_allocator)}
-			append(&src.options, Mana_Option{colors = colors, amount = 1, taps = true, convoke = true})
+			append(&src.options, convoke)
 			append(&out, src)
 		}
 	}
@@ -490,6 +497,9 @@ mana_value :: proc(cost: types.ManaCost) -> int {
 // CR 202.3e: an object's mana value, X counted as the announced value while it's on the stack (0 elsewhere).
 object_mana_value :: proc(o: ^types.GameObject) -> int {
 	n := mana_value(o.mana_cost)
+	// CR 712.6d, 202.3b: a transformed permanent's mana value is its front face's mana cost's (kept with its front
+	// face's name in back_face); the back face itself has no mana cost.
+	if o.transformed do if front, has := o.back_face.?; has do n = mana_value(front.mana_cost)
 	if o.zone == .Stack {
 		if c, ok := o.mana_cost.(types.ManaCost_Cost); ok {
 			x := int(o.cost_x_paid.? or_else 0)

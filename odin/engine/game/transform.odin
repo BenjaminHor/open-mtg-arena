@@ -39,15 +39,16 @@ transform_permanent :: proc(g: ^Game, o: ^types.GameObject) -> bool {
 	if card == nil do return false
 	for t in card.face.card_type.core_types do if t == .Instant || t == .Sorcery do return false
 	now_up := o.base_name // the face up now, which will be hidden
-	front_cost := o.base_mana_cost
+	now_cost := o.base_mana_cost
 	set_card_characteristics(o, &card.face)
-	if !o.transformed {
-		// CR 712.6d: its mana value is still its front face's mana cost.
-		o.mana_cost, o.base_mana_cost = front_cost, front_cost
-	}
-	o.back_face = types.BackFaceData{name = now_up}
+	// The hidden face's name, and its mana cost: with the back face up, the front's mana cost is its mana value
+	// (CR 712.6d, object_mana_value).
+	o.back_face = types.BackFaceData{name = now_up, mana_cost = now_cost}
 	o.transformed = !o.transformed
 	o.transformation_count += 1
+	// CR 613.7g: a double-faced permanent gets a new timestamp each time it transforms.
+	o.timestamp = g.state.next_timestamp
+	g.state.next_timestamp += 1
 	apply_continuous_effects(g)
 	return true
 }

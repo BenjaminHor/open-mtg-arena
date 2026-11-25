@@ -4033,11 +4033,14 @@ transform_to_the_back_face_and_back :: proc(t: ^testing.T) {
 	for a, i in captive.abilities^ do if a.effect != nil {
 		if _, transform := a.effect^.(types.Effect_Transform); transform do index = i
 	}
+	before := captive.timestamp
 	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = captive.id, ability_index = index}))
 	settle_stack(g)
 	testing.expect(t, captive.name == "Ulvenwald Abomination" && captive.power.? == 4 && captive.toughness.? == 6, "a 4/6 Abomination")
+	testing.expect(t, captive.timestamp > before, "a new timestamp (CR 613.7g)")
 	testing.expect(t, captive.transformed && captive.damage_marked == 1, "the same object: its damage stays")
-	testing.expect(t, game.mana_value(captive.mana_cost) == 2, "mana value of {1}{G}")
+	testing.expect(t, game.object_mana_value(captive) == 2, "mana value of {1}{G}, the front face's (CR 712.6d)")
+	testing.expect(t, game.mana_value(captive.mana_cost) == 0, "the back face has no mana cost (CR 202.3b): no devotion")
 	testing.expect(t, !game.has_keyword(captive, types.Keyword_Defender), "the back face has no defender")
 	game.move_object(g, captive.id, .Graveyard)
 	testing.expect(t, captive.name == "Ulvenwald Captive" && !captive.transformed, "the front face in the graveyard")
@@ -4250,4 +4253,135 @@ multicolored_spell_trigger :: proc(t: ^testing.T) {
 	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = helix.id}))
 	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
 	testing.expect(t, types.pvec_len(s.stack) == 2, "red and white: the Hero triggers")
+}
+
+@(test)
+triggered_ability_divides_damage :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Inferno Titan: "Whenever this creature enters or attacks, it deals 3 damage divided as you choose among one,
+	// two, or three targets." CR 603.3d: a triggered ability's division is announced as it's put on the stack, as
+	// a spell's is (601.2d).
+	g := new_game()
+	s := &g.state
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	elves := add(t, g, "Llanowar Elves", 1, .Battlefield)
+	titan := add(t, g, "Inferno Titan", 0, .Hand)
+	game.move_object(g, titan.id, .Battlefield)
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	asked_division := false
+	for _ in 0 ..< 12 {
+		#partial switch w in s.waiting_for {
+		case types.WaitingFor_TriggerTargetSelection:
+			slot := w.selection.current_slot
+			target: Maybe(types.TargetRef)
+			if slot == 0 do target = types.TargetRef_Object{bears.id}
+			if slot == 1 do target = types.TargetRef_Object{elves.id}
+			if slot == 2 do target = types.TargetRef_Player{1}
+			game.apply(g, 0, types.GameAction_ChooseTarget{target = target})
+			continue
+		case types.WaitingFor_DistributeAmong:
+			asked_division = true
+			testing.expect(t, w.total == 3 && len(w.targets) == 3, "3 among the three targets")
+			d: [dynamic]types.Tuple2(types.TargetRef, u32)
+			append(&d, types.Tuple2(types.TargetRef, u32){types.TargetRef_Object{bears.id}, 1})
+			append(&d, types.Tuple2(types.TargetRef, u32){types.TargetRef_Object{elves.id}, 1})
+			append(&d, types.Tuple2(types.TargetRef, u32){types.TargetRef_Player{1}, 1})
+			testing.expect(t, game.apply(g, 0, types.GameAction_DistributeAmong{distribution = d}))
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 && asked_division do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, asked_division, "asked to divide")
+	testing.expect(t, bears.zone == .Battlefield && bears.damage_marked == 1, "1 to the Bears")
+	testing.expect(t, elves.zone == .Graveyard, "1 to the Elves")
+	testing.expect(t, s.players[1].life == 19, "1 to the player")
+}
+
+@(test)
+its_controller_and_power_as_it_last_existed :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Swords to Plowshares: "Exile target creature. Its controller gains life equal to its power." The creature has
+	// left the battlefield, so its controller and power are as it last existed there (CR 608.2h): the player who
+	// controlled it (not its owner), and its power with counters.
+	testing.expect(t, game.card_supported(&card(t, "Swords to Plowshares").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Plains", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield) // owned by the opponent...
+	bears.controller, bears.base_controller = 0, 0 // ...controlled by player 0
+	game.add_counters(bears, types.CounterType_Plus1Plus1{}, 3)
+	game.apply_continuous_effects(g)
+	testing.expect(t, game.power_of(bears) == 5, "a 5/5")
+	swords := add(t, g, "Swords to Plowshares", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = swords.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	settle_stack(g)
+	testing.expect(t, bears.zone == .Exile, "exiled")
+	testing.expect(t, s.players[0].life == 25 && s.players[1].life == 20, "its last controller gains its last power")
+}
+
+@(test)
+convoke_with_a_mana_creature :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.51a: a green creature can convoke for {G} even if its mana ability makes another color. Siege Wurm
+	// ({5}{G}{G}, convoke) with five Plains, a Forest and Avacyn's Pilgrim (green, "{T}: Add {W}").
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 5 do add(t, g, "Plains", 0, .Battlefield)
+	add(t, g, "Forest", 0, .Battlefield)
+	pilgrim := add(t, g, "Avacyn's Pilgrim", 0, .Battlefield)
+	wurm := add(t, g, "Siege Wurm", 0, .Hand)
+	testing.expect(t, game.castable(s, 0, wurm, g.card_db), "the Pilgrim convokes for the second {G}")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = wurm.id}))
+	testing.expect(t, wurm.zone == .Stack && pilgrim.tapped, "cast, the Pilgrim tapped")
+}
+
+@(test)
+if_you_cast_it_after_it_left :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// The intervening "if" is checked again as the ability resolves (CR 603.4); the Avatar has left by then, so it's
+	// read as it last existed (CR 608.2h): it was cast, and the creatures are destroyed.
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 8 do add(t, g, "Plains", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	avatar := add(t, g, "Wakening Sun's Avatar", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = avatar.id}))
+	for _ in 0 ..< 4 {
+		if avatar.zone == .Battlefield do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, avatar.zone == .Battlefield && types.pvec_len(s.stack) == 1, "its trigger on the stack")
+	game.move_object(g, avatar.id, .Graveyard) // removed in response
+	settle_stack(g)
+	testing.expect(t, bears.zone == .Graveyard, "the trigger still destroys the Bears")
+}
+
+@(test)
+modal_face_from_exile :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// An effect lets the player play Akoum Warrior // Akoum Teeth from exile: either face can be used (CR 712.8b,
+	// 712.9), here the land face, as the turn's land.
+	g := new_game()
+	s := &g.state
+	warrior := add(t, g, "Akoum Warrior", 0, .Exile)
+	append(&warrior.casting_permissions, types.CastingPermission(types.CastingPermission_PlayFromExile{granted_to = 0, mode = .Play}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = warrior.id}))
+	testing.expect(t, warrior.zone == .Battlefield && warrior.name == "Akoum Teeth", "played as Akoum Teeth from exile")
+	testing.expect(t, s.players[0].lands_played_this_turn == 1, "the turn's land")
+}
+
+@(test)
+token_copy_of_a_transformed_permanent :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 707.8a: a token copy of a double-faced permanent is double-faced, entering with the original's face up.
+	g := new_game()
+	captive := add(t, g, "Ulvenwald Captive", 0, .Battlefield)
+	testing.expect(t, game.transform_permanent(g, captive), "transformed")
+	game.create_copy_token(g, captive, 0, false)
+	copy: ^types.GameObject
+	for id in game.ids_of(g.state.battlefield) do if o := game.object(&g.state, id); o.is_token do copy = o
+	testing.expect(t, copy != nil && copy.name == "Ulvenwald Abomination" && copy.transformed, "back face up")
+	if copy != nil do testing.expect(t, game.transform_permanent(g, copy) && copy.name == "Ulvenwald Captive", "and it can transform back")
 }

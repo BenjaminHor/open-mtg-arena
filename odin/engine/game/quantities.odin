@@ -332,7 +332,11 @@ scope_object :: proc(s: ^types.GameState, scope: types.ObjectScope, source, targ
 	case types.ObjectScope_Source:
 		return object(s, source)
 	case types.ObjectScope_Target:
-		if target != 0 do return object(s, target)
+		if target == 0 do return nil
+		// "Its power" of a target that has left the battlefield: as it last existed there (CR 608.2h).
+		o := object(s, target)
+		if was := last_known(target); was != nil && o != nil && o.zone != .Battlefield do return was
+		return o
 	}
 	return nil
 }

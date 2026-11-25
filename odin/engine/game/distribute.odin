@@ -61,6 +61,24 @@ with_share :: proc(e: types.Effect, n: int) -> types.Effect {
 	return e
 }
 
+// The dividing instruction of an ability, and the targets chosen for it among all of the ability's.
+division_of :: proc(chain: ^types.AbilityDefinition, all_targets: []types.TargetRef, counts: []int) -> (node: ^types.AbilityDefinition, targets: []types.TargetRef) {
+	group, start := 0, 0
+	for x := chain; x != nil; x = x.sub_ability {
+		if x != chain && is_reflexive(x) do break
+		if x.effect == nil do continue
+		if _, targets_one := effect_target(x.effect^); !targets_one do continue
+		n := counts[group] if group < len(counts) else 1
+		if x.distribute != nil {
+			end := min(start + n, len(all_targets))
+			return x, all_targets[min(start, end):end]
+		}
+		start += n
+		group += 1
+	}
+	return nil, nil
+}
+
 // The dividing instruction of what's being cast or activated, and the targets chosen for it.
 @(private = "file")
 pending_division :: proc(g: ^Game) -> (node: ^types.AbilityDefinition, targets: []types.TargetRef) {
@@ -69,20 +87,25 @@ pending_division :: proc(g: ^Game) -> (node: ^types.AbilityDefinition, targets: 
 	if g.pending.ability_index >= 0 do chain = activated_ability(o, g.pending.ability_index)
 	else if is_modal(o) do chain = chosen_mode_chain(o, g.pending.modes[:])
 	else do chain = spell_ability(o)
-	group, start := 0, 0
-	for x := chain; x != nil; x = x.sub_ability {
-		if x != chain && is_reflexive(x) do break
-		if x.effect == nil do continue
-		if _, targets_one := effect_target(x.effect^); !targets_one do continue
-		n := g.pending.counts[group] if group < len(g.pending.counts) else 1
-		if x.distribute != nil {
-			end := min(start + n, len(g.pending.targets))
-			return x, g.pending.targets[start:end]
-		}
-		start += n
-		group += 1
+	return division_of(chain, g.pending.targets[:], g.pending.counts[:])
+}
+
+// CR 603.3d, 601.2d: a triggered ability being put on the stack divides too, once its targets are chosen. True while
+// its controller decides.
+ask_trigger_division :: proc(g: ^Game, controller: types.PlayerId, chain: ^types.AbilityDefinition, c: ^Trigger_Target_Choice) -> bool {
+	if c.division_decided do return false
+	node, targets := division_of(chain, c.targets[:], c.counts[:])
+	if node == nil || len(targets) < 2 do return false
+	c.dividing = true
+	g.state.priority_player = controller
+	g.state.waiting_for = types.WaitingFor_DistributeAmong {
+		player  = controller,
+		total   = u32(distributed_total(node.effect^)),
+		targets = slice.clone_to_dynamic(targets),
+		unit    = node.distribute.?,
+		scope   = types.DistributionScope_AnnouncedTargets{},
 	}
-	return nil, nil
+	return true
 }
 
 // CR 601.2d: asks for the division once the targets are chosen, when there's more than one target to divide among.
@@ -118,6 +141,15 @@ answer_division :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_Distrib
 		if !found do return false
 	}
 	if sum != w.total do return false
+	if g.trigger_targets.dividing {
+		// A triggered ability's division: it's put on the stack with it (place_triggers).
+		g.trigger_targets.division = shares
+		g.trigger_targets.division_decided = true
+		g.trigger_targets.dividing = false
+		g.state.waiting_for = nil
+		give_priority(g, priority_holder(g))
+		return true
+	}
 	g.pending.division = shares
 	g.pending.division_decided = true
 	g.state.waiting_for = nil

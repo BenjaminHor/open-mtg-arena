@@ -192,7 +192,11 @@ continue_resolution :: proc(g: ^Game) -> bool {
 					continue
 				}
 				// "That creature's controller" (its last known controller if it has left, CR 608.2h).
-				if id, is_object := target_object(t); is_object do append(&affected, types.TargetRef(types.TargetRef_Player{object(s, id).controller}))
+				if id, is_object := target_object(t); is_object {
+					o := object(s, id)
+					if was := last_known(id); was != nil && o.zone != .Battlefield do o = was
+					append(&affected, types.TargetRef(types.TargetRef_Player{o.controller}))
+				}
 			}
 			if len(affected) == 0 do continue
 		} else if t, refers := event_reference(s, x.effect, r.event); refers {
