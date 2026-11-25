@@ -21,6 +21,7 @@ begin_first_turn :: proc(g: ^Game) {
 begin_turn :: proc(g: ^Game, active: types.PlayerId) {
 	s := &g.state
 	end_turn_auto_passes(s, active)
+	clear(&s.triggers_fired_this_turn) // "only once each turn": a new turn
 	s.active_player = active
 	s.lands_played_this_turn = 0
 	s.spells_cast_this_turn = 0

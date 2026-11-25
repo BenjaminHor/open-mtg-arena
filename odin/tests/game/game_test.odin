@@ -5022,3 +5022,29 @@ when_enchanted_creature_dies :: proc(t: ^testing.T) {
 	testing.expect(t, d2.zone == .Battlefield, "not for another creature")
 	_ = other
 }
+
+@(test)
+triggers_only_once_each_turn :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Battle-Scarred Survivalist: "Whenever another creature dies, put a +1/+1 counter on this creature. This ability
+	// triggers only once each turn." Two deaths in one turn: one counter; a new turn, it can trigger again.
+	testing.expect(t, game.card_supported(&card(t, "Battle-Scarred Survivalist").face))
+	g := new_game()
+	s := &g.state
+	survivalist := add(t, g, "Battle-Scarred Survivalist", 0, .Battlefield)
+	for _ in 0 ..< 2 {
+		bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		game.move_object(g, bears.id, .Graveyard)
+		game.give_priority(g, 0)
+		settle_stack(g)
+	}
+	testing.expect(t, game.counter_count(survivalist, types.CounterType_Plus1Plus1{}) == 1, "once this turn")
+	game.begin_turn(g, 1)
+	s.waiting_for = types.WaitingFor_Priority{player = 1}
+	s.priority_player = 1
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	game.move_object(g, bears.id, .Graveyard)
+	game.give_priority(g, 1)
+	settle_stack(g)
+	testing.expect(t, game.counter_count(survivalist, types.CounterType_Plus1Plus1{}) == 2, "again the next turn")
+}

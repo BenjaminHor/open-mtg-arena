@@ -143,6 +143,9 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		case types.TriggerConstraint_NthSpellThisTurn:
 			// "Whenever you cast your second spell each turn": the caster's count, any spell.
 			if !is_cast || x.filter != nil do return false
+		case types.TriggerConstraint_OncePerTurn:
+			// "This ability triggers only once each turn" (the card's own limit; add_trigger keeps the record).
+			if x.spent_by != .Triggering do return false
 		case types.TriggerConstraint_NthDrawThisTurn:
 			// "Whenever you draw your second card each turn" (CR 121.2: each card drawn is its own event).
 			if _, drawn := t.mode.(types.TriggerMode_Drawn); !drawn do return false
@@ -738,11 +741,14 @@ turn_constraint_met :: proc(s: ^types.GameState, t: types.TriggerDefinition, con
 		return s.active_player == controller
 	case types.TriggerConstraint_OnlyDuringOpponentsTurn:
 		return s.active_player != controller
+	case types.TriggerConstraint_OncePerTurn:
+		return true // checked as it triggers (add_trigger)
 	}
 	return false
 }
 
 add_trigger :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, trigger: ^types.TriggerDefinition, lki: ^types.GameObject = nil, amount := 0) {
+	if !first_time_this_turn(g, source, trigger) do return
 	t := unless_ability(trigger)
 	// CR 603.4: with an intervening "if", the ability triggers only if the condition is true now.
 	if c, has := t.condition.?; has && !condition_holds_as_was(&g.state, source, controller, c, lki) do return
@@ -1355,4 +1361,26 @@ unless_ability :: proc(t: ^types.TriggerDefinition) -> ^types.TriggerDefinition 
 	moved.execute = a
 	moved.unless_pay = nil
 	return moved
+}
+
+// "This ability triggers only once each turn": whether this ability of this object (CR 400.7: a new object has a
+// new one) hasn't triggered yet this turn, and if so, that it now has.
+@(private = "file")
+first_time_this_turn :: proc(g: ^Game, source: types.ObjectId, t: ^types.TriggerDefinition) -> bool {
+	c, has := t.constraint.?
+	if !has do return true
+	if _, once := c.(types.TriggerConstraint_OncePerTurn); !once do return true
+	s := &g.state
+	o := object(s, source)
+	if o == nil do return true
+	ref := types.TriggerDefinitionRef{source = types.ObjectIncarnationRef{object_id = o.id, incarnation = o.incarnation}}
+	found := false
+	for &e in trigger_definitions(o) do if &e.definition == t {
+		ref.occurrence = e.occurrence
+		found = true
+	}
+	if !found do return true // an ability made for the occasion (a keyword's), with no limit of its own
+	for r in s.triggers_fired_this_turn do if r == ref do return false
+	append(&s.triggers_fired_this_turn, ref)
+	return true
 }
