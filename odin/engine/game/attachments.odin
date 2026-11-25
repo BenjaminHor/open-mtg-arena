@@ -5,6 +5,7 @@
 // such Equipment (CR 704.5n).
 package game
 
+import "core:slice"
 import types "../types"
 
 // The enchant ability's filter: what an Aura can enchant (CR 702.5a).
@@ -21,7 +22,57 @@ is_aura :: proc(o: ^types.GameObject) -> bool {
 
 attach_effect_supported :: proc(x: types.Effect_Attach) -> bool {
 	if x.attachment != nil && !is_self(x.attachment) do return false
-	return filter_supported(x.target) && !may_name_player(x.target)
+	at, chosen := x.selection.(types.AttachSelection_AtResolution)
+	if !chosen do return filter_supported(x.target) && !may_name_player(x.target)
+	if _, one := at.count.(types.AttachCardinality_One); !one && at.count != nil do return false
+	// "Attach it to the token" (the one just created) or "attach it to a creature you control", chosen as it
+	// resolves (CR 608.2d), not targeted.
+	if _, last := x.target.(types.TargetFilter_LastCreated); last do return true
+	typed, ok := x.target.(types.TargetFilter_Typed)
+	if !ok || !typed_supported(typed._0) do return false
+	c, has := typed._0.controller.?
+	_, you := c.(types.ControllerRef_You)
+	return has && you
+}
+
+// Returns true while the player chooses what to attach it to.
+do_attach :: proc(g: ^Game, x: types.Effect_Attach, controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) -> bool {
+	s := &g.state
+	// CR 702.6a, 701.3: the source (an Equipment) becomes attached to it; only while it's the same object there.
+	equipment := same_source(g, source)
+	if equipment == nil || equipment.zone != .Battlefield do return false
+	if _, chosen := x.selection.(types.AttachSelection_AtResolution); !chosen {
+		if id, ok := target_object(target); ok do attach(s, equipment, object(s, id))
+		return false
+	}
+	if _, last := x.target.(types.TargetFilter_LastCreated); last {
+		// The token the instruction before made.
+		#reverse for id in g.resolution.moved do if o := object(s, id); o != nil && o.zone == .Battlefield && is_type(o, .Creature) {
+			attach(s, equipment, o)
+			break
+		}
+		return false
+	}
+	typed := x.target.(types.TargetFilter_Typed)._0
+	eligible: [dynamic]types.ObjectId
+	for o in permanents_of(s, controller) do if o.id != equipment.id && object_matches(s, o, typed, controller, source) do append(&eligible, o.id)
+	if len(eligible) == 0 do return false
+	if len(eligible) == 1 {
+		attach(s, equipment, object(s, eligible[0]))
+		return false
+	}
+	s.priority_player = controller
+	s.waiting_for = types.WaitingFor_EffectZoneChoice{player = controller, cards = eligible, count = 1, min_count = 1, source_id = source, effect_kind = .Attach, zone = .Battlefield}
+	return true
+}
+
+answer_attach :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_EffectZoneChoice, chosen: []types.ObjectId) -> bool {
+	if !g.resolution.active || len(chosen) != 1 || !slice.contains(w.cards[:], chosen[0]) do return false
+	s := &g.state
+	if equipment := same_source(g, w.source_id); equipment != nil && equipment.zone == .Battlefield do attach(s, equipment, object(s, chosen[0]))
+	s.waiting_for = nil
+	if continue_resolution(g) do after_resolution(g)
+	return true
 }
 
 // The object something is attached to, if it's attached to a permanent.

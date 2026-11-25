@@ -31,6 +31,14 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 			append(&one, w.cards[0])
 			return types.GameAction_SelectCards{cards = one}, true
 		}
+		if w.effect_kind == .Attach {
+			// What to attach the Equipment to: the strongest creature.
+			best := w.cards[0]
+			for id in w.cards do if power_of(object(s, id)) > power_of(object(s, best)) do best = id
+			one := make([dynamic]types.ObjectId, context.temp_allocator)
+			append(&one, best)
+			return types.GameAction_SelectCards{cards = one}, true
+		}
 		// What to sacrifice: the least valuable.
 		return types.GameAction_SelectCards{cards = least_valuable(g, w.cards[:], w.count)}, true
 	case types.WaitingFor_SearchChoice:

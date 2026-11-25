@@ -3299,3 +3299,47 @@ creature_land :: proc(t: ^testing.T) {
 	game.cleanup(g)
 	testing.expect(t, !game.is_type(nexus, .Creature), "a land again after the turn")
 }
+
+@(test)
+typecycling :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.29e: Ash Barrens, "Basic landcycling {1}": {1}, discard it: search your library for a basic land card,
+	// reveal it, put it into your hand, then shuffle.
+	testing.expect(t, game.card_supported(&card(t, "Ash Barrens").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Plains", 0, .Battlefield)
+	barrens := add(t, g, "Ash Barrens", 0, .Hand)
+	hand := types.pvec_len(game.player(s, 0).hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = barrens.id, ability_index = 1}))
+	testing.expect(t, barrens.zone == .Graveyard, "discarded as the cost")
+	for _ in 0 ..< 6 {
+		if w, searching := s.waiting_for.(types.WaitingFor_SearchChoice); searching {
+			one: [dynamic]types.ObjectId
+			append(&one, w.cards[0])
+			game.apply(g, 0, types.GameAction_SelectCards{cards = one})
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, types.pvec_len(game.player(s, 0).hand) == hand, "a basic land in place of the Barrens")
+}
+
+@(test)
+attach_to_the_new_token :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Ancestral Blade: "When this Equipment enters, create a 1/1 white Soldier creature token, then attach this
+	// Equipment to it. Equipped creature gets +1/+1." CR 701.3a: attach puts it on that creature.
+	testing.expect(t, game.card_supported(&card(t, "Ancestral Blade").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 2 do add(t, g, "Plains", 0, .Battlefield)
+	blade := add(t, g, "Ancestral Blade", 0, .Hand) // {1}{W}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = blade.id}))
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	soldier: ^types.GameObject
+	for id in game.ids_of(s.battlefield) do if o := game.object(s, id); o.is_token do soldier = o
+	testing.expect(t, soldier != nil && game.host_of(s, blade) == soldier, "attached to the Soldier")
+	if soldier != nil do testing.expect(t, soldier.power.? == 2 && soldier.toughness.? == 2, "a 2/2")
+}

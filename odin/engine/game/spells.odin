@@ -95,6 +95,10 @@ keyword_supported :: proc(k: types.Keyword) -> bool {
 		return mana // the cast from the graveyard and the exile are flashback.odin's
 	case types.Keyword_Kicker:
 		return true // carried out through the card's additional cost (kicker_cost), which card_supported checks
+	case types.Keyword_Typecycling:
+		// CR 702.29e: "[type]cycling [cost]": the card data spells it out as an activated ability from the hand that
+		// searches for a card of that type, checked like any other.
+		return true
 	case types.Keyword_Cycling:
 		// CR 702.29a: the card data spells it out as an activated ability from the hand ("[cost], Discard this
 		// card: Draw a card"), checked like any other.
@@ -407,7 +411,7 @@ effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 	case types.Effect_Bounce:
 		if x.selection == .Targeted do f = x.target // a chosen one isn't targeted
 	case types.Effect_Attach:
-		f = x.target
+		if _, chosen := x.selection.(types.AttachSelection_AtResolution); !chosen do f = x.target // chosen as it resolves: not targeted
 	case types.Effect_PutCounter:
 		f = x.target
 	case types.Effect_SetTapState:
@@ -962,9 +966,7 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 	}
 	#partial switch x in effect {
 	case types.Effect_Attach:
-		// CR 702.6a, 701.3: the source (an Equipment) becomes attached to the target.
-		equipment := object(s, source)
-		if id, ok := target_object(target); ok && equipment != nil && equipment.zone == .Battlefield do attach(s, equipment, object(s, id))
+		return do_attach(g, x, controller, source, target)
 	case types.Effect_Discard:
 		who := controller
 		if pid, ok := target_player(target); ok do who = pid
