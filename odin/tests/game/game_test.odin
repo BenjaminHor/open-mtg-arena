@@ -4656,3 +4656,33 @@ decayed_cant_block_and_is_sacrificed_after_attacking :: proc(t: ^testing.T) {
 	testing.expectf(t, zombie.zone == .Graveyard, "sacrificed at end of combat, in %v", zombie.zone)
 	testing.expect(t, s.players[1].life == 18, "after dealing its damage")
 }
+
+@(test)
+proliferate_chosen_permanents_and_players :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Steady Progress: "Proliferate. Draw a card." CR 701.34a: choose any number of permanents and/or players that
+	// have a counter; each chosen gets one more counter of each kind it has.
+	testing.expect(t, game.card_supported(&card(t, "Steady Progress").face))
+	g := new_game()
+	s := &g.state
+	for name in ([]string{"Island", "Island", "Island"}) do add(t, g, name, 0, .Battlefield)
+	mine := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	game.add_counters(mine, types.CounterType_Plus1Plus1{}, 1)
+	game.add_counters(mine, types.CounterType_Stun{}, 1)
+	theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	game.add_counters(theirs, types.CounterType_Plus1Plus1{}, 1)
+	add(t, g, "Grizzly Bears", 1, .Battlefield) // no counters: not a choice
+	s.players[1].poison_counters = 2
+	spell := add(t, g, "Steady Progress", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+	settle_stack(g)
+	w, asked := s.waiting_for.(types.WaitingFor_ProliferateChoice)
+	testing.expectf(t, asked && len(w.eligible) == 3, "two permanents and a player: %v", w.eligible)
+	chosen := make([dynamic]types.TargetRef)
+	append(&chosen, types.TargetRef_Object{mine.id}, types.TargetRef_Player{1})
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectTargets{targets = chosen}))
+	testing.expect(t, game.counter_count(mine, types.CounterType_Plus1Plus1{}) == 2 && game.counter_count(mine, types.CounterType_Stun{}) == 2, "one more of each kind")
+	testing.expect(t, game.counter_count(theirs, types.CounterType_Plus1Plus1{}) == 1, "not chosen")
+	testing.expect(t, s.players[1].poison_counters == 3, "one more poison counter")
+	testing.expect(t, spell.zone == .Graveyard, "then the rest of the spell")
+}

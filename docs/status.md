@@ -3067,6 +3067,9 @@ Progress:
 - Mana abilities with a sacrifice cost and no {T} ("Sacrifice this creature: Add {C}", Eldrazi Spawn and Scion
   tokens; activated by the player, CR 605.3a), and decayed (CR 702.147a: can't block; when it attacks, a delayed
   trigger sacrifices it at end of combat). 6,909 -> 6,930.
+- Proliferate (CR 701.34a, proliferate.odin): the player chooses any of the permanents and players with counters
+  (loyalty, poison, energy and player counters included); the AI picks its own permanents' counters other than
+  -1/-1, the opponent's -1/-1 counters and poison. 6,930 -> 6,976.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

@@ -68,6 +68,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_EffectZoneChoice:
 		return w.player, true
+	case types.WaitingFor_ProliferateChoice:
+		return w.player, true
 	case types.WaitingFor_OptionalCostChoice:
 		return w.player, true
 	}
@@ -228,6 +230,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			give_priority(g, p)
 			return true
 		}
+	case types.WaitingFor_ProliferateChoice:
+		a, ok := action.(types.GameAction_SelectTargets)
+		return ok && answer_proliferate(g, p, w, a.targets[:])
 	case types.WaitingFor_EffectZoneChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		if !ok do return false
@@ -472,6 +477,10 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		append(&out, types.GameAction_ChooseReplacement{index = 1})
 	case types.WaitingFor_NamedChoice:
 		for name in w.options do append(&out, types.GameAction_ChooseOption{choice = name})
+	case types.WaitingFor_ProliferateChoice:
+		// Any subset is an answer; offered: all of them, and none.
+		append(&out, types.GameAction_SelectTargets{targets = slice.clone_to_dynamic(w.eligible[:], context.temp_allocator)})
+		append(&out, types.GameAction_SelectTargets{})
 	case types.WaitingFor_RevealChoice:
 		for id in w.cards {
 			one := make([dynamic]types.ObjectId, context.temp_allocator)

@@ -131,6 +131,8 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		one := make([dynamic]types.ObjectId)
 		append(&one, w.cards[0])
 		return types.GameAction_SelectCards{cards = one}, true
+	case types.WaitingFor_ProliferateChoice:
+		return types.GameAction_SelectTargets{targets = ai_proliferate(g, p, w)}, true
 	case types.WaitingFor_NamedChoice:
 		return types.GameAction_ChooseOption{choice = ai_entry_name(g, p, w)}, true
 	case types.WaitingFor_ReplacementChoice:
