@@ -2936,6 +2936,9 @@ Progress:
   planeswalkers still wait on their abilities' effects. 5,756 -> 5,762; rules 285.
 - "You may pay {N} / N life. If you do, ..." as an instruction (CR 118.3, 608.2d): offered only when payable,
   mana paid from the player's sources the way automatic payment chooses them. 5,762 -> 5,807.
+- "If a creature card was exiled / put into a graveyard this way" (CR 608.2c): what the last instruction carried
+  out moved, kept on the resolution across choices; a skipped conditional instruction doesn't reset it.
+  5,807 -> 5,825.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

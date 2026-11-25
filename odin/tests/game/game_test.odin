@@ -3099,3 +3099,38 @@ you_may_pay_mana :: proc(t: ^testing.T) {
 	drew, asked = run(t, 2)
 	testing.expect(t, !drew, "no mana left: it can't be paid")
 }
+
+@(test)
+exiled_this_way :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Deathgorge Scavenger: "Whenever this creature enters or attacks, you may exile target card from a graveyard. If
+	// a creature card is exiled this way, you gain 2 life. If a noncreature card is exiled this way, this creature
+	// gets +1/+1 until end of turn." "This way" reads what the instruction before did (CR 608.2c).
+	testing.expect(t, game.card_supported(&card(t, "Deathgorge Scavenger").face))
+	run :: proc(t: ^testing.T, in_graveyard: string) -> (^game.Game, ^types.GameObject) {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 3 do add(t, g, "Forest", 0, .Battlefield)
+		dead := add(t, g, in_graveyard, 1, .Graveyard)
+		scavenger := add(t, g, "Deathgorge Scavenger", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = scavenger.id}))
+		for _ in 0 ..< 12 {
+			#partial switch w in s.waiting_for {
+			case types.WaitingFor_TriggerTargetSelection:
+				game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{dead.id}})
+				continue
+			case types.WaitingFor_OptionalEffectChoice:
+				game.apply(g, 0, types.GameAction_DecideOptionalEffect{accept = true})
+				continue
+			}
+			if types.pvec_len(s.stack) == 0 do break
+			game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+		}
+		testing.expect(t, dead.zone == .Exile)
+		return g, scavenger
+	}
+	g, sc := run(t, "Grizzly Bears")
+	testing.expect(t, game.player(&g.state, 0).life == 22 && sc.power.? == 3, "a creature card: 2 life, no pump")
+	g, sc = run(t, "Shock")
+	testing.expect(t, game.player(&g.state, 0).life == 20 && sc.power.? == 4, "a noncreature card: +1/+1, no life")
+}

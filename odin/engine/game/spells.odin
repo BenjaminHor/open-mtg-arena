@@ -1381,6 +1381,10 @@ ability_condition_supported :: proc(c: types.AbilityCondition) -> bool {
 	case types.AbilityCondition_SourceMatchesFilter:
 		typed, ok := x.filter.(types.TargetFilter_Typed)
 		return ok && object_condition_filter_supported(typed._0)
+	case types.AbilityCondition_ZoneChangedThisWay:
+		// "If a card was exiled this way" (resolution.odin reads what the instruction before moved).
+		typed, ok := x.filter.(types.TargetFilter_Typed)
+		return ok && object_condition_filter_supported(typed._0)
 	}
 	return false
 }

@@ -25,6 +25,8 @@ Resolution :: struct {
 	scope_node:   ^types.ResolvedAbility, // an instruction carried out for each player in a scope...
 	scope:        [dynamic]types.PlayerId, // ...for these players...
 	scope_next:   int, // ...of which this is the next
+	moved:        [dynamic]types.ObjectId, // what the latest instruction moved between zones: "this way" (CR 608.2c)
+	events_mark:  int, // where that instruction's events began (it may have paused for a choice since)
 }
 
 // The spell or ability as it goes on the stack: one node per instruction, each with the targets chosen for it (CR
@@ -94,6 +96,8 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 	g.resolution.last_targets = make([dynamic]types.TargetRef)
 	g.resolution.all_targets = make([dynamic]types.TargetRef)
 	g.resolution.found = make([dynamic]types.ObjectId)
+	g.resolution.moved = make([dynamic]types.ObjectId)
+	g.resolution.events_mark = -1
 	for n := top; n != nil; n = n.sub_ability do append(&g.resolution.all_targets, ..n.targets[:])
 	// A delayed ability's "it" (CR 603.7c): only while it's the same object it was.
 	if refers_to_parent_target(top.effect) {
@@ -110,6 +114,10 @@ continue_resolution :: proc(g: ^Game) -> bool {
 	r := &g.resolution
 	event_amount = r.event_amount // "that much", read by the instructions (quantities.odin)
 	for r.next != nil {
+		// What the instruction just carried out moved, before the next one reads "this way". An instruction skipped
+		// for its condition carries nothing out, so "this way" still means the one before it.
+		if r.events_mark >= 0 && r.events_mark <= len(g.events) do note_moved(g, r.events_mark)
+		r.events_mark = -1
 		x := r.next
 		r.next = x.sub_ability
 		if c, has := x.condition.?; has {
@@ -195,6 +203,7 @@ continue_resolution :: proc(g: ^Game) -> bool {
 			r.scope_node = nil
 			continue
 		}
+		r.events_mark = len(g.events)
 		for t in affected do if do_effect(g, x.effect, x.duration, r.controller, r.source, t) do return false // waiting for a choice
 	}
 	if r.spell != 0 do spell_leaves_stack(g, r.spell) // CR 608.2n (exile after flashback, CR 702.34a)
@@ -389,6 +398,17 @@ choose_index :: proc(g: ^Game, n: int) -> int {
 @(private = "file")
 condition_holds_now :: proc(r: ^Resolution, s: ^types.GameState, c: types.AbilityCondition) -> bool {
 	if want, is_outcome := outcome_wanted(c); is_outcome do return r.performed == want
+	if x, this_way := c.(types.AbilityCondition_ZoneChangedThisWay); this_way {
+		// "If a creature card was exiled this way": what the instruction before moved, as it is now.
+		typed := x.filter.(types.TargetFilter_Typed)._0
+		for id in r.moved {
+			o := object(s, id)
+			if o == nil do continue
+			if dest, has := x.destination.?; has && o.zone != dest do continue
+			if object_matches(s, o, typed, r.controller, r.source) do return true
+		}
+		return false
+	}
 	return ability_condition_holds(s, c, r.controller, r.source, r.last_targets[:])
 }
 
@@ -526,4 +546,11 @@ reflexive_trigger :: proc(g: ^Game, x: ^types.ResolvedAbility) {
 	t := new(types.TriggerDefinition)
 	t.execute = execute
 	add_trigger(g, r.source, r.controller, t)
+}
+
+// The objects the instruction just carried out moved from one zone to another (its zone-change events).
+note_moved :: proc(g: ^Game, events_before: int) {
+	r := &g.resolution
+	clear(&r.moved)
+	for e in g.events[events_before:] do if e.kind == .Zone_Change && e.from != e.to do append(&r.moved, e.object)
 }
