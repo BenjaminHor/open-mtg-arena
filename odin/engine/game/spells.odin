@@ -933,6 +933,14 @@ deal_damage :: proc(g: ^Game, source: types.ObjectId, target: types.TargetRef, n
 	if n <= 0 do return
 	s := &g.state
 	src := object(s, source)
+	if t, is_object := target.(types.TargetRef_Object); is_object {
+		// CR 122.1c: "If damage would be dealt to this permanent, prevent that damage and remove a shield counter
+		// from it." Prevented damage isn't dealt: no event, no lifelink.
+		if o := object(s, t._0); o != nil && o.zone == .Battlefield && counter_count(o, types.CounterType_Shield{}) > 0 {
+			remove_counters(o, types.CounterType_Shield{}, 1)
+			return
+		}
+	}
 	// CR 603.2: damage dealt is an event abilities can trigger on.
 	append(&g.events, Event{kind = .Damage, object = source, target = target, amount = n, combat = combat})
 	switch t in target {
@@ -969,6 +977,11 @@ lose_life :: proc(s: ^types.GameState, p: types.PlayerId, n: int) {
 // CR 701.8: destroying a permanent moves it to its owner's graveyard (CR 702.12b: unless it's indestructible).
 destroy :: proc(g: ^Game, o: ^types.GameObject) {
 	if o.zone != .Battlefield || has_keyword(o, types.Keyword_Indestructible) do return
+	// CR 122.1c: "If this permanent would be destroyed as the result of an effect, instead remove a shield counter."
+	if counter_count(o, types.CounterType_Shield{}) > 0 {
+		remove_counters(o, types.CounterType_Shield{}, 1)
+		return
+	}
 	move_object(g, o.id, .Graveyard)
 }
 

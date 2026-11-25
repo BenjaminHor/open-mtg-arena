@@ -21,8 +21,8 @@ replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
 		// A number, or an amount as it enters: "X +1/+1 counters" (the spell's X, CR 107.3m), "a counter for each".
 		amount_ok := quantity_supported(e.count) && !quantity_reads_target(e.count)
 		#partial switch _ in e.counter_type {
-		case types.CounterType_Plus1Plus1, types.CounterType_Minus1Minus1, types.CounterType_Lore:
-			// Lore: a Saga enters with a lore counter (CR 715.3a).
+		case types.CounterType_Plus1Plus1, types.CounterType_Minus1Minus1, types.CounterType_Lore, types.CounterType_Shield:
+			// Lore: a Saga enters with a lore counter (CR 715.3a). Shield: CR 122.1c.
 			return amount_ok && is_self(e.target)
 		}
 	}

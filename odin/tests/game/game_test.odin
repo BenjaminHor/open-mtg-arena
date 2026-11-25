@@ -2573,3 +2573,32 @@ shockland_pay_or_tapped :: proc(t: ^testing.T) {
 	// Raid: "This creature enters with a +1/+1 counter on it if you attacked this turn."
 	testing.expect(t, game.card_supported(&card(t, "Goblin Boarders").face))
 }
+
+@(test)
+shield_counters :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 122.1c: a shield counter prevents damage that would be dealt to the permanent, and replaces its being
+	// destroyed by an effect; either way one shield counter is removed.
+	testing.expect(t, game.card_supported(&card(t, "Dapper Shieldmate").face))
+	g := new_game()
+	s := &g.state
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	shield := types.CounterType(types.CounterType_Shield{})
+	game.add_counters(bears, shield, 1)
+	for _ in 0 ..< 3 do add(t, g, "Mountain", 0, .Battlefield)
+	for _ in 0 ..< 3 do add(t, g, "Swamp", 0, .Battlefield)
+	cast_at :: proc(t: ^testing.T, g: ^game.Game, name: string, target: types.ObjectId) {
+		spell := add(t, g, name, 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+		if _, asked := g.state.waiting_for.(types.WaitingFor_TargetSelection); asked {
+			game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{target}})
+		}
+		for types.pvec_len(g.state.stack) > 0 do game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+	}
+	cast_at(t, g, "Shock", bears.id)
+	testing.expect(t, bears.zone == .Battlefield && bears.damage_marked == 0 && game.counter_count(bears, shield) == 0, "damage prevented, the counter removed")
+	game.add_counters(bears, shield, 1)
+	cast_at(t, g, "Murder", bears.id)
+	testing.expect(t, bears.zone == .Battlefield && game.counter_count(bears, shield) == 0, "not destroyed, the counter removed")
+	_ = s
+}

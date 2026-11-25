@@ -38,7 +38,8 @@ may_name_player :: proc(f: types.TargetFilter) -> bool {
 
 counter_kind_supported :: proc(c: types.CounterType) -> bool {
 	#partial switch x in c {
-	case types.CounterType_Plus1Plus1, types.CounterType_Minus1Minus1, types.CounterType_Stun, types.CounterType_Lore:
+	case types.CounterType_Plus1Plus1, types.CounterType_Minus1Minus1, types.CounterType_Stun, types.CounterType_Lore,
+	     types.CounterType_Shield:
 		return true
 	case types.CounterType_Keyword:
 		_, ok := keyword_of_counter(x._0) // CR 122.1b
