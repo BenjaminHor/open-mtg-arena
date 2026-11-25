@@ -104,8 +104,7 @@ cost_supported :: proc(c: types.AbilityCost) -> bool {
 		count, is_count := x._0.requirement.(types.SacrificeRequirement_Count)
 		if !is_count do return false
 		if is_self(x._0.target) do return count.count == 1
-		typed, ok := x._0.target.(types.TargetFilter_Typed)
-		return ok && typed_supported(typed._0) && count.count >= 1 && count.count <= 10 && own_or_unrestricted(typed._0)
+		return sacrifice_filter_supported(x._0.target) && count.count >= 1 && count.count <= 10
 	case types.AbilityCost_Discard:
 		// "Discard this card" (cycling), or "discard a card" / "discard two cards" from the hand, chosen by the
 		// player (not at random).
@@ -141,6 +140,31 @@ cost_supported :: proc(c: types.AbilityCost) -> bool {
 	return false
 }
 
+// What may be sacrificed: a kind of permanent the player controls (CR 701.21a), or any of several kinds ("an
+// artifact or creature").
+@(private = "file")
+sacrifice_filter_supported :: proc(f: types.TargetFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Typed:
+		return typed_supported(x._0) && own_or_unrestricted(x._0)
+	case types.TargetFilter_Or:
+		for y in x.filters do if !sacrifice_filter_supported(y) do return false
+		return len(x.filters) > 0
+	}
+	return false
+}
+
+@(private = "file")
+sacrifice_filter_matches :: proc(s: ^types.GameState, f: types.TargetFilter, perm: ^types.GameObject, p: types.PlayerId, source: types.ObjectId) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Typed:
+		return object_matches(s, perm, x._0, p, source)
+	case types.TargetFilter_Or:
+		for y in x.filters do if sacrifice_filter_matches(s, y, perm, p, source) do return true
+	}
+	return false
+}
+
 own_or_unrestricted :: proc(f: types.TypedFilter) -> bool {
 	c, has := f.controller.?
 	if !has do return true
@@ -171,10 +195,9 @@ object_cost_of :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObj
 		#partial switch x in part {
 		case types.AbilityCost_Sacrifice:
 			if is_self(x._0.target) do continue
-			typed := x._0.target.(types.TargetFilter_Typed)
 			c := Object_Cost{kind = .Sacrifice, count = int(x._0.requirement.(types.SacrificeRequirement_Count).count)}
 			c.choices = make([dynamic]types.ObjectId, context.temp_allocator)
-			for perm in permanents_of(s, p) do if object_matches(s, perm, typed._0, p, o.id) do append(&c.choices, perm.id)
+			for perm in permanents_of(s, p) do if sacrifice_filter_matches(s, x._0.target, perm, p, o.id) do append(&c.choices, perm.id)
 			return c, true
 		case types.AbilityCost_Discard:
 			if x.self_scope == .SourceCard do continue // the card itself: no choice

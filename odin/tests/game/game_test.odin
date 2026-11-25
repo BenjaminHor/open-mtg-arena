@@ -5,6 +5,7 @@ package game_test
 
 import "core:os"
 import "core:sync"
+import "core:slice"
 import "core:testing"
 import carddb "../../engine/carddb"
 import game "../../engine/game"
@@ -2027,4 +2028,30 @@ ability_from_the_graveyard :: proc(t: ^testing.T) {
 	// Not from the battlefield: its cost can't be paid there.
 	croc2 := add(t, g, "Adorned Crocodile", 0, .Battlefield)
 	testing.expect(t, !game.apply(g, 0, types.GameAction_ActivateAbility{source_id = croc2.id, ability_index = index}))
+}
+
+@(test)
+sacrifice_one_of_two_kinds :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 602.2b, 601.2h: "{3}, Sacrifice another creature or artifact: Draw a card." (Ahriman): either kind may
+	// be chosen; nothing else (a land), and not Ahriman itself ("another").
+	g := new_game()
+	s := &g.state
+	testing.expect(t, game.card_supported(&card(t, "Ahriman").face))
+	for _ in 0 ..< 3 do add(t, g, "Forest", 0, .Battlefield)
+	ahriman := add(t, g, "Ahriman", 0, .Battlefield)
+	ring := add(t, g, "Sol Ring", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = ahriman.id, ability_index = 0}))
+	w, choosing := s.waiting_for.(types.WaitingFor_PayCost)
+	testing.expect(t, choosing, "asked what to sacrifice")
+	if !choosing do return
+	testing.expect(t, len(w.choices) == 2 && slice.contains(w.choices[:], ring.id) && slice.contains(w.choices[:], bears.id), "the artifact and the creature, not the lands or itself")
+	one: [dynamic]types.ObjectId
+	append(&one, ring.id)
+	hand := types.pvec_len(game.player(s, 0).hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = one}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, ring.zone == .Graveyard && types.pvec_len(game.player(s, 0).hand) == hand + 1, "sacrificed, and a card drawn")
 }
