@@ -3255,6 +3255,13 @@ Progress:
   "becomes the target" once (ward too): from judge-forum readings, not an official ruling (to confirm). "For the
   first time each turn" is read as "only once each turn" by older trigger modes: possible bug (known issue).
   12 tests. Coverage 7,770.
+- Entry replacements (agent, merged): chains ("enters tapped with three stun counters", "if kicked, with counters
+  and haste"), new entry conditions (two or more other lands, colors spent, first three turns, cast from hand),
+  riot (CR 702.136a, ReplacementChoice), "your choice of a deathtouch or lifelink counter" (ChooseOneOfBranch),
+  reveal-or-control-or-tapped, copies of graveyard cards and with exceptions (CR 707.9b, copiable), copies then
+  asked the copied entry choices (707.6); +X/+Y counters (122.1a), "with a counter"/"modified" (700.9), convoke
+  records. Grimdancer, Protean Raider to MISPARSED_CARDS. 17 tests. Not checked in the client UI: the choose-branch
+  dialog and choosing a graveyard card to copy. Coverage 7,876.
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 

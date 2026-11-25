@@ -45,12 +45,13 @@ Game :: struct {
 	optional_accepted: bool,
 	damage_progress:   Combat_Damage_Progress, // a combat damage step waiting on damage divisions
 	resolution:        Resolution, // a spell or ability partway through resolving, waiting on a choice
-	// Permanents that entered with "as this enters, you may pay N life" whose controller hasn't chosen yet, and who
-	// gets priority once they have (replacements.odin).
-	entry_choices:     [dynamic]types.ObjectId,
+	// Permanents that entered with "as this enters, you may pay N life", riot or "your choice of" counters whose
+	// controller hasn't chosen yet, and who gets priority once they have (replacements.odin).
+	entry_choices:     [dynamic]Entry_Option,
 	entry_copies:      [dynamic]types.ObjectId, // entered with "you may have this enter as a copy", still to choose
 	entry_names:       [dynamic]types.ObjectId, // entered with "as this enters, choose a color" (entry_choice.odin)
 	entry_reveals:     [dynamic]types.ObjectId, // entered with "you may reveal a Goblin card from your hand"
+	copy_exceptions:   map[types.ObjectId]Copy_Exceptions, // a copy's exceptions, for copies of it (CR 707.9b)
 	mana_color_choice: Mana_Color_Choice, // mana of one color being added while an ability resolves (mana.odin)
 	entry_after:       types.PlayerId,
 	// "Gain control of target creature until end of turn": who controlled it before, to give it back (kept beside

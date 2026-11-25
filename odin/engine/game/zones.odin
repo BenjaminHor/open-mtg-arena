@@ -121,6 +121,7 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 	if to != .Stack && !(from == .Stack && to == .Battlefield) {
 		o.cast_from_zone = nil
 		o.mana_spent_to_cast, o.mana_spent_to_cast_amount, o.colors_spent_to_cast = false, 0, {}
+		clear(&o.convoked_creatures)
 	}
 	if to != .Stack && !(from == .Stack && to == .Battlefield) {
 		o.cost_x_paid = nil
@@ -135,17 +136,15 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 		o.summoning_sick = true
 		o.timestamp = s.next_timestamp
 		s.next_timestamp += 1
-		apply_entering_replacements(s, o) // CR 614.12
+		apply_entering_replacements(g, o) // CR 614.12
 		// CR 306.5b: a planeswalker enters with loyalty counters equal to its printed loyalty.
 		if is_type(o, .Planeswalker) && g.card_db != nil {
 			if card := g.card_db(o.base_name if o.base_name != "" else o.name); card != nil {
 				if l, has := card.face.loyalty.?; has do if n, ok := strconv.parse_int(l); ok && n >= 0 do o.loyalty = u32(n)
 			}
 		}
-		if _, may_pay := entry_payment_of(o); may_pay do append(&g.entry_choices, id)
-		if _, copies := entry_copy_of(o); copies do append(&g.entry_copies, id)
-		if _, names := entry_choice_of(o); names do append(&g.entry_names, id)
-		if _, reveals := entry_reveal_of(o); reveals do append(&g.entry_reveals, id)
+		if _, copies := entry_copy_of(o); copies do append(&g.entry_copies, id) // asked first (ask_entry_copy)
+		queue_entry_choices(g, o)
 	} else {
 		o.entered_battlefield_turn = nil
 	}

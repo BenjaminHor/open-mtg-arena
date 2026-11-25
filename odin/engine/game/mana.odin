@@ -566,6 +566,9 @@ spend_pool_mana :: proc(s: ^types.GameState, p: types.PlayerId, pip: types.ManaP
 record_mana_spent :: proc(o: ^types.GameObject, taps: []Mana_Tap) {
 	o.mana_spent_to_cast = true
 	for t in taps {
+		// CR 702.51c: a creature tapped to pay for it with convoke "convoked" the spell ("for each creature that
+		// convoked it"); that isn't mana spent.
+		if t.option.convoke && t.object != nil do append(&o.convoked_creatures, t.object.id)
 		if t.option.convoke || t.paid <= 0 do continue
 		n := u32(t.paid)
 		o.mana_spent_to_cast_amount += n

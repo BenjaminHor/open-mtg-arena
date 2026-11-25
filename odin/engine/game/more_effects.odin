@@ -50,6 +50,8 @@ counter_kind_supported :: proc(c: types.CounterType) -> bool {
 	case types.CounterType_Keyword:
 		_, ok := keyword_of_counter(x._0) // CR 122.1b
 		return ok
+	case types.CounterType_PowerToughness:
+		return true // +1/+0 and the like: CR 122.1a, applied in layer 7c (continuous.odin)
 	}
 	return false
 }

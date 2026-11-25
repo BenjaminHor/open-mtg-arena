@@ -51,8 +51,12 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 	case types.FilterProp_Attacking:
 		return x.defender == nil
 	case types.FilterProp_Historic, types.FilterProp_NotHistoric, types.FilterProp_WasKicked, types.FilterProp_ColorCount,
-	     types.FilterProp_HasAdventure:
+	     types.FilterProp_HasAdventure, types.FilterProp_Modified:
 		return true
+	case types.FilterProp_Counters:
+		// "With a +1/+1 counter on it", "with three or more counters on it".
+		if m, of_type := x.counters.(types.CounterMatch_OfType); of_type && !counter_kind_supported(m._0) do return false
+		return quantity_supported(x.count) && !quantity_reads_target(x.count)
 	case types.FilterProp_IsChosenCreatureType, types.FilterProp_IsChosenColor, types.FilterProp_IsChosenCardType:
 		return true // the source's choice as it entered (entry_choice.odin)
 	case types.FilterProp_AnyOf:
@@ -282,6 +286,18 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 			if !compare(len(o.color), x.comparator, int(x.count)) do return false // "multicolored": two or more (CR 105.4)
 		case types.FilterProp_HasAdventure:
 			if !has_adventure(o) && !showing_adventure(o) do return false // CR 716.2a
+		case types.FilterProp_Modified:
+			if !modified(s, o) do return false
+		case types.FilterProp_Counters:
+			n := 0
+			#partial switch m in x.counters {
+			case types.CounterMatch_OfType:
+				n = int(counter_count(o, m._0))
+			case types.CounterMatch_Any:
+				n = int(o.loyalty.? or_else 0) // loyalty is kept apart from the other counters (add_counters)
+				for c in o.counters do n += int(c._1)
+			}
+			if !compare(n, x.comparator, quantity_value(s, x.count, chooser, source, 0)) do return false
 		case types.FilterProp_EnchantedBy, types.FilterProp_EquippedBy:
 			// "Enchanted/equipped creature": the permanent the source is attached to.
 			src := object(s, source)
@@ -299,6 +315,19 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 		}
 	}
 	return true
+}
+
+// CR 700.9: a permanent is modified if it has one or more counters on it, if it's equipped, or if it's enchanted by
+// an Aura its controller controls.
+modified :: proc(s: ^types.GameState, o: ^types.GameObject) -> bool {
+	if len(o.counters) > 0 || (o.loyalty.? or_else 0) > 0 do return true
+	for id in o.attachments {
+		a := object(s, id)
+		if a == nil do continue
+		if has_subtype(a, "Equipment") do return true
+		if has_subtype(a, "Aura") && a.controller == o.controller do return true
+	}
+	return false
 }
 
 // Whether a spell on the stack has a target that fits the description ("this creature", "a creature you control").

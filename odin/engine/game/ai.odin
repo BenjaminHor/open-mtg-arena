@@ -175,8 +175,16 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 	case types.WaitingFor_NamedChoice:
 		return types.GameAction_ChooseOption{choice = ai_entry_name(g, p, w)}, true
 	case types.WaitingFor_ReplacementChoice:
-		// A shockland: pay the life while there's plenty of it, else let it enter tapped.
-		return types.GameAction_ChooseReplacement{index = 0 if player(s, p).life > 10 else 1}, true
+		if len(w.candidates) > 0 {
+			if r, ok := asked_entry_option(g, w.candidates[0].source_id); ok {
+				// A shockland: pay the life while there's plenty of it, else let it enter tapped.
+				if _, may_pay := entry_payment(r); may_pay do return types.GameAction_ChooseReplacement{index = 0 if player(s, p).life > 10 else 1}, true
+			}
+		}
+		// Riot: the lasting +1/+1 counter.
+		return types.GameAction_ChooseReplacement{index = 0}, true
+	case types.WaitingFor_ChooseOneOfBranch:
+		return types.GameAction_ChooseBranch{index = 0}, true
 	case types.WaitingFor_ScryChoice:
 		return types.GameAction_SelectCards{cards = ai_keep_on_top(g, p, w.cards[:])}, true
 	case types.WaitingFor_DiscardChoice:

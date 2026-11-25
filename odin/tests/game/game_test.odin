@@ -11,6 +11,7 @@ import "core:slice"
 import "core:testing"
 import carddb "../../engine/carddb"
 import game "../../engine/game"
+import json "../../engine/json"
 import types "../../engine/types"
 
 CARD_DATA :: "client/public/card-data.json"
@@ -6842,4 +6843,460 @@ one_or_more_die_seen_by_one_dying_with_them :: proc(t: ^testing.T) {
 	testing.expectf(t, types.pvec_len(s.stack) == 1, "one trigger, got %d", types.pvec_len(s.stack))
 	resolve_stack(g)
 	testing.expect(t, types.pvec_len(game.player(s, 0).hand) == hand, "the wrath out of the hand, one card drawn")
+}
+
+// Casts a creature spell from player 0's hand and lets it resolve (the choices asked as it enters are the test's
+// to answer).
+@(private = "file")
+cast_and_resolve :: proc(t: ^testing.T, g: ^game.Game, o: ^types.GameObject) {
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = o.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+}
+
+@(test)
+riot_counter_or_haste :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.136a: riot means "You may have this permanent enter with an additional +1/+1 counter on it. If you
+	// don't, it gains haste." CR 614.12: chosen as it enters. Burning-Tree Vandal.
+	testing.expect(t, game.card_supported(&card(t, "Burning-Tree Vandal").face))
+	// Rhythm of the Wild gives riot to other creatures: the replacement it implies isn't given to them yet.
+	testing.expect(t, !game.card_supported(&card(t, "Rhythm of the Wild").face))
+	for counter in ([]bool{true, false}) {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 3 do add(t, g, "Mountain", 0, .Battlefield)
+		vandal := add(t, g, "Burning-Tree Vandal", 0, .Hand) // {2}{R}, 2/1
+		cast_and_resolve(t, g, vandal)
+		w, asked := s.waiting_for.(types.WaitingFor_ReplacementChoice)
+		testing.expect(t, asked && w.candidate_count == 2 && w.candidates[0].source_id == vandal.id, "asked as it enters")
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseReplacement{index = 0 if counter else 1}))
+		_, priority := s.waiting_for.(types.WaitingFor_Priority)
+		testing.expect(t, priority && s.priority_player == 0, "then priority back to its player")
+		testing.expectf(t, (game.power_of(vandal) == 3) == counter, "counter %v: power %d", counter, game.power_of(vandal))
+		testing.expectf(t, game.has_keyword(vandal, types.Keyword_Haste) == !counter, "counter %v: haste only without it", counter)
+		// CR 400.7: haste was this object's; back in the hand it's a new object without it.
+		game.move_object(g, vandal.id, .Hand)
+		game.apply_continuous_effects(g)
+		testing.expect(t, !game.has_keyword(vandal, types.Keyword_Haste) && len(vandal.counters) == 0)
+	}
+}
+
+@(test)
+enters_with_your_choice_of_counter :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Boot Nipper: "This creature enters with your choice of a deathtouch counter or a lifelink counter on it."
+	// CR 614.1c, 614.12: chosen as it enters; CR 122.1b: a keyword counter gives its keyword.
+	testing.expect(t, game.card_supported(&card(t, "Boot Nipper").face))
+	// Grimdancer's "two different counters from among menace, deathtouch, and lifelink" is three choices in its data.
+	testing.expect(t, !game.card_supported(&card(t, "Grimdancer").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 2 do add(t, g, "Swamp", 0, .Battlefield)
+	nipper := add(t, g, "Boot Nipper", 0, .Hand) // {1}{B}
+	cast_and_resolve(t, g, nipper)
+	w, asked := s.waiting_for.(types.WaitingFor_ChooseOneOfBranch)
+	testing.expect(t, asked && len(w.branches) == 2 && w.source_id == nipper.id, "asked which counter")
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ChooseBranch{index = 2}), "only the two")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseBranch{index = 1}))
+	testing.expect(t, game.has_keyword(nipper, types.Keyword_Lifelink) && !game.has_keyword(nipper, types.Keyword_Deathtouch), "a lifelink counter")
+	testing.expect(t, game.power_of(nipper) == 2, "no +1/+1 counter")
+}
+
+@(test)
+enters_tapped_if_you_control_two_other_lands :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Cave of the Frost Dragon: "If you control two or more other lands, this land enters tapped." CR 614.12: checked
+	// as it enters, the land itself not counted.
+	testing.expect(t, game.card_supported(&card(t, "Cave of the Frost Dragon").face))
+	for lands in 1 ..= 2 {
+		g := new_game()
+		for _ in 0 ..< lands do add(t, g, "Plains", 0, .Battlefield)
+		cave := add(t, g, "Cave of the Frost Dragon", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = cave.id}))
+		testing.expectf(t, cave.tapped == (lands == 2), "%d other lands: tapped %v", lands, cave.tapped)
+	}
+}
+
+@(test)
+enters_tapped_with_stun_counters :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Sleep-Cursed Faerie: "This creature enters tapped with three stun counters on it." CR 614.1c; CR 122.1d: a
+	// stun counter is removed instead of its untapping.
+	testing.expect(t, game.card_supported(&card(t, "Sleep-Cursed Faerie").face))
+	g := new_game()
+	add(t, g, "Island", 0, .Battlefield)
+	faerie := add(t, g, "Sleep-Cursed Faerie", 0, .Hand) // {U}
+	cast_and_resolve(t, g, faerie)
+	testing.expect(t, faerie.zone == .Battlefield && faerie.tapped, "entered tapped")
+	testing.expect(t, game.counter_count(faerie, types.CounterType_Stun{}) == 3, "with three stun counters")
+	game.untap(faerie)
+	testing.expect(t, faerie.tapped && game.counter_count(faerie, types.CounterType_Stun{}) == 2, "a counter removed instead")
+	// Put onto the battlefield other than by casting: the same.
+	g2 := new_game()
+	other := add(t, g2, "Sleep-Cursed Faerie", 0, .Graveyard)
+	game.move_object(g2, other.id, .Battlefield)
+	testing.expect(t, other.tapped && game.counter_count(other, types.CounterType_Stun{}) == 3)
+}
+
+@(test)
+kicked_enters_with_counters_and_haste :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Voidpouncer: "Kicker {2}{C}. If this creature was kicked, it enters with two +1/+1 counters and a trample
+	// counter on it and with haste." CR 702.33d, 614.1c.
+	testing.expect(t, game.card_supported(&card(t, "Voidpouncer").face))
+	for kick in ([]bool{true, false}) {
+		g := new_game()
+		s := &g.state
+		add(t, g, "Mountain", 0, .Battlefield)
+		for _ in 0 ..< 4 do add(t, g, "Wastes", 0, .Battlefield)
+		pouncer := add(t, g, "Voidpouncer", 0, .Hand) // {1}{R}, 3/1
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = pouncer.id}))
+		_, asked := s.waiting_for.(types.WaitingFor_OptionalCostChoice)
+		testing.expect(t, asked, "asked whether to kick")
+		testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalCost{index = 0 if kick else 1}))
+		settle_stack(g)
+		testing.expect(t, pouncer.zone == .Battlefield)
+		testing.expectf(t, (game.power_of(pouncer) == 5) == kick, "kicked %v: power %d", kick, game.power_of(pouncer))
+		testing.expect(t, game.has_keyword(pouncer, types.Keyword_Trample) == kick, "a trample counter if kicked")
+		testing.expect(t, game.has_keyword(pouncer, types.Keyword_Haste) == kick, "haste if kicked")
+	}
+}
+
+@(test)
+enters_with_counters_by_how_it_was_cast :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Steel Exemplar: "This creature enters with two +1/+1 counters on it unless two or more colors of mana were
+	// spent to cast it." CR 614.1c, 614.12.
+	testing.expect(t, game.card_supported(&card(t, "Steel Exemplar").face))
+	for colors in 1 ..= 2 {
+		g := new_game()
+		for _ in 0 ..< 3 do add(t, g, "Forest", 0, .Battlefield)
+		for _ in 0 ..< 2 do add(t, g, "Forest" if colors == 1 else "Mountain", 0, .Battlefield)
+		exemplar := add(t, g, "Steel Exemplar", 0, .Hand) // {5}, 4/4
+		cast_and_resolve(t, g, exemplar)
+		testing.expectf(t, (game.power_of(exemplar) == 6) == (colors == 1), "%d colors spent: power %d", colors, game.power_of(exemplar))
+	}
+	// Patched Plaything: "This creature enters with two -1/-1 counters on it if you cast it from your hand."
+	testing.expect(t, game.card_supported(&card(t, "Patched Plaything").face))
+	g := new_game()
+	for _ in 0 ..< 3 do add(t, g, "Plains", 0, .Battlefield)
+	plaything := add(t, g, "Patched Plaything", 0, .Hand) // {2}{W}, 4/3
+	cast_and_resolve(t, g, plaything)
+	testing.expect(t, game.power_of(plaything) == 2, "cast from the hand: two -1/-1 counters")
+	returned := add(t, g, "Patched Plaything", 0, .Graveyard)
+	game.move_object(g, returned.id, .Battlefield)
+	testing.expect(t, len(returned.counters) == 0, "put onto the battlefield, not cast: none")
+}
+
+@(test)
+enters_tapped_unless_your_first_three_turns :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Starting Town: "This land enters tapped unless it's your first, second, or third turn of the game."
+	testing.expect(t, game.card_supported(&card(t, "Starting Town").face))
+	for turns in ([]u32{3, 4}) {
+		g := new_game()
+		game.player(&g.state, 0).turns_taken = turns // this turn included
+		town := add(t, g, "Starting Town", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = town.id}))
+		testing.expectf(t, town.tapped == (turns == 4), "turn %d of yours: tapped %v", turns, town.tapped)
+	}
+	// On an opponent's turn it isn't your first turn, whatever your count.
+	g := new_game()
+	g.state.active_player = 1
+	game.player(&g.state, 0).turns_taken = 1
+	town := add(t, g, "Starting Town", 0, .Graveyard)
+	game.move_object(g, town.id, .Battlefield)
+	testing.expect(t, town.tapped, "an opponent's turn: tapped")
+}
+
+@(test)
+reveal_or_control_or_enter_tapped :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Fortified Beachhead: "As this land enters, you may reveal a Soldier card from your hand. This land enters
+	// tapped unless you revealed a Soldier card this way or you control a Soldier." CR 614.12.
+	testing.expect(t, game.card_supported(&card(t, "Fortified Beachhead").face))
+	for control in ([]bool{true, false}) {
+		g := new_game()
+		if control do add(t, g, "Elite Vanguard", 0, .Battlefield) // a Human Soldier
+		add(t, g, "Grizzly Bears", 0, .Hand) // no Soldier card to reveal
+		beachhead := add(t, g, "Fortified Beachhead", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = beachhead.id}))
+		testing.expectf(t, beachhead.tapped == !control, "control a Soldier %v: tapped %v", control, beachhead.tapped)
+	}
+	// A Soldier card in hand, not revealed, and none controlled: tapped.
+	g := new_game()
+	s := &g.state
+	add(t, g, "Elite Vanguard", 0, .Hand)
+	beachhead := add(t, g, "Fortified Beachhead", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = beachhead.id}))
+	_, asked := s.waiting_for.(types.WaitingFor_RevealChoice)
+	testing.expect(t, asked, "may reveal the Soldier")
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{}))
+	testing.expect(t, beachhead.tapped, "not revealed: tapped")
+}
+
+@(test)
+counters_for_each_creature_of_the_chosen_type :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Banner of Kinship: "As this artifact enters, choose a creature type. This artifact enters with a fellowship
+	// counter on it for each creature you control of the chosen type. Creatures you control of the chosen type get
+	// +1/+1 for each fellowship counter on this artifact." CR 614.12: the counters follow the choice.
+	testing.expect(t, game.card_supported(&card(t, "Banner of Kinship").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 5 do add(t, g, "Forest", 0, .Battlefield)
+	elves := add(t, g, "Llanowar Elves", 0, .Battlefield)
+	add(t, g, "Llanowar Elves", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	add(t, g, "Llanowar Elves", 1, .Battlefield) // not yours
+	banner := add(t, g, "Banner of Kinship", 0, .Hand) // {5}
+	cast_and_resolve(t, g, banner)
+	_, asked := s.waiting_for.(types.WaitingFor_NamedChoice)
+	testing.expect(t, asked, "asked for a creature type")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseOption{choice = "Elf"}))
+	testing.expectf(t, len(banner.counters) == 1 && banner.counters[0]._1 == 2, "two fellowship counters: %v", banner.counters)
+	testing.expect(t, game.power_of(elves) == 3 && game.power_of(bears) == 2, "Elves get +2/+2, the Bear doesn't")
+}
+
+@(test)
+copy_a_creature_card_in_a_graveyard :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Body Double: "You may have this creature enter as a copy of any creature card in a graveyard." CR 707.9,
+	// 614.12: chosen as it enters; the card isn't targeted and stays where it is.
+	testing.expect(t, game.card_supported(&card(t, "Body Double").face))
+	// Protean Raider's "Raid — If you attacked this turn" is lost from its data: refused.
+	testing.expect(t, !game.card_supported(&card(t, "Protean Raider").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 5 do add(t, g, "Island", 0, .Battlefield)
+	dead := add(t, g, "Craw Wurm", 1, .Graveyard)
+	alive := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	double := add(t, g, "Body Double", 0, .Hand) // {4}{U}
+	cast_and_resolve(t, g, double)
+	w, asked := s.waiting_for.(types.WaitingFor_CopyTargetChoice)
+	testing.expect(t, asked && slice.contains(w.valid_targets[:], dead.id), "the card in a graveyard is offered")
+	testing.expect(t, !slice.contains(w.valid_targets[:], alive.id), "a creature on the battlefield isn't")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{dead.id}}))
+	testing.expect(t, double.name == "Craw Wurm" && game.power_of(double) == 6, "a Craw Wurm")
+	testing.expect(t, dead.zone == .Graveyard, "the card stays in the graveyard")
+}
+
+@(test)
+copy_with_exceptions :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Glasspool Mimic: "You may have this creature enter as a copy of a creature you control, except it's a
+	// Shapeshifter Rogue in addition to its other types." CR 707.9b: the exception is part of its copiable values,
+	// so a Clone copying it is a Shapeshifter Rogue too.
+	testing.expect(t, game.card_supported(&card(t, "Glasspool Mimic").face))
+	// Hulking Metamorph's "its power and toughness are equal to ~'s" is lost from its data: refused.
+	testing.expect(t, !game.card_supported(&card(t, "Hulking Metamorph").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 7 do add(t, g, "Island", 0, .Battlefield)
+	elves := add(t, g, "Llanowar Elves", 0, .Battlefield)
+	theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	mimic := add(t, g, "Glasspool Mimic", 0, .Hand) // {2}{U}, a modal double-faced card
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = mimic.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseModalFace{back_face = false}))
+	settle_stack(g)
+	w, asked := s.waiting_for.(types.WaitingFor_CopyTargetChoice)
+	testing.expect(t, asked && slice.contains(w.valid_targets[:], elves.id), "a creature you control")
+	testing.expect(t, !slice.contains(w.valid_targets[:], theirs.id), "not an opponent's")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{elves.id}}))
+	testing.expect(t, mimic.name == "Llanowar Elves" && game.has_subtype(mimic, "Elf"), "a Llanowar Elves")
+	testing.expect(t, game.has_subtype(mimic, "Shapeshifter") && game.has_subtype(mimic, "Rogue"), "and a Shapeshifter Rogue")
+	testing.expect(t, !game.has_subtype(elves, "Rogue"), "the original is unchanged")
+	clone := add(t, g, "Clone", 0, .Hand) // {3}{U}
+	cast_and_resolve(t, g, clone)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{mimic.id}}))
+	testing.expect(t, clone.name == "Llanowar Elves" && game.has_subtype(clone, "Rogue"), "the Clone copies the exception too")
+	// CR 400.7: once it leaves the battlefield it's the card Glasspool Mimic again.
+	game.move_object(g, mimic.id, .Hand)
+	testing.expect(t, mimic.name == "Glasspool Mimic" && !game.has_subtype(mimic, "Elf"))
+}
+
+@(test)
+copy_by_mana_spent_or_tapped :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Mockingbird: "You may have this creature enter as a copy of any creature on the battlefield with mana value
+	// less than or equal to the amount of mana spent to cast this creature, except it's a Bird in addition to its
+	// other types and it has flying." CR 707.9.
+	testing.expect(t, game.card_supported(&card(t, "Mockingbird").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 2 do add(t, g, "Island", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield) // mana value 2
+	wurm := add(t, g, "Craw Wurm", 1, .Battlefield) // mana value 6
+	bird := add(t, g, "Mockingbird", 0, .Hand) // {X}{U}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = bird.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseX{value = 1}))
+	settle_stack(g)
+	w, asked := s.waiting_for.(types.WaitingFor_CopyTargetChoice)
+	testing.expect(t, asked && slice.contains(w.valid_targets[:], bears.id), "two mana spent: the Bears")
+	testing.expect(t, !slice.contains(w.valid_targets[:], wurm.id), "not the Wurm")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	testing.expect(t, bird.name == "Grizzly Bears" && game.has_subtype(bird, "Bird") && game.has_keyword(bird, types.Keyword_Flying), "a flying Bird Bear")
+
+	// Echoing Deeps: "You may have this land enter tapped as a copy of any land card in a graveyard, except it's a
+	// Cave in addition to its other types." Tapped only if it copies.
+	testing.expect(t, game.card_supported(&card(t, "Echoing Deeps").face))
+	for copy in ([]bool{true, false}) {
+		g2 := new_game()
+		forest := add(t, g2, "Forest", 1, .Graveyard)
+		deeps := add(t, g2, "Echoing Deeps", 0, .Hand)
+		testing.expect(t, game.apply(g2, 0, types.GameAction_PlayLand{object_id = deeps.id}))
+		_, copy_asked := g2.state.waiting_for.(types.WaitingFor_CopyTargetChoice)
+		testing.expect(t, copy_asked, "asked what to copy")
+		target: Maybe(types.TargetRef)
+		if copy do target = types.TargetRef_Object{forest.id}
+		testing.expect(t, game.apply(g2, 0, types.GameAction_ChooseTarget{target = target}))
+		testing.expectf(t, deeps.tapped == copy, "copied %v: tapped %v", copy, deeps.tapped)
+		testing.expect(t, (deeps.name == "Forest" && game.has_subtype(deeps, "Cave")) == copy, "a Forest Cave if copied")
+	}
+}
+
+@(test)
+enters_with_counters_counted_as_it_enters :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 614.1c, 614.12: the number of counters a permanent enters with is counted as it enters.
+	// Avatar of the Resolute: "a +1/+1 counter on it for each other creature you control with a +1/+1 counter on it".
+	testing.expect(t, game.card_supported(&card(t, "Avatar of the Resolute").face))
+	g := new_game()
+	for _ in 0 ..< 2 do add(t, g, "Forest", 0, .Battlefield)
+	countered := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	game.add_counters(countered, types.CounterType_Plus1Plus1{}, 2)
+	add(t, g, "Grizzly Bears", 0, .Battlefield) // no counter
+	theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	game.add_counters(theirs, types.CounterType_Plus1Plus1{}, 1) // not yours
+	avatar := add(t, g, "Avatar of the Resolute", 0, .Hand) // {G}{G}, 3/2
+	cast_and_resolve(t, g, avatar)
+	testing.expectf(t, game.counter_count(avatar, types.CounterType_Plus1Plus1{}) == 1, "one: %v", avatar.counters)
+
+	// Investigator's Journal: "a number of suspect counters on it equal to the greatest number of creatures a
+	// player controls".
+	testing.expect(t, game.card_supported(&card(t, "Investigator's Journal").face))
+	g2 := new_game()
+	for _ in 0 ..< 2 do add(t, g2, "Forest", 0, .Battlefield)
+	add(t, g2, "Grizzly Bears", 0, .Battlefield)
+	for _ in 0 ..< 3 do add(t, g2, "Grizzly Bears", 1, .Battlefield)
+	journal := add(t, g2, "Investigator's Journal", 0, .Hand) // {2}
+	cast_and_resolve(t, g2, journal)
+	testing.expectf(t, len(journal.counters) == 1 && journal.counters[0]._1 == 3, "three, the opponent's count: %v", journal.counters)
+
+	// Realm Seekers: "X +1/+1 counters on it, where X is the total number of cards in all players' hands".
+	testing.expect(t, game.card_supported(&card(t, "Realm Seekers").face))
+	g3 := new_game()
+	s3 := &g3.state
+	for _ in 0 ..< 6 do add(t, g3, "Forest", 0, .Battlefield)
+	seekers := add(t, g3, "Realm Seekers", 0, .Hand) // {4}{G}{G}, 0/0
+	testing.expect(t, game.apply(g3, 0, types.GameAction_CastSpell{object_id = seekers.id}))
+	hands := types.pvec_len(game.player(s3, 0).hand) + types.pvec_len(game.player(s3, 1).hand)
+	game.apply(g3, 0, types.GameAction_PassPriority{})
+	game.apply(g3, 1, types.GameAction_PassPriority{})
+	testing.expectf(t, int(game.counter_count(seekers, types.CounterType_Plus1Plus1{})) == hands && hands > 0, "%d cards in hands: %v", hands, seekers.counters)
+}
+
+@(test)
+plus_one_plus_zero_counters :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Lightning Serpent: "This creature enters with X +1/+0 counters on it." CR 122.1a, 613.4c: a +X/+Y counter adds
+	// X to power and Y to toughness; CR 107.3m: the X announced for the spell.
+	testing.expect(t, game.card_supported(&card(t, "Lightning Serpent").face))
+	g := new_game()
+	for _ in 0 ..< 3 do add(t, g, "Mountain", 0, .Battlefield)
+	serpent := add(t, g, "Lightning Serpent", 0, .Hand) // {X}{R}, 2/1
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = serpent.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseX{value = 2}))
+	settle_stack(g)
+	testing.expectf(t, game.power_of(serpent) == 4 && game.toughness_of(serpent) == 1, "4/1: %d/%d", game.power_of(serpent), game.toughness_of(serpent))
+}
+
+@(test)
+enters_with_a_counter_if_you_control_a_modified_creature :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Heir of the Ancient Fang: "This creature enters with a +1/+1 counter on it if you control a modified creature."
+	// CR 700.9: modified, with a counter on it, equipped, or enchanted by an Aura its controller controls.
+	testing.expect(t, game.card_supported(&card(t, "Heir of the Ancient Fang").face))
+	for modified in ([]bool{true, false}) {
+		g := new_game()
+		for _ in 0 ..< 3 do add(t, g, "Forest", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+		if modified do game.add_counters(bears, types.CounterType_Stun{}, 1) // any counter
+		theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		game.add_counters(theirs, types.CounterType_Plus1Plus1{}, 1) // not yours
+		heir := add(t, g, "Heir of the Ancient Fang", 0, .Hand) // {2}{G}, 2/3
+		cast_and_resolve(t, g, heir)
+		testing.expectf(t, (game.power_of(heir) == 3) == modified, "modified %v: power %d", modified, game.power_of(heir))
+	}
+}
+
+@(test)
+counters_for_each_creature_that_convoked_it :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Ancient Imperiosaur: "This creature enters with two +1/+1 counters on it for each creature that convoked it."
+	// CR 702.51c: a creature tapped to pay for the spell with convoke convoked it.
+	testing.expect(t, game.card_supported(&card(t, "Ancient Imperiosaur").face))
+	g := new_game()
+	for _ in 0 ..< 5 do add(t, g, "Forest", 0, .Battlefield)
+	bears := [2]^types.GameObject{add(t, g, "Grizzly Bears", 0, .Battlefield), add(t, g, "Grizzly Bears", 0, .Battlefield)}
+	dino := add(t, g, "Ancient Imperiosaur", 0, .Hand) // {5}{G}{G}, 6/6
+	cast_and_resolve(t, g, dino)
+	testing.expect(t, bears[0].tapped && bears[1].tapped, "both Bears convoked")
+	testing.expectf(t, game.counter_count(dino, types.CounterType_Plus1Plus1{}) == 4, "four counters: %v", dino.counters)
+	// Put onto the battlefield without being cast: nothing convoked it.
+	returned := add(t, g, "Ancient Imperiosaur", 0, .Graveyard)
+	game.move_object(g, returned.id, .Battlefield)
+	testing.expect(t, len(returned.counters) == 0)
+}
+
+@(test)
+copy_then_its_entry_choices :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 707.5, 707.6: a Clone copying Boot Nipper has its "enters with your choice of a deathtouch counter or a
+	// lifelink counter", and its controller makes that choice as it enters, after choosing what to copy.
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 4 do add(t, g, "Island", 0, .Battlefield)
+	nipper := add(t, g, "Boot Nipper", 1, .Battlefield)
+	clone := add(t, g, "Clone", 0, .Hand) // {3}{U}
+	cast_and_resolve(t, g, clone)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{nipper.id}}))
+	w, asked := s.waiting_for.(types.WaitingFor_ChooseOneOfBranch)
+	testing.expect(t, asked && w.source_id == clone.id && w.player == 0, "then asked which counter")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseBranch{index = 0}))
+	testing.expect(t, clone.name == "Boot Nipper" && game.has_keyword(clone, types.Keyword_Deathtouch), "a Boot Nipper with deathtouch")
+	_, priority := s.waiting_for.(types.WaitingFor_Priority)
+	testing.expect(t, priority, "then priority")
+}
+
+@(test)
+entry_choice_prompt_for_the_client :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// The prompt for "your choice of a counter" goes to the client as JSON (its ChooseOneOfBranch dialog) and the
+	// answer comes back as JSON; a restored game, without the engine's queue of entry choices, still takes it (its
+	// controller chooses as it enters, CR 614.12).
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 2 do add(t, g, "Swamp", 0, .Battlefield)
+	nipper := add(t, g, "Boot Nipper", 0, .Hand)
+	cast_and_resolve(t, g, nipper)
+	b := strings.builder_make(context.temp_allocator)
+	types.encode_WaitingFor(&b, s.waiting_for)
+	root, err := json.parse(transmute([]byte)strings.to_string(b))
+	testing.expect(t, err == nil, "the prompt encodes as JSON")
+	decoded: types.WaitingFor
+	testing.expectf(t, types.decode_WaitingFor(root, &decoded), "and decodes: %s", types.decode_error)
+	w, asked := decoded.(types.WaitingFor_ChooseOneOfBranch)
+	testing.expect(t, asked && w.source_id == nipper.id && len(w.branches) == 2 && len(w.branch_descriptions) == 2, "the client's ChooseOneOfBranch")
+	testing.expect(t, w.branch_descriptions[0] == "a deathtouch counter", "described")
+	action_json, _ := json.parse(transmute([]byte)string(`{"type":"ChooseBranch","data":{"index":1}}`))
+	action: types.GameAction
+	testing.expect(t, types.decode_GameAction(action_json, &action), "the client's answer decodes")
+	clear(&g.entry_choices) // as in a restored game: the prompt alone
+	s.waiting_for = decoded
+	testing.expect(t, game.apply(g, 0, action))
+	testing.expect(t, game.has_keyword(nipper, types.Keyword_Lifelink), "a lifelink counter")
+	_, priority := s.waiting_for.(types.WaitingFor_Priority)
+	testing.expect(t, priority && s.priority_player == 0, "then priority to the active player")
 }

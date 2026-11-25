@@ -59,6 +59,9 @@ MISPARSED_CARDS :: [?]string{
 	"Vitu-Ghazi Inspector", // the intervening "if evidence was collected" (CR 603.4) read as the effect's: it targets anyway
 	"Lo and Li, Royal Advisors", // "or mills one or more cards" lost from its discard trigger
 	"Shipwreck Sifters", // "or a card with disturb" lost from its discard trigger
+	// Entry replacements (2026-11-25).
+	"Grimdancer", // "two different counters ... from among menace, deathtouch, and lifelink" read as three choices
+	"Protean Raider", // "Raid — If you attacked this turn" lost from its copy replacement
 }
 
 misparsed :: proc(name: string) -> bool {
@@ -122,6 +125,10 @@ keyword_supported :: proc(k: types.Keyword) -> bool {
 	     types.Keyword_Convoke, // CR 702.51a: paying with creatures (mana.odin)
 	     types.Keyword_Changeling, types.Keyword_Devoid, types.Keyword_Toxic, // CR 702.73a, 702.114a, 702.164c
 	     types.Keyword_Decayed: // CR 702.147a (keywords.odin)
+		return true
+	case types.Keyword_Riot:
+		// CR 702.136a: carried out by the card's own replacement ("you may have this permanent enter with an
+		// additional +1/+1 counter on it. If you don't, it gains haste"), which card_supported checks.
 		return true
 	case types.Keyword_Crew:
 		return k.once_per_turn == nil // CR 702.122 (crew.odin)

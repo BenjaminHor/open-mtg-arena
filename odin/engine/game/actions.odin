@@ -36,6 +36,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_ReplacementChoice:
 		return w.player, true
+	case types.WaitingFor_ChooseOneOfBranch:
+		return w.player, true
 	case types.WaitingFor_NamedChoice:
 		return w.player, true
 	case types.WaitingFor_RevealChoice:
@@ -285,6 +287,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_ReplacementChoice:
 		a, ok := action.(types.GameAction_ChooseReplacement)
 		return ok && answer_entry_payment(g, p, w, a.index)
+	case types.WaitingFor_ChooseOneOfBranch:
+		a, ok := action.(types.GameAction_ChooseBranch)
+		return ok && answer_entry_branch(g, p, w, a.index)
 	case types.WaitingFor_NamedChoice:
 		a, ok := action.(types.GameAction_ChooseOption)
 		return ok && answer_entry_name(g, p, w, a.choice)
@@ -514,15 +519,14 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		append(&out, types.GameAction_CrewVehicle{vehicle_id = w.vehicle_id, creature_ids = slice.clone_to_dynamic(w.eligible_creatures[:], context.temp_allocator)})
 		append(&out, types.GameAction_CancelCast{})
 	case types.WaitingFor_ReplacementChoice:
-		land: types.ObjectId
-		if len(g.entry_choices) > 0 do land = g.entry_choices[0]
-		else if len(w.candidates) > 0 do land = w.candidates[0].source_id
-		if o := object(s, land); o != nil && entry_payment_of_ok(o) {
-			r, _ := entry_payment_of(o)
-			life, _ := entry_payment(r)
-			if int(player(s, p).life) >= life do append(&out, types.GameAction_ChooseReplacement{index = 0})
+		if len(w.candidates) > 0 {
+			if r, ok := asked_entry_option(g, w.candidates[0].source_id); ok && entry_option_acceptable(s, p, r) {
+				append(&out, types.GameAction_ChooseReplacement{index = 0})
+			}
 		}
 		append(&out, types.GameAction_ChooseReplacement{index = 1})
+	case types.WaitingFor_ChooseOneOfBranch:
+		for i in 0 ..< len(w.branches) do append(&out, types.GameAction_ChooseBranch{index = i})
 	case types.WaitingFor_NamedChoice:
 		for name in w.options do append(&out, types.GameAction_ChooseOption{choice = name})
 	case types.WaitingFor_ProliferateChoice:

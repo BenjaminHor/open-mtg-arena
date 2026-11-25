@@ -70,12 +70,19 @@ modification_supported :: proc(m: types.ContinuousModification) -> bool {
 	case types.ContinuousModification_GrantTrigger:
 		return k.trigger != nil && trigger_supported(k.trigger^)
 	case types.ContinuousModification_AddKeyword:
-		return keyword_supported(k.keyword)
+		return keyword_grantable(k.keyword)
 	case types.ContinuousModification_AddStaticMode:
 		modes := rule_modes(k.mode)
 		return modes != {} && modes & PLAYER_MODES == {} && .Flash not_in modes
 	}
 	return false
+}
+
+// A keyword an effect can give: one this engine carries out on an object that has it. Riot works through the
+// replacement the card's own data spells out (CR 702.136a), which a permanent given riot doesn't get yet.
+keyword_grantable :: proc(k: types.Keyword) -> bool {
+	if _, riot := k.(types.Keyword_Riot); riot do return false
+	return keyword_supported(k)
 }
 
 // This object, or permanents of a kind and controller (optionally "other").
@@ -262,6 +269,11 @@ apply_continuous_effects :: proc(g: ^Game) {
 			case types.CounterType_Minus1Minus1:
 				dp -= i32(c._1)
 				dt -= i32(c._1)
+			case types.CounterType_PowerToughness:
+				// CR 122.1a, 613.4c: a +X/+Y counter adds X to power and Y to toughness.
+				pt := c._0.(types.CounterType_PowerToughness)
+				dp += pt.power * i32(c._1)
+				dt += pt.toughness * i32(c._1)
 			}
 		}
 		if p, ok := power.?; ok do power = p + dp

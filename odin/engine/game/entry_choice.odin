@@ -13,9 +13,12 @@ import types "../types"
 // The choice an entry replacement asks for, when it's one this engine can ask.
 entry_choice :: proc(r: types.ReplacementDefinition) -> (types.ChoiceType, bool) {
 	if _, mandatory := r.mode.(types.ReplacementMode_Mandatory); !mandatory do return nil, false
-	if r.condition != nil || r.execute == nil || r.execute.effect == nil || r.execute.sub_ability != nil || r.execute.condition != nil do return nil, false
+	if r.condition != nil || r.execute == nil || r.execute.effect == nil || r.execute.condition != nil do return nil, false
 	if dest, has := r.destination_zone.?; !has || dest != .Battlefield do return nil, false
 	if f, has := r.valid_card.?; !has || !is_self(f) do return nil, false
+	// "This artifact enters with a fellowship counter on it for each creature you control of the chosen type"
+	// (Banner of Kinship): how it enters, once the choice is made.
+	if r.execute.sub_ability != nil && !entering_instructions_supported(r.execute.sub_ability) do return nil, false
 	c, is_choose := r.execute.effect^.(types.Effect_Choose)
 	if !is_choose || c.selection == .Random do return nil, false // "chosen at random": not yet
 	if c.chooser != nil {
@@ -34,6 +37,15 @@ entry_choice_of :: proc(o: ^types.GameObject) -> (types.ChoiceType, bool) {
 	if o.replacement_definitions == nil do return nil, false
 	for r in (^[dynamic]types.ReplacementDefinition)(o.replacement_definitions)^ do if c, ok := entry_choice(r); ok do return c, true
 	return nil, false
+}
+
+// What else the choice's replacement does as the permanent enters, after the choice ("enters with a counter for
+// each creature of the chosen type").
+@(private = "file")
+entry_choice_then :: proc(o: ^types.GameObject) -> ^types.AbilityDefinition {
+	if o.replacement_definitions == nil do return nil
+	for r in (^[dynamic]types.ReplacementDefinition)(o.replacement_definitions)^ do if _, ok := entry_choice(r); ok do return r.execute.sub_ability
+	return nil
 }
 
 // The names offered for a choice, in the order a player sees them.
@@ -144,6 +156,7 @@ answer_entry_name :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_Named
 	attr, ok := chosen_attribute(w.choice_type, answer)
 	if !ok do return false
 	append(&o.chosen_attributes, attr)
+	if then := entry_choice_then(o); then != nil do apply_entering_instructions(g, o, then)
 	after := s.active_player // a restored game: the prompt alone, priority to the active player
 	if len(g.entry_names) > 0 && g.entry_names[0] == id {
 		ordered_remove(&g.entry_names, 0)
@@ -215,7 +228,10 @@ entry_reveal :: proc(r: types.ReplacementDefinition) -> (types.TargetFilter, boo
 	rv, is_reveal := r.execute.effect^.(types.Effect_RevealFromHand)
 	if !is_reveal || rv.on_decline == nil do return nil, false
 	d := rv.on_decline
-	if d.sub_ability != nil || d.condition != nil || d.effect == nil do return nil, false
+	if d.sub_ability != nil || d.effect == nil do return nil, false
+	if c, has := d.condition.?; has {
+		if _, ok := unless_you_control(c); !ok do return nil, false
+	}
 	tap, is_tap := d.effect^.(types.Effect_SetTapState)
 	if !is_tap || !is_self(tap.target) || tap.state != .Tap || tap.scope != .Single do return nil, false
 	// "A Goblin card", "an Island or Swamp card".
@@ -230,6 +246,34 @@ entry_reveal :: proc(r: types.ReplacementDefinition) -> (types.TargetFilter, boo
 		return rv.filter, len(x.filters) > 0
 	}
 	return nil, false
+}
+
+// "This land enters tapped unless you revealed a Dragon card this way or you control a Dragon" (Temple of the
+// Dragon Queen): what its controller may control instead.
+@(private = "file")
+unless_you_control :: proc(c: types.AbilityCondition) -> (types.TargetFilter, bool) {
+	not, is_not := c.(types.AbilityCondition_Not)
+	if !is_not || not.condition == nil do return nil, false
+	controls, ok := not.condition^.(types.AbilityCondition_ControllerControlsMatching)
+	if !ok || !mass_filter_supported(controls.filter) do return nil, false
+	return controls.filter, true
+}
+
+// Whether the land enters tapped for want of a revealed card: unless its controller controls a permanent the
+// condition names (CR 614.12: looked at as it enters, the land itself not among them).
+@(private = "file")
+taps_without_reveal :: proc(s: ^types.GameState, o: ^types.GameObject) -> bool {
+	if o.replacement_definitions == nil do return true
+	for r in (^[dynamic]types.ReplacementDefinition)(o.replacement_definitions)^ {
+		if _, ok := entry_reveal(r); !ok do continue
+		rv := r.execute.effect^.(types.Effect_RevealFromHand)
+		c, has := rv.on_decline.condition.?
+		if !has do return true
+		f, _ := unless_you_control(c)
+		for perm in affected_permanents(s, f, o.controller, o.id) do if perm.id != o.id do return false
+		return true
+	}
+	return true
 }
 
 // Whether a card in its owner's hand fits the reveal's description.
@@ -268,7 +312,7 @@ ask_entry_reveal :: proc(g: ^Game, after: types.PlayerId) -> bool {
 		cards := make([dynamic]types.ObjectId)
 		for id in ids_of(player(s, o.controller).hand) do if reveal_fits(s, object(s, id), f, o.controller, o.id) do append(&cards, id)
 		if len(cards) == 0 {
-			o.tapped = true
+			if taps_without_reveal(s, o) do o.tapped = true
 			ordered_remove(&g.entry_reveals, 0)
 			continue
 		}
@@ -300,7 +344,7 @@ answer_entry_reveal :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_Rev
 		}
 	}
 	if o == nil do return false
-	if len(chosen) == 0 do o.tapped = true
+	if len(chosen) == 0 && taps_without_reveal(s, o) do o.tapped = true
 	s.waiting_for = nil
 	give_priority(g, after)
 	return true

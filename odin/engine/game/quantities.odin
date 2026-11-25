@@ -40,6 +40,10 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 		return x.inner != nil && quantity_supported(x.inner^)
 	case types.QuantityExpr_ClampMin:
 		return x.inner != nil && quantity_supported(x.inner^)
+	case types.QuantityExpr_Max:
+		// "The greatest power among creatures you control and creature cards in your graveyard".
+		for e in x.exprs do if !quantity_supported(e) do return false
+		return len(x.exprs) > 0
 	case types.QuantityExpr_Ref:
 		#partial switch r in x.qty {
 		case types.QuantityRef_PreviousEffectAmount:
@@ -73,7 +77,13 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			kind, has := r.counter_type.?
 			return from_source && (!has || counter_kind_supported(kind))
 		case types.QuantityRef_HandSize:
+			// "Your hand", an opponent's, or "the total number of cards in all players' hands".
+			if all, ok := r.player.(types.PlayerScope_AllPlayers); ok do return all_players_supported(r.player) && all.aggregate == .Sum
 			return player_scope_supported(r.player)
+		case types.QuantityRef_ControlledByEachPlayer:
+			// "The greatest number of creatures a player controls".
+			t, typed := r.filter.(types.TargetFilter_Typed)
+			return typed && t._0.controller == nil && r.relation == .All && typed_supported(t._0)
 		case types.QuantityRef_Variable:
 			return r.name == "X" && x_defined
 		case types.QuantityRef_CostXPaid:
@@ -104,6 +114,10 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return r.scope == .SelfObject || (r.scope == .TriggeringSpell && event_object_defined)
 		case types.QuantityRef_LifeAboveStarting:
 			return true
+		case types.QuantityRef_TurnsTaken:
+			return true // the turns you've taken this game, this one included (CR 103.8: the first turn is one)
+		case types.QuantityRef_ConvokedCreatureCount:
+			return true // "for each creature that convoked it" (CR 702.51c): this spell or the permanent it became
 		case types.QuantityRef_ObjectManaValue:
 			return scope_supported(r.scope)
 		case types.QuantityRef_AttackedThisTurn:
@@ -190,6 +204,13 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 		return quantity_value(s, x.inner^, controller, source, target) * int(x.factor)
 	case types.QuantityExpr_ClampMin:
 		return max(quantity_value(s, x.inner^, controller, source, target), int(x.minimum))
+	case types.QuantityExpr_Max:
+		n := 0
+		for e, i in x.exprs {
+			v := quantity_value(s, e, controller, source, target)
+			if i == 0 || v > n do n = v
+		}
+		return n
 	case types.QuantityExpr_Ref:
 		#partial switch r in x.qty {
 		case types.QuantityRef_TrackedSetSize:
@@ -249,8 +270,30 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			for c in o.counters do if !has || same_counter(c._0, kind) do n += int(c._1)
 			return n
 		case types.QuantityRef_HandSize:
-			// "The number of cards in your hand" (or an opponent's, in a two-player game).
+			// "The number of cards in your hand" (or an opponent's, in a two-player game), or in all players' hands.
+			if _, all := r.player.(types.PlayerScope_AllPlayers); all {
+				n := 0
+				for &p in s.players do n += types.pvec_len(p.hand)
+				return n
+			}
 			return types.pvec_len(player(s, scope_player(s, r.player, controller)).hand)
+		case types.QuantityRef_ControlledByEachPlayer:
+			// Each player's count of the permanents they control that fit, then the greatest, least or total.
+			f := r.filter.(types.TargetFilter_Typed)._0
+			n := 0
+			for &p, i in s.players {
+				count := 0
+				for o in permanents_of(s, p.id) do if object_matches(s, o, f, controller, source) do count += 1
+				switch r.aggregate {
+				case .Max:
+					if i == 0 || count > n do n = count
+				case .Min:
+					if i == 0 || count < n do n = count
+				case .Sum:
+					n += count
+				}
+			}
+			return n
 		case types.QuantityRef_Variable, types.QuantityRef_CostXPaid:
 			// CR 107.3a, 107.3m: X is the value announced for the spell (an enters ability of the permanent it became
 			// uses that too).
@@ -315,6 +358,11 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 				}
 			}
 			return 0
+		case types.QuantityRef_TurnsTaken:
+			// "The number of turns you've taken this game": counted as each of your turns begins (turn.odin).
+			return int(player(s, controller).turns_taken)
+		case types.QuantityRef_ConvokedCreatureCount:
+			if o := object(s, source); o != nil do return len(o.convoked_creatures)
 		case types.QuantityRef_LifeAboveStarting:
 			// "At least N life more than your starting life total" (Ajani, Strength of the Pride).
 			return max(int(player(s, controller).life) - starting_life(s), 0)
@@ -580,6 +628,8 @@ quantity_reads_target :: proc(q: types.QuantityExpr) -> bool {
 		return x.inner != nil && quantity_reads_target(x.inner^)
 	case types.QuantityExpr_ClampMin:
 		return x.inner != nil && quantity_reads_target(x.inner^)
+	case types.QuantityExpr_Max:
+		for e in x.exprs do if quantity_reads_target(e) do return true
 	case types.QuantityExpr_Ref:
 		#partial switch r in x.qty {
 		case types.QuantityRef_Power:
