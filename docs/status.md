@@ -3061,6 +3061,9 @@ Progress:
   the chosen type / color", "is the chosen type in addition" and "as long as [label] was chosen". The AI picks the
   color or type its cards show most. Not yet: chosen card names, opponents, odd or even; the trigger and ability
   forms of "if [label] was chosen". 6,860 -> 6,893.
+- "As this land enters, you may reveal a [kind of] card from your hand; if you don't, it enters tapped" (CR 614.12,
+  701.20a; "an Island or Swamp card" too), and permanents entering with any counter the engine knows (oil, charge,
+  ...: CR 122.1). 6,893 -> 6,909.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

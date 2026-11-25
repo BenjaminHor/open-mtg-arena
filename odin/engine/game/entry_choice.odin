@@ -203,3 +203,92 @@ name_weight :: proc(o: ^types.GameObject, c: types.ChoiceType, name: string) -> 
 	}
 	return 0
 }
+
+// "As this land enters, you may reveal a Goblin card from your hand. If you don't, it enters tapped" (CR 614.12,
+// 701.20a): the cards that may be revealed.
+entry_reveal :: proc(r: types.ReplacementDefinition) -> (types.TargetFilter, bool) {
+	if _, mandatory := r.mode.(types.ReplacementMode_Mandatory); !mandatory do return nil, false
+	if r.condition != nil || r.execute == nil || r.execute.effect == nil || r.execute.sub_ability != nil || r.execute.condition != nil do return nil, false
+	if dest, has := r.destination_zone.?; !has || dest != .Battlefield do return nil, false
+	if f, has := r.valid_card.?; !has || !is_self(f) do return nil, false
+	rv, is_reveal := r.execute.effect^.(types.Effect_RevealFromHand)
+	if !is_reveal || rv.on_decline == nil do return nil, false
+	d := rv.on_decline
+	if d.sub_ability != nil || d.condition != nil || d.effect == nil do return nil, false
+	tap, is_tap := d.effect^.(types.Effect_SetTapState)
+	if !is_tap || !is_self(tap.target) || tap.state != .Tap || tap.scope != .Single do return nil, false
+	// "A Goblin card", "an Island or Swamp card".
+	#partial switch x in rv.filter {
+	case types.TargetFilter_Typed:
+		return rv.filter, typed_supported(x._0)
+	case types.TargetFilter_Or:
+		for y in x.filters {
+			typed, ok := y.(types.TargetFilter_Typed)
+			if !ok || !typed_supported(typed._0) do return nil, false
+		}
+		return rv.filter, len(x.filters) > 0
+	}
+	return nil, false
+}
+
+// Whether a card in its owner's hand fits the reveal's description.
+@(private = "file")
+reveal_fits :: proc(s: ^types.GameState, card: ^types.GameObject, f: types.TargetFilter, p: types.PlayerId, source: types.ObjectId) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Typed:
+		plain := x._0
+		plain.controller = nil // cards in hand: the player's own
+		return object_matches(s, card, plain, p, source)
+	case types.TargetFilter_Or:
+		for y in x.filters do if reveal_fits(s, card, y, p, source) do return true
+	}
+	return false
+}
+
+entry_reveal_of :: proc(o: ^types.GameObject) -> (types.TargetFilter, bool) {
+	if o.replacement_definitions == nil do return nil, false
+	for r in (^[dynamic]types.ReplacementDefinition)(o.replacement_definitions)^ do if f, ok := entry_reveal(r); ok do return f, true
+	return nil, false
+}
+
+// Asked before the next player gets priority, like the other entry choices; with no such card in hand it simply
+// enters tapped.
+ask_entry_reveal :: proc(g: ^Game, after: types.PlayerId) -> bool {
+	s := &g.state
+	for len(g.entry_reveals) > 0 {
+		o := object(s, g.entry_reveals[0])
+		f: types.TargetFilter
+		ok := false
+		if o != nil do f, ok = entry_reveal_of(o)
+		if !ok || o.zone != .Battlefield {
+			ordered_remove(&g.entry_reveals, 0)
+			continue
+		}
+		cards := make([dynamic]types.ObjectId)
+		for id in ids_of(player(s, o.controller).hand) do if reveal_fits(s, object(s, id), f, o.controller, o.id) do append(&cards, id)
+		if len(cards) == 0 {
+			o.tapped = true
+			ordered_remove(&g.entry_reveals, 0)
+			continue
+		}
+		g.entry_after = after
+		s.priority_player = o.controller
+		s.waiting_for = types.WaitingFor_RevealChoice{player = o.controller, cards = cards, filter = f, optional = true, cardinality = types.ObjectSelectionCardinality_Exactly{count = 1}}
+		return true
+	}
+	return false
+}
+
+// The answer: one of the cards (revealed; it enters untapped), or none (it enters tapped).
+answer_entry_reveal :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_RevealChoice, chosen: []types.ObjectId) -> bool {
+	s := &g.state
+	if p != w.player || len(chosen) > 1 || len(g.entry_reveals) == 0 do return false
+	for id in chosen do if !slice.contains(w.cards[:], id) do return false
+	o := object(s, g.entry_reveals[0])
+	if o == nil do return false
+	if len(chosen) == 0 do o.tapped = true
+	ordered_remove(&g.entry_reveals, 0)
+	s.waiting_for = nil
+	give_priority(g, g.entry_after)
+	return true
+}

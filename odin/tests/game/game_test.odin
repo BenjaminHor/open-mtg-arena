@@ -4572,3 +4572,32 @@ creatures_of_the_chosen_type :: proc(t: ^testing.T) {
 	testing.expect(t, game.power_of(elves) == 2 && game.power_of(bears) == 2, "the Elf gets +1/+1, the Bear doesn't")
 	testing.expect(t, game.power_of(automaton) == 2, "not itself (other creatures)")
 }
+
+@(test)
+reveal_a_card_or_enter_tapped :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Auntie's Hovel: "As this land enters, you may reveal a Goblin card from your hand. If you don't, this land
+	// enters tapped." CR 614.12: decided as it enters.
+	testing.expect(t, game.card_supported(&card(t, "Auntie's Hovel").face))
+	for reveal in ([]bool{true, false}) {
+		g := new_game()
+		s := &g.state
+		goblin := add(t, g, "Raging Goblin", 0, .Hand)
+		add(t, g, "Grizzly Bears", 0, .Hand)
+		hovel := add(t, g, "Auntie's Hovel", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = hovel.id}))
+		w, asked := s.waiting_for.(types.WaitingFor_RevealChoice)
+		testing.expect(t, asked && len(w.cards) == 1 && w.cards[0] == goblin.id, "only the Goblin may be revealed")
+		pick := make([dynamic]types.ObjectId)
+		if reveal do append(&pick, goblin.id)
+		testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = pick}))
+		testing.expectf(t, hovel.tapped == !reveal, "revealed %v: tapped %v", reveal, hovel.tapped)
+		testing.expect(t, goblin.zone == .Hand, "the revealed card stays in hand")
+	}
+	// No Goblin in hand: it enters tapped without asking.
+	g := new_game()
+	hovel := add(t, g, "Auntie's Hovel", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = hovel.id}))
+	_, asked := g.state.waiting_for.(types.WaitingFor_RevealChoice)
+	testing.expect(t, !asked && hovel.tapped, "tapped, nothing to reveal")
+}

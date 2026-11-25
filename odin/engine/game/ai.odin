@@ -126,6 +126,11 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 			total += power_of(object(s, id))
 		}
 		return types.GameAction_CrewVehicle{vehicle_id = w.vehicle_id, creature_ids = chosen}, true
+	case types.WaitingFor_RevealChoice:
+		// Reveal: the land enters untapped and the card stays in hand.
+		one := make([dynamic]types.ObjectId)
+		append(&one, w.cards[0])
+		return types.GameAction_SelectCards{cards = one}, true
 	case types.WaitingFor_NamedChoice:
 		return types.GameAction_ChooseOption{choice = ai_entry_name(g, p, w)}, true
 	case types.WaitingFor_ReplacementChoice:

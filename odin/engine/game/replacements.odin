@@ -12,6 +12,7 @@ replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
 	if _, may_pay := entry_payment(r); may_pay do return true
 	if _, copy := entry_copy_filter(r); copy do return true
 	if _, choice := entry_choice(r); choice do return true
+	if _, reveal := entry_reveal(r); reveal do return true
 	if _, mandatory := r.mode.(types.ReplacementMode_Mandatory); !mandatory do return false
 	if c, has := r.condition.?; has && !entry_condition_supported(c) do return false
 	if r.execute == nil || r.execute.sub_ability != nil || r.execute.condition != nil do return false
@@ -24,11 +25,9 @@ replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
 	case types.Effect_PutCounter:
 		// A number, or an amount as it enters: "X +1/+1 counters" (the spell's X, CR 107.3m), "a counter for each".
 		amount_ok := quantity_supported(e.count) && !quantity_reads_target(e.count)
-		#partial switch _ in e.counter_type {
-		case types.CounterType_Plus1Plus1, types.CounterType_Minus1Minus1, types.CounterType_Lore, types.CounterType_Shield, types.CounterType_Finality:
-			// Lore: a Saga enters with a lore counter (CR 715.3a). Shield: CR 122.1c. Finality: CR 122.1h.
-			return amount_ok && is_self(e.target)
-		}
+		// Any counter this engine knows (counter_kind_supported): a Saga's lore counter (CR 715.3a), shield (CR 122.1c),
+		// finality (CR 122.1h), and counters with no rules meaning of their own (oil, charge: CR 122.1).
+		return amount_ok && is_self(e.target) && counter_kind_supported(e.counter_type)
 	}
 	return false
 }

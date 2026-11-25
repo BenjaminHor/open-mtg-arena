@@ -38,6 +38,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_NamedChoice:
 		return w.player, true
+	case types.WaitingFor_RevealChoice:
+		return w.player, true
 	case types.WaitingFor_CrewVehicle:
 		return w.player, true
 	case types.WaitingFor_CopyTargetChoice:
@@ -256,6 +258,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_NamedChoice:
 		a, ok := action.(types.GameAction_ChooseOption)
 		return ok && answer_entry_name(g, p, w, a.choice)
+	case types.WaitingFor_RevealChoice:
+		a, ok := action.(types.GameAction_SelectCards)
+		return ok && answer_entry_reveal(g, p, w, a.cards[:])
 	case types.WaitingFor_AbilityModeChoice:
 		a, ok := action.(types.GameAction_SelectModes)
 		return ok && select_trigger_modes(g, p, w, a.indices[:])
@@ -467,6 +472,13 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		append(&out, types.GameAction_ChooseReplacement{index = 1})
 	case types.WaitingFor_NamedChoice:
 		for name in w.options do append(&out, types.GameAction_ChooseOption{choice = name})
+	case types.WaitingFor_RevealChoice:
+		for id in w.cards {
+			one := make([dynamic]types.ObjectId, context.temp_allocator)
+			append(&one, id)
+			append(&out, types.GameAction_SelectCards{cards = one})
+		}
+		append(&out, types.GameAction_SelectCards{})
 	case types.WaitingFor_OptionalEffectChoice:
 		append(&out, types.GameAction_DecideOptionalEffect{accept = true})
 		append(&out, types.GameAction_DecideOptionalEffect{accept = false})
