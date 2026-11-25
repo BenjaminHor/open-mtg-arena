@@ -2993,6 +2993,9 @@ Progress:
 - Ward with a mana cost (CR 702.21a): a Became_Target event when a spell is cast or an ability put on the stack
   with targets; the ward trigger counters that spell or ability unless its controller pays (the "unless" prompt);
   countering an ability removes it from the stack (CR 701.6a). X and non-mana ward costs not yet. 6,371 -> 6,424.
+- Convoke (CR 702.51): for a spell with convoke, the automatic payment may tap untapped creatures (summoning sick
+  too) for {1} or one mana of their color, after lands; not mana, so no riders and nothing left in the pool.
+  6,424 -> 6,471.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

@@ -40,6 +40,9 @@ Mana_Option :: struct {
 	// "Add {W}{U}": every listed symbol at once, not one of them. The player activates such abilities on their own;
 	// automatic payment doesn't use them yet.
 	each:         bool,
+	// CR 702.51a: convoke, tapping a creature instead of paying {1} or one mana of its color. Not mana, and not a
+	// mana ability: no rider, nothing recorded, nothing left in the pool.
+	convoke:      bool,
 }
 
 // Whether a mana ability's "activate only ..." restrictions allow it now (CR 602.5).
@@ -199,6 +202,21 @@ mana_sources :: proc(s: ^types.GameState, p: types.PlayerId, exclude: types.Obje
 		}
 		if src.amount > 0 do append(&out, src)
 	}
+	// CR 702.51a: a spell with convoke may be paid for in part by tapping untapped creatures its caster controls,
+	// summoning sick or not (it isn't a {T} cost). A creature that's a mana source above is used that way instead.
+	if paying.is_spell && paying.object != nil && has_keyword(paying.object, types.Keyword_Convoke) {
+		for o in permanents_of(s, p) {
+			if o.id == exclude || o.id == paying.object.id || slice.contains(others, o.id) || o.tapped || !is_type(o, .Creature) do continue
+			already := false
+			for src in out do if src.object == o do already = true
+			if already do continue
+			colors: bit_set[types.ManaType]
+			for c in o.color do colors += {types.ManaType(c)}
+			src := Mana_Source{object = o, colors = colors, amount = 1, options = make([dynamic]Mana_Option, context.temp_allocator)}
+			append(&src.options, Mana_Option{colors = colors, amount = 1, taps = true, convoke = true})
+			append(&out, src)
+		}
+	}
 	return out
 }
 
@@ -312,7 +330,10 @@ pay_mana :: proc(g: ^Game, p: types.PlayerId, cost: types.ManaCost, exclude: typ
 	if !ok do return false
 	for t in taps {
 		if t.object == nil do spend_pool_mana(&g.state, p, t.pip)
-		else {
+		else if t.option.convoke {
+			tap_permanent(t.object) // CR 702.51c: it convoked the spell
+			continue
+		} else {
 			tap_permanent(t.object)
 			record_mana_activation(&g.state, t.object, t.option.index)
 		}
@@ -327,7 +348,7 @@ pay_mana :: proc(g: ^Game, p: types.PlayerId, cost: types.ManaCost, exclude: typ
 			add_pool_mana(&g.state, p, color, t.object.id if t.object != nil else 0, t.surplus, t.option.restrictions)
 		}
 	}
-	for t in taps do if t.object != nil do mana_rider(g, p, t.object, t.option)
+	for t in taps do if t.object != nil && !t.option.convoke do mana_rider(g, p, t.object, t.option)
 	return true
 }
 

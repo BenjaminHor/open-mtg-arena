@@ -3863,3 +3863,32 @@ ward_counters_an_ability :: proc(t: ^testing.T) {
 	settle_stack(g)
 	testing.expect(t, types.pvec_len(s.stack) == 0 && giant.damage_marked == 0, "no mana to pay: the ability is countered")
 }
+
+@(test)
+convoke_taps_creatures_to_pay :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.51a: convoke, tapping an untapped creature you control instead of paying {1} or one mana of its color.
+	// Not a {T} cost, so a summoning-sick creature can convoke. Arboretum Elemental: {7}{G}{G}.
+	testing.expect(t, game.card_supported(&card(t, "Arboretum Elemental").face))
+	for creatures in ([]int{4, 5}) {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 4 do add(t, g, "Forest", 0, .Battlefield)
+		bears: [dynamic]^types.GameObject
+		for _ in 0 ..< creatures do append(&bears, add(t, g, "Grizzly Bears", 0, .Battlefield))
+		bears[0].summoning_sick = true
+		elemental := add(t, g, "Arboretum Elemental", 0, .Hand)
+		castable := game.castable(s, 0, elemental, g.card_db)
+		if creatures == 4 {
+			testing.expect(t, !castable, "8 of the 9 mana")
+			continue
+		}
+		testing.expect(t, castable, "4 Forests and 5 creatures pay {7}{G}{G}")
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = elemental.id}))
+		testing.expect(t, elemental.zone == .Stack, "cast")
+		tapped := 0
+		for b in bears do if b.tapped do tapped += 1
+		testing.expect(t, tapped == 5, "every creature convoked")
+		testing.expect(t, len(s.players[0].mana_pool.mana) == 0, "no mana left over")
+	}
+}
