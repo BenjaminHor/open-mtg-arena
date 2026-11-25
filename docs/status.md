@@ -3377,6 +3377,11 @@ Progress:
   Life Trapping), "put onto the battlefield" without "owner's control" (Underworld Sentinel, CR 110.2a), Storrev
   (misparsed duration), Detention Sphere (same-name filter). Banishing Light and Cast Out now supported. Tests:
   exile_link_test.odin (26). Coverage 8,704. The return queue lives in Game, not the state (empty between actions).
+- In flight (2026-11-25, from ee6d94c): tenth rules review of bcaa6aa..ee6d94c; four coverage agents in worktrees
+  (brief: shared scratchpad agent-brief.md): named mechanics (Station, Connive, the Ring, Foretell, Warp, energy,
+  emblems); card faces (split, back faces, Omen fix); damage, life and replacements; zone instructions (ChangeZone,
+  library positions, draw/discard/mill, permissions outside exile). Next round: tokens and copies of tokens, delayed
+  triggers, "when you do"/"otherwise", multiple targets.
 - Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
   decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
   cards to be triaged against the CR (next step for the fixtures).
