@@ -46,6 +46,17 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return previous_amount_readable(r.channel) && r.aggregate == .Sum
 		case types.QuantityRef_TrackedSetSize:
 			return previous_instruction != nil && moves_cards(previous_instruction^)
+		case types.QuantityRef_PlayerCounter:
+			// "The number of poison counters you have" (CR 122.1f), experience, rad and ticket counters.
+			#partial switch r.scope {
+			case .Controller, .All, .Opponents:
+				return true
+			}
+			return false
+		case types.QuantityRef_CountersOnObjects:
+			// "The number of +1/+1 counters on creatures you control"; any kind when it names none.
+			if k, has := r.counter_type.?; has && !counter_kind_supported(k) do return false
+			return mass_filter_supported(r.filter)
 		case types.QuantityRef_FilteredTrackedSetSize:
 			if previous_instruction == nil || !moves_cards(previous_instruction^) || r.filter == nil do return false
 			if cause, has := r.caused_by.?; has && cause_zone(cause) == nil do return false
@@ -182,6 +193,26 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 		#partial switch r in x.qty {
 		case types.QuantityRef_TrackedSetSize:
 			return len(moved_now^) if moved_now != nil else 0
+		case types.QuantityRef_PlayerCounter:
+			n := 0
+			for &p in s.players {
+				#partial switch r.scope {
+				case .Controller:
+					if p.id != controller do continue
+				case .Opponents:
+					if p.id == controller do continue
+				}
+				if r.kind == .Poison do n += int(p.poison_counters)
+				else do n += int(p.player_counters[r.kind] or_else 0)
+			}
+			return n
+		case types.QuantityRef_CountersOnObjects:
+			n := 0
+			for o in affected_permanents(s, r.filter, controller, source, loc) {
+				if k, has := r.counter_type.?; has do n += int(counter_count(o, k))
+				else do for c in o.counters do n += int(c._1)
+			}
+			return n
 		case types.QuantityRef_FilteredTrackedSetSize:
 			// "For each creature destroyed this way": of what the instruction before moved, those that went where the
 			// words say, matching as they last existed where they were (CR 608.2h).

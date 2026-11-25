@@ -5641,3 +5641,19 @@ for_each_creature_destroyed_this_way :: proc(t: ^testing.T) {
 		testing.expect(t, treasures == 2 && tapped == 2, "two tapped Treasures: the token creature isn't counted")
 	}
 }
+
+// Mycosynth Fiend (2/2): "This creature gets +1/+1 for each poison counter your opponents have." Poison counters
+// are counters a player has (CR 122.1f); the count follows them as they change (CR 611.3a, layer 7c).
+@(test)
+gets_bigger_for_each_poison_counter_opponents_have :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Mycosynth Fiend").face))
+	g := new_game()
+	fiend := add(t, g, "Mycosynth Fiend", 0, .Battlefield)
+	testing.expect_value(t, game.power_of(fiend), 2)
+	g.state.players[1].poison_counters = 3
+	g.state.players[0].poison_counters = 5 // its controller's own don't count
+	game.apply_continuous_effects(g)
+	testing.expect_value(t, game.power_of(fiend), 5)
+	testing.expect_value(t, game.toughness_of(fiend), 5)
+}
