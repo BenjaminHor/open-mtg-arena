@@ -2911,6 +2911,10 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   gap recordings only once the engine is fleshed out (ask then).
 
 ## Known issues
+- (2026-11-25, owner: "CI is failing over and over on GitHub") Fixed in e45b75b: the Odin workflow's model check
+  failed on every push since a7e7ad1, which hand-edited the generated codecs in an order odingen doesn't emit.
+  Regenerated; the card-data round trip and the codec and logic tests pass locally. Check CI after each push,
+  not only the local suite.
 - (2026-11-25, Odin native tests) Fixed: the full native suite hung from 65c6e65 on: two tests emptied the hand
   through a copy of its persistent vector, so the loop never ended and memory grew until the container killed it.
   Runs reported in between as passing hadn't finished; the hang also hid two stale expectations (Ancient Tomb and
