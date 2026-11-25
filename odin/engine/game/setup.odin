@@ -35,7 +35,10 @@ Game :: struct {
 	trigger_targets:   Trigger_Target_Choice,
 	stack_abilities:   map[types.ObjectId]^types.AbilityDefinition,
 	stack_conditions:  map[types.ObjectId]Stack_Condition, // triggered abilities with an intervening "if" (CR 603.4)
-	stack_events: map[types.ObjectId]Trigger_Event, // a triggered ability's event: "that much damage", "that creature"
+	stack_events: map[types.ObjectId]Trigger_Event,
+	priority_after: Maybe(types.PlayerId), // who gets priority once the triggers being put on the stack are (CR 117.3c)
+	stack_crews:  map[types.ObjectId]u64,
+	attacked_planeswalkers: map[types.ObjectId]u64, // this combat's attacked planeswalkers, as they were (CR 506.4) // a crew ability on the stack: its Vehicle's incarnation then (CR 400.7) // a triggered ability's event: "that much damage", "that creature"
 	optional_entry:    types.StackEntry, // a "may" ability waiting for its controller's answer
 	optional_accepted: bool,
 	damage_progress:   Combat_Damage_Progress, // a combat damage step waiting on damage divisions

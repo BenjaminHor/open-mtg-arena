@@ -765,8 +765,15 @@ place_triggers :: proc(g: ^Game) -> bool {
 			push_resolved_trigger(g, pt.source, pt.controller, pt.delayed)
 			continue
 		}
-		if pt.definition.execute != nil && pt.definition.execute.modal != nil {
+		if a := pt.definition.execute; a != nil && a.modal != nil {
 			// CR 603.3c: a modal triggered ability's modes are chosen as it's put on the stack, before its targets.
+			// With fewer modes it can choose than it must (a mode needs a target and none is legal, CR 700.2b),
+			// none is chosen and the ability is removed.
+			m := a.modal.?
+			if m.mode_count - len(trigger_unavailable_modes(s, pt.controller, pt.source, a)) < max(m.min_choices, 1) {
+				ordered_remove(&g.pending_triggers, index)
+				continue
+			}
 			ask_trigger_modes(g, pt)
 			return false
 		}
@@ -841,7 +848,7 @@ choose_trigger_target :: proc(g: ^Game, p: types.PlayerId, t: types.TargetRef) -
 	w := s.waiting_for.(types.WaitingFor_TriggerTargetSelection)
 	if g.trigger_targets.definition == nil || !slice.contains(w.selection.current_legal_targets[:], t) do return false
 	take_target(slot_list(g.trigger_targets.definition.execute)[:], &g.trigger_targets.choice, t)
-	give_priority(g, s.active_player)
+	give_priority(g, priority_holder(g)) // CR 117.3c
 	return true
 }
 
@@ -852,7 +859,7 @@ decline_trigger_target :: proc(g: ^Game, p: types.PlayerId) -> bool {
 	c := &g.trigger_targets.choice
 	if c.slot >= len(slots) || !slots[c.slot].optional do return false
 	skip_group(slots[:], c)
-	give_priority(g, g.state.active_player)
+	give_priority(g, priority_holder(g)) // CR 117.3c
 	return true
 }
 

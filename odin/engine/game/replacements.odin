@@ -143,7 +143,9 @@ ask_entry_copy :: proc(g: ^Game, after: types.PlayerId) -> bool {
 			continue
 		}
 		valid := make([dynamic]types.ObjectId)
-		for p in affected_permanents(s, f, o.controller, o.id) do if p.id != o.id do append(&valid, p.id)
+		// A token's copiable values come from what made it (CR 111.3); copying a token isn't supported yet, so only
+		// card-backed creatures are offered.
+		for p in affected_permanents(s, f, o.controller, o.id) do if p.id != o.id && !(p.is_token && p.printed_ref == nil) do append(&valid, p.id)
 		if len(valid) == 0 {
 			ordered_remove(&g.entry_copies, 0) // nothing to copy: it enters as itself
 			continue
@@ -171,7 +173,7 @@ answer_entry_copy :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_CopyT
 		card: ^types.CardExportEntry
 		if g.card_db != nil && !(original.is_token && original.printed_ref == nil) do card = g.card_db(original.base_name if original.base_name != "" else original.name)
 		if card == nil do return false
-		set_card_characteristics(o, &card.face)
+		become_copy(o, &card.face)
 		apply_continuous_effects(g)
 	}
 	after := s.active_player // a restored game: the prompt alone, priority to the active player
@@ -182,6 +184,25 @@ answer_entry_copy :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_CopyT
 	s.waiting_for = nil
 	give_priority(g, after)
 	return true
+}
+
+// CR 707.2: the object's values become the copied card's, the values the layer pass starts from while it's on the
+// battlefield (the copy is a layer 1 effect, CR 613.1a, that lasts as long as this object does). Which card it is
+// stays in base_printed_ref: once it leaves the battlefield it's a new object with that card's values again
+// (CR 400.7; move_object rebuilds it).
+become_copy :: proc(o: ^types.GameObject, face: ^types.CardFace) {
+	own := o.base_printed_ref
+	set_card_characteristics(o, face)
+	o.base_printed_ref = own
+}
+
+// Whether the object has a copy's values over its own card's (become_copy), and that card's name.
+copying :: proc(o: ^types.GameObject) -> (own_card: string, is_copy: bool) {
+	if o.is_token do return "", false
+	own, has_own := o.base_printed_ref.?
+	now, has_now := o.printed_ref.?
+	if !has_own || !has_now || own.face_name == now.face_name do return "", false
+	return own.face_name, true
 }
 
 // "Enters tapped unless ...": the conditions lands check as they enter.

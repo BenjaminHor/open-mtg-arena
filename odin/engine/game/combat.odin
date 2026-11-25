@@ -67,6 +67,9 @@ declare_attackers :: proc(g: ^Game, attacks: []types.Tuple2(types.ObjectId, type
 		o := object(s, a._0)
 		if !has_keyword(o, types.Keyword_Vigilance) do tap_permanent(o)
 		append(&combat.attackers, types.AttackerInfo{object_id = a._0, defending_player = defender, attack_target = a._1})
+		if pw, attacks_pw := a._1.(types.AttackTarget_Planeswalker); attacks_pw {
+			if p := object(s, pw._0); p != nil do g.attacked_planeswalkers[p.id] = p.incarnation
+		}
 		append(&g.events, Event{kind = .Attack, object = a._0, controller = o.controller}) // CR 508.3a
 		// "If you attacked this turn" (Raid): the attackers as they were declared.
 		rec := types.AttackDeclarationRecord{object_id = o.id, incarnation = o.incarnation, is_token = o.is_token, is_commander = o.is_commander}
@@ -302,20 +305,20 @@ damage_pass :: proc(g: ^Game, combat: ^types.CombatState, pass: Damage_Pass) {
 		if !a.blocked {
 			// CR 510.1a: to the player or planeswalker it's attacking; a planeswalker that left (or stopped being
 			// one) is no longer attacked, so no damage (CR 506.4).
-			if t, ok := attacked_recipient(s, a); ok do append(&hits, Hit{a.object_id, t, n})
+			if t, ok := attacked_recipient(g, a); ok do append(&hits, Hit{a.object_id, t, n})
 			continue
 		}
 		// CR 510.1c: the division its controller chose, when there was one to make.
 		if choice, chosen := g.damage_progress.choices[a.object_id]; chosen {
 			for x in choice.to_blockers do if x._1 > 0 do append(&hits, Hit{a.object_id, types.TargetRef_Object{x._0}, int(x._1)})
-			if t, ok := attacked_recipient(s, a); ok && choice.to_player > 0 do append(&hits, Hit{a.object_id, t, int(choice.to_player)})
+			if t, ok := attacked_recipient(g, a); ok && choice.to_player > 0 do append(&hits, Hit{a.object_id, t, int(choice.to_player)})
 			continue
 		}
 		alive := alive_blockers(s, combat, a.object_id)
 		if len(alive) == 0 {
 			if has_keyword(attacker, types.Keyword_Trample) {
 				// CR 702.19c, 702.19e: to the player or planeswalker it's attacking.
-				if t, ok := attacked_recipient(s, a); ok do append(&hits, Hit{a.object_id, t, n})
+				if t, ok := attacked_recipient(g, a); ok do append(&hits, Hit{a.object_id, t, n})
 			}
 			continue // CR 510.1c: a blocked creature with no blockers left deals no damage
 		}
@@ -411,11 +414,15 @@ check_state_based_actions :: proc(g: ^Game) {
 
 // What an attacking creature deals its combat damage to when it isn't (all) blocked: the player, or the
 // planeswalker it attacks while that's still a planeswalker on the battlefield (CR 506.4).
-attacked_recipient :: proc(s: ^types.GameState, a: types.AttackerInfo) -> (types.TargetRef, bool) {
+attacked_recipient :: proc(g: ^Game, a: types.AttackerInfo) -> (types.TargetRef, bool) {
+	s := &g.state
 	#partial switch t in a.attack_target {
 	case types.AttackTarget_Planeswalker:
+		// CR 506.4: a planeswalker that left the battlefield (a new object if it came back, CR 400.7), stopped being
+		// a planeswalker or changed controller was removed from combat, and isn't dealt the damage.
 		pw := object(s, t._0)
-		if pw == nil || pw.zone != .Battlefield || !is_type(pw, .Planeswalker) do return nil, false
+		if pw == nil || pw.zone != .Battlefield || !is_type(pw, .Planeswalker) || pw.controller != a.defending_player do return nil, false
+		if was, known := g.attacked_planeswalkers[pw.id]; known && was != pw.incarnation do return nil, false
 		return types.TargetRef_Object{t._0}, true
 	case types.AttackTarget_Player:
 		return types.TargetRef_Player{t._0}, true

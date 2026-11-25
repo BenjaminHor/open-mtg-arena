@@ -62,6 +62,7 @@ answer_crew :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_CrewVehicle
 	s.next_object_id += 1
 	kind := types.StackEntryKind_KeywordAction{action = types.KeywordAction_Crew{vehicle_id = w.vehicle_id, paid_creature_ids = paid}}
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = w.vehicle_id, controller = p, kind = kind}, copy_entry)
+	if v := object(s, w.vehicle_id); v != nil do g.stack_crews[id] = v.incarnation
 	s.priority_passes = nil
 	give_priority(g, p)
 	return true
@@ -69,9 +70,12 @@ answer_crew :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_CrewVehicle
 
 // The crew ability resolves: the Vehicle is an artifact creature until end of turn (CR 702.122a, 301.7b: with the
 // power and toughness printed on it).
-resolve_crew :: proc(g: ^Game, x: types.KeywordAction_Crew) {
+resolve_crew :: proc(g: ^Game, x: types.KeywordAction_Crew, stack_id: types.ObjectId) {
 	o := object(&g.state, x.vehicle_id)
-	if o == nil || o.zone != .Battlefield do return
+	incarnation, known := g.stack_crews[stack_id]
+	delete_key(&g.stack_crews, stack_id)
+	// Only the Vehicle it was activated from: one that has left and come back is a new object (CR 400.7, 113.7a).
+	if o == nil || o.zone != .Battlefield || (known && o.incarnation != incarnation) do return
 	mods := make([dynamic]types.ContinuousModification)
 	append(&mods, types.ContinuousModification(types.ContinuousModification_AddType{core_type = .Artifact}))
 	append(&mods, types.ContinuousModification(types.ContinuousModification_AddType{core_type = .Creature}))

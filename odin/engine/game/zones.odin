@@ -100,6 +100,10 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 	clear(&o.counters)
 	clear(&o.attachments)
 	o.attached_to = nil
+	if own, is_copy := copying(o); is_copy && from == .Battlefield && g.card_db != nil {
+		// A copy that leaves the battlefield is a new object with its own card's values again (CR 400.7, 707.2).
+		if card := g.card_db(own); card != nil do set_card_characteristics(o, &card.face)
+	}
 	reset_characteristics(o)
 	// CR 107.3a: X, announced as the spell is cast, stays with it on the stack; CR 107.3m: the enters abilities of
 	// the permanent it becomes use that X too. Anywhere else, X is gone.

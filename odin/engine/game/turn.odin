@@ -91,6 +91,7 @@ begin_step :: proc(g: ^Game, step: types.Phase) {
 		// CR 511.3: at the end of combat, creatures stop being attacking and blocking creatures.
 	case .PostCombatMain:
 		s.combat = nil
+		clear(&g.attacked_planeswalkers)
 	case .Cleanup:
 		// CR 514.1: the active player discards down to their maximum hand size.
 		if ask_discard_to_hand_size(g) do return
@@ -119,6 +120,7 @@ cleanup :: proc(g: ^Game) {
 
 give_priority :: proc(g: ^Game, p: types.PlayerId) {
 	s := &g.state
+	g.priority_after = p // kept while a player chooses a trigger's modes or targets
 	// Choices made as a permanent entered, first (CR 614.12).
 	if ask_entry_copy(g, p) do return
 	if ask_entry_payment(g, p) do return
@@ -140,6 +142,12 @@ give_priority :: proc(g: ^Game, p: types.PlayerId) {
 	// CR 117.3c-d: after abilities are put on the stack, the active player gets priority, unless a player just acted.
 	s.priority_player = p
 	s.waiting_for = types.WaitingFor_Priority{player = p}
+}
+
+// The player who was about to receive priority when a trigger's modes or targets had to be chosen (CR 117.3c: the
+// player who cast a spell gets priority after it). A restored game doesn't know: the active player (CR 117.3b).
+priority_holder :: proc(g: ^Game) -> types.PlayerId {
+	return g.priority_after.? or_else g.state.active_player
 }
 
 // CR 117.3d, 117.4: a player passes priority. When every player has passed in succession, the top of the stack

@@ -2993,6 +2993,17 @@ crew_a_vehicle :: proc(t: ^testing.T) {
 	testing.expect(t, game.is_type(skiff, .Creature) && skiff.power.? == 3, "an artifact creature, 3/3")
 	game.cleanup(g)
 	testing.expect(t, !game.is_type(skiff, .Creature), "until end of turn")
+	// The Vehicle leaves and comes back while crew is on the stack: a new object the ability doesn't affect (CR 400.7).
+	bears.tapped = false
+	s.phase, s.active_player, s.priority_player = .PreCombatMain, 0, 0
+	s.waiting_for = types.WaitingFor_Priority{player = 0}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CrewVehicle{vehicle_id = skiff.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_CrewVehicle{vehicle_id = skiff.id, creature_ids = crew}))
+	testing.expect(t, types.pvec_len(s.stack) == 1, "crew on the stack again")
+	game.move_object(g, skiff.id, .Hand)
+	game.move_object(g, skiff.id, .Battlefield)
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, !game.is_type(skiff, .Creature), "the new Vehicle isn't crewed")
 }
 
 @(test)
@@ -3003,7 +3014,7 @@ clone_enters_as_a_copy :: proc(t: ^testing.T) {
 	// dies (CR 704.5f).
 	testing.expect(t, game.card_supported(&card(t, "Clone").face))
 	testing.expect(t, !game.card_supported(&card(t, "Altered Ego").face), "\"except it enters with X counters\" isn't read yet")
-	run :: proc(t: ^testing.T, copy: bool) -> ^types.GameObject {
+	run :: proc(t: ^testing.T, copy: bool) -> (^types.GameObject, ^game.Game) {
 		g := new_game()
 		s := &g.state
 		for _ in 0 ..< 4 do add(t, g, "Island", 0, .Battlefield)
@@ -3017,11 +3028,15 @@ clone_enters_as_a_copy :: proc(t: ^testing.T) {
 		target: Maybe(types.TargetRef)
 		if copy do target = types.TargetRef_Object{bears.id}
 		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = target}))
-		return clone
+		return clone, g
 	}
-	c := run(t, true)
+	c, g := run(t, true)
 	testing.expect(t, c.zone == .Battlefield && c.name == "Grizzly Bears" && c.power.? == 2, "a Grizzly Bears")
-	c = run(t, false)
+	// It leaves the battlefield: a new object, the card Clone again (CR 400.7, 707.2).
+	game.move_object(g, c.id, .Graveyard)
+	cost, _ := c.mana_cost.(types.ManaCost_Cost)
+	testing.expect(t, c.name == "Clone" && cost.generic == 3, "Clone in the graveyard, {3}{U}")
+	c, _ = run(t, false)
 	testing.expect(t, c.zone == .Graveyard, "declined: a 0/0, put into the graveyard")
 }
 
@@ -3557,4 +3572,143 @@ counter_unless_its_controller_pays :: proc(t: ^testing.T) {
 			testing.expect(t, bears.zone == .Graveyard, "countered")
 		}
 	}
+}
+
+@(test)
+it_fights_and_a_declined_fight :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Epic Confrontation: "Target creature you control gets +1/+2 until end of turn. It fights target creature you
+	// don't control." "It" is the first target, not a target of its own (CR 608.2c, 701.14a).
+	testing.expect(t, game.card_supported(&card(t, "Epic Confrontation").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 2 do add(t, g, "Forest", 0, .Battlefield)
+	mine := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	theirs := add(t, g, "Hill Giant", 1, .Battlefield) // 3/3
+	spell := add(t, g, "Epic Confrontation", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{mine.id}}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{theirs.id}}))
+	settle_stack(g)
+	testing.expect(t, theirs.zone == .Graveyard, "3 damage from the 3/4 Bears")
+	testing.expect(t, mine.zone == .Battlefield && mine.damage_marked == 3, "the Bears survive as a 3/4")
+
+	// Affectionate Indrik: "When this creature enters, you may have it fight target creature you don't control."
+	// Declined, nothing happens (CR 603.5, 608.2d).
+	testing.expect(t, game.card_supported(&card(t, "Affectionate Indrik").face))
+	g = new_game()
+	s = &g.state
+	for _ in 0 ..< 6 do add(t, g, "Forest", 0, .Battlefield)
+	big := add(t, g, "Craw Wurm", 1, .Battlefield) // 6/4
+	indrik := add(t, g, "Affectionate Indrik", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = indrik.id}))
+	for _ in 0 ..< 10 {
+		#partial switch w in s.waiting_for {
+		case types.WaitingFor_OptionalEffectChoice:
+			game.apply(g, 0, types.GameAction_DecideOptionalEffect{accept = false})
+			continue
+		case types.WaitingFor_TriggerTargetSelection:
+			game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{big.id}})
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 && indrik.zone == .Battlefield do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, indrik.zone == .Battlefield && indrik.damage_marked == 0 && big.damage_marked == 0, "declined: no fight")
+}
+
+@(test)
+modal_trigger_with_no_mode_it_can_choose :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Damage Control Crew: "When this creature enters, choose one — return target card with mana value 4 or greater
+	// from your graveyard to your hand; or exile target artifact or enchantment." With neither target, no mode can
+	// be chosen and the ability is removed (CR 700.2b, 603.3c); the game goes on.
+	testing.expect(t, game.card_supported(&card(t, "Damage Control Crew").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 4 do add(t, g, "Forest", 0, .Battlefield)
+	crew := add(t, g, "Damage Control Crew", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = crew.id}))
+	settle_stack(g)
+	_, priority := s.waiting_for.(types.WaitingFor_Priority)
+	testing.expect(t, crew.zone == .Battlefield && types.pvec_len(s.stack) == 0 && priority, "no trigger, priority as usual")
+}
+
+@(test)
+creature_types_are_the_cr_list :: proc(t: ^testing.T) {
+	// CR 205.3m lists the creature types; planeswalker types (205.3j) and Siege (205.3q) aren't, so "becomes a
+	// creature" effects that replace creature types leave them (CR 205.1b).
+	testing.expect(t, game.subtype_in_set("Elf", .Creature) && game.subtype_in_set("Time Lord", .Creature))
+	testing.expect(t, !game.subtype_in_set("Gideon", .Creature) && !game.subtype_in_set("Siege", .Creature))
+	testing.expect(t, !game.subtype_in_set("Equipment", .Creature) && !game.subtype_in_set("Forest", .Creature))
+}
+
+@(test)
+clone_is_not_offered_a_token :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Copying a token (its copiable values come from what made it, CR 111.3, 707.2) isn't supported yet, so Clone
+	// isn't offered one: a choice the engine would refuse would leave the player, or the AI, stuck.
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 4 do add(t, g, "Island", 0, .Battlefield)
+	token := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	token.is_token, token.printed_ref = true, nil
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	clone := add(t, g, "Clone", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = clone.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	w, asked := s.waiting_for.(types.WaitingFor_CopyTargetChoice)
+	testing.expect(t, asked && len(w.valid_targets) == 1 && w.valid_targets[0] == bears.id, "only the card")
+}
+
+@(test)
+priority_returns_to_the_caster_after_trigger_targets :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// The non-active player casts an instant in response; their Rockslide Sorcerer triggers ("Whenever you cast an
+	// instant or sorcery spell, this creature deals 1 damage to any target") and they choose its target. CR 117.3c:
+	// the player who cast the spell receives priority afterward, not the active player.
+	testing.expect(t, game.card_supported(&card(t, "Rockslide Sorcerer").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Rockslide Sorcerer", 1, .Battlefield)
+	add(t, g, "Mountain", 1, .Battlefield)
+	shock := add(t, g, "Shock", 1, .Hand)
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	testing.expect(t, s.priority_player == 1, "the non-active player has priority")
+	testing.expect(t, game.apply(g, 1, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g, 1, types.GameAction_ChooseTarget{target = types.TargetRef_Player{0}}))
+	_, asked := s.waiting_for.(types.WaitingFor_TriggerTargetSelection)
+	testing.expect(t, asked, "the Dragon's target is asked")
+	testing.expect(t, game.apply(g, 1, types.GameAction_ChooseTarget{target = types.TargetRef_Player{0}}))
+	w, priority := s.waiting_for.(types.WaitingFor_Priority)
+	testing.expect(t, priority && w.player == 1, "the caster gets priority back")
+}
+
+@(test)
+flickered_planeswalker_isnt_dealt_the_damage :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 506.4: an attacked planeswalker that leaves the battlefield is removed from combat; if it comes back it's a
+	// new object (CR 400.7), which nothing is attacking, so the unblocked attacker deals no combat damage to it.
+	g := new_game()
+	s := &g.state
+	jace := add(t, g, "Jace Beleren", 0, .Battlefield)
+	s.active_player, s.priority_player = 1, 1
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	game.begin_step(g, .DeclareAttackers)
+	attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{bears.id, types.AttackTarget_Planeswalker{jace.id}}}
+	testing.expect(t, game.apply(g, 1, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
+	game.move_object(g, jace.id, .Exile)
+	game.move_object(g, jace.id, .Battlefield)
+	loyalty := jace.loyalty.?
+	for _ in 0 ..< 8 {
+		if s.phase >= .EndCombat do break
+		if _, priority := s.waiting_for.(types.WaitingFor_Priority); !priority {
+			act, _ := game.ai_action(g, s.priority_player)
+			game.apply(g, s.priority_player, act)
+			continue
+		}
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, jace.loyalty.? == loyalty && game.player(s, 0).life == 20, "no damage to the new Jace or its controller")
 }

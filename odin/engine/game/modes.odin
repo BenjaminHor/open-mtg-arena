@@ -155,6 +155,6 @@ select_trigger_modes :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_Ab
 	t.execute = trigger_mode_chain(pt.definition.execute, sorted)
 	pt.definition = t
 	g.state.waiting_for = nil
-	give_priority(g, g.state.active_player)
+	give_priority(g, priority_holder(g)) // CR 117.3c
 	return true
 }

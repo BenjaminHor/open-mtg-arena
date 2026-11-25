@@ -177,8 +177,11 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		// "Choose target creature": a target for the instructions after it, doing nothing itself.
 		return filter_supported(x.target) && !may_name_player(x.target)
 	case types.Effect_Fight:
-		// CR 701.14a: "Target creature you control fights target creature you don't control", "this creature fights".
-		subject_ok := is_self(x.subject) || (filter_supported(x.subject) && !may_name_player(x.subject))
+		// CR 701.14a: "Target creature you control fights target creature you don't control", "this creature fights",
+		// "it fights" (the target of the instruction before, which ability_supported requires). A subject named by
+		// what it's attached to ("enchanted creature fights") isn't read yet.
+		_, parent := x.subject.(types.TargetFilter_ParentTarget)
+		subject_ok := is_self(x.subject) || parent || (fight_subject_targeted(x) && filter_supported(x.subject) && !may_name_player(x.subject) && !names_attachment(x.subject))
 		return subject_ok && filter_supported(x.target) && !may_name_player(x.target)
 	case types.Effect_Pump:
 		pf, tf := pump_value_supported(x.power), pump_value_supported(x.toughness)
@@ -354,8 +357,30 @@ effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
 	return nil, false
 }
 
+// A fight's subject chosen as a target ("target creature you control fights ..."), not "this creature" or "it".
+fight_subject_targeted :: proc(f: types.Effect_Fight) -> bool {
+	_, typed := f.subject.(types.TargetFilter_Typed)
+	return typed
+}
+
+// A filter naming a permanent by what's attached to it ("enchanted creature", "equipped creature").
+names_attachment :: proc(f: types.TargetFilter) -> bool {
+	typed, ok := f.(types.TargetFilter_Typed)
+	if !ok do return false
+	for p in typed._0.properties {
+		#partial switch _ in p {
+		case types.FilterProp_EnchantedBy, types.FilterProp_EquippedBy, types.FilterProp_AttachedTo:
+			return true
+		}
+	}
+	return false
+}
+
 // Whether an instruction acts on "it" or "that creature": the target an earlier instruction chose (CR 608.2c).
 refers_to_parent_target :: proc(e: types.Effect) -> bool {
+	if f, is_fight := e.(types.Effect_Fight); is_fight {
+		if _, parent := f.subject.(types.TargetFilter_ParentTarget); parent do return true
+	}
 	#partial switch _ in effect_target_filter(e) {
 	case types.TargetFilter_ParentTarget, types.TargetFilter_ParentTargetController:
 		return true
@@ -959,7 +984,7 @@ resolve_top_of_stack :: proc(g: ^Game) {
 		resolve_ability(g, entry, k.ability)
 		return
 	case types.StackEntryKind_KeywordAction:
-		if crew, is_crew := k.action.(types.KeywordAction_Crew); is_crew do resolve_crew(g, crew)
+		if crew, is_crew := k.action.(types.KeywordAction_Crew); is_crew do resolve_crew(g, crew, entry.id)
 		return
 	}
 	spell, is_spell := entry.kind.(types.StackEntryKind_Spell)
@@ -1216,6 +1241,15 @@ end_until_end_of_turn_effects :: proc(g: ^Game) {
 card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 	out := make([dynamic]string, context.temp_allocator)
 	if misparsed(face.name) do append(&out, "card data: misparsed")
+	if !is_land_face(face) {
+		// As card_supported: a spell needs a mana cost it can pay (CR 118.6, 107.4e-f).
+		c, is_cost := face.mana_cost.(types.ManaCost_Cost)
+		if !is_cost do append(&out, "mana cost: none")
+		else do for shard in c.shards do if _, _, ok := shard_payers(shard); !ok {
+			append(&out, "mana cost: symbol")
+			break
+		}
+	}
 	name :: proc(prefix: string, v: any) -> string {
 		full := fmt.tprintf("%v", reflect.union_variant_typeid(v))
 		if i := strings.last_index_byte(full, '_'); i >= 0 do full = full[i + 1:]

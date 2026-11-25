@@ -94,7 +94,7 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 		for t, i in n.targets {
 			any_target = true
 			// "Target creature you control fights target creature": the first target is the subject's.
-			if is_fight && i == 0 && !is_self(fight.subject) do f = fight.subject
+			if is_fight && i == 0 && fight_subject_targeted(fight) do f = fight.subject
 			else if is_fight do f = fight.target
 			// CR 608.2b: a target that changed zones (a new object, CR 400.7) or no longer fits is illegal.
 			if targets_one && same_object_as_chosen(s, n, i) && target_still_legal(s, t, f, controller, source) do any_legal = true
@@ -162,11 +162,7 @@ continue_resolution :: proc(g: ^Game) -> bool {
 				continue
 			}
 		}
-		if fight, is_fight := x.effect.(types.Effect_Fight); is_fight {
-			r.events_mark = len(g.events)
-			do_fight(g, x, fight)
-			continue
-		}
+		parent_targets := slice.clone(r.last_targets[:], context.temp_allocator) // "it fights ...": the one before's
 		affected := make([dynamic]Maybe(types.TargetRef), context.temp_allocator)
 		if _, targets_one := effect_target(x.effect); targets_one {
 			clear(&r.last_targets)
@@ -246,6 +242,12 @@ continue_resolution :: proc(g: ^Game) -> bool {
 				}
 			}
 			r.scope_node = nil
+			continue
+		}
+		if fight, is_fight := x.effect.(types.Effect_Fight); is_fight {
+			// After its conditions and "you may" like any instruction (CR 608.2c-d).
+			r.events_mark = len(g.events)
+			do_fight(g, x, fight, parent_targets)
 			continue
 		}
 		if _, has := x.unless_pay.?; has {
@@ -665,7 +667,7 @@ note_moved :: proc(g: ^Game, events_before: int) {
 
 // CR 701.14a-b: each creature deals damage equal to its power to the other, at once and not as combat damage
 // (701.14d); with either gone, no longer a creature, or an illegal target, neither does.
-do_fight :: proc(g: ^Game, x: ^types.ResolvedAbility, fight: types.Effect_Fight) {
+do_fight :: proc(g: ^Game, x: ^types.ResolvedAbility, fight: types.Effect_Fight, parent_targets: []types.TargetRef) {
 	s := &g.state
 	r := &g.resolution
 	a, b: ^types.GameObject
@@ -677,6 +679,13 @@ do_fight :: proc(g: ^Game, x: ^types.ResolvedAbility, fight: types.Effect_Fight)
 	}
 	if is_self(fight.subject) {
 		a = same_source(g, r.source)
+		b = legal(s, x, 0)
+	} else if !fight_subject_targeted(fight) {
+		// "It fights target creature": the earlier instruction's target (CR 608.2c).
+		for t in parent_targets do if id, ok := target_object(t); ok {
+			a = object(s, id)
+			break
+		}
 		b = legal(s, x, 0)
 	} else {
 		a = legal(s, x, 0)

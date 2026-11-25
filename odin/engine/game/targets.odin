@@ -28,7 +28,7 @@ slot_list :: proc(a: ^types.AbilityDefinition) -> [dynamic]Target_Slot {
 	for x := a; x != nil; x = x.sub_ability {
 		if x != a && is_reflexive(x) do break // its targets are chosen when it triggers (CR 603.12)
 		if x.effect == nil do continue
-		if fight, is_fight := x.effect^.(types.Effect_Fight); is_fight && !is_self(fight.subject) {
+		if fight, is_fight := x.effect^.(types.Effect_Fight); is_fight && fight_subject_targeted(fight) {
 			// "Target creature you control fights target creature you don't control": two targets, one instruction.
 			append(&out, Target_Slot{filter = fight.subject, group = group})
 			append(&out, Target_Slot{filter = fight.target, group = group, part = 1})
