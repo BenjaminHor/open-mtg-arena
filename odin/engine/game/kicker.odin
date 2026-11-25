@@ -1,6 +1,8 @@
 // Kicker (CR 702.33): "You may pay an additional [cost] as you cast this spell." The player announces it as they
 // cast the spell (CR 601.2b) through the optional-cost prompt; a kicked spell (CR 702.33d) and the permanent it
-// becomes remember it, for "if it was kicked" and "... instead". One mana kicker cost, paid once.
+// becomes remember it, for "if it was kicked" and "... instead". One mana kicker cost, paid once. An optional
+// additional cost other than mana ("Kicker—Sacrifice an artifact", "you may collect evidence 6") is announced the
+// same way and remembered the same way ("if evidence was collected"); spells.odin pays it (spell_additional_cost).
 package game
 
 import types "../types"
@@ -33,12 +35,16 @@ object_kicker_cost :: proc(o: ^types.GameObject) -> (types.ManaCost_Cost, bool) 
 
 kicked :: proc(o: ^types.GameObject) -> bool {return o != nil && o.additional_cost_payment_count > 0}
 
-// CR 601.2b: asks whether to pay the kicker cost, if the player could afford it.
+// CR 601.2b: asks whether to pay the kicker cost (or other optional additional cost: "you may blight 1",
+// "Kicker—Sacrifice an artifact or creature"), if the player could pay it (CR 701.59b, 701.68b).
 ask_kicker :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool {
 	if g.pending.kicker_decided do return false
-	if _, has := object_kicker_cost(o); !has do return false
+	_, mana := object_kicker_cost(o)
+	_, other := object_optional_cost(o)
+	if !mana && !other do return false
 	o.additional_cost_payment_count = 1
-	_, affordable := plan_payment(&g.state, p, spell_cost(&g.state, o, p), 0, nil, Payment{o, true})
+	affordable := additional_cost_payable(&g.state, p, o) // the cost other than mana, with the mana left to pay
+	if affordable do _, affordable = plan_payment(&g.state, p, spell_cost(&g.state, o, p), 0, nil, Payment{o, true})
 	o.additional_cost_payment_count = 0
 	if !affordable {
 		g.pending.kicker_decided = true

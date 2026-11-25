@@ -170,6 +170,9 @@ log_line :: proc(s: ^types.GameState, e: types.GameEvent) -> [dynamic]types.LogS
 	case types.GameEvent_Discarded:
 		append(&segs, player_name(s, x.player_id), text(" discards "), card_name(s, x.object_id))
 		return segs
+	case types.GameEvent_CardsRevealed:
+		reveals_line(s, &segs, x.player, x.card_ids[:]) // CR 701.20a: shown to all players
+		return segs
 	case types.GameEvent_ZoneChanged:
 		from, has_from := x.from.?
 		// The moves the cast, the resolution, a land play or a draw already tell, and moves the players can't see.
@@ -231,6 +234,16 @@ attacks_line :: proc(s: ^types.GameState, segs: ^[dynamic]types.LogSegment, atta
 		if pl, is_player := attacks[i]._1.(types.AttackTarget_Player); is_player do append(segs, player_name(s, pl._0))
 		else if pw, is_pw := attacks[i]._1.(types.AttackTarget_Planeswalker); is_pw do append(segs, card_name(s, pw._0))
 		else if b, is_battle := attacks[i]._1.(types.AttackTarget_Battle); is_battle do append(segs, card_name(s, b._0))
+	}
+}
+
+// "P reveals X, Y". (A proc of its own, like attacks_line.)
+@(private = "file")
+reveals_line :: proc(s: ^types.GameState, segs: ^[dynamic]types.LogSegment, p: types.PlayerId, ids: []types.ObjectId) {
+	append(segs, player_name(s, p), text(" reveals "))
+	for i in 0 ..< len(ids) {
+		if i > 0 do append(segs, text(", "))
+		append(segs, card_name(s, ids[i]))
 	}
 }
 

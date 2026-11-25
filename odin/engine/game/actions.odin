@@ -72,6 +72,10 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_OptionalCostChoice:
 		return w.player, true
+	case types.WaitingFor_BlightChoice:
+		return w.player, true
+	case types.WaitingFor_CollectEvidenceChoice:
+		return w.player, true
 	}
 	return 0, false
 }
@@ -298,6 +302,19 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		#partial switch a in action {
 		case types.GameAction_ChooseX:
 			return choose_x(g, p, w, a.value)
+		case types.GameAction_CancelCast:
+			forget_cast_choices(object(s, g.pending.object))
+			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed
+			g.pending = {}
+			give_priority(g, p)
+			return true
+		}
+	case types.WaitingFor_BlightChoice, types.WaitingFor_CollectEvidenceChoice:
+		// A spell's blight or collect-evidence cost (CR 701.68a, 701.59a).
+		#partial switch a in action {
+		case types.GameAction_SelectCards:
+			if blight, is_blight := w.(types.WaitingFor_BlightChoice); is_blight do return answer_blight_choice(g, p, blight, a.cards[:])
+			return answer_evidence_choice(g, p, w.(types.WaitingFor_CollectEvidenceChoice), a.cards[:])
 		case types.GameAction_CancelCast:
 			forget_cast_choices(object(s, g.pending.object))
 			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed

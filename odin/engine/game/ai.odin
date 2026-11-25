@@ -54,7 +54,14 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 			if o := object(&g.state, g.pending.object); o != nil do for _, i in choice._0 do if option_payable(&g.state, p, o, i) do return types.GameAction_DecideOptionalCost{index = i}, true
 			return types.GameAction_CancelCast{}, true
 		}
-		return types.GameAction_DecideOptionalCost{index = 0}, true // kicked, since it can afford it
+		// Kicked, since it can afford it; an optional cost that takes a permanent or weakens a creature, not.
+		if cost, other := object_optional_cost(object(s, g.pending.object)); other {
+			#partial switch _ in cost {
+			case types.AbilityCost_Sacrifice, types.AbilityCost_Blight, types.AbilityCost_TapCreatures:
+				return types.GameAction_DecideOptionalCost{index = 1}, true
+			}
+		}
+		return types.GameAction_DecideOptionalCost{index = 0}, true
 	case types.WaitingFor_ModeChoice:
 		modes, _ := ai_modes(g, p, object(s, g.pending.object))
 		return types.GameAction_SelectModes{indices = modes}, true
@@ -65,16 +72,43 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		if prompt, single := w.choice.(types.ManaChoicePrompt_SingleColor); single && len(prompt.options) > 0 {
 			return types.GameAction_ChooseManaColor{choice = types.ManaChoice_SingleColor{ai_mana_color(g, p, prompt.options[:])}, count = 1}, true
 		}
+	case types.WaitingFor_BlightChoice:
+		// The -1/-1 counters on a creature that survives them, the least valuable; else the least valuable.
+		survivors := make([dynamic]types.ObjectId, context.temp_allocator)
+		for id in w.creatures do if toughness_of(object(s, id)) > int(w.counters) do append(&survivors, id)
+		from := survivors[:] if len(survivors) > 0 else w.creatures[:]
+		return types.GameAction_SelectCards{cards = least_valuable(g, from, 1)}, true
+	case types.WaitingFor_CollectEvidenceChoice:
+		// The fewest cards: the highest mana values first, until the total is enough.
+		Valued :: struct {
+			id: types.ObjectId,
+			mv: int,
+		}
+		cards := make([dynamic]Valued, context.temp_allocator)
+		for id in w.cards do append(&cards, Valued{id, object_mana_value(object(s, id))})
+		slice.sort_by(cards[:], proc(a, b: Valued) -> bool {return a.mv > b.mv || (a.mv == b.mv && a.id < b.id)})
+		out := make([dynamic]types.ObjectId, context.temp_allocator)
+		total := 0
+		for c in cards {
+			if total >= int(w.minimum_mana_value) do break
+			append(&out, c.id)
+			total += c.mv
+		}
+		return types.GameAction_SelectCards{cards = out}, true
 	case types.WaitingFor_PayCost:
-		// The least valuable: tokens first, then the lowest mana value.
+		// The least valuable: tokens first, then the lowest mana value. For a tap cost, permanents that make no
+		// mana first, so the mana can still be paid (as additional_cost_payable checked).
 		Ranked :: struct {
 			id:    types.ObjectId,
 			score: int,
 		}
+		_, taps := w.kind.(types.PayCostKind_TapCreatures)
 		ranked := make([dynamic]Ranked, context.temp_allocator)
 		for id in w.choices {
 			o := object(s, id)
-			append(&ranked, Ranked{id, -1 if o.is_token else mana_value(o.mana_cost)})
+			score := -1 if o.is_token else mana_value(o.mana_cost)
+			if taps && makes_mana(s, id) do score += 1000
+			append(&ranked, Ranked{id, score})
 		}
 		slice.sort_by(ranked[:], proc(a, b: Ranked) -> bool {return a.score < b.score || (a.score == b.score && a.id < b.id)})
 		out := make([dynamic]types.ObjectId, context.temp_allocator)

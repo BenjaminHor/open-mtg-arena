@@ -3237,6 +3237,15 @@ Progress:
   "in any order" keeps the looked-at order (the player isn't asked). Test:
   `look_and_put_a_land_onto_the_battlefield_tapped` (Elvish Rejuvenator).
 - Fixture replay at e2b8187: 824 of 11,160 pass (807 at 8fbd5e6), 10,329 fail, 7 too large.
+- Additional costs (agent, merged): behold (CR 701.4), blight (701.68), collect evidence (701.59), tapping
+  untapped permanents you control (118.3), kicker that sacrifices and other optional non-mana costs (702.33a),
+  "reveal a [kind] card or pay" (701.20); the AI pays the free ones. Refused: a paid-only instruction with its own
+  target (Hulk's Thunderclap), required behold read later, "behold and exile", total-power tap costs; six misparsed
+  cards added to MISPARSED_CARDS. Found and fixed here: mana-kicker spells whose kicked instruction has its own
+  target (Urborg Repossession, Bloodchief's Thirst, Tear Asunder, Expel the Unworthy, Blood Beckoning, Divine
+  Resilience) were accepted though the engine asks for every target (CR 601.2c, 702.33g); now refused. Tests:
+  behold/blight/evidence/tap/kicker/reveal tests, `targets_chosen_only_when_kicked`. Coverage 7,649. Known issue
+  (agent): a game restored mid blight/evidence prompt can't resume (the in-progress cast isn't saved).
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 

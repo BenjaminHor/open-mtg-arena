@@ -172,8 +172,8 @@ cost_supported :: proc(c: types.AbilityCost) -> bool {
 }
 
 // What may be sacrificed: a kind of permanent the player controls (CR 701.21a), or any of several kinds ("an
-// artifact or creature").
-@(private = "file")
+// artifact or creature"). Also what may be tapped for a spell's additional cost ("tap two untapped artifacts,
+// creatures, and/or lands you control").
 sacrifice_filter_supported :: proc(f: types.TargetFilter) -> bool {
 	#partial switch x in f {
 	case types.TargetFilter_Typed:
@@ -185,7 +185,6 @@ sacrifice_filter_supported :: proc(f: types.TargetFilter) -> bool {
 	return false
 }
 
-@(private = "file")
 sacrifice_filter_matches :: proc(s: ^types.GameState, f: types.TargetFilter, perm: ^types.GameObject, p: types.PlayerId, source: types.ObjectId) -> bool {
 	#partial switch x in f {
 	case types.TargetFilter_Typed:
@@ -203,15 +202,36 @@ own_or_unrestricted :: proc(f: types.TypedFilter) -> bool {
 	return you
 }
 
-// A cost that has the player choose objects: "sacrifice a creature", "discard a card" (CR 601.2h, 602.2b).
+// A cost that has the player choose objects: "sacrifice a creature", "discard a card" (CR 601.2h, 602.2b). The
+// kinds after Exile_From_Graveyard are paid only as a spell's additional cost (additional_cost_part_supported).
+Object_Cost_Kind :: enum {
+	Sacrifice,
+	Discard,
+	Exile_From_Graveyard,
+	Tap, // "tap two untapped creatures you control" (CR 701.26a)
+	Behold, // CR 701.4a: a permanent you control or a card revealed from your hand
+	Reveal, // "reveal a Pirate card from your hand" (CR 701.20a)
+	Blight, // CR 701.68a: the creature the -1/-1 counters go on
+	Collect_Evidence, // CR 701.59a: cards from your graveyard, with total mana value N or greater
+}
+
 Object_Cost :: struct {
-	kind:    enum {
-		Sacrifice,
-		Discard,
-		Exile_From_Graveyard,
-	},
-	count:   int,
-	choices: [dynamic]types.ObjectId,
+	kind:           Object_Cost_Kind,
+	count:          int, // how many to choose (for evidence: none fixed)
+	choices:        [dynamic]types.ObjectId,
+	counters:       int, // Blight: the -1/-1 counters put on the chosen creature
+	min_mana_value: int, // Collect_Evidence: the total mana value the chosen cards need
+}
+
+// Whether the objects chosen for a cost of this kind can't also pay the cost's mana: tapped or gone by then
+// (CR 601.2g-h). A beheld or revealed card, a creature that gets -1/-1 counters, and cards exiled from a graveyard
+// are no mana sources the cost takes away.
+cost_objects_used_up :: proc(kind: Object_Cost_Kind) -> bool {
+	#partial switch kind {
+	case .Behold, .Reveal, .Blight, .Collect_Evidence:
+		return false
+	}
+	return true
 }
 
 object_cost :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, a: ^types.AbilityDefinition) -> (Object_Cost, bool) {
@@ -261,9 +281,61 @@ object_cost_of :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObj
 				append(&c.choices, id)
 			}
 			return c, true
+		case types.AbilityCost_TapCreatures:
+			// "Tap two untapped creatures and/or lands you control": only untapped ones can be tapped (CR 118.3,
+			// 701.26a). Unlike a {T} ability, the summoning sickness rule (CR 302.6) doesn't limit it.
+			c := Object_Cost{kind = .Tap, count = int(x.requirement.(types.TapCreaturesRequirement_Count).count)}
+			c.choices = make([dynamic]types.ObjectId, context.temp_allocator)
+			for perm in permanents_of(s, p) do if !perm.tapped && sacrifice_filter_matches(s, x.filter, perm, p, o.id) do append(&c.choices, perm.id)
+			return c, true
+		case types.AbilityCost_Behold:
+			// CR 701.4a: "reveal a [quality] card from your hand or choose a [quality] permanent you control". The spell
+			// being cast isn't one of the cards in the hand (CR 601.2a: it's on the stack).
+			c := Object_Cost{kind = .Behold, count = int(x.count)}
+			c.choices = make([dynamic]types.ObjectId, context.temp_allocator)
+			f := x.filter.(types.TargetFilter_Typed)._0
+			f.controller = nil
+			for perm in permanents_of(s, p) do if object_matches(s, perm, f, p, o.id) do append(&c.choices, perm.id)
+			for id in ids_of(player(s, p).hand) do if id != o.id && object_matches(s, object(s, id), f, p, o.id) do append(&c.choices, id)
+			return c, true
+		case types.AbilityCost_Reveal:
+			// "Reveal a Pirate card from your hand" (CR 701.20a): not the spell itself.
+			n, _ := fixed_quantity(x.count)
+			c := Object_Cost{kind = .Reveal, count = n}
+			c.choices = make([dynamic]types.ObjectId, context.temp_allocator)
+			f := x.filter.?.(types.TargetFilter_Typed)._0
+			f.controller = nil
+			for id in ids_of(player(s, p).hand) do if id != o.id && object_matches(s, object(s, id), f, p, o.id) do append(&c.choices, id)
+			return c, true
+		case types.AbilityCost_Blight:
+			// CR 701.68a: N -1/-1 counters on one creature you control.
+			c := Object_Cost{kind = .Blight, count = 1, counters = int(x.count)}
+			c.choices = make([dynamic]types.ObjectId, context.temp_allocator)
+			for perm in permanents_of(s, p) do if is_type(perm, .Creature) do append(&c.choices, perm.id)
+			return c, true
+		case types.AbilityCost_CollectEvidence:
+			// CR 701.59a: any number of cards from your graveyard with total mana value N or greater; not the spell
+			// itself, when it's cast from there.
+			c := Object_Cost{kind = .Collect_Evidence, min_mana_value = int(x.amount)}
+			c.choices = make([dynamic]types.ObjectId, context.temp_allocator)
+			for id in ids_of(player(s, p).graveyard) do if id != o.id do append(&c.choices, id)
+			return c, true
 		}
 	}
 	return {}, false
+}
+
+// Whether the player has what the cost asks them to choose: enough objects, or (collecting evidence) cards with
+// enough total mana value (CR 118.3, 701.59b, 701.68b). Kinds that use their objects up also leave the mana payable
+// without them (cost_objects_leave_mana).
+cost_objects_available :: proc(s: ^types.GameState, p: types.PlayerId, c: Object_Cost, mana: types.ManaCost, paying: Payment = {}) -> bool {
+	if c.kind == .Collect_Evidence {
+		total := 0
+		for id in c.choices do total += object_mana_value(object(s, id))
+		return total >= c.min_mana_value
+	}
+	if !cost_objects_used_up(c.kind) do return len(c.choices) >= c.count
+	return cost_objects_leave_mana(s, p, c.choices[:], c.count, mana, 0, paying)
 }
 
 // The parts of a cost, flattened.
@@ -365,23 +437,82 @@ pay_activation :: proc(g: ^Game, p: types.PlayerId) {
 answer_cost_choice :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_PayCost, chosen: []types.ObjectId) -> bool {
 	if g.pending.object == 0 || len(chosen) != w.count || has_duplicates(chosen) do return false
 	for id in chosen do if !slice.contains(w.choices[:], id) do return false
-	if !cost_choice_leaves_mana(g, p, chosen) do return false // CR 601.2h: the rest of the cost must still be payable
+	// CR 601.2h: the rest of the cost must still be payable (without what's tapped or sacrificed for it).
+	if cost_objects_used_up(g.pending.cost_kind) && !cost_choice_leaves_mana(g, p, chosen) do return false
+	take_cost_objects(g, p, chosen)
+	return true
+}
+
+// CR 701.68a: the creature a spell's blight cost puts its -1/-1 counters on.
+answer_blight_choice :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_BlightChoice, chosen: []types.ObjectId) -> bool {
+	if g.pending.object == 0 || len(chosen) != 1 || !slice.contains(w.creatures[:], chosen[0]) do return false
+	take_cost_objects(g, p, chosen)
+	return true
+}
+
+// CR 701.59a: the cards collected as evidence: any number of them, with total mana value N or greater.
+answer_evidence_choice :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_CollectEvidenceChoice, chosen: []types.ObjectId) -> bool {
+	if g.pending.object == 0 || has_duplicates(chosen) do return false
+	total := 0
+	for id in chosen {
+		if !slice.contains(w.cards[:], id) do return false
+		total += object_mana_value(object(&g.state, id))
+	}
+	if total < int(w.minimum_mana_value) do return false
+	take_cost_objects(g, p, chosen)
+	return true
+}
+
+// The objects chosen for the cost, kept until it's paid; then the casting or activation goes on.
+@(private = "file")
+take_cost_objects :: proc(g: ^Game, p: types.PlayerId, chosen: []types.ObjectId) {
 	g.pending.cost_objects = make([dynamic]types.ObjectId)
 	append(&g.pending.cost_objects, ..chosen)
 	g.pending.cost_chosen = true
 	if g.pending.ability_index >= 0 do pay_activation(g, p)
 	else do next_target_or_finish(g, p) // a spell's additional cost (CR 601.2h)
-	return true
 }
 
-// The PayCost prompt for a cost that has the player choose objects.
+// The prompt for a cost that has the player choose objects: PayCost, or blight's and evidence's own.
 ask_cost_objects :: proc(g: ^Game, p: types.PlayerId, c: Object_Cost) {
+	g.pending.cost_kind = c.kind
 	choices := make([dynamic]types.ObjectId)
 	append(&choices, ..c.choices[:])
-	kind: types.PayCostKind = types.PayCostKind_Sacrifice{}
-	if c.kind == .Discard do kind = types.PayCostKind_Discard{}
-	if c.kind == .Exile_From_Graveyard do kind = types.PayCostKind_ExileFromZone{zone = .Graveyard}
+	kind: types.PayCostKind
+	switch c.kind {
+	case .Sacrifice:
+		kind = types.PayCostKind_Sacrifice{}
+	case .Discard:
+		kind = types.PayCostKind_Discard{}
+	case .Exile_From_Graveyard:
+		kind = types.PayCostKind_ExileFromZone{zone = .Graveyard}
+	case .Tap:
+		kind = types.PayCostKind_TapCreatures{mode = types.TapCreaturesSelectionMode_Fixed{}}
+	case .Behold:
+		kind = types.PayCostKind_Behold{action = .ChooseOrReveal}
+	case .Reveal:
+		kind = types.PayCostKind_Reveal{}
+	case .Blight:
+		g.state.waiting_for = types.WaitingFor_BlightChoice{player = p, counters = u32(c.counters), creatures = choices, pending_cast = cost_pending_cast(g)}
+		return
+	case .Collect_Evidence:
+		resume := new(types.CollectEvidenceResume)
+		resume^ = types.CollectEvidenceResume_Casting{pending_cast = cost_pending_cast(g), source = .Other}
+		g.state.waiting_for = types.WaitingFor_CollectEvidenceChoice{player = p, minimum_mana_value = u32(c.min_mana_value), cards = choices, resume = resume}
+		return
+	}
 	g.state.waiting_for = types.WaitingFor_PayCost{player = p, kind = kind, choices = choices, count = c.count, min_count = c.count, resume = types.CostResume_Resolution{}}
+}
+
+// The spell being cast, as a prompt names it.
+@(private = "file")
+cost_pending_cast :: proc(g: ^Game) -> ^types.PendingCast {
+	o := object(&g.state, g.pending.object)
+	pending := new(types.PendingCast)
+	pending.object_id = o.id
+	pending.card_id = o.card_id
+	pending.cost = o.mana_cost
+	return pending
 }
 
 // CR 602.2b, 601.2h: the costs are paid; the ability is activated and its controller gets priority (CR 117.3c).
@@ -451,12 +582,6 @@ cost_parts_of :: proc(c: types.AbilityCost, out: ^[dynamic]types.AbilityCost) {c
 cost_objects_leave_mana :: proc(s: ^types.GameState, p: types.PlayerId, choices: []types.ObjectId, count: int, mana: types.ManaCost, exclude: types.ObjectId, paying: Payment = {}) -> bool {
 	if len(choices) < count do return false
 	ordered := slice.clone(choices, context.temp_allocator)
-	makes_mana :: proc(s: ^types.GameState, id: types.ObjectId) -> bool {
-		o := object(s, id)
-		if o.abilities == nil do return false
-		for a in o.abilities^ do if _, ok := mana_ability_option(a); ok do return true
-		return false
-	}
 	Ranked :: struct {
 		id:   types.ObjectId,
 		mana: bool,
@@ -469,6 +594,14 @@ cost_objects_leave_mana :: proc(s: ^types.GameState, p: types.PlayerId, choices:
 	if mana == nil do return true
 	_, payable := plan_payment(s, p, mana, exclude, picked[:], paying)
 	return payable
+}
+
+// Whether the permanent has a mana ability: one that paying a cost with it may take away from the mana.
+makes_mana :: proc(s: ^types.GameState, id: types.ObjectId) -> bool {
+	o := object(s, id)
+	if o.abilities == nil do return false
+	for a in o.abilities^ do if _, ok := mana_ability_option(a); ok do return true
+	return false
 }
 
 @(private = "file")

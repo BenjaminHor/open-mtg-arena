@@ -6091,3 +6091,386 @@ look_and_put_a_land_onto_the_battlefield_tapped :: proc(t: ^testing.T) {
 	bottom := game.ids_of(s.players[0].library)[:4]
 	for o in top do if o != plains do testing.expectf(t, slice.contains(bottom, o.id), "%s is on the bottom", o.name)
 }
+
+// The cards chosen for a cost, as the client sends them.
+@(private = "file")
+chosen :: proc(ids: ..types.ObjectId) -> [dynamic]types.ObjectId {
+	out := make([dynamic]types.ObjectId)
+	append(&out, ..ids)
+	return out
+}
+
+@(test)
+behold_as_an_additional_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Caustic Exhale ({B}): "As an additional cost to cast this spell, behold a Dragon or pay {1}. Target creature
+	// gets -3/-3 until end of turn." CR 701.4a: to behold a Dragon is to reveal a Dragon card from your hand or to
+	// choose a Dragon you control. CR 601.2b, 601.2h: the player announces which cost, then pays it.
+	testing.expect(t, game.card_supported(&card(t, "Caustic Exhale").face))
+	for on_battlefield in ([]bool{false, true}) {
+		// One Swamp: only beholding can be paid, so it's chosen for them. A Dragon card revealed stays in the hand
+		// (CR 701.20b); a Dragon permanent is only chosen.
+		g := new_game()
+		s := &g.state
+		add(t, g, "Swamp", 0, .Battlefield)
+		dragon := add(t, g, "Chardalyn Dragon", 0, .Battlefield if on_battlefield else .Hand)
+		bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		exhale := add(t, g, "Caustic Exhale", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = exhale.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+		w, asked := s.waiting_for.(types.WaitingFor_PayCost)
+		_, beholds := w.kind.(types.PayCostKind_Behold)
+		testing.expectf(t, asked && beholds && len(w.choices) == 1 && w.choices[0] == dragon.id, "behold the Dragon: %v", s.waiting_for)
+		testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen(dragon.id)}))
+		testing.expect(t, exhale.zone == .Stack, "cast")
+		testing.expect(t, dragon.zone == (.Battlefield if on_battlefield else .Hand) && !dragon.tapped, "the Dragon stays where it is")
+		settle_stack(g)
+		testing.expect(t, bears.zone == .Graveyard, "-3/-3")
+	}
+	// Kinsbaile Aspirant ({W}): "behold a Kithkin or pay {2}". With one Plains, only beholding is affordable, and the
+	// Aspirant, a Kithkin card, isn't in the hand to reveal: it's the spell being cast (CR 601.2a).
+	testing.expect(t, game.card_supported(&card(t, "Kinsbaile Aspirant").face))
+	g := new_game()
+	add(t, g, "Plains", 0, .Battlefield)
+	aspirant := add(t, g, "Kinsbaile Aspirant", 0, .Hand)
+	testing.expect(t, !game.castable(&g.state, 0, aspirant, g.card_db), "no other Kithkin to behold, no {2} to pay")
+	add(t, g, "Goldmeadow Stalwart", 0, .Hand)
+	testing.expect(t, game.castable(&g.state, 0, aspirant, g.card_db), "another Kithkin card to reveal")
+	// Lys Alana Dignitary ({1}{G}): "behold an Elf or pay {2}". Beholding only chooses the Elf (CR 701.4a): the
+	// Llanowar Elves beheld can still tap for the mana.
+	{
+		g := new_game()
+		forest := add(t, g, "Forest", 0, .Battlefield)
+		elves := add(t, g, "Llanowar Elves", 0, .Battlefield)
+		dignitary := add(t, g, "Lys Alana Dignitary", 0, .Hand)
+		testing.expect(t, game.card_supported(&card(t, "Lys Alana Dignitary").face))
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = dignitary.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen(elves.id)}), "the Elves beheld")
+		testing.expect(t, dignitary.zone == .Stack && forest.tapped && elves.tapped, "cast, with the Forest's and the Elves' mana")
+	}
+}
+
+@(test)
+optional_behold :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Hyperion's Atomic Vision ({1}{W}): "As an additional cost to cast this spell, you may behold a Hero. Destroy
+	// target tapped creature. If a Hero was beheld, scry 2." CR 118.8b, 601.2b: an optional additional cost,
+	// announced as the spell is cast; CR 701.4b: whether a Hero was beheld.
+	testing.expect(t, game.card_supported(&card(t, "Hyperion's Atomic Vision").face))
+	run :: proc(t: ^testing.T, behold: bool) -> (asked_to_scry: bool) {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 2 do add(t, g, "Plains", 0, .Battlefield)
+		hero := add(t, g, "Agent of Atlas", 0, .Hand)
+		bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		bears.tapped = true
+		vision := add(t, g, "Hyperion's Atomic Vision", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = vision.id}))
+		_, offered := s.waiting_for.(types.WaitingFor_OptionalCostChoice)
+		testing.expect(t, offered, "asked whether to behold a Hero")
+		testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalCost{index = 0 if behold else 1}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+		if behold do testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen(hero.id)}), "the Hero card revealed")
+		testing.expect(t, vision.zone == .Stack && hero.zone == .Hand, "cast; the Hero card stays in the hand")
+		settle_stack(g)
+		testing.expect(t, bears.zone == .Graveyard, "destroyed")
+		_, asked_to_scry = s.waiting_for.(types.WaitingFor_ScryChoice)
+		return
+	}
+	testing.expect(t, run(t, true), "a Hero was beheld: scry 2")
+	testing.expect(t, !run(t, false), "declined: no scry")
+	// With no Hero to behold, it isn't offered (CR 118.3).
+	g := new_game()
+	for _ in 0 ..< 2 do add(t, g, "Plains", 0, .Battlefield)
+	add(t, g, "Grizzly Bears", 1, .Battlefield).tapped = true
+	vision := add(t, g, "Hyperion's Atomic Vision", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = vision.id}))
+	_, targeting := g.state.waiting_for.(types.WaitingFor_TargetSelection)
+	testing.expect(t, targeting, "no Hero: straight to the target")
+}
+
+@(test)
+blight_as_an_additional_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Cinder Strike ({R}): "As an additional cost to cast this spell, you may blight 1. Cinder Strike deals 2 damage
+	// to target creature. It deals 4 damage to that creature instead if this spell's additional cost was paid."
+	// CR 701.68a: to blight 1 is to put a -1/-1 counter on a creature you control.
+	testing.expect(t, game.card_supported(&card(t, "Cinder Strike").face))
+	run :: proc(t: ^testing.T, blight: bool) -> (giant_died: bool) {
+		g := new_game()
+		s := &g.state
+		add(t, g, "Mountain", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+		giant := add(t, g, "Hill Giant", 1, .Battlefield)
+		strike := add(t, g, "Cinder Strike", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = strike.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalCost{index = 0 if blight else 1}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{giant.id}}))
+		if blight {
+			w, asked := s.waiting_for.(types.WaitingFor_BlightChoice)
+			testing.expectf(t, asked && w.counters == 1 && len(w.creatures) == 1, "which creature to blight: %v", s.waiting_for)
+			testing.expect(t, !game.apply(g, 0, types.GameAction_SelectCards{cards = chosen(giant.id)}), "not a creature they control")
+			testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen(bears.id)}))
+		}
+		testing.expect(t, strike.zone == .Stack, "cast")
+		testing.expect(t, game.counter_count(bears, types.CounterType_Minus1Minus1{}) == (1 if blight else 0), "the -1/-1 counter")
+		settle_stack(g)
+		return giant.zone == .Graveyard
+	}
+	testing.expect(t, run(t, true), "blighted: 4 damage")
+	testing.expect(t, !run(t, false), "not: 2 damage")
+	// Burning Curiosity ({2}{R}): "you may blight 1. Exile the top two cards of your library. If this spell's
+	// additional cost was paid, exile the top three cards instead. Until the end of your next turn, you may play
+	// those cards." Either way, the cards exiled are the ones that may be played.
+	testing.expect(t, game.card_supported(&card(t, "Burning Curiosity").face))
+	curiosity :: proc(t: ^testing.T, blight: bool) -> (exiled, playable: int) {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 3 do add(t, g, "Mountain", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+		spell := add(t, g, "Burning Curiosity", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalCost{index = 0 if blight else 1}))
+		if blight do testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen(bears.id)}))
+		settle_stack(g)
+		for id in game.ids_of(s.exile) {
+			exiled += 1
+			if _, ok := game.exile_permission(game.object(s, id), 0); ok do playable += 1
+		}
+		return
+	}
+	exiled, playable := curiosity(t, true)
+	testing.expectf(t, exiled == 3 && playable == 3, "blighted: three exiled, playable (%d, %d)", exiled, playable)
+	exiled, playable = curiosity(t, false)
+	testing.expectf(t, exiled == 2 && playable == 2, "not: two (%d, %d)", exiled, playable)
+	// Bogslither's Embrace ({1}{B}): "blight 1 or pay {3}. Exile target creature." Two Swamps: only blighting can
+	// be paid. The Llanowar Elves blighted to 0 toughness die before anyone gets priority (CR 704.5f, 117.5).
+	{
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 2 do add(t, g, "Swamp", 0, .Battlefield)
+		elves := add(t, g, "Llanowar Elves", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		embrace := add(t, g, "Bogslither's Embrace", 0, .Hand)
+		testing.expect(t, game.card_supported(&card(t, "Bogslither's Embrace").face))
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = embrace.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+		_, asked := s.waiting_for.(types.WaitingFor_BlightChoice)
+		testing.expect(t, asked, "which creature to blight")
+		testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen(elves.id)}))
+		testing.expect(t, embrace.zone == .Stack && elves.zone == .Graveyard, "cast; the Elves died")
+	}
+	// Wild Unraveling ({U}{U}): "blight 2 or pay {1}. Counter target spell." CR 701.68a: both counters on one
+	// creature.
+	{
+		g := new_game()
+		s := &g.state
+		add(t, g, "Mountain", 0, .Battlefield)
+		for _ in 0 ..< 2 do add(t, g, "Island", 0, .Battlefield)
+		giant := add(t, g, "Hill Giant", 0, .Battlefield)
+		shock := add(t, g, "Shock", 0, .Hand)
+		unraveling := add(t, g, "Wild Unraveling", 0, .Hand)
+		testing.expect(t, game.card_supported(&card(t, "Wild Unraveling").face))
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = unraveling.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{shock.id}}))
+		w, asked := s.waiting_for.(types.WaitingFor_BlightChoice)
+		testing.expectf(t, asked && w.counters == 2, "blight 2: %v", s.waiting_for)
+		testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen(giant.id)}))
+		testing.expect(t, unraveling.zone == .Stack && game.counter_count(giant, types.CounterType_Minus1Minus1{}) == 2, "two -1/-1 counters on the Giant")
+		settle_stack(g)
+		testing.expect(t, shock.zone == .Graveyard && game.player(s, 1).life == 20, "the Shock countered")
+	}
+	// CR 701.68b: with no creature to put the counter on, they can't choose to blight; it isn't offered.
+	g := new_game()
+	add(t, g, "Mountain", 0, .Battlefield)
+	add(t, g, "Hill Giant", 1, .Battlefield)
+	strike := add(t, g, "Cinder Strike", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = strike.id}))
+	_, targeting := g.state.waiting_for.(types.WaitingFor_TargetSelection)
+	testing.expect(t, targeting, "no creature: straight to the target")
+}
+
+@(test)
+collect_evidence_as_an_additional_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Crimestopper Sprite ({2}{U}): "As an additional cost to cast this spell, you may collect evidence 6. Flying.
+	// When this creature enters, tap target creature. If evidence was collected, put a stun counter on it." CR
+	// 701.59a: exile cards with total mana value 6 or greater from your graveyard; CR 701.59c: the permanent's
+	// ability reads whether it was collected.
+	testing.expect(t, game.card_supported(&card(t, "Crimestopper Sprite").face))
+	run :: proc(t: ^testing.T, collect: bool) -> (stunned: bool) {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 3 do add(t, g, "Island", 0, .Battlefield)
+		dragon := add(t, g, "Chardalyn Dragon", 0, .Graveyard) // mana value 6
+		bears := add(t, g, "Grizzly Bears", 0, .Graveyard) // 2
+		theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		sprite := add(t, g, "Crimestopper Sprite", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = sprite.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalCost{index = 0 if collect else 1}))
+		if collect {
+			w, asked := s.waiting_for.(types.WaitingFor_CollectEvidenceChoice)
+			testing.expectf(t, asked && w.minimum_mana_value == 6 && len(w.cards) == 2, "which cards: %v", s.waiting_for)
+			testing.expect(t, !game.apply(g, 0, types.GameAction_SelectCards{cards = chosen(bears.id)}), "a total of 2 isn't enough")
+			testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen(dragon.id)}))
+			testing.expect(t, dragon.zone == .Exile && bears.zone == .Graveyard, "exiled as the cost")
+		}
+		testing.expect(t, sprite.zone == .Stack, "cast")
+		for _ in 0 ..< 8 {
+			#partial switch _ in s.waiting_for {
+			case types.WaitingFor_TriggerTargetSelection:
+				game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{theirs.id}})
+				continue
+			case types.WaitingFor_Priority:
+				if types.pvec_len(s.stack) > 0 {
+					game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+					continue
+				}
+			}
+			break
+		}
+		testing.expect(t, sprite.zone == .Battlefield && theirs.tapped, "it enters and taps their creature")
+		return game.counter_count(theirs, types.CounterType_Stun{}) == 1
+	}
+	testing.expect(t, run(t, true), "evidence collected: a stun counter")
+	testing.expect(t, !run(t, false), "not collected: none")
+	// CR 701.59b: without cards of total mana value 6 in the graveyard, they can't choose to; it isn't offered.
+	g := new_game()
+	for _ in 0 ..< 3 do add(t, g, "Island", 0, .Battlefield)
+	add(t, g, "Grizzly Bears", 0, .Graveyard)
+	sprite := add(t, g, "Crimestopper Sprite", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = sprite.id}))
+	testing.expect(t, sprite.zone == .Stack, "cast without being asked")
+}
+
+@(test)
+tap_permanents_as_an_additional_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Fear of Exposure ({2}{G}): "As an additional cost to cast this spell, tap two untapped creatures and/or lands
+	// you control." CR 601.2g-h: the mana comes from sources other than the two tapped for the cost (a permanent
+	// already tapped can't be tapped to pay, CR 118.3). Unlike a {T} ability, the summoning sickness rule (CR 302.6)
+	// doesn't stop a creature from being tapped for it.
+	testing.expect(t, game.card_supported(&card(t, "Fear of Exposure").face))
+	{
+		g := new_game()
+		for _ in 0 ..< 4 do add(t, g, "Forest", 0, .Battlefield)
+		fear := add(t, g, "Fear of Exposure", 0, .Hand)
+		testing.expect(t, !game.castable(&g.state, 0, fear, g.card_db), "four lands: {2}{G} and two to tap is five")
+	}
+	g := new_game()
+	s := &g.state
+	forests: [3]^types.GameObject
+	for &f in forests do f = add(t, g, "Forest", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	bears.summoning_sick = true
+	elves := add(t, g, "Llanowar Elves", 0, .Battlefield)
+	fear := add(t, g, "Fear of Exposure", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = fear.id}))
+	w, asked := s.waiting_for.(types.WaitingFor_PayCost)
+	_, taps := w.kind.(types.PayCostKind_TapCreatures)
+	testing.expectf(t, asked && taps && w.count == 2 && len(w.choices) == 5, "what to tap: %v", s.waiting_for)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_SelectCards{cards = chosen(forests[0].id, forests[1].id)}), "one Forest and the Elves can't pay {2}{G}")
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen(bears.id, elves.id)}))
+	testing.expect(t, fear.zone == .Stack && bears.tapped && elves.tapped, "cast, the two tapped")
+	for f in forests do testing.expect(t, f.tapped, "the Forests pay {2}{G}")
+	// The AI picks so that the mana can still be paid: the Bears, which make no mana, and one Forest.
+	{
+		g := new_game()
+		for _ in 0 ..< 3 do add(t, g, "Forest", 0, .Battlefield)
+		add(t, g, "Grizzly Bears", 0, .Battlefield)
+		add(t, g, "Llanowar Elves", 0, .Battlefield)
+		fear := add(t, g, "Fear of Exposure", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = fear.id}))
+		a, _ := game.ai_action(g, 0)
+		testing.expect(t, game.apply(g, 0, a), "the AI's choice is accepted")
+		testing.expect(t, fear.zone == .Stack, "cast")
+	}
+}
+
+@(test)
+kicker_that_sacrifices :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Vicious Offering ({1}{B}): "Kicker—Sacrifice a creature. Target creature gets -2/-2 until end of turn. If this
+	// spell was kicked, that creature gets -5/-5 until end of turn instead." CR 702.33a: a kicker cost is an
+	// additional cost, announced (CR 601.2b) and paid (CR 601.2h) like any.
+	testing.expect(t, game.card_supported(&card(t, "Vicious Offering").face))
+	run :: proc(t: ^testing.T, kick: bool) -> (giant_died: bool) {
+		g := new_game()
+		for _ in 0 ..< 2 do add(t, g, "Swamp", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+		giant := add(t, g, "Hill Giant", 1, .Battlefield)
+		offering := add(t, g, "Vicious Offering", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = offering.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalCost{index = 0 if kick else 1}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{giant.id}}))
+		if kick do testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen(bears.id)}), "the creature sacrificed")
+		testing.expect(t, offering.zone == .Stack, "cast")
+		testing.expect(t, bears.zone == (.Graveyard if kick else .Battlefield), "sacrificed only if kicked")
+		settle_stack(g)
+		return giant.zone == .Graveyard
+	}
+	testing.expect(t, run(t, true), "kicked: -5/-5")
+	testing.expect(t, !run(t, false), "not kicked: -2/-2")
+	// With no creature of theirs to sacrifice, kicking isn't offered (CR 118.3).
+	g := new_game()
+	for _ in 0 ..< 2 do add(t, g, "Swamp", 0, .Battlefield)
+	add(t, g, "Hill Giant", 1, .Battlefield)
+	offering := add(t, g, "Vicious Offering", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = offering.id}))
+	_, targeting := g.state.waiting_for.(types.WaitingFor_TargetSelection)
+	testing.expect(t, targeting, "nothing to sacrifice: straight to the target")
+}
+
+@(test)
+reveal_or_pay_as_an_additional_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Silvergill Adept ({1}{U}): "As an additional cost to cast this spell, reveal a Merfolk card from your hand or
+	// pay {3}." CR 701.20a-b: the card revealed is shown and stays in the hand. The Adept, a Merfolk card itself,
+	// is the spell being cast, not a card in the hand (CR 601.2a).
+	testing.expect(t, game.card_supported(&card(t, "Silvergill Adept").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 2 do add(t, g, "Island", 0, .Battlefield)
+	adept := add(t, g, "Silvergill Adept", 0, .Hand)
+	testing.expect(t, !game.castable(s, 0, adept, g.card_db), "no other Merfolk card, no {3}")
+	merfolk := add(t, g, "Coral Merfolk", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = adept.id}))
+	w, asked := s.waiting_for.(types.WaitingFor_PayCost)
+	_, reveals := w.kind.(types.PayCostKind_Reveal)
+	testing.expectf(t, asked && reveals && len(w.choices) == 1 && w.choices[0] == merfolk.id, "which card to reveal: %v", s.waiting_for)
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen(merfolk.id)}))
+	testing.expect(t, adept.zone == .Stack && merfolk.zone == .Hand, "cast; the Merfolk card stays in the hand")
+}
+
+@(test)
+additional_costs_not_carried_out :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Hulk's Thunderclap: "you may behold a Gamma creature ... If this spell's additional cost was paid, destroy
+	// target noncreature artifact or noncreature enchantment." CR 601.2c, 702.33g: that target is chosen only if the
+	// cost is paid; the engine's targets don't depend on it yet.
+	testing.expect(t, !game.additional_cost_supported(&card(t, "Hulk's Thunderclap").face))
+	// Monstrous Emergence and Charge of the Forever-Beast read the card chosen or revealed for the cost ("equal to
+	// the revealed card's power"): not yet.
+	testing.expect(t, !game.additional_cost_supported(&card(t, "Monstrous Emergence").face))
+	testing.expect(t, !game.additional_cost_supported(&card(t, "Charge of the Forever-Beast").face))
+	// Champion of the Clachan: "behold a Kithkin and exile it", the card kept for later.
+	testing.expect(t, !game.additional_cost_supported(&card(t, "Champion of the Clachan").face))
+	// Card data that lost words of the Oracle text (MISPARSED_CARDS).
+	for name in ([]string{"Goblin Barrage", "Plumb the Forbidden", "Behind the Mask", "Tectonic Split", "Soul Immolation", "Vitu-Ghazi Inspector"}) {
+		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s refused", name)
+	}
+}
+
+// A target named only for when the spell was kicked ("If this spell was kicked, return another target permanent
+// card") is chosen only if it was (CR 601.2c, 702.33g); this engine asks for every target as the spell is cast, so
+// such spells stay unsupported. A kicker that only changes amounts is fine (Burst Lightning).
+@(test)
+targets_chosen_only_when_kicked :: proc(t: ^testing.T) {
+	if !load_db() do return
+	for name in ([]string{"Urborg Repossession", "Bloodchief's Thirst", "Tear Asunder", "Expel the Unworthy", "Blood Beckoning", "Divine Resilience"}) {
+		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s stays unsupported", name)
+	}
+	testing.expect(t, game.card_supported(&card(t, "Burst Lightning").face))
+}

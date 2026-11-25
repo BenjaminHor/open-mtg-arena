@@ -50,6 +50,13 @@ MISPARSED_CARDS :: [?]string{
 	"Equinox", // "if it would destroy a land you control" lost
 	"Arc Spitter", // "that's blocking it" lost
 	"Fearsome Temper", // "can't block this creature" read as "can't block"
+	// Additional costs (2026-11-25).
+	"Goblin Barrage", // the kicked "target player or planeswalker" read as the creature targeted
+	"Plumb the Forbidden", // "one or more creatures" and "copy this spell for each" lost
+	"Behind the Mask", // with evidence, "becomes an artifact creature" lost: only 1/1 "instead"
+	"Tectonic Split", // "half the lands you control" lost
+	"Soul Immolation", // "blight X" read as blight 1
+	"Vitu-Ghazi Inspector", // the intervening "if evidence was collected" (CR 603.4) read as the effect's: it targets anyway
 }
 
 misparsed :: proc(name: string) -> bool {
@@ -164,6 +171,11 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	previous_instruction = previous
 	defer previous_instruction, instruction_before_previous = outer, outer_before
 	if c, has := a.condition.?; has && !ability_condition_supported(c) do return false
+	// "If this spell was kicked, [target]...": that target is chosen only when the cost is paid (CR 601.2c, 702.33g),
+	// but this engine asks for every target as the spell is cast; such an instruction isn't read yet.
+	if c, has := a.condition.?; has && a.effect != nil && depends_on_cost_paid(c) {
+		if _, targets := effect_target(a.effect^); targets do return false
+	}
 	// "Each player draws", "an opponent draws", "for each creature chosen": scopes and groups not carried out yet.
 	// (Declaring a group is harmless while nothing reads it; reading one isn't supported.)
 	if a.reads_chosen_group != nil || a.starting_with != nil do return false
@@ -1037,6 +1049,7 @@ Pending_Cast :: struct {
 	kicker_decided: bool,
 	ability_index: int, // an activated ability being activated, or -1 for a spell being cast
 	cost_objects:  [dynamic]types.ObjectId, // the permanents to sacrifice or cards to discard for the cost, once chosen
+	cost_kind:     Object_Cost_Kind, // what's done with them (tapped, beheld, ...), from the prompt that asked
 	cost_chosen:   bool,
 	division:      [dynamic]u32, // CR 601.2d: each target's share of what's divided, in target order
 	division_decided: bool,
@@ -1104,7 +1117,9 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	s := &g.state
 	o := object(s, id)
 	cost_targets = {spell = id, caster = p, targets = targets} // CR 601.2f: the total cost reads the targets
-	pay_mana(g, p, spell_cost(s, o, p), 0, g.pending.cost_objects[:], Payment{o, true}) // CR 605.3, 601.2h
+	// CR 605.3, 601.2h: the mana first, from sources the rest of the cost doesn't tap or sacrifice.
+	used_up := g.pending.cost_objects[:] if cost_objects_used_up(g.pending.cost_kind) else nil
+	pay_mana(g, p, spell_cost(s, o, p), 0, used_up, Payment{o, true})
 	cost_targets = {}
 	pay_additional_cost(g, p, o)
 	from := o.zone // where it was cast from: flashback's exile reads it (CR 702.34a)
@@ -1566,6 +1581,9 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 		if i := strings.last_index_byte(full, '_'); i >= 0 do full = full[i + 1:]
 		append(out, strings.concatenate({"spell:condition:", full}, context.temp_allocator))
 	}
+	if c, has := a.condition.?; has && a.effect != nil && depends_on_cost_paid(c) {
+		if _, targets := effect_target(a.effect^); targets do append(out, "spell:target only if a cost was paid")
+	}
 	if a.optional_targeting do append(out, "spell:optional")
 	if a.modal != nil do append(out, "spell:modal")
 	if !multi_target_supported(a) do append(out, "spell:multiple targets")
@@ -1971,12 +1989,68 @@ additional_cost_options :: proc(face: ^types.CardFace) -> ([]types.AbilityCost, 
 	return choice._0[:], true
 }
 
-// A spell's additional cost that this engine pays: chosen objects (sacrificed, discarded, exiled from a graveyard),
-// life, or (for one of a choice) mana.
-additional_cost_part_supported :: proc(cost: types.AbilityCost, mana_ok: bool) -> bool {
-	if m, is_mana := cost.(types.AbilityCost_Mana); is_mana {
-		c, ok := m.cost.(types.ManaCost_Cost)
-		return mana_ok && ok && !has_x(m.cost)
+// "As an additional cost to cast this spell, you may blight 1", "Kicker—Sacrifice an artifact or creature": an
+// optional additional cost other than mana (CR 118.8b, 702.33a), paid once or not at all. An optional mana cost is
+// kicker_cost's.
+optional_additional_cost :: proc(face: ^types.CardFace) -> (types.AbilityCost, bool) {
+	a, has := face.additional_cost.?
+	if !has do return nil, false
+	cost: types.AbilityCost
+	#partial switch x in a {
+	case types.AdditionalCost_Kicker:
+		if len(x.costs) != 1 || x.repeatability != .Once do return nil, false
+		cost = x.costs[0]
+	case types.AdditionalCost_Optional:
+		if x.repeatability != .Once do return nil, false
+		cost = x.cost
+	case:
+		return nil, false
+	}
+	if _, is_mana := cost.(types.AbilityCost_Mana); is_mana do return nil, false
+	return cost, true
+}
+
+object_optional_cost :: proc(o: ^types.GameObject) -> (types.AbilityCost, bool) {
+	f := object_face(o)
+	return optional_additional_cost(&f)
+}
+
+// How a spell has an additional cost: always paid, paid if the player chooses to (CR 118.8b), or one of a choice
+// of costs (CR 601.2b).
+Additional_Cost_Use :: enum {
+	Required,
+	Optional,
+	One_Of_Choice,
+}
+
+// A spell's additional cost that this engine pays: chosen objects (sacrificed, discarded, exiled from a graveyard,
+// tapped, beheld, revealed, blighted, collected as evidence), life, or (for one of a choice) mana.
+additional_cost_part_supported :: proc(cost: types.AbilityCost, use: Additional_Cost_Use) -> bool {
+	#partial switch x in cost {
+	case types.AbilityCost_Mana:
+		// "Or pay {3}". (An optional mana cost is kicker_cost's.)
+		_, ok := x.cost.(types.ManaCost_Cost)
+		return use == .One_Of_Choice && ok && !has_x(x.cost)
+	case types.AbilityCost_TapCreatures:
+		// "Tap two untapped creatures and/or lands you control": a number of them, not a total power.
+		n, is_count := x.requirement.(types.TapCreaturesRequirement_Count)
+		return is_count && n.count >= 1 && n.count <= 10 && sacrifice_filter_supported(x.filter)
+	case types.AbilityCost_Behold:
+		// CR 701.4a: optional ("if a Dragon was beheld", CR 701.4b) or one of a choice. The one card requiring it
+		// reads the card chosen ("the creature you chose"), and "behold a Kithkin and exile it" (ExileChosen)
+		// keeps the card for later: neither yet.
+		return use != .Required && x.action == .ChooseOrReveal && x.type_choice == nil && x.count == 1 && hand_card_filter_supported(x.filter)
+	case types.AbilityCost_Reveal:
+		// "Reveal a Pirate card from your hand or pay {2}" (CR 701.20a). The cards with a reveal alone read the
+		// card revealed ("equal to the revealed card's power"): not yet.
+		n, fixed := fixed_quantity(x.count)
+		f, has := x.filter.?
+		return use == .One_Of_Choice && fixed && n == 1 && has && x.shared_quality == nil && hand_card_filter_supported(f)
+	case types.AbilityCost_Blight:
+		// CR 701.68a. The only card requiring it blights X, an X its data lost.
+		return use != .Required && x.count >= 1
+	case types.AbilityCost_CollectEvidence:
+		return x.amount >= 1 // CR 701.59a
 	}
 	if !cost_supported(cost) do return false
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
@@ -1997,36 +2071,59 @@ additional_cost_part_supported :: proc(cost: types.AbilityCost, mana_ok: bool) -
 	return true
 }
 
+// The kind of card a behold or reveal cost names ("a Dragon", "a Gamma creature"): types and subtypes alone, read
+// alike on a permanent and on a card in the hand.
+@(private = "file")
+hand_card_filter_supported :: proc(f: types.TargetFilter) -> bool {
+	typed, ok := f.(types.TargetFilter_Typed)
+	if !ok || len(typed._0.properties) > 0 || !own_or_unrestricted(typed._0) do return false
+	plain := typed._0
+	plain.controller = nil
+	return typed_supported(plain)
+}
+
 additional_cost_supported :: proc(face: ^types.CardFace) -> bool {
 	if face.additional_cost == nil do return true
 	if _, kicker := kicker_cost(face); kicker do return true
+	if cost, optional := optional_additional_cost(face); optional {
+		// CR 601.2c, 702.33g: a target in an instruction carried out only if the cost was paid is chosen only then;
+		// the targets asked for don't depend on the cost yet.
+		return additional_cost_part_supported(cost, .Optional) && !paid_cost_has_targets(face)
+	}
 	if options, is_choice := additional_cost_options(face); is_choice {
-		for c in options do if !additional_cost_part_supported(c, true) do return false
+		for c in options do if !additional_cost_part_supported(c, .One_Of_Choice) do return false
 		return true
 	}
 	cost, ok := additional_cost(face)
-	if !ok || !cost_supported(cost) do return false
-	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
-	cost_parts_of(cost, &parts)
-	for part in parts {
-		#partial switch x in part {
-		case types.AbilityCost_Sacrifice:
-			if is_self(x._0.target) do return false
-		case types.AbilityCost_Discard:
-			if x.self_scope == .SourceCard do return false
-		case types.AbilityCost_PayLife:
-		case types.AbilityCost_Exile:
-			// "Exile a creature card from your graveyard": chosen as the spell is cast (object_cost_of).
-			if f, has := x.filter.?; has && is_self(f) do return false
-		case:
-			return false // mana, tapping: not as a spell's additional cost here
+	return ok && additional_cost_part_supported(cost, .Required)
+}
+
+// Whether an instruction of the spell carried out only "if this spell's additional cost was paid" (or "instead"
+// then) has a target of its own ("If this spell's additional cost was paid, destroy target noncreature artifact").
+@(private = "file")
+paid_cost_has_targets :: proc(face: ^types.CardFace) -> bool {
+	for &a in face.abilities {
+		if a.kind != .Spell do continue
+		for x := &a; x != nil; x = x.sub_ability {
+			c, has := x.condition.?
+			if !has || x.effect == nil do continue
+			_, paid := c.(types.AbilityCondition_AdditionalCostPaid)
+			_, paid_instead := c.(types.AbilityCondition_AdditionalCostPaidInstead)
+			if !paid && !paid_instead do continue
+			if _, targets := effect_target(x.effect^); targets do return true
+			if fight, is_fight := x.effect^.(types.Effect_Fight); is_fight && fight_subject_targeted(fight) do return true
 		}
 	}
-	return true
+	return false
 }
 
 spell_additional_cost :: proc(o: ^types.GameObject) -> (types.AbilityCost, bool) {
 	f := object_face(o)
+	if cost, optional := optional_additional_cost(&f); optional {
+		// Once the player announces they'll pay it (CR 601.2b).
+		if !kicked(o) do return nil, false
+		return cost, true
+	}
 	if options, is_choice := additional_cost_options(&f); is_choice {
 		// The one chosen (CR 601.2b), once it is.
 		i, chosen := chosen_additional_option(o)
@@ -2125,7 +2222,8 @@ additional_cost_payable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^type
 	if c, chooses := object_cost_of(s, p, o, cost); chooses {
 		others := make([dynamic]types.ObjectId, context.temp_allocator)
 		for id in c.choices do if id != o.id do append(&others, id)
-		if !cost_objects_leave_mana(s, p, others[:], c.count, spell_cost(s, o, p), 0, Payment{o, true}) do return false
+		c.choices = others
+		if !cost_objects_available(s, p, c, spell_cost(s, o, p), Payment{o, true}) do return false
 	}
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
 	cost_parts_of(cost, &parts)
@@ -2136,13 +2234,32 @@ additional_cost_payable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^type
 	return true
 }
 
-// Pays the additional cost as the spell is cast (CR 601.2h): the chosen permanents sacrificed or cards discarded,
-// life paid.
+// Pays the additional cost as the spell is cast (CR 601.2h): the chosen permanents sacrificed or tapped, cards
+// discarded, revealed or exiled, -1/-1 counters put on the chosen creature, life paid.
 pay_additional_cost :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) {
 	cost, has := spell_additional_cost(o)
 	if !has do return
+	s := &g.state
 	together := begin_together() // paid at once ("sacrifice two creatures")
-	for id in g.pending.cost_objects do pay_with_object(g, id)
+	switch g.pending.cost_kind {
+	case .Sacrifice, .Discard, .Exile_From_Graveyard, .Collect_Evidence:
+		for id in g.pending.cost_objects do pay_with_object(g, id) // evidence: exiled from the graveyard (CR 701.59a)
+	case .Tap:
+		for id in g.pending.cost_objects do tap_permanent(object(s, id)) // CR 701.26a
+	case .Behold, .Reveal:
+		// CR 701.20a: a card from the hand is shown to all players and stays where it is (701.20b); a permanent
+		// beheld is only chosen (CR 701.4a).
+		revealed := make([dynamic]types.ObjectId)
+		names := make([dynamic]string)
+		for id in g.pending.cost_objects do if c := object(s, id); c.zone == .Hand {
+			append(&revealed, id)
+			append(&names, c.name)
+		}
+		if len(revealed) > 0 do report(types.GameEvent_CardsRevealed{player = p, card_ids = revealed, card_names = names})
+	case .Blight:
+		// CR 701.68a: N -1/-1 counters on the chosen creature.
+		if b, ok := cost.(types.AbilityCost_Blight); ok do for id in g.pending.cost_objects do add_counters(object(s, id), types.CounterType_Minus1Minus1{}, b.count)
+	}
 	end_together(together)
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
 	cost_parts_of(cost, &parts)
@@ -2196,6 +2313,23 @@ filter_names_permanents :: proc(f: types.TargetFilter) -> bool {
 		     types.TypeFilter_Planeswalker, types.TypeFilter_Battle, types.TypeFilter_Permanent:
 			return true
 		}
+	}
+	return false
+}
+
+// A condition on an additional cost having been paid ("if it was kicked", "... instead if ...").
+depends_on_cost_paid :: proc(c: types.AbilityCondition) -> bool {
+	#partial switch x in c {
+	case types.AbilityCondition_AdditionalCostPaid, types.AbilityCondition_AdditionalCostPaidInstead:
+		return true
+	case types.AbilityCondition_ConditionInstead:
+		return x.inner != nil && depends_on_cost_paid(x.inner^)
+	case types.AbilityCondition_And:
+		for y in x.conditions do if depends_on_cost_paid(y) do return true
+	case types.AbilityCondition_Or:
+		for y in x.conditions do if depends_on_cost_paid(y) do return true
+	case types.AbilityCondition_Not:
+		return depends_on_cost_paid(x.condition^)
 	}
 	return false
 }
