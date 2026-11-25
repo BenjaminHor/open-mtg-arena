@@ -22,6 +22,18 @@ has_keyword :: proc(o: ^types.GameObject, $T: typeid) -> bool {
 // Cards whose card data says something other than the card (found in rules reviews): refused until the data is
 // fixed, rather than played wrong.
 MISPARSED_CARDS :: [?]string{
+	// Ninth rules review (2026-11-25).
+	"Iridescent Drake", // "onto the battlefield attached to this creature" lost: a free host offered (CR 303.4i)
+	"Nomad Mythmaker", // "attached to a creature you control" lost
+	"Faerie Artisans", // "other tokens created with this creature" read as all other tokens
+	"Advancing the Spirit", // its power-up alternative read as a spell ability of the enchantment
+	"Circle of Confinement", // "with the same name as a card exiled with this" lost
+	"Sludge Titan", // "a creature card and/or a land card" read as one card
+	"Benefaction of Rhonas", // "and/or" read as one card
+	"Relentless Pursuit", // "and/or" read as one card
+	"In the Presence of Ages", // "and/or" read as one card
+	"Gift of the Gargantuan", // "and/or" read as one card
+	"Axgard Armory", // "and/or" read as one card
 	"Kairi, the Swirling Sky", // "with total mana value 6 or less" is dropped from "any number of target ..."
 	"Rampaging Yao Guai", // "with total mana value X or less" is dropped from "any number of target ..."
 	"Agadeem's Awakening", // "creature cards that each have a different mana value X or less" is lost
@@ -424,7 +436,8 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		dest, has_dest := x.destination.?
 		rest, has_rest := x.rest_destination.?
 		// Onto the battlefield (tapped or not): only permanent cards can be taken (a filter naming permanent types).
-		to_battlefield := has_dest && dest == .Battlefield && filter_names_permanents(x.filter)
+		// An Aura put onto the battlefield needs what it enchants chosen (CR 303.4f), which digs don't do yet.
+		to_battlefield := has_dest && dest == .Battlefield && filter_names_permanents(x.filter) && !copy_may_be_aura(x.filter)
 		return is_controller(x.player) && quantity_supported(x.count) && has_keep && keep >= 1 && x.keep_count_expr == nil &&
 			has_dest && (dest == .Hand || dest == .Graveyard || to_battlefield) && has_rest && (rest == .Library || rest == .Graveyard) &&
 			x.rest_remainder == .Route && x.rest_split_top_count == nil && x.source == .Library && !x.enters_attacking &&
@@ -436,6 +449,11 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		_, fixed := fixed_quantity(x.count)
 		return fixed && (x.target == nil || is_controller(x.target))
 	case types.Effect_ChangeZone:
+		// "Exile target creature until this leaves the battlefield" (CR 610.3): the return isn't built, so such an
+		// exile would be for good (ninth rules review).
+		if d, has := duration.?; has {
+			if _, until := d.(types.Duration_UntilHostLeavesPlay); until do return false
+		}
 		return change_zone_supported(x)
 	case types.Effect_Bounce:
 		return bounce_supported(x)

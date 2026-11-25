@@ -57,7 +57,15 @@ change_zone_supported :: proc(x: types.Effect_ChangeZone) -> bool {
 		return x.destination != .Hand && (x.destination != .Battlefield || !may_match_aura(types.TargetFilter_Typed{hand_filter}))
 	}
 	if is_self(x.target) do return true
-	if has_origin && origin == .Library && is_any(x.target) do return x.destination != .Library // the found cards
+	if has_origin && origin == .Library && is_any(x.target) {
+		// The found cards. An Aura put onto the battlefield needs what it enchants chosen (CR 303.4f), which a search
+		// doesn't do yet: a search that could find one (a Rebel search can find Bound in Silence) is refused.
+		if x.destination == .Library do return false
+		if x.destination == .Battlefield && previous_instruction != nil {
+			if search, is_search := previous_instruction^.(types.Effect_SearchLibrary); is_search && copy_may_be_aura(search.filter) do return false
+		}
+		return true
+	}
 	// "Return it to the battlefield": the earlier instruction's target, wherever that put it (CR 608.2c), or a delayed
 	// ability's "it" (CR 603.7c). An Aura returned has what it enchants chosen as it enters (do_change_zone, CR
 	// 303.4f). Onto the battlefield only straight after the instruction that targeted it: after another one (Koya's

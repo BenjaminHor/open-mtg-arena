@@ -3312,6 +3312,14 @@ Progress:
   corrections; six misparsed. Found and fixed here: counters/damage chosen as the ability resolves were read as
   targets (Ajani Fells the Godsire, Tilonalli's Crown): refused. Still to check: searches/digs putting a possible
   Aura onto the battlefield (CR 303.4f). Coverage 8,258.
+- Ninth rules review (725636a..79c6967), fixed by refusal: "exile ... until this leaves the battlefield" never
+  returned the card (pre-existing, ~65 cards: Banishing Light, Cast Out, Portable Hole...; CR 610.3, to build with a
+  link to its exiler, CR 607, and the CR 303.4f host choice on return); searches and digs that could put an Aura onto
+  the battlefield (CR 303.4f: Planar Bridge, the Rebel searchers via Bound in Silence, United Battlefront); and 11
+  misparsed cards (Iridescent Drake and Nomad Mythmaker lost "attached to", Faerie Artisans, Advancing the Spirit,
+  Circle of Confinement, "and/or" read as one card: Sludge Titan and five others). Unverified: Ram Through's excess
+  damage dealt as two events (CR 120.4a: one modified event). Tool note: $SP/gapsof.mjs names gaps but isn't the
+  support verdict; $SP/sup.mjs (odin_supported_cards) is. Test: `ninth_review_refusals`. Coverage 8,188.
 - Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
   decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
   cards to be triaged against the CR (next step for the fixtures).

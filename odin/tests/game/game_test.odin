@@ -8436,3 +8436,19 @@ choices_made_as_it_resolves_are_not_targets :: proc(t: ^testing.T) {
 	}
 	testing.expect(t, game.card_supported(&card(t, "Corpse Churn").face))
 }
+
+// Ninth rules review's refusals (2026-11-25): "exile ... until this leaves the battlefield" without its return (CR
+// 610.3); a search or dig that could put an Aura onto the battlefield without choosing what it enchants (CR 303.4f;
+// a Rebel search can find Bound in Silence); data that lost "attached to ..." (CR 303.4i), "created with this
+// creature", "and/or" or a condition. Searches for a creature or land to the battlefield, or for a card to the hand,
+// are fine.
+@(test)
+ninth_review_refusals :: proc(t: ^testing.T) {
+	if !load_db() do return
+	for name in ([]string{"Banishing Light", "Cast Out", "Planar Bridge", "Amrou Scout", "United Battlefront", "Iridescent Drake", "Nomad Mythmaker", "Faerie Artisans", "Advancing the Spirit", "Circle of Confinement", "Sludge Titan"}) {
+		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s stays unsupported", name)
+	}
+	for name in ([]string{"Rampant Growth", "Elvish Rejuvenator", "Goblin Matron"}) {
+		testing.expectf(t, game.card_supported(&card(t, name).face), "%s is supported", name)
+	}
+}
