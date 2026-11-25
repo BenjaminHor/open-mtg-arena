@@ -2740,3 +2740,21 @@ token_copy_of_a_creature :: proc(t: ^testing.T) {
 	testing.expect(t, copy.name == "Grizzly Bears" && copy.power.? == 2 && copy.toughness.? == 2 && copy.damage_marked == 0, "a 2/2 Grizzly Bears, without the counter or damage")
 	testing.expect(t, copy.controller == 0 && copy.owner == 0)
 }
+
+@(test)
+target_player_draws :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Opportunity: "Target player draws four cards" (CR 115.1: a player as a target; CR 121.2).
+	testing.expect(t, game.card_supported(&card(t, "Opportunity").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 6 do add(t, g, "Island", 0, .Battlefield)
+	spell := add(t, g, "Opportunity", 0, .Hand) // {4}{U}{U}
+	before := types.pvec_len(game.player(s, 1).hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+	if _, asked := s.waiting_for.(types.WaitingFor_TargetSelection); asked {
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	}
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, types.pvec_len(game.player(s, 1).hand) == before + 4, "the target player drew four")
+}

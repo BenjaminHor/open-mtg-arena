@@ -168,9 +168,12 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return quantity_supported(x.count) && pt_supported(x.power) && pt_supported(x.toughness) && you && x.attach_to == nil && predefined_token_supported(x) &&
 			len(x.enter_with_counters) == 0
 	case types.Effect_Draw:
-		fixed := quantity_supported(x.count)
-		_, you := x.target.(types.TargetFilter_Controller)
-		return fixed && you
+		// "Draw N cards", "target player draws N cards", "its controller draws a card".
+		#partial switch _ in x.target {
+		case types.TargetFilter_Controller, types.TargetFilter_Player, types.TargetFilter_ParentTargetController:
+			return quantity_supported(x.count)
+		}
+		return false
 	case types.Effect_GenericEffect:
 		return generic_effect_supported(x)
 	case types.Effect_SearchLibrary:
@@ -310,6 +313,8 @@ effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 	case types.Effect_Pump:
 		f = x.target
 	case types.Effect_CopyTokenOf:
+		f = x.target
+	case types.Effect_Draw:
 		f = x.target
 	case types.Effect_Destroy:
 		f = x.target
@@ -941,7 +946,9 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		for _ in 0 ..< n do create_token(g, x, maker, source)
 	case types.Effect_Draw:
 		n := amount(g, x.count, controller, source, target)
-		for _ in 0 ..< n do draw_card(s, player(s, controller))
+		who := controller
+		if pid, ok := target_player(target); ok do who = pid // a target player, or "its controller" (CR 608.2c)
+		for _ in 0 ..< n do draw_card(s, player(s, who))
 	case types.Effect_GainLife:
 		n := amount(g, x.amount, controller, source, target)
 		gain_life(s, controller, n)

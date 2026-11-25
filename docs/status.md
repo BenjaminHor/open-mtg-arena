@@ -2904,6 +2904,7 @@ Progress:
 - Token copies ("create a token that's a copy of target creature you control" / "of this creature", CR 707.2,
   111.2): the card's printed characteristics (copy effects on the original aren't carried yet), entering like any
   permanent. A copy token is checked for support like its card. 5,514 -> 5,527.
+- "Target player draws N", "its controller draws a card": 5,527 -> 5,535.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
