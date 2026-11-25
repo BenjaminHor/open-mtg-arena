@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 260 of 2880 rules implemented (9%), 111 of them tested.**
+**In scope (100-799): 260 of 2880 rules implemented (9%), 112 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -110,7 +110,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 701 keyword actions | 305 | 26 (9%) | 9 |
 | 702 keyword abilities | 774 | 26 (3%) | 6 |
 | 703 turn based actions | 20 | 1 (5%) | 0 |
-| 704 state based actions | 40 | 12 (30%) | 6 |
+| 704 state based actions | 40 | 12 (30%) | 7 |
 | 705 flipping a coin | 3 | 0 (0%) | 0 |
 | 706 rolling a die | 18 | 0 (0%) | 0 |
 | 707 copying objects | 33 | 0 (0%) | 0 |
@@ -2924,7 +2924,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - 🟡 704.5c If a player has ten or more poison counters, that player loses the game. Ignore this rule in Two-Headed Gia...
 - ✅ 704.5d If a token is in a zone other than the battlefield, it ceases to exist.
 - ⬜ 704.5e If a copy of a spell is in a zone other than the stack, it ceases to exist. If a copy of a card is in any z...
-- 🟡 704.5f If a creature has toughness 0 or less, it’s put into its owner’s graveyard. Regeneration can’t replace this...
+- ✅ 704.5f If a creature has toughness 0 or less, it’s put into its owner’s graveyard. Regeneration can’t replace this...
 - ✅ 704.5g If a creature has toughness greater than 0, it has damage marked on it, and the total damage marked on it i...
 - 🟡 704.5h If a creature has toughness greater than 0, and it’s been dealt damage by a source with deathtouch since th...
 - 🟡 704.5i If a planeswalker has loyalty 0, it’s put into its owner’s graveyard.

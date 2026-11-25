@@ -141,8 +141,7 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		_, parent_controller := x.target.(types.TargetFilter_ParentTargetController)
 		return fixed && x.damage_source == nil && x.excess == nil && (filter_supported(x.target) || is_controller(x.target) || parent_controller)
 	case types.Effect_Pump:
-		_, pf := x.power.(types.PtValue_Fixed)
-		_, tf := x.toughness.(types.PtValue_Fixed)
+		pf, tf := pump_value_supported(x.power), pump_value_supported(x.toughness)
 		d, has := duration.?
 		_, eot := d.(types.Duration_UntilEndOfTurn)
 		// A pump aimed at "any target" is a misparsed mass pump: a player can't get +N/+N.
@@ -880,7 +879,7 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		if id, ok := target_object(target); ok do pumped = object(s, id)
 		else if is_self(x.target) do pumped = same_source(g, source)
 		// "This creature gets +N/+N": only while it's still the same object on the battlefield (CR 400.7).
-		if pumped != nil && pumped.zone == .Battlefield do pump(g, pumped, x.power.(types.PtValue_Fixed)._0, x.toughness.(types.PtValue_Fixed)._0)
+		if pumped != nil && pumped.zone == .Battlefield do pump(g, pumped, pump_value(g, x.power, controller, source, target), pump_value(g, x.toughness, controller, source, target))
 	case types.Effect_LoseLife:
 		n := amount(g, x.amount, controller, source, target)
 		lose_life(s, controller, n)
@@ -1190,6 +1189,30 @@ pt_supported :: proc(v: types.PtValue) -> bool {
 		return quantity_supported(x._0)
 	}
 	return false
+}
+
+// "+N/+N", "+X/+X where X is ...", "-X/-X" (the spell's X): the amounts of a pump.
+pump_value_supported :: proc(v: types.PtValue) -> bool {
+	#partial switch x in v {
+	case types.PtValue_Variable:
+		return (x._0 == "X" || x._0 == "-X") && x_defined
+	}
+	return pt_supported(v)
+}
+
+// CR 608.2h: an amount in an instruction is worked out once, as it resolves; the pump doesn't change after.
+pump_value :: proc(g: ^Game, v: types.PtValue, controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) -> i32 {
+	#partial switch x in v {
+	case types.PtValue_Fixed:
+		return x._0
+	case types.PtValue_Quantity:
+		return i32(amount(g, x._0, controller, source, target))
+	case types.PtValue_Variable:
+		xq := types.QuantityExpr(types.QuantityExpr_Ref{qty = types.QuantityRef_Variable{name = "X"}})
+		n := i32(amount(g, xq, controller, source, target))
+		return -n if x._0 == "-X" else n
+	}
+	return 0
 }
 
 // ---- Conditions on instructions ("if ...", CR 608.2c) ---------------------------------------------------------

@@ -61,8 +61,7 @@ more_effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) 
 		player_ok := is_player_filter(x.target)
 		return fixed && x.destination == .Graveyard && (x.position == nil || top) && player_ok, true
 	case types.Effect_PumpAll:
-		_, pf := x.power.(types.PtValue_Fixed)
-		_, tf := x.toughness.(types.PtValue_Fixed)
+		pf, tf := pump_value_supported(x.power), pump_value_supported(x.toughness)
 		d, has := duration.?
 		_, eot := d.(types.Duration_UntilEndOfTurn)
 		return pf && tf && has && eot && mass_filter_supported(x.target), true
@@ -168,7 +167,8 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 			move_object(g, types.pvec_get(pl.library, count - 1), .Graveyard)
 		}
 	case types.Effect_PumpAll:
-		p, t := x.power.(types.PtValue_Fixed)._0, x.toughness.(types.PtValue_Fixed)._0
+		// CR 608.2h: worked out once, then the same for each creature.
+		p, t := pump_value(g, x.power, controller, source, nil), pump_value(g, x.toughness, controller, source, nil)
 		for o in affected_permanents(s, x.target, controller, source) do pump(g, o, p, t)
 	case types.Effect_DestroyAll:
 		// CR 701.8: all at once.

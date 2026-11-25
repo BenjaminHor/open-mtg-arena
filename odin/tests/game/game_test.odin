@@ -2665,3 +2665,23 @@ damage_each_opponent_and_counters_on_each :: proc(t: ^testing.T) {
 	p1 := types.CounterType(types.CounterType_Plus1Plus1{})
 	testing.expect(t, game.counter_count(bears, p1) == 1 && game.counter_count(theirs, p1) == 0, "a counter on each of yours only")
 }
+
+@(test)
+pump_by_an_amount :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Death Wind: "Target creature gets -X/-X until end of turn": the spell's X (CR 107.3a), worked out as it
+	// resolves (CR 608.2h).
+	testing.expect(t, game.card_supported(&card(t, "Death Wind").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Swamp", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	wind := add(t, g, "Death Wind", 0, .Hand) // {X}{B}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = wind.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseX{value = 2}))
+	if _, asked := s.waiting_for.(types.WaitingFor_TargetSelection); asked {
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	}
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, bears.zone == .Graveyard, "-2/-2 on a 2/2: toughness 0 (CR 704.5f)")
+}
