@@ -1939,3 +1939,37 @@ restricted_mana :: proc(t: ^testing.T) {
 	testing.expect(t, !game.apply(g2, 0, types.GameAction_CastSpell{object_id = shock2.id}), "not for Shock")
 	_ = s
 }
+
+@(test)
+predefined_tokens_are_carried_out :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 111.10: each predefined token's ability is one the engine carries out (a token counts as supported, so
+	// its abilities have to be).
+	for kind in game.MADE_TOKENS {
+		for a in game.predefined_abilities(kind) {
+			_, _, mana := game.tap_mana_ability(a)
+			testing.expectf(t, mana || game.activated_supported(a), "%s's ability", kind)
+		}
+	}
+	// CR 111.10h: a Powerstone's {C} pays for an artifact spell, not for another spell.
+	g := new_game()
+	s := &g.state
+	stone := add(t, g, "Forest", 0, .Battlefield)
+	stone.is_token = true
+	stone.name = "Powerstone"
+	// Its own type lists (an object's are shared with its card's until something changes them).
+	stone.card_types.core_types = {}
+	stone.card_types.subtypes = {}
+	append(&stone.card_types.core_types, types.CoreType.Artifact)
+	append(&stone.card_types.subtypes, "Powerstone")
+	abilities := new([dynamic]types.AbilityDefinition)
+	abilities^ = game.predefined_abilities("Powerstone")
+	stone.abilities = abilities
+	bears := add(t, g, "Grizzly Bears", 0, .Hand) // {1}{G}
+	add(t, g, "Forest", 0, .Battlefield)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_CastSpell{object_id = bears.id}), "not for a creature spell")
+	ring := add(t, g, "Sol Ring", 0, .Hand) // {1}, an artifact
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = ring.id}), "for an artifact spell")
+	testing.expect(t, stone.tapped)
+	_ = s
+}
