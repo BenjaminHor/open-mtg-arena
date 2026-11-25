@@ -2607,6 +2607,9 @@ the plan, what's done so far, what's tricky, what was about to happen next.
   for M2's start (Known issues: card tracking through hidden hands) (2026-11-19).
 
 ## Open questions
+
+- (2026-11-25) After the switch at 14,013 cards, aim for the whole 15,772-card pool (`game:arena in:paper`)? 1,584
+  of the 1,759 cards Rust doesn't play aren't supported by Odin either yet. Proposed: yes, as the next goal.
 - (2026-11-24, D-187) The card data comes from the Rust card-text parser (`./scripts/gen-card-data.sh`). After the
   switch Rust stays as a build step for card data, not only as a test reference, unless an Odin parser becomes part
   of the plan. Tell the owner (pending).
@@ -3278,6 +3281,11 @@ Progress:
   modes. Refused: exert, two chosen costs, a choice of costs, reductions reading the target; Daniels and Tetzimoc
   misparsed. Mana abilities with these costs stay refused. Client prompts (CostTypeChoice, remove-counter
   distribution) checked in its code only, not in the running app. Coverage 7,988.
+- Owner asked (2026-11-25): 14,013 is less than Scryfall's `game:arena in:paper` count; do we plan to support the
+  delta? Answer: the pool is 15,772; 14,013 is the Rust engine's count, the goal's finish line (D-187). At 7,988 Odin
+  cards (f912b38): 7,813 Rust also plays, 175 Rust doesn't, 6,200 only Rust, 1,584 neither. The other 1,759 aren't
+  in the plan yet beyond what comes along; proposed: switch the app at 14,013 as agreed, then keep going toward the
+  whole pool (owner to decide; Open questions).
 - Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
   decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
   cards to be triaged against the CR (next step for the fixtures).
