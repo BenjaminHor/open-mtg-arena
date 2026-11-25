@@ -1973,3 +1973,29 @@ predefined_tokens_are_carried_out :: proc(t: ^testing.T) {
 	testing.expect(t, stone.tapped)
 	_ = s
 }
+
+@(test)
+this_or_another_enters :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 603.6a: "Whenever this creature or another creature you control enters, you gain 1 life" (Bogwater
+	// Lumaret) triggers on its own entering and on another creature of its controller's.
+	g := new_game()
+	s := &g.state
+	testing.expect(t, game.card_supported(&card(t, "Bogwater Lumaret").face))
+	for _ in 0 ..< 4 do add(t, g, "Forest", 0, .Battlefield)
+	add(t, g, "Swamp", 0, .Battlefield)
+	resolve_all :: proc(g: ^game.Game) {
+		for _ in 0 ..< 8 {
+			if types.pvec_len(g.state.stack) == 0 do break
+			game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+		}
+	}
+	lumaret := add(t, g, "Bogwater Lumaret", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = lumaret.id}))
+	resolve_all(g)
+	testing.expect(t, lumaret.zone == .Battlefield && game.player(s, 0).life == 21, "it entered: 1 life")
+	bears := add(t, g, "Grizzly Bears", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = bears.id}))
+	resolve_all(g)
+	testing.expect(t, bears.zone == .Battlefield && game.player(s, 0).life == 22, "another creature entered: 1 more")
+}

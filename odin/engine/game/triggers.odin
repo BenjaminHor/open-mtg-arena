@@ -210,11 +210,15 @@ spell_matches :: proc(s: ^types.GameState, spell: ^types.GameObject, f: types.Ta
 
 // The objects a trigger watches: itself, or permanents of a kind (and controller).
 subject_filter_supported :: proc(f: types.TargetFilter) -> bool {
-	#partial switch _ in f {
+	#partial switch x in f {
 	case types.TargetFilter_SelfRef:
 		return true
 	case types.TargetFilter_Typed:
 		return filter_supported(f)
+	case types.TargetFilter_Or:
+		// "Whenever this creature or another creature you control enters".
+		for y in x.filters do if !subject_filter_supported(y) do return false
+		return len(x.filters) > 0
 	}
 	return false
 }
@@ -333,26 +337,36 @@ zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.Trigg
 	if origin, has := t.origin.?; has && origin != e.from do return
 	if dest, has := t.destination.?; has && dest != e.to do return
 	subject, _ := t.valid_card.?
-	controller := source.controller
+	controller, matched := zone_change_subject(g, source, t, subject, e, is_self)
+	if !matched do return
+	if !turn_constraint_met(s, t^, controller) do return
+	// CR 603.10a: a leaves-the-battlefield ability looks back at the permanent as it last existed.
+	add_trigger(g, source.id, controller, t, e.lki if is_self && e.from == .Battlefield else nil)
+}
+
+// Whether the moved object is what the trigger watches, and who controls the ability.
+@(private = "file")
+zone_change_subject :: proc(g: ^Game, source: ^types.GameObject, t: ^types.TriggerDefinition, subject: types.TargetFilter, e: Event, is_self: bool) -> (controller: types.PlayerId, matched: bool) {
+	s := &g.state
+	controller = source.controller
 	#partial switch f in subject {
 	case types.TargetFilter_SelfRef:
 		if !is_self do return
 		// The ability works from the zone the object is in now (entering) or was in (dying, leaving).
 		if !has_zone(t.trigger_zones[:], e.to) && !has_zone(t.trigger_zones[:], e.from) do return
 		if e.from == .Battlefield do controller = e.controller
+		return controller, true
 	case types.TargetFilter_Typed:
 		if is_self || source.zone != .Battlefield do return
-		moved := object(s, e.object)
-		// The moved object as it was for the event: its controller then (CR 603.10).
-		as_was := moved^
+		// The moved object as it was for the event (CR 603.10a: one that left, as it last existed on the
+		// battlefield), with its controller then.
+		as_was := e.lki^ if e.lki != nil else object(s, e.object)^
 		as_was.controller = e.controller
-		if !object_matches(s, &as_was, f._0, source.controller, source.id) do return
-	case:
-		return
+		return controller, object_matches(s, &as_was, f._0, source.controller, source.id)
+	case types.TargetFilter_Or:
+		for y in f.filters do if c, ok := zone_change_subject(g, source, t, y, e, is_self); ok do return c, true
 	}
-	if !turn_constraint_met(s, t^, controller) do return
-	// CR 603.10a: a leaves-the-battlefield ability looks back at the permanent as it last existed.
-	add_trigger(g, source.id, controller, t, e.lki if is_self && e.from == .Battlefield else nil)
+	return
 }
 
 turn_constraint_met :: proc(s: ^types.GameState, t: types.TriggerDefinition, controller: types.PlayerId) -> bool {
