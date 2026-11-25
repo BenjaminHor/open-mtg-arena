@@ -87,6 +87,10 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return r.window == .ThisTurn && (player_scope_supported(r.player) || all_players_supported(r.player))
 		case types.QuantityRef_DescendedThisTurn:
 			return true // CR 700.11 (the turn's zone change records)
+		case types.QuantityRef_CardsDiscardedThisTurn:
+			return player_scope_supported(r.player)
+		case types.QuantityRef_SacrificedThisTurn:
+			return player_scope_supported(r.player) && record_filter_supported(r.filter)
 
 		case types.QuantityRef_CardsDrawnThisTurn:
 			return player_scope_supported(r.player)
@@ -280,6 +284,18 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 				return n
 			}
 			return int(player(s, scope_player(s, r.player, controller)).life_lost_this_turn)
+		case types.QuantityRef_CardsDiscardedThisTurn:
+			// CR 701.9a: the cards a player discarded this turn (discard_card).
+			return int(s.cards_discarded_this_turn_by_player[scope_player(s, r.player, controller)] or_else 0)
+		case types.QuantityRef_SacrificedThisTurn:
+			// CR 701.21a: the permanents a player sacrificed this turn, as they last existed.
+			who := scope_player(s, r.player, controller)
+			n := 0
+			for i in 0 ..< types.pvec_len(s.sacrificed_permanents_this_turn) {
+				rec := types.pvec_get(s.sacrificed_permanents_this_turn, i)
+				if rec.controller == who && record_matches(rec, r.filter, who) do n += 1
+			}
+			return n
 		case types.QuantityRef_DescendedThisTurn:
 			// CR 700.11: each permanent card put into your graveyard from anywhere this turn (a token isn't a card).
 			n := 0

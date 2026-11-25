@@ -5071,3 +5071,29 @@ descended_and_life_lost_this_turn :: proc(t: ^testing.T) {
 	most := types.QuantityExpr_Ref{qty = types.QuantityRef_LifeLost{player = types.PlayerScope_AllPlayers{aggregate = .Max}, window = .ThisTurn}}
 	testing.expect(t, game.quantity_value(s, most, 0, 0, 0) == 5)
 }
+
+@(test)
+discarded_and_sacrificed_this_turn :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// "If you discarded a card this turn" (CR 701.9a) and "if you sacrificed a Food this turn" (CR 701.21a): the
+	// turn's own counts, gone when a new turn begins.
+	g := new_game()
+	s := &g.state
+	discarded := types.QuantityExpr_Ref{qty = types.QuantityRef_CardsDiscardedThisTurn{player = types.PlayerScope_Controller{}}}
+	food_filter := types.TargetFilter_Typed{types.TypedFilter{type_filters = make([dynamic]types.TypeFilter)}}
+	append(&food_filter._0.type_filters, types.TypeFilter_Subtype{"Food"})
+	sacrificed := types.QuantityExpr_Ref{qty = types.QuantityRef_SacrificedThisTurn{player = types.PlayerScope_Controller{}, filter = food_filter}}
+	card := add(t, g, "Grizzly Bears", 0, .Hand)
+	game.discard_card(g, card.id)
+	game.move_object(g, add(t, g, "Shock", 0, .Hand).id, .Graveyard) // put there, not discarded
+	testing.expect(t, game.quantity_value(s, discarded, 0, 0, 0) == 1, "one discard")
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	game.sacrifice_permanent(g, bears.id) // not a Food
+	testing.expect(t, game.quantity_value(s, sacrificed, 0, 0, 0) == 0, "no Food yet")
+	food := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	append(&food.card_types.subtypes, "Food")
+	game.sacrifice_permanent(g, food.id)
+	testing.expect(t, game.quantity_value(s, sacrificed, 0, 0, 0) == 1, "a Food sacrificed")
+	game.begin_turn(g, 1)
+	testing.expect(t, game.quantity_value(s, discarded, 0, 0, 0) == 0 && game.quantity_value(s, sacrificed, 0, 0, 0) == 0, "a new turn")
+}

@@ -22,6 +22,8 @@ begin_turn :: proc(g: ^Game, active: types.PlayerId) {
 	s := &g.state
 	end_turn_auto_passes(s, active)
 	clear(&s.triggers_fired_this_turn) // "only once each turn": a new turn
+	clear(&s.cards_discarded_this_turn_by_player)
+	s.sacrificed_permanents_this_turn = {}
 	s.active_player = active
 	s.lands_played_this_turn = 0
 	s.spells_cast_this_turn = 0

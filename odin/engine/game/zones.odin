@@ -162,6 +162,13 @@ sacrifice_permanent :: proc(g: ^Game, id: types.ObjectId) {
 	o := object(&g.state, id)
 	if o == nil || o.zone != .Battlefield do return
 	move_object(g, id, .Graveyard)
+	// "If you sacrificed a permanent this turn": the record, as the permanent last existed (sacrificed by its
+	// controller, CR 701.21a).
+	s := &g.state
+	if n := types.pvec_len(s.zone_changes_this_turn); n > 0 {
+		rec := types.pvec_get(s.zone_changes_this_turn, n - 1)
+		if rec.object_id == id do types.pvec_push(&s.sacrificed_permanents_this_turn, rec, proc(x: types.ZoneChangeRecord) -> types.ZoneChangeRecord {return x})
+	}
 	moved := g.events[len(g.events) - 1]
 	if moved.kind != .Zone_Change || moved.object != id do return
 	moved.kind = .Sacrificed
@@ -175,7 +182,19 @@ pay_with_object :: proc(g: ^Game, id: types.ObjectId) {
 	o := object(&g.state, id)
 	if o != nil && o.zone == .Battlefield do sacrifice_permanent(g, id)
 	else if o != nil && o.zone == .Graveyard do move_object(g, id, .Exile)
+	else if o != nil && o.zone == .Hand do discard_card(g, id)
 	else do move_object(g, id, .Graveyard)
+}
+
+// CR 701.9a: a card is discarded, from its owner's hand to their graveyard; counted for "if you discarded a card
+// this turn".
+discard_card :: proc(g: ^Game, id: types.ObjectId) {
+	s := &g.state
+	o := object(s, id)
+	if o == nil || o.zone != .Hand do return
+	owner := o.owner
+	move_object(g, id, .Graveyard)
+	s.cards_discarded_this_turn_by_player[owner] = (s.cards_discarded_this_turn_by_player[owner] or_else 0) + 1
 }
 
 // The zone changes of the turn, each with the object as it was (CR 603.10, 608.2h): "if a creature died this turn".

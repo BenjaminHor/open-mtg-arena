@@ -412,13 +412,13 @@ start_discard :: proc(g: ^Game, p: types.PlayerId, n: int, random: bool, source:
 	hand := ids_of(player(s, p).hand)
 	if n <= 0 || len(hand) == 0 do return false
 	if len(hand) <= n {
-		for id in hand do move_object(g, id, .Graveyard)
+		for id in hand do discard_card(g, id)
 		return false
 	}
 	if random {
 		for _ in 0 ..< n {
 			cards := ids_of(player(s, p).hand)
-			move_object(g, cards[choose_index(g, len(cards))], .Graveyard)
+			discard_card(g, cards[choose_index(g, len(cards))])
 		}
 		return false
 	}
@@ -436,7 +436,7 @@ answer_discard :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_DiscardC
 		for c in w.cards do if c == id do found = true
 		if !found do return false
 	}
-	for id in chosen do move_object(g, id, .Graveyard)
+	for id in chosen do discard_card(g, id)
 	g.state.waiting_for = nil
 	if continue_resolution(g) do after_resolution(g)
 	return true

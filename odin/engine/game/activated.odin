@@ -407,7 +407,7 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 		case types.AbilityCost_Sacrifice:
 			if is_self(x._0.target) do sacrifice_permanent(g, source)
 		case types.AbilityCost_Discard:
-			if x.self_scope == .SourceCard do move_object(g, source, .Graveyard) // "discard this card" (CR 702.29a)
+			if x.self_scope == .SourceCard do discard_card(g, source) // "discard this card" (CR 702.29a)
 		case types.AbilityCost_Exile:
 			if f, has := x.filter.?; has && is_self(f) do move_object(g, source, .Exile) // "exile this card from your graveyard" (CR 701.13a)
 		}
