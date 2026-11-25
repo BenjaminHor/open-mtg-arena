@@ -2864,6 +2864,10 @@ Progress:
   Putting counters is now an event ("whenever one or more +1/+1 counters are put on this"). Triggers are now
   collected before state-based actions each time (CR 603.2), so an event's triggers see the board as it was. Read
   ahead (CR 702.155) is refused. Most Sagas still wait on their chapter effects; the gap ranking shows which.
+- Reflexive triggers (-> 5,116): "you may X. When you do, Y" makes Y a triggered ability of its own (CR 603.12),
+  its targets chosen as it goes on the stack, not with X's. Read after a "you may" only; found again from the
+  source's own definition as it resolves. The card gaps now name the missing effect for every trigger kind the
+  engine handles, not just "trigger:<kind>".
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

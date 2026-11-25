@@ -111,8 +111,25 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	if moves_found_cards(a.effect^) && !after_search do return false
 	_, targets := effect_target(a.effect^)
 	_, searches := a.effect^.(types.Effect_SearchLibrary)
+	if a.sub_ability != nil && is_reflexive(a.sub_ability) {
+		// CR 603.12: "You may X. When you do, Y": Y is a triggered ability of its own, with its own targets. Read
+		// after a "you may" only, and as the last part of the ability (what follows it belongs to it).
+		if !a.optional do return false
+		for y := a.sub_ability.sub_ability; y != nil; y = y.sub_ability do if y.sub_link == .SequentialSibling do return false
+		reflex := a.sub_ability^
+		reflex.condition = nil
+		return ability_supported(reflex)
+	}
 	if a.sub_ability != nil do return ability_supported(a.sub_ability^, after_target || targets, after_search || searches)
 	return true
+}
+
+// "When you do, ...": a reflexive triggered ability (CR 603.12), created as the ability resolves.
+is_reflexive :: proc(a: ^types.AbilityDefinition) -> bool {
+	c, has := a.condition.?
+	if !has do return false
+	_, when_you_do := c.(types.AbilityCondition_WhenYouDo)
+	return when_you_do
 }
 
 effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bool {
@@ -990,7 +1007,10 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 		// For a kind of trigger the engine handles, what's missing is its effect or a condition on it.
 		#partial switch _ in t.mode {
 		case types.TriggerMode_ChangesZone, types.TriggerMode_Phase, types.TriggerMode_Attacks, types.TriggerMode_YouAttack,
-		     types.TriggerMode_SpellCast, types.TriggerMode_DamageDone, types.TriggerMode_DamageDoneOnceByController:
+		     types.TriggerMode_SpellCast, types.TriggerMode_DamageDone, types.TriggerMode_DamageDoneOnceByController,
+		     types.TriggerMode_EntersOrAttacks, types.TriggerMode_LeavesBattlefield, types.TriggerMode_Taps,
+		     types.TriggerMode_LifeGained, types.TriggerMode_Drawn, types.TriggerMode_DamageReceived,
+		     types.TriggerMode_Sacrificed, types.TriggerMode_CounterAdded:
 			event_amount_defined = trigger_has_amount(t)
 			if t.execute != nil && !ability_supported(t.execute^) do ability_gaps(&out, t.execute^, "trigger")
 			else do append(&out, name("trigger condition:", t.mode))

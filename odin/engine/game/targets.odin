@@ -25,6 +25,7 @@ slot_list :: proc(a: ^types.AbilityDefinition) -> [dynamic]Target_Slot {
 	out := make([dynamic]Target_Slot, context.temp_allocator)
 	group := 0
 	for x := a; x != nil; x = x.sub_ability {
+		if x != a && is_reflexive(x) do break // its targets are chosen when it triggers (CR 603.12)
 		if x.effect == nil do continue
 		f, ok := effect_target(x.effect^)
 		if !ok do continue

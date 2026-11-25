@@ -2,6 +2,7 @@
 // player to choose (scry, surveil); the resolution pauses there and continues once they answer.
 package game
 
+import "core:reflect"
 import "core:slice"
 import rng "../rng"
 import types "../types"
@@ -33,7 +34,9 @@ Resolution :: struct {
 resolved_tree :: proc(s: ^types.GameState, a: ^types.AbilityDefinition, targets: []types.TargetRef, counts: []int, controller: types.PlayerId, source: types.ObjectId) -> ^types.ResolvedAbility {
 	top, prev: ^types.ResolvedAbility
 	next, k := 0, 0
+	reflexive := false // past a "when you do": its targets come when it triggers (CR 603.12)
 	for x := a; x != nil; x = x.sub_ability {
+		if x != a && is_reflexive(x) do reflexive = true
 		node := new(types.ResolvedAbility)
 		node.source_id = source
 		node.controller = controller
@@ -47,7 +50,7 @@ resolved_tree :: proc(s: ^types.GameState, a: ^types.AbilityDefinition, targets:
 		node.optional = x.optional
 		node.multi_target = x.multi_target
 		node.player_scope = x.player_scope
-		if x.effect != nil {
+		if x.effect != nil && !reflexive {
 			if _, targets_one := effect_target(x.effect^); targets_one {
 				n := counts[k] if k < len(counts) else 1
 				k += 1
@@ -104,6 +107,14 @@ continue_resolution :: proc(g: ^Game) -> bool {
 	for r.next != nil {
 		x := r.next
 		r.next = x.sub_ability
+		if c, has := x.condition.?; has {
+			if _, when_you_do := c.(types.AbilityCondition_WhenYouDo); when_you_do {
+				// CR 603.12: "when you do" triggers if the "you may" before it was done; the rest is that ability's.
+				if r.performed do reflexive_trigger(g, x)
+				r.next = nil
+				continue
+			}
+		}
 		affected := make([dynamic]Maybe(types.TargetRef), context.temp_allocator)
 		if _, targets_one := effect_target(x.effect); targets_one {
 			clear(&r.last_targets)
@@ -444,4 +455,29 @@ optional_possible :: proc(g: ^Game, x: ^types.ResolvedAbility, controller: types
 		return false
 	}
 	return true
+}
+
+// Creates the reflexive triggered ability "when you do, ..." (CR 603.12) from the source's own definition of it: it
+// waits with the other triggered abilities and goes on the stack, its targets chosen then, the next time a player
+// would receive priority (CR 603.3).
+@(private = "file")
+reflexive_trigger :: proc(g: ^Game, x: ^types.ResolvedAbility) {
+	r := &g.resolution
+	o := object(&g.state, r.source)
+	if o == nil do return
+	found: ^types.AbilityDefinition
+	look :: proc(a: ^types.AbilityDefinition, x: ^types.ResolvedAbility, found: ^^types.AbilityDefinition) {
+		for y := a; y != nil && found^ == nil; y = y.sub_ability {
+			if y.effect != nil && is_reflexive(y) && reflect.union_variant_typeid(y.effect^) == reflect.union_variant_typeid(x.effect) do found^ = y
+		}
+	}
+	if o.abilities != nil do for &a in o.abilities^ do look(&a, x, &found)
+	for &entry in trigger_definitions(o) do if entry.definition.execute != nil do look(entry.definition.execute, x, &found)
+	if found == nil do return
+	execute := new(types.AbilityDefinition)
+	execute^ = found^
+	execute.condition = nil
+	t := new(types.TriggerDefinition)
+	t.execute = execute
+	add_trigger(g, r.source, r.controller, t)
 }

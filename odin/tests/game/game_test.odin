@@ -2357,3 +2357,47 @@ saga_chapters :: proc(t: ^testing.T) {
 	k := knights(s)
 	testing.expect(t, len(k) == 2 && k[0].power.? == 4 && k[0].toughness.? == 3, "Knights get +2/+1")
 }
+
+@(test)
+when_you_do :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 603.12: "you may X. When you do, Y": Y is a reflexive triggered ability, created if X was done, with its
+	// target chosen as it goes on the stack, not with the first ability's. Cavalier of Night: "When this creature
+	// enters, you may sacrifice another creature. When you do, destroy target creature an opponent controls."
+	run :: proc(t: ^testing.T, accept: bool) {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 5 do add(t, g, "Swamp", 0, .Battlefield)
+		cavalier := add(t, g, "Cavalier of Night", 0, .Hand)
+		mine := add(t, g, "Grizzly Bears", 0, .Battlefield)
+		theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = cavalier.id}))
+		reflexive_on_stack := false
+		for _ in 0 ..< 12 {
+			#partial switch w in s.waiting_for {
+			case types.WaitingFor_OptionalEffectChoice:
+				testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalEffect{accept = accept}))
+				if accept {
+					testing.expect(t, mine.zone == .Graveyard, "sacrificed")
+					testing.expect(t, theirs.zone == .Battlefield, "not yet destroyed: the reflexive ability goes on the stack first")
+					reflexive_on_stack = types.pvec_len(s.stack) == 1
+				}
+				continue
+			case types.WaitingFor_Priority:
+				if types.pvec_len(s.stack) == 0 do break
+				game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+				continue
+			}
+			break
+		}
+		if accept {
+			testing.expect(t, reflexive_on_stack, "the reflexive ability waited on the stack")
+			testing.expect(t, theirs.zone == .Graveyard, "then destroyed the opponent's creature")
+		} else {
+			testing.expect(t, mine.zone == .Battlefield && theirs.zone == .Battlefield, "declined: nothing happens")
+		}
+	}
+	testing.expect(t, game.card_supported(&card(t, "Cavalier of Night").face))
+	run(t, true)
+	run(t, false)
+}

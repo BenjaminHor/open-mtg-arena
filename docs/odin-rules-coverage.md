@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 255 of 2880 rules implemented (9%), 105 of them tested.**
+**In scope (100-799): 256 of 2880 rules implemented (9%), 106 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -92,7 +92,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 514 cleanup step | 4 | 3 (75%) | 2 |
 | 601 casting spells | 27 | 10 (37%) | 7 |
 | 602 activating activated abilities | 19 | 4 (21%) | 2 |
-| 603 handling triggered abilities | 47 | 12 (26%) | 5 |
+| 603 handling triggered abilities | 47 | 13 (28%) | 6 |
 | 604 handling static abilities | 8 | 2 (25%) | 1 |
 | 605 mana abilities | 13 | 4 (31%) | 2 |
 | 606 loyalty abilities | 6 | 0 (0%) | 0 |
@@ -1449,7 +1449,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - 🟡 602.5d Activated abilities that read “Activate only as a sorcery” mean the player must follow the timing rules for...
 - ⬜ 602.5e Activated abilities that read “Activate only as an instant” mean the player must follow the timing rules fo...
 
-### 603 handling triggered abilities (12/47)
+### 603 handling triggered abilities (13/47)
 
 - ⬜ 603.1 Triggered abilities have a trigger condition and an effect. They are written as “[When/Whenever/At] [trigge...
 - ⬜ 603.1a A triggered ability may include instructions after its effects that limit what the ability may target or st...
@@ -1496,7 +1496,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 603.10f Abilities that trigger when a player loses the game look back in time.
 - ⬜ 603.10g Abilities that trigger when a player planeswalks away from a plane look back in time.
 - ⬜ 603.11 Some objects have a static ability that’s linked to one or more triggered abilities. (See rule 607, “Linked...
-- ⬜ 603.12 A resolving spell or ability may allow or instruct a player to take an action and create a triggered abilit...
+- ✅ 603.12 A resolving spell or ability may allow or instruct a player to take an action and create a triggered abilit...
 - ⬜ 603.12a Normally, if the trigger event or events occur multiple times during the resolution of the spell or ability...
 
 ### 604 handling static abilities (2/8)
