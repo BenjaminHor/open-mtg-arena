@@ -1878,6 +1878,9 @@ record_spell_cast :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.Game
 	if s.spells_cast_this_turn_by_player == nil do s.spells_cast_this_turn_by_player = make(map[types.PlayerId]types.PVec(types.SpellCastRecord))
 	list := s.spells_cast_this_turn_by_player[p]
 	rec := types.SpellCastRecord{name = o.name, mana_value = u32(object_mana_value(o)), spell_object_id = o.id, from_zone = from}
+	// Its types as cast, for "instant and sorcery spells you've cast this turn" (quantities.odin).
+	append(&rec.core_types, ..o.card_types.core_types[:])
+	append(&rec.subtypes, ..o.card_types.subtypes[:])
 	types.pvec_push(&list, rec, proc(x: types.SpellCastRecord) -> types.SpellCastRecord {return x})
 	s.spells_cast_this_turn_by_player[p] = list
 }

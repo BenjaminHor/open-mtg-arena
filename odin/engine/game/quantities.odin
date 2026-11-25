@@ -111,7 +111,8 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return r.filter == nil && (r.scope == .Controller || r.scope == .All || r.scope == .Opponents)
 		case types.QuantityRef_SpellsCast:
 			// "The number of spells you've cast this turn": any spell, this turn only.
-			return r.filter == nil && r.window == .ThisTurn && (r.scope == .Controller || r.scope == .All || r.scope == .Opponents)
+			filter_ok := r.filter == nil || spell_record_filter_supported(r.filter.?)
+			return filter_ok && r.window == .ThisTurn && (r.scope == .Controller || r.scope == .All || r.scope == .Opponents)
 		case types.QuantityRef_LifeGainedThisTurn:
 			return player_scope_supported(r.player)
 		case types.QuantityRef_LifeLost:
@@ -340,7 +341,14 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 				case r.scope == .Controller && p.id != controller, r.scope == .Opponents && p.id == controller:
 					continue
 				}
-				n += spells_cast_this_turn_by(s, p.id)
+				f, filtered := r.filter.?
+				if !filtered {
+					n += spells_cast_this_turn_by(s, p.id)
+					continue
+				}
+				if list, ok := s.spells_cast_this_turn_by_player[p.id]; ok {
+					for i in 0 ..< types.pvec_len(list) do if spell_record_matches(types.pvec_get(list, i), f) do n += 1
+				}
 			}
 			return n
 		case types.QuantityRef_LifeGainedThisTurn:
@@ -598,29 +606,66 @@ record_type_supported :: proc(t: types.TypeFilter) -> bool {
 
 @(private = "file")
 record_matches_type :: proc(r: types.ZoneChangeRecord, t: types.TypeFilter) -> bool {
-	has :: proc(r: types.ZoneChangeRecord, c: types.CoreType) -> bool {
-		for x in r.core_types do if x == c do return true
+	return types_match(r.core_types[:], r.subtypes[:], t)
+}
+
+// Whether card types and subtypes as recorded (a zone change, a spell cast) fit one type in a filter.
+types_match :: proc(core: []types.CoreType, subtypes: []string, t: types.TypeFilter) -> bool {
+	has :: proc(core: []types.CoreType, c: types.CoreType) -> bool {
+		for x in core do if x == c do return true
 		return false
 	}
 	#partial switch x in t {
 	case types.TypeFilter_Creature:
-		return has(r, .Creature)
+		return has(core, .Creature)
 	case types.TypeFilter_Land:
-		return has(r, .Land)
+		return has(core, .Land)
 	case types.TypeFilter_Artifact:
-		return has(r, .Artifact)
+		return has(core, .Artifact)
 	case types.TypeFilter_Enchantment:
-		return has(r, .Enchantment)
+		return has(core, .Enchantment)
 	case types.TypeFilter_Planeswalker:
-		return has(r, .Planeswalker)
+		return has(core, .Planeswalker)
 	case types.TypeFilter_Instant:
-		return has(r, .Instant)
+		return has(core, .Instant)
 	case types.TypeFilter_Sorcery:
-		return has(r, .Sorcery)
+		return has(core, .Sorcery)
 	case types.TypeFilter_Permanent:
-		return !has(r, .Instant) && !has(r, .Sorcery)
+		return !has(core, .Instant) && !has(core, .Sorcery)
 	case types.TypeFilter_Subtype:
-		for st in r.subtypes do if st == x._0 do return true
+		for st in subtypes do if st == x._0 do return true
+	case types.TypeFilter_Non:
+		return x._0 != nil && !types_match(core, subtypes, x._0^)
+	}
+	return false
+}
+
+// "The number of instant and sorcery spells you've cast this turn": filters of card types (or "non-" types) only,
+// or several such ("instant or sorcery"), matched against the turn's spell records.
+spell_record_filter_supported :: proc(f: types.TargetFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Typed:
+		if len(x._0.properties) > 0 || x._0.controller != nil || len(x._0.type_filters) == 0 do return false
+		for t in x._0.type_filters {
+			if n, is_non := t.(types.TypeFilter_Non); is_non {
+				if n._0 == nil || !record_type_supported(n._0^) do return false
+			} else if !record_type_supported(t) do return false
+		}
+		return true
+	case types.TargetFilter_Or:
+		for y in x.filters do if !spell_record_filter_supported(y) do return false
+		return len(x.filters) > 0
+	}
+	return false
+}
+
+spell_record_matches :: proc(rec: types.SpellCastRecord, f: types.TargetFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Typed:
+		for t in x._0.type_filters do if !types_match(rec.core_types[:], rec.subtypes[:], t) do return false
+		return true
+	case types.TargetFilter_Or:
+		for y in x.filters do if spell_record_matches(rec, y) do return true
 	}
 	return false
 }

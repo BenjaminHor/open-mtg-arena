@@ -5749,3 +5749,33 @@ any_number_of_targets :: proc(t: ^testing.T) {
 	// The spell left the hand; two permanents came back; two cards drawn for them.
 	testing.expect_value(t, types.pvec_len(s.players[0].hand), hand_before - 1 + 2 + 2)
 }
+
+// "The number of instant and sorcery spells you've cast this turn": spells as they were cast (CR 601.2i), counted
+// by their card types from the turn's records.
+@(test)
+spells_cast_this_turn_of_a_type :: proc(t: ^testing.T) {
+	if !load_db() do return
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Mountain", 0, .Battlefield)
+	add(t, g, "Forest", 0, .Battlefield)
+	add(t, g, "Forest", 0, .Battlefield)
+	shock := add(t, g, "Shock", 0, .Hand)
+	bears := add(t, g, "Grizzly Bears", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	settle_stack(g)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = bears.id}))
+	settle_stack(g)
+	instant := types.TargetFilter_Typed{}
+	append(&instant._0.type_filters, types.TypeFilter_Instant{})
+	sorcery := types.TargetFilter_Typed{}
+	append(&sorcery._0.type_filters, types.TypeFilter_Sorcery{})
+	either := types.TargetFilter_Or{}
+	append(&either.filters, types.TargetFilter(instant), types.TargetFilter(sorcery))
+	q := types.QuantityExpr(types.QuantityExpr_Ref{qty = types.QuantityRef_SpellsCast{scope = .Controller, filter = types.TargetFilter(either), window = .ThisTurn}})
+	testing.expect(t, game.quantity_supported(q))
+	testing.expect_value(t, game.quantity_value(s, q, 0, 0, 0), 1)
+	all := types.QuantityExpr(types.QuantityExpr_Ref{qty = types.QuantityRef_SpellsCast{scope = .Controller, window = .ThisTurn}})
+	testing.expect_value(t, game.quantity_value(s, all, 0, 0, 0), 2)
+}
