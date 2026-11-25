@@ -1868,6 +1868,9 @@ additional_cost_supported :: proc(face: ^types.CardFace) -> bool {
 		case types.AbilityCost_Discard:
 			if x.self_scope == .SourceCard do return false
 		case types.AbilityCost_PayLife:
+		case types.AbilityCost_Exile:
+			// "Exile a creature card from your graveyard": chosen as the spell is cast (object_cost_of).
+			if f, has := x.filter.?; has && is_self(f) do return false
 		case:
 			return false // mana, tapping: not as a spell's additional cost here
 		}

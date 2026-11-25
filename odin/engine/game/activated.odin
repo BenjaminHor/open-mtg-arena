@@ -131,7 +131,8 @@ cost_supported :: proc(c: types.AbilityCost) -> bool {
 		// "Exile this card from your graveyard", or "exile N [kind of] cards from your graveyard" (chosen).
 		f, has := x.filter.?
 		zone, has_zone := x.zone.?
-		if !has || !has_zone || zone != .Graveyard do return false
+		if !has_zone || zone != .Graveyard do return false
+		if !has do return x.count >= 1 && x.count <= 10 // "exile a card from your graveyard": any card
 		if is_self(f) do return x.count == 1
 		typed, ok := f.(types.TargetFilter_Typed)
 		if !ok || x.count < 1 || x.count > 10 do return false
@@ -154,7 +155,7 @@ cost_supported :: proc(c: types.AbilityCost) -> bool {
 			case types.AbilityCost_Discard:
 				if y.self_scope != .SourceCard do chosen += 1
 			case types.AbilityCost_Exile:
-				if f, has := y.filter.?; has && !is_self(f) do chosen += 1
+				if f, has := y.filter.?; !has || !is_self(f) do chosen += 1
 			}
 		}
 		return chosen <= 1
@@ -223,13 +224,22 @@ object_cost_of :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObj
 			for perm in permanents_of(s, p) do if sacrifice_filter_matches(s, x._0.target, perm, p, o.id) do append(&c.choices, perm.id)
 			return c, true
 		case types.AbilityCost_Exile:
-			if f, has := x.filter.?; !has || is_self(f) do continue // "exile this card": no choice
-			// "Exile a creature card from your graveyard": the player's own graveyard (CR 404.1), the source excluded.
+			if f, has := x.filter.?; has && is_self(f) do continue // "exile this card": no choice
+			zone, has_zone := x.zone.?
+			if !has_zone || zone != .Graveyard do continue
+			// "Exile a [creature] card from your graveyard": the player's own graveyard (CR 404.1), the source excluded.
 			c := Object_Cost{kind = .Exile_From_Graveyard, count = int(x.count)}
 			c.choices = make([dynamic]types.ObjectId, context.temp_allocator)
-			f := x.filter.?.(types.TargetFilter_Typed)._0
-			f.controller = nil
-			for id in ids_of(player(s, p).graveyard) do if id != o.id && object_matches(s, object(s, id), f, p, o.id) do append(&c.choices, id)
+			typed, has_filter := x.filter.?
+			for id in ids_of(player(s, p).graveyard) {
+				if id == o.id do continue
+				if has_filter {
+					f := typed.(types.TargetFilter_Typed)._0
+					f.controller = nil
+					if !object_matches(s, object(s, id), f, p, o.id) do continue
+				}
+				append(&c.choices, id)
+			}
 			return c, true
 		case types.AbilityCost_Discard:
 			if x.self_scope == .SourceCard do continue // the card itself: no choice

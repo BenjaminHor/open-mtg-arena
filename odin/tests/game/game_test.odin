@@ -5221,3 +5221,28 @@ put_on_top_or_bottom_of_library :: proc(t: ^testing.T) {
 	lib2 := s2.players[0].library
 	testing.expect(t, types.pvec_get(lib2, types.pvec_len(lib2) - 1) == goblin.id, "the Goblin on top")
 }
+
+@(test)
+exile_from_graveyard_as_a_spells_additional_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Cobbled Lancer: "As an additional cost to cast this spell, exile a creature card from your graveyard." CR
+	// 601.2b, 601.2h: chosen and paid as it's cast; with no creature card there, it can't be cast.
+	testing.expect(t, game.card_supported(&card(t, "Cobbled Lancer").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Island", 0, .Battlefield)
+	lancer := add(t, g, "Cobbled Lancer", 0, .Hand)
+	add(t, g, "Shock", 0, .Graveyard)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_CastSpell{object_id = lancer.id}), "no creature card to exile")
+	bears := add(t, g, "Grizzly Bears", 0, .Graveyard)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = lancer.id}))
+	if w, asked := s.waiting_for.(types.WaitingFor_PayCost); asked {
+		testing.expectf(t, len(w.choices) == 1 && w.choices[0] == bears.id, "only the creature card: %v", w.choices)
+		pick := make([dynamic]types.ObjectId)
+		append(&pick, bears.id)
+		testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = pick}))
+	}
+	testing.expect(t, bears.zone == .Exile, "exiled as the cost")
+	settle_stack(g)
+	testing.expect(t, lancer.zone == .Battlefield, "the Lancer resolves")
+}

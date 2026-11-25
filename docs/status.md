@@ -3110,6 +3110,9 @@ Progress:
 - "Put [target permanent / target card in a graveyard / it / this / the card the search found] on the top or the
   bottom of its owner's library" (library_position.odin; CR 401.1). Not yet: Brainstorm's cards from hand, "Nth
   from the top", an arranger. 7,371 -> 7,428.
+- "Exile a card from your graveyard" (any card) as a cost, and as a spell's additional cost (CR 601.2h). 7,428 ->
+  7,436.
+- Fixture replay at 8fbd5e6 (frozen engine, all 11,160): 807 pass (792 at 8a539ae), 7 too large, the rest fail.
 - The app on the Odin engine, played by Playwright (Standard, random decks, the human only keeping, passing to end of
   turn and discarding): a whole game to the AI's win, no engine errors (scratchpad pw/play.cjs). Known: the game log
   panel is empty on the Odin engine (no log entries returned), and the home page's Card Coverage Dashboard reads
