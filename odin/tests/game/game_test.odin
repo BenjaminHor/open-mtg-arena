@@ -4137,3 +4137,29 @@ modal_double_faced_cards :: proc(t: ^testing.T) {
 	testing.expect(t, warrior.zone == .Battlefield && warrior.name == "Akoum Teeth" && warrior.tapped, "Akoum Teeth, entering tapped")
 	testing.expect(t, s.players[0].lands_played_this_turn == 1, "the turn's land")
 }
+
+@(test)
+affinity_devoid_and_toxic :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.41a: Frogmite ({4}), affinity for artifacts: {1} less for each artifact you control.
+	testing.expect(t, game.card_supported(&card(t, "Frogmite").face))
+	g := new_game()
+	s := &g.state
+	frogmite := add(t, g, "Frogmite", 0, .Hand)
+	for _ in 0 ..< 3 do add(t, g, "Ornithopter", 0, .Battlefield)
+	testing.expect(t, !game.castable(s, 0, frogmite, g.card_db), "three artifacts: {1} still to pay")
+	add(t, g, "Ornithopter", 0, .Battlefield)
+	testing.expect(t, game.castable(s, 0, frogmite, g.card_db), "four artifacts: free")
+	add(t, g, "Ornithopter", 1, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = frogmite.id}))
+
+	// CR 702.114a: Eldrazi Devastator has devoid: colorless, though its mana cost is {8}.
+	devastator := add(t, g, "Eldrazi Devastator", 0, .Hand)
+	testing.expect(t, len(devastator.color) == 0, "colorless")
+
+	// CR 702.164c: combat damage to a player from a creature with toxic 1 also gives a poison counter.
+	sentry := add(t, g, "Annex Sentry", 0, .Battlefield)
+	game.deal_damage(g, sentry.id, types.TargetRef_Player{1}, 1, combat = true)
+	game.deal_damage(g, sentry.id, types.TargetRef_Player{1}, 1)
+	testing.expect(t, s.players[1].poison_counters == 1, "one poison counter, from the combat damage only")
+}

@@ -81,12 +81,15 @@ keyword_supported :: proc(k: types.Keyword) -> bool {
 	     types.Keyword_Defender, types.Keyword_Trample, types.Keyword_Lifelink, types.Keyword_Deathtouch,
 	     types.Keyword_FirstStrike, types.Keyword_DoubleStrike, types.Keyword_Flash, types.Keyword_Menace,
 	     types.Keyword_Indestructible, types.Keyword_Hexproof, types.Keyword_Shroud, types.Keyword_Prowess,
-	     types.Keyword_Convoke: // CR 702.51a: paying with creatures (mana.odin)
+	     types.Keyword_Convoke, // CR 702.51a: paying with creatures (mana.odin)
+	     types.Keyword_Changeling, types.Keyword_Devoid, types.Keyword_Toxic: // CR 702.73a, 702.114a, 702.164c
 		return true
 	case types.Keyword_Crew:
 		return k.once_per_turn == nil // CR 702.122 (crew.odin)
 	case types.Keyword_Ward:
 		return ward_supported(k) // ward.odin
+	case types.Keyword_Affinity:
+		return typed_supported(k._0) // CR 702.41a (cost_modifiers.odin)
 	case types.Keyword_Enchant:
 		// CR 702.5a: an Aura enchants a permanent of a kind (enchanting players isn't modelled yet).
 		t, typed := k._0.(types.TargetFilter_Typed)
@@ -1250,6 +1253,13 @@ deal_damage :: proc(g: ^Game, source: types.ObjectId, target: types.TargetRef, n
 	switch t in target {
 	case types.TargetRef_Player:
 		lose_life(s, t._0, n)
+		if combat && src != nil {
+			// CR 702.164c: combat damage to a player from a creature with toxic also gives poison counters equal to
+			// its total toxic value (702.164b).
+			toxic: u32 = 0
+			for k in src.keywords do if x, is_toxic := k.(types.Keyword_Toxic); is_toxic do toxic += x._0
+			if toxic > 0 do player(s, t._0).poison_counters += toxic
+		}
 	case types.TargetRef_Object:
 		o := object(s, t._0)
 		if is_type(o, .Creature) {

@@ -111,6 +111,13 @@ cost_change :: proc(s: ^types.GameState, p: types.PlayerId, spell: ^types.GameOb
 		if q, has := m.dynamic_count.?; has do n *= quantity_value(s, types.QuantityExpr_Ref{q}, source.controller, source.id, 0)
 		return n if m.mode == .Raise else -n
 	}
+	// CR 702.41a: affinity for [something], "this spell costs {1} less to cast for each [something] you control",
+	// each instance (702.41b).
+	for k in spell.keywords {
+		a, is_affinity := k.(types.Keyword_Affinity)
+		if !is_affinity do continue
+		for o in permanents_of(s, p) do if object_matches(s, o, a._0, p, spell.id) do change -= 1
+	}
 	// The spell's own "this spell costs ...".
 	if spell.static_definitions != nil {
 		for &st in spell.static_definitions^ {

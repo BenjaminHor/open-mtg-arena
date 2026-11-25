@@ -155,6 +155,8 @@ set_card_characteristics :: proc(o: ^types.GameObject, face: ^types.CardFace) {
 	o.mana_cost = face.mana_cost
 	o.keywords = slice.clone_to_dynamic(face.keywords[:])
 	o.color = object_colors(face)
+	// CR 702.114a: devoid, "this object is colorless", a characteristic-defining ability that works everywhere.
+	for k in face.keywords do if _, devoid := k.(types.Keyword_Devoid); devoid do clear(&o.color)
 	o.power = pt_value(face.power)
 	o.toughness = pt_value(face.toughness)
 	o.layer_base_power = o.power

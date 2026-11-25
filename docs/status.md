@@ -3028,6 +3028,9 @@ Progress:
   face (WaitingFor_ModalFaceChoice / ChooseModalFace, the client's dialog), asked only when both faces can be used;
   the chosen face is up on the stack and battlefield (712.6e, modal_back_face) and the front face everywhere else
   (712.6a). The AI picks the front face, and doesn't yet play a spell's land back as its land drop. 6,495 -> 6,534.
+- Keywords: affinity (CR 702.41a, a cost reduction per permanent you control that fits), devoid (702.114a,
+  colorless everywhere), changeling as a keyword (702.73a, every creature type; the static form "is every creature
+  type" not yet), toxic (702.164c, poison counters with combat damage to a player). 6,534 -> 6,600.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
