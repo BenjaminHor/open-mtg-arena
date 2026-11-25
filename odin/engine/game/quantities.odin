@@ -84,7 +84,10 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 		case types.QuantityRef_LifeGainedThisTurn:
 			return player_scope_supported(r.player)
 		case types.QuantityRef_LifeLost:
-			return r.window == .ThisTurn && player_scope_supported(r.player)
+			return r.window == .ThisTurn && (player_scope_supported(r.player) || all_players_supported(r.player))
+		case types.QuantityRef_DescendedThisTurn:
+			return true // CR 700.11 (the turn's zone change records)
+
 		case types.QuantityRef_CardsDrawnThisTurn:
 			return player_scope_supported(r.player)
 		case types.QuantityRef_SelfManaValue:
@@ -113,18 +116,8 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			_, you := r.controller.(types.ControllerRef_You)
 			return you
 		case types.QuantityRef_ZoneChangeCountThisTurn:
-			// The record keeps types and controller, so the filter may ask only about those.
-			t, typed := r.filter.(types.TargetFilter_Typed)
-			if !typed || len(t._0.properties) > 0 do return false
-			if c, has := t._0.controller.?; has {
-				#partial switch _ in c {
-				case types.ControllerRef_You, types.ControllerRef_Opponent:
-				case:
-					return false
-				}
-			}
-			for tf in t._0.type_filters do if !record_type_supported(tf) do return false
-			return true
+			// The record keeps types, controller and whether it was a token, so the filter may ask only about those.
+			return record_filter_supported(r.filter)
 		case types.QuantityRef_ZoneCardCount:
 			if r.filter != nil do return false
 			#partial switch r.scope {
@@ -272,8 +265,30 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			// CR 119.3: the life a player gained this turn, counted on its own (a separate tally from life lost).
 			return int(player(s, scope_player(s, r.player, controller)).life_gained_this_turn)
 		case types.QuantityRef_LifeLost:
-			// Life lost this turn: from damage (CR 119.2), effects (119.3) and paying life (119.4).
+			// Life lost this turn: from damage (CR 119.2), effects (119.3) and paying life (119.4). "A player lost 4
+			// or more life": the most any player lost.
+			if all, is_all := r.player.(types.PlayerScope_AllPlayers); is_all {
+				n := 0
+				for p, i in s.players {
+					v := int(p.life_lost_this_turn)
+					switch all.aggregate {
+					case .Sum: n += v
+					case .Max: n = max(n, v)
+					case .Min: n = v if i == 0 else min(n, v)
+					}
+				}
+				return n
+			}
 			return int(player(s, scope_player(s, r.player, controller)).life_lost_this_turn)
+		case types.QuantityRef_DescendedThisTurn:
+			// CR 700.11: each permanent card put into your graveyard from anywhere this turn (a token isn't a card).
+			n := 0
+			for i in 0 ..< types.pvec_len(s.zone_changes_this_turn) {
+				rec := types.pvec_get(s.zone_changes_this_turn, i)
+				if rec.to_zone == .Graveyard && rec.owner == controller && !rec.is_token && record_matches_type(rec, types.TypeFilter_Permanent{}) do n += 1
+			}
+			return n
+
 		case types.QuantityRef_CardsDrawnThisTurn:
 			// CR 121.1: the cards a player drew this turn.
 			return int(player(s, scope_player(s, r.player, controller)).cards_drawn_this_turn)
@@ -357,19 +372,12 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			return n
 		case types.QuantityRef_ZoneChangeCountThisTurn:
 			// "If a creature died this turn" (CR 700.4: dies means put into a graveyard from the battlefield).
-			t := r.filter.(types.TargetFilter_Typed)._0
 			n := 0
 			for i in 0 ..< types.pvec_len(s.zone_changes_this_turn) {
 				rec := types.pvec_get(s.zone_changes_this_turn, i)
 				if from, has := r.from.?; has && rec.from_zone != from do continue
 				if to, has := r.to.?; has && rec.to_zone != to do continue
-				if c, has := t.controller.?; has {
-					_, you := c.(types.ControllerRef_You)
-					if (rec.controller == controller) != you do continue
-				}
-				fits := true
-				for tf in t.type_filters do if !record_matches_type(rec, tf) do fits = false
-				if fits do n += 1
+				if record_matches(rec, r.filter, controller) do n += 1
 			}
 			return n
 		case types.QuantityRef_ZoneCardCount:
@@ -676,4 +684,72 @@ party_size :: proc(s: ^types.GameState, p: types.PlayerId) -> int {
 	}
 	fill(creatures[:], used, 0, 0, &best)
 	return best
+}
+
+all_players_supported :: proc(p: types.PlayerScope) -> bool {
+	all, ok := p.(types.PlayerScope_AllPlayers)
+	return ok && all.exclude == nil
+}
+
+// The filters a zone change record can be matched against: card types and subtypes, whose ("you control" / "an
+// opponent controls", as it last existed), token or not.
+record_filter_supported :: proc(f: types.TargetFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Typed:
+		for tf in x._0.type_filters {
+			#partial switch _ in tf {
+			case types.TypeFilter_Creature, types.TypeFilter_Land, types.TypeFilter_Artifact, types.TypeFilter_Enchantment,
+			     types.TypeFilter_Planeswalker, types.TypeFilter_Instant, types.TypeFilter_Sorcery, types.TypeFilter_Permanent,
+			     types.TypeFilter_Subtype:
+			case:
+				return false
+			}
+		}
+		if c, has := x._0.controller.?; has {
+			#partial switch _ in c {
+			case types.ControllerRef_You, types.ControllerRef_Opponent:
+			case:
+				return false
+			}
+		}
+		for p in x._0.properties {
+			#partial switch _ in p {
+			case types.FilterProp_Token, types.FilterProp_NonToken:
+			case:
+				return false
+			}
+		}
+		return true
+	case types.TargetFilter_Or:
+		for y in x.filters do if !record_filter_supported(y) do return false
+		return len(x.filters) > 0
+	}
+	return false
+}
+
+record_matches :: proc(rec: types.ZoneChangeRecord, f: types.TargetFilter, controller: types.PlayerId) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Typed:
+		for tf in x._0.type_filters do if !record_matches_type(rec, tf) do return false
+		if c, has := x._0.controller.?; has {
+			#partial switch _ in c {
+			case types.ControllerRef_You:
+				if rec.controller != controller do return false
+			case types.ControllerRef_Opponent:
+				if rec.controller == controller do return false
+			}
+		}
+		for p in x._0.properties {
+			#partial switch _ in p {
+			case types.FilterProp_Token:
+				if !rec.is_token do return false
+			case types.FilterProp_NonToken:
+				if rec.is_token do return false
+			}
+		}
+		return true
+	case types.TargetFilter_Or:
+		for y in x.filters do if record_matches(rec, y, controller) do return true
+	}
+	return false
 }

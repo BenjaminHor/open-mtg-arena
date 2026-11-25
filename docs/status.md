@@ -3095,6 +3095,8 @@ Progress:
 - "This ability triggers only once each turn": each object's ability is recorded as it triggers
   (triggers_fired_this_turn, by object incarnation and ability occurrence; cleared as a turn begins). "Do this only
   once each turn" (CR 603.2h, the indicated action) not yet. 7,153 -> 7,178.
+- Turn counts: "descended this turn" (CR 700.11), zone changes this turn by kind, controller and token or not, "a
+  player lost N life this turn" (the most any player lost). 7,178 -> 7,189.
 - The app on the Odin engine, played by Playwright (Standard, random decks, the human only keeping, passing to end of
   turn and discarding): a whole game to the AI's win, no engine errors (scratchpad pw/play.cjs). Known: the game log
   panel is empty on the Odin engine (no log entries returned), and the home page's Card Coverage Dashboard reads

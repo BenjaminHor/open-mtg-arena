@@ -5048,3 +5048,26 @@ triggers_only_once_each_turn :: proc(t: ^testing.T) {
 	settle_stack(g)
 	testing.expect(t, game.counter_count(survivalist, types.CounterType_Plus1Plus1{}) == 2, "again the next turn")
 }
+
+@(test)
+descended_and_life_lost_this_turn :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 700.11: "descended this turn" counts permanent cards put into your graveyard from anywhere this turn; an
+	// instant isn't a permanent card, and an opponent's card goes to their graveyard.
+	g := new_game()
+	s := &g.state
+	descended := types.QuantityExpr_Ref{qty = types.QuantityRef_DescendedThisTurn{}}
+	testing.expect(t, game.quantity_value(s, descended, 0, 0, 0) == 0)
+	bears := add(t, g, "Grizzly Bears", 0, .Hand)
+	game.move_object(g, bears.id, .Graveyard) // from the hand counts too
+	shock := add(t, g, "Shock", 0, .Hand)
+	game.move_object(g, shock.id, .Graveyard)
+	theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	game.move_object(g, theirs.id, .Graveyard)
+	testing.expectf(t, game.quantity_value(s, descended, 0, 0, 0) == 1, "one: %d", game.quantity_value(s, descended, 0, 0, 0))
+	// "If a player lost 4 or more life this turn": the most any player lost.
+	s.players[0].life_lost_this_turn = 1
+	s.players[1].life_lost_this_turn = 5
+	most := types.QuantityExpr_Ref{qty = types.QuantityRef_LifeLost{player = types.PlayerScope_AllPlayers{aggregate = .Max}, window = .ThisTurn}}
+	testing.expect(t, game.quantity_value(s, most, 0, 0, 0) == 5)
+}
