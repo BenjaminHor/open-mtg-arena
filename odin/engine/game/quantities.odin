@@ -55,6 +55,13 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return player_scope_supported(r.player)
 		case types.QuantityRef_ObjectCountDistinct:
 			return object_count_distinct_supported(r)
+		case types.QuantityRef_BattlefieldEntriesThisTurn:
+			// "The number of creatures that entered the battlefield under your control this turn": the turn's zone
+			// change records, by kind and controller.
+			t, typed := r.filter.(types.TargetFilter_Typed)
+			if !typed || len(t._0.properties) > 0 || !player_scope_supported(r.player) do return false
+			for tf in t._0.type_filters do if !record_type_supported(tf) do return false
+			return true
 		case types.QuantityRef_ManaSpentToCast:
 			// "The amount of mana spent to cast this spell", "if {R} was spent to cast it" (this spell or permanent, or
 			// the spell that triggered the ability).
@@ -178,6 +185,18 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			return starting_life(s) // CR 103.4: the same for every player in a two-player game
 		case types.QuantityRef_ObjectCountDistinct:
 			return object_count_distinct(s, r, controller, source)
+		case types.QuantityRef_BattlefieldEntriesThisTurn:
+			who := scope_player(s, r.player, controller)
+			t := r.filter.(types.TargetFilter_Typed)._0
+			n := 0
+			for i in 0 ..< types.pvec_len(s.zone_changes_this_turn) {
+				rec := types.pvec_get(s.zone_changes_this_turn, i)
+				if rec.to_zone != .Battlefield || rec.controller != who do continue
+				fits := true
+				for tf in t.type_filters do if !record_matches_type(rec, tf) do fits = false
+				if fits do n += 1
+			}
+			return n
 		case types.QuantityRef_ManaSpentToCast:
 			o := object(s, source)
 			if r.scope == .TriggeringSpell {

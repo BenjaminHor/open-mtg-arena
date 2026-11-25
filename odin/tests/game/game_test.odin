@@ -4419,3 +4419,25 @@ number_of_different_names :: proc(t: ^testing.T) {
 	game.apply_continuous_effects(g)
 	testing.expect(t, game.power_of(amalgam) == 2 && game.toughness_of(amalgam) == 2, "Forest and Island: 2/2")
 }
+
+@(test)
+landfall_this_turn :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Groundswell: "Target creature gets +2/+2 until end of turn. Landfall — If you had a land enter the battlefield
+	// under your control this turn, that creature gets +4/+4 until end of turn instead."
+	testing.expect(t, game.card_supported(&card(t, "Groundswell").face))
+	for landfall in ([]bool{false, true}) {
+		g := new_game()
+		add(t, g, "Forest", 0, .Battlefield)
+		if landfall {
+			land := add(t, g, "Forest", 0, .Hand)
+			testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = land.id}))
+		}
+		bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+		spell := add(t, g, "Groundswell", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+		settle_stack(g)
+		testing.expectf(t, game.power_of(bears) == (6 if landfall else 4), "landfall %v: power %d", landfall, game.power_of(bears))
+	}
+}
