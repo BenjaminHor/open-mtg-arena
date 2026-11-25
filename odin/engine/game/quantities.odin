@@ -89,6 +89,8 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return true // CR 700.11 (the turn's zone change records)
 		case types.QuantityRef_CardsDiscardedThisTurn:
 			return player_scope_supported(r.player)
+		case types.QuantityRef_DamageDealtThisTurn:
+			return damage_record_query_supported(r)
 		case types.QuantityRef_SacrificedThisTurn:
 			return player_scope_supported(r.player) && record_filter_supported(r.filter)
 
@@ -284,6 +286,8 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 				return n
 			}
 			return int(player(s, scope_player(s, r.player, controller)).life_lost_this_turn)
+		case types.QuantityRef_DamageDealtThisTurn:
+			return damage_dealt_this_turn(s, r, controller, source)
 		case types.QuantityRef_CardsDiscardedThisTurn:
 			// CR 701.9a: the cards a player discarded this turn (discard_card).
 			return int(s.cards_discarded_this_turn_by_player[scope_player(s, r.player, controller)] or_else 0)
@@ -768,4 +772,98 @@ record_matches :: proc(rec: types.ZoneChangeRecord, f: types.TargetFilter, contr
 		for y in x.filters do if record_matches(rec, y, controller) do return true
 	}
 	return false
+}
+
+// "If an opponent was dealt damage this turn", "the damage dealt to this creature this turn", "if an opponent was
+// dealt 3 or more damage this turn" (the most dealt to one of them): the turn's damage records (CR 120.3: damage
+// dealt, after prevention).
+damage_record_query_supported :: proc(r: types.QuantityRef_DamageDealtThisTurn) -> bool {
+	if r.channel != .Total || r.source == nil || r.target == nil do return false
+	if _, has := r.group_by.?; has && r.aggregate == .Min do return false
+	#partial switch x in r.source^ {
+	case types.TargetFilter_Any, types.TargetFilter_SelfRef:
+	case types.TargetFilter_Typed:
+		// "A source you controlled": only who controlled it.
+		if len(x._0.type_filters) > 0 || len(x._0.properties) > 0 || x._0.controller == nil do return false
+		if _, you := x._0.controller.?.(types.ControllerRef_You); !you do return false
+	case:
+		return false
+	}
+	_, ok := damaged_player_side(r.target^)
+	#partial switch _ in r.target^ {
+	case types.TargetFilter_Any, types.TargetFilter_SelfRef:
+		ok = true
+	}
+	return ok
+}
+
+// "[An opponent / you] was dealt damage": a player, by whose they are.
+@(private = "file")
+damaged_player_side :: proc(f: types.TargetFilter) -> (you: bool, ok: bool) {
+	and, is_and := f.(types.TargetFilter_And)
+	if !is_and || len(and.filters) != 2 do return
+	if _, player := and.filters[0].(types.TargetFilter_Player); !player do return
+	typed, is_typed := and.filters[1].(types.TargetFilter_Typed)
+	if !is_typed || len(typed._0.type_filters) > 0 || len(typed._0.properties) > 0 do return
+	c, has := typed._0.controller.?
+	if !has do return
+	#partial switch _ in c {
+	case types.ControllerRef_You:
+		return true, true
+	case types.ControllerRef_Opponent:
+		return false, true
+	}
+	return
+}
+
+@(private = "file")
+damage_dealt_this_turn :: proc(s: ^types.GameState, r: types.QuantityRef_DamageDealtThisTurn, controller: types.PlayerId, source: types.ObjectId) -> int {
+	groups := make(map[u64]int, allocator = context.temp_allocator)
+	total := 0
+	for i in 0 ..< types.pvec_len(s.damage_dealt_this_turn) {
+		rec := types.pvec_get(s.damage_dealt_this_turn, i)
+		#partial switch r.damage_kind {
+		case .CombatOnly:
+			if !rec.is_combat do continue
+		case .NoncombatOnly:
+			if rec.is_combat do continue
+		}
+		#partial switch x in r.source^ {
+		case types.TargetFilter_SelfRef:
+			if rec.source_id != source do continue
+		case types.TargetFilter_Typed:
+			if rec.source_controller != controller do continue
+		}
+		key: u64
+		#partial switch x in r.target^ {
+		case types.TargetFilter_SelfRef:
+			id, is_object := rec.target.(types.TargetRef_Object)
+			if !is_object || id._0 != source do continue
+		case types.TargetFilter_Any:
+		case:
+			you, _ := damaged_player_side(r.target^)
+			p, is_player := rec.target.(types.TargetRef_Player)
+			if !is_player || (p._0 == controller) != you do continue
+		}
+		g, grouped := r.group_by.?
+		if grouped {
+			switch g {
+			case .Target:
+				switch t in rec.target {
+				case types.TargetRef_Player: key = u64(t._0) + 1 << 62
+				case types.TargetRef_Object: key = u64(t._0)
+				}
+			case .SourceId:
+				key = u64(rec.source_id)
+			}
+			groups[key] += int(rec.amount)
+		}
+		total += int(rec.amount)
+	}
+	if _, grouped := r.group_by.?; grouped {
+		best := 0
+		for _, v in groups do best = max(best, v)
+		return best if r.aggregate == .Max else total
+	}
+	return total
 }

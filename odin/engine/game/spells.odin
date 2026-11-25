@@ -1280,6 +1280,18 @@ deal_damage :: proc(g: ^Game, source: types.ObjectId, target: types.TargetRef, n
 	}
 	// CR 603.2: damage dealt is an event abilities can trigger on.
 	append(&g.events, Event{kind = .Damage, object = source, target = target, amount = n, combat = combat})
+	// The turn's record ("if an opponent was dealt damage this turn"), with who controlled each side then.
+	{
+		rec := types.DamageRecord{source_id = source, target = target, amount = u32(n), is_combat = combat}
+		if src != nil do rec.source_controller, rec.source_incarnation = src.controller, src.incarnation
+		switch t in target {
+		case types.TargetRef_Player:
+			rec.target_controller = t._0
+		case types.TargetRef_Object:
+			if o := object(s, t._0); o != nil do rec.target_controller, rec.target_incarnation = o.controller, o.incarnation
+		}
+		types.pvec_push(&s.damage_dealt_this_turn, rec, proc(x: types.DamageRecord) -> types.DamageRecord {return x})
+	}
 	switch t in target {
 	case types.TargetRef_Player:
 		lose_life(s, t._0, n)

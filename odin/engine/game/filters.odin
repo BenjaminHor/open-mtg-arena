@@ -93,6 +93,12 @@ has_subtype :: proc(o: ^types.GameObject, name: string) -> bool {
 	for s in o.card_types.subtypes do if s == name do return true
 	// CR 702.73a: changeling, "this object is every creature type", everywhere.
 	if has_keyword(o, types.Keyword_Changeling) && subtype_in_set(name, .Creature) do return true
+	// "This is every creature type" as a characteristic-defining ability: true in every zone (CR 604.3).
+	if o.static_definitions != nil && subtype_in_set(name, .Creature) {
+		for st in o.static_definitions^ do if st.characteristic_defining {
+			for m in st.modifications do if _, all := m.(types.ContinuousModification_AddAllCreatureTypes); all do return true
+		}
+	}
 	return false
 }
 

@@ -3099,6 +3099,9 @@ Progress:
   player lost N life this turn" (the most any player lost). 7,178 -> 7,189.
 - "If you discarded a card this turn" (CR 701.9a: discards go through discard_card, which counts them) and "if
   you sacrificed a [kind] this turn" (CR 701.21a: sacrifices recorded as the permanent last existed). 7,189 -> 7,204.
+- The turn's damage records ("if an opponent was dealt damage this turn", the most dealt to one opponent, damage
+  dealt to this creature); rule statics with a condition ("can't block as long as ...", CR 611.3b); "is every
+  creature type" (CR 205.3m), as a characteristic-defining ability in every zone (CR 604.3). 7,204 -> 7,256.
 - The app on the Odin engine, played by Playwright (Standard, random decks, the human only keeping, passing to end of
   turn and discarding): a whole game to the AI's win, no engine errors (scratchpad pw/play.cjs). Known: the game log
   panel is empty on the Odin engine (no log entries returned), and the home page's Card Coverage Dashboard reads

@@ -22,7 +22,8 @@ static_supported :: proc(st: types.StaticDefinition) -> bool {
 		for m in st.modifications {
 			#partial switch _ in m {
 			case types.ContinuousModification_SetDynamicPower, types.ContinuousModification_SetDynamicToughness,
-			     types.ContinuousModification_SetColor, types.ContinuousModification_SetPower, types.ContinuousModification_SetToughness:
+			     types.ContinuousModification_SetColor, types.ContinuousModification_SetPower, types.ContinuousModification_SetToughness,
+			     types.ContinuousModification_AddAllCreatureTypes: // "is every creature type", in every zone (has_subtype)
 			case:
 				return false
 			}
@@ -59,6 +60,8 @@ modification_supported :: proc(m: types.ContinuousModification) -> bool {
 		return true
 	case types.ContinuousModification_AddChosenSubtype:
 		return k.kind == .CreatureType
+	case types.ContinuousModification_AddAllCreatureTypes:
+		return true
 	case types.ContinuousModification_AddKeyword:
 		return keyword_supported(k.keyword)
 	case types.ContinuousModification_AddStaticMode:
@@ -113,6 +116,13 @@ apply_continuous_effects :: proc(g: ^Game) {
 		add_types :: proc(ct: ^types.CardType, mods: []types.ContinuousModification, changed: ^bool, source: ^types.GameObject) {
 			for m in mods {
 				#partial switch k in m {
+				case types.ContinuousModification_AddAllCreatureTypes:
+					// "Is every creature type" (CR 205.3m, the list of creature types; the static form of changeling,
+					// CR 702.73a).
+					for name in CREATURE_TYPES do if !slice.contains(ct.subtypes[:], name) {
+						append(&ct.subtypes, name)
+						changed^ = true
+					}
 				case types.ContinuousModification_AddChosenSubtype:
 					// "It's the chosen type in addition to its other types" (CR 614.12: chosen as its source entered).
 					if name, chosen := chosen_creature_type(source); chosen && k.kind == .CreatureType && !slice.contains(ct.subtypes[:], name) {

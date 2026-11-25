@@ -5097,3 +5097,37 @@ discarded_and_sacrificed_this_turn :: proc(t: ^testing.T) {
 	game.begin_turn(g, 1)
 	testing.expect(t, game.quantity_value(s, discarded, 0, 0, 0) == 0 && game.quantity_value(s, sacrificed, 0, 0, 0) == 0, "a new turn")
 }
+
+@(test)
+every_creature_type :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Mistform Ultimus: "Mistform Ultimus is every creature type." A characteristic-defining ability: it applies in
+	// every zone (CR 604.3), so in the hand it's an Elf too.
+	testing.expect(t, game.card_supported(&card(t, "Mistform Ultimus").face))
+	g := new_game()
+	ultimus := add(t, g, "Mistform Ultimus", 0, .Hand)
+	testing.expect(t, game.has_subtype(ultimus, "Elf") && game.has_subtype(ultimus, "Wizard"), "every creature type")
+	testing.expect(t, !game.has_subtype(ultimus, "Forest"), "not a land type")
+	// Amorphous Axe: "Equipped creature gets +3/+0 and is every creature type." (CR 205.3m, layer 4.)
+	testing.expect(t, game.card_supported(&card(t, "Amorphous Axe").face))
+	axe := add(t, g, "Amorphous Axe", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	game.attach(&g.state, axe, bears)
+	game.apply_continuous_effects(g)
+	testing.expect(t, game.has_subtype(bears, "Goblin") && game.has_subtype(bears, "Bear") && game.power_of(bears) == 5, "a Goblin, still a Bear, 5 power")
+}
+
+@(test)
+cant_block_as_long_as :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Childhood Horror: "Threshold — As long as there are seven or more cards in your graveyard, this creature gets
+	// +2/+2 and can't block." CR 611.3b: the rule applies only while the condition holds.
+	testing.expect(t, game.card_supported(&card(t, "Childhood Horror").face))
+	g := new_game()
+	horror := add(t, g, "Childhood Horror", 0, .Battlefield)
+	attacker := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, game.can_block(g, horror, attacker), "may block with six or fewer")
+	for _ in 0 ..< 7 do add(t, g, "Forest", 0, .Graveyard)
+	game.apply_continuous_effects(g)
+	testing.expect(t, !game.can_block(g, horror, attacker), "can't block with threshold")
+}

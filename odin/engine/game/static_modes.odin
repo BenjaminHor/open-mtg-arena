@@ -53,7 +53,9 @@ PLAYER_MODES :: bit_set[Rule_Mode]{.No_Max_Hand_Size, .Extra_Land}
 static_mode_supported :: proc(st: types.StaticDefinition) -> bool {
 	if _, ok := blocked_by_filter(st); ok do return true
 	modes := rule_modes(st.mode)
-	if modes == {} || st.condition != nil || st.per_player_condition != nil do return false
+	if modes == {} || st.per_player_condition != nil do return false
+	// "As long as ..." (CR 611.3b): checked wherever the rule is read (has_rule, player_rule_count).
+	if c, has := st.condition.?; has && (.Flash in modes || !condition_supported(c)) do return false
 	if st.affected_zone != nil || st.effect_zone != nil || len(st.active_zones) > 0 || len(st.modifications) > 0 do return false
 	affected, has := st.affected.?
 	if modes <= PLAYER_MODES {
@@ -72,7 +74,7 @@ has_rule :: proc(g: ^Game, o: ^types.GameObject, mode: Rule_Mode) -> bool {
 		src := object(s, id)
 		if src.static_definitions == nil do continue
 		for &st in src.static_definitions^ {
-			if mode not_in rule_modes(st.mode) || !static_mode_supported(st) do continue
+			if mode not_in rule_modes(st.mode) || !static_mode_supported(st) || !condition_holds(s, src, st.condition) do continue
 			affected, _ := st.affected.?
 			#partial switch x in affected {
 			case types.TargetFilter_SelfRef:
@@ -103,7 +105,7 @@ player_rule_count :: proc(g: ^Game, p: types.PlayerId, mode: Rule_Mode) -> int {
 	n := 0
 	for o in permanents_of(s, p) {
 		if o.static_definitions == nil do continue
-		for &st in o.static_definitions^ do if mode in rule_modes(st.mode) && static_mode_supported(st) do n += 1
+		for &st in o.static_definitions^ do if mode in rule_modes(st.mode) && static_mode_supported(st) && condition_holds(s, o, st.condition) do n += 1
 	}
 	return n
 }
