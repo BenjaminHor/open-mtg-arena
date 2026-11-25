@@ -39,6 +39,21 @@ Event :: struct {
 	incarnation: u64, // Counter_Added: the object as it was (CR 400.7)
 }
 
+// What a triggered ability's trigger event was about, for its instructions: "that much damage", "that creature",
+// "that player" (CR 603.2, 608.2c). "That creature" is the object as it was then: if it has since changed zones it's
+// a new object, which the instruction doesn't affect (CR 400.7).
+Trigger_Event :: struct {
+	amount:            int,
+	object:            types.ObjectId, // 0: the event is about no object
+	incarnation:       u64,
+	object_controller: types.PlayerId, // that object's controller then (its last known one, CR 608.2h)
+	player:            Maybe(types.PlayerId),
+}
+
+// The event triggers are being collected for, while they are (collect_triggers).
+@(thread_local)
+collecting_event: Trigger_Event
+
 // A triggered ability waiting to be put on the stack (CR 603.3).
 Pending_Trigger :: struct {
 	source:     types.ObjectId,
@@ -46,6 +61,7 @@ Pending_Trigger :: struct {
 	definition: ^types.TriggerDefinition,
 	lki:        ^types.GameObject, // a leaves-the-battlefield trigger's source as it last existed (CR 603.10a)
 	amount:     int, // the event's amount, for "that much" (the damage dealt)
+	event:      Trigger_Event, // what the event was about
 	delayed:    ^types.ResolvedAbility, // a delayed triggered ability (delayed.odin), its "it" already chosen
 }
 
@@ -60,6 +76,8 @@ Stack_Condition :: struct {
 trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	event_amount_defined = trigger_has_amount(t)
 	defer event_amount_defined = false
+	event_object_defined, event_player_defined = trigger_has_object(t), trigger_has_player(t)
+	defer event_object_defined, event_player_defined = false, false
 	if t.execute == nil do return false
 	if t.execute.modal != nil {
 		if !modal_trigger_supported(t.execute^) do return false
@@ -309,6 +327,58 @@ subject_filter_supported :: proc(f: types.TargetFilter) -> bool {
 }
 
 // Whether the trigger's event has an amount its effect can call "that much": damage dealt to or by one object.
+// What an event is about: its object ("that creature", "that spell") and player ("that player": the caster, the
+// damaged player, the one who gained life or drew, the active player at the start of a step, the controller of what
+// changed zones), as Rust's engine reads them.
+event_about :: proc(s: ^types.GameState, e: Event) -> Trigger_Event {
+	out: Trigger_Event
+	#partial switch e.kind {
+	case .Zone_Change, .Spell_Cast, .Damage, .Attack, .Tapped, .Counter_Added, .Sacrificed:
+		if o := object(s, e.object); o != nil {
+			out.object, out.incarnation, out.object_controller = o.id, o.incarnation, o.controller
+			if e.kind == .Zone_Change || e.kind == .Sacrificed do out.object_controller = e.controller // as it last existed
+		}
+	}
+	#partial switch e.kind {
+	case .Spell_Cast, .Life_Gained, .Card_Drawn, .Zone_Change, .Sacrificed, .Attack:
+		out.player = e.controller
+	case .Step_Begin:
+		out.player = s.active_player
+	case .Damage:
+		if pid, is_player := target_player(e.target); is_player do out.player = pid
+		else if id, is_object := target_object(e.target); is_object {
+			if o := object(s, id); o != nil do out.player = o.controller
+		}
+	}
+	return out
+}
+
+// Whether a trigger's event names an object or a player its instructions can refer to, checked with the trigger.
+@(thread_local)
+event_object_defined: bool
+@(thread_local)
+event_player_defined: bool
+
+trigger_has_object :: proc(t: types.TriggerDefinition) -> bool {
+	#partial switch _ in t.mode {
+	case types.TriggerMode_ChangesZone, types.TriggerMode_LeavesBattlefield, types.TriggerMode_SpellCast,
+	     types.TriggerMode_DamageDone, types.TriggerMode_Taps, types.TriggerMode_Attacks, types.TriggerMode_Sacrificed,
+	     types.TriggerMode_CounterAdded, types.TriggerMode_EntersOrAttacks:
+		return true
+	}
+	return false
+}
+
+trigger_has_player :: proc(t: types.TriggerDefinition) -> bool {
+	#partial switch _ in t.mode {
+	case types.TriggerMode_SpellCast, types.TriggerMode_DamageDone, types.TriggerMode_DamageReceived,
+	     types.TriggerMode_LifeGained, types.TriggerMode_Drawn, types.TriggerMode_Phase, types.TriggerMode_ChangesZone,
+	     types.TriggerMode_LeavesBattlefield, types.TriggerMode_Sacrificed, types.TriggerMode_Attacks:
+		return true
+	}
+	return false
+}
+
 trigger_has_amount :: proc(t: types.TriggerDefinition) -> bool {
 	#partial switch _ in t.mode {
 	case types.TriggerMode_DamageDone, types.TriggerMode_DamageReceived, types.TriggerMode_LifeGained:
@@ -334,7 +404,9 @@ has_zone :: proc(zones: []types.Zone, z: types.Zone) -> bool {
 collect_triggers :: proc(g: ^Game) {
 	s := &g.state
 	fired := make([dynamic]^types.TriggerDefinition, context.temp_allocator) // batched triggers already triggered
+	defer collecting_event = {}
 	for e, index in g.events {
+		collecting_event = event_about(s, e)
 		switch e.kind {
 		case .Zone_Change, .Sacrificed:
 			moved := object(s, e.object)
@@ -586,7 +658,7 @@ turn_constraint_met :: proc(s: ^types.GameState, t: types.TriggerDefinition, con
 add_trigger :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, t: ^types.TriggerDefinition, lki: ^types.GameObject = nil, amount := 0) {
 	// CR 603.4: with an intervening "if", the ability triggers only if the condition is true now.
 	if c, has := t.condition.?; has && !condition_holds_as_was(&g.state, source, controller, c, lki) do return
-	append(&g.pending_triggers, Pending_Trigger{source = source, controller = controller, definition = t, lki = lki, amount = amount})
+	append(&g.pending_triggers, Pending_Trigger{source = source, controller = controller, definition = t, lki = lki, amount = amount, event = collecting_event})
 }
 
 // The condition, read from the source as it last existed when it has left the battlefield (CR 603.10a, 608.2h).
@@ -724,7 +796,9 @@ place_triggers :: proc(g: ^Game) -> bool {
 		if !complete do continue
 		id := push_ability(g, pt.source, pt.controller, pt.definition.execute, targets[:], true, counts[:], pt.definition.description)
 		if pt.definition.condition != nil do g.stack_conditions[id] = Stack_Condition{pt.definition, pt.lki}
-		if pt.amount != 0 do g.stack_event_amounts[id] = pt.amount
+		event := pt.event
+		event.amount = pt.amount
+		if event != {} do g.stack_events[id] = event
 	}
 	return true
 }
@@ -823,10 +897,10 @@ resolve_ability :: proc(g: ^Game, entry: types.StackEntry, resolved: ^types.Reso
 		}
 	}
 	if resolved == nil do return
-	amount := g.stack_event_amounts[entry.id]
-	delete_key(&g.stack_event_amounts, entry.id)
+	event := g.stack_events[entry.id]
+	delete_key(&g.stack_events, entry.id)
 	// A "may" ability asks its controller as that instruction is carried out (CR 603.5, 608.2d).
-	start_resolution(g, resolved, entry.controller, entry.source_id, stack_id = entry.id, event_amount = amount)
+	start_resolution(g, resolved, entry.controller, entry.source_id, stack_id = entry.id, event = event)
 }
 
 // CR 603.5: the controller decides whether to carry out a "may" ability.

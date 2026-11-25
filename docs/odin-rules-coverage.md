@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 297 of 2880 rules implemented (10%), 140 of them tested.**
+**In scope (100-799): 297 of 2880 rules implemented (10%), 141 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -25,7 +25,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 110 permanents | 14 | 3 (21%) | 0 |
 | 111 tokens | 35 | 12 (34%) | 6 |
 | 112 spells | 7 | 0 (0%) | 0 |
-| 113 abilities | 41 | 3 (7%) | 2 |
+| 113 abilities | 41 | 3 (7%) | 3 |
 | 114 emblems | 5 | 0 (0%) | 0 |
 | 115 targets | 26 | 6 (23%) | 5 |
 | 116 special actions | 15 | 0 (0%) | 0 |
@@ -473,7 +473,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 113.6n An ability that modifies the rules for deck construction functions before the game begins. Such an ability ...
 - ⬜ 113.6p Abilities of emblems, plane cards, vanguard cards, scheme cards, and conspiracy cards function in the comma...
 - ⬜ 113.7 The source of an ability is the object that generated it. The source of an activated ability on the stack i...
-- 🟡 113.7a Once activated or triggered, an ability exists on the stack independently of its source. Destruction or rem...
+- ✅ 113.7a Once activated or triggered, an ability exists on the stack independently of its source. Destruction or rem...
 - ⬜ 113.8 The controller of an activated ability on the stack is the player who activated it. The controller of a tri...
 - ⬜ 113.9 Activated and triggered abilities on the stack aren’t spells, and therefore can’t be countered by anything ...
 - ⬜ 113.10 Effects can add or remove abilities of objects. An effect that adds an ability will state that the object “...

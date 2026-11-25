@@ -300,6 +300,12 @@ filter_supported :: proc(f: types.TargetFilter) -> bool {
 		return true
 	case types.TargetFilter_ParentTarget:
 		return true // only after an instruction that chose a target (ability_supported)
+	case types.TargetFilter_TriggeringSource:
+		return event_object_defined // "that creature": in a trigger whose event names one (resolution.odin)
+	case types.TargetFilter_TriggeringPlayer:
+		return event_player_defined
+	case types.TargetFilter_TriggeringSourceController:
+		return event_object_defined
 	case types.TargetFilter_Typed:
 		if _, is_player := player_typed(x._0); is_player do return true
 		return typed_supported(x._0)
@@ -1224,9 +1230,10 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 		     types.TriggerMode_LifeGained, types.TriggerMode_Drawn, types.TriggerMode_DamageReceived,
 		     types.TriggerMode_Sacrificed, types.TriggerMode_CounterAdded:
 			event_amount_defined = trigger_has_amount(t)
+			event_object_defined, event_player_defined = trigger_has_object(t), trigger_has_player(t)
 			if t.execute != nil && !ability_supported(t.execute^) do ability_gaps(&out, t.execute^, "trigger")
 			else do append(&out, name("trigger condition:", t.mode))
-			event_amount_defined = false
+			event_amount_defined, event_object_defined, event_player_defined = false, false, false
 		case:
 			append(&out, name("trigger:", t.mode))
 		}
@@ -1279,7 +1286,14 @@ static_gap :: proc(st: types.StaticDefinition) -> string {
 
 @(private = "file")
 ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: string) {
-	if c, has := a.condition.?; has && !ability_condition_supported(c) do append(out, "spell:condition")
+	if c, has := a.condition.?; has && !ability_condition_supported(c) {
+		// Named by its kind ("spell:condition:IsYourTurn"; "If ..., instead" by the condition inside).
+		inner := c
+		if x, instead := c.(types.AbilityCondition_ConditionInstead); instead && x.inner != nil do inner = x.inner^
+		full := fmt.tprintf("%v", reflect.union_variant_typeid(inner))
+		if i := strings.last_index_byte(full, '_'); i >= 0 do full = full[i + 1:]
+		append(out, strings.concatenate({"spell:condition:", full}, context.temp_allocator))
+	}
 	if a.optional_targeting do append(out, "spell:optional")
 	if a.modal != nil do append(out, "spell:modal")
 	if !multi_target_supported(a) || a.distribute != nil do append(out, "spell:multiple targets")

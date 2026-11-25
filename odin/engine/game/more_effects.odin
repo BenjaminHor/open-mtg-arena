@@ -14,7 +14,8 @@ permanent_or_self :: proc(f: types.TargetFilter) -> bool {
 // A filter naming only players: "target player", "target opponent", "you".
 is_player_filter :: proc(f: types.TargetFilter) -> bool {
 	#partial switch x in f {
-	case types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_Controller:
+	case types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_Controller,
+	     types.TargetFilter_TriggeringPlayer, types.TargetFilter_TriggeringSourceController:
 		return true
 	case types.TargetFilter_Typed:
 		_, player := player_typed(x._0)
@@ -39,7 +40,11 @@ may_name_player :: proc(f: types.TargetFilter) -> bool {
 counter_kind_supported :: proc(c: types.CounterType) -> bool {
 	#partial switch x in c {
 	case types.CounterType_Plus1Plus1, types.CounterType_Minus1Minus1, types.CounterType_Stun, types.CounterType_Lore,
-	     types.CounterType_Shield:
+	     types.CounterType_Shield, types.CounterType_Loyalty:
+		return true
+	case types.CounterType_Time, types.CounterType_Fade, types.CounterType_Age, types.CounterType_Generic:
+		// Counters with no rules meaning of their own (CR 122.1): only what reads them ("for each plan counter")
+		// gives them one.
 		return true
 	case types.CounterType_Keyword:
 		_, ok := keyword_of_counter(x._0) // CR 122.1b
@@ -51,8 +56,10 @@ counter_kind_supported :: proc(c: types.CounterType) -> bool {
 more_effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> (supported: bool, known: bool) {
 	#partial switch x in e {
 	case types.Effect_PutCounter:
-		_, fixed := fixed_quantity(x.count)
-		return fixed && counter_kind_supported(x.counter_type) && permanent_or_self(x.target), true
+		// "Put N counters on target creature / this / that creature / it (the token just made)."
+		_, last := x.target.(types.TargetFilter_LastCreated)
+		count_ok := quantity_supported(x.count) && !quantity_reads_target(x.count)
+		return count_ok && counter_kind_supported(x.counter_type) && (last || permanent_or_self(x.target)), true
 	case types.Effect_SetTapState:
 		return x.scope == .Single && permanent_or_self(x.target), true
 	case types.Effect_Mill:
@@ -177,8 +184,17 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 	#partial switch x in e {
 	case types.Effect_PutCounter:
 		if is_self(x.target) do affected = same_source(g, source)
+		if _, last := x.target.(types.TargetFilter_LastCreated); last {
+			// The permanent the instruction before made (a token), CR 608.2c.
+			affected = nil
+			#reverse for id in g.resolution.moved do if o := object(s, id); o != nil && o.zone == .Battlefield {
+				affected = o
+				break
+			}
+		}
 		if affected == nil || affected.zone != .Battlefield do return
-		n, _ := fixed_quantity(x.count)
+		n := quantity_value(s, x.count, controller, source, 0)
+		if n <= 0 do return
 		add_counters(affected, x.counter_type, u32(n))
 		apply_continuous_effects(g)
 	case types.Effect_SetTapState:

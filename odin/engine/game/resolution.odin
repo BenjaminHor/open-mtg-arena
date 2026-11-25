@@ -21,7 +21,7 @@ Resolution :: struct {
 	performed:    bool, // whether the latest "you may" instruction was done: "if you do" (CR 608.2c)
 	found:        [dynamic]types.ObjectId, // the cards a library search found: "those cards" next
 	source_incarnation: Maybe(u64), // the source as the ability was put on the stack: "this" means that object
-	event_amount: int, // a triggered ability's event's amount: "that much damage"
+	event:        Trigger_Event, // a triggered ability's event: "that much damage", "that creature"
 	scope_node:   ^types.ResolvedAbility, // an instruction carried out for each player in a scope...
 	scope:        [dynamic]types.PlayerId, // ...for these players...
 	scope_next:   int, // ...of which this is the next
@@ -80,7 +80,7 @@ resolved_tree :: proc(s: ^types.GameState, a: ^types.AbilityDefinition, targets:
 }
 
 // Starts resolving: checks targets (CR 608.2b) and carries out the instructions. False while a player chooses.
-start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: types.PlayerId, source: types.ObjectId, spell: types.ObjectId = 0, stack_id: types.ObjectId = 0, event_amount := 0) -> bool {
+start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: types.PlayerId, source: types.ObjectId, spell: types.ObjectId = 0, stack_id: types.ObjectId = 0, event := Trigger_Event{}) -> bool {
 	s := &g.state
 	any_target, any_legal := false, false
 	for n := top; n != nil; n = n.sub_ability {
@@ -98,7 +98,7 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 			else do append(&n.illegal_target_slots, i)
 		}
 	}
-	g.resolution = Resolution{active = true, next = top, controller = controller, source = source, spell = spell, stack_id = stack_id, event_amount = event_amount}
+	g.resolution = Resolution{active = true, next = top, controller = controller, source = source, spell = spell, stack_id = stack_id, event = event}
 	g.resolution.source_incarnation = top.source_incarnation
 	g.resolution.last_targets = make([dynamic]types.TargetRef)
 	g.resolution.all_targets = make([dynamic]types.TargetRef)
@@ -116,11 +116,30 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 	return continue_resolution(g)
 }
 
+// An instruction about its trigger's event ("put a +1/+1 counter on that creature", "it deals 2 damage to that
+// player"): what it acts on, or nil when that object has changed zones since (CR 400.7).
+event_reference :: proc(s: ^types.GameState, e: types.Effect, event: Trigger_Event) -> (Maybe(types.TargetRef), bool) {
+	#partial switch _ in effect_target_filter(e) {
+	case types.TargetFilter_TriggeringSource:
+		o := object(s, event.object)
+		if o == nil || event.object == 0 || o.incarnation != event.incarnation do return nil, true
+		return types.TargetRef(types.TargetRef_Object{o.id}), true
+	case types.TargetFilter_TriggeringSourceController:
+		if event.object == 0 do return nil, true
+		return types.TargetRef(types.TargetRef_Player{event.object_controller}), true
+	case types.TargetFilter_TriggeringPlayer:
+		p, has := event.player.?
+		if !has do return nil, true
+		return types.TargetRef(types.TargetRef_Player{p}), true
+	}
+	return nil, false
+}
+
 // Carries out the remaining instructions. False while a player chooses; true once resolved.
 continue_resolution :: proc(g: ^Game) -> bool {
 	s := &g.state
 	r := &g.resolution
-	event_amount = r.event_amount // "that much", read by the instructions (quantities.odin)
+	event_amount = r.event.amount // "that much", read by the instructions (quantities.odin)
 	for r.next != nil {
 		// What the instruction just carried out moved, before the next one reads "this way". An instruction skipped
 		// for its condition carries nothing out, so "this way" still means the one before it.
@@ -166,6 +185,12 @@ continue_resolution :: proc(g: ^Game) -> bool {
 				if id, is_object := target_object(t); is_object do append(&affected, types.TargetRef(types.TargetRef_Player{object(s, id).controller}))
 			}
 			if len(affected) == 0 do continue
+		} else if t, refers := event_reference(s, x.effect, r.event); refers {
+			// "That creature", "that player": what the trigger event was about (CR 608.2c), only while it's the
+			// same object (CR 400.7).
+			t, ok := t.?
+			if !ok do continue
+			append(&affected, t)
 		} else {
 			append(&affected, nil)
 		}

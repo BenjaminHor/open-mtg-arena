@@ -35,11 +35,13 @@ for (let i = 0; i < pool.length; i += 500) for (const n of odin.odin_call("odin_
 const rust = new Map();
 const coverage = JSON.parse(readFileSync(`${root}client/public/coverage-data.json`, "utf8"));
 for (const c of coverage.cards ?? []) rust.set(c.card_name, !!c.supported);
-const rustCount = pool.filter((n) => rust.get(n)).length;
+// A split or double-faced card ("Fire // Ice") is listed under its full name or its front face's.
+const rustSupports = (n) => rust.get(n) ?? rust.get(n.split(" // ")[0]) ?? false;
+const rustCount = pool.filter(rustSupports).length;
 
 console.log(`pool ${pool.length}: Odin fully supports ${supported.size}, Rust ${rustCount} (target ${rustCount})`);
 const i = process.argv.indexOf("--list-missing");
-if (i > 0) console.log(pool.filter((n) => !supported.has(n) && rust.get(n)).slice(0, Number(process.argv[i + 1] ?? 50)).join("\n"));
+if (i > 0) console.log(pool.filter((n) => !supported.has(n) && rustSupports(n)).slice(0, Number(process.argv[i + 1] ?? 50)).join("\n"));
 
 // What to build next: the missing pieces, ranked by how many Rust-supported pool cards each one blocks, and by how
 // many cards it is the only thing missing from.
@@ -47,7 +49,7 @@ const gaps = {};
 for (let i = 0; i < pool.length; i += 500) Object.assign(gaps, odin.odin_call("odin_card_gaps", [pool.slice(i, i + 500)]));
 const blocks = new Map(), only = new Map();
 for (const [name, list] of Object.entries(gaps)) {
-  if (!rust.get(name) || list.length === 0) continue;
+  if (!rustSupports(name) || list.length === 0) continue;
   const unique = [...new Set(list)];
   for (const gap of unique) blocks.set(gap, (blocks.get(gap) ?? 0) + 1);
   if (unique.length === 1) only.set(unique[0], (only.get(unique[0]) ?? 0) + 1);
@@ -60,6 +62,6 @@ console.log(`\nthe only missing piece, by cards it would add:\n${top(only, 30)}`
 const ex = process.argv.indexOf("--examples");
 if (ex > 0) {
   const want = process.argv[ex + 1];
-  const names = Object.entries(gaps).filter(([n, l]) => rust.get(n) && new Set(l).size === 1 && l[0] === want).map(([n]) => n);
+  const names = Object.entries(gaps).filter(([n, l]) => rustSupports(n) && new Set(l).size === 1 && l[0] === want).map(([n]) => n);
   console.log(`\n${want}: ${names.slice(0, 40).join(" | ")}`);
 }

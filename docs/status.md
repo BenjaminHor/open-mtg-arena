@@ -2964,7 +2964,15 @@ Progress:
   your opponents cast that target this creature cost {2} more". The total cost reads the chosen targets; before
   they're chosen (castable, max X, kicker) it's the best case (a reduction counts if some legal target earns it, an
   increase doesn't). Targets that leave the cost unpayable reverse the cast (CR 601.2h, 734.1); the AI picks a last
-  target it can pay for. 6,115 -> 6,151.
+  target it can pay for. 6,115 -> 6,151. An increase every legal target would pay counts in that best case too
+  (Boreal Elemental as the only creature: Murder isn't castable).
+- The coverage target reads 14,013 again: coverage.mjs now matches split and double-faced cards by their front
+  face, as coverage-data.json lists them (it showed 13,381). Gap labels name the condition's kind
+  (`spell:condition:QuantityCheck`).
+- "That creature" / "that player" in a triggered ability: the trigger event's object and player go with the ability
+  onto the stack (Game.stack_events, with the amount; to move into the state later) and are read as it resolves
+  (CR 603.2, 608.2c). The object only while it's the same one (CR 400.7). Put counters: any count the engine can
+  work out, on "that creature" or the token just made, and loyalty, time, age and named counters. 6,151 -> 6,243.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

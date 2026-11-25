@@ -3435,3 +3435,65 @@ cost_increase_every_target_would_pay :: proc(t: ^testing.T) {
 	add(t, g, "Grizzly Bears", 1, .Battlefield)
 	testing.expect(t, game.castable(s, 0, murder, g.card_db), "the Bears can be targeted for {1}{B}{B}")
 }
+
+// Passes priority until the stack is empty (at most `n` passes).
+@(private = "file")
+settle_stack :: proc(g: ^game.Game, n := 8) {
+	for _ in 0 ..< n {
+		if types.pvec_len(g.state.stack) == 0 do return
+		game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+	}
+}
+
+@(test)
+that_creature_is_the_one_that_entered :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Good-Fortune Unicorn: "Whenever another creature you control enters, put a +1/+1 counter on that creature."
+	// CR 603.2, 608.2c: "that creature" is the object the trigger event was about; once it has changed zones it's a
+	// new object the ability doesn't affect (CR 400.7).
+	testing.expect(t, game.card_supported(&card(t, "Good-Fortune Unicorn").face))
+	g := new_game()
+	s := &g.state
+	unicorn := add(t, g, "Good-Fortune Unicorn", 0, .Battlefield)
+	add(t, g, "Forest", 0, .Battlefield)
+	add(t, g, "Forest", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = bears.id}))
+	settle_stack(g)
+	testing.expect(t, bears.zone == .Battlefield && game.counter_count(bears, types.CounterType_Plus1Plus1{}) == 1, "the Bears got the counter")
+	testing.expect(t, game.counter_count(unicorn, types.CounterType_Plus1Plus1{}) == 0, "not the Unicorn")
+	// The creature leaves before the trigger resolves: nothing gets the counter.
+	elves := add(t, g, "Llanowar Elves", 0, .Hand)
+	add(t, g, "Forest", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = elves.id}))
+	for _ in 0 ..< 4 {
+		if elves.zone == .Battlefield do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, elves.zone == .Battlefield && types.pvec_len(s.stack) == 1, "the Unicorn's trigger waits")
+	// The Unicorn leaves (its trigger on the stack still resolves, CR 113.7a), and the Elves leave and come back: a
+	// new object (CR 400.7), which the trigger about the old one doesn't affect.
+	game.move_object(g, unicorn.id, .Graveyard)
+	game.move_object(g, elves.id, .Hand)
+	game.move_object(g, elves.id, .Battlefield)
+	settle_stack(g)
+	testing.expect(t, elves.zone == .Battlefield && game.counter_count(elves, types.CounterType_Plus1Plus1{}) == 0, "a new object: no counter")
+}
+
+@(test)
+that_player_is_the_caster :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Eidolon of the Great Revel: "Whenever a player casts a spell with mana value 3 or less, this creature deals 2
+	// damage to that player." "That player" is the one who cast it (CR 603.2, 608.2c).
+	testing.expect(t, game.card_supported(&card(t, "Eidolon of the Great Revel").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Eidolon of the Great Revel", 1, .Battlefield)
+	add(t, g, "Mountain", 0, .Battlefield)
+	shock := add(t, g, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	settle_stack(g)
+	testing.expect(t, s.players[0].life == 18, "the caster took 2")
+	testing.expect(t, s.players[1].life == 18, "the Shock hit the Eidolon's controller")
+}
