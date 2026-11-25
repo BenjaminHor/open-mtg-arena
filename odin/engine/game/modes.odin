@@ -92,3 +92,69 @@ has_duplicate_ints :: proc(xs: []int) -> bool {
 	for x, i in xs do for y in xs[i + 1:] do if x == y do return true
 	return false
 }
+
+// ---- Modal triggered abilities (CR 700.2b, 603.3c) -------------------------------------------------------------
+
+// "At the beginning of your end step, choose one -": the modes are its mode_abilities; the controller chooses as
+// the ability is put on the stack (CR 603.3c).
+modal_trigger_supported :: proc(a: types.AbilityDefinition) -> bool {
+	m, ok := a.modal.?
+	if !ok do return false
+	if m.dynamic_max_choices != nil || len(m.constraints) > 0 || len(m.mode_costs) > 0 || m.entwine_cost != nil || m.allow_repeat_modes do return false
+	if _, you := m.chooser.(types.PlayerFilter_Controller); !you do return false
+	if m.min_choices < 1 || m.max_choices < m.min_choices || m.max_choices > m.mode_count || len(a.mode_abilities) != m.mode_count do return false
+	if a.sub_ability != nil || a.condition != nil do return false
+	for mode in a.mode_abilities do if !ability_supported(mode) do return false
+	return true
+}
+
+// CR 700.2a: the modes whose targets couldn't be chosen.
+trigger_unavailable_modes :: proc(s: ^types.GameState, p: types.PlayerId, source: types.ObjectId, a: ^types.AbilityDefinition) -> [dynamic]int {
+	out: [dynamic]int
+	for &mode, i in a.mode_abilities do if !slots_fillable(s, slot_list(&mode)[:], p, source) do append(&out, i)
+	return out
+}
+
+// The chosen modes as one chain, in printed order (CR 700.2): a new definition for the trigger to put on the stack.
+trigger_mode_chain :: proc(a: ^types.AbilityDefinition, modes: []int) -> ^types.AbilityDefinition {
+	first, last: ^types.AbilityDefinition
+	for i in modes {
+		mode := &a.mode_abilities[i]
+		for x := mode; x != nil; x = x.sub_ability {
+			c := new(types.AbilityDefinition)
+			c^ = x^
+			c.sub_ability = nil
+			if x == mode do c.sub_link = .SequentialSibling
+			if first == nil do first = c
+			else do last.sub_ability = c
+			last = c
+		}
+	}
+	return first
+}
+
+ask_trigger_modes :: proc(g: ^Game, pt: Pending_Trigger) {
+	s := &g.state
+	a := pt.definition.execute
+	s.priority_player = pt.controller
+	s.waiting_for = types.WaitingFor_AbilityModeChoice{player = pt.controller, modal = a.modal.?, source_id = pt.source, mode_abilities = a.mode_abilities, unavailable_modes = trigger_unavailable_modes(s, pt.controller, pt.source, a)}
+}
+
+// The controller's modes for the modal trigger next in line: it's put on the stack with them (CR 603.3c).
+select_trigger_modes :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_AbilityModeChoice, indices: []int) -> bool {
+	if w.is_activated || len(g.pending_triggers) == 0 do return false
+	if len(indices) < w.modal.min_choices || len(indices) > w.modal.max_choices || has_duplicate_ints(indices) do return false
+	for i in indices do if i < 0 || i >= w.modal.mode_count || slice.contains(w.unavailable_modes[:], i) do return false
+	index := next_trigger(g)
+	pt := &g.pending_triggers[index]
+	if pt.source != w.source_id || pt.controller != p || pt.definition.execute == nil || pt.definition.execute.modal == nil do return false
+	sorted := slice.clone(indices, context.temp_allocator)
+	slice.sort(sorted) // CR 608.2c: carried out in the order written
+	t := new(types.TriggerDefinition)
+	t^ = pt.definition^
+	t.execute = trigger_mode_chain(pt.definition.execute, sorted)
+	pt.definition = t
+	g.state.waiting_for = nil
+	give_priority(g, g.state.active_player)
+	return true
+}

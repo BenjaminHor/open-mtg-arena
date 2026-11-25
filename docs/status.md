@@ -2945,6 +2945,9 @@ Progress:
   deals damage if either is gone or illegal) and bite ("deals damage equal to its power to target creature": the
   first target, a TargetOnly, is the source). A fight's two targets are two parts of one instruction's slots.
   5,834 -> 5,885.
+- Modal triggered abilities ("At the beginning of your end step, choose one -"): Rust's AbilityModeChoice as the
+  trigger goes on the stack, before its targets (CR 603.3c); modes with no legal target unavailable (CR 700.2a);
+  the chosen modes chained in printed order. Modal activated abilities aren't yet. 5,885 -> 5,952.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

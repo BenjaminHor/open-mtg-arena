@@ -3196,3 +3196,26 @@ fight_and_bite :: proc(t: ^testing.T) {
 	cast_two(t, g2, "Bite Down", mine2.id, theirs.id)
 	testing.expect(t, theirs.zone == .Graveyard && mine2.zone == .Battlefield && mine2.damage_marked == 0, "bitten: one way")
 }
+
+@(test)
+modal_triggered_ability :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Abiding Grace: "At the beginning of your end step, choose one - You gain 1 life; or return target creature card
+	// with mana value 1 from your graveyard to the battlefield." CR 603.3c: the mode is chosen as the ability is put
+	// on the stack; CR 700.2a: a mode whose target can't be chosen can't be chosen.
+	testing.expect(t, game.card_supported(&card(t, "Abiding Grace").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Abiding Grace", 0, .Battlefield)
+	game.begin_step(g, .End)
+	w, asked := s.waiting_for.(types.WaitingFor_AbilityModeChoice)
+	testing.expect(t, asked && slice.contains(w.unavailable_modes[:], 1), "asked, the return mode unavailable with no such card")
+	modes: [dynamic]int
+	append(&modes, 1)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_SelectModes{indices = modes}), "not the unavailable mode")
+	modes[0] = 0
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectModes{indices = modes}))
+	testing.expect(t, types.pvec_len(s.stack) == 1, "on the stack with its mode")
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, game.player(s, 0).life == 21)
+}

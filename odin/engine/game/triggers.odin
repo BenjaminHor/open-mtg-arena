@@ -60,7 +60,10 @@ Stack_Condition :: struct {
 trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	event_amount_defined = trigger_has_amount(t)
 	defer event_amount_defined = false
-	if t.execute == nil || !ability_supported(t.execute^) do return false
+	if t.execute == nil do return false
+	if t.execute.modal != nil {
+		if !modal_trigger_supported(t.execute^) do return false
+	} else if !ability_supported(t.execute^) do return false
 	// "That much" reads the event only in the first instruction: after another one ("discard your hand. If you do,
 	// draw that many cards") it means what that instruction did, which isn't tracked yet.
 	if t.execute.sub_ability != nil && event_amount_defined {
@@ -690,6 +693,11 @@ place_triggers :: proc(g: ^Game) -> bool {
 			push_resolved_trigger(g, pt.source, pt.controller, pt.delayed)
 			continue
 		}
+		if pt.definition.execute != nil && pt.definition.execute.modal != nil {
+			// CR 603.3c: a modal triggered ability's modes are chosen as it's put on the stack, before its targets.
+			ask_trigger_modes(g, pt)
+			return false
+		}
 		slots := slot_list(pt.definition.execute)
 		if g.trigger_targets.source != pt.source || g.trigger_targets.definition != pt.definition {
 			g.trigger_targets = Trigger_Target_Choice{source = pt.source, definition = pt.definition}
@@ -722,7 +730,6 @@ place_triggers :: proc(g: ^Game) -> bool {
 }
 
 // APNAP: the active player's triggers first, then the others in turn order.
-@(private = "file")
 next_trigger :: proc(g: ^Game) -> int {
 	s := &g.state
 	for i in 0 ..< len(s.players) {

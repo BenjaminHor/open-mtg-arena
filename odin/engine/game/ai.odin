@@ -85,6 +85,11 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		return types.GameAction_ChooseTarget{target = t}, true
 	case types.WaitingFor_OptionalEffectChoice:
 		return types.GameAction_DecideOptionalEffect{accept = true}, true
+	case types.WaitingFor_AbilityModeChoice:
+		// The first modes it can choose, as few as allowed.
+		chosen := make([dynamic]int, context.temp_allocator)
+		for i in 0 ..< w.modal.mode_count do if len(chosen) < w.modal.min_choices && !slice.contains(w.unavailable_modes[:], i) do append(&chosen, i)
+		return types.GameAction_SelectModes{indices = chosen}, true
 	case types.WaitingFor_CopyTargetChoice:
 		// The biggest creature to copy.
 		best: types.ObjectId
