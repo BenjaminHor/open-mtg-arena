@@ -39,7 +39,7 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 		return false
 	case types.FilterProp_Another, types.FilterProp_Tapped, types.FilterProp_Untapped, types.FilterProp_Token,
 	     types.FilterProp_NonToken, types.FilterProp_HasColor, types.FilterProp_NotColor, types.FilterProp_HasSupertype,
-	     types.FilterProp_NotSupertype, types.FilterProp_Blocking:
+	     types.FilterProp_NotSupertype, types.FilterProp_Blocking, types.FilterProp_Named:
 		return true
 	case types.FilterProp_Attacking:
 		return x.defender == nil
@@ -57,8 +57,9 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 }
 
 typed_supported :: proc(f: types.TypedFilter) -> bool {
-	// A typed filter naming no types (and controlled by someone) describes a player, which isn't modelled here.
-	if len(f.type_filters) == 0 do return false
+	// A typed filter naming no types (and controlled by someone) describes a player, which isn't modelled here;
+	// "a card named X" names a card by its name alone.
+	if len(f.type_filters) == 0 && !(len(f.properties) == 1 && is_named(f.properties[0]) && f.controller == nil) do return false
 	for t in f.type_filters do if !type_filter_supported(t) do return false
 	for p in f.properties do if !property_supported(p) do return false
 	if c, has := f.controller.?; has {
@@ -69,6 +70,11 @@ typed_supported :: proc(f: types.TypedFilter) -> bool {
 		}
 	}
 	return true
+}
+
+is_named :: proc(p: types.FilterProp) -> bool {
+	_, named := p.(types.FilterProp_Named)
+	return named
 }
 
 has_subtype :: proc(o: ^types.GameObject, name: string) -> bool {
@@ -159,6 +165,8 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 		#partial switch x in p {
 		case types.FilterProp_Another:
 			if o.id == source do return false
+		case types.FilterProp_Named:
+			if o.name != x.name do return false // CR 201.2
 		case types.FilterProp_Tapped:
 			if !o.tapped do return false
 		case types.FilterProp_Untapped:

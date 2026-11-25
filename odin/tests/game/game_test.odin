@@ -2602,3 +2602,29 @@ shield_counters :: proc(t: ^testing.T) {
 	testing.expect(t, bears.zone == .Battlefield && game.counter_count(bears, shield) == 0, "not destroyed, the counter removed")
 	_ = s
 }
+
+@(test)
+fetchland_search_either_type :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Arid Mesa: "{T}, Pay 1 life, Sacrifice this land: Search your library for a Mountain or Plains card, put it
+	// onto the battlefield, then shuffle." CR 701.23a: the cards found must match the search, either type here.
+	testing.expect(t, game.card_supported(&card(t, "Arid Mesa").face))
+	g := new_game()
+	s := &g.state
+	mesa := add(t, g, "Arid Mesa", 0, .Battlefield)
+	mountain := add(t, g, "Mountain", 0, .Library)
+	plains := add(t, g, "Plains", 0, .Library)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = mesa.id, ability_index = 0}))
+	for types.pvec_len(s.stack) > 0 {
+		if _, searching := s.waiting_for.(types.WaitingFor_SearchChoice); searching do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	w, searching := s.waiting_for.(types.WaitingFor_SearchChoice)
+	testing.expect(t, searching, "searching")
+	if !searching do return
+	testing.expect(t, len(w.cards) == 2 && slice.contains(w.cards[:], mountain.id) && slice.contains(w.cards[:], plains.id), "only the Mountain and the Plains, not the Forests")
+	chosen: [dynamic]types.ObjectId
+	append(&chosen, plains.id)
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen}))
+	testing.expect(t, plains.zone == .Battlefield && mesa.zone == .Graveyard && game.player(s, 0).life == 19)
+}

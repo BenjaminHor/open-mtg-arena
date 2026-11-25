@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 259 of 2880 rules implemented (9%), 110 of them tested.**
+**In scope (100-799): 260 of 2880 rules implemented (9%), 110 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -37,7 +37,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 122 counters | 20 | 5 (25%) | 4 |
 | 123 stickers | 26 | 0 (0%) | 0 |
 | 200 general | 3 | 0 (0%) | 0 |
-| 201 name | 22 | 0 (0%) | 0 |
+| 201 name | 22 | 1 (5%) | 0 |
 | 202 mana cost and color | 19 | 4 (21%) | 2 |
 | 203 illustration | 1 | 0 (0%) | 0 |
 | 204 color indicator | 2 | 0 (0%) | 0 |
@@ -729,10 +729,10 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 200.2 Some parts of a card are also characteristics of the object that has them. See rule 109.3.
 - ⬜ 200.3 Some objects that aren’t cards (tokens, copies of cards, and copies of spells) have some of the parts of a ...
 
-### 201 name (0/22)
+### 201 name (1/22)
 
 - ⬜ 201.1 The name of a card is printed on its upper left corner.
-- ⬜ 201.2 A card’s name is always considered to be the English version of its name, regardless of printed language.
+- 🟡 201.2 A card’s name is always considered to be the English version of its name, regardless of printed language.
 - ⬜ 201.2a Two or more objects have the same name if they have at least one name in common, even if one or more of tho...
 - ⬜ 201.2b Some spells and abilities refer to two or more objects with different names. Those objects have different n...
 - ⬜ 201.2c Some spells or abilities check if one object has a different name than a second object or group of objects....

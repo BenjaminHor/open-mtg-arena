@@ -2888,6 +2888,8 @@ Progress:
   in-flight pieces. Raid "enters with a counter if you attacked". 5,221 -> 5,235.
 - Shield counters (CR 122.1c: prevent damage to the permanent, replace its destruction by an effect, one counter
   removed each time): 5,235 -> 5,243.
+- Library searches for "a Mountain or Plains card" (fetchlands, landscapes, monuments) and "a card named X"
+  (CR 201.2), and "named X" in filters generally: 5,243 -> 5,310.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

@@ -11,11 +11,22 @@ search_supported :: proc(x: types.Effect_SearchLibrary) -> bool {
 	for z in x.source_zones do if z != .Library do return false
 	if x.target_player != nil || x.split != nil do return false
 	if _, plain := x.selection_constraint.(types.SearchSelectionConstraint_None); x.selection_constraint != nil && !plain do return false
-	typed, ok := x.filter.(types.TargetFilter_Typed)
-	if !ok || (len(typed._0.type_filters) > 0 && !typed_supported(typed._0)) do return false
-	if len(typed._0.type_filters) == 0 do return false
+	if !search_filter_supported(x.filter) do return false
 	_, _, counted := search_count(x)
 	return counted
+}
+
+// "A basic land card", "a Mountain or Plains card", "a card named X".
+@(private = "file")
+search_filter_supported :: proc(f: types.TargetFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Typed:
+		return typed_supported(x._0)
+	case types.TargetFilter_Or:
+		for y in x.filters do if !search_filter_supported(y) do return false
+		return len(x.filters) > 0
+	}
+	return false
 }
 
 // How many cards to find, whether it's "up to", and whether the count is one the engine reads.
@@ -46,12 +57,12 @@ start_search :: proc(g: ^Game, x: types.Effect_SearchLibrary, controller: types.
 	s := &g.state
 	clear(&g.resolution.found)
 	n, up_to, _ := search_count(x)
-	typed := x.filter.(types.TargetFilter_Typed)._0
 	cards: [dynamic]types.ObjectId
 	for id in ids_of(player(s, controller).library) {
-		if object_matches(s, object(s, id), typed, controller, source) do append(&cards, id)
+		if mass_filter_matches(s, object(s, id), x.filter, controller, source) do append(&cards, id)
 	}
-	any_card := len(typed.properties) == 0 && len(typed.type_filters) == 1 && is_card_filter(typed.type_filters[0])
+	typed, is_typed := x.filter.(types.TargetFilter_Typed)
+	any_card := is_typed && len(typed._0.properties) == 0 && len(typed._0.type_filters) == 1 && is_card_filter(typed._0.type_filters[0])
 	s.priority_player = controller
 	s.waiting_for = types.WaitingFor_SearchChoice {
 		player              = controller,
