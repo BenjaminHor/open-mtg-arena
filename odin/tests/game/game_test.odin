@@ -3219,3 +3219,42 @@ modal_triggered_ability :: proc(t: ^testing.T) {
 	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
 	testing.expect(t, game.player(s, 0).life == 21)
 }
+
+@(test)
+impulse_draw :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Reckless Impulse: "Exile the top two cards of your library. Until the end of your next turn, you may play those
+	// cards." A land among them is played as the land for the turn (CR 305.1), a spell cast from exile.
+	testing.expect(t, game.card_supported(&card(t, "Reckless Impulse").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 2 do add(t, g, "Mountain", 0, .Battlefield)
+	mountain := add(t, g, "Mountain", 0, .Library)
+	shock := add(t, g, "Shock", 0, .Library) // the top card
+	impulse := add(t, g, "Reckless Impulse", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = impulse.id}))
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, shock.zone == .Exile && mountain.zone == .Exile, "both exiled")
+	testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = mountain.id}), "the Mountain played from exile")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}), "Shock cast from exile")
+	if _, asked := s.waiting_for.(types.WaitingFor_TargetSelection); asked {
+		game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}})
+	}
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, game.player(s, 1).life == 18 && shock.zone == .Graveyard)
+
+	// A card not played by then stays exiled and can't be played after the end of the controller's next turn.
+	g2 := new_game()
+	s2 := &g2.state
+	for _ in 0 ..< 2 do add(t, g2, "Mountain", 0, .Battlefield)
+	kept := add(t, g2, "Shock", 0, .Library)
+	impulse2 := add(t, g2, "Reckless Impulse", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = impulse2.id}))
+	for types.pvec_len(s2.stack) > 0 do game.apply(g2, s2.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, len(kept.casting_permissions) == 1)
+	game.cleanup(g2) // this turn ends: the permission lasts
+	testing.expect(t, len(kept.casting_permissions) == 1, "still playable on the opponent's turn and the next of ours")
+	game.cleanup(g2)
+	game.cleanup(g2) // the end of its controller's next turn
+	testing.expect(t, len(kept.casting_permissions) == 0 && kept.zone == .Exile, "gone, the card still exiled")
+}

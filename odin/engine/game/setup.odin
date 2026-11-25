@@ -49,6 +49,7 @@ Game :: struct {
 	// the state like the pumps).
 	control_changes:   [dynamic]Control_Change,
 	preventions:       [dynamic]Prevention, // damage prevention shields lasting the turn (prevention.odin)
+	permission_ends:   [dynamic]Permission_End, // when the play-from-exile permissions end (impulse.odin)
 	// Permanents whose shield counter already prevented damage in the combat damage being dealt now: the rest of
 	// that simultaneous damage is prevented too (CR 122.1c, 510.2).
 	shielded:          [dynamic]types.ObjectId,

@@ -330,7 +330,9 @@ bottom_cards :: proc(g: ^Game, p: types.PlayerId, cards: []types.ObjectId) -> bo
 // played their land for the turn.
 can_play_land :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool {
 	s := &g.state
-	if o.zone != .Hand || o.owner != p || !is_type(o, .Land) do return false
+	mode, from_exile := exile_permission(o, p)
+	if o.owner != p || !is_type(o, .Land) do return false
+	if o.zone != .Hand && !(from_exile && mode == .Play) do return false // "you may play that card" (CR 305.1)
 	// CR 305.2: one land a turn, plus one for each effect allowing an additional land.
 	allowed := int(s.max_lands_per_turn) + player_rule_count(g, p, .Extra_Land)
 	return sorcery_timing(s, p) && int(player(s, p).lands_played_this_turn) < allowed
@@ -461,6 +463,7 @@ castable_zone_ids :: proc(s: ^types.GameState, p: types.PlayerId) -> [dynamic]ty
 	append(&out, ..ids_of(player(s, p).hand))
 	for id in ids_of(s.command_zone) do if object(s, id).owner == p do append(&out, id)
 	for id in ids_of(player(s, p).graveyard) do if flashback_castable(object(s, id), p) do append(&out, id) // CR 702.34a
+	for id in ids_of(s.exile) do if _, ok := exile_permission(object(s, id), p); ok do append(&out, id)
 	return out
 }
 

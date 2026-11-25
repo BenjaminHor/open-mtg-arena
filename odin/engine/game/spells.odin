@@ -232,6 +232,10 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return prevention_supported(x)
 	case types.Effect_PayCost:
 		return pay_cost_supported(x)
+	case types.Effect_ExileTop:
+		return exile_top_supported(x)
+	case types.Effect_GrantCastingPermission:
+		return grant_permission_supported(x)
 	case types.Effect_AddTargetReplacement:
 		return exile_instead_supported(x)
 	case types.Effect_GainControl:
@@ -561,7 +565,9 @@ sorcery_timing :: proc(s: ^types.GameState, p: types.PlayerId) -> bool {
 castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, card_db: Card_Lookup) -> bool {
 	// From the hand, a commander from the command zone (CR 903.8), or a card with flashback from the graveyard
 	// (CR 702.34a).
-	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander) || flashback_castable(o, p)) do return refuse("not castable from its zone")
+	_, from_exile := exile_permission(o, p)
+	if is_type(o, .Land) do from_exile = false // a land is played, not cast
+	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander) || flashback_castable(o, p) || from_exile) do return refuse("not castable from its zone")
 	if !object_supported(o, card_db) do return refuse_unsupported(o)
 	if !can_cast_now(s, p, o) do return refuse("not now (timing or priority)")
 	if is_modal(o) {
@@ -1014,6 +1020,10 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		add_prevention(g, x, controller, source, target)
 	case types.Effect_PayCost:
 		if cost_payable_now(g, x, controller, source) do do_pay_cost(g, x, controller, source)
+	case types.Effect_ExileTop:
+		do_exile_top(g, x, controller, source, target)
+	case types.Effect_GrantCastingPermission:
+		do_grant_permission(g, x, controller, source)
 	case types.Effect_AddTargetReplacement:
 		add_exile_instead(g, target)
 	case types.Effect_GainControl:
@@ -1145,6 +1155,7 @@ pump :: proc(g: ^Game, o: ^types.GameObject, power, toughness: i32) {
 end_until_end_of_turn_effects :: proc(g: ^Game) {
 	clear(&g.pumps)
 	clear(&g.preventions) // CR 514.2: "this turn" prevention ends
+	end_permissions(g)
 	clear(&g.exile_instead)
 	// CR 514.2: "until end of turn" control ends; the permanent goes back to who controlled it before, if it's still
 	// the same object.

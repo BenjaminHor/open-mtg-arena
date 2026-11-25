@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 290 of 2880 rules implemented (10%), 133 of them tested.**
+**In scope (100-799): 290 of 2880 rules implemented (10%), 134 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -55,7 +55,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 302 creatures | 10 | 1 (10%) | 1 |
 | 303 enchantments | 20 | 3 (15%) | 1 |
 | 304 instants | 5 | 0 (0%) | 0 |
-| 305 lands | 11 | 3 (27%) | 1 |
+| 305 lands | 11 | 3 (27%) | 2 |
 | 306 planeswalkers | 13 | 1 (8%) | 1 |
 | 307 sorceries | 6 | 1 (17%) | 0 |
 | 308 kindreds | 3 | 0 (0%) | 0 |
@@ -956,7 +956,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 
 ### 305 lands (3/11)
 
-- 🟡 305.1 A player who has priority may play a land card from their hand during a main phase of their turn when the s...
+- ✅ 305.1 A player who has priority may play a land card from their hand during a main phase of their turn when the s...
 - 🟡 305.2 A player can normally play one land during their turn; however, continuous effects may increase this number.
 - ⬜ 305.2a To determine whether a player can play a land, compare the number of lands the player can play this turn wi...
 - ⬜ 305.2b A player can’t play a land, for any reason, if the number of lands the player can play this turn is equal t...

@@ -2948,6 +2948,10 @@ Progress:
 - Modal triggered abilities ("At the beginning of your end step, choose one -"): Rust's AbilityModeChoice as the
   trigger goes on the stack, before its targets (CR 603.3c); modes with no legal target unavailable (CR 700.2a);
   the chosen modes chained in printed order. Modal activated abilities aren't yet. 5,885 -> 5,952.
+- Impulse draw: "exile the top N cards of your library; until the end of your next turn (this turn, as long as
+  it's exiled) you may play them". The permission is on the card in the state (casting_permissions, as Rust has
+  it); lands are played from exile as the turn's land, spells cast; it ends in the cleanup step of its last turn
+  (the end turn kept in Game, permission_ends) or when the card leaves exile. 5,952 -> 5,988.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
