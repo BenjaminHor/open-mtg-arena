@@ -4385,3 +4385,22 @@ token_copy_of_a_transformed_permanent :: proc(t: ^testing.T) {
 	testing.expect(t, copy != nil && copy.name == "Ulvenwald Abomination" && copy.transformed, "back face up")
 	if copy != nil do testing.expect(t, game.transform_permanent(g, copy) && copy.name == "Ulvenwald Captive", "and it can transform back")
 }
+
+@(test)
+colors_of_mana_spent_to_cast :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Painful Truths ({2}{B}), converge: "You draw X cards and you lose X life, where X is the number of colors of
+	// mana spent to cast this spell." Paid with a Swamp, an Island and a Mountain: three colors.
+	testing.expect(t, game.card_supported(&card(t, "Painful Truths").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Swamp", 0, .Battlefield)
+	add(t, g, "Island", 0, .Battlefield)
+	add(t, g, "Mountain", 0, .Battlefield)
+	truths := add(t, g, "Painful Truths", 0, .Hand)
+	hand := types.pvec_len(s.players[0].hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = truths.id}))
+	testing.expect(t, truths.colors_spent_to_cast.black == 1 && truths.mana_spent_to_cast_amount == 3, "one black of three")
+	settle_stack(g)
+	testing.expect(t, types.pvec_len(s.players[0].hand) == hand - 1 + 3 && s.players[0].life == 17, "drew 3, lost 3")
+}

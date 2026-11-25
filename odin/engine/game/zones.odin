@@ -112,7 +112,10 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 	// the permanent it becomes use that X too. Anywhere else, X is gone.
 	// A spell that resolves into a permanent remembers it was cast, and from where ("when this enters, if you cast
 	// it", CR 603.4); anywhere else that's forgotten (CR 400.7).
-	if to != .Stack && !(from == .Stack && to == .Battlefield) do o.cast_from_zone = nil
+	if to != .Stack && !(from == .Stack && to == .Battlefield) {
+		o.cast_from_zone = nil
+		o.mana_spent_to_cast, o.mana_spent_to_cast_amount, o.colors_spent_to_cast = false, 0, {}
+	}
 	if to != .Stack && !(from == .Stack && to == .Battlefield) {
 		o.cost_x_paid = nil
 		o.additional_cost_payment_count = 0 // CR 702.33d: "kicked" belongs to the spell and the permanent it became

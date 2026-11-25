@@ -276,6 +276,8 @@ Mana_Tap :: struct {
 	option:  Mana_Option,
 	pip:     types.ManaPipId,
 	surplus: int, // mana it makes beyond what the cost needs, left in the pool (CR 106.4)
+	paid:    int, // how much of the cost it pays...
+	color:   types.ManaType, // ...and in what type of mana (a colored symbol's, or the first it can make)
 }
 
 // CR 601.2g-h: which permanents to tap, and with which abilities, to pay the cost. Abilities without a rider are
@@ -332,7 +334,18 @@ plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaC
 				if fits && (best < 0 || option.rider < src.options[best].rider) do best = j
 			}
 			if best < 0 do best = 0
-			append(&taps, Mana_Tap{src.object, src.options[best], src.pip, surplus[i]})
+			color: types.ManaType
+			for c in src.options[best].colors {
+				color = c
+				break
+			}
+			for k in 0 ..< len(colored) do if assigned[k] == i {
+				for c in src.options[best].colors & colored[k] {
+					color = c
+					break
+				}
+			}
+			append(&taps, Mana_Tap{src.object, src.options[best], src.pip, surplus[i], used[i] - surplus[i], color})
 		}
 		return taps, true
 	}
@@ -365,6 +378,7 @@ pay_mana :: proc(g: ^Game, p: types.PlayerId, cost: types.ManaCost, exclude: typ
 		}
 	}
 	for t in taps do if t.object != nil && !t.option.convoke do mana_rider(g, p, t.object, t.option)
+	if paying.is_spell && paying.object != nil do record_mana_spent(paying.object, taps[:])
 	return true
 }
 
@@ -528,6 +542,30 @@ spend_pool_mana :: proc(s: ^types.GameState, p: types.PlayerId, pip: types.ManaP
 	for u, i in pool do if u.pip_id == pip {
 		ordered_remove(pool, i)
 		return
+	}
+}
+
+// What was spent to cast a spell ("if at least three mana of the same color was spent", "the amount of mana spent"):
+// kept on the object, and on the permanent it becomes. Convoke isn't mana (CR 702.51c), nor counted.
+@(private = "file")
+record_mana_spent :: proc(o: ^types.GameObject, taps: []Mana_Tap) {
+	o.mana_spent_to_cast = true
+	for t in taps {
+		if t.option.convoke || t.paid <= 0 do continue
+		n := u32(t.paid)
+		o.mana_spent_to_cast_amount += n
+		#partial switch t.color {
+		case .White:
+			o.colors_spent_to_cast.white += n
+		case .Blue:
+			o.colors_spent_to_cast.blue += n
+		case .Black:
+			o.colors_spent_to_cast.black += n
+		case .Red:
+			o.colors_spent_to_cast.red += n
+		case .Green:
+			o.colors_spent_to_cast.green += n
+		}
 	}
 }
 

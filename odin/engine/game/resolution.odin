@@ -154,6 +154,7 @@ continue_resolution :: proc(g: ^Game) -> bool {
 	s := &g.state
 	r := &g.resolution
 	event_amount = r.event.amount // "that much", read by the instructions (quantities.odin)
+	event_object_now = r.event.object
 	for r.next != nil {
 		// What the instruction just carried out moved, before the next one reads "this way". An instruction skipped
 		// for its condition carries nothing out, so "this way" still means the one before it.
@@ -295,6 +296,7 @@ continue_resolution :: proc(g: ^Game) -> bool {
 		delete_key(&g.stack_transforms, r.stack_id)
 	}
 	r^ = {}
+	event_object_now = 0
 	return true
 }
 

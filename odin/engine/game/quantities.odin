@@ -15,6 +15,9 @@ x_defined: bool
 event_amount_defined: bool
 @(thread_local)
 event_amount: int
+// The trigger event's object while its ability resolves ("the spell that triggered it").
+@(thread_local)
+event_object_now: types.ObjectId
 
 quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 	#partial switch x in q {
@@ -50,6 +53,11 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return player_scope_supported(r.player)
 		case types.QuantityRef_StartingLifeTotal:
 			return player_scope_supported(r.player)
+		case types.QuantityRef_ManaSpentToCast:
+			// "The amount of mana spent to cast this spell", "if {R} was spent to cast it" (this spell or permanent, or
+			// the spell that triggered the ability).
+			if _, from_source := r.metric.(types.CastManaSpentMetric_FromSource); from_source do return false
+			return r.scope == .SelfObject || (r.scope == .TriggeringSpell && event_object_defined)
 		case types.QuantityRef_LifeAboveStarting:
 			return true
 		case types.QuantityRef_ObjectManaValue:
@@ -166,6 +174,37 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			return int(player(s, scope_player(s, r.player, controller)).life)
 		case types.QuantityRef_StartingLifeTotal:
 			return starting_life(s) // CR 103.4: the same for every player in a two-player game
+		case types.QuantityRef_ManaSpentToCast:
+			o := object(s, source)
+			if r.scope == .TriggeringSpell {
+				id := event_object_now
+				if id == 0 do id = collecting_event.object // checked as it triggers
+				o = object(s, id)
+			}
+			if o == nil do return 0
+			c := o.colors_spent_to_cast
+			#partial switch m in r.metric {
+			case types.CastManaSpentMetric_Total:
+				return int(o.mana_spent_to_cast_amount)
+			case types.CastManaSpentMetric_DistinctColors:
+				n := 0
+				for v in ([5]u32{c.white, c.blue, c.black, c.red, c.green}) do if v > 0 do n += 1
+				return n
+			case types.CastManaSpentMetric_OfColor:
+				switch m.color {
+				case .White:
+					return int(c.white)
+				case .Blue:
+					return int(c.blue)
+				case .Black:
+					return int(c.black)
+				case .Red:
+					return int(c.red)
+				case .Green:
+					return int(c.green)
+				}
+			}
+			return 0
 		case types.QuantityRef_LifeAboveStarting:
 			// "At least N life more than your starting life total" (Ajani, Strength of the Pride).
 			return max(int(player(s, controller).life) - starting_life(s), 0)

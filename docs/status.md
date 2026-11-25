@@ -3040,6 +3040,10 @@ Progress:
   settled when the ability triggers and not checked again as it resolves. 6,612 -> 6,679.
 - Spell filters: historic (CR 700.6), kicked (702.33d), multicolored and other color counts (105.4), "has an
   Adventure" (716.2a), and "and" filters. 6,679 -> 6,729.
+- Mana spent to cast a spell (converge, adamant, "if {R} was spent", "the amount of mana spent"): payment records
+  each source's mana type on the spell (mana_spent_to_cast, colors_spent_to_cast; kept on the permanent it becomes,
+  convoke not counted, CR 702.51c), read for the spell itself or the spell that triggered an ability. 6,729 ->
+  6,763.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
