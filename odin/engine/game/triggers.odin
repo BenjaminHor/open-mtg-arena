@@ -131,6 +131,9 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		case types.TriggerConstraint_NthSpellThisTurn:
 			// "Whenever you cast your second spell each turn": the caster's count, any spell.
 			if !is_cast || x.filter != nil do return false
+		case types.TriggerConstraint_NthDrawThisTurn:
+			// "Whenever you draw your second card each turn" (CR 121.2: each card drawn is its own event).
+			if _, drawn := t.mode.(types.TriggerMode_Drawn); !drawn do return false
 		case:
 			return false
 		}
@@ -606,7 +609,13 @@ collect_triggers :: proc(g: ^Game) {
 					case:
 						continue
 					}
-					if !trigger_supported(t^) || !turn_constraint_met(s, t^, o.controller) do continue
+					if !trigger_supported(t^) do continue
+					if c, has := t.constraint.?; has {
+						if nth, is_nth := c.(types.TriggerConstraint_NthDrawThisTurn); is_nth {
+							// This card is the drawer's (before + 1)th this turn.
+							if !compare(e.before + 1, nth.comparator, int(nth.n)) do continue
+						} else if !turn_constraint_met(s, t^, o.controller) do continue
+					}
 					// Whose: "you", "an opponent", or any player.
 					if v, has := t.valid_target.?; has {
 						if is_you(v) && e.controller != o.controller do continue

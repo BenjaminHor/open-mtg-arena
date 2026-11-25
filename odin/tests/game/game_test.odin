@@ -4706,3 +4706,23 @@ a_spell_that_adds_mana :: proc(t: ^testing.T) {
 	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = corpse.id}), "paid from the pool")
 	testing.expect(t, len(s.players[0].mana_pool.mana) == 1, "one left")
 }
+
+@(test)
+second_card_drawn_each_turn :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Atlantean Cavalry: "Whenever you draw your second card each turn, put a +1/+1 counter on this creature." Each
+	// card drawn is its own event (CR 121.2): drawing two at once triggers on the second, a third doesn't.
+	testing.expect(t, game.card_supported(&card(t, "Atlantean Cavalry").face))
+	g := new_game()
+	s := &g.state
+	cavalry := add(t, g, "Atlantean Cavalry", 0, .Battlefield)
+	s.players[0].cards_drawn_this_turn = 0 // the opening hand was drawn before this turn
+	for _ in 0 ..< 6 do add(t, g, "Island", 0, .Battlefield)
+	for _ in 0 ..< 2 {
+		// Divination: "Draw two cards." The first one's second card triggers; the second one's (3rd, 4th) doesn't.
+		spell := add(t, g, "Divination", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+		settle_stack(g)
+	}
+	testing.expectf(t, game.counter_count(cavalry, types.CounterType_Plus1Plus1{}) == 1, "one counter, got %d", game.counter_count(cavalry, types.CounterType_Plus1Plus1{}))
+}

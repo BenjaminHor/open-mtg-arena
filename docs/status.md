@@ -3074,6 +3074,8 @@ Progress:
   not mana abilities, they use the stack; the mana goes to the pool, CR 106.4). Fixed and colorless amounts; any
   color, restricted or lasting mana not yet. An activated ability that adds mana is never handled as an ordinary
   activated ability (CR 605.1a). 6,976 -> 6,999.
+- "Whenever you draw your second (third) card each turn": each card drawn is its own event (CR 121.2) carrying the
+  drawer's count before it. 6,999 -> 7,035.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
