@@ -303,6 +303,7 @@ apply_entering_replacements :: proc(s: ^types.GameState, o: ^types.GameObject) {
 add_counters :: proc(o: ^types.GameObject, kind: types.CounterType, n: u32) {
 	if n == 0 do return
 	before := counter_count(o, kind)
+	report(types.GameEvent_CounterAdded{object_id = o.id, counter_type = kind, count = n, actor = o.controller})
 	if action_events != nil do append(action_events, Event{kind = .Counter_Added, object = o.id, controller = o.controller, counter = kind, amount = int(n), before = int(before), incarnation = o.incarnation})
 	// Loyalty counters are kept as the permanent's loyalty (CR 306.5b, 209.1), the number its abilities' costs,
 	// damage and CR 704.5i read.
@@ -357,6 +358,7 @@ remove_counters :: proc(o: ^types.GameObject, kind: types.CounterType, n: u32) {
 tap_permanent :: proc(o: ^types.GameObject) {
 	if o.tapped do return
 	o.tapped = true
+	report(types.GameEvent_PermanentTapped{object_id = o.id})
 	if action_events != nil do append(action_events, Event{kind = .Tapped, object = o.id, controller = o.controller})
 }
 
@@ -368,6 +370,7 @@ untap :: proc(o: ^types.GameObject) {
 		return
 	}
 	o.tapped = false
+	report(types.GameEvent_PermanentUntapped{object_id = o.id})
 }
 
 // The keyword a keyword counter gives (CR 122.1b), of those this engine carries out.

@@ -155,6 +155,7 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 	// CR 603.2, 603.6: a zone change is an event abilities can trigger on.
 	if !moving_together do event_group += 1
 	append(&g.events, Event{kind = .Zone_Change, object = id, from = from, to = to, controller = last_controller, lki = lki, group = event_group})
+	report_zone_change(s, id, from, to)
 }
 
 // CR 701.21a: to sacrifice a permanent, its controller moves it from the battlefield to its owner's graveyard. That
@@ -163,6 +164,8 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 sacrifice_permanent :: proc(g: ^Game, id: types.ObjectId) {
 	o := object(&g.state, id)
 	if o == nil || o.zone != .Battlefield do return
+	report(types.GameEvent_PermanentSacrificed{object_id = id, player_id = o.controller})
+	report_told_move(id)
 	move_object(g, id, .Graveyard)
 	// "If you sacrificed a permanent this turn": the record, as the permanent last existed (sacrificed by its
 	// controller, CR 701.21a).
@@ -195,6 +198,8 @@ discard_card :: proc(g: ^Game, id: types.ObjectId) {
 	o := object(s, id)
 	if o == nil || o.zone != .Hand do return
 	owner := o.owner
+	report(types.GameEvent_Discarded{player_id = owner, object_id = id})
+	report_told_move(id)
 	move_object(g, id, .Graveyard)
 	s.cards_discarded_this_turn_by_player[owner] = (s.cards_discarded_this_turn_by_player[owner] or_else 0) + 1
 }

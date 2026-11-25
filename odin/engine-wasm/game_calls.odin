@@ -87,10 +87,15 @@ initialize_game :: proc(b: ^strings.Builder, args: []json.Value) {
 	seed, has_seed := json.to_u64(arg(args, 1))
 	if !has_seed do seed = random_seed()
 	first, _ := json.to_u64(arg(args, 5))
+	report := new_report()
+	game.reporting = &report
 	current = game.start_game(decks[:], seed, format, types.PlayerId(first), card_lookup)
+	game.reporting = nil
 	revision = 0
 
-	strings.write_string(b, `{"ok":{"events":[],"log_entries":[],"waiting_for":`)
+	strings.write_string(b, `{"ok":{`)
+	write_report(b, &report)
+	strings.write_string(b, `,"waiting_for":`)
 	types.encode_WaitingFor(b, current.state.waiting_for)
 	strings.write_string(b, "}}")
 }
@@ -177,19 +182,46 @@ submit_action :: proc(b: ^strings.Builder, args: []json.Value) {
 	}
 	actor, _ := json.to_u64(arg(args, 0))
 	applied := false
+	report := new_report()
 	{
 		context.allocator = game_allocator()
 		action: types.GameAction
+		game.reporting = &report
 		if types.decode_GameAction(arg(args, 1), &action) do applied = game.apply(current, types.PlayerId(actor), action)
+		game.reporting = nil
 	}
-	write_outcome(b, applied)
+	write_outcome(b, applied, &report)
+}
+
+// What happened, for the client's animations and game log. Lives for this call only (the temporary allocator).
+@(private = "file")
+new_report :: proc() -> game.Report {
+	return game.Report{events = make([dynamic]types.GameEvent, context.temp_allocator), log = make([dynamic]types.GameLogEntry, context.temp_allocator)}
+}
+
+// `"events":[...],"log_entries":[...]`
+@(private = "file")
+write_report :: proc(b: ^strings.Builder, r: ^game.Report) {
+	strings.write_string(b, `"events":[`)
+	for e, i in r.events {
+		if i > 0 do strings.write_byte(b, ',')
+		types.encode_GameEvent(b, e)
+	}
+	strings.write_string(b, `],"log_entries":[`)
+	for e, i in r.log {
+		if i > 0 do strings.write_byte(b, ',')
+		types.encode_GameLogEntry(b, e)
+	}
+	strings.write_byte(b, ']')
 }
 
 @(private = "file")
-write_outcome :: proc(b: ^strings.Builder, applied: bool) {
+write_outcome :: proc(b: ^strings.Builder, applied: bool, report: ^game.Report) {
 	if applied {
 		revision += 1
-		reply_ok_raw(b, `{"status":"applied","result":{"events":[],"log_entries":[]}}`)
+		strings.write_string(b, `{"ok":{"status":"applied","result":{`)
+		write_report(b, report)
+		strings.write_string(b, "}}}")
 	} else {
 		// The engine's reason, when it gave one, after the client's usual message.
 		strings.write_string(b, `{"ok":{"status":"rejected","rejection":{"code":"invalid_action","disposition":"invalid","message":"That action isn't legal now.","reason":`)

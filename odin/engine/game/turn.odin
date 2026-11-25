@@ -41,6 +41,7 @@ begin_turn :: proc(g: ^Game, active: types.PlayerId) {
 		p.life_lost_this_turn = 0
 	}
 	player(s, active).turns_taken += 1
+	report(types.GameEvent_TurnStarted{player_id = active, turn_number = s.turn_number})
 	begin_step(g, .Untap)
 }
 
@@ -55,6 +56,7 @@ begin_step :: proc(g: ^Game, step: types.Phase) {
 	defer action_events = outer
 	empty_mana_pools(s) // CR 500.5, 703.4q: the previous step or phase has ended
 	s.phase = step
+	report(types.GameEvent_PhaseChanged{phase = step})
 	s.priority_passes = nil
 	#partial switch step {
 	case .Untap:

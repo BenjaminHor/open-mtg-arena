@@ -3,7 +3,9 @@
 // Run: odin test odin/tests/game
 package game_test
 
+import "core:fmt"
 import "core:os"
+import "core:strings"
 import "core:sync"
 import "core:slice"
 import "core:testing"
@@ -5396,4 +5398,59 @@ sixth_review_fixes :: proc(t: ^testing.T) {
 	for name in ([]string{"Bind the Monster", "Tolls of War", "Rift Elemental", "Equinox"}) {
 		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s refused", name)
 	}
+}
+
+// The report the client's animations and game log read: a spell cast (CR 601.2i), its resolution (CR 608.2), the
+// damage (CR 120.3) and the creature dying (CR 704.5g, 700.4); a refused action reports nothing.
+@(test)
+report_tells_what_happened :: proc(t: ^testing.T) {
+	if !load_db() do return
+	g := new_game()
+	add(t, g, "Mountain", 0, .Battlefield)
+	shock := add(t, g, "Shock", 0, .Hand)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	report := game.Report{events = make([dynamic]types.GameEvent, context.temp_allocator), log = make([dynamic]types.GameLogEntry, context.temp_allocator)}
+	game.reporting = &report
+	defer game.reporting = nil
+	testing.expect(t, !game.apply(g, 1, types.GameAction_PassPriority{}), "player 2 doesn't have priority")
+	testing.expect(t, len(report.events) == 0 && len(report.log) == 0, "a refused action reports nothing")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	was_cast, resolved, damage, died := false, false, false, false
+	for e in report.events {
+		#partial switch x in e {
+		case types.GameEvent_SpellCast:
+			was_cast = was_cast || x.object_id == shock.id
+		case types.GameEvent_StackResolved:
+			resolved = true
+		case types.GameEvent_DamageDealt:
+			damage = damage || (x.amount == 2 && x.target == types.TargetRef(types.TargetRef_Object{bears.id}))
+		case types.GameEvent_ZoneChanged:
+			from, _ := x.from.?
+			died = died || (x.object_id == bears.id && from == .Battlefield && x.to == .Graveyard)
+		}
+	}
+	testing.expect(t, was_cast && resolved && damage && died, "cast, resolution, damage and death are reported")
+	lines := make([dynamic]string, context.temp_allocator)
+	for entry in report.log {
+		line := ""
+		for seg in entry.segments {
+			#partial switch x in seg {
+			case types.LogSegment_Text:
+				line = strings.concatenate({line, x._0}, context.temp_allocator)
+			case types.LogSegment_CardName:
+				line = strings.concatenate({line, x.name}, context.temp_allocator)
+			case types.LogSegment_PlayerName:
+				line = strings.concatenate({line, x.name}, context.temp_allocator)
+			case types.LogSegment_Number:
+				line = strings.concatenate({line, fmt.tprint(x._0)}, context.temp_allocator)
+			}
+		}
+		append(&lines, line)
+	}
+	testing.expect(t, slice.contains(lines[:], "Player 1 casts Shock"), "the cast is logged")
+	testing.expect(t, slice.contains(lines[:], "Shock deals 2 damage to Grizzly Bears"), "the damage is logged")
+	testing.expect(t, slice.contains(lines[:], "Grizzly Bears dies"), "the death is logged")
 }

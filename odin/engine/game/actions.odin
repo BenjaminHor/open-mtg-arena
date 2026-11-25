@@ -81,11 +81,18 @@ apply :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> bool {
 	rejection, rejection_object = "", 0
 	action_events = &g.events
 	defer action_events = nil
+	begin_report(g)
+	was_over := game_over(&g.state)
 	ok := apply_action(g, p, action)
 	if ok {
 		run_auto_pass(g) // the standing passes of whoever now has priority
 		apply_continuous_effects(g)
 		sync_decider(&g.state)
+		if w, over := g.state.waiting_for.(types.WaitingFor_GameOver); over && !was_over do report(types.GameEvent_GameOver{winner = w.winner})
+	} else if reporting != nil {
+		// A refused action changed nothing, so nothing happened to tell.
+		clear(&reporting.events)
+		clear(&reporting.log)
 	}
 	return ok
 }
@@ -125,6 +132,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		// CR 104.3a: a player may concede at any time; they leave the game and lose. Only for themselves.
 		if a.player_id != p do return false
 		player(s, a.player_id).is_eliminated = true
+		report(types.GameEvent_PlayerLost{player_id = a.player_id})
 		other := opponent(s, a.player_id)
 		s.waiting_for = types.WaitingFor_GameOver{winner = other}
 		return true
@@ -406,6 +414,8 @@ play_land :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, face_decided 
 		if handled, ok := offer_modal_face(g, p, o); handled do return ok
 	}
 	if o == nil || !can_play_land(g, p, o) || !object_supported(o, g.card_db) do return false
+	report(types.GameEvent_LandPlayed{object_id = id, player_id = p, from_zone = o.zone})
+	report_told_move(id)
 	move_object(g, id, .Battlefield)
 	player(s, p).lands_played_this_turn += 1
 	s.lands_played_this_turn += 1

@@ -1092,6 +1092,7 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	record_spell_cast(s, p, o, from)
 	note_targeted(g, id, p, targets) // CR 601.2c
 	append(&g.events, Event{kind = .Spell_Cast, object = id, controller = p}) // CR 601.2i
+	report(types.GameEvent_SpellCast{card_id = o.card_id, controller = p, object_id = id})
 	s.priority_passes = nil
 	give_priority(g, p)
 }
@@ -1103,6 +1104,7 @@ copy_entry :: proc(x: types.StackEntry) -> types.StackEntry {return x}
 resolve_top_of_stack :: proc(g: ^Game) {
 	s := &g.state
 	entry := types.pvec_pop(&s.stack, copy_entry)
+	report_resolved(s, entry)
 	#partial switch k in entry.kind {
 	case types.StackEntryKind_TriggeredAbility:
 		resolve_ability(g, entry, k.ability)
@@ -1306,6 +1308,7 @@ deal_damage :: proc(g: ^Game, source: types.ObjectId, target: types.TargetRef, n
 	}
 	// CR 603.2: damage dealt is an event abilities can trigger on.
 	append(&g.events, Event{kind = .Damage, object = source, target = target, amount = n, combat = combat})
+	report(types.GameEvent_DamageDealt{source_id = source, target = target, amount = u32(n), is_combat = combat})
 	// The turn's record ("if an opponent was dealt damage this turn"), with who controlled each side then.
 	{
 		rec := types.DamageRecord{source_id = source, target = target, amount = u32(n), is_combat = combat}
@@ -1346,6 +1349,7 @@ gain_life :: proc(s: ^types.GameState, p: types.PlayerId, n: int) {
 	pl := player(s, p)
 	pl.life += i32(n)
 	pl.life_gained_this_turn += u32(n)
+	report_life(s, p, n)
 	// CR 119.9: a gain of 0 life isn't an event abilities trigger on.
 	if n > 0 && action_events != nil do append(action_events, Event{kind = .Life_Gained, controller = p, amount = n})
 }
@@ -1354,6 +1358,7 @@ lose_life :: proc(s: ^types.GameState, p: types.PlayerId, n: int) {
 	pl := player(s, p)
 	pl.life -= i32(n)
 	pl.life_lost_this_turn += u32(n)
+	report_life(s, p, -n)
 }
 
 // CR 701.8: destroying a permanent moves it to its owner's graveyard (CR 702.12b: unless it's indestructible).
@@ -1364,6 +1369,8 @@ destroy :: proc(g: ^Game, o: ^types.GameObject) {
 		remove_counters(o, types.CounterType_Shield{}, 1)
 		return
 	}
+	report(types.GameEvent_CreatureDestroyed{object_id = o.id})
+	report_told_move(o.id)
 	move_object(g, o.id, .Graveyard)
 }
 

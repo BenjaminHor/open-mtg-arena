@@ -1038,6 +1038,8 @@ push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerI
 		kind = types.StackEntryKind_ActivatedAbility{source_id = source, ability = resolved}
 	}
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = source, controller = controller, kind = kind}, copy_entry)
+	if triggered do report(types.GameEvent_AbilityTriggered{stack_entry = id, source_id = source, controller = controller})
+	else do report(types.GameEvent_AbilityActivated{player_id = controller, source_id = source, stack_entry = id})
 	return id
 }
 
@@ -1049,6 +1051,7 @@ push_resolved_trigger :: proc(g: ^Game, source: types.ObjectId, controller: type
 	src := object(s, source)
 	kind := types.StackEntryKind_TriggeredAbility{source_id = source, ability = ability, source_name = src.name if src != nil else ""}
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = source, controller = controller, kind = kind}, copy_entry)
+	report(types.GameEvent_AbilityTriggered{stack_entry = id, source_id = source, controller = controller, origin = .Delayed})
 }
 
 // ---- Resolving (CR 608.2) -----------------------------------------------------------------------------------
@@ -1176,6 +1179,8 @@ create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId
 	if e.enters_attacking do enter_attacking(s, o)
 	// CR 111.10 (and 603.6a): a token entering the battlefield is an event like any other.
 	append(&g.events, Event{kind = .Zone_Change, object = o.id, from = .Command, to = .Battlefield, controller = controller})
+	report(types.GameEvent_ZoneChanged{object_id = o.id, to = .Battlefield})
+	report(types.GameEvent_TokenCreated{object_id = o.id, name = o.name, source_id = source})
 }
 
 // CR 707.2, 111.1: a token that's a copy of an object has its copiable values: for a card, the card's printed

@@ -3167,6 +3167,16 @@ Progress:
   where Rust gives a verdict), the summary check's choice of first failure, unaccented name aliases, the bracket
   estimate (null). Next: `initialize_game`.
 
+- Step 4 (2026-11-25): the Odin engine now reports what happened. `odin/engine/game/report.odin` records the
+  client's GameEvents (turns, steps, casts, resolutions, triggers, land plays, draws, zone changes, damage, life,
+  taps, counters, tokens, attacks and blocks, deaths, sacrifices, discards, losses, game over) and builds the game
+  log's lines from them; `initialize_game` and `submit_action` return both (they were empty). In the app the game
+  log fills ("Player 2 casts Cryogen Relic", "Cryogen Relic's ability triggers", "Player 1 discards ..."). Test:
+  `report_tells_what_happened`. An Odin compiler bug: a loop with a nested union switch inside `log_line`'s big
+  switch produced WebAssembly that doesn't validate; it lives in its own proc (`attacks_line`).
+- Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
+  halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
+
 Rust baseline (measured 2026-11-24, this cloud container: 4 cores, 15 GB): `./scripts/build-wasm.sh wasm-dev` from
 cold compiled for 18 min 15 s, then wasm-bindgen was killed for lack of memory on the 260 MB debug-info module, so
 the dev engine build doesn't complete here without stripping `.debug_*` first. That is the loop the Odin engine

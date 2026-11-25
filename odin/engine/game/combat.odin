@@ -83,6 +83,7 @@ declare_attackers :: proc(g: ^Game, attacks: []types.Tuple2(types.ObjectId, type
 	}
 	// CR 508.3d: "whenever you attack" triggers if one or more creatures were declared as attackers.
 	if len(attacks) > 0 do append(&g.events, Event{kind = .You_Attack, controller = s.active_player})
+	if len(attacks) > 0 do report_attackers(s, attacks, defender)
 	s.combat = combat
 	// CR 508.2: the active player gets priority, attackers or not (508.8 skips the later combat steps).
 	give_priority(g, s.active_player)
@@ -135,6 +136,7 @@ declare_blockers :: proc(g: ^Game, assignments: []types.Tuple2(types.ObjectId, t
 	}
 	for &info in combat.attackers do if count[info.object_id] > 0 do info.blocked = true
 	append(&combat.blockers_declared_by, defender)
+	report_blockers(assignments)
 	give_priority(g, s.active_player)
 	return true
 }
@@ -404,6 +406,7 @@ check_state_based_actions :: proc(g: ^Game) {
 		if p.life <= 0 || p.drew_from_empty_library || p.poison_counters >= 10 {
 			p.is_eliminated = true
 			append(&losers, p.id)
+			report(types.GameEvent_PlayerLost{player_id = p.id})
 		}
 	}
 	if len(losers) > 0 {

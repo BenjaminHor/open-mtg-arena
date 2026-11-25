@@ -76,6 +76,8 @@ Control_Change :: struct {
 // (CR 103.5) and the game waits for the starting player's mulligan declaration, then the others' in turn order.
 start_game :: proc(decks: []Deck, seed: u64, format: types.FormatConfig, first_player: types.PlayerId, card_db: Card_Lookup) -> ^Game {
 	g := new(Game)
+	begin_report(g)
+	report(types.GameEvent_GameStarted{})
 	g.card_db = card_db
 	current_card_db = card_db
 	g.rng = rng.from_u64(seed)
@@ -269,6 +271,8 @@ draw_card :: proc(s: ^types.GameState, p: ^types.Player) -> bool {
 	types.pvec_push(&p.hand, id, copy_id)
 	s.objects.inner[id].zone = .Hand
 	p.cards_drawn_this_turn += 1
+	report_zone_change(s, id, .Library, .Hand)
+	report(types.GameEvent_CardDrawn{player_id = p.id, object_id = id, nth_in_turn = p.cards_drawn_this_turn})
 	// CR 121.2: each card drawn is its own event ("whenever you draw a card").
 	if action_events != nil do append(action_events, Event{kind = .Card_Drawn, controller = p.id, amount = 1, before = int(p.cards_drawn_this_turn) - 1})
 	return true
