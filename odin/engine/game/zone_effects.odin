@@ -37,7 +37,12 @@ change_zone_supported :: proc(x: types.Effect_ChangeZone) -> bool {
 		// "Under your control": the controller of the ability, as the engine already puts it (CR 110.2).
 		if _, you := under.(types.ControllerRef_You); !you do return false
 	}
-	if x.enters_attacking || x.up_to || len(x.enter_with_counters) > 0 || len(x.conditional_enter_with_counters) > 0 do return false
+	if x.up_to || len(x.conditional_enter_with_counters) > 0 do return false
+	if x.enters_attacking && x.destination != .Battlefield do return false
+	// "Return it to the battlefield with a +1/+1 counter on it" (CR 122.6): counters it enters with.
+	for c in x.enter_with_counters {
+		if x.destination != .Battlefield || !counter_kind_supported(c._0) || !quantity_supported(c._1) || quantity_reads_target(c._1) do return false
+	}
 	if x.face_down_profile != nil || x.enters_modified_if != nil do return false
 	#partial switch x.destination {
 	case .Hand, .Battlefield, .Graveyard, .Exile:
@@ -175,7 +180,7 @@ start_hand_choice :: proc(g: ^Game, x: types.Effect_ChangeZone, controller: type
 	for id in ids_of(player(s, controller).hand) do if object_matches(s, object(s, id), f, controller, source) do append(&eligible, id)
 	if len(eligible) == 0 do return false
 	s.priority_player = controller
-	s.waiting_for = types.WaitingFor_EffectZoneChoice{player = controller, cards = eligible, count = 1, min_count = 1, source_id = source, effect_kind = .ChangeZone, zone = .Hand, destination = x.destination, enter_tapped = x.enter_tapped}
+	s.waiting_for = types.WaitingFor_EffectZoneChoice{player = controller, cards = eligible, count = 1, min_count = 1, source_id = source, effect_kind = .ChangeZone, zone = .Hand, destination = x.destination, enter_tapped = x.enter_tapped, enters_attacking = x.enters_attacking}
 	return true
 }
 
@@ -190,6 +195,7 @@ answer_hand_choice :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_Effe
 			o := object(&g.state, id)
 			o.controller = p
 			if w.enter_tapped == .Tapped do o.tapped = true
+			if w.enters_attacking do enter_attacking(&g.state, o)
 		}
 	}
 	g.state.waiting_for = nil
@@ -212,5 +218,12 @@ do_change_zone :: proc(g: ^Game, x: types.Effect_ChangeZone, controller: types.P
 		// else its owner's ("return that card to the battlefield under its owner's control").
 		if _, has := x.enters_under.?; has do moved.controller = controller
 		if x.enter_tapped == .Tapped do moved.tapped = true
+		// CR 122.6: it enters with the counters the instruction names, as it enters.
+		for c in x.enter_with_counters {
+			if moved.zone != .Battlefield do break
+			n := quantity_value(s, c._1, controller, source, 0)
+			if n > 0 do add_counters(moved, c._0, u32(n))
+		}
+		if x.enters_attacking && moved.zone == .Battlefield do enter_attacking(s, moved)
 	}
 }

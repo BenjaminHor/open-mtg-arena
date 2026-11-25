@@ -3052,6 +3052,9 @@ Progress:
   records. 6,795 -> 6,806.
 - Party size (CR 700.8: the largest assignment of Cleric, Rogue, Warrior and Wizard) and "the number of colors among
   [permanents]" (CR 105.2). 6,806 -> 6,835.
+- Zone changes onto the battlefield "with N counters" (CR 122.6) and "tapped and attacking" (CR 508.4: the engine
+  picks the defending player, not yet a planeswalker; never declared, so no attack triggers), the finality counter
+  (CR 122.1h: exiled instead of going to a graveyard from the battlefield). 6,835 -> 6,860.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

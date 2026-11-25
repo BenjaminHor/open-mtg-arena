@@ -1113,11 +1113,7 @@ create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId
 	s.next_timestamp += 1
 	s.objects.inner[o.id] = o
 	types.pvec_push(&s.battlefield, o.id, copy_id)
-	// CR 508.4: entering attacking the defending player; only a creature (CR 506.3a), only the attacking player's
-	// (CR 506.3b), only during combat.
-	if c, in_combat := &s.combat.?; in_combat && e.enters_attacking && s.active_player == controller && is_type(o, .Creature) {
-		append(&c.attackers, types.AttackerInfo{object_id = o.id, defending_player = opponent(s, controller), attack_target = types.AttackTarget_Player{opponent(s, controller)}})
-	}
+	if e.enters_attacking do enter_attacking(s, o)
 	// CR 111.10 (and 603.6a): a token entering the battlefield is an event like any other.
 	append(&g.events, Event{kind = .Zone_Change, object = o.id, from = .Command, to = .Battlefield, controller = controller})
 }

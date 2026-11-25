@@ -40,7 +40,8 @@ may_name_player :: proc(f: types.TargetFilter) -> bool {
 counter_kind_supported :: proc(c: types.CounterType) -> bool {
 	#partial switch x in c {
 	case types.CounterType_Plus1Plus1, types.CounterType_Minus1Minus1, types.CounterType_Stun, types.CounterType_Lore,
-	     types.CounterType_Shield, types.CounterType_Loyalty:
+	     types.CounterType_Shield, types.CounterType_Loyalty, types.CounterType_Finality:
+		// Finality: exiled instead of going to a graveyard (CR 122.1h, move_object).
 		return true
 	case types.CounterType_Time, types.CounterType_Fade, types.CounterType_Age, types.CounterType_Generic:
 		// Counters with no rules meaning of their own (CR 122.1): only what reads them ("for each plan counter")

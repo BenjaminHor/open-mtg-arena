@@ -70,6 +70,9 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 	to := destination
 	// CR 614.6: "if it would die, exile it instead" changes where it goes.
 	if o.zone == .Battlefield && to == .Graveyard && exiled_instead(g, o) do to = .Exile
+	// CR 122.1h: finality counters make one replacement effect, "if this permanent would be put into a graveyard
+	// from the battlefield, exile it instead".
+	if o.zone == .Battlefield && to == .Graveyard && counter_count(o, types.CounterType_Finality{}) > 0 do to = .Exile
 	// CR 111.8: a token that has left the battlefield can't move to another zone or come back.
 	if o.is_token && o.zone != .Battlefield do return
 	if o.zone != .Stack {

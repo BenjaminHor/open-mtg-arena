@@ -4460,3 +4460,63 @@ party_size_counts_the_largest_party :: proc(t: ^testing.T) {
 	testing.expectf(t, game.party_size(&g.state, 0) == 3, "Cleric, Wizard, Rogue: got %d", game.party_size(&g.state, 0))
 	testing.expect(t, game.party_size(&g.state, 1) == 0, "the opponent has none")
 }
+
+@(test)
+returned_with_a_finality_counter :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Rite of the Moth: "Return target creature card from your graveyard to the battlefield with a finality counter
+	// on it." CR 122.6: it enters with the counter; CR 122.1h: if it would then go to a graveyard from the
+	// battlefield, it's exiled instead.
+	testing.expect(t, game.card_supported(&card(t, "Rite of the Moth").face))
+	g := new_game()
+	s := &g.state
+	for name in ([]string{"Plains", "Swamp", "Swamp", "Swamp"}) do add(t, g, name, 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Graveyard)
+	rite := add(t, g, "Rite of the Moth", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = rite.id}))
+	if _, choosing := s.waiting_for.(types.WaitingFor_TargetSelection); choosing {
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	}
+	settle_stack(g)
+	testing.expect(t, bears.zone == .Battlefield, "returned")
+	testing.expect(t, game.counter_count(bears, types.CounterType_Finality{}) == 1, "with a finality counter")
+	game.move_object(g, bears.id, .Graveyard)
+	testing.expectf(t, bears.zone == .Exile, "exiled instead of dying, got %v", bears.zone)
+}
+
+@(test)
+put_onto_the_battlefield_tapped_and_attacking :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Kinscaer Sentry: "Whenever this creature attacks, you may put a creature card with mana value X or less from
+	// your hand onto the battlefield tapped and attacking, where X is the number of attacking creatures you
+	// control." CR 508.4: it attacks as it enters, though it was never declared as an attacker.
+	testing.expect(t, game.card_supported(&card(t, "Kinscaer Sentry").face))
+	g := new_game()
+	s := &g.state
+	sentry := add(t, g, "Kinscaer Sentry", 0, .Battlefield)
+	elves := add(t, g, "Llanowar Elves", 0, .Hand)
+	add(t, g, "Grizzly Bears", 0, .Hand) // mana value 2: too much with one attacker
+	game.begin_step(g, .DeclareAttackers)
+	attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{sentry.id, types.AttackTarget_Player{1}}}
+	testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
+	for _ in 0 ..< 10 {
+		#partial switch w in s.waiting_for {
+		case types.WaitingFor_OptionalEffectChoice:
+			testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalEffect{accept = true}))
+			continue
+		case types.WaitingFor_EffectZoneChoice:
+			testing.expectf(t, len(w.cards) == 1 && w.cards[0] == elves.id, "only the Elves fit: %v", w.cards)
+			pick := make([dynamic]types.ObjectId)
+			append(&pick, elves.id)
+			testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = pick}))
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, elves.zone == .Battlefield && elves.tapped, "entered tapped")
+	c, _ := s.combat.?
+	attacking := false
+	for a in c.attackers do if a.object_id == elves.id do attacking = true
+	testing.expect(t, attacking, "and attacking")
+}
