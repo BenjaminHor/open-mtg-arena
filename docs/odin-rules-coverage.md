@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 297 of 2880 rules implemented (10%), 139 of them tested.**
+**In scope (100-799): 297 of 2880 rules implemented (10%), 140 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -140,7 +140,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 731 merging with permanents | 18 | 0 (0%) | 0 |
 | 732 day and night | 6 | 0 (0%) | 0 |
 | 733 taking shortcuts | 12 | 0 (0%) | 0 |
-| 734 handling illegal actions | 2 | 1 (50%) | 0 |
+| 734 handling illegal actions | 2 | 1 (50%) | 1 |
 | 800-999 (out of scope) | 303 | 4 | 3 |
 
 ## Checklist
@@ -3409,5 +3409,5 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 
 ### 734 handling illegal actions (1/2)
 
-- 🟡 734.1 If a player takes an illegal action or starts to take an action but can’t legally complete it, the entire a...
+- ✅ 734.1 If a player takes an illegal action or starts to take an action but can’t legally complete it, the entire a...
 - ⬜ 734.2 When reversing illegal spells and abilities, the player who had priority retains it and may take another ac...

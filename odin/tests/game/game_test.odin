@@ -3369,3 +3369,53 @@ exile_from_an_opponents_graveyard :: proc(t: ^testing.T) {
 	}
 	testing.expect(t, theirs.zone == .Exile && mine.zone == .Graveyard)
 }
+
+@(test)
+cost_that_depends_on_the_target :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Ajani's Response ({4}{W}): "This spell costs {3} less to cast if it targets a tapped creature. Destroy target
+	// creature." CR 601.2f: the total cost is worked out after the targets are chosen (601.2c), so with two Plains it
+	// can be cast at a tapped creature only; an untapped one leaves a cost it can't pay, and the cast is reversed
+	// (CR 601.2h, 734.1).
+	testing.expect(t, game.card_supported(&card(t, "Ajani's Response").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 2 do add(t, g, "Plains", 0, .Battlefield)
+	untapped := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	response := add(t, g, "Ajani's Response", 0, .Hand)
+	testing.expect(t, !game.castable(s, 0, response, g.card_db), "no tapped creature: five mana needed")
+	tapped := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	tapped.tapped = true
+	testing.expect(t, game.castable(s, 0, response, g.card_db), "{1}{W} at the tapped creature")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = response.id}))
+	game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{untapped.id}})
+	testing.expect(t, response.zone == .Hand && types.pvec_len(s.stack) == 0, "reversed: back in hand, nothing on the stack")
+	_, has_priority := s.waiting_for.(types.WaitingFor_Priority)
+	testing.expect(t, has_priority, "the player has priority again")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = response.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{tapped.id}}))
+	testing.expect(t, response.zone == .Stack, "cast for {1}{W}")
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, tapped.zone == .Graveyard && untapped.zone == .Battlefield)
+}
+
+@(test)
+spells_that_target_it_cost_more :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Boreal Elemental: "Spells your opponents cast that target this creature cost {2} more to cast." (CR 601.2f).
+	// With one Mountain, Shock can go at the player but not at the Elemental.
+	testing.expect(t, game.card_supported(&card(t, "Boreal Elemental").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Mountain", 0, .Battlefield)
+	elemental := add(t, g, "Boreal Elemental", 1, .Battlefield)
+	shock := add(t, g, "Shock", 0, .Hand)
+	testing.expect(t, game.castable(s, 0, shock, g.card_db), "castable at another target")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{elemental.id}})
+	testing.expect(t, shock.zone == .Hand, "{2} more at the Elemental: reversed")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	testing.expect(t, shock.zone == .Stack, "cast at the player for {R}")
+}

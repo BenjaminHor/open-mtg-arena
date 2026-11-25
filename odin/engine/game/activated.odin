@@ -420,6 +420,9 @@ cost_choice_leaves_mana :: proc(g: ^Game, p: types.PlayerId, chosen: []types.Obj
 	s := &g.state
 	o := object(s, g.pending.object)
 	if g.pending.ability_index < 0 {
+		saved := cost_targets
+		defer cost_targets = saved
+		cost_targets = {spell = o.id, caster = p, targets = g.pending.targets[:]} // CR 601.2f
 		_, payable := plan_payment(s, p, spell_cost(s, o, p), 0, chosen, Payment{o, true})
 		return payable
 	}

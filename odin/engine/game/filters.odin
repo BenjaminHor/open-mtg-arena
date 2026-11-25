@@ -238,6 +238,8 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 
 // Whether a spell on the stack has a target that fits the description ("this creature", "a creature you control").
 spell_targets_one :: proc(s: ^types.GameState, spell: types.ObjectId, f: types.TargetFilter, chooser: types.PlayerId, source: types.ObjectId) -> bool {
+	// A spell whose cost is being worked out reads the targets it's being cast with (CR 601.2f).
+	if cost_targets.spell == spell && spell != 0 do return cost_target_fits(s, object(s, spell), f, chooser, source)
 	for i in 0 ..< types.pvec_len(s.stack) {
 		e := types.pvec_get(s.stack, i)
 		if e.id != spell do continue

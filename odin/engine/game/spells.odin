@@ -618,6 +618,13 @@ object_gaps :: proc(o: ^types.GameObject) -> [dynamic]string {
 // CR 601.2f: the total cost: the mana cost, plus the commander tax (CR 903.8), plus increases, minus reductions,
 // never below {0}. Reductions here are of generic mana only.
 spell_cost :: proc(s: ^types.GameState, o: ^types.GameObject, p: types.PlayerId) -> types.ManaCost {
+	if cost_targets.spell != o.id {
+		// Not told its targets: the best case (Cost_Targets).
+		saved := cost_targets
+		cost_targets = {spell = o.id, caster = p, best_case = true}
+		defer cost_targets = saved
+		return spell_cost(s, o, p)
+	}
 	base := o.mana_cost
 	if o.zone == .Graveyard {
 		if f, has := flashback_cost(o); has do base = f // CR 702.34a: instead of its mana cost
@@ -774,8 +781,19 @@ next_target_or_finish :: proc(g: ^Game, p: types.PlayerId) {
 		pay_activation(g, p)
 		return
 	}
-	// CR 601.2h: an additional cost that has the player choose (what to sacrifice or discard).
 	o := object(s, g.pending.object)
+	if !spell_payable_with_targets(g, p, o) {
+		// CR 601.2h, 734.1: the targets chosen leave a cost it can't pay ("costs {3} less if it targets a tapped
+		// creature", with an untapped one chosen): the cast is reversed.
+		withdraw_spell(s, o.id)
+		o.cost_x_paid = nil
+		o.additional_cost_payment_count = 0
+		g.pending = {}
+		rejection = "the cost with those targets can't be paid"
+		give_priority(g, p)
+		return
+	}
+	// CR 601.2h: an additional cost that has the player choose (what to sacrifice or discard).
 	if cost, has := spell_additional_cost(o); has && !g.pending.cost_chosen {
 		if c, chooses := object_cost_of(s, p, o, cost); chooses {
 			others := make([dynamic]types.ObjectId, context.temp_allocator)
@@ -787,6 +805,15 @@ next_target_or_finish :: proc(g: ^Game, p: types.PlayerId) {
 	}
 	finish_cast(g, p, g.pending.object, g.pending.targets[:])
 	g.pending = {}
+}
+
+// Whether the spell being cast can pay its cost with the targets chosen for it (CR 601.2f, 601.2h).
+spell_payable_with_targets :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, targets: []types.TargetRef = nil) -> bool {
+	saved := cost_targets
+	defer cost_targets = saved
+	cost_targets = {spell = o.id, caster = p, targets = targets if targets != nil else g.pending.targets[:]}
+	_, payable := plan_payment(&g.state, p, spell_cost(&g.state, o, p), 0, nil, Payment{o, true})
+	return payable
 }
 
 has_x :: proc(cost: types.ManaCost) -> bool {
@@ -889,7 +916,9 @@ decline_target :: proc(g: ^Game, p: types.PlayerId) -> bool {
 finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []types.TargetRef) {
 	s := &g.state
 	o := object(s, id)
+	cost_targets = {spell = id, caster = p, targets = targets} // CR 601.2f: the total cost reads the targets
 	pay_mana(g, p, spell_cost(s, o, p), 0, g.pending.cost_objects[:], Payment{o, true}) // CR 605.3, 601.2h
+	cost_targets = {}
 	pay_additional_cost(g, p, o)
 	from := o.zone // where it was cast from: flashback's exile reads it (CR 702.34a)
 	if o.zone == .Command {

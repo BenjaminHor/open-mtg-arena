@@ -2960,6 +2960,11 @@ Progress:
   token just created" or to a creature you control chosen as it resolves (CR 701.3a). 6,038 -> 6,098.
 - "Owned by" filters (CR 108.3: "target card from an opponent's graveyard"), and graveyard targets whose
   instruction states no origin zone. 6,098 -> 6,115.
+- Costs that read the spell's targets (CR 601.2f): "costs {3} less if it targets a tapped creature" and "spells
+  your opponents cast that target this creature cost {2} more". The total cost reads the chosen targets; before
+  they're chosen (castable, max X, kicker) it's the best case (a reduction counts if some legal target earns it, an
+  increase doesn't). Targets that leave the cost unpayable reverse the cast (CR 601.2h, 734.1); the AI picks a last
+  target it can pay for. 6,115 -> 6,151.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

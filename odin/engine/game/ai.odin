@@ -77,12 +77,13 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		return types.GameAction_SelectCards{cards = out}, true
 	case types.WaitingFor_TargetSelection:
 		slot := w.selection.current_slot
+		legal := affordable_targets(g, p, w.selection.current_legal_targets[:], slot + 1 == len(w.target_slots))
 		if slot < len(w.target_slots) && w.target_slots[slot].optional {
 			// "Up to two": another target only if it's a good one.
-			t, good := chosen_target(g, p, w.selection.current_legal_targets[:], pending_ability(g))
+			t, good := chosen_target(g, p, legal, pending_ability(g))
 			return types.GameAction_ChooseTarget{target = t if good else nil}, true
 		}
-		return types.GameAction_ChooseTarget{target = best_target(g, p, w.selection.current_legal_targets[:])}, true
+		return types.GameAction_ChooseTarget{target = best_target(g, p, legal)}, true
 	case types.WaitingFor_TriggerTargetSelection:
 		a: ^types.AbilityDefinition
 		if g.trigger_targets.definition != nil do a = g.trigger_targets.definition.execute
@@ -272,6 +273,21 @@ chosen_target :: proc(g: ^Game, p: types.PlayerId, legal: []types.TargetRef, a: 
 		}
 	}
 	return best, best_score >= 0
+}
+
+// For the last target of a spell whose cost depends on its targets ("costs {3} less if it targets a tapped
+// creature"), the targets it can still pay for (CR 601.2f); a choice it can't pay for would only reverse the cast.
+affordable_targets :: proc(g: ^Game, p: types.PlayerId, legal: []types.TargetRef, last: bool) -> []types.TargetRef {
+	o := object(&g.state, g.pending.object)
+	if !last || o == nil || g.pending.ability_index >= 0 do return legal
+	out := make([dynamic]types.TargetRef, context.temp_allocator)
+	for t in legal {
+		chosen := make([dynamic]types.TargetRef, context.temp_allocator)
+		append(&chosen, ..g.pending.targets[:])
+		append(&chosen, t)
+		if spell_payable_with_targets(g, p, o, chosen[:]) do append(&out, t)
+	}
+	return out[:] if len(out) > 0 else legal
 }
 
 best_target :: proc(g: ^Game, p: types.PlayerId, legal: []types.TargetRef) -> types.TargetRef {

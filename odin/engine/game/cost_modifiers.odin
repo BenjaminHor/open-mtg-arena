@@ -11,7 +11,7 @@ cost_modifier_supported :: proc(st: types.StaticDefinition) -> bool {
 	amount, is_cost := m.amount.(types.ManaCost_Cost)
 	if !is_cost || len(amount.shards) > 0 || amount.generic == 0 do return false
 	if q, has := m.dynamic_count.?; has && !quantity_supported(types.QuantityExpr_Ref{q}) do return false
-	if f, has := m.spell_filter.?; has && (!spell_filter_supported(f) || filter_reads_targets(f)) do return false
+	if f, has := m.spell_filter.?; has && !spell_filter_supported(f) do return false
 	if c, has := st.condition.?; has && !condition_supported(c) do return false
 	affected, has := st.affected.?
 	if !has do return false
@@ -30,8 +30,46 @@ cost_modifier_supported :: proc(st: types.StaticDefinition) -> bool {
 	return false
 }
 
-// A reduction that depends on the spell's targets ("costs {2} less if it targets a creature you control") would
-// need the targets chosen before the total cost; that order isn't modelled yet.
+// CR 601.2f: the total cost is worked out after the targets are chosen (601.2c), so a change "if it targets a tapped
+// creature" or "spells that target this creature" reads them. The spell being cast and its chosen targets, while its
+// cost is worked out; spell_targets_one reads them. When the cost is asked for a spell without its targets (is it
+// castable at all, how large can X be), it's the best case: a reduction counts if some legal target would earn it,
+// an increase doesn't count. A target choice that then leaves the cost unpayable reverses the cast (CR 734).
+Cost_Targets :: struct {
+	spell:     types.ObjectId,
+	caster:    types.PlayerId,
+	targets:   []types.TargetRef,
+	best_case: bool,
+}
+
+@(thread_local)
+cost_targets: Cost_Targets
+
+// Whether the spell has a target among `cost_targets` that fits; in the best case, whether some legal target of
+// its would.
+cost_target_fits :: proc(s: ^types.GameState, spell: ^types.GameObject, f: types.TargetFilter, chooser: types.PlayerId, source: types.ObjectId) -> bool {
+	fits :: proc(s: ^types.GameState, t: types.TargetRef, f: types.TargetFilter, chooser: types.PlayerId, source: types.ObjectId) -> bool {
+		id, is_object := t.(types.TargetRef_Object)
+		if !is_object do return false
+		#partial switch x in f {
+		case types.TargetFilter_SelfRef:
+			return id._0 == source
+		case types.TargetFilter_Typed:
+			o := object(s, id._0)
+			return o != nil && object_matches(s, o, x._0, chooser, source)
+		}
+		return false
+	}
+	if !cost_targets.best_case {
+		for t in cost_targets.targets do if fits(s, t, f, chooser, source) do return true
+		return false
+	}
+	for slot in spell_slot_list(spell) {
+		for t in legal_targets(s, slot.filter, cost_targets.caster, spell.id) do if fits(s, t, f, chooser, source) do return true
+	}
+	return false
+}
+
 @(private = "file")
 filter_reads_targets :: proc(f: types.TargetFilter) -> bool {
 	#partial switch x in f {
@@ -49,7 +87,11 @@ cost_change :: proc(s: ^types.GameState, p: types.PlayerId, spell: ^types.GameOb
 	change := 0
 	apply :: proc(s: ^types.GameState, st: ^types.StaticDefinition, source, spell: ^types.GameObject) -> int {
 		m := st.mode.(types.StaticMode_ModifyCost)
-		if f, has := m.spell_filter.?; has && !spell_matches(s, spell, f, source) do return 0
+		if f, has := m.spell_filter.?; has {
+			// The best case before targets are chosen: an increase that depends on them doesn't count yet.
+			if cost_targets.best_case && m.mode == .Raise && filter_reads_targets(f) do return 0
+			if !spell_matches(s, spell, f, source) do return 0
+		}
 		if !condition_holds(s, source, st.condition) do return 0
 		n := int(m.amount.(types.ManaCost_Cost).generic)
 		if q, has := m.dynamic_count.?; has do n *= quantity_value(s, types.QuantityExpr_Ref{q}, source.controller, source.id, 0)
