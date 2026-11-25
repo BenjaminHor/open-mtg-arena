@@ -1999,3 +1999,32 @@ this_or_another_enters :: proc(t: ^testing.T) {
 	resolve_all(g)
 	testing.expect(t, bears.zone == .Battlefield && game.player(s, 0).life == 22, "another creature entered: 1 more")
 }
+
+@(test)
+ability_from_the_graveyard :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 113.6j: "Renew — {B}, Exile this card from your graveyard: Put a +1/+1 counter on target creature.
+	// Activate only as a sorcery." (Adorned Crocodile) works from the graveyard, where its cost can be paid; the
+	// card is exiled as the cost (CR 701.13a).
+	g := new_game()
+	s := &g.state
+	testing.expect(t, game.card_supported(&card(t, "Adorned Crocodile").face))
+	add(t, g, "Swamp", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	croc := add(t, g, "Adorned Crocodile", 0, .Graveyard)
+	index := -1
+	for a in game.legal_actions(g, 0) do if x, ok := a.(types.GameAction_ActivateAbility); ok && x.source_id == croc.id do index = x.ability_index
+	testing.expect(t, index >= 0, "offered from the graveyard")
+	if index < 0 do return
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = croc.id, ability_index = index}))
+	if _, choosing := s.waiting_for.(types.WaitingFor_TargetSelection); choosing {
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	}
+	testing.expect(t, croc.zone == .Exile, "exiled as the cost")
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, len(bears.counters) == 1, "the counter")
+	// Not from the battlefield: its cost can't be paid there.
+	croc2 := add(t, g, "Adorned Crocodile", 0, .Battlefield)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ActivateAbility{source_id = croc2.id, ability_index = index}))
+}

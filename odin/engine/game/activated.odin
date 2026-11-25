@@ -12,8 +12,18 @@ activated_supported :: proc(a: types.AbilityDefinition) -> bool {
 	if !has || !cost_supported(cost) do return false
 	if a.activator_filter != nil || a.activation_mana_payment_restriction != nil do return false
 	if a.cost_reduction != nil do return false // "costs {1} less for each ..." (channel): not applied yet
-	// From the hand: abilities that discard the card itself as their cost (cycling, CR 702.29a).
-	if zone, has := a.activation_zone.?; has && (zone != .Hand || !discards_itself(a)) do return false
+	// From the hand: abilities that discard the card itself as their cost (cycling, CR 702.29a). From the
+	// graveyard: those that exile it from there (CR 113.6j: a cost payable only there).
+	if zone, has := a.activation_zone.?; has {
+		#partial switch zone {
+		case .Hand:
+			if !discards_itself(a) do return false
+		case .Graveyard:
+			if !exiles_itself(a) do return false
+		case:
+			return false
+		}
+	}
 	for r in a.activation_restrictions do if !restriction_supported(r) do return false
 	return true
 }
@@ -109,6 +119,11 @@ cost_supported :: proc(c: types.AbilityCost) -> bool {
 	case types.AbilityCost_PayLife:
 		_, fixed := fixed_quantity(x.amount)
 		return fixed
+	case types.AbilityCost_Exile:
+		// "Exile this card from your graveyard."
+		f, has := x.filter.?
+		zone, has_zone := x.zone.?
+		return has && is_self(f) && has_zone && zone == .Graveyard && x.count == 1
 	case types.AbilityCost_Composite:
 		// At most one part that has the player choose objects (object_cost asks for one).
 		chosen := 0
@@ -201,8 +216,9 @@ can_activate :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: i
 	if !object_supported(o, g.card_db) do return refuse_unsupported(o)
 	// CR 602.2: a permanent's ability, by its controller; a hand ability (cycling), by the card's owner from their
 	// hand (CR 702.29a).
-	if zone, from_hand := a.activation_zone.?; from_hand {
-		if zone != .Hand || o.zone != .Hand || o.owner != p do return refuse("not activatable from its zone")
+	if zone, elsewhere := a.activation_zone.?; elsewhere {
+		// From the hand or graveyard, by the card's owner (CR 602.2, 113.6j).
+		if (zone != .Hand && zone != .Graveyard) || o.zone != zone || o.owner != p do return refuse("not activatable from its zone")
 	} else if o.zone != .Battlefield || o.controller != p do return refuse("not activatable from its zone")
 	if _, _, mana := tap_mana_ability(a^); mana do return refuse("a mana ability (activated through mana payment)")
 	if !activated_supported(a^) do return refuse("ability not supported")
@@ -318,10 +334,22 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 			if is_self(x._0.target) do move_object(g, source, .Graveyard)
 		case types.AbilityCost_Discard:
 			if x.self_scope == .SourceCard do move_object(g, source, .Graveyard) // "discard this card" (CR 702.29a)
+		case types.AbilityCost_Exile:
+			move_object(g, source, .Exile) // "exile this card from your graveyard" (CR 701.13a)
 		}
 	}
 	s.priority_passes = nil
 	give_priority(g, p)
+}
+
+// Whether the ability's cost includes exiling the card it's on from the graveyard.
+exiles_itself :: proc(a: types.AbilityDefinition) -> bool {
+	cost, has := a.cost.?
+	if !has do return false
+	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
+	cost_parts(cost, &parts)
+	for part in parts do if x, ok := part.(types.AbilityCost_Exile); ok && cost_supported(x) do return true
+	return false
 }
 
 // Whether the ability's cost includes discarding the card it's on.

@@ -348,11 +348,13 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 				}
 			}
 		}
-		// Abilities that work from the hand (cycling).
-		for id in ids_of(player(s, p).hand) {
-			o := object(s, id)
-			if o.abilities == nil do continue
-			for _, i in o.abilities^ do if can_activate(g, p, o, i) do append(&out, types.GameAction_ActivateAbility{source_id = o.id, ability_index = i})
+		// Abilities that work from the hand (cycling) or the graveyard (CR 113.6j).
+		for zone in ([]types.Zone{.Hand, .Graveyard}) {
+			for id in ids_of(zone_list(s, zone, p)^) {
+				o := object(s, id)
+				if o.abilities == nil do continue
+				for _, i in o.abilities^ do if can_activate(g, p, o, i) do append(&out, types.GameAction_ActivateAbility{source_id = o.id, ability_index = i})
+			}
 		}
 	case types.WaitingFor_TargetSelection:
 		for t in w.selection.current_legal_targets do append(&out, types.GameAction_ChooseTarget{target = t})

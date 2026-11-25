@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 232 of 2880 rules implemented (8%), 87 of them tested.**
+**In scope (100-799): 234 of 2880 rules implemented (8%), 89 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -25,7 +25,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 110 permanents | 14 | 2 (14%) | 0 |
 | 111 tokens | 35 | 12 (34%) | 5 |
 | 112 spells | 7 | 0 (0%) | 0 |
-| 113 abilities | 41 | 1 (2%) | 0 |
+| 113 abilities | 41 | 2 (5%) | 1 |
 | 114 emblems | 5 | 0 (0%) | 0 |
 | 115 targets | 26 | 5 (19%) | 4 |
 | 116 special actions | 15 | 0 (0%) | 0 |
@@ -107,7 +107,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 615 prevention effects | 15 | 0 (0%) | 0 |
 | 616 interaction of replacement and or prevention effects | 9 | 0 (0%) | 0 |
 | 700 general | 36 | 5 (14%) | 3 |
-| 701 keyword actions | 305 | 22 (7%) | 7 |
+| 701 keyword actions | 305 | 23 (8%) | 8 |
 | 702 keyword abilities | 774 | 26 (3%) | 6 |
 | 703 turn based actions | 20 | 1 (5%) | 0 |
 | 704 state based actions | 40 | 11 (28%) | 4 |
@@ -439,7 +439,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 112.3 A noncopy spell’s characteristics are the same as those printed on its card, as modified by any continuous ...
 - ⬜ 112.4 If an effect of a resolving spell or ability changes any characteristics of a permanent spell, the effect c...
 
-### 113 abilities (1/41)
+### 113 abilities (2/41)
 
 - ⬜ 113.1 An ability can be one of three things:
 - ⬜ 113.1a An ability can be a characteristic an object has that lets it affect the game. An object’s abilities are de...
@@ -467,7 +467,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 113.6g An object’s ability that states it can’t be countered or can’t be copied functions on the stack.
 - ⬜ 113.6h An object’s ability that modifies how that particular object enters the battlefield functions as that objec...
 - ⬜ 113.6i An object’s ability that states counters can’t be put on that object functions as that object is entering t...
-- ⬜ 113.6j An object’s activated ability that has a cost that can’t be paid while the object is on the battlefield fun...
+- ✅ 113.6j An object’s activated ability that has a cost that can’t be paid while the object is on the battlefield fun...
 - ⬜ 113.6k A trigger condition that can’t trigger from the battlefield functions in all zones it can trigger from. Oth...
 - ⬜ 113.6m An ability whose cost or effect specifies that it moves the object it’s on out of a particular zone functio...
 - ⬜ 113.6n An ability that modifies the rules for deck construction functions before the game begins. Such an ability ...
@@ -1803,7 +1803,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 700.16 Some cards refer to worthy creatures. A creature is worthy if it’s legendary, isn’t a Villain, and is red a...
 - ⬜ 700.17 Some abilities trigger when a player “faces a dilemma.” A player faces a dilemma whenever they choose one o...
 
-### 701 keyword actions (22/305)
+### 701 keyword actions (23/305)
 
 - ⬜ 701.1 Most actions described in a card’s rules text use the standard English definitions of the verbs within, but...
 - ⬜ 701.2 Activate
@@ -1856,7 +1856,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 701.12g A spell or ability may instruct a player to exchange two numerical values. In such an exchange, each value ...
 - ⬜ 701.12h One card (Exchange of Words) instructs a player to exchange the text boxes of two creatures. This creates a...
 - 🟡 701.13 Exile
-- ⬜ 701.13a To exile an object, move it to the exile zone from wherever it is. See rule 406, “Exile.”
+- ✅ 701.13a To exile an object, move it to the exile zone from wherever it is. See rule 406, “Exile.”
 - ⬜ 701.14 Fight
 - ⬜ 701.14a A spell or ability may instruct a creature to fight another creature or it may instruct two creatures to fi...
 - ⬜ 701.14b If one or both creatures instructed to fight are no longer on the battlefield or are no longer creatures, n...
