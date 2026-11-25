@@ -3281,3 +3281,21 @@ effect_without_duration_lasts :: proc(t: ^testing.T) {
 	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
 	testing.expect(t, bears.zone == .Graveyard, "sacrificed at the end step")
 }
+
+@(test)
+creature_land :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Blinkmoth Nexus: "{1}: This land becomes a 1/1 Blinkmoth artifact creature with flying until end of turn.
+	// It's still a land." CR 205.1b: it gets the new creature type, keeping its land types (CR 613.1d, 613.4b).
+	testing.expect(t, game.card_supported(&card(t, "Blinkmoth Nexus").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Plains", 0, .Battlefield)
+	nexus := add(t, g, "Blinkmoth Nexus", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = nexus.id, ability_index = 1}))
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, game.is_type(nexus, .Creature) && game.is_type(nexus, .Land) && game.is_type(nexus, .Artifact), "an artifact creature land")
+	testing.expect(t, nexus.power.? == 1 && game.has_keyword(nexus, types.Keyword_Flying) && game.has_subtype(nexus, "Blinkmoth"))
+	game.cleanup(g)
+	testing.expect(t, !game.is_type(nexus, .Creature), "a land again after the turn")
+}

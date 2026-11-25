@@ -2954,6 +2954,8 @@ Progress:
   (the end turn kept in Game, permission_ends) or when the card leaves exile. 5,952 -> 5,988.
 - An effect with no stated duration ("that creature gains haste") lasts indefinitely (CR 611.2a); the
   instruction's own duration counts when the effect's is unset. 5,988 -> 5,991.
+- Creature lands and other "becomes a [type] creature" effects: removing creature (or land) subtypes in the type
+  layer (CR 205.1b), with the subtype lists of CR 205.3g-i (anything else is a creature type). 5,991 -> 6,038.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

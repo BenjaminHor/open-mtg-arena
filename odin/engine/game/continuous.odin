@@ -51,6 +51,8 @@ modification_supported :: proc(m: types.ContinuousModification) -> bool {
 		return quantity_supported(k.value)
 	case types.ContinuousModification_SetColor:
 		return true
+	case types.ContinuousModification_RemoveAllSubtypes:
+		return k.set == .Creature || k.set == .Land
 	case types.ContinuousModification_AddPower, types.ContinuousModification_AddToughness,
 	     types.ContinuousModification_SetPower, types.ContinuousModification_SetToughness,
 	     types.ContinuousModification_AddType, types.ContinuousModification_AddSubtype:
@@ -105,13 +107,20 @@ apply_continuous_effects :: proc(g: ^Game) {
 		card_types := o.base_card_types
 		card_types.core_types = slice.clone_to_dynamic(o.base_card_types.core_types[:], context.temp_allocator)
 		card_types.subtypes = slice.clone_to_dynamic(o.base_card_types.subtypes[:], context.temp_allocator)
-		add_types :: proc(ct: ^types.CardType, mods: []types.ContinuousModification) {
+		types_changed := false
+		add_types :: proc(ct: ^types.CardType, mods: []types.ContinuousModification, changed: ^bool) {
 			for m in mods {
 				#partial switch k in m {
 				case types.ContinuousModification_AddType:
 					if !slice.contains(ct.core_types[:], k.core_type) do append(&ct.core_types, k.core_type)
 				case types.ContinuousModification_AddSubtype:
 					if !slice.contains(ct.subtypes[:], k.subtype) do append(&ct.subtypes, k.subtype)
+				case types.ContinuousModification_RemoveAllSubtypes:
+					// CR 205.1b: "becomes a [creature type] creature" replaces its creature types.
+					for i := len(ct.subtypes) - 1; i >= 0; i -= 1 do if subtype_in_set(ct.subtypes[i], k.set) {
+						ordered_remove(&ct.subtypes, i)
+						changed^ = true
+					}
 				}
 			}
 		}
@@ -120,10 +129,10 @@ apply_continuous_effects :: proc(g: ^Game) {
 		// The effects of resolved spells and abilities still applying to this object, in the order they were created.
 		temps := make([dynamic][]types.ContinuousModification, context.temp_allocator)
 		for t in g.temp_effects do if t.object == o.id && t.incarnation == o.incarnation do append(&temps, t.modifications)
-		for e in statics do if affects(s, e.source, e.static, o) do add_types(&card_types, e.static.modifications[:])
-		for mods in temps do add_types(&card_types, mods)
+		for e in statics do if affects(s, e.source, e.static, o) do add_types(&card_types, e.static.modifications[:], &types_changed)
+		for mods in temps do add_types(&card_types, mods, &types_changed)
 		o.card_types = o.base_card_types
-		if len(card_types.core_types) != len(o.base_card_types.core_types) || len(card_types.subtypes) != len(o.base_card_types.subtypes) {
+		if types_changed || len(card_types.core_types) != len(o.base_card_types.core_types) || len(card_types.subtypes) != len(o.base_card_types.subtypes) {
 			o.card_types.core_types = slice.clone_to_dynamic(card_types.core_types[:])
 			o.card_types.subtypes = slice.clone_to_dynamic(card_types.subtypes[:])
 		}
@@ -384,4 +393,25 @@ rules_only :: proc(st: types.StaticDefinition) -> bool {
 	if _, continuous := st.mode.(types.StaticMode_Continuous); continuous && len(st.modifications) == 0 do return false
 	for m in st.modifications do if _, mode := m.(types.ContinuousModification_AddStaticMode); !mode do return false
 	return true
+}
+
+// The subtypes of each card type (CR 205.3g-i); a subtype that's none of the others' is a creature type (205.3m).
+ARTIFACT_TYPES :: [?]string{"Attraction", "Blood", "Bobblehead", "Book", "Clue", "Communicator", "Contraption", "Equipment", "Food", "Fortification", "Gold", "Heartwood", "Incubator", "Infinity", "Junk", "Lander", "Map", "Mutagen", "Powerstone", "Spacecraft", "Stone", "Treasure", "Vehicle", "Vibranium"}
+ENCHANTMENT_TYPES :: [?]string{"Aura", "Background", "Cartouche", "Case", "Class", "Curse", "Plan", "Role", "Room", "Rune", "Saga", "Shard", "Shrine"}
+LAND_TYPES :: [?]string{"Cave", "Desert", "Forest", "Gate", "Island", "Lair", "Locus", "Mine", "Mountain", "Plains", "Planet", "Power-Plant", "Sphere", "Swamp", "Tower", "Town", "Urza's", "Urza’s"}
+SPELL_TYPES :: [?]string{"Adventure", "Arcane", "Chorus", "Lesson", "Omen", "Trap"}
+
+subtype_in_set :: proc(name: string, set: types.SubtypeSet) -> bool {
+	in_list :: proc(name: string, list: []string) -> bool {
+		for n in list do if n == name do return true
+		return false
+	}
+	artifact, enchantment, land, spell := ARTIFACT_TYPES, ENCHANTMENT_TYPES, LAND_TYPES, SPELL_TYPES
+	#partial switch set {
+	case .Land:
+		return in_list(name, land[:])
+	case .Creature:
+		return !in_list(name, artifact[:]) && !in_list(name, enchantment[:]) && !in_list(name, land[:]) && !in_list(name, spell[:])
+	}
+	return false
 }
