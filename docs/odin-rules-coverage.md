@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 276 of 2880 rules implemented (10%), 124 of them tested.**
+**In scope (100-799): 277 of 2880 rules implemented (10%), 125 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -113,7 +113,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 704 state based actions | 40 | 12 (30%) | 7 |
 | 705 flipping a coin | 3 | 0 (0%) | 0 |
 | 706 rolling a die | 18 | 0 (0%) | 0 |
-| 707 copying objects | 33 | 1 (3%) | 1 |
+| 707 copying objects | 33 | 2 (6%) | 2 |
 | 708 face down spells and permanents | 14 | 0 (0%) | 0 |
 | 709 split cards | 22 | 0 (0%) | 0 |
 | 710 flip cards | 8 | 0 (0%) | 0 |
@@ -2981,7 +2981,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 706.8b To reroll one or more stored results of a permanent, roll one of the kind of die noted for each of them. If...
 - ⬜ 706.8c If a permanent has an ability that stores results on it and another ability that refers to the stored resul...
 
-### 707 copying objects (1/33)
+### 707 copying objects (2/33)
 
 - ⬜ 707.1 Some objects become or turn another object into a “copy” of a spell, permanent, or card. Some effects creat...
 - ✅ 707.2 When copying an object, the copy acquires the copiable values of the original object’s characteristics and,...
@@ -2995,7 +2995,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 707.7 If a pair of linked abilities are copied, those abilities will be similarly linked to one another on the ob...
 - ⬜ 707.8 When copying a double-faced permanent or a melded permanent, use the copiable values of the face that’s cur...
 - ⬜ 707.8a If an effect creates a token that is a copy of a double-faced permanent or a double-faced card not on the b...
-- ⬜ 707.9 Copy effects may include modifications or exceptions to the copying process.
+- ✅ 707.9 Copy effects may include modifications or exceptions to the copying process.
 - ⬜ 707.9a Some copy effects cause the copy to gain an ability as part of the copying process. This ability becomes pa...
 - ⬜ 707.9b Some copy effects modify a characteristic as part of the copying process. The final set of values for that ...
 - ⬜ 707.9c Some copy effects specifically state that they don’t copy certain characteristics and the affected objects ...

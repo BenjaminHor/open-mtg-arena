@@ -2927,6 +2927,9 @@ Progress:
   and their power); the chosen creatures are tapped as the cost, the ability goes on the stack as a keyword
   action, and the Vehicle is an artifact creature until end of turn. The AI answers the prompt but doesn't crew on
   its own yet. "Once each turn" crew is refused. 5,684 -> 5,748.
+- Clone ("you may have this enter as a copy of any creature", CR 707.9): Rust's CopyTargetChoice prompt as it
+  enters (ChooseTarget, none to decline), the copied card's printed characteristics (CR 707.2). Copies with
+  exceptions are refused; the copied creature's own entering replacements don't apply yet. 5,748 -> 5,756.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

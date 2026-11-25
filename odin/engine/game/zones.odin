@@ -115,6 +115,7 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 		s.next_timestamp += 1
 		apply_entering_replacements(s, o) // CR 614.12
 		if _, may_pay := entry_payment_of(o); may_pay do append(&g.entry_choices, id)
+		if _, copies := entry_copy_of(o); copies do append(&g.entry_copies, id)
 	} else {
 		o.entered_battlefield_turn = nil
 	}

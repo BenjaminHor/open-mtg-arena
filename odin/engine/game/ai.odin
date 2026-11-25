@@ -85,6 +85,11 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		return types.GameAction_ChooseTarget{target = t}, true
 	case types.WaitingFor_OptionalEffectChoice:
 		return types.GameAction_DecideOptionalEffect{accept = true}, true
+	case types.WaitingFor_CopyTargetChoice:
+		// The biggest creature to copy.
+		best: types.ObjectId
+		for id in w.valid_targets do if best == 0 || power_of(object(s, id)) > power_of(object(s, best)) do best = id
+		return types.GameAction_ChooseTarget{target = types.TargetRef_Object{best}}, true
 	case types.WaitingFor_CrewVehicle:
 		// The fewest creatures, weakest first, that add up to the crew power.
 		ids := slice.clone(w.eligible_creatures[:], context.temp_allocator)

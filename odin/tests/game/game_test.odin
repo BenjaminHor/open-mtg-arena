@@ -2994,3 +2994,33 @@ crew_a_vehicle :: proc(t: ^testing.T) {
 	game.cleanup(g)
 	testing.expect(t, !game.is_type(skiff, .Creature), "until end of turn")
 }
+
+@(test)
+clone_enters_as_a_copy :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Clone: "You may have this creature enter as a copy of any creature on the battlefield." CR 707.9, 614.12: the
+	// choice is made as it enters; CR 707.2: it takes the copied card's copiable values. Declining, it's a 0/0 and
+	// dies (CR 704.5f).
+	testing.expect(t, game.card_supported(&card(t, "Clone").face))
+	testing.expect(t, !game.card_supported(&card(t, "Altered Ego").face), "\"except it enters with X counters\" isn't read yet")
+	run :: proc(t: ^testing.T, copy: bool) -> ^types.GameObject {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 4 do add(t, g, "Island", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		clone := add(t, g, "Clone", 0, .Hand) // {3}{U}
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = clone.id}))
+		game.apply(g, 0, types.GameAction_PassPriority{})
+		game.apply(g, 1, types.GameAction_PassPriority{})
+		w, asked := s.waiting_for.(types.WaitingFor_CopyTargetChoice)
+		testing.expect(t, asked && slice.contains(w.valid_targets[:], bears.id), "asked what to copy")
+		target: Maybe(types.TargetRef)
+		if copy do target = types.TargetRef_Object{bears.id}
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = target}))
+		return clone
+	}
+	c := run(t, true)
+	testing.expect(t, c.zone == .Battlefield && c.name == "Grizzly Bears" && c.power.? == 2, "a Grizzly Bears")
+	c = run(t, false)
+	testing.expect(t, c.zone == .Graveyard, "declined: a 0/0, put into the graveyard")
+}

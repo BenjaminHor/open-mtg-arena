@@ -3,11 +3,14 @@
 package game
 
 import "core:reflect"
+import "core:slice"
+import "core:strings"
 import types "../types"
 
 replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
 	if _, moved := r.event.(types.ReplacementEvent_Moved); !moved do return false
 	if _, may_pay := entry_payment(r); may_pay do return true
+	if _, copy := entry_copy_filter(r); copy do return true
 	if _, mandatory := r.mode.(types.ReplacementMode_Mandatory); !mandatory do return false
 	if c, has := r.condition.?; has && !entry_condition_supported(c) do return false
 	if r.execute == nil || r.execute.sub_ability != nil || r.execute.condition != nil do return false
@@ -103,6 +106,81 @@ answer_entry_payment :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_Re
 	ordered_remove(&g.entry_choices, 0)
 	s.waiting_for = nil
 	give_priority(g, g.entry_after)
+	return true
+}
+
+// "You may have this creature enter as a copy of any creature on the battlefield" (Clone, CR 707.9): what it may
+// copy. One with exceptions ("except it enters with X counters") isn't read yet.
+entry_copy_filter :: proc(r: types.ReplacementDefinition) -> (types.TargetFilter, bool) {
+	opt, optional := r.mode.(types.ReplacementMode_Optional)
+	if !optional || opt.decline != nil || r.condition != nil || r.execute == nil || r.execute.effect == nil || r.execute.sub_ability != nil do return nil, false
+	if dest, has := r.destination_zone.?; !has || dest != .Battlefield do return nil, false
+	if f, has := r.valid_card.?; !has || !is_self(f) do return nil, false
+	if d, has := r.description.?; has && strings.contains(d, "except") do return nil, false
+	bc, is_copy := r.execute.effect^.(types.Effect_BecomeCopy)
+	if !is_copy || bc.duration != nil || bc.mana_value_limit != nil || len(bc.additional_modifications) > 0 do return nil, false
+	if !mass_filter_supported(bc.target) do return nil, false
+	return bc.target, true
+}
+
+entry_copy_of :: proc(o: ^types.GameObject) -> (types.TargetFilter, bool) {
+	if o.replacement_definitions == nil do return nil, false
+	for r in (^[dynamic]types.ReplacementDefinition)(o.replacement_definitions)^ do if f, ok := entry_copy_filter(r); ok do return f, true
+	return nil, false
+}
+
+// CR 707.9, 614.12: its controller chooses what it copies (or nothing) as it enters, asked before the next player
+// would receive priority.
+ask_entry_copy :: proc(g: ^Game, after: types.PlayerId) -> bool {
+	s := &g.state
+	for len(g.entry_copies) > 0 {
+		o := object(s, g.entry_copies[0])
+		f: types.TargetFilter
+		ok := false
+		if o != nil do f, ok = entry_copy_of(o)
+		if !ok || o.zone != .Battlefield {
+			ordered_remove(&g.entry_copies, 0)
+			continue
+		}
+		valid := make([dynamic]types.ObjectId)
+		for p in affected_permanents(s, f, o.controller, o.id) do if p.id != o.id do append(&valid, p.id)
+		if len(valid) == 0 {
+			ordered_remove(&g.entry_copies, 0) // nothing to copy: it enters as itself
+			continue
+		}
+		g.entry_after = after
+		s.priority_player = o.controller
+		s.waiting_for = types.WaitingFor_CopyTargetChoice{player = o.controller, source_id = o.id, valid_targets = valid, purpose = .BecomeCopy}
+		return true
+	}
+	return false
+}
+
+// The answer: a creature to copy, or none (it stays itself). CR 707.2: the copy takes the copiable values, the
+// card's printed characteristics (copy effects on that creature aren't carried yet); it keeps its own counters and
+// status, as it's the same object.
+answer_entry_copy :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_CopyTargetChoice, target: Maybe(types.TargetRef)) -> bool {
+	s := &g.state
+	if p != w.player do return false
+	o := object(s, w.source_id)
+	if o == nil do return false
+	if t, has := target.?; has {
+		id, is_object := target_object(t)
+		if !is_object || !slice.contains(w.valid_targets[:], id) do return false
+		original := object(s, id)
+		card: ^types.CardExportEntry
+		if g.card_db != nil && !(original.is_token && original.printed_ref == nil) do card = g.card_db(original.base_name if original.base_name != "" else original.name)
+		if card == nil do return false
+		set_card_characteristics(o, &card.face)
+		apply_continuous_effects(g)
+	}
+	after := s.active_player // a restored game: the prompt alone, priority to the active player
+	if len(g.entry_copies) > 0 && g.entry_copies[0] == w.source_id {
+		ordered_remove(&g.entry_copies, 0)
+		after = g.entry_after
+	}
+	s.waiting_for = nil
+	give_priority(g, after)
 	return true
 }
 

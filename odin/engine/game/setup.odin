@@ -43,6 +43,7 @@ Game :: struct {
 	// Permanents that entered with "as this enters, you may pay N life" whose controller hasn't chosen yet, and who
 	// gets priority once they have (replacements.odin).
 	entry_choices:     [dynamic]types.ObjectId,
+	entry_copies:      [dynamic]types.ObjectId, // entered with "you may have this enter as a copy", still to choose
 	entry_after:       types.PlayerId,
 	// "Gain control of target creature until end of turn": who controlled it before, to give it back (kept beside
 	// the state like the pumps).
@@ -135,6 +136,14 @@ new_card_object :: proc(s: ^types.GameState, card: ^types.CardExportEntry, owner
 	o.zone = zone
 	o.incarnation = 1
 	o.phase_status = types.PhaseStatus_PhasedIn{} // CR 702.26: permanents are phased in unless something phases them out
+	set_card_characteristics(o, face)
+	s.objects.inner[o.id] = o
+	return o
+}
+
+// The characteristics a card gives its object (CR 109.3), current and printed alike: also what a copy of that card
+// takes (CR 707.2).
+set_card_characteristics :: proc(o: ^types.GameObject, face: ^types.CardFace) {
 	o.name = face.name
 	o.card_types = face.card_type
 	o.mana_cost = face.mana_cost
@@ -177,8 +186,6 @@ new_card_object :: proc(s: ^types.GameState, card: ^types.CardExportEntry, owner
 	o.base_replacement_definitions = (^[dynamic]types.ReplacementDefinition)(o.replacement_definitions)
 	o.base_printed_ref = o.printed_ref
 	o.base_characteristics_initialized = true
-	s.objects.inner[o.id] = o
-	return o
 }
 
 // CR 202.2: an object's colors are the colors of the mana symbols in its mana cost, unless a color indicator or a

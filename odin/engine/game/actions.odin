@@ -30,6 +30,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_CrewVehicle:
 		return w.player, true
+	case types.WaitingFor_CopyTargetChoice:
+		return w.player, true
 	case types.WaitingFor_AssignCombatDamage:
 		return w.player, true
 	case types.WaitingFor_ScryChoice:
@@ -214,6 +216,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			give_priority(g, p)
 			return true
 		}
+	case types.WaitingFor_CopyTargetChoice:
+		a, ok := action.(types.GameAction_ChooseTarget)
+		return ok && answer_entry_copy(g, p, w, a.target)
 	case types.WaitingFor_ReplacementChoice:
 		a, ok := action.(types.GameAction_ChooseReplacement)
 		return ok && answer_entry_payment(g, p, w, a.index)
@@ -394,6 +399,9 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		for i in 0 ..< w.modal.mode_count do if !slice.contains(w.unavailable_modes[:], i) do append(&available, i)
 		mode_sets(&out, available[:], 0, make([dynamic]int, context.temp_allocator), w.modal.min_choices, w.modal.max_choices)
 		append(&out, types.GameAction_CancelCast{})
+	case types.WaitingFor_CopyTargetChoice:
+		for id in w.valid_targets do append(&out, types.GameAction_ChooseTarget{target = types.TargetRef_Object{id}})
+		append(&out, types.GameAction_ChooseTarget{}) // copy nothing
 	case types.WaitingFor_CrewVehicle:
 		// The client picks the creatures (any set with enough power); every eligible one is a valid answer to offer.
 		append(&out, types.GameAction_CrewVehicle{vehicle_id = w.vehicle_id, creature_ids = slice.clone_to_dynamic(w.eligible_creatures[:], context.temp_allocator)})
