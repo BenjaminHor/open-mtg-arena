@@ -53,7 +53,7 @@ declare_attackers :: proc(g: ^Game, attacks: []types.Tuple2(types.ObjectId, type
 	combat := types.CombatState{}
 	for a in attacks {
 		o := object(s, a._0)
-		if !has_keyword(o, types.Keyword_Vigilance) do o.tapped = true
+		if !has_keyword(o, types.Keyword_Vigilance) do tap_permanent(o)
 		append(&combat.attackers, types.AttackerInfo{object_id = a._0, defending_player = defender, attack_target = a._1})
 		append(&g.events, Event{kind = .Attack, object = a._0, controller = o.controller}) // CR 508.3a
 	}

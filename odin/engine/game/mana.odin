@@ -289,7 +289,7 @@ pay_mana :: proc(g: ^Game, p: types.PlayerId, cost: types.ManaCost, exclude: typ
 	if !ok do return false
 	for t in taps {
 		if t.object == nil do spend_pool_mana(&g.state, p, t.pip)
-		else do t.object.tapped = true
+		else do tap_permanent(t.object)
 		if t.surplus > 0 {
 			// CR 106.4: the rest of the mana stays in the pool. A choice of color is the engine's for now, as is the
 			// choice of what to tap: the first it could make.
@@ -325,7 +325,7 @@ activate_mana_ability :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject,
 	if !mana_ability_activatable(g, p, o, a) do return false
 	option, _ := mana_ability_option(a^)
 	// CR 602.2b, 601.2h: the costs are paid: {T}, and mana for "{1}, {T}: Add ..." (from other sources, CR 605.3a).
-	if option.taps do o.tapped = true
+	if option.taps do tap_permanent(o)
 	if option.mana_cost != nil do pay_mana(g, p, option.mana_cost, o.id, nil, Payment{o, false})
 	if card(option.colors) > 1 {
 		// "One mana of any color": the color is chosen as it resolves (CR 605.3b), which is at once.

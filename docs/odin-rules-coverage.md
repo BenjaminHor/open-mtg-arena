@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 245 of 2880 rules implemented (9%), 99 of them tested.**
+**In scope (100-799): 246 of 2880 rules implemented (9%), 100 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -107,7 +107,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 615 prevention effects | 15 | 0 (0%) | 0 |
 | 616 interaction of replacement and or prevention effects | 9 | 0 (0%) | 0 |
 | 700 general | 36 | 6 (17%) | 4 |
-| 701 keyword actions | 305 | 24 (8%) | 8 |
+| 701 keyword actions | 305 | 25 (8%) | 9 |
 | 702 keyword abilities | 774 | 26 (3%) | 6 |
 | 703 turn based actions | 20 | 1 (5%) | 0 |
 | 704 state based actions | 40 | 11 (28%) | 4 |
@@ -1803,7 +1803,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 700.16 Some cards refer to worthy creatures. A creature is worthy if it’s legendary, isn’t a Villain, and is red a...
 - ⬜ 700.17 Some abilities trigger when a player “faces a dilemma.” A player faces a dilemma whenever they choose one o...
 
-### 701 keyword actions (24/305)
+### 701 keyword actions (25/305)
 
 - ⬜ 701.1 Most actions described in a card’s rules text use the standard English definitions of the verbs within, but...
 - ⬜ 701.2 Activate
@@ -1922,7 +1922,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 701.25c If a player is instructed to surveil 0, no surveil event occurs. Abilities that trigger whenever a player s...
 - ⬜ 701.25d An ability that triggers whenever a player surveils triggers after the process described in rule 701.25a is...
 - 🟡 701.26 Tap and Untap
-- ⬜ 701.26a To tap a permanent, turn it sideways from an upright position. Only untapped permanents can be tapped.
+- ✅ 701.26a To tap a permanent, turn it sideways from an upright position. Only untapped permanents can be tapped.
 - 🟡 701.26b To untap a permanent, rotate it back to the upright position from a sideways position. Only tapped permanen...
 - ⬜ 701.27 Transform
 - ⬜ 701.27a To transform a permanent, turn it over so that its other face is up. Only permanents represented by double-...

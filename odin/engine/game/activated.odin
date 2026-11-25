@@ -338,7 +338,7 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 		case types.AbilityCost_Mana:
 			pay_mana(g, p, x.cost, source if taps_self else 0, g.pending.cost_objects[:], Payment{object(s, source), false}) // CR 601.2h
 		case types.AbilityCost_Tap:
-			o.tapped = true
+			tap_permanent(o)
 		case types.AbilityCost_PayLife:
 			n, _ := fixed_quantity(x.amount)
 			lose_life(s, p, n) // CR 119.4: paying life is losing it

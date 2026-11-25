@@ -2253,3 +2253,23 @@ gain_life_draw_and_damage_triggers :: proc(t: ^testing.T) {
 	testing.expect(t, reckoner.damage_marked == 2 || reckoner.zone == .Graveyard)
 	testing.expectf(t, game.player(s2, 0).life == 18, "2 damage back (the AI aims at its opponent): life %d", game.player(s2, 0).life)
 }
+
+@(test)
+becomes_tapped :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 701.26a: "Whenever this land becomes tapped, it deals 1 damage to you." (City of Brass) triggers when it's
+	// tapped for mana to pay a cost; entering tapped isn't becoming tapped.
+	g := new_game()
+	s := &g.state
+	testing.expect(t, game.card_supported(&card(t, "City of Brass").face))
+	testing.expect(t, !game.card_supported(&card(t, "Agent Maria Hill").face), "a tapping for a teamwork cost isn't told apart")
+	brass := add(t, g, "City of Brass", 0, .Battlefield)
+	elves := add(t, g, "Llanowar Elves", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = elves.id}))
+	testing.expect(t, brass.tapped)
+	for _ in 0 ..< 8 {
+		if types.pvec_len(s.stack) == 0 do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, game.player(s, 0).life == 19, "1 damage")
+}

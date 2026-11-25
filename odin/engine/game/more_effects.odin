@@ -110,7 +110,7 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 	case types.Effect_SetTapState:
 		if is_self(x.target) do affected = same_source(g, source)
 		if affected == nil || affected.zone != .Battlefield do return
-		if x.state == .Tap do affected.tapped = true
+		if x.state == .Tap do tap_permanent(affected)
 		else do untap(affected) // CR 122.1d
 	case types.Effect_Mill:
 		// CR 701.17a: the player puts the top N cards of their library into their graveyard.

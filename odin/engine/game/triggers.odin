@@ -5,6 +5,7 @@
 package game
 
 import "core:slice"
+import "core:strings"
 import types "../types"
 
 Event_Kind :: enum {
@@ -15,6 +16,7 @@ Event_Kind :: enum {
 	Damage,
 	You_Attack, // a player attacked with one or more creatures (CR 508.3d)
 	Life_Gained, // controller gained amount life (CR 119.9: never 0)
+	Tapped, // object became tapped (CR 701.26a)
 	Card_Drawn, // controller drew a card (CR 121.2: each card is its own draw)
 }
 
@@ -114,6 +116,21 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		if dest, has := t.destination.?; has && dest == .Battlefield do return false
 		if f, has := t.valid_card.?; has do return subject_filter_supported(f)
 		return false
+	case types.TriggerMode_Taps:
+		// "Whenever this (or a creature you control) becomes tapped." One tapped by an opponent's effect isn't
+		// told apart yet, so a filter on an opponent's permanents isn't read.
+		// "Becomes tapped to pay a teamwork cost": the card data drops what it was tapped for; refused, not read
+		// as any tapping.
+		if d, has_d := t.description.?; has_d && strings.contains(d, "becomes tapped to ") do return false
+		f, has := t.valid_card.?
+		if !has do return false
+		if is_self(f) do return true
+		typed, ok := f.(types.TargetFilter_Typed)
+		if !ok || !typed_supported(typed._0) do return false
+		if c, has_c := typed._0.controller.?; has_c {
+			if _, opp := c.(types.ControllerRef_Opponent); opp do return false
+		}
+		return true
 	case types.TriggerMode_LifeGained, types.TriggerMode_Drawn:
 		if t.valid_card != nil || t.life_amount != nil do return false
 		if v, has := t.valid_target.?; has && !is_you(v) && !is_an_opponent(v) && !is_any_player(v) do return false
@@ -373,6 +390,21 @@ collect_triggers :: proc(g: ^Game) {
 				t := &entry.definition
 				if _, attacks := t.mode.(types.TriggerMode_Attacks); attacks && trigger_supported(t^) do add_trigger(g, o.id, o.controller, t)
 				if _, either := t.mode.(types.TriggerMode_EntersOrAttacks); either && trigger_supported(t^) do add_trigger(g, o.id, o.controller, t)
+			}
+		case .Tapped:
+			tapped := object(s, e.object)
+			for id in ids_of(s.battlefield) {
+				w := object(s, id)
+				for &entry in trigger_definitions(w) {
+					t := &entry.definition
+					if _, taps := t.mode.(types.TriggerMode_Taps); !taps || !trigger_supported(t^) do continue
+					f, _ := t.valid_card.?
+					if is_self(f) {
+						if w.id != tapped.id do continue
+					} else if !object_matches(s, tapped, f.(types.TargetFilter_Typed)._0, w.controller, w.id) do continue
+					if !turn_constraint_met(s, t^, w.controller) do continue
+					add_trigger(g, w.id, w.controller, t)
+				}
 			}
 		case .Life_Gained, .Card_Drawn:
 			for id in ids_of(s.battlefield) {

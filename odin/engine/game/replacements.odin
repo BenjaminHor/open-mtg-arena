@@ -140,6 +140,14 @@ remove_counters :: proc(o: ^types.GameObject, kind: types.CounterType, n: u32) {
 	}
 }
 
+// Tapping a permanent (CR 701.26a: only an untapped one can be): an event abilities trigger on ("whenever this
+// becomes tapped"). Entering tapped isn't becoming tapped.
+tap_permanent :: proc(o: ^types.GameObject) {
+	if o.tapped do return
+	o.tapped = true
+	if action_events != nil do append(action_events, Event{kind = .Tapped, object = o.id, controller = o.controller})
+}
+
 // Untapping a permanent (CR 701.26b). CR 122.1d: with a stun counter on it, a stun counter is removed instead.
 untap :: proc(o: ^types.GameObject) {
 	if !o.tapped do return
