@@ -2845,6 +2845,12 @@ Progress:
   cited (8%), 84 tested. Strict: a rule counts only if cited by number, so much behaviour written without its exact
   subrule (keywords cite 702.9, not 702.9a-c) counts under its parent only. Regenerate and commit it with engine
   changes; it also lists citations that aren't in the CR (fixed one: 602.2h).
+- Mechanics added 2026-11-25 (card coverage 4,439 -> 4,850; rules cited 228 -> 239): this-turn amounts and
+  control/tapped trigger conditions; enters-with-counters conditions and X counters; the turn's zone changes ("a
+  creature died this turn"); zone-change triggers with a targeted effect and "this or another"; conditions on a
+  target that left (last known information); mana abilities with mana costs and a color choice; restricted mana;
+  Powerstone, Blood, Lander and Mutagen tokens; graveyard abilities; "sacrifice an A or B" costs; stun and
+  keyword counters.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
@@ -2923,8 +2929,9 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
 ## Known issues
 - (2026-11-25, owner: "CI is failing over and over on GitHub") Fixed in e45b75b: the Odin workflow's model check
   failed on every push since a7e7ad1, which hand-edited the generated codecs in an order odingen doesn't emit.
-  Regenerated; the card-data round trip and the codec and logic tests pass locally. Check CI after each push,
-  not only the local suite.
+  Regenerated; run 112 (e45b75b) passed every step, both round trips included. Check CI after each push, not
+  only the local suite. Pending runs show as "cancelled" when a newer push replaces them in the queue: push in
+  batches.
 - (2026-11-25, Odin native tests) Fixed: the full native suite hung from 65c6e65 on: two tests emptied the hand
   through a copy of its persistent vector, so the loop never ended and memory grew until the container killed it.
   Runs reported in between as passing hadn't finished; the hang also hid two stale expectations (Ancient Tomb and
