@@ -1809,3 +1809,29 @@ enters_with_counters_if_and_x :: proc(t: ^testing.T) {
 	game.apply(g3, 1, types.GameAction_PassPriority{})
 	testing.expect(t, one.zone == .Battlefield && len(one.counters) == 1 && one.counters[0]._1 == 3 && game.power_of(one) == 3, "three counters")
 }
+
+@(test)
+a_creature_died_this_turn :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// "If a creature died this turn" counts the turn's moves from the battlefield to a graveyard (CR 700.4), each
+	// with the object as it was; a new turn starts the count again. Cackling Slasher enters with a +1/+1 counter if
+	// a creature died this turn (CR 614.1c).
+	g := new_game()
+	s := &g.state
+	testing.expect(t, game.card_supported(&card(t, "Cackling Slasher").face))
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	creature: types.TypedFilter
+	append(&creature.type_filters, types.TypeFilter(types.TypeFilter_Creature{}))
+	died := types.QuantityExpr(types.QuantityExpr_Ref{types.QuantityRef_ZoneChangeCountThisTurn{from = types.Zone.Battlefield, to = types.Zone.Graveyard, filter = types.TargetFilter_Typed{creature}}})
+	testing.expect(t, game.quantity_supported(died) && game.quantity_value(s, died, 0, 0, 0) == 0)
+	game.move_object(g, bears.id, .Graveyard)
+	testing.expect(t, game.quantity_value(s, died, 0, 0, 0) == 1, "the Bears died")
+	for _ in 0 ..< 4 do add(t, g, "Swamp", 0, .Battlefield)
+	slasher := add(t, g, "Cackling Slasher", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = slasher.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, slasher.zone == .Battlefield && len(slasher.counters) == 1, "it enters with a counter")
+	game.begin_turn(g, 1)
+	testing.expect(t, game.quantity_value(s, died, 0, 0, 0) == 0, "a new turn: none yet")
+}

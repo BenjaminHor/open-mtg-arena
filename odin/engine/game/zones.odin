@@ -78,6 +78,7 @@ move_object :: proc(g: ^Game, id: types.ObjectId, to: types.Zone) {
 		unattach(s, o)
 	}
 	last_controller := o.controller // CR 603.10: a leaves-the-battlefield trigger looks back at the object as it was
+	record_zone_change(s, o, from, to)
 	lki: ^types.GameObject
 	if from == .Battlefield {
 		// CR 608.2h: its last known information, kept for abilities that look back at it.
@@ -119,6 +120,29 @@ move_object :: proc(g: ^Game, id: types.ObjectId, to: types.Zone) {
 	}
 	// CR 603.2, 603.6: a zone change is an event abilities can trigger on.
 	append(&g.events, Event{kind = .Zone_Change, object = id, from = from, to = to, controller = last_controller, lki = lki})
+}
+
+// The zone changes of the turn, each with the object as it was (CR 603.10, 608.2h): "if a creature died this turn".
+record_zone_change :: proc(s: ^types.GameState, o: ^types.GameObject, from, to: types.Zone) {
+	r := types.ZoneChangeRecord {
+		object_id            = o.id,
+		name                 = o.name,
+		core_types           = slice.clone_to_dynamic(o.card_types.core_types[:]),
+		subtypes             = slice.clone_to_dynamic(o.card_types.subtypes[:]),
+		supertypes           = slice.clone_to_dynamic(o.card_types.supertypes[:]),
+		colors               = slice.clone_to_dynamic(o.color[:]),
+		power                = o.power,
+		toughness            = o.toughness,
+		mana_value           = u32(object_mana_value(o)),
+		controller           = o.controller,
+		owner                = o.owner,
+		from_zone            = from,
+		to_zone              = to,
+		is_token             = o.is_token,
+		recorded_turn_number = s.turn_number,
+		turn_zone_change_index = types.pvec_len(s.zone_changes_this_turn),
+	}
+	types.pvec_push(&s.zone_changes_this_turn, r, proc(x: types.ZoneChangeRecord) -> types.ZoneChangeRecord {return x})
 }
 
 // Back to the printed characteristics (CR 613: no continuous effects apply to the new object yet).

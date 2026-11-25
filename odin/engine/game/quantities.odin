@@ -52,6 +52,19 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return r.window == .ThisTurn && player_scope_supported(r.player)
 		case types.QuantityRef_CardsDrawnThisTurn:
 			return player_scope_supported(r.player)
+		case types.QuantityRef_ZoneChangeCountThisTurn:
+			// The record keeps types and controller, so the filter may ask only about those.
+			t, typed := r.filter.(types.TargetFilter_Typed)
+			if !typed || len(t._0.properties) > 0 do return false
+			if c, has := t._0.controller.?; has {
+				#partial switch _ in c {
+				case types.ControllerRef_You, types.ControllerRef_Opponent:
+				case:
+					return false
+				}
+			}
+			for tf in t._0.type_filters do if !record_type_supported(tf) do return false
+			return true
 		case types.QuantityRef_ZoneCardCount:
 			if r.filter != nil do return false
 			#partial switch r.scope {
@@ -135,6 +148,23 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 		case types.QuantityRef_CardsDrawnThisTurn:
 			// CR 121.1: the cards a player drew this turn.
 			return int(player(s, scope_player(s, r.player, controller)).cards_drawn_this_turn)
+		case types.QuantityRef_ZoneChangeCountThisTurn:
+			// "If a creature died this turn" (CR 700.4: dies means put into a graveyard from the battlefield).
+			t := r.filter.(types.TargetFilter_Typed)._0
+			n := 0
+			for i in 0 ..< types.pvec_len(s.zone_changes_this_turn) {
+				rec := types.pvec_get(s.zone_changes_this_turn, i)
+				if from, has := r.from.?; has && rec.from_zone != from do continue
+				if to, has := r.to.?; has && rec.to_zone != to do continue
+				if c, has := t.controller.?; has {
+					_, you := c.(types.ControllerRef_You)
+					if (rec.controller == controller) != you do continue
+				}
+				fits := true
+				for tf in t.type_filters do if !record_matches_type(rec, tf) do fits = false
+				if fits do n += 1
+			}
+			return n
 		case types.QuantityRef_ZoneCardCount:
 			// "The number of creature cards in your graveyard": cards of any of the listed types.
 			n := 0
@@ -224,6 +254,47 @@ quantity_reads_target :: proc(q: types.QuantityExpr) -> bool {
 			_, t := r.scope.(types.ObjectScope_Target)
 			return t
 		}
+	}
+	return false
+}
+
+// A card type a zone-change record can be checked for: a core type, a subtype, "permanent".
+@(private = "file")
+record_type_supported :: proc(t: types.TypeFilter) -> bool {
+	#partial switch _ in t {
+	case types.TypeFilter_Creature, types.TypeFilter_Land, types.TypeFilter_Artifact, types.TypeFilter_Enchantment,
+	     types.TypeFilter_Planeswalker, types.TypeFilter_Instant, types.TypeFilter_Sorcery, types.TypeFilter_Subtype,
+	     types.TypeFilter_Permanent:
+		return true
+	}
+	return false
+}
+
+@(private = "file")
+record_matches_type :: proc(r: types.ZoneChangeRecord, t: types.TypeFilter) -> bool {
+	has :: proc(r: types.ZoneChangeRecord, c: types.CoreType) -> bool {
+		for x in r.core_types do if x == c do return true
+		return false
+	}
+	#partial switch x in t {
+	case types.TypeFilter_Creature:
+		return has(r, .Creature)
+	case types.TypeFilter_Land:
+		return has(r, .Land)
+	case types.TypeFilter_Artifact:
+		return has(r, .Artifact)
+	case types.TypeFilter_Enchantment:
+		return has(r, .Enchantment)
+	case types.TypeFilter_Planeswalker:
+		return has(r, .Planeswalker)
+	case types.TypeFilter_Instant:
+		return has(r, .Instant)
+	case types.TypeFilter_Sorcery:
+		return has(r, .Sorcery)
+	case types.TypeFilter_Permanent:
+		return !has(r, .Instant) && !has(r, .Sorcery)
+	case types.TypeFilter_Subtype:
+		for st in r.subtypes do if st == x._0 do return true
 	}
 	return false
 }

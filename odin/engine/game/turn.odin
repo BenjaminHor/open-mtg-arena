@@ -25,6 +25,7 @@ begin_turn :: proc(g: ^Game, active: types.PlayerId) {
 	s.spells_cast_this_turn = 0
 	if s.activated_abilities_this_turn != nil do clear(s.activated_abilities_this_turn)
 	clear(&s.spells_cast_this_turn_by_player)
+	s.zone_changes_this_turn = {} // "this turn" (CR 500.1: a new turn)
 	for &p in s.players {
 		p.lands_played_this_turn = 0
 		p.cards_drawn_this_turn = 0
