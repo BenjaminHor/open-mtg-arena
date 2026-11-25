@@ -35,6 +35,7 @@ Pending_Trigger :: struct {
 	controller: types.PlayerId,
 	definition: ^types.TriggerDefinition,
 	lki:        ^types.GameObject, // a leaves-the-battlefield trigger's source as it last existed (CR 603.10a)
+	amount:     int, // the event's amount, for "that much" (the damage dealt)
 }
 
 // A triggered ability on the stack whose intervening "if" is checked again as it resolves (CR 603.4).
@@ -46,7 +47,15 @@ Stack_Condition :: struct {
 // ---- What's supported --------------------------------------------------------------------------------------
 
 trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
+	event_amount_defined = trigger_has_amount(t)
+	defer event_amount_defined = false
 	if t.execute == nil || !ability_supported(t.execute^) do return false
+	// "That much" reads the event only in the first instruction: after another one ("discard your hand. If you do,
+	// draw that many cards") it means what that instruction did, which isn't tracked yet.
+	if t.execute.sub_ability != nil && event_amount_defined {
+		event_amount_defined = false
+		if !ability_supported(t.execute.sub_ability^) do return false
+	}
 	if c, has := t.condition.?; has && !trigger_condition_supported(c) do return false
 	if t.unless_pay != nil || t.batched do return false
 	// "you" as the one acting is read only by spell-cast triggers ("whenever you cast").
@@ -223,6 +232,12 @@ subject_filter_supported :: proc(f: types.TargetFilter) -> bool {
 	return false
 }
 
+// Whether the trigger's event has an amount its effect can call "that much": damage dealt to or by one object.
+trigger_has_amount :: proc(t: types.TriggerDefinition) -> bool {
+	_, dmg := t.mode.(types.TriggerMode_DamageDone)
+	return dmg
+}
+
 // ---- Collecting ---------------------------------------------------------------------------------------------
 
 trigger_definitions :: proc(o: ^types.GameObject) -> []types.TriggerEntry {
@@ -309,7 +324,7 @@ collect_triggers :: proc(g: ^Game) {
 						if slice.contains(fired[:], t) do continue
 						append(&fired, t)
 					}
-					add_trigger(g, w.id, w.controller, t)
+					add_trigger(g, w.id, w.controller, t, nil, 0 if batched else e.amount)
 				}
 			}
 		case .You_Attack:
@@ -381,10 +396,10 @@ turn_constraint_met :: proc(s: ^types.GameState, t: types.TriggerDefinition, con
 	return false
 }
 
-add_trigger :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, t: ^types.TriggerDefinition, lki: ^types.GameObject = nil) {
+add_trigger :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, t: ^types.TriggerDefinition, lki: ^types.GameObject = nil, amount := 0) {
 	// CR 603.4: with an intervening "if", the ability triggers only if the condition is true now.
 	if c, has := t.condition.?; has && !condition_holds_as_was(&g.state, source, controller, c, lki) do return
-	append(&g.pending_triggers, Pending_Trigger{source = source, controller = controller, definition = t, lki = lki})
+	append(&g.pending_triggers, Pending_Trigger{source = source, controller = controller, definition = t, lki = lki, amount = amount})
 }
 
 // The condition, read from the source as it last existed when it has left the battlefield (CR 603.10a, 608.2h).
@@ -511,6 +526,7 @@ place_triggers :: proc(g: ^Game) -> bool {
 		if !complete do continue
 		id := push_ability(g, pt.source, pt.controller, pt.definition.execute, targets[:], true, counts[:])
 		if pt.definition.condition != nil do g.stack_conditions[id] = Stack_Condition{pt.definition, pt.lki}
+		if pt.amount != 0 do g.stack_event_amounts[id] = pt.amount
 	}
 	return true
 }
@@ -600,8 +616,10 @@ resolve_ability :: proc(g: ^Game, entry: types.StackEntry, resolved: ^types.Reso
 		}
 	}
 	if resolved == nil do return
+	amount := g.stack_event_amounts[entry.id]
+	delete_key(&g.stack_event_amounts, entry.id)
 	// A "may" ability asks its controller as that instruction is carried out (CR 603.5, 608.2d).
-	start_resolution(g, resolved, entry.controller, entry.source_id, stack_id = entry.id)
+	start_resolution(g, resolved, entry.controller, entry.source_id, stack_id = entry.id, event_amount = amount)
 }
 
 // CR 603.5: the controller decides whether to carry out a "may" ability.

@@ -989,8 +989,10 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 		#partial switch _ in t.mode {
 		case types.TriggerMode_ChangesZone, types.TriggerMode_Phase, types.TriggerMode_Attacks, types.TriggerMode_YouAttack,
 		     types.TriggerMode_SpellCast, types.TriggerMode_DamageDone, types.TriggerMode_DamageDoneOnceByController:
+			event_amount_defined = trigger_has_amount(t)
 			if t.execute != nil && !ability_supported(t.execute^) do ability_gaps(&out, t.execute^, "trigger")
 			else do append(&out, name("trigger condition:", t.mode))
+			event_amount_defined = false
 		case:
 			append(&out, name("trigger:", t.mode))
 		}

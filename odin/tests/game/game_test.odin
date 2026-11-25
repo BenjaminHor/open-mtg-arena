@@ -2178,3 +2178,35 @@ amounts_devotion_domain_aggregates :: proc(t: ^testing.T) {
 	opponents := ref(types.QuantityRef_PlayerCount{filter = types.PlayerFilter_Opponent{}})
 	testing.expect(t, game.quantity_value(s, opponents, 0, 0, 0) == 1, "one opponent")
 }
+
+@(test)
+that_much_damage :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// "Whenever enchanted creature deals damage, you gain that much life." (Armadillo Cloak): the amount is the
+	// damage that triggered it. "Discard all the cards in your hand. If you do, draw that many cards" (Book
+	// Devourer) counts the discarded cards, which isn't tracked: refused rather than read as the damage.
+	testing.expect(t, game.card_supported(&card(t, "April, Reporter of the Weird").face))
+	testing.expect(t, !game.card_supported(&card(t, "Book Devourer").face))
+	g := new_game()
+	s := &g.state
+	april := add(t, g, "April, Reporter of the Weird", 0, .Battlefield) // draw that many, then discard a card
+	hand := types.pvec_len(game.player(s, 0).hand)
+	game.begin_step(g, .DeclareAttackers)
+	attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{april.id, types.AttackTarget_Player{1}}}
+	testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
+	for _ in 0 ..< 16 {
+		who, _ := game.acting_player(s)
+		#partial switch w in s.waiting_for {
+		case types.WaitingFor_DeclareBlockers:
+			game.apply(g, who, types.GameAction_DeclareBlockers{})
+		case types.WaitingFor_DiscardChoice:
+			game.apply(g, who, types.GameAction_SelectCards{cards = game.worst_cards(g, who, w.count)})
+		case:
+			game.apply(g, who, types.GameAction_PassPriority{})
+		}
+		if s.phase == .EndCombat || s.phase == .PostCombatMain do break
+	}
+	power := game.power_of(april)
+	testing.expectf(t, game.player(s, 1).life == 20 - i32(power), "the damage: %d", power)
+	testing.expectf(t, types.pvec_len(game.player(s, 0).hand) == hand + power - 1, "drew %d, discarded 1", power)
+}

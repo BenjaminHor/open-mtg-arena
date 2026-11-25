@@ -9,6 +9,13 @@ import types "../types"
 @(thread_local)
 x_defined: bool
 
+// "That much" (the damage that triggered the ability): defined while a trigger whose event has an amount is
+// checked, and its value while that ability resolves.
+@(thread_local)
+event_amount_defined: bool
+@(thread_local)
+event_amount: int
+
 quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 	#partial switch x in q {
 	case types.QuantityExpr_Fixed:
@@ -54,6 +61,8 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return player_scope_supported(r.player)
 		case types.QuantityRef_SelfManaValue:
 			return true
+		case types.QuantityRef_EventContextAmount:
+			return event_amount_defined
 		case types.QuantityRef_PropertyAggregate:
 			_, special := r._0.property.(types.ObjectProperty_ManaSymbolCount)
 			return !special && card_set_supported(r._0.source)
@@ -169,6 +178,8 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			return int(player(s, scope_player(s, r.player, controller)).cards_drawn_this_turn)
 		case types.QuantityRef_SelfManaValue:
 			if o := object(s, source); o != nil do return object_mana_value(o) // CR 202.3
+		case types.QuantityRef_EventContextAmount:
+			return event_amount
 		case types.QuantityRef_PropertyAggregate:
 			// "The greatest power among creatures you control", "the total mana value of ...".
 			a := r._0

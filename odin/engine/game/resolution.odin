@@ -20,6 +20,7 @@ Resolution :: struct {
 	performed:    bool, // whether the latest "you may" instruction was done: "if you do" (CR 608.2c)
 	found:        [dynamic]types.ObjectId, // the cards a library search found: "those cards" next
 	source_incarnation: Maybe(u64), // the source as the ability was put on the stack: "this" means that object
+	event_amount: int, // a triggered ability's event's amount: "that much damage"
 	scope_node:   ^types.ResolvedAbility, // an instruction carried out for each player in a scope...
 	scope:        [dynamic]types.PlayerId, // ...for these players...
 	scope_next:   int, // ...of which this is the next
@@ -71,7 +72,7 @@ resolved_tree :: proc(s: ^types.GameState, a: ^types.AbilityDefinition, targets:
 }
 
 // Starts resolving: checks targets (CR 608.2b) and carries out the instructions. False while a player chooses.
-start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: types.PlayerId, source: types.ObjectId, spell: types.ObjectId = 0, stack_id: types.ObjectId = 0) -> bool {
+start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: types.PlayerId, source: types.ObjectId, spell: types.ObjectId = 0, stack_id: types.ObjectId = 0, event_amount := 0) -> bool {
 	s := &g.state
 	any_target, any_legal := false, false
 	for n := top; n != nil; n = n.sub_ability {
@@ -84,7 +85,7 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 			else do append(&n.illegal_target_slots, i)
 		}
 	}
-	g.resolution = Resolution{active = true, next = top, controller = controller, source = source, spell = spell, stack_id = stack_id}
+	g.resolution = Resolution{active = true, next = top, controller = controller, source = source, spell = spell, stack_id = stack_id, event_amount = event_amount}
 	g.resolution.source_incarnation = top.source_incarnation
 	g.resolution.last_targets = make([dynamic]types.TargetRef)
 	g.resolution.all_targets = make([dynamic]types.TargetRef)
@@ -99,6 +100,7 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 continue_resolution :: proc(g: ^Game) -> bool {
 	s := &g.state
 	r := &g.resolution
+	event_amount = r.event_amount // "that much", read by the instructions (quantities.odin)
 	for r.next != nil {
 		x := r.next
 		r.next = x.sub_ability

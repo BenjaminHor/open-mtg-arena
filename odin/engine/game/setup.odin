@@ -35,6 +35,7 @@ Game :: struct {
 	trigger_targets:   Trigger_Target_Choice,
 	stack_abilities:   map[types.ObjectId]^types.AbilityDefinition,
 	stack_conditions:  map[types.ObjectId]Stack_Condition, // triggered abilities with an intervening "if" (CR 603.4)
+	stack_event_amounts: map[types.ObjectId]int, // a triggered ability's event's amount: "that much damage"
 	optional_entry:    types.StackEntry, // a "may" ability waiting for its controller's answer
 	optional_accepted: bool,
 	damage_progress:   Combat_Damage_Progress, // a combat damage step waiting on damage divisions

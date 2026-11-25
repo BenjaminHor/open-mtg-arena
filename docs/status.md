@@ -2927,6 +2927,11 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   gap recordings only once the engine is fleshed out (ask then).
 
 ## Known issues
+- (2026-11-25, found while building the Odin engine) The Rust engine may read Book Devourer's "discard all the cards
+  in your hand. If you do, draw that many cards" as the combat damage: its "that many" (EventContextAmount)
+  checks the triggering event's amount before the preceding instruction's count (quantity.rs
+  event_context_amount). By the card's wording it's the number discarded. Unconfirmed in play; Odin refuses
+  "that much" after a first instruction until it tracks such counts.
 - (2026-11-25, owner: "CI is failing over and over on GitHub") Fixed in e45b75b: the Odin workflow's model check
   failed on every push since a7e7ad1, which hand-edited the generated codecs in an order odingen doesn't emit.
   Regenerated; run 112 (e45b75b) passed every step, both round trips included. Check CI after each push, not
