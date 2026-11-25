@@ -3940,3 +3940,28 @@ amass_makes_or_grows_an_army :: proc(t: ^testing.T) {
 	for id in game.ids_of(s.battlefield) do if o := game.object(s, id); o.is_token do tokens += 1
 	testing.expect(t, tokens == 1 && a != nil && a.power.? == 2, "the same Army, now 2/2")
 }
+
+@(test)
+mana_counted_as_it_is_added :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Elvish Archdruid: "{T}: Add {G} for each Elf you control." The count is taken as the mana ability resolves
+	// (CR 605.3b, 106.4); the Archdruid is an Elf itself.
+	testing.expect(t, game.card_supported(&card(t, "Elvish Archdruid").face))
+	g := new_game()
+	s := &g.state
+	druid := add(t, g, "Elvish Archdruid", 0, .Battlefield)
+	for _ in 0 ..< 2 do add(t, g, "Llanowar Elves", 0, .Battlefield)
+	index := -1
+	for a, i in druid.abilities^ do if a.kind == .Activated do index = i
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = druid.id, ability_index = index}))
+	testing.expect(t, len(s.players[0].mana_pool.mana) == 3, "{G}{G}{G}")
+	// Paying automatically counts it the same way: a {4}{G}{G} spell from the Archdruid's three, the Elves' two and
+	// one Forest.
+	g = new_game()
+	s = &g.state
+	add(t, g, "Elvish Archdruid", 0, .Battlefield)
+	for _ in 0 ..< 2 do add(t, g, "Llanowar Elves", 0, .Battlefield)
+	add(t, g, "Forest", 0, .Battlefield)
+	wurm := add(t, g, "Craw Wurm", 0, .Hand) // {4}{G}{G}
+	testing.expect(t, game.castable(s, 0, wurm, g.card_db), "3 + 1 + 1 + 1 mana")
+}

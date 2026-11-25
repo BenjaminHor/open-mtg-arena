@@ -71,7 +71,9 @@ tap_mana_ability :: proc(a: types.AbilityDefinition) -> (colors: bit_set[types.M
 	return o.colors, o.amount, is_mana
 }
 
-mana_ability_option :: proc(a: types.AbilityDefinition) -> (option: Mana_Option, ok: bool) {
+// `s` and `o`: the state and the ability's object, to work out an amount that's counted ("Add X mana of any one
+// color, where X is ..."); without them (checking support) it's assumed to be at least one.
+mana_ability_option :: proc(a: types.AbilityDefinition, s: ^types.GameState = nil, o: ^types.GameObject = nil) -> (option: Mana_Option, ok: bool) {
 	if a.kind != .Activated || a.effect == nil do return
 	// "Activate only if you control a Swamp", "only once each turn" (CR 602.5): checked where the ability is used,
 	// with the state at hand (mana_restrictions_met). Not yet: conditions, other zones, extra effects other than
@@ -113,7 +115,7 @@ mana_ability_option :: proc(a: types.AbilityDefinition) -> (option: Mana_Option,
 	}
 	if !taps && option.mana_cost == nil do return
 	option.taps = taps
-	colors, amount := produced_mana(a)
+	colors, amount, counted := produced_mana(a, s, o)
 	option.colors, option.amount = colors, amount
 	if effect, is_mana := a.effect.(types.Effect_Mana); is_mana {
 		if fixed, is_fixed := effect.produced.(types.ManaProduction_Fixed); is_fixed && card(colors) > 1 do option.each = true
@@ -123,11 +125,18 @@ mana_ability_option :: proc(a: types.AbilityDefinition) -> (option: Mana_Option,
 		for r, i in effect.restrictions do rs[i] = pool_restriction(r)
 		option.restrictions = rs
 	}
-	return option, amount > 0
+	return option, amount > 0 || (counted && colors != {}) // a counted amount can be 0 now (CR 106.4)
 }
 
 @(private = "file")
-produced_mana :: proc(a: types.AbilityDefinition) -> (colors: bit_set[types.ManaType], amount: int) {
+produced_mana :: proc(a: types.AbilityDefinition, s: ^types.GameState, o: ^types.GameObject) -> (colors: bit_set[types.ManaType], amount: int, counted: bool) {
+	// How much: a fixed number, or a count worked out now (CR 107.3, 608.2h).
+	how_many :: proc(q: types.QuantityExpr, s: ^types.GameState, o: ^types.GameObject) -> (n: int, counted: bool, ok: bool) {
+		if n, fixed := fixed_quantity(q); fixed do return n, false, true
+		if !quantity_supported(q) || quantity_reads_target(q) do return 0, true, false
+		if s == nil || o == nil do return 1, true, true
+		return max(quantity_value(s, q, o.controller, o.id, 0), 0), true, true
+	}
 	effect, is_mana := a.effect.(types.Effect_Mana)
 	if !is_mana || len(effect.grants) > 0 || effect.expiry != nil || effect.target != nil do return
 	for r in effect.restrictions do if !spend_restriction_supported(r) do return
@@ -136,17 +145,17 @@ produced_mana :: proc(a: types.AbilityDefinition) -> (colors: bit_set[types.Mana
 		// "Add {G}" (one color, once per symbol) or "Add {W}{U}" (each listed symbol).
 		for c in p.colors do colors += {types.ManaType(c)}
 		amount = len(p.colors)
-		return colors, amount
+		return colors, amount, false
 	case types.ManaProduction_Colorless:
-		n, fixed := fixed_quantity(p.count)
-		if !fixed do return {}, 0
-		return {.Colorless}, n
+		n, is_counted, ok := how_many(p.count, s, o)
+		if !ok do return {}, 0, false
+		return {.Colorless}, n, is_counted
 	case types.ManaProduction_AnyOneColor:
-		n, fixed := fixed_quantity(p.count)
-		if !fixed do return {}, 0
+		n, is_counted, ok := how_many(p.count, s, o)
+		if !ok do return {}, 0, false
 		for c in p.color_options do colors += {types.ManaType(c)}
 		if len(p.color_options) == 0 do colors = {.White, .Blue, .Black, .Red, .Green}
-		return colors, n
+		return colors, n, is_counted
 	case types.ManaProduction_Mixed, types.ManaProduction_AnyCombination, types.ManaProduction_ChosenColor,
 	     types.ManaProduction_NotedType, types.ManaProduction_OpponentLandColors,
 	     types.ManaProduction_AnyCombinationOfObjectColors, types.ManaProduction_AnyTypeProduceableBy,
@@ -187,7 +196,7 @@ mana_sources :: proc(s: ^types.GameState, p: types.PlayerId, exclude: types.Obje
 		// than `worst`.
 		src := Mana_Source{object = o, options = make([dynamic]Mana_Option, context.temp_allocator)}
 		for a, index in o.abilities^ {
-			option, ok := mana_ability_option(a)
+			option, ok := mana_ability_option(a, s, o)
 			option.index = index
 			if ok && (option.mana_cost != nil || !option.taps || option.each) do ok = false // activated by the player, not here
 			if ok && !mana_restrictions_met(s, p, o, index, a) do ok = false
@@ -370,7 +379,7 @@ mana_rider :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, option: Ma
 // resolves at once, its mana going into the player's mana pool (CR 106.4) until it's spent or the step ends.
 activate_mana_ability :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, a: ^types.AbilityDefinition) -> bool {
 	if !mana_ability_activatable(g, p, o, a) do return false
-	option, _ := mana_ability_option(a^)
+	option, _ := mana_ability_option(a^, &g.state, o)
 	record_mana_activation(&g.state, o, ability_index_of(o, a))
 	// CR 602.2b, 601.2h: the costs are paid: {T}, and mana for "{1}, {T}: Add ..." (from other sources, CR 605.3a).
 	if option.taps do tap_permanent(o)
@@ -403,7 +412,7 @@ activate_mana_ability :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject,
 
 // Whether the player can activate this mana ability now: they control it on the battlefield, can pay its costs.
 mana_ability_activatable :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, a: ^types.AbilityDefinition) -> bool {
-	option, is_mana := mana_ability_option(a^)
+	option, is_mana := mana_ability_option(a^, &g.state, o)
 	if !is_mana do return false
 	if o.zone != .Battlefield || o.controller != p do return refuse("not activatable from its zone")
 	if !mana_restrictions_met(&g.state, p, o, ability_index_of(o, a), a^) do return refuse("activation restriction") // CR 602.5
@@ -436,7 +445,7 @@ choose_mana_color :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_Choos
 	if o == nil || !has do return false
 	a := activated_ability(o, index)
 	if a == nil do return false
-	option, _ := mana_ability_option(a^)
+	option, _ := mana_ability_option(a^, &g.state, o)
 	finish_mana_ability(g, p, o, option, picked._0)
 	return true
 }
