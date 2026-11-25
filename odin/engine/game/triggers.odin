@@ -66,6 +66,11 @@ Trigger_Event :: struct {
 	damaged:             types.ObjectId,
 	damaged_incarnation: u64,
 	lki:               ^types.GameObject, // the object as it last existed on the battlefield, if the event moved it from there (CR 608.2h)
+	// A zone change: where the object moved from and to, and how many zone changes the turn had then (for its last
+	// known information if it leaves the battlefield later: moved_object_as_was).
+	moved:             bool,
+	moved_from, moved_to: types.Zone,
+	zone_change_mark:  int,
 }
 
 // The event triggers are being collected for, while they are (collect_triggers).
@@ -81,6 +86,7 @@ Pending_Trigger :: struct {
 	amount:     int, // the event's amount, for "that much" (the damage dealt)
 	event:      Trigger_Event, // what the event was about
 	delayed:    ^types.ResolvedAbility, // a delayed triggered ability (delayed.odin), its "it" already chosen
+	settled:    []bool, // its condition's parts about the trigger event, as they were then (event_settled)
 }
 
 // A triggered ability on the stack whose intervening "if" is checked again as it resolves (CR 603.4).
@@ -90,11 +96,17 @@ Stack_Condition :: struct {
 	// The source as it was put on the stack, read instead if it has changed zones by the time it resolves (CR
 	// 608.2h: "when this enters, if you cast it" with the permanent gone).
 	snapshot:   ^types.GameObject,
+	settled:    []bool, // the condition's parts about the trigger event, as they were when it triggered
 }
 
 // ---- What's supported --------------------------------------------------------------------------------------
 
 trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
+	// "Whenever a card leaves your graveyard": the data's one zone-change clause, read as the trigger's own zones.
+	if len(t.zone_change_clauses) > 0 {
+		v, ok := single_clause_view(t)
+		return ok && trigger_supported(v)
+	}
 	// CR 107.3m: only an enters-the-battlefield ability of the permanent itself reads the X of the spell it was (0
 	// when it wasn't cast with one).
 	saved_x := x_defined
@@ -122,11 +134,21 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		event_amount_defined = false
 		if !ability_supported(t.execute.sub_ability^) do return false
 	}
+	saved_move, saved_mode := condition_move, condition_mode
+	condition_move = condition_move_of(t) // what "it" is for the condition (trigger_conditions.odin)
+	condition_mode = t.mode
+	defer condition_move, condition_mode = saved_move, saved_mode
 	if c, has := t.condition.?; has && !trigger_condition_supported(c) do return false
 	// "One or more": a batch of simultaneous events, read by the modes that collect them (CR 603.2c).
 	if t.batched {
 		#partial switch _ in t.mode {
-		case types.TriggerMode_ChangesZoneAll, types.TriggerMode_DiscardedAll:
+		case types.TriggerMode_ChangesZoneAll, types.TriggerMode_DiscardedAll, types.TriggerMode_YouAttack:
+		case types.TriggerMode_ChangesZone, types.TriggerMode_LeavesBattlefield:
+			if !once_each_turn_batch_supported(t) do return false
+		case types.TriggerMode_DamageDoneOnceByController:
+			// "Whenever one or more creatures you control deal combat damage to a player": combat damage is dealt
+			// at once in each combat damage step (CR 510.2), so all of it is one batch. Other damage isn't grouped.
+			if t.damage_kind != .CombatOnly do return false
 		case:
 			return false
 		}
@@ -167,6 +189,10 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	     types.TriggerMode_Cycled, types.TriggerMode_CycledOrDiscarded:
 		is_player_event = true
 	}
+	// "Whenever you attack": whose attack (you_attack_supported). "At the beginning of each player's upkeep": whose
+	// step (phase_player_supported).
+	if _, you_attack := t.mode.(types.TriggerMode_YouAttack); you_attack do is_player_event = true
+	if _, phase := t.mode.(types.TriggerMode_Phase); phase do is_player_event = true
 	if !is_cast && !is_damage && !is_zone_change && !is_player_event && t.valid_target != nil do return false
 	// "Becomes the target of a spell or ability [an opponent controls]": the targeting spell or ability.
 	_, is_targeted := t.mode.(types.TriggerMode_BecomesTarget)
@@ -179,13 +205,21 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		#partial switch x in c {
 		case types.TriggerConstraint_OnlyDuringYourTurn, types.TriggerConstraint_OnlyDuringOpponentsTurn:
 		case types.TriggerConstraint_NthSpellThisTurn:
-			// "Whenever you cast your second spell each turn": the caster's count, any spell.
-			if !is_cast || x.filter != nil do return false
+			// "Whenever you cast your second spell each turn": the caster's count; "their first noncreature spell each
+			// turn": of the spells of that kind (the turn's spell records).
+			if !is_cast do return false
+			if f, has := x.filter.?; has && !spell_record_filter_supported(f) do return false
+		case types.TriggerConstraint_OnlyDuringYourMainPhase:
+			// "Whenever you cast an instant spell during your main phase".
+			if !is_cast do return false
 		case types.TriggerConstraint_OncePerTurn:
 			// "This ability triggers only once each turn" (the card's own limit; add_trigger keeps the record). The data
 			// has one constraint: a "during your turn" beside it would be lost.
 			if x.spent_by != .Triggering do return false
-			if d, has := t.description.?; has && (strings.contains(d, "during your turn") || strings.contains(d, "during an opponent's turn") || strings.contains(d, "during each opponent's turn")) do return false
+			if d, has := t.description.?; has && (strings.contains(d, "during your turn") || strings.contains(d, "during an opponent's turn") || strings.contains(d, "during each opponent's turn")) {
+				// Unless the condition carries those words ("whenever a card leaves your graveyard during your turn").
+				if !(strings.contains(d, "during your turn") && condition_is_your_turn(t)) do return false
+			}
 		case types.TriggerConstraint_NthDrawThisTurn:
 			// "Whenever you draw your second card each turn" (CR 121.2: each card drawn is its own event).
 			if _, drawn := t.mode.(types.TriggerMode_Drawn); !drawn do return false
@@ -205,7 +239,7 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		return false
 	case types.TriggerMode_Phase:
 		_, has := t.phase.?
-		return has && t.valid_card == nil
+		return has && t.valid_card == nil && phase_player_supported(t)
 	case types.TriggerMode_Attacks:
 		// "Whenever this creature attacks", "whenever equipped/enchanted creature attacks", "whenever a creature you
 		// control attacks" (CR 508.3a: when it's declared as an attacker).
@@ -214,8 +248,8 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		if _, attached := f.(types.TargetFilter_AttachedTo); attached do return true
 		return subject_filter_supported(f)
 	case types.TriggerMode_YouAttack:
-		// "Whenever you attack": the plain form (CR 508.3d).
-		return t.valid_card == nil && t.attack_target_filter == nil
+		// "Whenever you attack" (CR 508.3d), "with one or more [kind of] creatures" (attack_triggers.odin).
+		return you_attack_supported(t)
 	case types.TriggerMode_EntersOrAttacks:
 		// "Whenever this creature enters or attacks" (CR 603.6a, 508.3a).
 		f, has := t.valid_card.?
@@ -256,13 +290,19 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		return true
 	case types.TriggerMode_DamageReceived:
 		// "Whenever this creature is dealt damage" (CR 120.3).
-		f, has := t.valid_card.?
-		return has && is_self(f) && t.valid_source == nil && t.damage_amount == nil && t.damage_kind != .NoncombatOnly
+		// "Whenever this creature is dealt [noncombat] damage" (CR 120.3, 120.2b); "whenever an opponent is dealt
+		// noncombat damage" (each event: each source's damage, CR 120.2).
+		if t.valid_source != nil || t.damage_amount != nil do return false
+		if f, has := t.valid_card.?; has do return is_self(f) // valid_target: the note of its effect's target
+		v, has := t.valid_target.?
+		return has && is_an_opponent(v)
 	case types.TriggerMode_DamageDone, types.TriggerMode_DamageDoneOnceByController:
 		// "Whenever [this / a creature you control / enchanted creature] deals [combat] damage to [a player / an
 		// opponent / a creature / you]"; "whenever one or more creatures you control deal combat damage to a
 		// player" (once per batch, CR 603.2c).
-		if t.damage_kind == .NoncombatOnly || t.damage_amount != nil do return false
+		if t.damage_amount != nil do return false
+		// "Deals noncombat damage" (CR 120.2b): one source's damage event at a time, not a combat batch.
+		if _, batch := t.mode.(types.TriggerMode_DamageDoneOnceByController); batch && t.damage_kind == .NoncombatOnly do return false
 		src, has_src := t.valid_source.?
 		if !has_src || !damage_source_supported(src) do return false
 		if v, has := t.valid_target.?; has && !damage_recipient_supported(v) do return false
@@ -287,6 +327,12 @@ damage_source_supported :: proc(f: types.TargetFilter) -> bool {
 	case types.TargetFilter_SelfRef, types.TargetFilter_AttachedTo:
 		return true
 	case types.TargetFilter_Typed:
+		// "A source you control": any object (CR 120.1), by its controller.
+		if len(x._0.type_filters) == 0 && len(x._0.properties) == 0 {
+			c, has := x._0.controller.?
+			_, you := c.(types.ControllerRef_You)
+			return has && you
+		}
 		return typed_supported(x._0)
 	case types.TargetFilter_Or:
 		for y in x.filters do if !damage_source_supported(y) do return false
@@ -455,6 +501,10 @@ graveyard_watcher_supported :: proc(t: types.TriggerDefinition) -> bool {
 		return typed
 	case types.TriggerMode_Phase:
 		return true
+	case types.TriggerMode_SpellCast:
+		// "Whenever you cast a noncreature spell, you may pay {B}. If you do, return this card from your graveyard to
+		// your hand" (CR 113.6m: it moves the card out of the graveyard, so it works there).
+		return true
 	}
 	return false
 }
@@ -471,6 +521,29 @@ graveyard_watchers :: proc(s: ^types.GameState) -> [dynamic]^types.GameObject {
 		}
 	}
 	return out
+}
+
+// "Whenever one or more artifacts you control enter, ... This ability triggers only once each turn": the batch
+// (CR 603.2c) triggers it once, and so does each of the events of a batch seen one at a time, as the limit counts
+// only the first (CR 603.2h is a different limit, "do this only once each turn", not read here). A condition about
+// the objects ("if they entered from a graveyard") would need the whole batch: only "during your turn" is read.
+once_each_turn_batch_supported :: proc(t: types.TriggerDefinition) -> bool {
+	c, has := t.constraint.?
+	if !has do return false
+	once, is_once := c.(types.TriggerConstraint_OncePerTurn)
+	if !is_once || once.spent_by != .Triggering do return false
+	if t.condition != nil && !condition_is_your_turn(t) do return false
+	return true
+}
+
+// The condition is "during your turn" (and nothing else).
+condition_is_your_turn :: proc(t: types.TriggerDefinition) -> bool {
+	c, has := t.condition.?
+	if !has do return false
+	d, is_turn := c.(types.TriggerCondition_DuringPlayersTurn)
+	if !is_turn do return false
+	_, yours := d.player.(types.PlayerFilter_Controller)
+	return yours
 }
 
 // The objects a trigger watches: itself, or permanents of a kind (and controller).
@@ -517,6 +590,10 @@ event_about :: proc(s: ^types.GameState, e: Event) -> Trigger_Event {
 			out.object, out.incarnation, out.object_controller = o.id, o.incarnation, o.controller
 			if e.kind == .Zone_Change || e.kind == .Sacrificed do out.object_controller, out.lki = e.controller, e.lki // as it last existed
 		}
+	}
+	if e.kind == .Zone_Change {
+		out.moved, out.moved_from, out.moved_to = true, e.from, e.to
+		out.zone_change_mark = types.pvec_len(s.zone_changes_this_turn)
 	}
 	if e.kind == .Became_Target {
 		// "That spell or ability" and "that player": the targeting stack object and its controller.
@@ -575,6 +652,7 @@ trigger_has_attack :: proc(t: types.TriggerDefinition) -> bool {
 }
 
 trigger_has_object :: proc(t: types.TriggerDefinition) -> bool {
+	if t.batched do return false // "one or more": no one object
 	#partial switch _ in t.mode {
 	case types.TriggerMode_ChangesZone, types.TriggerMode_LeavesBattlefield, types.TriggerMode_SpellCast,
 	     types.TriggerMode_DamageDone, types.TriggerMode_Taps, types.TriggerMode_Attacks, types.TriggerMode_Sacrificed,
@@ -668,7 +746,7 @@ collect_triggers :: proc(g: ^Game) {
 					t := &entry.definition
 					if _, phase := t.mode.(types.TriggerMode_Phase); !phase || !watches_from(t^, o.zone) || !trigger_supported(t^) do continue
 					step, _ := t.phase.?
-					if step != e.step || !turn_constraint_met(s, t^, o.controller) do continue
+					if step != e.step || !turn_constraint_met(s, t^, o.controller) || !phase_player_matches(s, t^, o) do continue
 					add_trigger(g, o.id, o.controller, t)
 				}
 			}
@@ -678,10 +756,13 @@ collect_triggers :: proc(g: ^Game) {
 			watchers := make([dynamic]^types.GameObject, context.temp_allocator)
 			append(&watchers, spell)
 			for id in ids_of(s.battlefield) do append(&watchers, object(s, id))
+			append(&watchers, ..graveyard_watchers(s)[:]) // CR 113.6b: abilities that work from a graveyard
 			for w in watchers {
 				for &entry in trigger_definitions(w) {
 					t := &entry.definition
 					if _, is_cast := t.mode.(types.TriggerMode_SpellCast); !is_cast || !trigger_supported(t^) do continue
+					if w.zone == .Graveyard && !watches_from(t^, .Graveyard) do continue
+					if w.zone == .Battlefield && !watches_from(t^, .Battlefield) do continue
 					f, has := t.valid_card.?
 					if w.id == spell.id && !(has && is_self(f)) do continue // a spell's own triggers are "this spell" ones
 					if has && !spell_matches(s, spell, f, w) do continue
@@ -692,7 +773,7 @@ collect_triggers :: proc(g: ^Game) {
 					}
 					if c, has := t.constraint.?; has {
 						if nth, is_nth := c.(types.TriggerConstraint_NthSpellThisTurn); is_nth {
-							if !compare(spells_cast_this_turn_by(s, e.controller), nth.comparator, int(nth.n)) do continue
+							if !compare(nth_spell_count(s, e.controller, nth.filter), nth.comparator, int(nth.n)) do continue
 						} else if !turn_constraint_met(s, t^, w.controller) do continue
 					}
 					add_trigger(g, w.id, w.controller, t)
@@ -717,6 +798,7 @@ collect_triggers :: proc(g: ^Game) {
 					_, batched := t.mode.(types.TriggerMode_DamageDoneOnceByController)
 					if (!dmg && !batched) || !trigger_supported(t^) do continue
 					if t.damage_kind == .CombatOnly && !e.combat do continue
+					if t.damage_kind == .NoncombatOnly && e.combat do continue
 					src, _ := t.valid_source.?
 					if !damage_source_matches(s, src, source, w) do continue
 					if v, has := t.valid_target.?; has && !damage_recipient_matches(s, v, e.target, w) do continue
@@ -729,12 +811,7 @@ collect_triggers :: proc(g: ^Game) {
 				}
 			}
 		case .You_Attack:
-			for o in permanents_of(s, e.controller) {
-				for &entry in trigger_definitions(o) {
-					t := &entry.definition
-					if _, yours := t.mode.(types.TriggerMode_YouAttack); yours && trigger_supported(t^) && turn_constraint_met(s, t^, o.controller) do add_trigger(g, o.id, o.controller, t)
-				}
-			}
+			you_attack_triggers(g, e) // CR 508.3c-e
 		case .Attack:
 			o := object(s, e.object)
 			for &entry in trigger_definitions(o) {
@@ -827,9 +904,24 @@ collect_triggers :: proc(g: ^Game) {
 				if o := object(s, id); o != nil && o.zone == .Battlefield {
 					for &entry in trigger_definitions(o) {
 						t := &entry.definition
-						if _, received := t.mode.(types.TriggerMode_DamageReceived); !received || !trigger_supported(t^) do continue
+						if _, received := t.mode.(types.TriggerMode_DamageReceived); !received || t.valid_card == nil || !trigger_supported(t^) do continue
 						if t.damage_kind == .CombatOnly && !e.combat do continue
+						if t.damage_kind == .NoncombatOnly && e.combat do continue
 						add_trigger(g, o.id, o.controller, t, nil, e.amount)
+					}
+				}
+			}
+			// "Whenever an opponent is dealt noncombat damage": permanents watching the players.
+			if pid, is_player := target_player(e.target); is_player {
+				for id in ids_of(s.battlefield) {
+					w := object(s, id)
+					for &entry in trigger_definitions(w) {
+						t := &entry.definition
+						if _, received := t.mode.(types.TriggerMode_DamageReceived); !received || t.valid_card != nil || !trigger_supported(t^) do continue
+						if t.damage_kind == .CombatOnly && !e.combat do continue
+						if t.damage_kind == .NoncombatOnly && e.combat do continue
+						if pid == w.controller do continue // an opponent of the watcher's controller
+						add_trigger(g, w.id, w.controller, t, nil, e.amount)
 					}
 				}
 			}
@@ -842,6 +934,17 @@ collect_triggers :: proc(g: ^Game) {
 @(private = "file")
 zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.TriggerDefinition, e: Event, is_self: bool, batches: ^[dynamic]Batch_Key, watcher_gone: Maybe(^types.GameObject) = nil) {
 	s := &g.state
+	// "Whenever a card leaves your graveyard": its one clause read as the trigger's zones and card (single_clause_view).
+	view := t
+	if len(t.zone_change_clauses) > 0 {
+		v, ok := single_clause_view(t^)
+		if !ok do return
+		view = new_clone(v, context.temp_allocator)
+		// CR 603.10a: leaving a graveyard looks back in time: the ability triggers only if it was on the battlefield
+		// just before the event. Not the card's own (it was in the graveyard), nor one that entered with it or since.
+		if is_self do return
+		if _, gone := watcher_gone.?; !gone && entered_since(g, source.id, e.group) do return
+	}
 	// A sacrifice is also a zone change (CR 701.21a); a sacrifice trigger sees only the sacrifice event, the others
 	// only the zone change.
 	_, sacrifice_mode := t.mode.(types.TriggerMode_Sacrificed)
@@ -849,8 +952,8 @@ zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.Trigg
 	#partial switch _ in t.mode {
 	case types.TriggerMode_Sacrificed:
 	case types.TriggerMode_ChangesZone:
-		if origin, has := t.origin.?; has && origin != e.from do return
-		if dest, has := t.destination.?; has && dest != e.to do return
+		if origin, has := view.origin.?; has && origin != e.from do return
+		if dest, has := view.destination.?; has && dest != e.to do return
 	case types.TriggerMode_ChangesZoneAll:
 		// "Whenever one or more cards are put into a library from anywhere": a move within a zone isn't one.
 		if e.from == e.to do return
@@ -865,8 +968,8 @@ zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.Trigg
 		return
 	}
 	if !trigger_supported(t^) do return
-	subject, _ := t.valid_card.?
-	controller, matched := zone_change_subject(g, source, t, subject, e, is_self)
+	subject, _ := view.valid_card.?
+	controller, matched := zone_change_subject(g, source, view, subject, e, is_self)
 	if !matched do return
 	if !turn_constraint_met(s, t^, controller) do return
 	if _, all := t.mode.(types.TriggerMode_ChangesZoneAll); all {
@@ -880,6 +983,13 @@ zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.Trigg
 	lki := e.lki if is_self && e.from == .Battlefield else nil
 	if gone, has := watcher_gone.?; has && !is_self do lki = gone
 	add_trigger(g, source.id, controller, t, lki)
+}
+
+// Whether this object entered the battlefield in this group of simultaneous zone changes or a later one.
+@(private = "file")
+entered_since :: proc(g: ^Game, id: types.ObjectId, group: int) -> bool {
+	for f in g.events do if f.kind == .Zone_Change && f.object == id && f.to == .Battlefield && f.group >= group do return true
+	return false
 }
 
 // Whether the moved object is what the trigger watches, and who controls the ability.
@@ -931,17 +1041,67 @@ turn_constraint_met :: proc(s: ^types.GameState, t: types.TriggerDefinition, con
 		return s.active_player != controller
 	case types.TriggerConstraint_OncePerTurn:
 		return true // checked as it triggers (add_trigger)
+	case types.TriggerConstraint_OnlyDuringYourMainPhase:
+		// CR 505.1: the precombat and postcombat main phases of your turn.
+		return s.active_player == controller && (s.phase == .PreCombatMain || s.phase == .PostCombatMain)
+	}
+	return false
+}
+
+// The spells a player has cast this turn (this one included), of a kind when the filter names one: "your first
+// enchantment spell each turn" (CR 601.2i).
+nth_spell_count :: proc(s: ^types.GameState, p: types.PlayerId, filter: Maybe(types.TargetFilter)) -> int {
+	f, filtered := filter.?
+	if !filtered do return spells_cast_this_turn_by(s, p)
+	n := 0
+	if list, ok := s.spells_cast_this_turn_by_player[p]; ok {
+		for i in 0 ..< types.pvec_len(list) do if spell_record_matches(types.pvec_get(list, i), f) do n += 1
+	}
+	return n
+}
+
+// "At the beginning of each player's upkeep" (any player's step), "each opponent's upkeep", "the upkeep of enchanted
+// creature's controller": the player whose step it is (CR 603.2b).
+phase_player_supported :: proc(t: types.TriggerDefinition) -> bool {
+	v, has := t.valid_target.?
+	if !has || is_any_player(v) || is_an_opponent(v) || is_you(v) do return true
+	_, host_controller := v.(types.TargetFilter_ParentTargetController)
+	return host_controller
+}
+
+phase_player_matches :: proc(s: ^types.GameState, t: types.TriggerDefinition, o: ^types.GameObject) -> bool {
+	v, has := t.valid_target.?
+	if !has || is_any_player(v) do return true
+	if is_an_opponent(v) do return s.active_player != o.controller
+	if is_you(v) do return s.active_player == o.controller
+	if _, host_controller := v.(types.TargetFilter_ParentTargetController); host_controller {
+		// "Enchanted creature's controller": the controller of what this Aura is attached to now.
+		host := host_of(s, o)
+		return host != nil && s.active_player == host.controller
 	}
 	return false
 }
 
 add_trigger :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, trigger: ^types.TriggerDefinition, lki: ^types.GameObject = nil, amount := 0) {
 	t := unless_ability(trigger)
-	// CR 603.4: with an intervening "if", the ability triggers only if the condition is true now.
-	if c, has := t.condition.?; has && !condition_holds_as_was(&g.state, source, controller, c, lki) do return
+	// CR 603.4: with an intervening "if", the ability triggers only if the condition is true now. The parts of it
+	// about the trigger event are kept as they were, for the check as it resolves.
+	settled := make([dynamic]bool)
+	if c, has := t.condition.?; has {
+		settled_record = &settled
+		holds := condition_holds_as_was(&g.state, source, controller, c, lki)
+		settled_record = nil
+		if !holds {
+			delete(settled)
+			return
+		}
+	}
 	// "Only once each turn": counted when it does trigger.
-	if !first_time_this_turn(g, source, trigger) do return
-	append(&g.pending_triggers, Pending_Trigger{source = source, controller = controller, definition = t, lki = lki, amount = amount, event = collecting_event})
+	if !first_time_this_turn(g, source, trigger) {
+		delete(settled)
+		return
+	}
+	append(&g.pending_triggers, Pending_Trigger{source = source, controller = controller, definition = t, lki = lki, amount = amount, event = collecting_event, settled = settled[:]})
 }
 
 // The condition, read from the source as it last existed when it has left the battlefield (CR 603.10a, 608.2h).
@@ -962,12 +1122,66 @@ condition_holds_as_was :: proc(s: ^types.GameState, source: types.ObjectId, cont
 @(thread_local)
 rechecking_on_resolution: bool
 
+// The parts of a condition that are about the trigger event itself ("attacks alone", "enters untapped", "if you
+// attacked with three or more creatures"): what they were as it triggered is what they are as it resolves (CR
+// 603.4). As it triggers each such part's value is recorded in order (settled_record); as it resolves they're read
+// back in the same order (settled_replay). And/Or check every part, so the order is the same both times.
+@(thread_local)
+settled_record: ^[dynamic]bool
+@(thread_local)
+settled_replay: []bool
+@(thread_local)
+settled_next: int
+
+// A condition part about the trigger event: its value now as it triggers (recorded), or as recorded as it resolves.
+event_settled :: proc(now: bool) -> bool {
+	if rechecking_on_resolution {
+		if settled_next >= len(settled_replay) do return true // not recorded: a condition checked only as it resolves
+		v := settled_replay[settled_next]
+		settled_next += 1
+		return v
+	}
+	if settled_record != nil do append(settled_record, now)
+	return now
+}
+
 trigger_condition_supported :: proc(c: types.TriggerCondition) -> bool {
 	#partial switch x in c {
 	case types.TriggerCondition_MinCoAttackers:
 		return x.filter == nil // "attacks with at least N other creatures" (battalion); "alone" is Not of 1
 	case types.TriggerCondition_EventTime:
 		return x.condition != nil && trigger_condition_supported(x.condition^)
+	case types.TriggerCondition_AttackersDeclaredCount:
+		// Read from the combat just declared: only by a trigger on attackers being declared (CR 508.3).
+		#partial switch _ in condition_mode {
+		case types.TriggerMode_YouAttack, types.TriggerMode_Attacks:
+			return attackers_declared_supported(x)
+		}
+		return false
+	case types.TriggerCondition_DuringPlayersTurn:
+		// "During your turn", "during an opponent's turn", "if it's not their turn" (the player the event names).
+		#partial switch _ in x.player {
+		case types.PlayerFilter_Controller, types.PlayerFilter_Opponent:
+			return true
+		case types.PlayerFilter_TriggeringPlayer:
+			return event_player_defined
+		}
+		return false
+	case types.TriggerCondition_SourceMatchesFilter:
+		// "If this creature attacked this turn", "if this isn't prepared", "if this isn't a creature".
+		typed, ok := x.filter.(types.TargetFilter_Typed)
+		if !ok || typed._0.controller != nil do return false
+		for p in typed._0.properties do if !source_property_supported(p) do return false
+		for tf in typed._0.type_filters do if !type_filter_supported(tf) do return false
+		return true
+	case types.TriggerCondition_ZoneChangeObjectIsTapped, types.TriggerCondition_HadCounters, types.TriggerCondition_ZoneChangeObjectMatchesFilter,
+	     types.TriggerCondition_DealtDamageBySourceThisTurn:
+		return moved_object_condition_supported(c)
+	case types.TriggerCondition_DefendingPlayerControlsNone:
+		// "Whenever this attacks, if defending player controls no Walls".
+		typed, ok := x.filter.(types.TargetFilter_Typed)
+		_, attacks := condition_mode.(types.TriggerMode_Attacks)
+		return ok && attacks && typed._0.controller == nil && typed_supported(typed._0)
 	case types.TriggerCondition_WasCast:
 		// "If you cast it": the caster is the permanent's controller as it enters; "from your hand" also its owner.
 		if ctl, has := x.controller.?; has {
@@ -1012,17 +1226,58 @@ trigger_condition_holds :: proc(s: ^types.GameState, source: types.ObjectId, con
 	#partial switch x in c {
 	case types.TriggerCondition_MinCoAttackers:
 		// CR 508.1: the other creatures declared as attackers with it.
-		if rechecking_on_resolution do return true
+		if rechecking_on_resolution do return event_settled(true)
 		combat, in_combat := s.combat.?
-		if !in_combat do return false
+		if !in_combat do return event_settled(false)
 		others := 0
 		for a in combat.attackers do if a.object_id != collecting_event.object do others += 1
 		if collecting_event.object == 0 do others -= 1 // not while collecting: the source itself attacks
-		return others >= int(x.minimum)
+		return event_settled(others >= int(x.minimum))
 	case types.TriggerCondition_EventTime:
-		if rechecking_on_resolution do return true
-		return trigger_condition_holds(s, source, controller, x.condition^)
+		// "Whenever this attacks while you have the most life": true as the event happened (not an intervening "if").
+		if rechecking_on_resolution do return event_settled(true)
+		saved := settled_record
+		settled_record = nil // one value for the whole part
+		now := trigger_condition_holds(s, source, controller, x.condition^)
+		settled_record = saved
+		return event_settled(now)
+	case types.TriggerCondition_AttackersDeclaredCount:
+		if rechecking_on_resolution do return event_settled(true)
+		return event_settled(attackers_declared_count(s, x, source, controller))
+	case types.TriggerCondition_DuringPlayersTurn:
+		#partial switch _ in x.player {
+		case types.PlayerFilter_Controller:
+			return s.active_player == controller
+		case types.PlayerFilter_Opponent:
+			return s.active_player != controller
+		case types.PlayerFilter_TriggeringPlayer:
+			p, has := collecting_event.player.?
+			return has && s.active_player == p
+		}
+		return false
+	case types.TriggerCondition_SourceMatchesFilter:
+		return src != nil && object_matches(s, src, x.filter.(types.TargetFilter_Typed)._0, controller, source)
+	case types.TriggerCondition_ZoneChangeObjectIsTapped, types.TriggerCondition_HadCounters, types.TriggerCondition_ZoneChangeObjectMatchesFilter,
+	     types.TriggerCondition_DealtDamageBySourceThisTurn:
+		return moved_object_condition_holds(s, source, controller, c)
+	case types.TriggerCondition_DefendingPlayerControlsNone:
+		// CR 506.2: in a two-player game the defending player is the attacking player's opponent.
+		defending := opponent(s, controller)
+		for o in permanents_of(s, defending) do if object_matches(s, o, x.filter.(types.TargetFilter_Typed)._0, controller, source) do return false
+		return true
 	case types.TriggerCondition_WasCast:
+		// "Whenever another creature you control enters, if you cast it from a graveyard": the creature that entered,
+		// cast or not as it entered (settled by the event).
+		if ev := collecting_event; ev.moved && ev.object != source && ev.object != 0 {
+			if rechecking_on_resolution do return event_settled(true)
+			o := object(s, ev.object)
+			if o == nil || o.incarnation != ev.incarnation || o.controller != controller do return event_settled(false)
+			z, was_cast := o.cast_from_zone.?
+			if !was_cast do return event_settled(false)
+			if want, has := x.zone.?; has && z != want do return event_settled(false)
+			if _, has := x.owner.?; has && o.owner != controller do return event_settled(false)
+			return event_settled(true)
+		}
 		// "If you cast it (from your hand)": the permanent came from a spell its controller cast.
 		if src == nil do return false
 		z, was_cast := src.cast_from_zone.?
@@ -1057,15 +1312,16 @@ trigger_condition_holds :: proc(s: ^types.GameState, source: types.ObjectId, con
 	case types.TriggerCondition_AdditionalCostPaid:
 		return kicked(src)
 	case types.TriggerCondition_And:
-		for y in x.conditions do if !trigger_condition_holds(s, source, controller, y) do return false
-		return true
+		// Every part is checked (no shortcut), so the parts about the event are met in the same order each time.
+		all := true
+		for y in x.conditions do if !trigger_condition_holds(s, source, controller, y) do all = false
+		return all
 	case types.TriggerCondition_Or:
-		for y in x.conditions do if trigger_condition_holds(s, source, controller, y) do return true
-		return false
+		any := false
+		for y in x.conditions do if trigger_condition_holds(s, source, controller, y) do any = true
+		return any
 	case types.TriggerCondition_Not:
-		// "Attacks alone" (not with one other attacker) belongs to the trigger event, settled when it triggered: as it
-		// resolves the inner condition reads true (above), so its negation must too.
-		if _, event_only := x.condition^.(types.TriggerCondition_MinCoAttackers); event_only && rechecking_on_resolution do return true
+		// "Attacks alone" (not with one other attacker): a part about the event reads as it was when it triggered.
 		return !trigger_condition_holds(s, source, controller, x.condition^)
 	}
 	return false
@@ -1138,7 +1394,7 @@ place_triggers :: proc(g: ^Game) -> bool {
 				snapshot^ = src^
 				snapshot.counters = slice.clone_to_dynamic(src.counters[:])
 			}
-			g.stack_conditions[id] = Stack_Condition{pt.definition, pt.lki, snapshot}
+			g.stack_conditions[id] = Stack_Condition{pt.definition, pt.lki, snapshot, pt.settled}
 		}
 		event := pt.event
 		event.amount = pt.amount
@@ -1258,10 +1514,16 @@ resolve_ability :: proc(g: ^Game, entry: types.StackEntry, resolved: ^types.Reso
 	if t, has := g.stack_conditions[entry.id]; has {
 		delete_key(&g.stack_conditions, entry.id)
 		rechecking_on_resolution = true
+		settled_replay, settled_next = t.settled, 0
+		// What the trigger event was about ("that creature"), for the parts of the condition that read it.
+		saved_event := collecting_event
+		collecting_event = g.stack_events[entry.id]
 		lki := t.lki
 		if src := object(&g.state, entry.source_id); lki == nil && t.snapshot != nil && (src == nil || src.incarnation != t.snapshot.incarnation) do lki = t.snapshot
 		holds := condition_holds_as_was(&g.state, entry.source_id, entry.controller, t.definition.condition.?, lki)
 		rechecking_on_resolution = false
+		settled_replay, settled_next = nil, 0
+		collecting_event = saved_event
 		if !holds {
 			delete_key(&g.stack_abilities, entry.id)
 			return
@@ -1380,7 +1642,10 @@ create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId
 	types.pvec_push(&s.battlefield, o.id, copy_id)
 	if host != nil do attach(s, o, host) // it enters attached (CR 303.4i)
 	if e.enters_attacking do enter_attacking(s, o)
-	// CR 111.10 (and 603.6a): a token entering the battlefield is an event like any other.
+	// CR 111.10 (and 603.6a): a token entering the battlefield is an event like any other, and one the turn's
+	// records count ("if two or more nonland permanents entered the battlefield under your control this turn"),
+	// recorded like a copy token, which comes from the command zone (create_copy_token).
+	record_zone_change(s, o, .Command, .Battlefield)
 	// Its own group of simultaneous zone changes, unless created with others at once (zones.odin).
 	if !moving_together do event_group += 1
 	append(&g.events, Event{kind = .Zone_Change, object = o.id, from = .Command, to = .Battlefield, controller = controller, group = event_group})

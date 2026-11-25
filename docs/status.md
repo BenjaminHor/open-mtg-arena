@@ -3351,6 +3351,20 @@ Progress:
   Found, not fixed (Known issues): Omen cards (Chilling Screech and 15 others, "adventure" layout without the
   Adventure subtype) count as supported but their Omen half can't be cast; an optional free cast asks twice; a free
   cast always uses the main face; with several alternative costs only the first is offered.
+- Trigger conditions (agent, merged; attack_triggers.odin, trigger_conditions.odin, triggers.odin, quantities.odin,
+  filters.odin): "whenever you attack" batched forms (CR 508.3c-e, 603.2c); conditions of the trigger event recorded
+  as it triggers and read back as it resolves (CR 603.4; Not/And/Or now exact, no short-circuit); conditions on the
+  object that moved, from last known information (CR 603.10a; Pelt Collector's power rechecked per its rulings);
+  turn-record amounts (entered, left, cast, discarded this turn); "during your turn", first spell of a type each
+  turn, whose step a phase trigger fires on; once-each-turn batches; combat-damage-to-a-player batches (CR 510.2);
+  "a card leaves your graveyard"; noncombat damage triggers. Fixed: created tokens weren't recorded as entering the
+  battlefield this turn (Celebration and others read that record). 5 misparsed cards refused. Tests:
+  trigger_condition_test.odin (42). Coverage 8,640.
+  Known approximations (Known issues): "an opponent is dealt noncombat damage" triggers per source, not per event;
+  "another" in entry records compares ids, not incarnations; an entry record's controller is the previous zone's.
+  Found wrong in supported cards (Known issues): Ark of Hunger, Tablet of Discovery ("mill ... you may play that
+  card") and Mosswood Dreadknight ("cast it from your graveyard") do nothing: do_grant_permission grants only to
+  exiled cards; CR 704.5q (+1/+1 and -1/-1 counters cancel) isn't implemented.
 - Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
   decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
   cards to be triaged against the CR (next step for the fixtures).
@@ -3398,6 +3412,12 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   gap recordings only once the engine is fleshed out (ask then).
 
 ## Known issues
+- (Odin, 2026-11-25) Play/cast permissions granted to cards outside exile do nothing (do_grant_permission): Ark of
+  Hunger, Tablet of Discovery, Mosswood Dreadknight are marked supported but wrong. Refuse or build.
+- (Odin, 2026-11-25) CR 704.5q (+1/+1 and -1/-1 counters on one permanent cancel) isn't implemented.
+- (Odin, 2026-11-25) "An opponent is dealt noncombat damage" triggers once per source rather than once per event;
+  entry records compare object ids, not incarnations, for "another"; an entry record's controller is the one in
+  the previous zone (wrong for a card put onto the battlefield under another player's control).
 - (Odin, 2026-11-25) Omen cards (Chilling Screech and 15 others) come through as layout "adventure" without the
   Adventure subtype; the creature is supported but the Omen half can never be cast (has_adventure). Should be
   refused or built (CR 715 analogue for Omen; look up the rule).

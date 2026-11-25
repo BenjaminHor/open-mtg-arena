@@ -64,6 +64,11 @@ MISPARSED_CARDS :: [?]string{
 	"Tolls of War", // "during your turn" lost beside "only once each turn"
 	"Dionus, Elvish Archdruid", // the same
 	"Stika, Playtestress", // "playtest card" lost: any spell triggers it
+	// Trigger conditions (2026-11-25).
+	"Geralf, the Fleshwright", // "during your turn other than your first spell that turn" lost: any spell triggers it
+	"Samut, Vizier of Naktamun", // "if that creature entered this turn" reads the instruction's target; it has none
+	"Skyclave Shade", // "you may cast it from your graveyard" reads as a permission for cards just exiled (none)
+	"Fire Nation Salvagers", // "from that player's graveyard" lost: any graveyard's card
 	"Danitha, Sword of Hope", // "or a spell that targets a creature you control" lost
 	"Draco", // "costs {2} less for each basic land type" lost
 	"Rift Elemental", // "from a permanent you control or suspended card you own" read as "from this"

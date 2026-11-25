@@ -2,6 +2,7 @@
 // control", "equal to its power", "the number of +1/+1 counters on it", plus or times a number.
 package game
 
+import "core:reflect"
 import types "../types"
 
 // Whether the ability being checked has an X it can read: a spell's own, announced as it's cast (CR 107.3a). Set
@@ -79,6 +80,14 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			typed, is_typed := r.filter.(types.TargetFilter_Typed)
 			return is_typed && typed_supported(typed._0)
 		case types.QuantityRef_ObjectCount:
+			// "If this creature didn't attack this turn": the number of this permanent that fits, 0 or 1.
+			// "If you control at least five other Mountains": other than the one the trigger event is about.
+			if f, other := without_trigger_object(r.filter); other do return event_object_defined && mass_filter_supported(f)
+			if f, is_self_and := self_and_filter(r.filter); is_self_and {
+				for p in f.properties do if !source_property_supported(p) do return false
+				for tf in f.type_filters do if !type_filter_supported(tf) do return false
+				return f.controller == nil
+			}
 			// Permanents, or "cards named Undead Servant in your graveyard" (graveyard_filter, zone_effects.odin): your
 			// graveyard, an opponent's or all of them.
 			if gf, in_graveyard := graveyard_filter(r.filter); in_graveyard {
@@ -126,10 +135,7 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 		case types.QuantityRef_BattlefieldEntriesThisTurn:
 			// "The number of creatures that entered the battlefield under your control this turn": the turn's zone
 			// change records, by kind and controller.
-			t, typed := r.filter.(types.TargetFilter_Typed)
-			if !typed || len(t._0.properties) > 0 || !player_scope_supported(r.player) do return false
-			for tf in t._0.type_filters do if !record_type_supported(tf) do return false
-			return true
+			return player_scope_supported(r.player) && entry_record_filter_supported(r.filter)
 		case types.QuantityRef_ManaSpentToCast:
 			// "The amount of mana spent to cast this spell", "if {R} was spent to cast it" (this spell or permanent, or
 			// the spell that triggered the ability).
@@ -158,6 +164,8 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 		case types.QuantityRef_DescendedThisTurn:
 			return true // CR 700.11 (the turn's zone change records)
 		case types.QuantityRef_CardsDiscardedThisTurn:
+			// "If a player discarded a card this turn": all players' together.
+			if all, ok := r.player.(types.PlayerScope_AllPlayers); ok do return all_players_supported(r.player) && all.aggregate == .Sum
 			return player_scope_supported(r.player)
 		case types.QuantityRef_DamageDealtThisTurn:
 			return damage_record_query_supported(r)
@@ -192,8 +200,13 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			_, you := r.controller.(types.ControllerRef_You)
 			return you
 		case types.QuantityRef_ZoneChangeCountThisTurn:
-			// The record keeps types, controller and whether it was a token, so the filter may ask only about those.
-			return record_filter_supported(r.filter)
+			// The record keeps types, controller, owner and whether it was a token, so the filter may ask only about
+			// those, and about the zone it left ("a creature died under your control": on the battlefield then).
+			// "A permanent card put into your graveyard" (descend, CR 700.11) is the card as it is there, which the
+			// record (the object as it was before) doesn't tell for a modal double-faced card: read by
+			// DescendedThisTurn, not here.
+			if to, has := r.to.?; has && to == .Graveyard && names_type(r.filter, types.TypeFilter_Permanent{}) do return false
+			return record_filter_supported(r.filter, r.from)
 		case types.QuantityRef_ZoneCardCount:
 			if r.filter != nil do return false
 			#partial switch r.scope {
@@ -287,6 +300,15 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			if r.channel == .Excess do return int(s.last_effect_excess_amount.? or_else 0)
 			return int(s.last_effect_amount.? or_else 0)
 		case types.QuantityRef_ObjectCount:
+			if f, other := without_trigger_object(r.filter); other {
+				n := 0
+				for o in affected_permanents(s, f, controller, source) do if o.id != collecting_event.object do n += 1
+				return n
+			}
+			if f, is_self_and := self_and_filter(r.filter); is_self_and {
+				o := object(s, source)
+				return 1 if o != nil && o.zone == .Battlefield && object_matches(s, o, f, controller, source) else 0
+			}
 			if gf, in_graveyard := graveyard_filter(r.filter); in_graveyard {
 				// The ability's own card counts too, unless the words say "another".
 				another := false
@@ -355,14 +377,11 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			return card(seen)
 		case types.QuantityRef_BattlefieldEntriesThisTurn:
 			who := scope_player(s, r.player, controller)
-			t := r.filter.(types.TargetFilter_Typed)._0
 			n := 0
 			for i in 0 ..< types.pvec_len(s.zone_changes_this_turn) {
 				rec := types.pvec_get(s.zone_changes_this_turn, i)
 				if rec.to_zone != .Battlefield || rec.controller != who do continue
-				fits := true
-				for tf in t.type_filters do if !record_matches_type(rec, tf) do fits = false
-				if fits do n += 1
+				if entry_record_matches(rec, r.filter, source) do n += 1
 			}
 			return n
 		case types.QuantityRef_ManaSpentToCast:
@@ -461,6 +480,11 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			return damage_dealt_this_turn(s, r, controller, source)
 		case types.QuantityRef_CardsDiscardedThisTurn:
 			// CR 701.9a: the cards a player discarded this turn (discard_card).
+			if _, all := r.player.(types.PlayerScope_AllPlayers); all {
+				n := 0
+				for p in s.players do n += int(s.cards_discarded_this_turn_by_player[p.id] or_else 0)
+				return n
+			}
 			return int(s.cards_discarded_this_turn_by_player[scope_player(s, r.player, controller)] or_else 0)
 		case types.QuantityRef_SacrificedThisTurn:
 			// CR 701.21a: the permanents a player sacrificed this turn, as they last existed.
@@ -735,15 +759,26 @@ types_match :: proc(core: []types.CoreType, subtypes: []string, t: types.TypeFil
 
 // "The number of instant and sorcery spells you've cast this turn": filters of card types (or "non-" types) only,
 // or several such ("instant or sorcery"), matched against the turn's spell records.
-spell_record_filter_supported :: proc(f: types.TargetFilter) -> bool {
+spell_record_filter_supported :: proc(f: types.TargetFilter, from: Maybe(types.Zone) = nil) -> bool {
 	#partial switch x in f {
 	case types.TargetFilter_Typed:
-		if len(x._0.properties) > 0 || x._0.controller != nil || len(x._0.type_filters) == 0 do return false
+		if x._0.controller != nil || (len(x._0.type_filters) == 0 && len(x._0.properties) == 0) do return false
 		for t in x._0.type_filters {
-			if _, card := t.(types.TypeFilter_Card); card do continue // any spell cast (a copy isn't cast, CR 707.10)
+			if _, card := t.(types.TypeFilter_Card); card do continue // a spell cast is a card (CR 601.2a; copies aren't cast here)
 			if n, is_non := t.(types.TypeFilter_Non); is_non {
 				if n._0 == nil || !record_type_supported(n._0^) do return false
 			} else if !record_type_supported(t) do return false
+		}
+		for p in x._0.properties {
+			#partial switch y in p {
+			case types.FilterProp_InZone:
+				// "If you haven't cast a spell from your hand this turn": where it was cast from.
+			case types.FilterProp_Cmc:
+				// "A spell with mana value 4 or greater": its mana value on the stack (CR 202.3).
+				if _, fixed := y.value.(types.QuantityExpr_Fixed); !fixed do return false
+			case:
+				return false
+			}
 		}
 		return true
 	case types.TargetFilter_Or:
@@ -759,6 +794,14 @@ spell_record_matches :: proc(rec: types.SpellCastRecord, f: types.TargetFilter) 
 		for t in x._0.type_filters {
 			if _, card := t.(types.TypeFilter_Card); card do continue
 			if !types_match(rec.core_types[:], rec.subtypes[:], t) do return false
+		}
+		for p in x._0.properties {
+			#partial switch y in p {
+			case types.FilterProp_InZone:
+				if rec.from_zone != y.zone do return false
+			case types.FilterProp_Cmc:
+				if !compare(int(rec.mana_value), y.comparator, int(y.value.(types.QuantityExpr_Fixed).value)) do return false
+			}
 		}
 		return true
 	case types.TargetFilter_Or:
@@ -937,7 +980,7 @@ all_players_supported :: proc(p: types.PlayerScope) -> bool {
 
 // The filters a zone change record can be matched against: card types and subtypes, whose ("you control" / "an
 // opponent controls", as it last existed), token or not.
-record_filter_supported :: proc(f: types.TargetFilter) -> bool {
+record_filter_supported :: proc(f: types.TargetFilter, from: Maybe(types.Zone) = nil) -> bool {
 	#partial switch x in f {
 	case types.TargetFilter_Typed:
 		for tf in x._0.type_filters {
@@ -957,15 +1000,26 @@ record_filter_supported :: proc(f: types.TargetFilter) -> bool {
 			}
 		}
 		for p in x._0.properties {
-			#partial switch _ in p {
+			#partial switch y in p {
 			case types.FilterProp_Token, types.FilterProp_NonToken:
+			case types.FilterProp_Owned:
+				// "Put into your hand", "left your graveyard": the card's owner (CR 108.3).
+				#partial switch _ in y.controller {
+				case types.ControllerRef_You, types.ControllerRef_Opponent:
+				case:
+					return false
+				}
+			case types.FilterProp_InZone:
+				// "A creature died under your control": it was on the battlefield, the zone it left.
+				z, has := from.?
+				if !has || z != y.zone do return false
 			case:
 				return false
 			}
 		}
 		return true
 	case types.TargetFilter_Or:
-		for y in x.filters do if !record_filter_supported(y) do return false
+		for y in x.filters do if !record_filter_supported(y, from) do return false
 		return len(x.filters) > 0
 	}
 	return false
@@ -984,11 +1038,14 @@ record_matches :: proc(rec: types.ZoneChangeRecord, f: types.TargetFilter, contr
 			}
 		}
 		for p in x._0.properties {
-			#partial switch _ in p {
+			#partial switch y in p {
 			case types.FilterProp_Token:
 				if !rec.is_token do return false
 			case types.FilterProp_NonToken:
 				if rec.is_token do return false
+			case types.FilterProp_Owned:
+				_, you := y.controller.(types.ControllerRef_You)
+				if (rec.owner == controller) != you do return false
 			}
 		}
 		return true
@@ -1116,4 +1173,87 @@ cause_zone :: proc(c: types.ThisWayCause) -> Maybe(types.Zone) {
 		return .Hand
 	}
 	return nil
+}
+
+// "The number of [kind of] permanents that entered the battlefield under your control this turn": the turn's zone
+// change records (tokens created included), by card type, subtype, "non-" type, or "another" (not this object).
+entry_record_filter_supported :: proc(f: types.TargetFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Typed:
+		if x._0.controller != nil do return false
+		for tf in x._0.type_filters {
+			if n, is_non := tf.(types.TypeFilter_Non); is_non {
+				if n._0 == nil || !record_type_supported(n._0^) do return false
+			} else if !record_type_supported(tf) do return false
+		}
+		for p in x._0.properties {
+			#partial switch _ in p {
+			case types.FilterProp_Another:
+				// Other than this permanent. In a triggered ability about another object ("whenever a Zombie enters,
+				// ... for each other Zombie that entered"), "other" is that object, which isn't read here.
+				if event_object_defined && triggering_filter != nil && !is_self(triggering_filter) do return false
+			case:
+				return false
+			}
+		}
+		return true
+	case types.TargetFilter_Or:
+		// "An Equipment or Spacecraft".
+		for y in x.filters do if !entry_record_filter_supported(y) do return false
+		return len(x.filters) > 0
+	}
+	return false
+}
+
+entry_record_matches :: proc(rec: types.ZoneChangeRecord, f: types.TargetFilter, source: types.ObjectId) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Typed:
+		for tf in x._0.type_filters do if !record_matches_type(rec, tf) do return false
+		for p in x._0.properties {
+			if _, another := p.(types.FilterProp_Another); another && rec.object_id == source do return false
+		}
+		return true
+	case types.TargetFilter_Or:
+		for y in x.filters do if entry_record_matches(rec, y, source) do return true
+	}
+	return false
+}
+
+// Whether a filter names this type (in one of its alternatives).
+names_type :: proc(f: types.TargetFilter, t: types.TypeFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Typed:
+		for tf in x._0.type_filters do if types_equal(tf, t) do return true
+	case types.TargetFilter_Or:
+		for y in x.filters do if names_type(y, t) do return true
+	}
+	return false
+}
+
+@(private = "file")
+types_equal :: proc(a, b: types.TypeFilter) -> bool {
+	return reflect.union_variant_typeid(a) == reflect.union_variant_typeid(b)
+}
+
+// "This creature, if it attacked this turn" (And of this object and a description): the description.
+self_and_filter :: proc(f: types.TargetFilter) -> (types.TypedFilter, bool) {
+	and, is_and := f.(types.TargetFilter_And)
+	if !is_and || len(and.filters) != 2 do return {}, false
+	if !is_self(and.filters[0]) do return {}, false
+	typed, ok := and.filters[1].(types.TargetFilter_Typed)
+	return typed._0, ok
+}
+
+// A filter that says "other than the object the trigger event is about": the filter without those words.
+without_trigger_object :: proc(f: types.TargetFilter) -> (types.TargetFilter, bool) {
+	typed, ok := f.(types.TargetFilter_Typed)
+	if !ok do return nil, false
+	found := false
+	rest := types.TypedFilter{type_filters = typed._0.type_filters, controller = typed._0.controller}
+	rest.properties = make([dynamic]types.FilterProp, context.temp_allocator)
+	for p in typed._0.properties {
+		if _, other := p.(types.FilterProp_OtherThanTriggerObject); other do found = true
+		else do append(&rest.properties, p)
+	}
+	return types.TargetFilter_Typed{rest}, found
 }

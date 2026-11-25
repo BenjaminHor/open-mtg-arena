@@ -79,8 +79,17 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 	case types.FilterProp_PtComparison:
 		// "Power greater than target creature's power" would need the target: not read here.
 		return quantity_supported(x.value) && !quantity_reads_target(x.value) && x.stat != .TotalPowerToughness
+	case types.FilterProp_EnteredThisTurn, types.FilterProp_Prepared:
+		return true
 	}
 	return false
+}
+
+// A property of the ability's own source: also "if this creature attacked this turn" (as this object). Not read for
+// other objects: "each creature that attacked this turn" also counts ones that have left the battlefield since.
+source_property_supported :: proc(p: types.FilterProp) -> bool {
+	if a, attacked := p.(types.FilterProp_AttackedThisTurn); attacked do return a.defender == nil
+	return property_supported(p)
 }
 
 typed_supported :: proc(f: types.TypedFilter) -> bool {
@@ -321,6 +330,17 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 			if !in_damage_record(s, o, dealt = true) do return false
 		case types.FilterProp_InZone:
 			if o.zone != x.zone do return false
+		case types.FilterProp_EnteredThisTurn:
+			// "That entered this turn": this object (CR 400.7) entered the battlefield this turn.
+			turn, entered := o.entered_battlefield_turn.?
+			if !entered || turn != s.turn_number || o.zone != .Battlefield do return false
+		case types.FilterProp_Prepared:
+			if o.prepared == nil do return false // CR 723.3a: the "prepared" designation
+		case types.FilterProp_AttackedThisTurn:
+			// CR 508.1: declared as an attacker this turn, as this object (CR 400.7).
+			attacked := false
+			for rec in s.attacker_declarations_this_turn do if rec.object_id == o.id && (rec.incarnation.? or_else 0) == o.incarnation do attacked = true
+			if !attacked do return false
 		case types.FilterProp_Owned:
 			// "A card an opponent owns" (CR 108.3).
 			_, you := x.controller.(types.ControllerRef_You)
