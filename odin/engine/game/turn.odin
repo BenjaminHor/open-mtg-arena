@@ -41,6 +41,11 @@ begin_turn :: proc(g: ^Game, active: types.PlayerId) {
 // where players get it. Steps that end on their own move straight on.
 begin_step :: proc(g: ^Game, step: types.Phase) {
 	s := &g.state
+	// The step's turn-based actions are events too (a lore counter put on a Saga), also when a step begins outside a
+	// player's action (the game's first turn).
+	outer := action_events
+	action_events = &g.events
+	defer action_events = outer
 	empty_mana_pools(s) // CR 500.5, 703.4q: the previous step or phase has ended
 	s.phase = step
 	s.priority_passes = nil
@@ -89,7 +94,11 @@ begin_step :: proc(g: ^Game, step: types.Phase) {
 		if ask_discard_to_hand_size(g) do return
 		cleanup(g)
 		return
-	case .Upkeep, .PreCombatMain, .End:
+	case .PreCombatMain:
+		// CR 505.4, 715.3c: the active player puts a lore counter on each Saga they control with chapter abilities.
+		// A turn-based action, not using the stack; the chapters it reaches trigger (CR 715.2b).
+		for o in permanents_of(s, s.active_player) do if final_chapter(o) > 0 do add_counters(o, types.CounterType_Lore{}, 1)
+	case .Upkeep, .End:
 	}
 	// CR 503.1, 513.1, 507.1 ...: "at the beginning of" a step, abilities trigger once its turn-based actions are done.
 	append(&g.events, Event{kind = .Step_Begin, step = step})
@@ -111,6 +120,9 @@ give_priority :: proc(g: ^Game, p: types.PlayerId) {
 	// CR 117.5: state-based actions are checked, then triggered abilities go on the stack, repeating until neither
 	// happens, before a player receives priority.
 	for {
+		// CR 603.2: abilities trigger when their event happens, so the events so far are seen before state-based
+		// actions change the board (a Saga's last chapter triggers before CR 704.5s would sacrifice it).
+		collect_triggers(g)
 		check_state_based_actions(g)
 		if game_over(s) do return
 		before := types.pvec_len(s.stack)

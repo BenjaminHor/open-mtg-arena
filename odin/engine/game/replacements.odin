@@ -20,7 +20,8 @@ replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
 		// A number, or an amount as it enters: "X +1/+1 counters" (the spell's X, CR 107.3m), "a counter for each".
 		amount_ok := quantity_supported(e.count) && !quantity_reads_target(e.count)
 		#partial switch _ in e.counter_type {
-		case types.CounterType_Plus1Plus1, types.CounterType_Minus1Minus1:
+		case types.CounterType_Plus1Plus1, types.CounterType_Minus1Minus1, types.CounterType_Lore:
+			// Lore: a Saga enters with a lore counter (CR 715.3a).
 			return amount_ok && is_self(e.target)
 		}
 	}
@@ -103,7 +104,12 @@ apply_entering_replacements :: proc(s: ^types.GameState, o: ^types.GameObject) {
 	}
 }
 
+// Puts counters on an object: an event abilities trigger on ("whenever one or more +1/+1 counters are put on",
+// a Saga's chapters), including the counters a permanent enters with (CR 122.6).
 add_counters :: proc(o: ^types.GameObject, kind: types.CounterType, n: u32) {
+	if n == 0 do return
+	before := counter_count(o, kind)
+	if action_events != nil do append(action_events, Event{kind = .Counter_Added, object = o.id, controller = o.controller, counter = kind, amount = int(n), before = int(before)})
 	for &c in o.counters do if same_counter(c._0, kind) {
 		c._1 += n
 		return

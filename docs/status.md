@@ -2858,6 +2858,12 @@ Progress:
 - Full replay at 53e766b: 624 of 11,160 pass (5.6%, from 597). First differences: card not supported (CastSpell
   4,587, ActivateAbility 1,527), waiting_for and stack differences next. Sagas (CR 715, about 250 pool cards) are the
   largest single gap among triggers and are next.
+- Sagas (-> 5,095; rules 255, 105 tested): a Saga enters with a lore counter (CR 715.3a), gets one as its
+  controller's precombat main phase begins (CR 505.4, 715.3c), its chapters trigger when the count passes N
+  (CR 715.2b), and it's sacrificed at its final chapter once no chapter ability of its own waits (CR 704.5s).
+  Putting counters is now an event ("whenever one or more +1/+1 counters are put on this"). Triggers are now
+  collected before state-based actions each time (CR 603.2), so an event's triggers see the board as it was. Read
+  ahead (CR 702.155) is refused. Most Sagas still wait on their chapter effects; the gap ranking shows which.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

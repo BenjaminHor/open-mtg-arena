@@ -19,6 +19,7 @@ Event_Kind :: enum {
 	Tapped, // object became tapped (CR 701.26a)
 	Card_Drawn, // controller drew a card (CR 121.2: each card is its own draw)
 	Sacrificed, // controller sacrificed object, a permanent moved from the battlefield to the graveyard (CR 701.21a)
+	Counter_Added, // amount counters of kind counter put on object, which had before of them (CR 122.6)
 }
 
 // Something that happened that an ability may trigger on (CR 603.2).
@@ -32,6 +33,8 @@ Event :: struct {
 	amount:     int,
 	combat:     bool,
 	lki:        ^types.GameObject, // Zone_Change from the battlefield: the permanent as it last existed (CR 608.2h)
+	counter:    types.CounterType, // Counter_Added
+	before:     int,
 }
 
 // A triggered ability waiting to be put on the stack (CR 603.3).
@@ -90,7 +93,9 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	}
 	if !is_cast && !is_damage && !is_zone_change && !is_player_event && t.valid_target != nil do return false
 	if !is_damage && t.valid_source != nil do return false
-	if len(t.origin_zones) > 0 || len(t.zone_change_clauses) > 0 || t.counter_filter != nil || t.saga_chapter != nil do return false
+	_, counter_mode := t.mode.(types.TriggerMode_CounterAdded)
+	if len(t.origin_zones) > 0 || len(t.zone_change_clauses) > 0 do return false
+	if !counter_mode && (t.counter_filter != nil || t.saga_chapter != nil) do return false
 	if c, has := t.constraint.?; has {
 		#partial switch x in c {
 		case types.TriggerConstraint_OnlyDuringYourTurn, types.TriggerConstraint_OnlyDuringOpponentsTurn:
@@ -119,6 +124,12 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		// "Whenever this creature enters or attacks" (CR 603.6a, 508.3a).
 		f, has := t.valid_card.?
 		return has && is_self(f) && t.attack_target_filter == nil
+	case types.TriggerMode_CounterAdded:
+		// "Whenever one or more +1/+1 counters are put on this creature"; a Saga's chapter abilities (CR 715.2b).
+		// Who put them isn't tracked, so "whenever you put" (no counter kind in the data) isn't read.
+		f, has := t.valid_card.?
+		_, has_filter := t.counter_filter.?
+		return has && is_self(f) && has_filter
 	case types.TriggerMode_Sacrificed:
 		// "Whenever you sacrifice a [kind of] permanent", "when you sacrifice this" (CR 701.21a, 603.10a).
 		if f, has := t.valid_card.?; has do return subject_filter_supported(f)
@@ -418,6 +429,20 @@ collect_triggers :: proc(g: ^Game) {
 					add_trigger(g, w.id, w.controller, t)
 				}
 			}
+		case .Counter_Added:
+			o := object(s, e.object)
+			if o == nil || o.zone != .Battlefield do continue
+			for &entry in trigger_definitions(o) {
+				t := &entry.definition
+				if _, added := t.mode.(types.TriggerMode_CounterAdded); !added || !trigger_supported(t^) do continue
+				cf := t.counter_filter.?
+				if !same_counter(cf.counter_type, e.counter) do continue
+				// CR 715.2b: a chapter (or "the Nth counter") triggers when the count was less than N and became at
+				// least N.
+				if n, has := cf.threshold.?; has && !(e.before < int(n) && e.before + e.amount >= int(n)) do continue
+				if !turn_constraint_met(s, t^, o.controller) do continue
+				add_trigger(g, o.id, o.controller, t)
+			}
 		case .Life_Gained, .Card_Drawn:
 			for id in ids_of(s.battlefield) {
 				o := object(s, id)
@@ -652,7 +677,7 @@ place_triggers :: proc(g: ^Game) -> bool {
 		ordered_remove(&g.pending_triggers, index)
 		// CR 603.3d: an ability that needs a target and has none legal is removed from the stack.
 		if !complete do continue
-		id := push_ability(g, pt.source, pt.controller, pt.definition.execute, targets[:], true, counts[:])
+		id := push_ability(g, pt.source, pt.controller, pt.definition.execute, targets[:], true, counts[:], pt.definition.description)
 		if pt.definition.condition != nil do g.stack_conditions[id] = Stack_Condition{pt.definition, pt.lki}
 		if pt.amount != 0 do g.stack_event_amounts[id] = pt.amount
 	}
@@ -714,7 +739,7 @@ decline_trigger_target :: proc(g: ^Game, p: types.PlayerId) -> bool {
 }
 
 // Puts an ability on the stack: a new stack object (CR 113.7a) whose definition the game keeps to resolve it.
-push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, a: ^types.AbilityDefinition, targets: []types.TargetRef, triggered: bool, counts: []int = nil) -> types.ObjectId {
+push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, a: ^types.AbilityDefinition, targets: []types.TargetRef, triggered: bool, counts: []int = nil, description: Maybe(string) = nil) -> types.ObjectId {
 	s := &g.state
 	id := types.ObjectId(s.next_object_id)
 	s.next_object_id += 1
@@ -723,7 +748,7 @@ push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerI
 	src := object(s, source)
 	kind: types.StackEntryKind
 	if triggered {
-		kind = types.StackEntryKind_TriggeredAbility{source_id = source, ability = resolved, source_name = src.name if src != nil else ""}
+		kind = types.StackEntryKind_TriggeredAbility{source_id = source, ability = resolved, source_name = src.name if src != nil else "", description = description}
 	} else {
 		kind = types.StackEntryKind_ActivatedAbility{source_id = source, ability = resolved}
 	}
@@ -960,4 +985,31 @@ own_grant_supported :: proc(st: types.StaticDefinition) -> bool {
 		}
 	}
 	return true
+}
+
+// A Saga's final chapter number: the greatest of its chapter abilities' (CR 715.2d). 0 for anything else.
+final_chapter :: proc(o: ^types.GameObject) -> int {
+	if !has_subtype(o, "Saga") do return 0
+	final := 0
+	for &entry in trigger_definitions(o) do if n, has := entry.definition.saga_chapter.?; has do final = max(final, int(n))
+	return final
+}
+
+// Whether one of the Saga's chapter abilities has triggered and not yet left the stack (CR 704.5s).
+chapter_waiting :: proc(g: ^Game, o: ^types.GameObject) -> bool {
+	for pt in g.pending_triggers do if pt.source == o.id && pt.definition.saga_chapter != nil do return true
+	for i in 0 ..< types.pvec_len(g.state.stack) {
+		entry := types.pvec_get(g.state.stack, i)
+		t, triggered := entry.kind.(types.StackEntryKind_TriggeredAbility)
+		if !triggered || t.source_id != o.id do continue
+		a := g.stack_abilities[entry.id]
+		for &def in trigger_definitions(o) {
+			if def.definition.saga_chapter == nil do continue
+			if a != nil && a == def.definition.execute do return true
+			d, has := def.definition.description.?
+			td, has_t := t.description.?
+			if has && has_t && d == td do return true
+		}
+	}
+	return false
 }

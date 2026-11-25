@@ -343,6 +343,15 @@ check_state_based_actions :: proc(g: ^Game) {
 				changed = true
 			}
 		}
+		for id in ids_of(s.battlefield) {
+			// CR 704.5s, 715.4: a Saga with at least its final chapter number of lore counters, and no chapter ability
+			// of its own waiting to resolve, is sacrificed by its controller.
+			o := object(s, id)
+			final := final_chapter(o)
+			if final == 0 || int(counter_count(o, types.CounterType_Lore{})) < final || chapter_waiting(g, o) do continue
+			sacrifice_permanent(g, id)
+			changed = true
+		}
 		if remove_departed_tokens(g) do changed = true
 		if attachment_state_actions(g) do changed = true
 		// CR 903.9a: a commander put into a graveyard or exile goes back to the command zone (its owner may choose

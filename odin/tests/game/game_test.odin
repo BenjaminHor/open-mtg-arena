@@ -2315,3 +2315,45 @@ whenever_you_sacrifice :: proc(t: ^testing.T) {
 	resolve_all(g2)
 	testing.expect(t, bears2.zone == .Graveyard && types.pvec_len(g2.state.stack) == 0 && briar2.power.? == 2, "no trigger")
 }
+
+@(test)
+saga_chapters :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 715.3a: a Saga enters with a lore counter; CR 715.3c, 505.4: its controller adds one as their precombat
+	// main phase begins; CR 715.2b: chapter N triggers when the count goes from below N to at least N; CR 704.5s,
+	// 715.4: with lore counters at its final chapter number and no chapter ability of its own waiting, it's
+	// sacrificed. History of Benalia: I, II - a 2/2 Knight token with vigilance; III - Knights you control get +2/+1.
+	g := new_game()
+	s := &g.state
+	testing.expect(t, game.card_supported(&card(t, "History of Benalia").face))
+	for _ in 0 ..< 3 do add(t, g, "Plains", 0, .Battlefield)
+	saga := add(t, g, "History of Benalia", 0, .Hand)
+	knights :: proc(s: ^types.GameState) -> [dynamic]^types.GameObject {
+		out := make([dynamic]^types.GameObject, context.temp_allocator)
+		for id in game.ids_of(s.battlefield) do if o := game.object(s, id); game.has_subtype(o, "Knight") do append(&out, o)
+		return out
+	}
+	resolve_all := proc(g: ^game.Game) {
+		for _ in 0 ..< 8 {
+			if types.pvec_len(g.state.stack) == 0 do break
+			game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+		}
+	}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = saga.id}))
+	resolve_all(g)
+	lore := types.CounterType(types.CounterType_Lore{})
+	testing.expect(t, saga.zone == .Battlefield && game.counter_count(saga, lore) == 1, "it enters with a lore counter")
+	testing.expect(t, len(knights(s)) == 1, "chapter I: a Knight")
+
+	game.begin_step(g, .PreCombatMain) // the next turn's precombat main phase
+	testing.expect(t, game.counter_count(saga, lore) == 2)
+	resolve_all(g)
+	testing.expect(t, len(knights(s)) == 2, "chapter II: another Knight")
+
+	game.begin_step(g, .PreCombatMain)
+	testing.expect(t, saga.zone == .Battlefield && types.pvec_len(s.stack) == 1, "chapter III on the stack, the Saga still there")
+	resolve_all(g)
+	testing.expect(t, saga.zone == .Graveyard, "sacrificed once chapter III has left the stack")
+	k := knights(s)
+	testing.expect(t, len(k) == 2 && k[0].power.? == 4 && k[0].toughness.? == 3, "Knights get +2/+1")
+}
