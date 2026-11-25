@@ -7300,3 +7300,46 @@ entry_choice_prompt_for_the_client :: proc(t: ^testing.T) {
 	_, priority := s.waiting_for.(types.WaitingFor_Priority)
 	testing.expect(t, priority && s.priority_player == 0, "then priority to the active player")
 }
+
+// Eighth rules review's fixes (2026-11-25). One instruction destroying three targets is one event: Chainsaw's
+// "whenever one or more creatures die" triggers once (CR 603.2c); a creature dying with them still sees the others
+// die (CR 603.10a). The cleanup step performs state-based actions and gives priority when it did (CR 514.3a). "The
+// first time each turn you gain life" (Vanguard Seraph) and targets with a condition on them together (Call of the
+// Death-Dweller: "total mana value 3 or less") stay refused.
+@(test)
+eighth_review_fixes :: proc(t: ^testing.T) {
+	if !load_db() do return
+	for name in ([]string{"Vanguard Seraph", "Call of the Death-Dweller"}) {
+		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s stays unsupported", name)
+	}
+	{
+		g := new_game()
+		s := &g.state
+		for name in ([]string{"Swamp", "Swamp", "Mountain", "Mountain", "Mountain", "Forest", "Forest"}) do add(t, g, name, 0, .Battlefield)
+		saw := add(t, g, "Chainsaw", 0, .Battlefield)
+		ultimatum := add(t, g, "Violent Ultimatum", 0, .Hand)
+		a := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		b := add(t, g, "Hill Giant", 1, .Battlefield)
+		c := add(t, g, "Gray Ogre", 1, .Battlefield)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = ultimatum.id}))
+		for o in ([]^types.GameObject{a, b, c}) do testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{o.id}}))
+		settle_stack(g)
+		testing.expect(t, a.zone == .Graveyard && b.zone == .Graveyard && c.zone == .Graveyard, "all three destroyed")
+		revs: u32 = 0
+		for k in saw.counters do revs += k._1
+		testing.expect_value(t, revs, 1)
+		_ = s
+	}
+	{
+		g := new_game()
+		s := &g.state
+		bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+		game.add_counters(bears, types.CounterType_Minus1Minus1{}, 2)
+		game.pump(g, bears, 3, 3)
+		testing.expect_value(t, game.toughness_of(bears), 3)
+		s.phase = .End
+		game.begin_step(g, .Cleanup)
+		testing.expect(t, bears.zone == .Graveyard, "dies as the pump ends")
+		testing.expect(t, s.phase == .Cleanup && s.turn_number == 2, "priority in the cleanup step, the turn not over")
+	}
+}

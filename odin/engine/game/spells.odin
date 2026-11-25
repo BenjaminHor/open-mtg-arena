@@ -191,6 +191,9 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	if scope, has := a.player_scope.?; has && !player_scope_ok(scope, a) do return false
 	if a.target_chooser != nil || a.optional_player != nil || a.optional_for != nil do return false
 	if !multi_target_supported(a) || !distribute_supported(a) || !repeat_supported(a) || !unless_pay_supported(a) do return false
+	// "Up to two target creature cards with total mana value 3 or less", "from a single graveyard": conditions on
+	// the targets together (CR 115.1, 601.2c) this engine doesn't check yet.
+	if len(a.target_constraints) > 0 do return false
 	if a.else_ability != nil do return false
 	if !effect_supported(a.effect^, a.duration) do return false
 	if refers_to_parent_target(a.effect^) && !after_target do return false
@@ -1598,6 +1601,7 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 	if a.optional_targeting do append(out, "spell:optional")
 	if a.modal != nil do append(out, "spell:modal")
 	if !multi_target_supported(a) do append(out, "spell:multiple targets")
+	if len(a.target_constraints) > 0 do append(out, "spell:target constraints")
 	if !distribute_supported(a) do append(out, "spell:divided")
 	if !repeat_supported(a) do append(out, "spell:repeat")
 	if !unless_pay_supported(a) do append(out, "spell:unless pay")

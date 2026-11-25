@@ -126,7 +126,7 @@ discard_triggers :: proc(g: ^Game, e: Event, batches: ^[dynamic]Batch_Key) {
 
 // Whether the ability's "for the first time each turn", if it says that, is read: as the turn's count of the event
 // for cycles and batches of discards (discard_triggers); for the other modes the data's "only once each turn" isn't
-// the same thing, so those are refused. Modes this engine read before are left as they were.
+// the same thing, so those are refused.
 first_time_readable :: proc(t: types.TriggerDefinition) -> bool {
 	d, has := t.description.?
 	if !has || !strings.contains(d, "first time each turn") do return true
@@ -143,7 +143,10 @@ first_time_readable :: proc(t: types.TriggerDefinition) -> bool {
 	case types.TriggerMode_DiscardedAll:
 		// The count is of all the cards the player discarded: "one or more artifact cards for the first time" isn't.
 		return t.valid_card == nil
-	case types.TriggerMode_Discarded, types.TriggerMode_CycledOrDiscarded, types.TriggerMode_ChangesZoneAll, types.TriggerMode_BecomesTarget:
+	case types.TriggerMode_Discarded, types.TriggerMode_CycledOrDiscarded, types.TriggerMode_ChangesZoneAll, types.TriggerMode_BecomesTarget,
+	     types.TriggerMode_LifeGained, types.TriggerMode_CounterAdded:
+		// Life gained, counters: "the first time each turn" counts gains before this permanent was there too (Vanguard
+		// Seraph's ruling), which "only once each turn" doesn't (eighth rules review).
 		return false
 	}
 	return true

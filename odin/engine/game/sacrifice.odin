@@ -62,9 +62,11 @@ do_sacrifice :: proc(g: ^Game, x: types.Effect_Sacrifice, controller: types.Play
 answer_sacrifice :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_EffectZoneChoice, chosen: []types.ObjectId) -> bool {
 	if !g.resolution.active || w.effect_kind != .Sacrifice || len(chosen) != w.count || has_duplicates(chosen) do return false
 	for id in chosen do if !slice.contains(w.cards[:], id) do return false
+	scoped := join_scope_moves(g) // one of "each player sacrifices": the instruction's event (CR 603.2c)
 	together := begin_together()
 	for id in chosen do sacrifice_permanent(g, id)
 	end_together(together)
+	end_together(scoped)
 	g.state.waiting_for = nil
 	if continue_resolution(g) do after_resolution(g)
 	return true

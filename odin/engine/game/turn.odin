@@ -122,8 +122,15 @@ cleanup :: proc(g: ^Game) {
 	s := &g.state
 	for id in ids_of(s.battlefield) do object(s, id).damage_marked = 0
 	end_until_end_of_turn_effects(g)
+	// CR 514.3a: state-based actions that would be performed now are (a creature whose "until end of turn" boost
+	// just ended dies); if any were, or abilities triggered, the active player gets priority in this cleanup step.
+	events_before := len(g.events)
+	apply_continuous_effects(g)
+	check_state_based_actions(g)
+	if game_over(s) do return
+	acted := len(g.events) != events_before
 	collect_triggers(g)
-	if len(g.pending_triggers) > 0 {
+	if acted || len(g.pending_triggers) > 0 {
 		s.priority_passes = nil
 		give_priority(g, s.active_player)
 		return

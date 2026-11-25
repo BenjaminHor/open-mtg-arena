@@ -26,6 +26,7 @@ Resolution :: struct {
 	scope_node:   ^types.ResolvedAbility, // an instruction carried out for each player in a scope...
 	scope:        [dynamic]types.PlayerId, // ...for these players...
 	scope_next:   int, // ...of which this is the next
+	scope_group:  int, // ...whose moves are one event for triggers (CR 603.2c), across the players' choices
 	moved:        [dynamic]types.ObjectId, // what the latest instruction moved between zones: "this way" (CR 608.2c)
 	events_mark:  int, // where that instruction's events began (it may have paused for a choice since)
 	did_something: bool, // that instruction moved, made or put counters on something: "when you do" after it
@@ -257,20 +258,26 @@ continue_resolution :: proc(g: ^Game) -> bool {
 		}
 		if scope, scoped := x.player_scope.?; scoped {
 			// "Each player ...": the instruction for each player in turn, as that player, resuming after a choice.
+			// "Each player sacrifices a creature": one instruction, its moves at the same time for triggers (CR 101.4,
+			// 603.2c), even when a player's choice comes in between: the same event group throughout.
+			together := begin_together()
 			if r.scope_node != x {
 				r.scope_node = x
 				r.scope = scope_players(s, scope, r.controller)
 				r.scope_next = 0
 				r.events_mark = len(g.events) // for "this way": what it did for every player
-			}
+				r.scope_group = event_group
+			} else do event_group = r.scope_group
 			for r.scope_next < len(r.scope) {
 				p := r.scope[r.scope_next]
 				r.scope_next += 1
 				if do_effect(g, x.effect, x.duration, p, r.source, nil) {
 					r.next = x // carried on once the player has chosen
+					end_together(together)
 					return false
 				}
 			}
+			end_together(together)
 			r.scope_node = nil
 			continue
 		}
@@ -292,16 +299,24 @@ continue_resolution :: proc(g: ^Game) -> bool {
 			}
 		}
 		r.events_mark = len(g.events)
+		// CR 603.2c, 603.10a: one instruction acts on all its objects at the same time ("destroy two target creatures"
+		// is one event for "whenever one or more creatures die", and each dying creature sees the others die).
+		together := begin_together()
 		if division, divided := x.distribution.?; divided {
 			// CR 601.2d, 608.2b: each legal target gets the share announced for it.
 			for d in division do if slice.contains(affected[:], Maybe(types.TargetRef)(d._0)) {
 				do_effect(g, with_share(x.effect, int(d._1)), x.duration, r.controller, r.source, d._0)
 			}
+			end_together(together)
 			continue
 		}
 		times := 1
 		if n, repeats := x.repeat_for.?; repeats do times = amount(g, n, r.controller, r.source, nil) // repeat_supported
-		for _ in 0 ..< times do for t in affected do if do_effect(g, x.effect, x.duration, r.controller, r.source, t) do return false // waiting for a choice
+		for _ in 0 ..< times do for t in affected do if do_effect(g, x.effect, x.duration, r.controller, r.source, t) {
+			end_together(together)
+			return false // waiting for a choice
+		}
+		end_together(together)
 	}
 	if r.spell != 0 {
 		// CR 608.2n; exiled after flashback (CR 702.34a) or an Adventure that resolved (CR 716.3d).
@@ -499,9 +514,11 @@ answer_discard :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_DiscardC
 		for c in w.cards do if c == id do found = true
 		if !found do return false
 	}
+	scoped := join_scope_moves(g) // one of "each player discards": the instruction's event (CR 603.2c)
 	together := begin_together() // at the same time (CR 603.2c)
 	for id in chosen do discard_card(g, id)
 	end_together(together)
+	end_together(scoped)
 	g.state.waiting_for = nil
 	if continue_resolution(g) do after_resolution(g)
 	return true
@@ -812,4 +829,15 @@ do_fight :: proc(g: ^Game, x: ^types.ResolvedAbility, fight: types.Effect_Fight,
 	pa, pb := power_of(a), power_of(b)
 	deal_damage(g, a.id, types.TargetRef_Object{b.id}, pa)
 	deal_damage(g, b.id, types.TargetRef_Object{a.id}, pb)
+}
+
+// A player's answer that carries out part of a scoped instruction ("each player sacrifices a creature"): its moves
+// join the instruction's event group (CR 101.4, 603.2c). Returns the outer state for end_together.
+join_scope_moves :: proc(g: ^Game) -> bool {
+	outer := moving_together
+	if g.resolution.active && g.resolution.scope_node != nil {
+		moving_together = true
+		event_group = g.resolution.scope_group
+	}
+	return outer
 }

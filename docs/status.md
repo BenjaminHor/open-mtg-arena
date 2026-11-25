@@ -3252,7 +3252,7 @@ Progress:
   603.10a; one instruction's moves grouped as simultaneous), abilities that work from the graveyard (CR 113.6b:
   Bloodghast, Arclight Phoenix). Also: cleanup-step triggers give priority and a new cleanup step (CR 514.3a); a
   source that left during resolution read as it last existed (CR 608.2h). A permanent a spell targets twice
-  "becomes the target" once (ward too): from judge-forum readings, not an official ruling (to confirm). "For the
+  "becomes the target" once (ward too): confirmed by official rulings (eighth review). "For the
   first time each turn" is read as "only once each turn" by older trigger modes: possible bug (known issue).
   12 tests. Coverage 7,770.
 - Entry replacements (agent, merged): chains ("enters tapped with three stun counters", "if kicked, with counters
@@ -3262,6 +3262,14 @@ Progress:
   asked the copied entry choices (707.6); +X/+Y counters (122.1a), "with a counter"/"modified" (700.9), convoke
   records. Grimdancer, Protean Raider to MISPARSED_CARDS. 17 tests. Not checked in the client UI: the choose-branch
   dialog and choosing a graveyard card to copy. Coverage 7,876.
+- Eighth rules review (f6d495c..3e88454), fixed: an instruction acting on several targets, and a player-scoped
+  instruction across the players' choices, is one event (begin_together; the scope keeps its event group, CR 101.4,
+  603.2c, 603.10a: Chainsaw + Violent Ultimatum gives one counter); the cleanup step performs state-based actions and
+  gives priority when it did (CR 514.3a); "the first time each turn" on life-gained and counter triggers refused
+  (Vanguard Seraph's ruling); abilities with target constraints (total mana value, single graveyard) refused.
+  Confirmed by the review: "becomes the target" once for a permanent one spell targets twice (official rulings:
+  Battle Mammoth, heroic). Noted: copy exceptions (copy_exceptions) live outside GameState. Test:
+  `eighth_review_fixes`. Coverage 7,863.
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 
