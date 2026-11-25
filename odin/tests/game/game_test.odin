@@ -2893,3 +2893,27 @@ review_fixes_delayed_shield_shockland :: proc(t: ^testing.T) {
 	testing.expect(t, !game.apply(g2, 0, types.GameAction_ChooseReplacement{index = 0}))
 	testing.expect(t, game.apply(g2, 0, types.GameAction_ChooseReplacement{index = 1}) && crypt.tapped)
 }
+
+@(test)
+exile_instead_of_dying :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Agate Assault: "deals 4 damage to target creature. If that creature would die this turn, exile it instead"
+	// (CR 614.6: the replacement changes where it goes; dying is going to the graveyard from the battlefield).
+	testing.expect(t, game.card_supported(&card(t, "Agate Assault").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Mountain", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	spell := add(t, g, "Agate Assault", 0, .Hand) // {2}{R}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+	if _, asked := s.waiting_for.(types.WaitingFor_ModeChoice); asked {
+		modes: [dynamic]int
+		append(&modes, 0)
+		testing.expect(t, game.apply(g, 0, types.GameAction_SelectModes{indices = modes}))
+	}
+	if _, asked := s.waiting_for.(types.WaitingFor_TargetSelection); asked {
+		game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}})
+	}
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, bears.zone == .Exile, "exiled, not put into the graveyard")
+}

@@ -78,3 +78,37 @@ damage_prevented :: proc(g: ^Game, target: types.TargetRef, combat: bool) -> boo
 	}
 	return false
 }
+
+// "If that creature would die this turn, exile it instead" (CR 614.6): a replacement effect on one permanent,
+// lasting the turn, applying once.
+exile_instead_supported :: proc(x: types.Effect_AddTargetReplacement) -> bool {
+	r := x.replacement
+	if r == nil || r.execute == nil || r.execute.effect == nil || r.execute.sub_ability != nil || r.condition != nil do return false
+	if _, any := x.target.(types.TargetFilter_Any); !any do return false // "that creature": the earlier target
+	if _, moved := r.event.(types.ReplacementEvent_Moved); !moved do return false
+	if _, mandatory := r.mode.(types.ReplacementMode_Mandatory); !mandatory do return false
+	if dest, has := r.destination_zone.?; !has || dest != .Graveyard do return false
+	cz, is_cz := r.execute.effect^.(types.Effect_ChangeZone)
+	if !is_cz || cz.destination != .Exile || !is_self(cz.target) do return false
+	if e, has := r.expiry.?; has {
+		if _, eot := e.(types.RestrictionExpiry_EndOfTurn); !eot do return false
+	}
+	return true
+}
+
+add_exile_instead :: proc(g: ^Game, target: Maybe(types.TargetRef)) {
+	id, ok := target_object(target)
+	if !ok do return
+	o := object(&g.state, id)
+	if o == nil || o.zone != .Battlefield do return
+	append(&g.exile_instead, Control_Change{object = id, incarnation = o.incarnation})
+}
+
+// Whether a permanent going from the battlefield to a graveyard goes to exile instead (and the effect is used up).
+exiled_instead :: proc(g: ^Game, o: ^types.GameObject) -> bool {
+	for c, i in g.exile_instead do if c.object == o.id && c.incarnation == o.incarnation {
+		ordered_remove(&g.exile_instead, i)
+		return true
+	}
+	return false
+}

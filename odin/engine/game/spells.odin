@@ -199,6 +199,8 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return delayed_trigger_supported(x, true) // and with what came before it: ability_supported
 	case types.Effect_PreventDamage:
 		return prevention_supported(x)
+	case types.Effect_AddTargetReplacement:
+		return exile_instead_supported(x)
 	case types.Effect_GainControl:
 		// "Gain control of target creature until end of turn" (Act of Treason), or for good.
 		ok_duration := true
@@ -314,6 +316,11 @@ refers_to_parent_target :: proc(e: types.Effect) -> bool {
 	if tok, is_token := e.(types.Effect_Token); is_token {
 		_, parent_controller := tok.owner.(types.TargetFilter_ParentTargetController)
 		return parent_controller
+	}
+	if atr, is_replacement := e.(types.Effect_AddTargetReplacement); is_replacement {
+		// "If that creature would die this turn": the earlier instruction's target.
+		_, any := atr.target.(types.TargetFilter_Any)
+		return any
 	}
 	if prev, is_prevention := e.(types.Effect_PreventDamage); is_prevention {
 		// "Prevent all damage that would be dealt to it this turn."
@@ -950,6 +957,8 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		create_delayed_trigger(g, x, controller, source)
 	case types.Effect_PreventDamage:
 		add_prevention(g, x, controller, source, target)
+	case types.Effect_AddTargetReplacement:
+		add_exile_instead(g, target)
 	case types.Effect_GainControl:
 		if id, ok := target_object(target); ok {
 			_, eot := duration.?
@@ -1079,6 +1088,7 @@ pump :: proc(g: ^Game, o: ^types.GameObject, power, toughness: i32) {
 end_until_end_of_turn_effects :: proc(g: ^Game) {
 	clear(&g.pumps)
 	clear(&g.preventions) // CR 514.2: "this turn" prevention ends
+	clear(&g.exile_instead)
 	// CR 514.2: "until end of turn" control ends; the permanent goes back to who controlled it before, if it's still
 	// the same object.
 	kept := make([dynamic]Control_Change)

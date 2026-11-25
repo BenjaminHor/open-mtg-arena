@@ -2917,6 +2917,8 @@ Progress:
   cards whose card data is wrong are refused by name (MISPARSED_CARDS in spells.odin: Phelia, Shallow Grave,
   Vizier of Deferment); one shield counter prevents all simultaneous combat damage to its permanent (D-188); a
   shockland prompt answered after a restore finds its land from the prompt. 5,575 -> 5,578 (with Fog's gains).
+- "If that creature would die this turn, exile it instead" (CR 614.6) on an earlier target, used once, ending
+  with the turn (kept in Game, exile_instead): 5,578 -> 5,603.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

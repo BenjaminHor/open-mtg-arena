@@ -63,9 +63,12 @@ zone_list :: proc(s: ^types.GameState, zone: types.Zone, owner: types.PlayerId) 
 // CR 400.7: an object that moves from one zone to another becomes a new object with no memory of its previous
 // existence: it enters untapped, without damage, counters or attachments, and with its printed characteristics.
 // (The id stays, with the incarnation counting the new object, so the client can follow the card.)
-move_object :: proc(g: ^Game, id: types.ObjectId, to: types.Zone) {
+move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 	s := &g.state
 	o := object(s, id)
+	to := destination
+	// CR 614.6: "if it would die, exile it instead" changes where it goes.
+	if o.zone == .Battlefield && to == .Graveyard && exiled_instead(g, o) do to = .Exile
 	// CR 111.8: a token that has left the battlefield can't move to another zone or come back.
 	if o.is_token && o.zone != .Battlefield do return
 	if o.zone != .Stack {

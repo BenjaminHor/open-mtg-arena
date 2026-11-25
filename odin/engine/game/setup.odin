@@ -51,6 +51,7 @@ Game :: struct {
 	// Permanents whose shield counter already prevented damage in the combat damage being dealt now: the rest of
 	// that simultaneous damage is prevented too (CR 122.1c, 510.2).
 	shielded:          [dynamic]types.ObjectId,
+	exile_instead:     [dynamic]Control_Change, // "if it would die this turn, exile it instead" (prevention.odin)
 	dealing_combat:    bool,
 }
 
