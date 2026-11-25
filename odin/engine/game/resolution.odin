@@ -160,7 +160,10 @@ continue_resolution :: proc(g: ^Game) -> bool {
 	for r.next != nil {
 		// What the instruction just carried out moved, before the next one reads "this way". An instruction skipped
 		// for its condition carries nothing out, so "this way" still means the one before it.
-		if r.events_mark >= 0 && r.events_mark <= len(g.events) do note_moved(g, r.events_mark)
+		if r.events_mark >= 0 && r.events_mark <= len(g.events) {
+			note_moved(g, r.events_mark)
+			if r.current != nil do note_amount(g, r.current.effect, r.events_mark)
+		}
 		r.events_mark = -1
 		x := r.next
 		r.next = x.sub_ability
@@ -250,6 +253,7 @@ continue_resolution :: proc(g: ^Game) -> bool {
 				r.scope_node = x
 				r.scope = scope_players(s, scope, r.controller)
 				r.scope_next = 0
+				r.events_mark = len(g.events) // for "this way": what it did for every player
 			}
 			for r.scope_next < len(r.scope) {
 				p := r.scope[r.scope_next]
@@ -298,9 +302,50 @@ continue_resolution :: proc(g: ^Game) -> bool {
 		delete_key(&g.stack_transforms, r.stack_id)
 	}
 	r^ = {}
+	s.last_effect_amount, s.last_effect_excess_amount = nil, nil // "this way" means this resolution's instructions
 	event_object_now = 0
 	source_was_now = nil
 	return true
+}
+
+// ---- "This way" amounts (CR 608.2c) -----------------------------------------------------------------------
+
+// Which instructions produce a number a later one reads as "the life lost this way", "that many", "the excess damage
+// dealt this way": life lost or gained, damage dealt (and its excess, CR 120.10), cards drawn or discarded.
+amount_producer :: proc(e: types.Effect) -> (total: bool, excess: bool) {
+	#partial switch _ in e {
+	case types.Effect_LoseLife, types.Effect_GainLife, types.Effect_Draw, types.Effect_Discard, types.Effect_DamageAll, types.Effect_DamageEachPlayer:
+		return true, false
+	case types.Effect_DealDamage:
+		return true, true
+	}
+	return false, false
+}
+
+// After an instruction is carried out: the number it produced, from the events it caused since `mark`.
+note_amount :: proc(g: ^Game, e: types.Effect, mark: int) {
+	total, excess_too := amount_producer(e)
+	if !total do return
+	n, excess := 0, 0
+	for ev in g.events[mark:] {
+		#partial switch _ in e {
+		case types.Effect_LoseLife:
+			if ev.kind == .Life_Lost do n += ev.amount
+		case types.Effect_GainLife:
+			if ev.kind == .Life_Gained do n += ev.amount
+		case types.Effect_Draw:
+			if ev.kind == .Card_Drawn do n += 1
+		case types.Effect_Discard:
+			if ev.kind == .Zone_Change && ev.from == .Hand do n += 1 // CR 701.9a: from a hand
+		case:
+			if ev.kind == .Damage {
+				n += ev.amount
+				excess += ev.excess
+			}
+		}
+	}
+	g.state.last_effect_amount = i32(n)
+	if excess_too do g.state.last_effect_excess_amount = i32(excess)
 }
 
 // ---- "Unless a player pays" (CR 118.12a) -----------------------------------------------------------------

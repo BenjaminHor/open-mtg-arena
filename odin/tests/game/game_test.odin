@@ -5454,3 +5454,44 @@ report_tells_what_happened :: proc(t: ^testing.T) {
 	testing.expect(t, slice.contains(lines[:], "Shock deals 2 damage to Grizzly Bears"), "the damage is logged")
 	testing.expect(t, slice.contains(lines[:], "Grizzly Bears dies"), "the death is logged")
 }
+
+// CR 608.2c: "you gain life equal to the life lost this way" reads what the instruction before did, for every
+// opponent it affected (Blood Tithe: "Each opponent loses 3 life. You gain life equal to the life lost this way.").
+@(test)
+life_lost_this_way :: proc(t: ^testing.T) {
+	if !load_db() do return
+	g := new_game()
+	for _ in 0 ..< 4 do add(t, g, "Swamp", 0, .Battlefield)
+	tithe := add(t, g, "Blood Tithe", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = tithe.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect_value(t, g.state.players[1].life, 17)
+	testing.expect_value(t, g.state.players[0].life, 23)
+	testing.expect(t, g.state.last_effect_amount == nil, "the amount doesn't outlive the resolution")
+}
+
+// CR 120.4a, 120.10: excess damage to a creature is the damage beyond lethal, counting damage already marked on it
+// (Lacerate Flesh: 4 damage to target creature, then a Blood token for each 1 excess damage dealt this way).
+@(test)
+excess_damage_dealt_this_way :: proc(t: ^testing.T) {
+	if !load_db() do return
+	blood_tokens :: proc(g: ^game.Game) -> int {
+		n := 0
+		for id in game.ids_of(g.state.battlefield) do if o := game.object(&g.state, id); o.is_token && o.name == "Blood" do n += 1
+		return n
+	}
+	for marked in ([]u32{0, 1}) {
+		g := new_game()
+		for _ in 0 ..< 5 do add(t, g, "Mountain", 0, .Battlefield)
+		flesh := add(t, g, "Lacerate Flesh", 0, .Hand)
+		bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		bears.damage_marked = marked
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = flesh.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+		game.apply(g, 0, types.GameAction_PassPriority{})
+		game.apply(g, 1, types.GameAction_PassPriority{})
+		// 2 toughness: 4 damage is 2 beyond lethal, or 3 when 1 damage was already marked.
+		testing.expect_value(t, blood_tokens(g), 2 + int(marked))
+	}
+}

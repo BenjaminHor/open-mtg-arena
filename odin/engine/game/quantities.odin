@@ -18,6 +18,10 @@ event_amount: int
 // The trigger event's object while its ability resolves ("the spell that triggered it").
 @(thread_local)
 event_object_now: types.ObjectId
+// The instruction before the one being checked, for "the life lost this way" (CR 608.2c): set by ability_supported.
+@(thread_local)
+previous_instruction: ^types.Effect
+
 // The resolving ability's source as it last existed, when it has left since (CR 608.2h, 107.3m).
 @(thread_local)
 source_was_now: ^types.GameObject
@@ -34,6 +38,8 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 		return x.inner != nil && quantity_supported(x.inner^)
 	case types.QuantityExpr_Ref:
 		#partial switch r in x.qty {
+		case types.QuantityRef_PreviousEffectAmount:
+			return previous_amount_readable(r.channel) && r.aggregate == .Sum
 		case types.QuantityRef_ObjectCount:
 			return mass_filter_supported(r.filter)
 		case types.QuantityRef_Power:
@@ -163,6 +169,10 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 		return max(quantity_value(s, x.inner^, controller, source, target), int(x.minimum))
 	case types.QuantityExpr_Ref:
 		#partial switch r in x.qty {
+		case types.QuantityRef_PreviousEffectAmount:
+			// CR 608.2c: what the instruction before produced (resolution.odin's note_amount).
+			if r.channel == .Excess do return int(s.last_effect_excess_amount.? or_else 0)
+			return int(s.last_effect_amount.? or_else 0)
 		case types.QuantityRef_ObjectCount:
 			return len(affected_permanents(s, r.filter, controller, source, loc))
 		case types.QuantityRef_Power:
@@ -882,4 +892,11 @@ damage_dealt_this_turn :: proc(s: ^types.GameState, r: types.QuantityRef_DamageD
 		return best if r.aggregate == .Max else total
 	}
 	return total
+}
+
+// "This way": readable when the instruction before produces that number (resolution.odin's amount_producer).
+previous_amount_readable :: proc(channel: types.DamageChannel) -> bool {
+	if previous_instruction == nil do return false
+	total, excess := amount_producer(previous_instruction^)
+	return excess if channel == .Excess else total
 }

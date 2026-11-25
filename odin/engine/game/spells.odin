@@ -152,8 +152,11 @@ spell_ability_supported :: proc(a: types.AbilityDefinition) -> bool {
 // targets and (for triggered abilities, CR 603.5) whether to do it at all.
 // `after_target`: an earlier instruction of the same ability chose a target, which "it" or "that creature" can
 // refer to.
-ability_supported :: proc(a: types.AbilityDefinition, after_target := false, after_search := false, after_chosen_target := false) -> bool {
+ability_supported :: proc(a: types.AbilityDefinition, after_target := false, after_search := false, after_chosen_target := false, previous: ^types.Effect = nil) -> bool {
 	if a.effect == nil || a.optional_targeting || a.modal != nil do return false
+	outer := previous_instruction
+	previous_instruction = previous
+	defer previous_instruction = outer
 	if c, has := a.condition.?; has && !ability_condition_supported(c) do return false
 	// "Each player draws", "an opponent draws", "for each creature chosen": scopes and groups not carried out yet.
 	// (Declaring a group is harmless while nothing reads it; reading one isn't supported.)
@@ -191,7 +194,7 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	}
 	// A target chosen (not "enchanted creature", which names the one it's attached to).
 	chosen := targets && !names_attachment(effect_target_filter(a.effect^))
-	if a.sub_ability != nil do return ability_supported(a.sub_ability^, after_target || targets, after_search || searches, after_chosen_target || chosen)
+	if a.sub_ability != nil do return ability_supported(a.sub_ability^, after_target || targets, after_search || searches, after_chosen_target || chosen, a.effect)
 	return true
 }
 
@@ -1307,8 +1310,9 @@ deal_damage :: proc(g: ^Game, source: types.ObjectId, target: types.TargetRef, n
 		}
 	}
 	// CR 603.2: damage dealt is an event abilities can trigger on.
-	append(&g.events, Event{kind = .Damage, object = source, target = target, amount = n, combat = combat})
-	report(types.GameEvent_DamageDealt{source_id = source, target = target, amount = u32(n), is_combat = combat})
+	excess := excess_damage(s, src, target, n)
+	append(&g.events, Event{kind = .Damage, object = source, target = target, amount = n, combat = combat, excess = excess})
+	report(types.GameEvent_DamageDealt{source_id = source, target = target, amount = u32(n), is_combat = combat, excess = u32(excess)})
 	// The turn's record ("if an opponent was dealt damage this turn"), with who controlled each side then.
 	{
 		rec := types.DamageRecord{source_id = source, target = target, amount = u32(n), is_combat = combat}
@@ -1345,6 +1349,24 @@ deal_damage :: proc(g: ^Game, source: types.ObjectId, target: types.TargetRef, n
 	if src != nil && has_keyword(src, types.Keyword_Lifelink) do gain_life(s, src.controller, n)
 }
 
+// CR 120.4a, 120.10: the part of n damage to a permanent beyond what's lethal to it, before it's marked: for a
+// creature, beyond its toughness less the damage already on it (any damage beyond 1 from a source with
+// deathtouch); for a planeswalker, beyond its loyalty; the greatest of these when it's both. None to a player.
+excess_damage :: proc(s: ^types.GameState, src: ^types.GameObject, target: types.TargetRef, n: int) -> int {
+	t, is_object := target.(types.TargetRef_Object)
+	if !is_object do return 0
+	o := object(s, t._0)
+	if o == nil do return 0
+	excess := 0
+	if is_type(o, .Creature) {
+		lethal := max(0, int(o.toughness.? or_else 0) - int(o.damage_marked))
+		if src != nil && has_keyword(src, types.Keyword_Deathtouch) do lethal = min(lethal, 1)
+		excess = max(excess, n - lethal)
+	}
+	if is_type(o, .Planeswalker) do excess = max(excess, n - int(o.loyalty.? or_else 0))
+	return max(excess, 0)
+}
+
 gain_life :: proc(s: ^types.GameState, p: types.PlayerId, n: int) {
 	pl := player(s, p)
 	pl.life += i32(n)
@@ -1358,6 +1380,7 @@ lose_life :: proc(s: ^types.GameState, p: types.PlayerId, n: int) {
 	pl := player(s, p)
 	pl.life -= i32(n)
 	pl.life_lost_this_turn += u32(n)
+	if n > 0 && action_events != nil do append(action_events, Event{kind = .Life_Lost, controller = p, amount = n})
 	report_life(s, p, -n)
 }
 
@@ -1495,7 +1518,10 @@ static_gap :: proc(st: types.StaticDefinition) -> string {
 }
 
 @(private = "file")
-ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: string) {
+ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: string, previous: ^types.Effect = nil) {
+	outer := previous_instruction
+	previous_instruction = previous // "this way" reads the instruction before (as ability_supported checks it)
+	defer previous_instruction = outer
 	if c, has := a.condition.?; has && !ability_condition_supported(c) {
 		// Named by its kind ("spell:condition:IsYourTurn"); one made of others by the first part not supported.
 		inner := unsupported_condition_part(c)
@@ -1545,7 +1571,7 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 		}
 		append(out, strings.concatenate({"effect:", full, detail}, context.temp_allocator))
 	}
-	if a.sub_ability != nil do ability_gaps(out, a.sub_ability^, prefix)
+	if a.sub_ability != nil do ability_gaps(out, a.sub_ability^, prefix, a.effect)
 }
 
 is_land_face :: proc(face: ^types.CardFace) -> bool {
@@ -1691,6 +1717,15 @@ ability_condition_supported :: proc(c: types.AbilityCondition) -> bool {
 		return x.inner != nil && ability_condition_supported(x.inner^)
 	case types.AbilityCondition_QuantityCheck:
 		return quantity_supported(x.lhs) && quantity_supported(x.rhs)
+	case types.AbilityCondition_PreviousEffectAmount:
+		// "If excess damage was dealt this way", "if no counter was removed this way" (CR 608.2c).
+		return previous_amount_readable(x.channel) && quantity_supported(x.rhs)
+	case types.AbilityCondition_HasObjectTarget:
+		// "If a creature [it targeted] was dealt damage this way": the instruction before chose a target (an object
+		// or a player; this asks which). Not one it took from the trigger event.
+		if previous_instruction == nil do return false
+		_, targets := effect_target(previous_instruction^)
+		return targets
 	case types.AbilityCondition_TargetMatchesFilter:
 		// "If that creature is attacking": the target chosen for an earlier slot, as it is now. Unset, the subject is
 		// the target (the card data leaves the default out).
@@ -1774,6 +1809,12 @@ ability_condition_holds :: proc(s: ^types.GameState, c: types.AbilityCondition, 
 	#partial switch x in c {
 	case types.AbilityCondition_QuantityCheck:
 		return compare(quantity_value(s, x.lhs, controller, source, 0), x.comparator, quantity_value(s, x.rhs, controller, source, 0))
+	case types.AbilityCondition_HasObjectTarget:
+		for t in subjects do if _, is_object := target_object(t); is_object do return true
+		return false
+	case types.AbilityCondition_PreviousEffectAmount:
+		had := s.last_effect_excess_amount if x.channel == .Excess else s.last_effect_amount
+		return compare(int(had.? or_else 0), x.comparator, quantity_value(s, x.rhs, controller, source, 0))
 	case types.AbilityCondition_TargetMatchesFilter:
 		// The (legal) target the instruction acts on; CR 608.2b: nothing is learned from an illegal one.
 		if len(subjects) == 0 do return false

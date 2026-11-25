@@ -21,6 +21,7 @@ Event_Kind :: enum {
 	Sacrificed, // controller sacrificed object, a permanent moved from the battlefield to the graveyard (CR 701.21a)
 	Counter_Added, // amount counters of kind counter put on object, which had before of them (CR 122.6)
 	Became_Target, // object became a target of stack_entry, a spell or ability controller controls (CR 115.1)
+	Life_Lost, // controller lost amount life (CR 119.3)
 }
 
 // Something that happened that an ability may trigger on (CR 603.2).
@@ -39,6 +40,7 @@ Event :: struct {
 	group:      int, // zone changes with the same group happened at the same time (state-based actions, CR 704.3)
 	incarnation: u64, // Counter_Added: the object as it was (CR 400.7)
 	stack_entry: types.ObjectId, // Became_Target: the spell or ability that targets it
+	excess:      int, // Damage: how much of it was excess damage (CR 120.4a, 120.10)
 }
 
 // What a triggered ability's trigger event was about, for its instructions: "that much damage", "that creature",
@@ -530,6 +532,7 @@ collect_triggers :: proc(g: ^Game) {
 				}
 			}
 			prowess_triggers(g, spell, e.controller) // CR 702.108a
+		case .Life_Lost: // no "whenever you lose life" triggers yet; read by "this way" (resolution.odin)
 		case .Became_Target:
 			ward_triggers(g, e) // CR 702.21a
 		case .Damage:

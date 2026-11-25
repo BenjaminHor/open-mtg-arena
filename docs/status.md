@@ -3174,6 +3174,12 @@ Progress:
   log fills ("Player 2 casts Cryogen Relic", "Cryogen Relic's ability triggers", "Player 1 discards ..."). Test:
   `report_tells_what_happened`. An Odin compiler bug: a loop with a nested union switch inside `log_line`'s big
   switch produced WebAssembly that doesn't validate; it lives in its own proc (`attacks_line`).
+- "This way" amounts (CR 608.2c, 120.4a, 120.10): after each instruction, the number it produced (life lost or
+  gained, damage dealt and its excess, cards drawn or discarded) is kept in `last_effect_amount` /
+  `last_effect_excess_amount` for the next ones ("you gain life equal to the life lost this way", "a Blood token for
+  each 1 excess damage dealt this way", "if a Werewolf was dealt damage this way"). Supported only when the
+  instruction before produces that number. Tests: `life_lost_this_way`, `excess_damage_dealt_this_way`. Coverage
+  7,491. Also fixed: `tools/rules/rule.mjs` couldn't find the rules file (its root was one level short).
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 
