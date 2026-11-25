@@ -3067,3 +3067,35 @@ planeswalker_loyalty_and_attacks :: proc(t: ^testing.T) {
 	}
 	testing.expect(t, ajani.loyalty.? == 3 && game.player(s, 0).life == 20, "2 damage to Jace, none to its controller")
 }
+
+@(test)
+you_may_pay_mana :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Mentor of the Meek: "Whenever another creature you control with power 2 or less enters, you may pay {1}. If
+	// you do, draw a card." The payment is a choice as it resolves (CR 608.2d), possible only if the player can pay
+	// it (CR 118.3).
+	testing.expect(t, game.card_supported(&card(t, "Mentor of the Meek").face))
+	run :: proc(t: ^testing.T, lands: int) -> (drew: bool, asked: bool) {
+		g := new_game()
+		s := &g.state
+		add(t, g, "Mentor of the Meek", 0, .Battlefield)
+		for _ in 0 ..< lands do add(t, g, "Forest", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 0, .Hand)
+		hand := types.pvec_len(game.player(s, 0).hand) - 1
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = bears.id}))
+		for _ in 0 ..< 10 {
+			if _, optional := s.waiting_for.(types.WaitingFor_OptionalEffectChoice); optional {
+				asked = true
+				testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalEffect{accept = true}))
+				continue
+			}
+			if types.pvec_len(s.stack) == 0 do break
+			game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+		}
+		return types.pvec_len(game.player(s, 0).hand) == hand + 1, asked
+	}
+	drew, asked := run(t, 3)
+	testing.expect(t, asked && drew, "a third Forest pays {1}: a card")
+	drew, asked = run(t, 2)
+	testing.expect(t, !drew, "no mana left: it can't be paid")
+}

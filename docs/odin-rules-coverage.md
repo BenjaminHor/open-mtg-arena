@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 285 of 2880 rules implemented (10%), 130 of them tested.**
+**In scope (100-799): 286 of 2880 rules implemented (10%), 131 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -30,7 +30,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 115 targets | 26 | 6 (23%) | 5 |
 | 116 special actions | 15 | 0 (0%) | 0 |
 | 117 timing and priority | 20 | 7 (35%) | 3 |
-| 118 costs | 39 | 1 (3%) | 1 |
+| 118 costs | 39 | 2 (5%) | 2 |
 | 119 life | 17 | 4 (24%) | 3 |
 | 120 damage | 25 | 1 (4%) | 1 |
 | 121 drawing a card | 17 | 2 (12%) | 2 |
@@ -561,11 +561,11 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 117.6 In a multiplayer game using the shared team turns option, teams rather than individual players have priorit...
 - ⬜ 117.7 If a player with priority casts a spell or activates an activated ability while another spell or ability is...
 
-### 118 costs (1/39)
+### 118 costs (2/39)
 
 - ⬜ 118.1 A cost is an action or payment necessary to take another action or to stop another action from taking place...
 - ⬜ 118.2 If a cost includes a mana payment, the player paying the cost has a chance to activate mana abilities. Payi...
-- ⬜ 118.3 A player can’t pay a cost without having the necessary resources to pay it fully. For example, a player wit...
+- ✅ 118.3 A player can’t pay a cost without having the necessary resources to pay it fully. For example, a player wit...
 - ⬜ 118.3a Paying mana is done by removing the indicated mana from a player’s mana pool. (Players can always pay 0 man...
 - ⬜ 118.3b Paying life is done by subtracting the indicated amount of life from a player’s life total. (Players can al...
 - ⬜ 118.3c Activating mana abilities is not mandatory, even if paying a cost is.

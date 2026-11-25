@@ -458,8 +458,49 @@ optional_possible :: proc(g: ^Game, x: ^types.ResolvedAbility, controller: types
 		if !ok do return false
 		for o in permanents_of(s, controller) do if object_matches(s, o, typed._0, controller, source) do return true
 		return false
+	case types.Effect_PayCost:
+		return cost_payable_now(g, e, controller, source)
 	}
 	return true
+}
+
+// "You may pay {2}", "you may pay 3 life" (CR 118.3: a cost can be paid only if the player can pay all of it;
+// CR 119.4: life only up to their total). Mana from the player's mana sources, chosen as automatic payment does.
+pay_cost_supported :: proc(x: types.Effect_PayCost) -> bool {
+	if x.scale != nil || !is_controller(x.payer) do return false
+	#partial switch c in x.cost {
+	case types.AbilityCost_Mana:
+		_, plain := c.cost.(types.ManaCost_Cost)
+		return plain && !has_x(c.cost)
+	case types.AbilityCost_PayLife:
+		_, fixed := fixed_quantity(c.amount)
+		return fixed
+	}
+	return false
+}
+
+cost_payable_now :: proc(g: ^Game, x: types.Effect_PayCost, controller: types.PlayerId, source: types.ObjectId) -> bool {
+	s := &g.state
+	#partial switch c in x.cost {
+	case types.AbilityCost_Mana:
+		_, ok := plan_payment(s, controller, c.cost, 0, nil, Payment{object(s, source), false})
+		return ok
+	case types.AbilityCost_PayLife:
+		n, _ := fixed_quantity(c.amount)
+		return int(player(s, controller).life) >= n
+	}
+	return false
+}
+
+do_pay_cost :: proc(g: ^Game, x: types.Effect_PayCost, controller: types.PlayerId, source: types.ObjectId) {
+	s := &g.state
+	#partial switch c in x.cost {
+	case types.AbilityCost_Mana:
+		pay_mana(g, controller, c.cost, 0, nil, Payment{object(s, source), false})
+	case types.AbilityCost_PayLife:
+		n, _ := fixed_quantity(c.amount)
+		lose_life(s, controller, n) // CR 119.4
+	}
 }
 
 // Creates the reflexive triggered ability "when you do, ..." (CR 603.12) from the source's own definition of it: it

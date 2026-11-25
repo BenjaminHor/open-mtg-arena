@@ -211,6 +211,8 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return delayed_trigger_supported(x, true) // and with what came before it: ability_supported
 	case types.Effect_PreventDamage:
 		return prevention_supported(x)
+	case types.Effect_PayCost:
+		return pay_cost_supported(x)
 	case types.Effect_AddTargetReplacement:
 		return exile_instead_supported(x)
 	case types.Effect_GainControl:
@@ -980,6 +982,8 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		create_delayed_trigger(g, x, controller, source)
 	case types.Effect_PreventDamage:
 		add_prevention(g, x, controller, source, target)
+	case types.Effect_PayCost:
+		if cost_payable_now(g, x, controller, source) do do_pay_cost(g, x, controller, source)
 	case types.Effect_AddTargetReplacement:
 		add_exile_instead(g, target)
 	case types.Effect_GainControl:
