@@ -1912,3 +1912,30 @@ mana_ability_with_a_mana_cost_and_a_color :: proc(t: ^testing.T) {
 	shock := add(t, g, "Shock", 0, .Hand)
 	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}), "Shock paid with the {R}")
 }
+
+@(test)
+restricted_mana :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 106.6: "Spend this mana only to cast a creature spell" (Ancient Ziggurat): it pays for a creature spell,
+	// not another spell, whether it's tapped by the payment or already in the pool.
+	g := new_game()
+	s := &g.state
+	testing.expect(t, game.card_supported(&card(t, "Ancient Ziggurat").face))
+	ziggurat := add(t, g, "Ancient Ziggurat", 0, .Battlefield)
+	shock := add(t, g, "Shock", 0, .Hand)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}), "Shock isn't a creature spell")
+	elves := add(t, g, "Llanowar Elves", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = elves.id}), "a creature spell")
+	testing.expect(t, ziggurat.tapped)
+
+	g2 := new_game()
+	s2 := &g2.state
+	z2 := add(t, g2, "Ancient Ziggurat", 0, .Battlefield)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_ActivateAbility{source_id = z2.id, ability_index = 0}))
+	testing.expect(t, game.apply(g2, 0, types.GameAction_ChooseManaColor{choice = types.ManaChoice_SingleColor{.Red}, count = 1}))
+	pool := game.player(s2, 0).mana_pool.mana
+	testing.expect(t, len(pool) == 1 && len(pool[0].restrictions) == 1, "the {R} keeps its restriction in the pool")
+	shock2 := add(t, g2, "Shock", 0, .Hand)
+	testing.expect(t, !game.apply(g2, 0, types.GameAction_CastSpell{object_id = shock2.id}), "not for Shock")
+	_ = s
+}

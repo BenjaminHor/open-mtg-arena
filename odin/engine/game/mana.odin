@@ -1,7 +1,9 @@
 // Mana (CR 106) and paying costs (CR 601.2g-h): a player's mana sources and the automatic payment of a mana cost.
 package game
 
+import "core:fmt"
 import "core:slice"
+import "core:strings"
 import types "../types"
 
 // One untapped permanent's {T}: add mana abilities, and the mana they can make; or one mana already in the
@@ -32,6 +34,15 @@ Mana_Option :: struct {
 	// "{1}, {T}: Add one mana of any color": mana paid to activate it (CR 605.3a). Automatic payment doesn't use
 	// such abilities; the player activates them on their own.
 	mana_cost:    types.ManaCost,
+	// "Spend this mana only to cast a creature spell" (CR 106.6): what the mana may pay for.
+	restrictions: []types.ManaRestriction,
+}
+
+// What a payment is for, which mana with a spending restriction reads (CR 106.6): a spell being cast, or an
+// ability of `object` being activated. Unknown (the zero value), restricted mana isn't spent.
+Payment :: struct {
+	object:   ^types.GameObject,
+	is_spell: bool,
 }
 
 // A {T} ability whose only effect is to add mana (CR 605.1a), and what it adds.
@@ -82,13 +93,19 @@ mana_ability_option :: proc(a: types.AbilityDefinition) -> (option: Mana_Option,
 	option.taps = taps
 	colors, amount := produced_mana(a)
 	option.colors, option.amount = colors, amount
+	if effect, is_mana := a.effect.(types.Effect_Mana); is_mana && len(effect.restrictions) > 0 {
+		rs := make([]types.ManaRestriction, len(effect.restrictions), context.temp_allocator)
+		for r, i in effect.restrictions do rs[i] = pool_restriction(r)
+		option.restrictions = rs
+	}
 	return option, amount > 0
 }
 
 @(private = "file")
 produced_mana :: proc(a: types.AbilityDefinition) -> (colors: bit_set[types.ManaType], amount: int) {
 	effect, is_mana := a.effect.(types.Effect_Mana)
-	if !is_mana || len(effect.restrictions) > 0 || len(effect.grants) > 0 || effect.expiry != nil || effect.target != nil do return
+	if !is_mana || len(effect.grants) > 0 || effect.expiry != nil || effect.target != nil do return
+	for r in effect.restrictions do if !spend_restriction_supported(r) do return
 	switch p in effect.produced {
 	case types.ManaProduction_Fixed:
 		// "Add {G}" (one color, once per symbol) or "Add {W}{U}" (each listed symbol).
@@ -129,12 +146,12 @@ can_tap_for_cost :: proc(o: ^types.GameObject) -> bool {
 	return true
 }
 
-mana_sources :: proc(s: ^types.GameState, p: types.PlayerId, exclude: types.ObjectId = 0, worst: Mana_Rider = .None, others: []types.ObjectId = nil) -> [dynamic]Mana_Source {
+mana_sources :: proc(s: ^types.GameState, p: types.PlayerId, exclude: types.ObjectId = 0, worst: Mana_Rider = .None, others: []types.ObjectId = nil, paying: Payment = {}) -> [dynamic]Mana_Source {
 	out := make([dynamic]Mana_Source, context.temp_allocator)
-	// CR 106.4: mana in the pool can pay costs. Mana with a spending restriction or a rider (CR 106.6) isn't
-	// spent automatically yet.
+	// CR 106.4: mana in the pool can pay costs; CR 106.6: restricted mana, only what it may be spent on. Mana with
+	// a rider isn't spent automatically yet.
 	for u in player(s, p).mana_pool.mana {
-		if len(u.restrictions) > 0 || len(u.grants) > 0 do continue
+		if len(u.grants) > 0 || !restrictions_allow(s, u.restrictions[:], paying) do continue
 		option := Mana_Option{colors = {u.color}, amount = 1}
 		src := Mana_Source{pip = u.pip_id, colors = {u.color}, amount = 1, options = make([dynamic]Mana_Option, context.temp_allocator)}
 		append(&src.options, option)
@@ -148,6 +165,7 @@ mana_sources :: proc(s: ^types.GameState, p: types.PlayerId, exclude: types.Obje
 		for a in o.abilities^ {
 			option, ok := mana_ability_option(a)
 			if ok && (option.mana_cost != nil || !option.taps) do ok = false // activated by the player, not here
+			if ok && !restrictions_allow(s, option.restrictions, paying) do ok = false
 			// CR 119.4: life can be paid only up to the player's life total.
 			if ok && option.rider == .Life && int(player(s, p).life) < option.rider_amount do ok = false
 			if ok && option.rider <= worst {
@@ -188,9 +206,9 @@ shard_payers :: proc(shard: types.ManaCostShard) -> (payers: bit_set[types.ManaT
 // sources so creatures stay free to attack and block; the generic part comes from what's left. CR 118.6: an object
 // with no mana cost can't be cast by paying one.
 // `exclude` and `others`: permanents that can't pay, because they pay another part of the cost (CR 601.2h).
-plan_payment :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0, others: []types.ObjectId = nil) -> (taps: [dynamic]^types.GameObject, ok: bool) {
+plan_payment :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0, others: []types.ObjectId = nil, paying: Payment = {}) -> (taps: [dynamic]^types.GameObject, ok: bool) {
 	taps = make([dynamic]^types.GameObject, context.temp_allocator)
-	plan, payable := plan_mana_taps(s, p, cost, exclude, others)
+	plan, payable := plan_mana_taps(s, p, cost, exclude, others, paying)
 	for t in plan do if t.object != nil do append(&taps, t.object)
 	return taps, payable
 }
@@ -205,7 +223,7 @@ Mana_Tap :: struct {
 
 // CR 601.2g-h: which permanents to tap, and with which abilities, to pay the cost. Abilities without a rider are
 // tried first, then those that deal damage or cost life, then those that sacrifice the source.
-plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0, others: []types.ObjectId = nil) -> (taps: [dynamic]Mana_Tap, ok: bool) {
+plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0, others: []types.ObjectId = nil, paying: Payment = {}) -> (taps: [dynamic]Mana_Tap, ok: bool) {
 	taps = make([dynamic]Mana_Tap, context.temp_allocator)
 	c, is_cost := cost.(types.ManaCost_Cost)
 	if !is_cost do return taps, false
@@ -217,7 +235,7 @@ plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaC
 	}
 	for worst in Mana_Rider {
 		if worst == .Life do continue // tried together with Damage
-		sources := mana_sources(s, p, exclude, .Life if worst == .Damage else worst, others)
+		sources := mana_sources(s, p, exclude, .Life if worst == .Damage else worst, others, paying)
 		// Preference order: mana already in the pool (it empties at the end of the step, CR 106.4), then
 		// noncreatures, then sources that make fewer kinds of mana.
 		slice.sort_by(sources[:], proc(a, b: Mana_Source) -> bool {
@@ -266,8 +284,8 @@ plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaC
 
 // Pays a mana cost: taps the planned permanents, then carries out their abilities' riders (CR 605.3b: a mana
 // ability resolves at once): damage to the player, life paid, the source sacrificed.
-pay_mana :: proc(g: ^Game, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0, others: []types.ObjectId = nil) -> bool {
-	taps, ok := plan_mana_taps(&g.state, p, cost, exclude, others)
+pay_mana :: proc(g: ^Game, p: types.PlayerId, cost: types.ManaCost, exclude: types.ObjectId = 0, others: []types.ObjectId = nil, paying: Payment = {}) -> bool {
+	taps, ok := plan_mana_taps(&g.state, p, cost, exclude, others, paying)
 	if !ok do return false
 	for t in taps {
 		if t.object == nil do spend_pool_mana(&g.state, p, t.pip)
@@ -280,7 +298,7 @@ pay_mana :: proc(g: ^Game, p: types.PlayerId, cost: types.ManaCost, exclude: typ
 				color = c
 				break
 			}
-			add_pool_mana(&g.state, p, color, t.object.id if t.object != nil else 0, t.surplus)
+			add_pool_mana(&g.state, p, color, t.object.id if t.object != nil else 0, t.surplus, t.option.restrictions)
 		}
 	}
 	for t in taps do if t.object != nil do mana_rider(g, p, t.object, t.option)
@@ -308,7 +326,7 @@ activate_mana_ability :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject,
 	option, _ := mana_ability_option(a^)
 	// CR 602.2b, 601.2h: the costs are paid: {T}, and mana for "{1}, {T}: Add ..." (from other sources, CR 605.3a).
 	if option.taps do o.tapped = true
-	if option.mana_cost != nil do pay_mana(g, p, option.mana_cost, o.id)
+	if option.mana_cost != nil do pay_mana(g, p, option.mana_cost, o.id, nil, Payment{o, false})
 	if card(option.colors) > 1 {
 		// "One mana of any color": the color is chosen as it resolves (CR 605.3b), which is at once.
 		pending := new(types.PendingManaAbility)
@@ -334,7 +352,7 @@ mana_ability_activatable :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObje
 	if option.taps && !can_tap_for_cost(o) do return refuse("can't tap") // CR 302.6
 	if option.rider == .Life && int(player(&g.state, p).life) < option.rider_amount do return refuse("not enough life") // CR 119.4
 	if option.mana_cost != nil {
-		if _, payable := plan_payment(&g.state, p, option.mana_cost, o.id if option.taps else 0); !payable do return refuse("mana cost unpayable")
+		if _, payable := plan_payment(&g.state, p, option.mana_cost, o.id if option.taps else 0, nil, Payment{o, false}); !payable do return refuse("mana cost unpayable")
 	}
 	return true
 }
@@ -343,7 +361,7 @@ mana_ability_activatable :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObje
 // back to its player after state-based actions and triggers (CR 405.6c, 117.3c, 117.5), earlier passes no longer
 // counting (CR 117.4).
 finish_mana_ability :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, option: Mana_Option, color: types.ManaType) {
-	add_pool_mana(&g.state, p, color, o.id, option.amount)
+	add_pool_mana(&g.state, p, color, o.id, option.amount, option.restrictions)
 	mana_rider(g, p, o, option)
 	g.state.priority_passes = nil
 	give_priority(g, p)
@@ -417,12 +435,13 @@ object_mana_value :: proc(o: ^types.GameObject) -> int {
 // ---- The mana pool (CR 106.4) -----------------------------------------------------------------------------------
 
 // CR 106.4: mana a player adds goes into their mana pool.
-add_pool_mana :: proc(s: ^types.GameState, p: types.PlayerId, color: types.ManaType, source: types.ObjectId, n := 1) {
+add_pool_mana :: proc(s: ^types.GameState, p: types.PlayerId, color: types.ManaType, source: types.ObjectId, n := 1, restrictions: []types.ManaRestriction = nil) {
 	pl := player(s, p)
 	for _ in 0 ..< n {
-		// Each unit's id, for the client to follow it: from 1 up (0 means none).
+		// Each unit's id, for the client to follow it: from 1 up (0 means none). Restricted mana keeps what it may
+		// be spent on (CR 106.6).
 		if s.next_pip_id == 0 do s.next_pip_id = 1
-		append(&pl.mana_pool.mana, types.ManaUnit{color = color, source_id = source, pip_id = types.ManaPipId(s.next_pip_id)})
+		append(&pl.mana_pool.mana, types.ManaUnit{color = color, source_id = source, pip_id = types.ManaPipId(s.next_pip_id), restrictions = slice.clone_to_dynamic(restrictions)})
 		s.next_pip_id += 1
 	}
 }
@@ -438,4 +457,102 @@ spend_pool_mana :: proc(s: ^types.GameState, p: types.PlayerId, pip: types.ManaP
 // CR 106.4: each player's mana pool empties at the end of each step and phase.
 empty_mana_pools :: proc(s: ^types.GameState) {
 	for &pl in s.players do clear(&pl.mana_pool.mana)
+}
+
+// ---- Restricted mana (CR 106.6) --------------------------------------------------------------------------------
+
+// The spending restrictions this engine reads: "only to cast [a kind of] spell(s)", optionally "or activate
+// abilities [of that kind]".
+spend_restriction_supported :: proc(r: types.ManaSpendRestriction) -> bool {
+	#partial switch x in r {
+	case types.ManaSpendRestriction_SpellType:
+		return spell_type_phrase_supported(x._0)
+	case types.ManaSpendRestriction_SpellTypeOrAbilityActivation:
+		return spell_type_phrase_supported(x.spell_type)
+	}
+	return false
+}
+
+// The card's wording of a restriction as the mana in the pool carries it (only the supported kinds).
+@(private = "file")
+pool_restriction :: proc(r: types.ManaSpendRestriction) -> types.ManaRestriction {
+	#partial switch x in r {
+	case types.ManaSpendRestriction_SpellType:
+		return types.ManaRestriction_OnlyForSpellType{x._0}
+	case types.ManaSpendRestriction_SpellTypeOrAbilityActivation:
+		return types.ManaRestriction_OnlyForTypeSpellsOrAbilities{spell_type = x.spell_type, ability = x.ability}
+	}
+	return types.ManaRestriction_Impossible{}
+}
+
+// Whether every restriction lets the mana pay for this (CR 106.6: it can be spent only as it says).
+restrictions_allow :: proc(s: ^types.GameState, rs: []types.ManaRestriction, paying: Payment) -> bool {
+	for r in rs {
+		if paying.object == nil do return false
+		#partial switch x in r {
+		case types.ManaRestriction_OnlyForSpellType:
+			if !paying.is_spell || !spell_type_phrase_matches(paying.object, x._0) do return false
+		case types.ManaRestriction_OnlyForTypeSpellsOrAbilities:
+			// "Spend this mana only to cast artifact spells or activate abilities of artifacts."
+			if paying.is_spell {
+				if !spell_type_phrase_matches(paying.object, x.spell_type) do return false
+			} else if x.ability == .OfSpellType && !spell_type_phrase_matches(paying.object, x.spell_type) {
+				return false
+			}
+		case:
+			return false
+		}
+	}
+	return true
+}
+
+// A phrase like "Creature", "Instant or Sorcery", "Noncreature", "Dragon Creature", "Legendary", "Multicolored",
+// "Kicked": alternatives joined by "or"/"and" (either kind of spell), each all of its words.
+@(private = "file")
+spell_type_phrase_supported :: proc(phrase: string) -> bool {
+	for alt in phrase_alternatives(phrase) {
+		for word in strings.fields(alt, context.temp_allocator) {
+			w := strings.trim_prefix(word, "Non")
+			switch w {
+			case "Historic", "Outlaw", "Party", "Colorless", "Monocolored", "Permanent":
+				return false // kinds that aren't a type or supertype: not read yet
+			}
+			if len(w) == 0 || !(w[0] >= 'A' && w[0] <= 'Z') do return false
+		}
+	}
+	return true
+}
+
+@(private = "file")
+spell_type_phrase_matches :: proc(o: ^types.GameObject, phrase: string) -> bool {
+	for alt in phrase_alternatives(phrase) {
+		all := true
+		for word in strings.fields(alt, context.temp_allocator) {
+			negated := strings.has_prefix(word, "Non") && len(word) > 3 && word[3] >= 'A' && word[3] <= 'Z'
+			w := word[3:] if negated else word
+			if word_matches(o, w) == negated do all = false
+		}
+		if all do return true
+	}
+	return false
+}
+
+@(private = "file")
+word_matches :: proc(o: ^types.GameObject, w: string) -> bool {
+	switch w {
+	case "Multicolored":
+		return len(o.color) >= 2
+	case "Kicked":
+		return kicked(o) // CR 702.33d
+	}
+	for c in o.card_types.core_types do if fmt.tprintf("%v", c) == w do return true
+	for st in o.card_types.supertypes do if fmt.tprintf("%v", st) == w do return true
+	return has_subtype(o, w)
+}
+
+// "Instant or Sorcery", "Instant and Sorcery" (either kind of spell): the alternatives.
+@(private = "file")
+phrase_alternatives :: proc(phrase: string) -> []string {
+	either, _ := strings.replace_all(phrase, " and ", " or ", context.temp_allocator)
+	return strings.split(either, " or ", context.temp_allocator)
 }

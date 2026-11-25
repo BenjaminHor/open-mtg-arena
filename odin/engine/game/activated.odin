@@ -226,9 +226,9 @@ can_activate :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: i
 		}
 	}
 	if !slots_fillable(s, slot_list(a)[:], p, o.id) do return refuse("no legal targets")
-	if c, has := object_cost(g, p, o, a); has && !cost_objects_leave_mana(s, p, c.choices[:], c.count, mana, o.id if taps_self else 0) do return refuse("cost objects unavailable")
+	if c, has := object_cost(g, p, o, a); has && !cost_objects_leave_mana(s, p, c.choices[:], c.count, mana, o.id if taps_self else 0, Payment{o, false}) do return refuse("cost objects unavailable")
 	if mana == nil do return true // no mana in the cost ("Sacrifice a creature: ...")
-	_, payable := plan_payment(s, p, mana, o.id if taps_self else 0)
+	_, payable := plan_payment(s, p, mana, o.id if taps_self else 0, nil, Payment{o, false})
 	return payable || refuse("mana cost unpayable")
 }
 
@@ -297,7 +297,7 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 	for part in parts {
 		#partial switch x in part {
 		case types.AbilityCost_Mana:
-			pay_mana(g, p, x.cost, source if taps_self else 0, g.pending.cost_objects[:]) // CR 601.2h
+			pay_mana(g, p, x.cost, source if taps_self else 0, g.pending.cost_objects[:], Payment{object(s, source), false}) // CR 601.2h
 		case types.AbilityCost_Tap:
 			o.tapped = true
 		case types.AbilityCost_PayLife:
@@ -338,7 +338,7 @@ cost_parts_of :: proc(c: types.AbilityCost, out: ^[dynamic]types.AbilityCost) {c
 
 // CR 601.2h: whether `count` of the choices can be sacrificed or discarded and the mana still paid without them.
 // Tries the choices that make no mana first.
-cost_objects_leave_mana :: proc(s: ^types.GameState, p: types.PlayerId, choices: []types.ObjectId, count: int, mana: types.ManaCost, exclude: types.ObjectId) -> bool {
+cost_objects_leave_mana :: proc(s: ^types.GameState, p: types.PlayerId, choices: []types.ObjectId, count: int, mana: types.ManaCost, exclude: types.ObjectId, paying: Payment = {}) -> bool {
 	if len(choices) < count do return false
 	ordered := slice.clone(choices, context.temp_allocator)
 	makes_mana :: proc(s: ^types.GameState, id: types.ObjectId) -> bool {
@@ -357,7 +357,7 @@ cost_objects_leave_mana :: proc(s: ^types.GameState, p: types.PlayerId, choices:
 	picked := make([dynamic]types.ObjectId, context.temp_allocator)
 	for r in ranked[:count] do append(&picked, r.id)
 	if mana == nil do return true
-	_, payable := plan_payment(s, p, mana, exclude, picked[:])
+	_, payable := plan_payment(s, p, mana, exclude, picked[:], paying)
 	return payable
 }
 
@@ -366,7 +366,7 @@ cost_choice_leaves_mana :: proc(g: ^Game, p: types.PlayerId, chosen: []types.Obj
 	s := &g.state
 	o := object(s, g.pending.object)
 	if g.pending.ability_index < 0 {
-		_, payable := plan_payment(s, p, spell_cost(s, o, p), 0, chosen)
+		_, payable := plan_payment(s, p, spell_cost(s, o, p), 0, chosen, Payment{o, true})
 		return payable
 	}
 	a := activated_ability(o, g.pending.ability_index)
@@ -384,6 +384,6 @@ cost_choice_leaves_mana :: proc(g: ^Game, p: types.PlayerId, chosen: []types.Obj
 		}
 	}
 	if mana == nil do return true
-	_, payable := plan_payment(s, p, mana, o.id if taps_self else 0, chosen)
+	_, payable := plan_payment(s, p, mana, o.id if taps_self else 0, chosen, Payment{o, false})
 	return payable
 }

@@ -451,7 +451,7 @@ castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c
 		if !modes_castable(s, p, o) do return refuse("no castable modes")
 	} else if !slots_fillable(s, spell_slot_list(o)[:], p, o.id) do return refuse("no legal targets")
 	if !additional_cost_payable(s, p, o) do return refuse("additional cost unpayable")
-	_, payable := plan_payment(s, p, spell_cost(s, o, p))
+	_, payable := plan_payment(s, p, spell_cost(s, o, p), 0, nil, Payment{o, true})
 	return payable || refuse("mana cost unpayable")
 }
 
@@ -675,7 +675,7 @@ max_x :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject) -> u
 	x: u32 = 0
 	for x < 40 {
 		o.cost_x_paid = x + 1
-		if _, payable := plan_payment(s, p, spell_cost(s, o, p)); !payable do break
+		if _, payable := plan_payment(s, p, spell_cost(s, o, p), 0, nil, Payment{o, true}); !payable do break
 		x += 1
 	}
 	return x
@@ -761,7 +761,7 @@ decline_target :: proc(g: ^Game, p: types.PlayerId) -> bool {
 finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []types.TargetRef) {
 	s := &g.state
 	o := object(s, id)
-	pay_mana(g, p, spell_cost(s, o, p), 0, g.pending.cost_objects[:]) // CR 605.3, 601.2h
+	pay_mana(g, p, spell_cost(s, o, p), 0, g.pending.cost_objects[:], Payment{o, true}) // CR 605.3, 601.2h
 	pay_additional_cost(g, p, o)
 	from := o.zone // where it was cast from: flashback's exile reads it (CR 702.34a)
 	if o.zone == .Command {
@@ -1327,7 +1327,7 @@ additional_cost_payable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^type
 	if c, chooses := object_cost_of(s, p, o, cost); chooses {
 		others := make([dynamic]types.ObjectId, context.temp_allocator)
 		for id in c.choices do if id != o.id do append(&others, id)
-		if !cost_objects_leave_mana(s, p, others[:], c.count, spell_cost(s, o, p), 0) do return false
+		if !cost_objects_leave_mana(s, p, others[:], c.count, spell_cost(s, o, p), 0, Payment{o, true}) do return false
 	}
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
 	cost_parts_of(cost, &parts)

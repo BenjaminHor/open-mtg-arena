@@ -38,7 +38,7 @@ ask_kicker :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) -> bool {
 	if g.pending.kicker_decided do return false
 	if _, has := object_kicker_cost(o); !has do return false
 	o.additional_cost_payment_count = 1
-	_, affordable := plan_payment(&g.state, p, spell_cost(&g.state, o, p))
+	_, affordable := plan_payment(&g.state, p, spell_cost(&g.state, o, p), 0, nil, Payment{o, true})
 	o.additional_cost_payment_count = 0
 	if !affordable {
 		g.pending.kicker_decided = true

@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 228 of 2880 rules implemented (8%), 84 of them tested.**
+**In scope (100-799): 228 of 2880 rules implemented (8%), 85 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -18,7 +18,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 103 starting the game | 32 | 6 (19%) | 0 |
 | 104 ending the game | 30 | 3 (10%) | 1 |
 | 105 colors | 8 | 0 (0%) | 0 |
-| 106 mana | 20 | 2 (10%) | 1 |
+| 106 mana | 20 | 2 (10%) | 2 |
 | 107 numbers and symbols | 49 | 8 (16%) | 3 |
 | 108 cards | 11 | 1 (9%) | 0 |
 | 109 objects | 16 | 2 (13%) | 0 |
@@ -277,7 +277,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 106.4a If any mana remains in a player’s mana pool after mana is spent to pay a cost, that player announces what m...
 - ⬜ 106.4b If a player passes priority (see rule 117) while there is mana in their mana pool, that player announces wh...
 - ⬜ 106.5 If an ability would produce one or more mana of an undefined type, it produces no mana instead.
-- 🟡 106.6 Some spells or abilities that produce mana restrict how that mana can be spent, have an additional effect t...
+- ✅ 106.6 Some spells or abilities that produce mana restrict how that mana can be spent, have an additional effect t...
 - ⬜ 106.6a Some replacement effects increase the amount of mana produced by a spell or ability. In these cases, any re...
 - ⬜ 106.7 Some abilities produce mana based on the type of mana another permanent or permanents “could produce.” The ...
 - ⬜ 106.8 If an effect would add mana represented by a hybrid mana symbol to a player’s mana pool, that player choose...
