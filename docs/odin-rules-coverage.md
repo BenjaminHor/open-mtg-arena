@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 271 of 2880 rules implemented (9%), 122 of them tested.**
+**In scope (100-799): 272 of 2880 rules implemented (9%), 123 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -81,7 +81,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 503 upkeep step | 3 | 1 (33%) | 0 |
 | 504 draw step | 2 | 1 (50%) | 0 |
 | 505 main phase | 10 | 2 (20%) | 1 |
-| 506 combat phase | 29 | 3 (10%) | 1 |
+| 506 combat phase | 29 | 4 (14%) | 2 |
 | 507 beginning of combat step | 2 | 1 (50%) | 0 |
 | 508 declare attackers step | 39 | 9 (23%) | 3 |
 | 509 declare blockers step | 23 | 3 (13%) | 1 |
@@ -1256,10 +1256,10 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 505.6a The main phase is the only phase in which a player can normally cast artifact, creature, enchantment, plane...
 - 🟡 505.6b During either main phase, the active player may play one land card from their hand if the stack is empty, i...
 
-### 506 combat phase (3/29)
+### 506 combat phase (4/29)
 
 - ⬜ 506.1 The combat phase has five steps, which proceed in order: beginning of combat, declare attackers, declare bl...
-- ⬜ 506.2 During the combat phase, the active player is the attacking player; creatures that player controls may atta...
+- ✅ 506.2 During the combat phase, the active player is the attacking player; creatures that player controls may atta...
 - ⬜ 506.2a During the combat phase of a multiplayer game, there may be one or more defending players, depending on the...
 - ⬜ 506.2b In multiplayer games using the shared team turns option, the active team is the attacking team and the nona...
 - ⬜ 506.3 Only a creature can attack or block. Only a player, a planeswalker, or a battle can be attacked.

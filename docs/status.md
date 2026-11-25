@@ -2919,6 +2919,8 @@ Progress:
   shockland prompt answered after a restore finds its land from the prompt. 5,575 -> 5,578 (with Fog's gains).
 - "If that creature would die this turn, exile it instead" (CR 614.6) on an earlier target, used once, ending
   with the turn (kept in Game, exile_instead): 5,578 -> 5,603.
+- Life loss for a target player or opponent, the defending player (CR 506.2) and "its controller": 5,603 ->
+  5,638.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

@@ -162,10 +162,20 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		// A pump aimed at "any target" is a misparsed mass pump: a player can't get +N/+N.
 		return pf && tf && has && eot && (is_self(x.target) || (filter_supported(x.target) && !may_name_player(x.target)))
 	case types.Effect_LoseLife:
-		fixed := quantity_supported(x.amount)
+		// "You lose N life", "target player / target opponent loses N life", "defending player loses N life",
+		// "its controller loses N life".
+		if !quantity_supported(x.amount) do return false
 		t, has := x.target.?
-		_, you := t.(types.TargetFilter_Controller)
-		return fixed && (!has || you)
+		if !has do return true
+		#partial switch y in t {
+		case types.TargetFilter_Controller, types.TargetFilter_Player, types.TargetFilter_Opponent,
+		     types.TargetFilter_DefendingPlayer, types.TargetFilter_ParentTargetController:
+			return true
+		case types.TargetFilter_Typed:
+			_, is_player := player_typed(y._0)
+			return is_player
+		}
+		return false
 	case types.Effect_Token:
 		_, you := x.owner.(types.TargetFilter_Controller)
 		_, parent_controller := x.owner.(types.TargetFilter_ParentTargetController)
@@ -355,6 +365,8 @@ effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 		f = x.target
 	case types.Effect_Draw:
 		f = x.target
+	case types.Effect_LoseLife:
+		f = x.target.? or_else nil
 	case types.Effect_Destroy:
 		f = x.target
 	case types.Effect_GenericEffect:
@@ -942,7 +954,13 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		if pumped != nil && pumped.zone == .Battlefield do pump(g, pumped, pump_value(g, x.power, controller, source, target), pump_value(g, x.toughness, controller, source, target))
 	case types.Effect_LoseLife:
 		n := amount(g, x.amount, controller, source, target)
-		lose_life(s, controller, n)
+		who := controller
+		if pid, ok := target_player(target); ok do who = pid
+		else if t, has := x.target.?; has {
+			// CR 506.2: in a two-player game, the defending player is the attacking player's opponent.
+			if _, defending := t.(types.TargetFilter_DefendingPlayer); defending do who = opponent(s, controller)
+		}
+		lose_life(s, who, n) // CR 119.3
 	case types.Effect_ChangeZone:
 		if moves_found_cards(effect) do move_found_cards(g, x, controller)
 		else if _, from_hand := hand_choice(x); from_hand {

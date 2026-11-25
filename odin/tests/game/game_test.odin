@@ -2917,3 +2917,29 @@ exile_instead_of_dying :: proc(t: ^testing.T) {
 	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
 	testing.expect(t, bears.zone == .Exile, "exiled, not put into the graveyard")
 }
+
+@(test)
+players_lose_life :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 119.3: "Target opponent loses 3 life" (Bump in the Night); "whenever this creature attacks, defending
+	// player loses 1 life and you gain 1 life" (Agate-Blade Assassin; CR 506.2: the attacking player's opponent).
+	testing.expect(t, game.card_supported(&card(t, "Bump in the Night").face))
+	testing.expect(t, game.card_supported(&card(t, "Agate-Blade Assassin").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Swamp", 0, .Battlefield)
+	bump := add(t, g, "Bump in the Night", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = bump.id}))
+	if _, asked := s.waiting_for.(types.WaitingFor_TargetSelection); asked {
+		game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}})
+	}
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, game.player(s, 1).life == 17, "3 life")
+
+	assassin := add(t, g, "Agate-Blade Assassin", 0, .Battlefield)
+	game.begin_step(g, .DeclareAttackers)
+	attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{assassin.id, types.AttackTarget_Player{1}}}
+	testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, game.player(s, 1).life == 16 && game.player(s, 0).life == 21, "defending player loses 1, you gain 1")
+}
