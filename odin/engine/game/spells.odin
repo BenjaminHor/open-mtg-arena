@@ -541,10 +541,12 @@ cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []t
 	if !castable(s, p, o, g.card_db) do return false
 	slots := spell_slot_list(o)
 	g.pending = Pending_Cast{object = id, ability_index = -1}
+	announce_spell(s, p, o)
 	// Targets named with the action fill the slots in order.
 	for t in targets {
 		settle_choice(s, slots[:], &g.pending.choice, p, id)
 		if !slice.contains(slot_legal(s, slots[:], &g.pending.choice, p, id)[:], t) {
+			withdraw_spell(s, id)
 			g.pending = {}
 			return false
 		}
@@ -553,6 +555,7 @@ cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []t
 	if is_modal(o) {
 		// CR 601.2b, 700.2a: the modes are chosen first.
 		if len(targets) > 0 {
+			withdraw_spell(s, id)
 			g.pending = {}
 			return false
 		}
@@ -561,6 +564,25 @@ cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []t
 	}
 	continue_casting(g, p)
 	return true
+}
+
+// CR 601.2a: casting starts by putting the spell on the stack, where it is while its modes, X, costs and targets are
+// chosen (601.2b-h). Its entry is on the stack from now on; the card keeps its place in its zone until it becomes
+// cast (601.2i), so a cast that's reversed (CR 734) has nothing to move back.
+announce_spell :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject) {
+	types.pvec_push(&s.stack, types.StackEntry{id = o.id, source_id = o.id, controller = p, kind = types.StackEntryKind_Spell{card_id = o.card_id}}, copy_entry)
+}
+
+// The spell's entry while it's being cast, taken off the stack: the cast was reversed (CR 734), or it's done and its
+// full entry takes the place.
+withdraw_spell :: proc(s: ^types.GameState, id: types.ObjectId) {
+	n := types.pvec_len(s.stack)
+	if n == 0 do return
+	top := types.pvec_get(s.stack, n - 1)
+	// CR 601.2a: it's the topmost object while it's cast; nothing can be put above it before it's cast.
+	if _, spell := top.kind.(types.StackEntryKind_Spell); !spell || top.id != id do return
+	if o := object(s, id); o == nil || o.zone == .Stack do return // already cast: not an announcement
+	types.pvec_pop(&s.stack, copy_entry)
 }
 
 // CR 601.2b: the announcements in order: kicker, then X; then targets (601.2c) and paying (601.2h).
@@ -716,6 +738,7 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 		s.commander_cast_count[o.id] += 1
 		o.commander_tax = 2 * s.commander_cast_count[o.id]
 	}
+	withdraw_spell(s, id) // its full entry replaces the one it had while being cast (CR 601.2a)
 	move_object(g, id, .Stack)
 	o.cast_from_zone = from
 	o.controller = p

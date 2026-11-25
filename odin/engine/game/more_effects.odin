@@ -2,6 +2,8 @@
 // "each"/"all" effects: "creatures you control get +N/+N", "destroy all creatures", "deal N damage to each creature".
 package game
 
+import "core:fmt"
+import "core:reflect"
 import types "../types"
 
 // "Target creature" or "this", where a permanent is meant (not a player).
@@ -76,9 +78,14 @@ mass_filter_supported :: proc(f: types.TargetFilter) -> bool {
 }
 
 // The permanents an "each"/"all" effect affects, decided as it resolves (CR 608.2c, 611.2c).
-affected_permanents :: proc(s: ^types.GameState, f: types.TargetFilter, controller: types.PlayerId, source: types.ObjectId) -> [dynamic]^types.GameObject {
+affected_permanents :: proc(s: ^types.GameState, f: types.TargetFilter, controller: types.PlayerId, source: types.ObjectId, loc := #caller_location) -> [dynamic]^types.GameObject {
 	out := make([dynamic]^types.GameObject, context.temp_allocator)
-	t := f.(types.TargetFilter_Typed)
+	t, typed := f.(types.TargetFilter_Typed)
+	if !typed {
+		// Callers check mass_filter_supported first; one that doesn't is a bug to fix, not a reason to end the game.
+		fmt.eprintf("affected_permanents: untyped filter %v from %v\n", reflect.union_variant_typeid(f), loc)
+		return out
+	}
 	for id in ids_of(s.battlefield) {
 		o := object(s, id)
 		if object_matches(s, o, t._0, controller, source) do append(&out, o)

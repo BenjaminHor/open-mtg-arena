@@ -1688,3 +1688,27 @@ mana_pool_holds_and_empties :: proc(t: ^testing.T) {
 	wastes2 := add(t, g, "Adarkar Wastes", 0, .Battlefield)
 	testing.expect(t, !game.apply(g, 0, types.GameAction_ActivateAbility{source_id = wastes2.id, ability_index = 1}))
 }
+
+@(test)
+spell_is_on_the_stack_while_cast :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 601.2a: casting a spell starts by putting it on the stack; it's there while its targets are chosen
+	// (601.2c). A cast that's cancelled is reversed (CR 734): the stack is as it was.
+	g := new_game()
+	s := &g.state
+	add(t, g, "Mountain", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	shock := add(t, g, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	_, choosing := s.waiting_for.(types.WaitingFor_TargetSelection)
+	testing.expect(t, choosing && types.pvec_len(s.stack) == 1 && types.pvec_get(s.stack, 0).id == shock.id, "on the stack while targeting")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CancelCast{}))
+	testing.expect(t, types.pvec_len(s.stack) == 0 && shock.zone == .Hand, "cancelled: as before")
+
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	testing.expect(t, types.pvec_len(s.stack) == 1 && shock.zone == .Stack, "cast: one entry, the spell's")
+	e := types.pvec_get(s.stack, 0)
+	k, _ := e.kind.(types.StackEntryKind_Spell)
+	testing.expect(t, k.ability != nil, "the full entry, with its targets")
+}

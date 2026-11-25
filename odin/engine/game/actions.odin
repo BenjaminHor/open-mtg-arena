@@ -130,6 +130,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 				o.cost_x_paid = nil // CR 601.2: the cast is undone
 				o.additional_cost_payment_count = 0
 			}
+			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed
 			g.pending = {}
 			give_priority(g, p)
 			return true
@@ -170,6 +171,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			return decide_kicker(g, p, a.index)
 		case types.GameAction_CancelCast:
 			if o := object(s, g.pending.object); o != nil do o.additional_cost_payment_count = 0
+			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed
 			g.pending = {}
 			give_priority(g, p)
 			return true
@@ -185,6 +187,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		case types.GameAction_SelectModes:
 			return select_modes(g, p, w, a.indices[:])
 		case types.GameAction_CancelCast:
+			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed
 			g.pending = {}
 			give_priority(g, p)
 			return true
@@ -195,6 +198,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			return choose_x(g, p, w, a.value)
 		case types.GameAction_CancelCast:
 			if o := object(s, g.pending.object); o != nil do o.cost_x_paid = nil
+			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed
 			g.pending = {}
 			give_priority(g, p)
 			return true
@@ -205,6 +209,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			return answer_cost_choice(g, p, w, a.cards[:])
 		case types.GameAction_CancelCast:
 			// CR 602.2 / 601.2: an activation that can't be finished is undone.
+			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed
 			g.pending = {}
 			give_priority(g, p)
 			return true

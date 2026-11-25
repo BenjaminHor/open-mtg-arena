@@ -81,13 +81,16 @@ for (const file of files) {
   }
   const names = new Set();
   for (const step of parsed) for (const o of Object.values(step.pre?.objects ?? {})) if (o && !o.is_token && o.name && o.zone !== "Library") names.add(o.name); // cards a test puts in play, not its filler library
+  let inStep = false; // the engine's own state matches the recording after the last step
   for (const [i, step] of parsed.entries()) {
     const pre = step.pre ?? prev;
     prev = step.post;
     steps++;
     let why = null;
     try {
-      engine.restore_game_state(JSON.stringify(pre));
+      // Lockstep: a step without its own starting state continues from the engine's state when the last step
+      // matched, so a decision in progress (a cast waiting for its targets) carries over as the engine keeps it.
+      if (step.pre || !inStep) engine.restore_game_state(JSON.stringify(pre));
       const r = submit(step.actor ?? 0, step.action);
       if (r.accepted !== step.ok) why = { path: `accepted ${step.action?.type ?? "?"} (${step.ok ? "rejected here" : "accepted here"})`, a: step.ok, b: `${r.accepted} ${r.why ?? ""}` };
       // The full state (get_game_state hides what the viewer can't see, like the library).
@@ -95,6 +98,7 @@ for (const file of files) {
     } catch (e) {
       why = { path: "error", a: null, b: String(e.message ?? e).slice(0, 200) };
     }
+    inStep = !why;
     if (why) {
       ok = false;
       firstFail ??= { step: i, ...why };

@@ -76,7 +76,7 @@ scope_supported :: proc(scope: types.ObjectScope) -> bool {
 }
 
 // The value as the instruction is carried out. `target` is the ability's first object target, for "its power".
-quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: types.PlayerId, source: types.ObjectId, target: types.ObjectId) -> int {
+quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: types.PlayerId, source: types.ObjectId, target: types.ObjectId, loc := #caller_location) -> int {
 	#partial switch x in q {
 	case types.QuantityExpr_Fixed:
 		return int(x.value)
@@ -89,7 +89,7 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 	case types.QuantityExpr_Ref:
 		#partial switch r in x.qty {
 		case types.QuantityRef_ObjectCount:
-			return len(affected_permanents(s, r.filter, controller, source))
+			return len(affected_permanents(s, r.filter, controller, source, loc))
 		case types.QuantityRef_Power:
 			if o := scope_object(s, r.scope, source, target); o != nil do return power_of(o)
 		case types.QuantityRef_Toughness:
