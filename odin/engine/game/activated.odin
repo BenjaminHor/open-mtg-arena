@@ -117,6 +117,8 @@ cost_supported :: proc(c: types.AbilityCost) -> bool {
 	case types.AbilityCost_PayLife:
 		_, fixed := fixed_quantity(x.amount)
 		return fixed
+	case types.AbilityCost_Loyalty:
+		return true // CR 606.4 (checked and paid below)
 	case types.AbilityCost_Exile:
 		// "Exile this card from your graveyard."
 		f, has := x.filter.?
@@ -259,6 +261,12 @@ can_activate :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: i
 		case types.AbilityCost_PayLife:
 			n, _ := fixed_quantity(x.amount)
 			if int(player(s, p).life) < n do return refuse("not enough life") // CR 119.4: a player can pay life only up to their total
+		case types.AbilityCost_Loyalty:
+			// CR 606.3: main phase, own turn, empty stack, and once per turn for the permanent's loyalty abilities.
+			if !sorcery_timing(s, p) do return refuse("loyalty ability: sorcery timing")
+			if loyalty_ability_used(s, o) do return refuse("a loyalty ability of it was activated this turn")
+			// CR 606.6: removing counters it doesn't have can't be paid.
+			if x.amount < 0 && int(o.loyalty.? or_else 0) < int(-x.amount) do return refuse("not enough loyalty")
 		case types.AbilityCost_Mana:
 			mana = x.cost
 		}
@@ -341,6 +349,10 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 		case types.AbilityCost_PayLife:
 			n, _ := fixed_quantity(x.amount)
 			lose_life(s, p, n) // CR 119.4: paying life is losing it
+		case types.AbilityCost_Loyalty:
+			// CR 606.4: put on or remove that many loyalty counters.
+			l := int(o.loyalty.? or_else 0) + int(x.amount)
+			o.loyalty = u32(max(l, 0))
 		}
 	}
 	// The chosen permanents are sacrificed and cards discarded after the mana is paid (CR 601.2g lets mana
@@ -428,4 +440,17 @@ cost_choice_leaves_mana :: proc(g: ^Game, p: types.PlayerId, chosen: []types.Obj
 	if mana == nil do return true
 	_, payable := plan_payment(s, p, mana, o.id if taps_self else 0, chosen, Payment{o, false})
 	return payable
+}
+
+// Whether a loyalty ability of this permanent was activated this turn (CR 606.3).
+loyalty_ability_used :: proc(s: ^types.GameState, o: ^types.GameObject) -> bool {
+	if o.abilities == nil do return false
+	for &a, i in o.abilities^ {
+		cost, has := a.cost.?
+		if !has do continue
+		parts := make([dynamic]types.AbilityCost, context.temp_allocator)
+		cost_parts(cost, &parts)
+		for part in parts do if _, loyalty := part.(types.AbilityCost_Loyalty); loyalty && activations(s.activated_abilities_this_turn, o, i) > 0 do return true
+	}
+	return false
 }

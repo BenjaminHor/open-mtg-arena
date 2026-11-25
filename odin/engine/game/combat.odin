@@ -31,7 +31,10 @@ ask_attackers :: proc(g: ^Game) -> bool {
 	for o in permanents_of(s, s.active_player) do if can_attack(g, o) do append(&valid, o.id)
 	if len(valid) == 0 do return false
 	targets: [dynamic]types.AttackTarget
-	append(&targets, types.AttackTarget_Player{opponent(s, s.active_player)})
+	defender := opponent(s, s.active_player)
+	append(&targets, types.AttackTarget_Player{defender})
+	// CR 508.1b: or a planeswalker the defending player controls.
+	for o in permanents_of(s, defender) do if is_type(o, .Planeswalker) do append(&targets, types.AttackTarget_Planeswalker{o.id})
 	s.waiting_for = types.WaitingFor_DeclareAttackers{player = s.active_player, valid_attacker_ids = valid, valid_attack_targets = targets}
 	return true
 }
@@ -45,8 +48,16 @@ declare_attackers :: proc(g: ^Game, attacks: []types.Tuple2(types.ObjectId, type
 	for a in attacks {
 		o := object(s, a._0)
 		if o == nil || o.zone != .Battlefield || !can_attack(g, o) || seen[a._0] do return false
-		t, to_player := a._1.(types.AttackTarget_Player)
-		if !to_player || t._0 != defender do return false
+		#partial switch t in a._1 {
+		case types.AttackTarget_Player:
+			if t._0 != defender do return false
+		case types.AttackTarget_Planeswalker:
+			// CR 508.1b: a planeswalker the defending player controls.
+			pw := object(s, t._0)
+			if pw == nil || pw.zone != .Battlefield || pw.controller != defender || !is_type(pw, .Planeswalker) do return false
+		case:
+			return false
+		}
 		seen[a._0] = true
 	}
 	// CR 508.1d: a creature that attacks each combat if able must be declared when it can attack.
@@ -289,20 +300,22 @@ damage_pass :: proc(g: ^Game, combat: ^types.CombatState, pass: Damage_Pass) {
 		n := power_of(attacker)
 		if n <= 0 do continue
 		if !a.blocked {
-			hits_target, _ := a.attack_target.(types.AttackTarget_Player)
-			append(&hits, Hit{a.object_id, types.TargetRef_Player{hits_target._0}, n})
+			// CR 510.1a: to the player or planeswalker it's attacking; a planeswalker that left (or stopped being
+			// one) is no longer attacked, so no damage (CR 506.4).
+			if t, ok := attacked_recipient(s, a); ok do append(&hits, Hit{a.object_id, t, n})
 			continue
 		}
 		// CR 510.1c: the division its controller chose, when there was one to make.
 		if choice, chosen := g.damage_progress.choices[a.object_id]; chosen {
 			for x in choice.to_blockers do if x._1 > 0 do append(&hits, Hit{a.object_id, types.TargetRef_Object{x._0}, int(x._1)})
-			if choice.to_player > 0 do append(&hits, Hit{a.object_id, types.TargetRef_Player{a.defending_player}, int(choice.to_player)})
+			if t, ok := attacked_recipient(s, a); ok && choice.to_player > 0 do append(&hits, Hit{a.object_id, t, int(choice.to_player)})
 			continue
 		}
 		alive := alive_blockers(s, combat, a.object_id)
 		if len(alive) == 0 {
 			if has_keyword(attacker, types.Keyword_Trample) {
-				append(&hits, Hit{a.object_id, types.TargetRef_Player{a.defending_player}, n})
+				// CR 702.19c, 702.19e: to the player or planeswalker it's attacking.
+				if t, ok := attacked_recipient(s, a); ok do append(&hits, Hit{a.object_id, t, n})
 			}
 			continue // CR 510.1c: a blocked creature with no blockers left deals no damage
 		}
@@ -394,4 +407,18 @@ check_state_based_actions :: proc(g: ^Game) {
 		if len(remaining) == 1 do winner = remaining[0]
 		s.waiting_for = types.WaitingFor_GameOver{winner = winner}
 	}
+}
+
+// What an attacking creature deals its combat damage to when it isn't (all) blocked: the player, or the
+// planeswalker it attacks while that's still a planeswalker on the battlefield (CR 506.4).
+attacked_recipient :: proc(s: ^types.GameState, a: types.AttackerInfo) -> (types.TargetRef, bool) {
+	#partial switch t in a.attack_target {
+	case types.AttackTarget_Planeswalker:
+		pw := object(s, t._0)
+		if pw == nil || pw.zone != .Battlefield || !is_type(pw, .Planeswalker) do return nil, false
+		return types.TargetRef_Object{t._0}, true
+	case types.AttackTarget_Player:
+		return types.TargetRef_Player{t._0}, true
+	}
+	return types.TargetRef_Player{a.defending_player}, true
 }

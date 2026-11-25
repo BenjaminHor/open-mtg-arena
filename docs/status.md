@@ -2930,6 +2930,10 @@ Progress:
 - Clone ("you may have this enter as a copy of any creature", CR 707.9): Rust's CopyTargetChoice prompt as it
   enters (ChooseTarget, none to decline), the copied card's printed characteristics (CR 707.2). Copies with
   exceptions are refused; the copied creature's own entering replacements don't apply yet. 5,748 -> 5,756.
+- Planeswalkers: they enter with their printed loyalty (CR 306.5b; o.loyalty, as the state has it), loyalty
+  abilities are paid in loyalty at sorcery speed once per turn per permanent (CR 606.3-606.6), and creatures can
+  attack them (CR 508.1b; combat damage to the planeswalker attacked, trample's excess too, none if it left). Most
+  planeswalkers still wait on their abilities' effects. 5,756 -> 5,762; rules 285.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

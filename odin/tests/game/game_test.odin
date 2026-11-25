@@ -3024,3 +3024,46 @@ clone_enters_as_a_copy :: proc(t: ^testing.T) {
 	c = run(t, false)
 	testing.expect(t, c.zone == .Graveyard, "declined: a 0/0, put into the graveyard")
 }
+
+@(test)
+planeswalker_loyalty_and_attacks :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 306.5b: a planeswalker enters with its printed loyalty. CR 606.3-606.4: a loyalty ability, at sorcery
+	// speed, once per turn for that permanent, adds or removes loyalty as its cost. CR 508.1b, 510.1a: a creature
+	// can attack it, and its combat damage removes loyalty (CR 120.3c).
+	testing.expect(t, game.card_supported(&card(t, "Jace Beleren").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Island", 0, .Battlefield)
+	ajani := add(t, g, "Jace Beleren", 0, .Hand) // {1}{U}{U}, loyalty 3; +2: Each player draws a card
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = ajani.id}))
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, ajani.zone == .Battlefield && ajani.loyalty.? == 3, "enters with 3 loyalty")
+	hand := types.pvec_len(game.player(s, 1).hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = ajani.id, ability_index = 0}))
+	testing.expect(t, ajani.loyalty.? == 5, "+2 paid as it's activated")
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, types.pvec_len(game.player(s, 1).hand) == hand + 1, "each player drew")
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ActivateAbility{source_id = ajani.id, ability_index = 0}), "once per turn")
+
+	// The opponent's turn: their Bears attack Jace.
+	s.active_player, s.priority_player = 1, 1
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	game.begin_step(g, .DeclareAttackers)
+	w, asked := s.waiting_for.(types.WaitingFor_DeclareAttackers)
+	pw_offered := false
+	if asked do for target in w.valid_attack_targets do if p, is_pw := target.(types.AttackTarget_Planeswalker); is_pw && p._0 == ajani.id do pw_offered = true
+	testing.expect(t, pw_offered, "Jace can be attacked")
+	attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{bears.id, types.AttackTarget_Planeswalker{ajani.id}}}
+	testing.expect(t, game.apply(g, 1, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
+	for _ in 0 ..< 8 {
+		if s.phase >= .EndCombat do break
+		if _, priority := s.waiting_for.(types.WaitingFor_Priority); !priority {
+			act, _ := game.ai_action(g, s.priority_player)
+			game.apply(g, s.priority_player, act)
+			continue
+		}
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, ajani.loyalty.? == 3 && game.player(s, 0).life == 20, "2 damage to Jace, none to its controller")
+}
