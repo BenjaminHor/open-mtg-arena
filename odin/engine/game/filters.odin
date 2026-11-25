@@ -185,14 +185,14 @@ object_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.Typed
 		case types.FilterProp_Another:
 			if o.id == source do return false
 		case types.FilterProp_IsChosenCreatureType:
-			// "Creatures of the chosen type": the type chosen for the ability's source (CR 614.12); none chosen, none.
-			name, chosen := chosen_creature_type(object(s, source))
+			// "Creatures of the chosen type": the type chosen for the ability's source (CR 614.12, 607.2d); none chosen, none.
+			name, chosen := chosen_creature_type(chooser_of(s, source))
 			if !chosen || !has_subtype(o, name) do return false
 		case types.FilterProp_IsChosenColor:
-			c, chosen := chosen_color(object(s, source))
+			c, chosen := chosen_color(chooser_of(s, source))
 			if !chosen || !has_color(o, c) do return false
 		case types.FilterProp_IsChosenCardType:
-			t, chosen := chosen_card_type(object(s, source))
+			t, chosen := chosen_card_type(chooser_of(s, source))
 			if !chosen || !is_type(o, t) do return false
 		case types.FilterProp_Named:
 			if o.name != x.name do return false // CR 201.2

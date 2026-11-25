@@ -20,6 +20,7 @@ begin_first_turn :: proc(g: ^Game) {
 
 begin_turn :: proc(g: ^Game, active: types.PlayerId) {
 	s := &g.state
+	end_turn_auto_passes(s, active)
 	s.active_player = active
 	s.lands_played_this_turn = 0
 	s.spells_cast_this_turn = 0

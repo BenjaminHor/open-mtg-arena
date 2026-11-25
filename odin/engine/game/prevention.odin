@@ -114,7 +114,7 @@ exiled_instead :: proc(g: ^Game, o: ^types.GameObject) -> bool {
 	return false
 }
 
-// ---- Static prevention (CR 615.1a, 615.6): "Prevent all damage that would be dealt to this creature", "... to
+// ---- Static prevention (CR 615.1a, 615.6, 609.7c): "Prevent all damage that would be dealt to this creature", "... to
 // creatures", "prevent all combat damage that would be dealt by enchanted creature" ----
 
 // The replacement's part this engine reads: a permanent's static "prevent all [combat] damage" naming what it
@@ -145,9 +145,23 @@ prevention_side_supported :: proc(f: types.TargetFilter) -> bool {
 	return false
 }
 
-// Whether `o` is what a side of the prevention names, for the permanent `holder` with the ability.
+// Whether a side of the prevention names "enchanted / equipped creature(s)": the creature the holder is attached to,
+// so only for an Aura or Equipment (Wall of Putrid Flesh's "enchanted creatures" means any enchanted creature,
+// which isn't read yet).
+prevention_reads_attachment :: proc(r: types.ReplacementDefinition) -> bool {
+	reads :: proc(f: Maybe(types.TargetFilter)) -> bool {
+		x, has := f.?
+		if !has do return false
+		return names_attachment(x)
+	}
+	return reads(r.valid_card) || reads(r.damage_source_filter)
+}
+
+// Whether `o` is what a side of the prevention names, for the permanent `holder` with the ability. `anywhere`: the
+// source side, whose qualities count wherever the source is (CR 609.7c), as it last existed if it has left the
+// battlefield (CR 113.7a).
 @(private = "file")
-prevention_side_matches :: proc(s: ^types.GameState, f: types.TargetFilter, o: ^types.GameObject, holder: ^types.GameObject) -> bool {
+prevention_side_matches :: proc(s: ^types.GameState, f: types.TargetFilter, o: ^types.GameObject, holder: ^types.GameObject, anywhere := false) -> bool {
 	if o == nil do return false
 	#partial switch x in f {
 	case types.TargetFilter_SelfRef:
@@ -156,6 +170,11 @@ prevention_side_matches :: proc(s: ^types.GameState, f: types.TargetFilter, o: ^
 		host := host_of(s, holder)
 		return host != nil && host.id == o.id
 	case types.TargetFilter_Typed:
+		if anywhere {
+			was := o
+			if o.zone != .Battlefield do if lki := last_known(o.id); lki != nil do was = lki
+			return object_matches(s, was, x._0, holder.controller, holder.id)
+		}
 		return o.zone == .Battlefield && object_matches(s, o, x._0, holder.controller, holder.id)
 	}
 	return false
@@ -177,7 +196,7 @@ statically_prevented :: proc(g: ^Game, source: types.ObjectId, target: types.Tar
 				if scope == .NoncombatOnly && combat do continue
 			}
 			if f, has := r.valid_card.?; has && !prevention_side_matches(s, f, recipient, holder) do continue
-			if f, has := r.damage_source_filter.?; has && !prevention_side_matches(s, f, src, holder) do continue
+			if f, has := r.damage_source_filter.?; has && !prevention_side_matches(s, f, src, holder, anywhere = true) do continue
 			return true
 		}
 	}

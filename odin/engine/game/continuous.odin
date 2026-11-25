@@ -373,7 +373,7 @@ condition_holds :: proc(s: ^types.GameState, source: ^types.GameObject, c: Maybe
 	case types.StaticCondition_DuringYourTurn:
 		return s.active_player == source.controller
 	case types.StaticCondition_ChosenLabelIs:
-		// "As long as Khans was chosen" (the Sieges, CR 614.12).
+		// "As long as Khans was chosen" (the Sieges: a choice between words, linked to the ability that reads it, CR 607.2f).
 		label, chosen := chosen_label(source)
 		return chosen && label == x.label
 	case types.StaticCondition_IsPresent:

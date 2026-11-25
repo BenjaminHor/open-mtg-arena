@@ -3081,6 +3081,9 @@ Progress:
 - Static prevention: "prevent all [combat] damage that would be dealt to [this / creatures / enchanted creature]"
   and "... dealt by enchanted creature" (CR 615.1a, 615.6; prevention.odin). One whose limit the card data drops
   ("3 or less damage") stays unsupported. 7,070 -> 7,078.
+- Fifth rules review fixed (Known issues), 7,078 -> 7,074 (refused cards); the app's "Pass to end of turn" button
+  works (auto_pass.odin). Fixture replay at 8a539ae: 792 of 11,160 pass (760 at 3aff280). Rules checklist: 354 of
+  2,880 in scope implemented, 180 tested.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
@@ -3157,6 +3160,26 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   gap recordings only once the engine is fleshed out (ask then).
 
 ## Known issues
+- (2026-11-25, fifth rules review of the Odin engine, 42be933..8a539ae; all fixed, tests fifth_review_fixes,
+  clone_makes_the_copied_cards_entry_choice, chosen_type_looks_back_when_its_source_dies; the data-dropped cards,
+  Gilraen and Dawn-Blessed Pennant refused in MISPARSED_CARDS, "chosen at random" refused, "enchanted creatures"
+  read only on an Aura or Equipment) Engine: (1) static prevention
+  checks a source's qualities only on the battlefield (CR 609.7c: also sources elsewhere, by last known info); (2)
+  "dealt by enchanted creatures" read as "the creature this is attached to" (Wall of Putrid Flesh, Enchanted Being);
+  (3) Guardian Naga's "during your turn" dropped by the data; (4) "of the chosen type" filters read the live source,
+  so a dies trigger that looks back (CR 603.10a) loses the choice (Species Specialist in a wrath); (5) a Clone
+  copying a card with "as this enters" (choose, enters tapped, with counters) skips it (CR 707.5, 707.6); (6)
+  Gilraen's delayed return never moves the exiled card (origin Battlefield in the data); (7) Dawn-Blessed Pennant
+  reads a chosen card type but chooses a creature type; (8) loyalty counters put by PutCounter go to o.counters, not
+  o.loyalty (Settle the Score, Ajani the Greathearted, ...); (9) a reveal-land prompt can't be answered in a restored
+  game. Data drops to refuse: Captivating Crossroads, Camato Scout, Buzzing Whack-a-Doodle, Riptide Replicator,
+  Volrath's Laboratory, Sarpadian Empires Vol. VII, Pompous Gadabout, Nick Fury Spymaster, Quicksilver Servitor.
+  Citations: 508.4 (not 508.4c) at combat.odin enter_attacking, 609.7c for static prevention, 614.12a for entry
+  choices, 614.12c/607 for chosen labels. Checked correct: triggered mana abilities (none supported that trigger
+  from mana abilities, CR 605.1b), Nth-draw reset, entry-choice timing, finality, decayed, sacrifice-only mana.
+- (2026-11-25, app on the Odin engine, Playwright) The "Pass" button (pass to the end of the turn) did nothing: the
+  engine ignored SetAutoPass, so a game never left the first main phase that way. Fixed: auto_pass.odin keeps the
+  standing passes and phase stops in the state and passes for the player (test pass_to_the_end_of_the_turn).
 - (2026-11-25, fourth rules review of the Odin engine, 973a688..82ce148) All eight fixed, each with a test: a
   triggered ability divides damage or counters as it's put on the stack (CR 603.3d, 601.2d); "its controller" and
   "its power" of a target that left read its last known information (608.2h); a transformed permanent has no mana

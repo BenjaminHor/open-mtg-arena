@@ -83,6 +83,7 @@ apply :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> bool {
 	defer action_events = nil
 	ok := apply_action(g, p, action)
 	if ok {
+		run_auto_pass(g) // the standing passes of whoever now has priority
 		apply_continuous_effects(g)
 		sync_decider(&g.state)
 	}
@@ -102,11 +103,21 @@ sync_decider :: proc(s: ^types.GameState) {
 apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> bool {
 	s := &g.state
 	if game_over(s) do return false
-	// A player's own settings (where to stop, passing preferences, the order of their hand) change no game state
-	// here: the client keeps them, and the engine doesn't auto-pass for anyone.
+	// A player's own settings. Standing passes and where to stop are kept in the state, and the engine passes for
+	// the player (auto_pass.odin); the others (passing preferences, the order of their hand) the client keeps.
 	#partial switch a in action {
-	case types.GameAction_SetPhaseStops, types.GameAction_SetAutoPass, types.GameAction_CancelAutoPass,
-	     types.GameAction_SetPriorityPassingMode, types.GameAction_SetPriorityYield, types.GameAction_SetMayTriggerAutoChoice,
+	case types.GameAction_SetAutoPass:
+		return set_auto_pass(g, p, a.mode)
+	case types.GameAction_CancelAutoPass:
+		delete_key(&s.auto_pass, p)
+		return true
+	case types.GameAction_SetPhaseStops:
+		if old, had := s.phase_stops[p]; had do delete(old)
+		stops := make([dynamic]types.PhaseStop)
+		append(&stops, ..a.stops[:])
+		s.phase_stops[p] = stops
+		return true
+	case types.GameAction_SetPriorityPassingMode, types.GameAction_SetPriorityYield, types.GameAction_SetMayTriggerAutoChoice,
 	     types.GameAction_SetTriggerOrderTemplate, types.GameAction_SetReplacementAutoChoice, types.GameAction_ReorderHand,
 	     types.GameAction_UnAction:
 		return true

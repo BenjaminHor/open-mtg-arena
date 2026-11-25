@@ -93,6 +93,7 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 		lki^ = o^
 		lki.counters = slice.clone_to_dynamic(o.counters[:])
 		lki.attachments = slice.clone_to_dynamic(o.attachments[:])
+		lki.chosen_attributes = slice.clone_to_dynamic(o.chosen_attributes[:])
 	}
 	if from == .Exile do clear(&o.casting_permissions) // CR 400.7: a new object, without the permission
 	o.zone = to

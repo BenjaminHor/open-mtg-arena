@@ -33,6 +33,7 @@ ask_attackers :: proc(g: ^Game) -> bool {
 	valid: [dynamic]types.ObjectId
 	for o in permanents_of(s, s.active_player) do if can_attack(g, o) do append(&valid, o.id)
 	if len(valid) == 0 do return false
+	if passing_the_turn(s, s.active_player) do return false // passing to the end of the turn: no attackers
 	targets: [dynamic]types.AttackTarget
 	defender := opponent(s, s.active_player)
 	append(&targets, types.AttackTarget_Player{defender})
@@ -436,7 +437,7 @@ attacked_recipient :: proc(g: ^Game, a: types.AttackerInfo) -> (types.TargetRef,
 // A creature put onto the battlefield attacking (CR 508.4): it attacks the defending player (its controller's
 // choice of defender, CR 508.4; the engine picks the player). Only a creature (CR 506.3a), only the attacking
 // player's (CR 506.3b), only during combat. It was never declared as an attacker, so "whenever it attacks" doesn't
-// trigger (CR 508.3a, 508.4c).
+// trigger (CR 508.3a, 508.4).
 enter_attacking :: proc(s: ^types.GameState, o: ^types.GameObject) {
 	c, in_combat := &s.combat.?
 	if !in_combat || s.active_player != o.controller || !is_type(o, .Creature) do return

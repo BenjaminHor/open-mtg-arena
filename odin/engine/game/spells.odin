@@ -25,6 +25,18 @@ MISPARSED_CARDS :: [?]string{
 	"Phelia, Exuberant Shepherd", // its +1/+1 counter sits outside the delayed ability and without its condition
 	"Shallow Grave", // "the top creature card of your graveyard" is read as a target
 	"Vizier of Deferment", // "if it attacked or blocked this turn" is dropped
+	// Fifth rules review (2026-11-25): parts of the Oracle text the data dropped or changed.
+	"Guardian Naga", // "during your turn" on its prevention
+	"Captivating Crossroads", // "during your first three turns ... if you were the starting player"
+	"Buzzing Whack-a-Doodle", // the opponent's secret choice; all three abilities unconditional
+	"Riptide Replicator", // the token "of the chosen color and type", and the creature-type choice
+	"Volrath's Laboratory", // the same
+	"Sarpadian Empires, Vol. VII", // the token of the chosen type
+	"Pompous Gadabout", // "creatures that don't have a name" read as any creature
+	"Nick Fury, Spymaster", // "gains indestructible until end of turn"
+	"Quicksilver Servitor", // "from among cards put into your hand this turn"
+	"Dawn-Blessed Pennant", // reads a chosen card type; the card chooses a creature type
+	"Gilraen, Dúnedain Protector", // the delayed return's origin (battlefield) contradicts the exiled card
 }
 
 misparsed :: proc(name: string) -> bool {
@@ -40,6 +52,10 @@ card_supported :: proc(face: ^types.CardFace, back_face := false) -> bool {
 		x_defined = has_x(face.mana_cost)
 		defer x_defined = false
 		for r in face.replacements do if !replacement_supported(r) do return false
+		// "Prevent ... dealt by enchanted creature": an Aura's or Equipment's own host only.
+		for r in face.replacements do if static_prevention_supported(r) && prevention_reads_attachment(r) {
+			if !slice.contains(face.card_type.subtypes[:], "Aura") && !slice.contains(face.card_type.subtypes[:], "Equipment") do return false
+		}
 	}
 	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !cost_modifier_supported(st) do return false
 	for t in face.triggers do if !trigger_supported(t) do return false
@@ -1388,6 +1404,9 @@ card_gaps :: proc(face: ^types.CardFace, back_face := false) -> [dynamic]string 
 	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !cost_modifier_supported(st) do append(&out, static_gap(st))
 	x_defined = has_x(face.mana_cost) // CR 107.3m, as card_supported checks it
 	for r in face.replacements do if !replacement_supported(r) do append(&out, name("replacement:", r.event))
+	for r in face.replacements do if static_prevention_supported(r) && prevention_reads_attachment(r) {
+		if !slice.contains(face.card_type.subtypes[:], "Aura") && !slice.contains(face.card_type.subtypes[:], "Equipment") do append(&out, "replacement:DamageDone (enchanted creatures)")
+	}
 	x_defined = false
 	if !additional_cost_supported(face) do append(&out, "additional cost")
 	if !modal_supported(face) do append(&out, "modal")

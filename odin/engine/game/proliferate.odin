@@ -47,7 +47,7 @@ answer_proliferate :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_Prol
 			o := object(s, x._0)
 			kinds := slice.clone(o.counters[:], context.temp_allocator)
 			for c in kinds do add_counters(o, c._0, 1)
-			if l, has := o.loyalty.?; has && l > 0 do o.loyalty = l + 1
+			if (o.loyalty.? or_else 0) > 0 do add_counters(o, types.CounterType_Loyalty{}, 1)
 		case types.TargetRef_Player:
 			pl := player(s, x._0)
 			if pl.poison_counters > 0 do pl.poison_counters += 1

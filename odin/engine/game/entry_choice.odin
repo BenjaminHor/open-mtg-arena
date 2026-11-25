@@ -1,7 +1,8 @@
 package game
 
 // "As this enters, choose a color / a creature type / ..." (CR 614.12, 614.1c): a replacement effect that makes a
-// choice as the permanent enters; the choice is kept on the permanent (its chosen attributes) for its other
+// choice as the permanent enters (made before it enters, CR 614.12a; the engine asks before anyone gets priority,
+// and nothing can see the permanent in between); the choice is kept on the permanent (its chosen attributes) for its other
 // abilities to read ("of the chosen color", "creatures of the chosen type"). CR 400.7: a new object, after a zone
 // change, has no chosen attributes.
 
@@ -16,7 +17,7 @@ entry_choice :: proc(r: types.ReplacementDefinition) -> (types.ChoiceType, bool)
 	if dest, has := r.destination_zone.?; !has || dest != .Battlefield do return nil, false
 	if f, has := r.valid_card.?; !has || !is_self(f) do return nil, false
 	c, is_choose := r.execute.effect^.(types.Effect_Choose)
-	if !is_choose do return nil, false
+	if !is_choose || c.selection == .Random do return nil, false // "chosen at random": not yet
 	if c.chooser != nil {
 		if _, you := c.chooser.(types.ControllerRef_You); !you do return nil, false
 	}
@@ -282,13 +283,33 @@ ask_entry_reveal :: proc(g: ^Game, after: types.PlayerId) -> bool {
 // The answer: one of the cards (revealed; it enters untapped), or none (it enters tapped).
 answer_entry_reveal :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_RevealChoice, chosen: []types.ObjectId) -> bool {
 	s := &g.state
-	if p != w.player || len(chosen) > 1 || len(g.entry_reveals) == 0 do return false
+	if p != w.player || len(chosen) > 1 do return false
 	for id in chosen do if !slice.contains(w.cards[:], id) do return false
-	o := object(s, g.entry_reveals[0])
+	o: ^types.GameObject
+	after := s.active_player
+	if len(g.entry_reveals) > 0 {
+		o = object(s, g.entry_reveals[0])
+		ordered_remove(&g.entry_reveals, 0)
+		after = g.entry_after
+	} else {
+		// A restored game: the prompt alone names the player; the land is their latest permanent with the
+		// reveal, entered this turn (lands enter one at a time).
+		for perm in permanents_of(s, p) {
+			if _, reveals := entry_reveal_of(perm); !reveals || perm.entered_battlefield_turn != s.turn_number do continue
+			if o == nil || perm.timestamp > o.timestamp do o = perm
+		}
+	}
 	if o == nil do return false
 	if len(chosen) == 0 do o.tapped = true
-	ordered_remove(&g.entry_reveals, 0)
 	s.waiting_for = nil
-	give_priority(g, g.entry_after)
+	give_priority(g, after)
 	return true
+}
+
+// The object whose choice an ability reads: its source, or, once the source has left the battlefield, the source as
+// it last existed there ("whenever another creature of the chosen type dies" looking back, CR 603.10a).
+chooser_of :: proc(s: ^types.GameState, source: types.ObjectId) -> ^types.GameObject {
+	o := object(s, source)
+	if o != nil && o.zone != .Battlefield do if lki := last_known(source); lki != nil do return lki
+	return o
 }

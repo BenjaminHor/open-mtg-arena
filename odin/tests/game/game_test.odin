@@ -4770,3 +4770,123 @@ static_prevention_of_damage :: proc(t: ^testing.T) {
 	game.deal_damage(g2, other.id, types.TargetRef_Object{host.id}, 1, false)
 	testing.expect(t, host.damage_marked == 1, "noncombat damage isn't")
 }
+
+@(test)
+pass_to_the_end_of_the_turn :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// The app's "Pass" button: a standing pass until the end of the turn. The engine passes for the player each time
+	// they'd get priority (CR 117.3d); the opponent still passes for themselves. When the turn ends, so does the
+	// standing pass.
+	g := new_game()
+	s := &g.state
+	add(t, g, "Grizzly Bears", 0, .Battlefield) // could attack: passing the turn declares no attackers
+	testing.expect(t, game.apply(g, 0, types.GameAction_SetAutoPass{mode = types.AutoPassRequest_UntilTurnBoundary{until = .EndOfCurrentTurn}}))
+	for _ in 0 ..< 40 {
+		if s.active_player == 1 do break
+		w, priority := s.waiting_for.(types.WaitingFor_Priority)
+		testing.expectf(t, priority && w.player == 1, "only the opponent is asked: %v", s.waiting_for)
+		if !priority || w.player != 1 do break
+		testing.expect(t, game.apply(g, 1, types.GameAction_PassPriority{}))
+	}
+	testing.expect(t, s.active_player == 1, "the turn passed")
+	_, still := s.auto_pass[0]
+	testing.expect(t, !still, "the standing pass ended with the turn")
+	testing.expect(t, s.players[1].life == 20, "no attack was made")
+
+	// "Resolve the stack": passes until the stack is empty, then stops.
+	g2 := new_game()
+	s2 := &g2.state
+	add(t, g2, "Mountain", 1, .Battlefield)
+	shock := add(t, g2, "Shock", 1, .Hand)
+	s2.priority_player = 1
+	s2.waiting_for = types.WaitingFor_Priority{player = 1}
+	testing.expect(t, game.apply(g2, 1, types.GameAction_CastSpell{object_id = shock.id}))
+	if _, choosing := s2.waiting_for.(types.WaitingFor_TargetSelection); choosing {
+		testing.expect(t, game.apply(g2, 1, types.GameAction_ChooseTarget{target = types.TargetRef_Player{0}}))
+	}
+	// The caster passes; then player 0 asks to pass until the stack is empty.
+	testing.expect(t, game.apply(g2, 1, types.GameAction_PassPriority{}))
+	testing.expect(t, game.apply(g2, 0, types.GameAction_SetAutoPass{mode = types.AutoPassRequest_UntilStackEmpty{}}))
+	testing.expect(t, types.pvec_len(s2.stack) == 0 && s2.players[0].life == 18, "Shock resolved")
+}
+
+@(test)
+fifth_review_fixes :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 609.7c: "prevent all damage dealt to this by creatures" also covers a creature source that has left the
+	// battlefield (Champion Lancer and a creature card dealing damage from the graveyard).
+	{
+		g := new_game()
+		lancer := add(t, g, "Champion Lancer", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		game.move_object(g, bears.id, .Graveyard)
+		game.deal_damage(g, bears.id, types.TargetRef_Object{lancer.id}, 2)
+		testing.expect(t, lancer.damage_marked == 0, "a creature source off the battlefield")
+	}
+	// "Enchanted creatures" on a creature isn't its host: not read yet, so the card isn't offered.
+	testing.expect(t, !game.card_supported(&card(t, "Wall of Putrid Flesh").face), "Wall of Putrid Flesh refused")
+	// Cards whose data dropped part of their text.
+	for name in ([]string{"Guardian Naga", "Camato Scout", "Pompous Gadabout", "Dawn-Blessed Pennant"}) {
+		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s refused", name)
+	}
+	// Loyalty counters are the planeswalker's loyalty (CR 306.5b): one number, not a second store.
+	{
+		g := new_game()
+		pw := add(t, g, "Grizzly Bears", 0, .Battlefield)
+		pw.loyalty = 3
+		game.add_counters(pw, types.CounterType_Loyalty{}, 2)
+		testing.expect(t, (pw.loyalty.? or_else 0) == 5 && len(pw.counters) == 0, "loyalty 5, nothing else")
+		testing.expect(t, game.counter_count(pw, types.CounterType_Loyalty{}) == 5)
+		game.remove_counters(pw, types.CounterType_Loyalty{}, 1)
+		testing.expect(t, (pw.loyalty.? or_else 0) == 4)
+	}
+}
+
+@(test)
+clone_makes_the_copied_cards_entry_choice :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 707.5, 707.6: a Clone entering as a copy of Adaptive Automaton has its "as this enters, choose a creature
+	// type", and its controller chooses.
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 4 do add(t, g, "Island", 0, .Battlefield)
+	automaton := add(t, g, "Adaptive Automaton", 1, .Battlefield)
+	append(&automaton.chosen_attributes, types.ChosenAttribute_CreatureType{"Bear"}) // its own choice isn't copied
+	clone := add(t, g, "Clone", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = clone.id}))
+	settle_stack(g)
+	_, copying := s.waiting_for.(types.WaitingFor_CopyTargetChoice)
+	testing.expect(t, copying, "asked what to copy")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{automaton.id}}))
+	_, naming := s.waiting_for.(types.WaitingFor_NamedChoice)
+	testing.expect(t, naming, "then asked for a creature type")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseOption{choice = "Elf"}))
+	testing.expect(t, game.has_subtype(clone, "Elf") && !game.has_subtype(clone, "Bear"), "its own choice")
+}
+
+@(test)
+chosen_type_looks_back_when_its_source_dies :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Species Specialist: "As this creature enters, choose a creature type. Whenever another creature of the chosen
+	// type dies, you may draw a card." Dying with the Bears in one wrath, it looks back at itself as it was (CR
+	// 603.10a), choice included.
+	testing.expect(t, game.card_supported(&card(t, "Species Specialist").face))
+	g := new_game()
+	s := &g.state
+	specialist := add(t, g, "Species Specialist", 0, .Battlefield)
+	append(&specialist.chosen_attributes, types.ChosenAttribute_CreatureType{"Bear"})
+	add(t, g, "Grizzly Bears", 0, .Battlefield)
+	for _ in 0 ..< 4 do add(t, g, "Plains", 0, .Battlefield)
+	wrath := add(t, g, "Day of Judgment", 0, .Hand)
+	hand := types.pvec_len(s.players[0].hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = wrath.id}))
+	for _ in 0 ..< 10 {
+		if _, may := s.waiting_for.(types.WaitingFor_OptionalEffectChoice); may {
+			game.apply(g, 0, types.GameAction_DecideOptionalEffect{accept = true})
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expectf(t, types.pvec_len(s.players[0].hand) == hand, "drew for the Bears (the wrath left the hand): %d vs %d", types.pvec_len(s.players[0].hand), hand)
+}

@@ -175,6 +175,12 @@ answer_entry_copy :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_CopyT
 		if g.card_db != nil && !(original.is_token && original.printed_ref == nil) do card = g.card_db(original.base_name if original.base_name != "" else original.name)
 		if card == nil do return false
 		become_copy(o, &card.face)
+		// CR 707.5, 707.6: the copied card's "as this enters" and "enters with" abilities apply to it as it enters
+		// (enters tapped, with counters), and its controller makes their choices.
+		apply_entering_replacements(s, o)
+		if _, may_pay := entry_payment_of(o); may_pay do append(&g.entry_choices, o.id)
+		if _, names := entry_choice_of(o); names do append(&g.entry_names, o.id)
+		if _, reveals := entry_reveal_of(o); reveals do append(&g.entry_reveals, o.id)
 		apply_continuous_effects(g)
 	}
 	after := s.active_player // a restored game: the prompt alone, priority to the active player
@@ -298,6 +304,12 @@ add_counters :: proc(o: ^types.GameObject, kind: types.CounterType, n: u32) {
 	if n == 0 do return
 	before := counter_count(o, kind)
 	if action_events != nil do append(action_events, Event{kind = .Counter_Added, object = o.id, controller = o.controller, counter = kind, amount = int(n), before = int(before), incarnation = o.incarnation})
+	// Loyalty counters are kept as the permanent's loyalty (CR 306.5b, 209.1), the number its abilities' costs,
+	// damage and CR 704.5i read.
+	if _, loyalty := kind.(types.CounterType_Loyalty); loyalty {
+		o.loyalty = (o.loyalty.? or_else 0) + n
+		return
+	}
 	for &c in o.counters do if same_counter(c._0, kind) {
 		c._1 += n
 		return
@@ -322,11 +334,17 @@ same_counter :: proc(a, b: types.CounterType) -> bool {
 }
 
 counter_count :: proc(o: ^types.GameObject, kind: types.CounterType) -> u32 {
+	if _, loyalty := kind.(types.CounterType_Loyalty); loyalty do return o.loyalty.? or_else 0
 	for c in o.counters do if same_counter(c._0, kind) do return c._1
 	return 0
 }
 
 remove_counters :: proc(o: ^types.GameObject, kind: types.CounterType, n: u32) {
+	if _, loyalty := kind.(types.CounterType_Loyalty); loyalty {
+		l := o.loyalty.? or_else 0
+		o.loyalty = l - min(l, n)
+		return
+	}
 	for c, i in o.counters do if same_counter(c._0, kind) {
 		if c._1 <= n do ordered_remove(&o.counters, i)
 		else do o.counters[i]._1 -= n
