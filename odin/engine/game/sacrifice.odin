@@ -9,6 +9,7 @@ sacrifice_supported :: proc(x: types.Effect_Sacrifice) -> bool {
 	n, fixed := fixed_quantity(x.count)
 	if !fixed || n < 1 do return false
 	if is_self(x.target) do return n == 1
+	if _, parent := x.target.(types.TargetFilter_ParentTarget); parent do return n == 1 // "sacrifice it"
 	typed, ok := x.target.(types.TargetFilter_Typed)
 	if !ok || !typed_supported(typed._0) do return false
 	c, has := typed._0.controller.?
@@ -18,9 +19,16 @@ sacrifice_supported :: proc(x: types.Effect_Sacrifice) -> bool {
 }
 
 // Returns true while the player chooses.
-do_sacrifice :: proc(g: ^Game, x: types.Effect_Sacrifice, controller: types.PlayerId, source: types.ObjectId) -> bool {
+do_sacrifice :: proc(g: ^Game, x: types.Effect_Sacrifice, controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef) = nil) -> bool {
 	s := &g.state
 	n, _ := fixed_quantity(x.count)
+	if _, parent := x.target.(types.TargetFilter_ParentTarget); parent {
+		// "Sacrifice it": that permanent, if its controller is this player (CR 701.21a).
+		if id, ok := target_object(target); ok {
+			if o := object(s, id); o != nil && o.zone == .Battlefield && o.controller == controller do sacrifice_permanent(g, id)
+		}
+		return false
+	}
 	if is_self(x.target) {
 		// "Sacrifice this": only while it's still the same permanent, under this player's control.
 		if o := same_source(g, source); o != nil && o.zone == .Battlefield && o.controller == controller do sacrifice_permanent(g, source)

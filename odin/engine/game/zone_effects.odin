@@ -168,8 +168,9 @@ do_change_zone :: proc(g: ^Game, x: types.Effect_ChangeZone, controller: types.P
 	if is_self(x.target) && moved.zone == .Stack do return
 	move_object(g, moved.id, x.destination)
 	if x.destination == .Battlefield {
-		// CR 110.2: it enters under the control of the player who put it there.
-		moved.controller = controller
+		// CR 110.2a: under the control the instruction states: "under your control" (the card data's enters_under),
+		// else its owner's ("return that card to the battlefield under its owner's control").
+		if _, has := x.enters_under.?; has do moved.controller = controller
 		if x.enter_tapped == .Tapped do moved.tapped = true
 	}
 }

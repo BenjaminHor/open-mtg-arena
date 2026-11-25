@@ -177,6 +177,8 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return search_supported(x)
 	case types.Effect_Sacrifice:
 		return sacrifice_supported(x)
+	case types.Effect_CreateDelayedTrigger:
+		return delayed_trigger_supported(x)
 	case types.Effect_Counter:
 		return counter_supported(x)
 	case types.Effect_Shuffle:
@@ -278,6 +280,11 @@ refers_to_parent_target :: proc(e: types.Effect) -> bool {
 	if tok, is_token := e.(types.Effect_Token); is_token {
 		_, parent_controller := tok.owner.(types.TargetFilter_ParentTargetController)
 		return parent_controller
+	}
+	if sac, is_sacrifice := e.(types.Effect_Sacrifice); is_sacrifice {
+		// "Sacrifice it" (not a targeted instruction: its other forms name a kind of permanent to choose).
+		_, parent := sac.target.(types.TargetFilter_ParentTarget)
+		return parent
 	}
 	if x, generic := e.(types.Effect_GenericEffect); generic && x.target == nil {
 		for st in x.static_abilities {
@@ -892,7 +899,9 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		start_search(g, x, controller, source)
 		return true
 	case types.Effect_Sacrifice:
-		return do_sacrifice(g, x, controller, source)
+		return do_sacrifice(g, x, controller, source, target)
+	case types.Effect_CreateDelayedTrigger:
+		create_delayed_trigger(g, x, controller, source)
 	case types.Effect_Counter:
 		if id, ok := target_object(target); ok do counter_spell(g, id)
 	case types.Effect_Shuffle:

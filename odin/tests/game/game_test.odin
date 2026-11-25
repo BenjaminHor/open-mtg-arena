@@ -2685,3 +2685,31 @@ pump_by_an_amount :: proc(t: ^testing.T) {
 	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
 	testing.expect(t, bears.zone == .Graveyard, "-2/-2 on a 2/2: toughness 0 (CR 704.5f)")
 }
+
+@(test)
+delayed_trigger_next_end_step :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 603.7: Flickerwisp: "When this creature enters, exile another target permanent. Return that card to the
+	// battlefield under its owner's control at the beginning of the next end step." The delayed ability triggers
+	// once, at the next end step (CR 603.7b), and returns the card it exiled (CR 603.7c).
+	testing.expect(t, game.card_supported(&card(t, "Flickerwisp").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Plains", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	wisp := add(t, g, "Flickerwisp", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = wisp.id}))
+	for _ in 0 ..< 8 {
+		if _, asked := s.waiting_for.(types.WaitingFor_TriggerTargetSelection); asked {
+			testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, bears.zone == .Exile && len(s.delayed_triggers) == 1, "exiled, the delayed ability waiting")
+	game.begin_step(g, .End)
+	testing.expect(t, types.pvec_len(s.stack) == 1 && len(s.delayed_triggers) == 0, "it triggered at the end step, once")
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, bears.zone == .Battlefield && bears.controller == 1, "back under its owner's control")
+}

@@ -46,6 +46,7 @@ Pending_Trigger :: struct {
 	definition: ^types.TriggerDefinition,
 	lki:        ^types.GameObject, // a leaves-the-battlefield trigger's source as it last existed (CR 603.10a)
 	amount:     int, // the event's amount, for "that much" (the damage dealt)
+	delayed:    ^types.ResolvedAbility, // a delayed triggered ability (delayed.odin), its "it" already chosen
 }
 
 // A triggered ability on the stack whose intervening "if" is checked again as it resolves (CR 603.4).
@@ -351,6 +352,7 @@ collect_triggers :: proc(g: ^Game) {
 				for &entry in trigger_definitions(f.lki) do zone_change_trigger(g, f.lki, &entry.definition, e, false, f.lki)
 			}
 		case .Step_Begin:
+			trigger_delayed(g, e.step)
 			for id in ids_of(s.battlefield) {
 				o := object(s, id)
 				for &entry in trigger_definitions(o) {
@@ -682,6 +684,12 @@ place_triggers :: proc(g: ^Game) -> bool {
 	for len(g.pending_triggers) > 0 {
 		index := next_trigger(g)
 		pt := g.pending_triggers[index]
+		if pt.delayed != nil {
+			// CR 603.7: put on the stack like any triggered ability; it has no targets to choose.
+			ordered_remove(&g.pending_triggers, index)
+			push_resolved_trigger(g, pt.source, pt.controller, pt.delayed)
+			continue
+		}
 		slots := slot_list(pt.definition.execute)
 		if g.trigger_targets.source != pt.source || g.trigger_targets.definition != pt.definition {
 			g.trigger_targets = Trigger_Target_Choice{source = pt.source, definition = pt.definition}
@@ -783,6 +791,16 @@ push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerI
 	}
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = source, controller = controller, kind = kind}, copy_entry)
 	return id
+}
+
+// A triggered ability whose instructions are already worked out (a delayed one): onto the stack as it is.
+push_resolved_trigger :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, ability: ^types.ResolvedAbility) {
+	s := &g.state
+	id := types.ObjectId(s.next_object_id)
+	s.next_object_id += 1
+	src := object(s, source)
+	kind := types.StackEntryKind_TriggeredAbility{source_id = source, ability = ability, source_name = src.name if src != nil else ""}
+	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = source, controller = controller, kind = kind}, copy_entry)
 }
 
 // ---- Resolving (CR 608.2) -----------------------------------------------------------------------------------
