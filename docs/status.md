@@ -3228,6 +3228,10 @@ Progress:
   modes. Refused: pawprint modes, non-mana entwine, conditions on additional costs, commander/And conditions,
   mandatory "choose both instead", misparsed counts (Moment of Reckoning, Doomsday Confluence). 10 tests. Also:
   spells cast this turn counted by type (`spells_cast_this_turn_of_a_type`). Coverage 7,613.
+- Process (2026-11-25): coverage families now also go to background agents in their own git worktrees (one area
+  each: modal spells done; triggers, additional costs and "as it enters, choose" running), started from the
+  branch head; they don't commit. Their diffs are merged here with `git apply -3`, checked with the full verify,
+  reviewed, and committed with a status entry. Rules reviews still run on each batch.
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 
