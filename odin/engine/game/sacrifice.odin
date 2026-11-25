@@ -23,14 +23,14 @@ do_sacrifice :: proc(g: ^Game, x: types.Effect_Sacrifice, controller: types.Play
 	n, _ := fixed_quantity(x.count)
 	if is_self(x.target) {
 		// "Sacrifice this": only while it's still the same permanent, under this player's control.
-		if o := same_source(g, source); o != nil && o.zone == .Battlefield && o.controller == controller do move_object(g, source, .Graveyard)
+		if o := same_source(g, source); o != nil && o.zone == .Battlefield && o.controller == controller do sacrifice_permanent(g, source)
 		return false
 	}
 	typed := x.target.(types.TargetFilter_Typed)._0
 	eligible: [dynamic]types.ObjectId
 	for o in permanents_of(s, controller) do if object_matches(s, o, typed, controller, source) do append(&eligible, o.id)
 	if len(eligible) <= n {
-		for id in eligible do move_object(g, id, .Graveyard)
+		for id in eligible do sacrifice_permanent(g, id)
 		return false
 	}
 	s.priority_player = controller
@@ -41,7 +41,7 @@ do_sacrifice :: proc(g: ^Game, x: types.Effect_Sacrifice, controller: types.Play
 answer_sacrifice :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_EffectZoneChoice, chosen: []types.ObjectId) -> bool {
 	if !g.resolution.active || w.effect_kind != .Sacrifice || len(chosen) != w.count || has_duplicates(chosen) do return false
 	for id in chosen do if !slice.contains(w.cards[:], id) do return false
-	for id in chosen do move_object(g, id, .Graveyard)
+	for id in chosen do sacrifice_permanent(g, id)
 	g.state.waiting_for = nil
 	if continue_resolution(g) do after_resolution(g)
 	return true

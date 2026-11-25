@@ -18,6 +18,7 @@ Event_Kind :: enum {
 	Life_Gained, // controller gained amount life (CR 119.9: never 0)
 	Tapped, // object became tapped (CR 701.26a)
 	Card_Drawn, // controller drew a card (CR 121.2: each card is its own draw)
+	Sacrificed, // controller sacrificed object, a permanent moved from the battlefield to the graveyard (CR 701.21a)
 }
 
 // Something that happened that an ability may trigger on (CR 603.2).
@@ -71,8 +72,15 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	// damage to target opponent"): the event is matched on the card alone, the target chosen by the effect.
 	is_zone_change := false
 	#partial switch _ in t.mode {
-	case types.TriggerMode_ChangesZone, types.TriggerMode_LeavesBattlefield, types.TriggerMode_EntersOrAttacks:
+	case types.TriggerMode_ChangesZone, types.TriggerMode_LeavesBattlefield, types.TriggerMode_EntersOrAttacks, types.TriggerMode_Sacrificed:
 		is_zone_change = true
+	}
+	// Other permanents' events are watched from the battlefield only: an ability that works from another zone
+	// ("when you sacrifice a Clue, return this card from your graveyard") isn't watched there yet. An object's
+	// own zone change is seen wherever it went (CR 603.6, 603.10a).
+	if len(t.trigger_zones) > 0 && !has_zone(t.trigger_zones[:], .Battlefield) {
+		f, has := t.valid_card.?
+		if !has || !is_self(f) do return false
 	}
 	// "Whenever you gain life", "whenever you draw a card": the player is valid_target.
 	is_player_event := false
@@ -111,6 +119,10 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		// "Whenever this creature enters or attacks" (CR 603.6a, 508.3a).
 		f, has := t.valid_card.?
 		return has && is_self(f) && t.attack_target_filter == nil
+	case types.TriggerMode_Sacrificed:
+		// "Whenever you sacrifice a [kind of] permanent", "when you sacrifice this" (CR 701.21a, 603.10a).
+		if f, has := t.valid_card.?; has do return subject_filter_supported(f)
+		return false
 	case types.TriggerMode_LeavesBattlefield:
 		// "When this leaves the battlefield" (CR 603.6c, 603.10a).
 		if dest, has := t.destination.?; has && dest == .Battlefield do return false
@@ -307,7 +319,7 @@ collect_triggers :: proc(g: ^Game) {
 	fired := make([dynamic]^types.TriggerDefinition, context.temp_allocator) // batched triggers already triggered
 	for e in g.events {
 		switch e.kind {
-		case .Zone_Change:
+		case .Zone_Change, .Sacrificed:
 			moved := object(s, e.object)
 			// The moved object's own abilities, as it is now (it entered) or as it last existed (it left): CR 603.6a,
 			// 603.10a. Then every other permanent watching for such an event.
@@ -449,7 +461,12 @@ collect_triggers :: proc(g: ^Game) {
 @(private = "file")
 zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.TriggerDefinition, e: Event, is_self: bool) {
 	s := &g.state
+	// A sacrifice is also a zone change (CR 701.21a); a sacrifice trigger sees only the sacrifice event, the others
+	// only the zone change.
+	_, sacrifice_mode := t.mode.(types.TriggerMode_Sacrificed)
+	if sacrifice_mode != (e.kind == .Sacrificed) do return
 	#partial switch _ in t.mode {
+	case types.TriggerMode_Sacrificed:
 	case types.TriggerMode_ChangesZone:
 		if origin, has := t.origin.?; has && origin != e.from do return
 		if dest, has := t.destination.?; has && dest != e.to do return

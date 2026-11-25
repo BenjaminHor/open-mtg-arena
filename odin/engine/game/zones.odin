@@ -122,6 +122,26 @@ move_object :: proc(g: ^Game, id: types.ObjectId, to: types.Zone) {
 	append(&g.events, Event{kind = .Zone_Change, object = id, from = from, to = to, controller = last_controller, lki = lki})
 }
 
+// CR 701.21a: to sacrifice a permanent, its controller moves it from the battlefield to its owner's graveyard. That
+// is an event of its own, which "whenever you sacrifice" abilities trigger on, looking back at the permanent as it
+// last existed (CR 603.10a).
+sacrifice_permanent :: proc(g: ^Game, id: types.ObjectId) {
+	o := object(&g.state, id)
+	if o == nil || o.zone != .Battlefield do return
+	move_object(g, id, .Graveyard)
+	moved := g.events[len(g.events) - 1]
+	if moved.kind != .Zone_Change || moved.object != id do return
+	moved.kind = .Sacrificed
+	append(&g.events, moved)
+}
+
+// A permanent or card chosen to pay a cost goes to the graveyard: sacrificed from the battlefield, discarded from
+// the hand (CR 701.21a, 701.9a).
+pay_with_object :: proc(g: ^Game, id: types.ObjectId) {
+	if o := object(&g.state, id); o != nil && o.zone == .Battlefield do sacrifice_permanent(g, id)
+	else do move_object(g, id, .Graveyard)
+}
+
 // The zone changes of the turn, each with the object as it was (CR 603.10, 608.2h): "if a creature died this turn".
 record_zone_change :: proc(s: ^types.GameState, o: ^types.GameObject, from, to: types.Zone) {
 	r := types.ZoneChangeRecord {

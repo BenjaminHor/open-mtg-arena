@@ -346,7 +346,7 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 	}
 	// The chosen permanents are sacrificed and cards discarded after the mana is paid (CR 601.2g lets mana
 	// abilities be activated first, so a land tapped for mana can still be sacrificed).
-	for id in g.pending.cost_objects do move_object(g, id, .Graveyard)
+	for id in g.pending.cost_objects do pay_with_object(g, id)
 	push_ability(g, source, p, a, targets, false, g.pending.counts[:])
 	record_activation(&s.activated_abilities_this_turn, o, index)
 	record_activation(&s.activated_abilities_this_game, o, index)
@@ -354,7 +354,7 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 	for part in parts {
 		#partial switch x in part {
 		case types.AbilityCost_Sacrifice:
-			if is_self(x._0.target) do move_object(g, source, .Graveyard)
+			if is_self(x._0.target) do sacrifice_permanent(g, source)
 		case types.AbilityCost_Discard:
 			if x.self_scope == .SourceCard do move_object(g, source, .Graveyard) // "discard this card" (CR 702.29a)
 		case types.AbilityCost_Exile:

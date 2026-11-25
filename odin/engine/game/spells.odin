@@ -1352,7 +1352,7 @@ additional_cost_payable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^type
 pay_additional_cost :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) {
 	cost, has := spell_additional_cost(o)
 	if !has do return
-	for id in g.pending.cost_objects do move_object(g, id, .Graveyard)
+	for id in g.pending.cost_objects do pay_with_object(g, id)
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
 	cost_parts_of(cost, &parts)
 	for part in parts do if life, ok := part.(types.AbilityCost_PayLife); ok {

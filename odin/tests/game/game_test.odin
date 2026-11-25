@@ -2273,3 +2273,45 @@ becomes_tapped :: proc(t: ^testing.T) {
 	}
 	testing.expect(t, game.player(s, 0).life == 19, "1 damage")
 }
+
+@(test)
+whenever_you_sacrifice :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 701.21a: sacrificing moves a permanent its controller controls from the battlefield to the graveyard, and
+	// "whenever you sacrifice" abilities trigger on it, looking back at the permanent as it last existed (CR
+	// 603.10a). Bloodbriar: "Whenever you sacrifice another permanent, put a +1/+1 counter on this creature."
+	g := new_game()
+	s := &g.state
+	testing.expect(t, game.card_supported(&card(t, "Bloodbriar").face))
+	testing.expect(t, game.card_supported(&card(t, "Carrot Cake").face), "\"when you sacrifice this\"")
+	testing.expect(t, !game.card_supported(&card(t, "Curious Cadaver").face), "an ability that works from the graveyard isn't watched there yet")
+	briar := add(t, g, "Bloodbriar", 0, .Battlefield) // 2/3
+	husk := add(t, g, "Nantuko Husk", 0, .Battlefield) // Sacrifice a creature: +2/+2 until end of turn
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	resolve_all := proc(g: ^game.Game) {
+		for _ in 0 ..< 8 {
+			if types.pvec_len(g.state.stack) == 0 do break
+			game.apply(g, g.state.priority_player, types.GameAction_PassPriority{})
+		}
+	}
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = husk.id, ability_index = 0}))
+	chosen: [dynamic]types.ObjectId
+	append(&chosen, bears.id)
+	testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen}))
+	testing.expect(t, types.pvec_len(s.stack) == 2, "the Husk's ability and the sacrifice trigger")
+	resolve_all(g)
+	testing.expect(t, briar.power.? == 3 && briar.toughness.? == 4, "a +1/+1 counter")
+
+	// A creature that's destroyed isn't sacrificed.
+	g2 := new_game()
+	briar2 := add(t, g2, "Bloodbriar", 0, .Battlefield)
+	bears2 := add(t, g2, "Grizzly Bears", 0, .Battlefield)
+	murder := add(t, g2, "Murder", 0, .Hand)
+	for _ in 0 ..< 3 do add(t, g2, "Swamp", 0, .Battlefield)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = murder.id}))
+	if _, choosing := g2.state.waiting_for.(types.WaitingFor_TargetSelection); choosing {
+		game.apply(g2, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears2.id}})
+	}
+	resolve_all(g2)
+	testing.expect(t, bears2.zone == .Graveyard && types.pvec_len(g2.state.stack) == 0 && briar2.power.? == 2, "no trigger")
+}

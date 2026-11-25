@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 246 of 2880 rules implemented (9%), 100 of them tested.**
+**In scope (100-799): 247 of 2880 rules implemented (9%), 100 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -107,7 +107,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 615 prevention effects | 15 | 0 (0%) | 0 |
 | 616 interaction of replacement and or prevention effects | 9 | 0 (0%) | 0 |
 | 700 general | 36 | 6 (17%) | 4 |
-| 701 keyword actions | 305 | 25 (8%) | 9 |
+| 701 keyword actions | 305 | 26 (9%) | 9 |
 | 702 keyword abilities | 774 | 26 (3%) | 6 |
 | 703 turn based actions | 20 | 1 (5%) | 0 |
 | 704 state based actions | 40 | 11 (28%) | 4 |
@@ -1803,7 +1803,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 700.16 Some cards refer to worthy creatures. A creature is worthy if it’s legendary, isn’t a Villain, and is red a...
 - ⬜ 700.17 Some abilities trigger when a player “faces a dilemma.” A player faces a dilemma whenever they choose one o...
 
-### 701 keyword actions (25/305)
+### 701 keyword actions (26/305)
 
 - ⬜ 701.1 Most actions described in a card’s rules text use the standard English definitions of the verbs within, but...
 - ⬜ 701.2 Activate
@@ -1831,7 +1831,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 701.8b The only ways a permanent can be destroyed are as a result of an effect that uses the word “destroy” or as ...
 - ⬜ 701.8c A regeneration effect replaces a destruction event. See rule 701.19, “Regenerate.”
 - 🟡 701.9 Discard
-- ⬜ 701.9a To discard a card, move it from its owner’s hand to that player’s graveyard.
+- 🟡 701.9a To discard a card, move it from its owner’s hand to that player’s graveyard.
 - ✅ 701.9b By default, effects that cause a player to discard a card allow the affected player to choose which card to...
 - ⬜ 701.9c If a card is discarded, but an effect causes it to be put into a hidden zone instead of into its owner’s gr...
 - ⬜ 701.10 Double

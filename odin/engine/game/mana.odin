@@ -315,7 +315,7 @@ mana_rider :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, option: Ma
 	case .Life:
 		lose_life(&g.state, p, option.rider_amount) // CR 119.4: paying life is losing it
 	case .Sacrifice:
-		move_object(g, o.id, .Graveyard)
+		sacrifice_permanent(g, o.id)
 	}
 }
 

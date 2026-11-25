@@ -2850,7 +2850,14 @@ Progress:
   creature died this turn"); zone-change triggers with a targeted effect and "this or another"; conditions on a
   target that left (last known information); mana abilities with mana costs and a color choice; restricted mana;
   Powerstone, Blood, Lander and Mutagen tokens; graveyard abilities; "sacrifice an A or B" costs; stun and
-  keyword counters.
+  keyword counters. Then (-> 5,076; rules 247): "that much" from a damage trigger; life-gain, draw, damage-received,
+  leaves and enters-or-attacks triggers; "whenever this becomes tapped"; "whenever you sacrifice" (CR 701.21a,
+  603.10a), with every sacrifice (costs, mana riders, effects) its own event. A trigger that works from a zone other
+  than the battlefield ("when you sacrifice a Clue, return this card from your graveyard") is refused unless it's
+  the object's own zone change: only the battlefield is watched for other objects' events.
+- Full replay at 53e766b: 624 of 11,160 pass (5.6%, from 597). First differences: card not supported (CastSpell
+  4,587, ActivateAbility 1,527), waiting_for and stack differences next. Sagas (CR 715, about 250 pool cards) are the
+  largest single gap among triggers and are next.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
