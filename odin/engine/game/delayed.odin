@@ -10,7 +10,11 @@ import types "../types"
 // `after_target`: an instruction before it chose a target, which "it" can name (CR 608.2c); with none, an "it"
 // would name nothing, so that's refused.
 delayed_trigger_supported :: proc(x: types.Effect_CreateDelayedTrigger, after_target: bool) -> bool {
-	if x.effect == nil || x.uses_tracked_set do return false
+	if x.effect == nil do return false
+	// "Return those cards at the beginning of the next end step": the cards the instruction before moved, kept by
+	// the delayed ability (only a zone change reading them, after an instruction that moves cards).
+	// (The data sometimes names them as the earlier target, "it", which is the same card.)
+	if x.uses_tracked_set && !(previous_instruction != nil && moves_cards(previous_instruction^) && (reads_tracked_set(x.effect.effect^) || refers_to_parent_target(x.effect.effect^))) do return false
 	c, at_next := x.condition.(types.DelayedTriggerCondition_AtNextPhase)
 	if !at_next do return false
 	#partial switch c.phase {
@@ -22,7 +26,21 @@ delayed_trigger_supported :: proc(x: types.Effect_CreateDelayedTrigger, after_ta
 		if a.effect == nil || a.condition != nil do return false // "if you do" there would read nothing done yet
 		if _, targets := effect_target(a.effect^); targets do return false
 	}
+	if x.uses_tracked_set do return ability_supported(x.effect^, after_target = after_target, previous = previous_instruction)
 	return ability_supported(x.effect^, after_target = after_target)
+}
+
+// A zone change or sacrifice of "those cards" (the tracked set an earlier instruction made).
+reads_tracked_set :: proc(e: types.Effect) -> bool {
+	#partial switch x in e {
+	case types.Effect_ChangeZone:
+		_, tracked := x.target.(types.TargetFilter_TrackedSet)
+		return tracked
+	case types.Effect_Sacrifice:
+		_, tracked := x.target.(types.TargetFilter_TrackedSet)
+		return tracked
+	}
+	return false
 }
 
 // CR 603.7a, 603.7d: the ability exists from now, controlled by the resolving spell or ability's controller; "it"
@@ -32,6 +50,10 @@ create_delayed_trigger :: proc(g: ^Game, x: types.Effect_CreateDelayedTrigger, c
 	top := resolved_tree(s, x.effect, nil, nil, controller, source)
 	if refers_to_parent_target(top.effect) {
 		append(&top.targets, ..g.resolution.last_targets[:])
+		record_target_incarnations(s, top)
+	} else if x.uses_tracked_set && reads_tracked_set(top.effect) {
+		// "Those cards": what the instruction before moved, each as the object it is now (CR 603.7c, 400.7j).
+		for id in g.resolution.moved do append(&top.targets, types.TargetRef(types.TargetRef_Object{id}))
 		record_target_incarnations(s, top)
 	}
 	append(&s.delayed_triggers, types.DelayedTrigger{condition = x.condition, ability = top, controller = controller, source_id = source, one_shot = true})

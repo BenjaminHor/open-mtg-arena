@@ -3190,6 +3190,11 @@ Progress:
   control (CR 110.2a) or as stated. Tests: `exile_then_return_that_card` (Cloudshift, the ParentTarget form),
   `return_the_card_the_instruction_before_moved` (Eldrazi Displacer). Coverage 7,522. Next in this family: "put up
   to N of those cards into your hand" (TrackedSetFiltered, up_to: 18 cards).
+- Delayed abilities over "those cards" / "those tokens" (CR 603.7c): the cards or tokens the instruction before
+  moved or made are kept on the delayed ability with their identity, and only the same objects are returned or
+  sacrificed (Thatcher Revolt, Explosive Getaway). Test: `sacrifice_those_tokens_at_the_next_end_step`. Coverage
+  7,531. Still refused in this family: "whenever ... this turn" delayed triggers (36), "when it dies" (16), "the next
+  time" (11), "at the beginning of that player's next ..." (9).
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 

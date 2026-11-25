@@ -5572,3 +5572,33 @@ return_the_card_the_instruction_before_moved :: proc(t: ^testing.T) {
 	settle_stack(g)
 	testing.expect(t, bears.zone == .Battlefield && bears.tapped && bears.controller == 1, "back, tapped, under its owner's control")
 }
+
+// Thatcher Revolt: "Create three 1/1 red Human creature tokens with haste. Sacrifice those tokens at the beginning of
+// the next end step." The delayed ability keeps the tokens it made (CR 603.7c); at the next end step their controller
+// sacrifices them (CR 701.21a), and no other token.
+@(test)
+sacrifice_those_tokens_at_the_next_end_step :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Thatcher Revolt").face))
+	humans :: proc(g: ^game.Game) -> int {
+		n := 0
+		for id in game.ids_of(g.state.battlefield) do if o := game.object(&g.state, id); o.is_token && o.name == "Human" do n += 1
+		return n
+	}
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 6 do add(t, g, "Mountain", 0, .Battlefield)
+	first := add(t, g, "Thatcher Revolt", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = first.id}))
+	settle_stack(g)
+	testing.expect_value(t, humans(g), 3)
+	// Without the first ability, three more: the second ability sacrifices only the three it made.
+	s.delayed_triggers = {}
+	second := add(t, g, "Thatcher Revolt", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = second.id}))
+	settle_stack(g)
+	testing.expect(t, humans(g) == 6 && len(s.delayed_triggers) == 1, "six tokens, one ability waiting")
+	game.begin_step(g, .End)
+	for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect_value(t, humans(g), 3)
+}

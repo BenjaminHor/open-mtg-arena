@@ -257,6 +257,8 @@ moves_cards :: proc(e: types.Effect) -> bool {
 	#partial switch _ in e {
 	case types.Effect_ChangeZone, types.Effect_ChangeZoneAll, types.Effect_ExileTop, types.Effect_Bounce, types.Effect_Mill:
 		return true
+	case types.Effect_Token, types.Effect_CopyTokenOf:
+		return true // "those tokens": the ones it created (they entered the battlefield, a zone change)
 	}
 	return false
 }

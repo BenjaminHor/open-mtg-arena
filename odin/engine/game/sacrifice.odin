@@ -10,6 +10,8 @@ sacrifice_supported :: proc(x: types.Effect_Sacrifice) -> bool {
 	if !fixed || n < 1 do return false
 	if is_self(x.target) do return n == 1
 	if _, parent := x.target.(types.TargetFilter_ParentTarget); parent do return n == 1 // "sacrifice it"
+	// "Sacrifice those tokens": what an earlier instruction made or moved (a delayed ability's, delayed.odin).
+	if _, tracked := x.target.(types.TargetFilter_TrackedSet); tracked do return previous_instruction != nil && moves_cards(previous_instruction^)
 	typed, ok := x.target.(types.TargetFilter_Typed)
 	if !ok || !typed_supported(typed._0) do return false
 	c, has := typed._0.controller.?
@@ -25,6 +27,15 @@ do_sacrifice :: proc(g: ^Game, x: types.Effect_Sacrifice, controller: types.Play
 	if _, parent := x.target.(types.TargetFilter_ParentTarget); parent {
 		// "Sacrifice it": that permanent, if its controller is this player (CR 701.21a).
 		if id, ok := target_object(target); ok {
+			if o := object(s, id); o != nil && o.zone == .Battlefield && o.controller == controller do sacrifice_permanent(g, id)
+		}
+		return false
+	}
+	if _, tracked := x.target.(types.TargetFilter_TrackedSet); tracked {
+		// Each of them still the same permanent, under this player's control (CR 701.21a), at once.
+		together := begin_together()
+		defer end_together(together)
+		for id in slice.clone(g.resolution.moved[:], context.temp_allocator) {
 			if o := object(s, id); o != nil && o.zone == .Battlefield && o.controller == controller do sacrifice_permanent(g, id)
 		}
 		return false

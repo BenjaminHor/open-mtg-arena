@@ -92,7 +92,7 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 	for n := top; n != nil; n = n.sub_ability {
 		clear(&n.illegal_target_slots)
 		f, targets_one := effect_target(n.effect)
-		if !targets_one && refers_to_parent_target(n.effect) do continue // a delayed ability's "it": not a target
+		if !targets_one && (refers_to_parent_target(n.effect) || reads_tracked_set(n.effect)) do continue // a delayed ability's "it", "those cards": not targets
 		fight, is_fight := n.effect.(types.Effect_Fight)
 		for t, i in n.targets {
 			any_target = true
@@ -116,6 +116,9 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 	// A delayed ability's "it" (CR 603.7c): only while it's the same object it was.
 	if refers_to_parent_target(top.effect) {
 		for t, i in top.targets do if same_object_as_chosen(s, top, i) do append(&g.resolution.last_targets, t)
+	} else if reads_tracked_set(top.effect) {
+		// A delayed ability's "those cards": the ones still the objects they were (CR 603.7c).
+		for t, i in top.targets do if id, is_object := target_object(t); is_object && same_object_as_chosen(s, top, i) do append(&g.resolution.moved, id)
 	}
 	// CR 608.2b: with every target illegal, the spell or ability does nothing.
 	if any_target && !any_legal {
