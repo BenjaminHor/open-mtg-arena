@@ -4726,3 +4726,18 @@ second_card_drawn_each_turn :: proc(t: ^testing.T) {
 	}
 	testing.expectf(t, game.counter_count(cavalry, types.CounterType_Plus1Plus1{}) == 1, "one counter, got %d", game.counter_count(cavalry, types.CounterType_Plus1Plus1{}))
 }
+
+@(test)
+cant_be_blocked_by_big_creatures :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Amrou Kithkin: "This creature can't be blocked by creatures with power 3 or greater." CR 509.1b: a blocking
+	// restriction, checked as blockers are declared.
+	testing.expect(t, game.card_supported(&card(t, "Amrou Kithkin").face))
+	g := new_game()
+	kithkin := add(t, g, "Amrou Kithkin", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	big := add(t, g, "Hill Giant", 1, .Battlefield)
+	testing.expect(t, game.can_block(g, bears, kithkin), "power 2 may block")
+	testing.expect(t, !game.can_block(g, big, kithkin), "power 3 may not")
+	testing.expect(t, game.can_block(g, big, bears), "only what it affects")
+}

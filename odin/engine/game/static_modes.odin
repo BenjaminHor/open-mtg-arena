@@ -51,6 +51,7 @@ rule_modes :: proc(m: types.StaticMode) -> (modes: bit_set[Rule_Mode]) {
 PLAYER_MODES :: bit_set[Rule_Mode]{.No_Max_Hand_Size, .Extra_Land}
 
 static_mode_supported :: proc(st: types.StaticDefinition) -> bool {
+	if _, ok := blocked_by_filter(st); ok do return true
 	modes := rule_modes(st.mode)
 	if modes == {} || st.condition != nil || st.per_player_condition != nil do return false
 	if st.affected_zone != nil || st.effect_zone != nil || len(st.active_zones) > 0 || len(st.modifications) > 0 do return false
@@ -105,4 +106,42 @@ player_rule_count :: proc(g: ^Game, p: types.PlayerId, mode: Rule_Mode) -> int {
 		for &st in o.static_definitions^ do if mode in rule_modes(st.mode) && static_mode_supported(st) do n += 1
 	}
 	return n
+}
+
+// "This creature can't be blocked by creatures with power 2 or less / by Walls / by artifact creatures" (CR 509.1b:
+// a restriction on blocking): the creatures that can't block what the ability affects.
+blocked_by_filter :: proc(st: types.StaticDefinition) -> (types.TypedFilter, bool) {
+	m, ok := st.mode.(types.StaticMode_CantBeBlockedBy)
+	if !ok || st.condition != nil || st.per_player_condition != nil do return {}, false
+	if st.affected_zone != nil || st.effect_zone != nil || len(st.active_zones) > 0 || len(st.modifications) > 0 do return {}, false
+	affected, has := st.affected.?
+	if !has || !affected_supported(affected) do return {}, false
+	typed, is_typed := m.filter.(types.TargetFilter_Typed)
+	if !is_typed || typed._0.controller != nil || !typed_supported(typed._0) do return {}, false
+	return typed._0, true
+}
+
+// Whether a static ability on the battlefield stops `blocker` from blocking `attacker` (CR 509.1b).
+cant_be_blocked_by :: proc(g: ^Game, attacker, blocker: ^types.GameObject) -> bool {
+	s := &g.state
+	for id in ids_of(s.battlefield) {
+		src := object(s, id)
+		if src.static_definitions == nil do continue
+		for &st in src.static_definitions^ {
+			f, ok := blocked_by_filter(st)
+			if !ok do continue
+			affected, _ := st.affected.?
+			#partial switch x in affected {
+			case types.TargetFilter_SelfRef:
+				if src.id != attacker.id do continue
+			case types.TargetFilter_Typed:
+				if !object_matches(s, attacker, x._0, src.controller, src.id) do continue
+			case:
+				continue
+			}
+			// "Power greater than this creature's": read from the attacker, the ability's source here.
+			if object_matches(s, blocker, f, src.controller, attacker.id) do return true
+		}
+	}
+	return false
 }

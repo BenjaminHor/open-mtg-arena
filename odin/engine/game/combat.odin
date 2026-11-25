@@ -22,6 +22,7 @@ can_block :: proc(g: ^Game, blocker, attacker: ^types.GameObject) -> bool {
 	if !is_type(blocker, .Creature) || blocker.tapped do return false
 	if has_rule(g, blocker, .Cant_Block) || has_rule(g, attacker, .Cant_Be_Blocked) do return false
 	if has_keyword(blocker, types.Keyword_Decayed) do return false // CR 702.147a
+	if cant_be_blocked_by(g, attacker, blocker) do return false // CR 509.1b
 	if has_keyword(attacker, types.Keyword_Flying) && !has_keyword(blocker, types.Keyword_Flying) && !has_keyword(blocker, types.Keyword_Reach) do return false
 	if protected_from(attacker, blocker) do return false // CR 702.16f
 	return true
