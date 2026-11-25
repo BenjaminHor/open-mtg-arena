@@ -62,6 +62,13 @@ modification_supported :: proc(m: types.ContinuousModification) -> bool {
 		return k.kind == .CreatureType
 	case types.ContinuousModification_AddAllCreatureTypes:
 		return true
+	case types.ContinuousModification_GrantAbility:
+		// An activated ability (a mana ability included) the permanent then has, its "this" being that permanent.
+		if k.definition == nil do return false
+		if _, _, mana := tap_mana_ability(k.definition^); mana do return true
+		return activated_supported(k.definition^)
+	case types.ContinuousModification_GrantTrigger:
+		return k.trigger != nil && trigger_supported(k.trigger^)
 	case types.ContinuousModification_AddKeyword:
 		return keyword_supported(k.keyword)
 	case types.ContinuousModification_AddStaticMode:
@@ -158,6 +165,25 @@ apply_continuous_effects :: proc(g: ^Game) {
 			for m in e.static.modifications do if k, ok := m.(types.ContinuousModification_AddKeyword); ok && !has_keyword_in(keywords[:], k.keyword) do append(&keywords, k.keyword)
 		}
 		for mods in temps do for m in mods do if k, ok := m.(types.ContinuousModification_AddKeyword); ok && !has_keyword_in(keywords[:], k.keyword) do append(&keywords, k.keyword)
+		// Abilities granted ("equipped creature has '{T}: ...'", "creatures you control have 'whenever ...'"): its
+		// own, then the granted ones.
+		{
+			granted := make([dynamic]types.AbilityDefinition, context.temp_allocator)
+			granted_triggers := make([dynamic]^types.TriggerDefinition, context.temp_allocator)
+			grants :: proc(mods: []types.ContinuousModification, out: ^[dynamic]types.AbilityDefinition, triggers: ^[dynamic]^types.TriggerDefinition) {
+				for m in mods {
+					#partial switch k in m {
+					case types.ContinuousModification_GrantAbility:
+						if k.definition != nil do append(out, k.definition^)
+					case types.ContinuousModification_GrantTrigger:
+						if k.trigger != nil do append(triggers, k.trigger)
+					}
+				}
+			}
+			for e in statics do if affects(s, e.source, e.static, o) do grants(e.static.modifications[:], &granted, &granted_triggers)
+			for mods in temps do grants(mods, &granted, &granted_triggers)
+			set_granted_abilities(o, granted[:], granted_triggers[:])
+		}
 		// CR 122.1b, 613.1f: a keyword counter gives its keyword.
 		for c in o.counters do if kc, ok := c._0.(types.CounterType_Keyword); ok {
 			if k, known := keyword_of_counter(kc._0); known && !has_keyword_in(keywords[:], k) do append(&keywords, k)
@@ -440,4 +466,41 @@ subtype_in_set :: proc(name: string, set: types.SubtypeSet) -> bool {
 		return in_list(name, creature[:])
 	}
 	return false
+}
+
+// Layer 6 (CR 613.1f): the object's abilities are its own and then those granted to it. Its own activated abilities
+// keep their positions (an activation names an ability by its index); granted triggers are marked as granted, and
+// replaced on every pass.
+set_granted_abilities :: proc(o: ^types.GameObject, granted: []types.AbilityDefinition, granted_triggers: []^types.TriggerDefinition) {
+	base := o.base_abilities
+	if base != nil {
+		if len(granted) == 0 {
+			o.abilities = base
+		} else if o.abilities == base || o.abilities == nil || len(o.abilities^) != len(base^) + len(granted) {
+			all := new([dynamic]types.AbilityDefinition)
+			append(all, ..base[:])
+			append(all, ..granted)
+			o.abilities = all
+		} else {
+			for a, i in granted do o.abilities^[len(base^) + i] = a
+		}
+	}
+	if o.trigger_definitions == nil {
+		if len(granted_triggers) == 0 do return
+		o.trigger_definitions = types.Definitions_TriggerEntry(new([dynamic]types.TriggerEntry))
+	}
+	list := (^[dynamic]types.TriggerEntry)(o.trigger_definitions)
+	own := 0
+	for e in list^ do if _, is_granted := e.occurrence.(types.TriggerDefinitionOccurrenceRef_Granted); !is_granted do own += 1
+	if len(list^) == own + len(granted_triggers) {
+		for t, i in granted_triggers do list^[own + i].definition = t^
+		return
+	}
+	// A new list: triggers waiting to go on the stack point into the old one, which stays as it was.
+	fresh := new([dynamic]types.TriggerEntry)
+	for e in list^ do if _, is_granted := e.occurrence.(types.TriggerDefinitionOccurrenceRef_Granted); !is_granted do append(fresh, e)
+	for t, i in granted_triggers {
+		append(fresh, types.TriggerEntry{occurrence = types.TriggerDefinitionOccurrenceRef_Granted{grant_instance = types.TriggerGrantInstanceRef(i + 1)}, definition = t^})
+	}
+	o.trigger_definitions = types.Definitions_TriggerEntry(fresh)
 }

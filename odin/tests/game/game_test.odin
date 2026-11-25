@@ -1972,6 +1972,7 @@ predefined_tokens_are_carried_out :: proc(t: ^testing.T) {
 	abilities := new([dynamic]types.AbilityDefinition)
 	abilities^ = game.predefined_abilities("Powerstone")
 	stone.abilities = abilities
+	stone.base_abilities = abilities // its own abilities, which the layer pass starts from (CR 613.1f)
 	bears := add(t, g, "Grizzly Bears", 0, .Hand) // {1}{G}
 	add(t, g, "Forest", 0, .Battlefield)
 	testing.expect(t, !game.apply(g, 0, types.GameAction_CastSpell{object_id = bears.id}), "not for a creature spell")
@@ -5130,4 +5131,45 @@ cant_block_as_long_as :: proc(t: ^testing.T) {
 	for _ in 0 ..< 7 do add(t, g, "Forest", 0, .Graveyard)
 	game.apply_continuous_effects(g)
 	testing.expect(t, !game.can_block(g, horror, attacker), "can't block with threshold")
+}
+
+@(test)
+granted_abilities :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Cryptolith Rite: "Creatures you control have '{T}: Add one mana of any color.'" CR 613.1f: layer 6 adds the
+	// ability to each; it's theirs while the Rite applies.
+	testing.expect(t, game.card_supported(&card(t, "Cryptolith Rite").face))
+	g := new_game()
+	s := &g.state
+	rite := add(t, g, "Cryptolith Rite", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	game.apply_continuous_effects(g)
+	source := false
+	for src in game.mana_sources(s, 0) do if src.object == bears do source = true
+	testing.expect(t, source, "the Bears tap for mana")
+	testing.expect(t, theirs.abilities == nil || len(theirs.abilities^) == 0, "not the opponent's creature")
+	game.move_object(g, rite.id, .Graveyard)
+	game.apply_continuous_effects(g)
+	testing.expect(t, bears.abilities == nil || len(bears.abilities^) == 0, "gone with the Rite")
+
+	// Aura Flux: "Other enchantments have 'At the beginning of your upkeep, sacrifice this enchantment unless you pay
+	// {2}.'" A granted trigger: with nothing to pay with, the other enchantment is sacrificed; Aura Flux isn't.
+	testing.expect(t, game.card_supported(&card(t, "Aura Flux").face))
+	g2 := new_game()
+	s2 := &g2.state
+	flux := add(t, g2, "Aura Flux", 0, .Battlefield)
+	other := add(t, g2, "Glorious Anthem", 0, .Battlefield)
+	game.apply_continuous_effects(g2)
+	game.begin_turn(g2, 0)
+	for _ in 0 ..< 20 {
+		if s2.phase == .PreCombatMain && types.pvec_len(s2.stack) == 0 do break
+		if _, asked := s2.waiting_for.(types.WaitingFor_UnlessPayment); asked {
+			game.apply(g2, 0, types.GameAction_PayUnlessCost{pay = false})
+			continue
+		}
+		game.apply(g2, s2.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expectf(t, other.zone == .Graveyard, "the other enchantment is sacrificed: %v", other.zone)
+	testing.expect(t, flux.zone == .Battlefield, "Aura Flux itself stays")
 }

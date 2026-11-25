@@ -3102,6 +3102,11 @@ Progress:
 - The turn's damage records ("if an opponent was dealt damage this turn", the most dealt to one opponent, damage
   dealt to this creature); rule statics with a condition ("can't block as long as ...", CR 611.3b); "is every
   creature type" (CR 205.3m), as a characteristic-defining ability in every zone (CR 604.3). 7,204 -> 7,256.
+- Granted abilities (CR 613.1f, layer 6): "creatures you control have '{T}: Add one mana of any color'",
+  "enchanted creature has 'whenever this creature attacks, ...'", "other enchantments have 'at the beginning of your
+  upkeep, ...'", from static abilities and from resolved effects. Each pass rebuilds a permanent's abilities as its
+  own (kept at their positions) and then the granted ones; granted triggers are marked as granted and a changed set
+  gets a new list (triggers waiting to go on the stack keep pointing at the old one). 7,256 -> 7,371.
 - The app on the Odin engine, played by Playwright (Standard, random decks, the human only keeping, passing to end of
   turn and discarding): a whole game to the AI's win, no engine errors (scratchpad pw/play.cjs). Known: the game log
   panel is empty on the Odin engine (no log entries returned), and the home page's Card Coverage Dashboard reads
