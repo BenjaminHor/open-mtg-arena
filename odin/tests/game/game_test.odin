@@ -4190,3 +4190,41 @@ protection_from_a_color :: proc(t: ^testing.T) {
 	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
 	testing.expect(t, game.can_block(g, bears, knight), "a green one can")
 }
+
+@(test)
+attack_triggers_watching_other_attackers :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Boros Elite, battalion: "Whenever this creature and at least two other creatures attack, this creature gets
+	// +2/+2 until end of turn." The other attackers are counted as they're declared (CR 508.1, 508.3a).
+	testing.expect(t, game.card_supported(&card(t, "Boros Elite").face))
+	attack :: proc(t: ^testing.T, others: int) -> ^types.GameObject {
+		g := new_game()
+		s := &g.state
+		elite := add(t, g, "Boros Elite", 0, .Battlefield)
+		attackers: [dynamic]types.Tuple2(types.ObjectId, types.AttackTarget)
+		append(&attackers, types.Tuple2(types.ObjectId, types.AttackTarget){elite.id, types.AttackTarget_Player{1}})
+		for _ in 0 ..< others {
+			b := add(t, g, "Grizzly Bears", 0, .Battlefield)
+			append(&attackers, types.Tuple2(types.ObjectId, types.AttackTarget){b.id, types.AttackTarget_Player{1}})
+		}
+		game.begin_step(g, .DeclareAttackers)
+		testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attackers}))
+		settle_stack(g)
+		return elite
+	}
+	testing.expect(t, attack(t, 2).power.? == 3, "with two others: 3/3")
+	testing.expect(t, attack(t, 1).power.? == 1, "with one other: no battalion")
+
+	// Glory Bearers: "Whenever another creature you control attacks, it gets +0/+1 until end of turn": a trigger
+	// on another attacker ("it" is that creature, CR 608.2c).
+	testing.expect(t, game.card_supported(&card(t, "Glory Bearers").face))
+	g := new_game()
+	add(t, g, "Glory Bearers", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	game.begin_step(g, .DeclareAttackers)
+	attackers: [dynamic]types.Tuple2(types.ObjectId, types.AttackTarget)
+	append(&attackers, types.Tuple2(types.ObjectId, types.AttackTarget){bears.id, types.AttackTarget_Player{1}})
+	testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attackers}))
+	settle_stack(g)
+	testing.expect(t, bears.toughness.? == 3, "the attacking Bears get +0/+1")
+}

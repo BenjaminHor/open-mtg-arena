@@ -3035,6 +3035,9 @@ Progress:
   of sources with the quality (702.16b), their damage prevented (702.16e), not blocked by such creatures (702.16f),
   such Auras and Equipment can't stay attached (702.16c-d). Other qualities (card types, players, everything) not
   yet. 6,600 -> 6,612.
+- Attack triggers watching others: "whenever equipped/enchanted creature attacks", "whenever a creature you
+  control attacks"; "attacks with at least N others" / "attacks alone" (MinCoAttackers) and EventTime conditions,
+  settled when the ability triggers and not checked again as it resolves. 6,612 -> 6,679.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

@@ -140,9 +140,12 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		_, has := t.phase.?
 		return has && t.valid_card == nil
 	case types.TriggerMode_Attacks:
+		// "Whenever this creature attacks", "whenever equipped/enchanted creature attacks", "whenever a creature you
+		// control attacks" (CR 508.3a: when it's declared as an attacker).
 		f, has := t.valid_card.?
-		_, self := f.(types.TargetFilter_SelfRef)
-		return has && self && t.attack_target_filter == nil
+		if !has || t.attack_target_filter != nil do return false
+		if _, attached := f.(types.TargetFilter_AttachedTo); attached do return true
+		return subject_filter_supported(f)
 	case types.TriggerMode_YouAttack:
 		// "Whenever you attack": the plain form (CR 508.3d).
 		return t.valid_card == nil && t.attack_target_filter == nil
@@ -324,6 +327,23 @@ subject_filter_supported :: proc(f: types.TargetFilter) -> bool {
 		// "Whenever this creature or another creature you control enters".
 		for y in x.filters do if !subject_filter_supported(y) do return false
 		return len(x.filters) > 0
+	}
+	return false
+}
+
+// Whether the attacking creature is what an attack trigger watches: the watcher itself, what it's attached to, or a
+// creature of the described kind from the watcher's point of view.
+attack_subject_matches :: proc(s: ^types.GameState, f: types.TargetFilter, attacker, watcher: ^types.GameObject) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_SelfRef:
+		return attacker.id == watcher.id
+	case types.TargetFilter_AttachedTo:
+		host := host_of(s, watcher)
+		return host != nil && host.id == attacker.id
+	case types.TargetFilter_Typed:
+		return object_matches(s, attacker, x._0, watcher.controller, watcher.id)
+	case types.TargetFilter_Or:
+		for y in x.filters do if attack_subject_matches(s, y, attacker, watcher) do return true
 	}
 	return false
 }
@@ -510,8 +530,16 @@ collect_triggers :: proc(g: ^Game) {
 			o := object(s, e.object)
 			for &entry in trigger_definitions(o) {
 				t := &entry.definition
-				if _, attacks := t.mode.(types.TriggerMode_Attacks); attacks && trigger_supported(t^) do add_trigger(g, o.id, o.controller, t)
 				if _, either := t.mode.(types.TriggerMode_EntersOrAttacks); either && trigger_supported(t^) do add_trigger(g, o.id, o.controller, t)
+			}
+			// "Whenever [this / equipped creature / a creature you control] attacks": each permanent watching.
+			for id in ids_of(s.battlefield) {
+				w := object(s, id)
+				for &entry in trigger_definitions(w) {
+					t := &entry.definition
+					if _, attacks := t.mode.(types.TriggerMode_Attacks); !attacks || !trigger_supported(t^) do continue
+					if attack_subject_matches(s, t.valid_card.?, o, w) do add_trigger(g, w.id, w.controller, t)
+				}
 			}
 		case .Tapped:
 			tapped := object(s, e.object)
@@ -686,8 +714,17 @@ condition_holds_as_was :: proc(s: ^types.GameState, source: types.ObjectId, cont
 
 // ---- Intervening "if" conditions (CR 603.4) -----------------------------------------------------------------
 
+// Set while a triggered ability's condition is checked again as it resolves (CR 603.4): conditions that belong to
+// the trigger event alone (EventTime, "attacks alone") were settled when it triggered.
+@(thread_local)
+rechecking_on_resolution: bool
+
 trigger_condition_supported :: proc(c: types.TriggerCondition) -> bool {
 	#partial switch x in c {
+	case types.TriggerCondition_MinCoAttackers:
+		return x.filter == nil // "attacks with at least N other creatures" (battalion); "alone" is Not of 1
+	case types.TriggerCondition_EventTime:
+		return x.condition != nil && trigger_condition_supported(x.condition^)
 	case types.TriggerCondition_WasCast:
 		// "If you cast it": the caster is the permanent's controller as it enters; "from your hand" also its owner.
 		if ctl, has := x.controller.?; has {
@@ -730,6 +767,18 @@ trigger_condition_supported :: proc(c: types.TriggerCondition) -> bool {
 trigger_condition_holds :: proc(s: ^types.GameState, source: types.ObjectId, controller: types.PlayerId, c: types.TriggerCondition) -> bool {
 	src := object(s, source)
 	#partial switch x in c {
+	case types.TriggerCondition_MinCoAttackers:
+		// CR 508.1: the other creatures declared as attackers with it.
+		if rechecking_on_resolution do return true
+		combat, in_combat := s.combat.?
+		if !in_combat do return false
+		others := 0
+		for a in combat.attackers do if a.object_id != collecting_event.object do others += 1
+		if collecting_event.object == 0 do others -= 1 // not while collecting: the source itself attacks
+		return others >= int(x.minimum)
+	case types.TriggerCondition_EventTime:
+		if rechecking_on_resolution do return true
+		return trigger_condition_holds(s, source, controller, x.condition^)
 	case types.TriggerCondition_WasCast:
 		// "If you cast it (from your hand)": the permanent came from a spell its controller cast.
 		if src == nil do return false
@@ -930,7 +979,10 @@ resolve_ability :: proc(g: ^Game, entry: types.StackEntry, resolved: ^types.Reso
 	// CR 603.4: the intervening "if" is checked again as the ability resolves; if false, it does nothing.
 	if t, has := g.stack_conditions[entry.id]; has {
 		delete_key(&g.stack_conditions, entry.id)
-		if !condition_holds_as_was(&g.state, entry.source_id, entry.controller, t.definition.condition.?, t.lki) {
+		rechecking_on_resolution = true
+		holds := condition_holds_as_was(&g.state, entry.source_id, entry.controller, t.definition.condition.?, t.lki)
+		rechecking_on_resolution = false
+		if !holds {
 			delete_key(&g.stack_abilities, entry.id)
 			return
 		}
