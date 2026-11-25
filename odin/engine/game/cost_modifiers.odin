@@ -34,12 +34,14 @@ cost_modifier_supported :: proc(st: types.StaticDefinition) -> bool {
 // creature" or "spells that target this creature" reads them. The spell being cast and its chosen targets, while its
 // cost is worked out; spell_targets_one reads them. When the cost is asked for a spell without its targets (is it
 // castable at all, how large can X be), it's the best case: a reduction counts if some legal target would earn it,
-// an increase doesn't count. A target choice that then leaves the cost unpayable reverses the cast (CR 734).
+// an increase only if it can't be avoided (a required target whose every legal choice fits). A target choice that
+// then leaves the cost unpayable reverses the cast (CR 734).
 Cost_Targets :: struct {
-	spell:     types.ObjectId,
-	caster:    types.PlayerId,
-	targets:   []types.TargetRef,
-	best_case: bool,
+	spell:       types.ObjectId,
+	caster:      types.PlayerId,
+	targets:     []types.TargetRef,
+	best_case:   bool,
+	unavoidable: bool, // in the best case, for an increase: every legal choice of some required target fits
 }
 
 @(thread_local)
@@ -65,7 +67,15 @@ cost_target_fits :: proc(s: ^types.GameState, spell: ^types.GameObject, f: types
 		return false
 	}
 	for slot in spell_slot_list(spell) {
-		for t in legal_targets(s, slot.filter, cost_targets.caster, spell.id) do if fits(s, t, f, chooser, source) do return true
+		legal := legal_targets(s, slot.filter, cost_targets.caster, spell.id)
+		if cost_targets.unavoidable {
+			if slot.optional || len(legal) == 0 do continue
+			all := true
+			for t in legal do if !fits(s, t, f, chooser, source) do all = false
+			if all do return true
+		} else {
+			for t in legal do if fits(s, t, f, chooser, source) do return true
+		}
 	}
 	return false
 }
@@ -88,9 +98,13 @@ cost_change :: proc(s: ^types.GameState, p: types.PlayerId, spell: ^types.GameOb
 	apply :: proc(s: ^types.GameState, st: ^types.StaticDefinition, source, spell: ^types.GameObject) -> int {
 		m := st.mode.(types.StaticMode_ModifyCost)
 		if f, has := m.spell_filter.?; has {
-			// The best case before targets are chosen: an increase that depends on them doesn't count yet.
-			if cost_targets.best_case && m.mode == .Raise && filter_reads_targets(f) do return 0
-			if !spell_matches(s, spell, f, source) do return 0
+			// The best case before targets are chosen: an increase that depends on them counts only if it can't be
+			// avoided.
+			unavoidable := cost_targets.best_case && m.mode == .Raise && filter_reads_targets(f)
+			cost_targets.unavoidable = unavoidable
+			matches := spell_matches(s, spell, f, source)
+			cost_targets.unavoidable = false
+			if !matches do return 0
 		}
 		if !condition_holds(s, source, st.condition) do return 0
 		n := int(m.amount.(types.ManaCost_Cost).generic)

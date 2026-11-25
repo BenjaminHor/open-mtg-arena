@@ -3419,3 +3419,19 @@ spells_that_target_it_cost_more :: proc(t: ^testing.T) {
 	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
 	testing.expect(t, shock.zone == .Stack, "cast at the player for {R}")
 }
+
+@(test)
+cost_increase_every_target_would_pay :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Boreal Elemental: "Spells your opponents cast that target this creature cost {2} more to cast." When it's the
+	// only creature, Murder ({1}{B}{B}, "destroy target creature") can't be cast with three Swamps: every legal
+	// target raises the cost (CR 601.2f, 601.2h).
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Swamp", 0, .Battlefield)
+	add(t, g, "Boreal Elemental", 1, .Battlefield)
+	murder := add(t, g, "Murder", 0, .Hand)
+	testing.expect(t, !game.castable(s, 0, murder, g.card_db), "only the Elemental to target: {3}{B}{B}")
+	add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, game.castable(s, 0, murder, g.card_db), "the Bears can be targeted for {1}{B}{B}")
+}
