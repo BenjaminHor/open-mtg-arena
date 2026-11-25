@@ -1773,3 +1773,39 @@ flashback_spell_cant_target_itself :: proc(t: ^testing.T) {
 	}
 	_ = opt
 }
+
+@(test)
+enters_with_counters_if_and_x :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 614.1c, 614.12: "enters with a +1/+1 counter on it if an opponent lost life this turn" is checked as it
+	// enters. Cindering Cutthroat.
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Mountain", 0, .Battlefield)
+	testing.expect(t, game.card_supported(&card(t, "Cindering Cutthroat").face))
+	a := add(t, g, "Cindering Cutthroat", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = a.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, a.zone == .Battlefield && len(a.counters) == 0, "no life lost: no counter")
+	_ = s
+	g2 := new_game()
+	for _ in 0 ..< 3 do add(t, g2, "Mountain", 0, .Battlefield)
+	game.lose_life(&g2.state, 1, 2)
+	b := add(t, g2, "Cindering Cutthroat", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = b.id}))
+	game.apply(g2, 0, types.GameAction_PassPriority{})
+	game.apply(g2, 1, types.GameAction_PassPriority{})
+	testing.expect(t, b.zone == .Battlefield && len(b.counters) == 1 && b.counters[0]._1 == 1, "an opponent lost life: a counter")
+
+	// CR 107.3m: "enters with X +1/+1 counters" uses the X announced for the spell. Endless One, X = 3.
+	g3 := new_game()
+	for _ in 0 ..< 3 do add(t, g3, "Forest", 0, .Battlefield)
+	one := add(t, g3, "Endless One", 0, .Hand)
+	testing.expect(t, game.card_supported(&card(t, "Endless One").face))
+	testing.expect(t, game.apply(g3, 0, types.GameAction_CastSpell{object_id = one.id}))
+	testing.expect(t, game.apply(g3, 0, types.GameAction_ChooseX{value = 3}))
+	game.apply(g3, 0, types.GameAction_PassPriority{})
+	game.apply(g3, 1, types.GameAction_PassPriority{})
+	testing.expect(t, one.zone == .Battlefield && len(one.counters) == 1 && one.counters[0]._1 == 3 && game.power_of(one) == 3, "three counters")
+}

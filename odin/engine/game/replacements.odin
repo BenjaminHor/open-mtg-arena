@@ -16,10 +16,11 @@ replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
 	case types.Effect_SetTapState:
 		return is_self(e.target) && e.state == .Tap && e.scope == .Single
 	case types.Effect_PutCounter:
-		_, fixed := fixed_quantity(e.count)
+		// A number, or an amount as it enters: "X +1/+1 counters" (the spell's X, CR 107.3m), "a counter for each".
+		amount_ok := quantity_supported(e.count) && !quantity_reads_target(e.count)
 		#partial switch _ in e.counter_type {
 		case types.CounterType_Plus1Plus1, types.CounterType_Minus1Minus1:
-			return fixed && is_self(e.target)
+			return amount_ok && is_self(e.target)
 		}
 	}
 	return false
@@ -30,6 +31,9 @@ entry_condition_supported :: proc(c: types.ReplacementCondition) -> bool {
 	#partial switch x in c {
 	case types.ReplacementCondition_CastViaKicker:
 		return x.variant == nil && x.kicker_cost == nil // the one kicker cost
+	case types.ReplacementCondition_OnlyIfQuantity:
+		// "Enters with a +1/+1 counter if an opponent lost life this turn" (CR 614.1c).
+		return x.active_player_req == nil && quantity_supported(x.lhs) && quantity_supported(x.rhs)
 	case types.ReplacementCondition_UnlessControlsSubtype, types.ReplacementCondition_UnlessPlayerLifeAtMost,
 	     types.ReplacementCondition_UnlessMultipleOpponents, types.ReplacementCondition_UnlessYourTurn:
 		return true
@@ -70,6 +74,9 @@ entry_condition_holds :: proc(s: ^types.GameState, o: ^types.GameObject, c: type
 		return len(s.players) <= 2 // a two-player game has one opponent
 	case types.ReplacementCondition_UnlessYourTurn:
 		return s.active_player != o.controller
+	case types.ReplacementCondition_OnlyIfQuantity:
+		// CR 614.12: read as it's about to enter; it isn't among the permanents counted (not yet on the battlefield).
+		return compare(quantity_value(s, x.lhs, o.controller, o.id, 0), x.comparator, quantity_value(s, x.rhs, o.controller, o.id, 0))
 	case types.ReplacementCondition_CastViaKicker:
 		return kicked(o) // "if it was kicked, it enters with ..." (CR 702.33d)
 	}
@@ -79,6 +86,9 @@ entry_condition_holds :: proc(s: ^types.GameState, o: ^types.GameObject, c: type
 // CR 614.12: as the permanent enters, its own replacement effects apply.
 apply_entering_replacements :: proc(s: ^types.GameState, o: ^types.GameObject) {
 	if o.replacement_definitions == nil do return
+	// CR 107.3m: an X in its replacement effects is the X of the spell it was.
+	x_defined = has_x(o.mana_cost)
+	defer x_defined = false
 	for r in (^[dynamic]types.ReplacementDefinition)(o.replacement_definitions)^ {
 		if !replacement_supported(r) do continue
 		if c, has := r.condition.?; has && !entry_condition_holds(s, o, c) do continue
@@ -86,8 +96,8 @@ apply_entering_replacements :: proc(s: ^types.GameState, o: ^types.GameObject) {
 		case types.Effect_SetTapState:
 			o.tapped = true
 		case types.Effect_PutCounter:
-			n, _ := fixed_quantity(e.count)
-			add_counters(o, e.counter_type, u32(n))
+			n := quantity_value(s, e.count, o.controller, o.id, 0)
+			if n > 0 do add_counters(o, e.counter_type, u32(n))
 		}
 	}
 }

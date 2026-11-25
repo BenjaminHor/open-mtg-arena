@@ -20,7 +20,12 @@ has_keyword :: proc(o: ^types.GameObject, $T: typeid) -> bool {
 // keywords. Triggered, static and replacement abilities, and activated abilities other than mana abilities, come
 // later.
 card_supported :: proc(face: ^types.CardFace) -> bool {
-	for r in face.replacements do if !replacement_supported(r) do return false
+	{
+		// CR 107.3m: "enters with X counters" uses the spell's X.
+		x_defined = has_x(face.mana_cost)
+		defer x_defined = false
+		for r in face.replacements do if !replacement_supported(r) do return false
+	}
 	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !cost_modifier_supported(st) do return false
 	for t in face.triggers do if !trigger_supported(t) do return false
 	if !additional_cost_supported(face) || len(face.casting_options) > 0 || !modal_supported(face) do return false
@@ -985,7 +990,9 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 		}
 	}
 	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !cost_modifier_supported(st) do append(&out, static_gap(st))
+	x_defined = has_x(face.mana_cost) // CR 107.3m, as card_supported checks it
 	for r in face.replacements do if !replacement_supported(r) do append(&out, name("replacement:", r.event))
+	x_defined = false
 	if !additional_cost_supported(face) do append(&out, "additional cost")
 	if !modal_supported(face) do append(&out, "modal")
 	if len(face.casting_options) > 0 do append(&out, "casting option")
