@@ -93,6 +93,11 @@ change_zone_supported :: proc(x: types.Effect_ChangeZone) -> bool {
 	if _, event := x.target.(types.TargetFilter_TriggeringSource); event && x.destination == .Battlefield {
 		return event_object_defined && (!has_origin || origin == .Graveyard || origin == .Exile)
 	}
+	// "Whenever you discard a card, exile that card from your graveyard": the event's card, as the new object it
+	// became in the graveyard, while it's that object (CR 400.7, event_reference) and still there (do_change_zone).
+	if _, event := x.target.(types.TargetFilter_TriggeringSource); event && x.destination == .Exile && has_origin && origin == .Graveyard {
+		return event_object_defined
+	}
 	// A permanent on the battlefield.
 	return (!has_origin || origin == .Battlefield) && x.destination != .Battlefield && filter_supported(x.target) && !may_name_player(x.target)
 }
@@ -517,8 +522,13 @@ move_chosen_cards :: proc(g: ^Game, to: types.Zone, p: types.PlayerId, enter_tap
 // True while a player chooses what an Aura it returns will enchant (answer_aura_host carries it out then).
 do_change_zone :: proc(g: ^Game, x: types.Effect_ChangeZone, controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) -> bool {
 	s := &g.state
+	// CR 610.3a-b: "exile ... until this leaves the battlefield" with this already gone: nothing moves.
+	if exile_until_source_gone(g) do return false
 	moving := make([dynamic]types.ObjectId, context.temp_allocator)
-	if _, tracked := x.target.(types.TargetFilter_TrackedSet); tracked {
+	if _, _, linked := linked_exile_target(x.target); linked {
+		// "Return the exiled cards": those this object's other ability exiled (CR 607.2a, exile_links.odin).
+		append(&moving, ..linked_cards_named(g, x.target, controller, source)[:])
+	} else if _, tracked := x.target.(types.TargetFilter_TrackedSet); tracked {
 		// CR 400.7j: an effect that moved an object to a public zone can find it there; one now in a hidden zone (or
 		// a token that ceased to exist, CR 111.8) can't be found.
 		for id in g.resolution.moved {
@@ -567,7 +577,6 @@ Aura_Host :: struct {
 
 // What an Aura could enchant as it enters under `who` (CR 303.4f): a permanent its enchant ability allows (read as
 // that player's Aura), not one with protection from it (CR 702.16c). It isn't targeted (CR 115.10a).
-@(private = "file")
 aura_hosts_for :: proc(s: ^types.GameState, aura: ^types.GameObject, who: types.PlayerId) -> [dynamic]types.TargetRef {
 	out := make([dynamic]types.TargetRef)
 	f, _ := enchant_filter(aura)
@@ -609,11 +618,14 @@ choose_aura_hosts :: proc(g: ^Game, moving: []types.ObjectId, under: Maybe(types
 // The player's choice of what the returning Aura enchants; then the instruction is carried out (or asks again, for
 // the next Aura).
 answer_aura_host :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_ReturnAsAuraTarget, choice: Maybe(types.TargetRef)) -> bool {
+	// An Aura returning because what it was exiled "until" left (CR 610.3), outside any resolution (exile_links.odin).
+	if g.asking_exile_return || !g.resolution.active do return answer_exile_return_host(g, p, w, choice)
 	r := &g.resolution
 	if !r.active || r.current == nil || p != w.player do return false
 	t, chosen := choice.?
 	if !chosen || !slice.contains(w.legal_targets[:], t) do return false
 	x, moves := r.current.effect.(types.Effect_ChangeZone)
+	if !moves do x, moves = linked_exile_return(r.current.effect) // "return the exiled cards"
 	if !moves do return false
 	host, _ := target_object(t)
 	append(&r.aura_hosts, Aura_Host{aura = w.returned_id, host = host})

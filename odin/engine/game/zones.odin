@@ -96,6 +96,7 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 	}
 	last_controller := o.controller // CR 603.10: a leaves-the-battlefield trigger looks back at the object as it was
 	record_zone_change(s, o, from, to)
+	unlink_departing(g, o, from) // its exile links end with it (CR 400.7, 607.2a; exile_links.odin)
 	if from == .Exile do clear(&o.casting_permissions) // CR 400.7: a new object, without the permission
 	o.zone = to
 	o.incarnation += 1
@@ -152,10 +153,13 @@ move_object :: proc(g: ^Game, id: types.ObjectId, destination: types.Zone) {
 		list := zone_list(s, to, o.owner)
 		types.pvec_push(list, id, copy_id)
 	}
+	if to == .Exile do link_exiled_card(g, o, from) // "the exiled card", "until this leaves" (CR 607.2a, 610.3)
 	// CR 603.2, 603.6: a zone change is an event abilities can trigger on.
 	if !moving_together do event_group += 1
 	append(&g.events, Event{kind = .Zone_Change, object = id, from = from, to = to, controller = last_controller, lki = lki, group = event_group})
 	report_zone_change(s, id, from, to)
+	// CR 610.3: what it exiled "until" it left returns immediately after (or once the simultaneous moves end).
+	returns_due(g)
 }
 
 // CR 701.21a: to sacrifice a permanent, its controller moves it from the battlefield to its owner's graveyard. That
@@ -166,6 +170,9 @@ sacrifice_permanent :: proc(g: ^Game, id: types.ObjectId) {
 	if o == nil || o.zone != .Battlefield do return
 	report(types.GameEvent_PermanentSacrificed{object_id = id, player_id = o.controller})
 	report_told_move(id)
+	// One event with its sacrifice record: the cards it exiled "until" it left return after (end_together, CR 610.3).
+	together := begin_together()
+	defer end_together(together)
 	move_object(g, id, .Graveyard)
 	// "If you sacrificed a permanent this turn": the record, as the permanent last existed (sacrificed by its
 	// controller, CR 701.21a).
@@ -305,6 +312,8 @@ begin_together :: proc() -> bool {
 
 end_together :: proc(outer: bool) {
 	moving_together = outer
+	// CR 610.3d: cards exiled "until" permanents that left together return together, right after (exile_links.odin).
+	if !outer do returns_after_together()
 }
 
 // The events of the action being carried out, for last known information (CR 608.2h) where only the state is at hand.

@@ -478,10 +478,11 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		_, fixed := fixed_quantity(x.count)
 		return fixed && (x.target == nil || is_controller(x.target))
 	case types.Effect_ChangeZone:
-		// "Exile target creature until this leaves the battlefield" (CR 610.3): the return isn't built, so such an
-		// exile would be for good (ninth rules review).
 		if d, has := duration.?; has {
-			if _, until := d.(types.Duration_UntilHostLeavesPlay); until do return false
+			// "Exile target creature until this leaves the battlefield" (CR 610.3, exile_links.odin). No other
+			// duration is read (Storrev's "that wasn't put there this combat" comes as one).
+			if _, until := d.(types.Duration_UntilHostLeavesPlay); !until do return false
+			return exile_until_supported(x)
 		}
 		return change_zone_supported(x)
 	case types.Effect_Bounce:
@@ -995,7 +996,14 @@ object_supported :: proc(o: ^types.GameObject, card_db: Card_Lookup) -> bool {
 	if o.is_token && o.printed_ref == nil do return true
 	// Its triggers are checked where they are (object_face leaves them out, to allocate nothing: this runs for
 	// every card on every legal-action query).
-	if o.trigger_definitions != nil do for e in o.trigger_definitions^ do if !trigger_supported(e.definition) do return false
+	if o.trigger_definitions != nil {
+		// The card's whole face, for what a trigger's check reads from the card (exile_links.odin: whether its
+		// exiles are linked, CR 607.2a), as card_supported has it.
+		outer_face := checking_face
+		defer checking_face = outer_face
+		if e, ok := card_entry_of(o); ok do checking_face = &e.face
+		for e in o.trigger_definitions^ do if !trigger_supported(e.definition) do return false
+	}
 	f := object_face(o)
 	return card_supported(&f, back_face = o.transformed) // a transformed permanent's back face has no mana cost
 }
@@ -1379,6 +1387,8 @@ is_permanent_card :: proc(o: ^types.GameObject) -> bool {
 // One instruction of a resolving spell or ability. True when it asked a player to choose (resolution pauses).
 do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration), controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) -> (asked: bool) {
 	s := &g.state
+	// "Return the exiled cards": a ChangeZone of the linked cards, choosing hosts for Auras (exile_links.odin).
+	if linked, is_linked := linked_exile_return(effect); is_linked do return do_change_zone(g, linked, controller, source, target)
 	if _, known := more_effect_supported(effect, duration); known {
 		do_more_effect(g, effect, controller, source, target)
 		return

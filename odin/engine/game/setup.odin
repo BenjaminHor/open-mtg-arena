@@ -73,6 +73,11 @@ Game :: struct {
 	cast_snapshots:    map[types.ObjectId]Cast_Snapshot, // this turn's spells as cast, for "copy that spell" (copy_spell.odin)
 	copy_retarget:     Copy_Retarget, // a copy of a spell whose new targets are being chosen (CR 707.10c)
 	dealing_combat:    bool,
+	// Cards exiled "until" a permanent that has left, still to return (CR 610.3), and while the owner of a returning
+	// Aura chooses what it enchants (CR 303.4f), who receives priority after (exile_links.odin).
+	exile_returns:       [dynamic]Exile_Return,
+	asking_exile_return: bool,
+	exile_return_after:  types.PlayerId,
 }
 
 Control_Change :: struct {

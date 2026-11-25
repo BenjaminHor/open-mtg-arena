@@ -146,7 +146,8 @@ give_priority :: proc(g: ^Game, p: types.PlayerId) {
 	// CR 608.2g: a spell cast while another resolves: no one gets priority; the resolution goes on.
 	if resume_after_free_cast(g) do return
 	g.priority_after = p // kept while a player chooses a trigger's modes or targets
-	// Choices made as a permanent entered, first (CR 614.12).
+	// A returning Aura's host (CR 610.3, 303.4f), then choices made as a permanent entered (CR 614.12).
+	if ask_exile_return_host(g, p) do return
 	if ask_entry_copy(g, p) do return
 	if ask_entry_payment(g, p) do return
 	if ask_entry_name(g, p) do return
@@ -169,6 +170,8 @@ give_priority :: proc(g: ^Game, p: types.PlayerId) {
 		collect_triggers(g)
 		if !had_triggers && len(g.events) == 0 && len(g.pending_triggers) == 0 do break
 	}
+	// An Aura whose host left as state-based actions were performed (CR 610.3, 303.4f).
+	if ask_exile_return_host(g, p) do return
 	// CR 117.3c-d: after abilities are put on the stack, the active player gets priority, unless a player just acted.
 	s.priority_player = p
 	s.waiting_for = types.WaitingFor_Priority{player = p}

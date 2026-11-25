@@ -207,7 +207,12 @@ continue_resolution :: proc(g: ^Game) -> bool {
 			note_moved(g, r.events_mark)
 			if r.current != nil do note_amount(g, r.current.effect, r.events_mark)
 		}
-		if !resuming_scope_now do r.events_mark = -1
+		if !resuming_scope_now {
+			r.events_mark = -1
+			// CR 610.3: cards exiled "until" a permanent the instruction made leave return now, after what it did
+			// and outside its "this way" (exile_links.odin).
+			return_exiled_cards(g)
+		}
 		x := r.next
 		r.next = x.sub_ability
 		previous := r.current

@@ -3365,6 +3365,18 @@ Progress:
   Found wrong in supported cards (Known issues): Ark of Hunger, Tablet of Discovery ("mill ... you may play that
   card") and Mosswood Dreadknight ("cast it from your graveyard") do nothing: do_grant_permission grants only to
   exiled cards; CR 704.5q (+1/+1 and -1/-1 counters cancel) isn't implemented.
+- Exile until it leaves, and linked "exiled with" abilities (agent, merged; exile_links.odin): CR 610.3 built with
+  the state's `exile_links` (link made only when an ability's exile instruction moves a nontoken card while its
+  source is the same object on the battlefield, so Fiend Hunter leaving in response exiles for good, per its
+  rulings); links end per CR 400.7 and move to `linked_exile_lki` when the source leaves (for leaves triggers and
+  sacrifice costs); returns under the owner's control (610.3c), together as one later event (610.3d), tokens never
+  (111.8), Auras with the owner choosing a host or staying exiled (303.4f-g, prompt ReturnAsAuraTarget); returns
+  during a resolution wait for the end of the current instruction. "Return the exiled cards" (CR 607.2a) to
+  battlefield, hand or graveyard. Fixed: Temporary Lockdown exiled for good (its duration was ignored). Refused:
+  linked exiles from costs or replacements (Fear of Abduction, CR 607.2q), "all other ... exiled with" (Mirror of
+  Life Trapping), "put onto the battlefield" without "owner's control" (Underworld Sentinel, CR 110.2a), Storrev
+  (misparsed duration), Detention Sphere (same-name filter). Banishing Light and Cast Out now supported. Tests:
+  exile_link_test.odin (26). Coverage 8,704. The return queue lives in Game, not the state (empty between actions).
 - Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
   decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
   cards to be triaged against the CR (next step for the fixtures).

@@ -95,6 +95,11 @@ more_effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) 
 		// "Put a +1/+1 counter on each creature you control."
 		return quantity_supported(x.count) && !quantity_reads_target(x.count) && counter_kind_supported(x.counter_type) && mass_filter_supported(x.target), true
 	case types.Effect_ChangeZoneAll:
+		if d, has := duration.?; has {
+			// "Exile each ... until this leaves the battlefield" (CR 610.3, exile_links.odin); no other duration is read.
+			if _, until := d.(types.Duration_UntilHostLeavesPlay); !until do return false, true
+			return exile_all_until_supported(x), true
+		}
 		return change_zone_all_supported(x), true
 	case types.Effect_BounceAll:
 		// "Return all creatures to their owners' hands."
@@ -113,6 +118,8 @@ change_zone_all_supported :: proc(x: types.Effect_ChangeZoneAll) -> bool {
 	}
 	if x.enters_attacking || len(x.enter_with_counters) > 0 || x.face_down_profile != nil || x.library_position != nil || x.random_order do return false
 	if x.enter_tapped == .Untapped do return false
+	// "Return the exiled cards", "cards exiled with this" (CR 607.2a, exile_links.odin).
+	if _, _, linked := linked_exile_target(x.target); linked do return linked_return_supported(x)
 	origin := x.origin.? or_else .Battlefield
 	#partial switch origin {
 	case .Battlefield:
@@ -374,6 +381,8 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 		n := quantity_value(s, x.amount, controller, source, 0)
 		for p in s.players do if player_filter_matches(x.player_filter, p.id, controller) do deal_damage(g, source, types.TargetRef_Player{p.id}, n)
 	case types.Effect_ChangeZoneAll:
+		// CR 610.3a-b: "exile each ... until this leaves the battlefield" with this already gone: nothing moves.
+		if exile_until_source_gone(g) do return
 		// All at once (CR 608.2c: those that match as it resolves).
 		origin := x.origin.? or_else .Battlefield
 		moving := make([dynamic]^types.GameObject, context.temp_allocator)
