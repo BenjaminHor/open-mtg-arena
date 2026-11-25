@@ -3134,3 +3134,30 @@ exiled_this_way :: proc(t: ^testing.T) {
 	g, sc = run(t, "Shock")
 	testing.expect(t, game.player(&g.state, 0).life == 20 && sc.power.? == 4, "a noncreature card: +1/+1, no life")
 }
+
+@(test)
+when_you_do_after_a_sacrifice :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Brokers Hideout: "When this land enters, sacrifice it. When you do, search your library for a basic Forest,
+	// Plains, or Island card, put it onto the battlefield tapped, then shuffle." CR 603.12: the reflexive ability
+	// triggers because the sacrifice happened.
+	testing.expect(t, game.card_supported(&card(t, "Brokers Hideout").face))
+	g := new_game()
+	s := &g.state
+	plains := add(t, g, "Plains", 0, .Library)
+	hideout := add(t, g, "Brokers Hideout", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = hideout.id}))
+	for _ in 0 ..< 10 {
+		if w, searching := s.waiting_for.(types.WaitingFor_SearchChoice); searching {
+			chosen: [dynamic]types.ObjectId
+			append(&chosen, plains.id)
+			testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen}))
+			_ = w
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, hideout.zone == .Graveyard, "sacrificed")
+	testing.expect(t, plains.zone == .Battlefield && plains.tapped, "then the Plains, tapped")
+}

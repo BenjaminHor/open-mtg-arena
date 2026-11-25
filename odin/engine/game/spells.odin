@@ -131,7 +131,14 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	if a.sub_ability != nil && is_reflexive(a.sub_ability) {
 		// CR 603.12: "You may X. When you do, Y": Y is a triggered ability of its own, with its own targets. Read
 		// after a "you may" only, and as the last part of the ability (what follows it belongs to it).
-		if !a.optional do return false
+		// After a mandatory instruction, "you do" means it did something (moved, made or marked something).
+		if !a.optional {
+			#partial switch _ in a.effect^ {
+			case types.Effect_ChangeZone, types.Effect_Sacrifice, types.Effect_Token, types.Effect_PutCounter, types.Effect_Mill, types.Effect_Discard, types.Effect_Destroy:
+			case:
+				return false
+			}
+		}
 		for y := a.sub_ability.sub_ability; y != nil; y = y.sub_ability do if y.sub_link == .SequentialSibling do return false
 		reflex := a.sub_ability^
 		reflex.condition = nil

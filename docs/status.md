@@ -2939,6 +2939,8 @@ Progress:
 - "If a creature card was exiled / put into a graveyard this way" (CR 608.2c): what the last instruction carried
   out moved, kept on the resolution across choices; a skipped conditional instruction doesn't reset it.
   5,807 -> 5,825.
+- "When you do" after a mandatory instruction (sacrifice, zone change, token, counters, mill, discard, destroy):
+  it triggers if that instruction did something (CR 603.12); the SNC tri-lands and others. 5,825 -> 5,834.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

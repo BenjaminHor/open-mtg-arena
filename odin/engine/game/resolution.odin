@@ -27,6 +27,8 @@ Resolution :: struct {
 	scope_next:   int, // ...of which this is the next
 	moved:        [dynamic]types.ObjectId, // what the latest instruction moved between zones: "this way" (CR 608.2c)
 	events_mark:  int, // where that instruction's events began (it may have paused for a choice since)
+	did_something: bool, // that instruction moved, made or put counters on something: "when you do" after it
+	current:      ^types.ResolvedAbility, // the instruction being carried out (the one before, once the next starts)
 }
 
 // The spell or ability as it goes on the stack: one node per instruction, each with the targets chosen for it (CR
@@ -120,10 +122,14 @@ continue_resolution :: proc(g: ^Game) -> bool {
 		r.events_mark = -1
 		x := r.next
 		r.next = x.sub_ability
+		previous := r.current
+		r.current = x
 		if c, has := x.condition.?; has {
 			if _, when_you_do := c.(types.AbilityCondition_WhenYouDo); when_you_do {
 				// CR 603.12: "when you do" triggers if the "you may" before it was done; the rest is that ability's.
-				if r.performed do reflexive_trigger(g, x)
+				// After a "you may", whether it was done; after a mandatory instruction, whether it did anything.
+				done := r.performed if previous != nil && previous.optional else r.did_something
+				if done do reflexive_trigger(g, x)
 				r.next = nil
 				continue
 			}
@@ -552,5 +558,9 @@ reflexive_trigger :: proc(g: ^Game, x: ^types.ResolvedAbility) {
 note_moved :: proc(g: ^Game, events_before: int) {
 	r := &g.resolution
 	clear(&r.moved)
-	for e in g.events[events_before:] do if e.kind == .Zone_Change && e.from != e.to do append(&r.moved, e.object)
+	r.did_something = false
+	for e in g.events[events_before:] {
+		if e.kind == .Zone_Change && e.from != e.to do append(&r.moved, e.object)
+		if e.kind == .Zone_Change || e.kind == .Counter_Added || e.kind == .Sacrificed do r.did_something = true
+	}
 }
