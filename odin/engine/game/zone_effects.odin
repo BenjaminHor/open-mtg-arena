@@ -64,7 +64,8 @@ bounce_supported :: proc(x: types.Effect_Bounce) -> bool {
 }
 
 // Graveyard cards matching a filter, as targets for the player choosing.
-graveyard_targets :: proc(s: ^types.GameState, f: types.TypedFilter, chooser: types.PlayerId, out: ^[dynamic]types.TargetRef) {
+// `source` is left out: a spell cast from a graveyard (flashback) can't target itself (CR 115.5).
+graveyard_targets :: proc(s: ^types.GameState, f: types.TypedFilter, chooser: types.PlayerId, source: types.ObjectId, out: ^[dynamic]types.TargetRef) {
 	for p in s.players {
 		owned_ok := true
 		for prop in f.properties do if owned, ok := prop.(types.FilterProp_Owned); ok {
@@ -85,6 +86,7 @@ graveyard_targets :: proc(s: ^types.GameState, f: types.TypedFilter, chooser: ty
 		}
 		if !owned_ok do continue
 		for id in ids_of(p.graveyard) {
+			if id == source do continue
 			o := object(s, id)
 			plain := f
 			plain.controller = nil // a card's owner was checked above; in a graveyard it has no controller as such

@@ -24,7 +24,8 @@ card_supported :: proc(face: ^types.CardFace) -> bool {
 	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !cost_modifier_supported(st) do return false
 	for t in face.triggers do if !trigger_supported(t) do return false
 	if !additional_cost_supported(face) || len(face.casting_options) > 0 || !modal_supported(face) do return false
-	// Not yet: "cast only during ..." (CR 601.3), strive (CR 702.111), cleave (CR 702.148), solve (CR 719.2).
+	// Not yet: "cast only during ..." (CR 601.3), strive (an ability word, CR 207.2c), cleave (CR 702.148), a
+	// Case's "to solve" (CR 720.3a).
 	if len(face.casting_restrictions) > 0 || face.strive_cost != nil || face.cleave_variant != nil || face.solve_condition != nil do return false
 	// A spell needs a mana cost it can pay (CR 118.6, 107.4e-f); lands aren't cast.
 	if !is_land_face(face) {
@@ -390,7 +391,7 @@ legal_targets :: proc(s: ^types.GameState, f: types.TargetFilter, controller: ty
 			return out
 		}
 		if gf, in_graveyard := graveyard_filter(f); in_graveyard {
-			graveyard_targets(s, gf, controller, &out)
+			graveyard_targets(s, gf, controller, source, &out)
 			return out
 		}
 		for id in ids_of(s.battlefield) {
@@ -529,7 +530,10 @@ object_face :: proc(o: ^types.GameObject) -> types.CardFace {
 	if o.abilities != nil do f.abilities = o.abilities^
 	if o.static_definitions != nil do f.static_abilities = (^[dynamic]types.StaticDefinition)(o.static_definitions)^
 	if o.replacement_definitions != nil do f.replacements = (^[dynamic]types.ReplacementDefinition)(o.replacement_definitions)^
-	if e, ok := card_entry_of(o); ok do f.casting_options = e.face.casting_options
+	if e, ok := card_entry_of(o); ok {
+		f.casting_options = e.face.casting_options
+		f.solve_condition = e.face.solve_condition // a Case's "to solve" (CR 720.3a), not kept on objects either
+	}
 	return f
 }
 

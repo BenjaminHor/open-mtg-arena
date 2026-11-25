@@ -208,8 +208,12 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		case types.GameAction_SelectCards:
 			return answer_cost_choice(g, p, w, a.cards[:])
 		case types.GameAction_CancelCast:
-			// CR 602.2 / 601.2: an activation that can't be finished is undone.
-			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed
+			// CR 734.1: an activation or cast that can't be finished is reversed entirely.
+			withdraw_spell(s, g.pending.object)
+			if o := object(s, g.pending.object); o != nil && g.pending.ability_index < 0 {
+				o.cost_x_paid = nil
+				o.additional_cost_payment_count = 0
+			}
 			g.pending = {}
 			give_priority(g, p)
 			return true

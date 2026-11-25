@@ -127,7 +127,7 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 			}
 			return n
 		case types.QuantityRef_LifeGainedThisTurn:
-			// CR 119.3: the life a player gained this turn, all of it (losses don't offset it).
+			// CR 119.3: the life a player gained this turn, counted on its own (a separate tally from life lost).
 			return int(player(s, scope_player(s, r.player, controller)).life_gained_this_turn)
 		case types.QuantityRef_LifeLost:
 			// Life lost this turn: from damage (CR 119.2), effects (119.3) and paying life (119.4).

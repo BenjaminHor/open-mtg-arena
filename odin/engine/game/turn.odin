@@ -40,7 +40,7 @@ begin_turn :: proc(g: ^Game, active: types.PlayerId) {
 // where players get it. Steps that end on their own move straight on.
 begin_step :: proc(g: ^Game, step: types.Phase) {
 	s := &g.state
-	empty_mana_pools(s) // CR 106.4: the previous step or phase has ended
+	empty_mana_pools(s) // CR 500.5, 703.4q: the previous step or phase has ended
 	s.phase = step
 	s.priority_passes = nil
 	#partial switch step {

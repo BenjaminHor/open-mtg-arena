@@ -187,9 +187,10 @@ plan_payment :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaCos
 
 // A permanent tapped for mana, and the rider of the ability used.
 Mana_Tap :: struct {
-	object: ^types.GameObject, // nil: mana from the pool, `pip`
-	option: Mana_Option,
-	pip:    types.ManaPipId,
+	object:  ^types.GameObject, // nil: mana from the pool, `pip`
+	option:  Mana_Option,
+	pip:     types.ManaPipId,
+	surplus: int, // mana it makes beyond what the cost needs, left in the pool (CR 106.4)
 }
 
 // CR 601.2g-h: which permanents to tap, and with which abilities, to pay the cost. Abilities without a rider are
@@ -220,15 +221,23 @@ plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaC
 		assigned := make([]int, len(colored), context.temp_allocator) // the source paying each colored symbol
 		if !assign_colored(sources[:], colored[:], 0, used, assigned) do continue
 		generic := int(c.generic)
-		for src, i in sources do if used[i] > 0 do generic -= src.amount - used[i] // the rest of a tapped source's mana
+		last := -1 // the source that pays the last of the cost
+		for src, i in sources do if used[i] > 0 {
+			if src.amount > used[i] do last = i
+			generic -= src.amount - used[i] // the rest of a tapped source's mana
+		}
 		for src, i in sources {
 			if generic <= 0 do break
 			if used[i] == 0 {
 				used[i] = src.amount
 				generic -= src.amount
+				last = i
 			}
 		}
 		if generic > 0 do continue
+		// What's made beyond the cost (Sol Ring's second {C} for {1}) is counted as the source that paid last's.
+		surplus := make([]int, len(sources), context.temp_allocator)
+		if generic < 0 && last >= 0 do surplus[last] = -generic
 		for src, i in sources do if used[i] > 0 {
 			// The ability with the mildest rider that makes every symbol this source pays.
 			best := -1
@@ -238,7 +247,7 @@ plan_mana_taps :: proc(s: ^types.GameState, p: types.PlayerId, cost: types.ManaC
 				if fits && (best < 0 || option.rider < src.options[best].rider) do best = j
 			}
 			if best < 0 do best = 0
-			append(&taps, Mana_Tap{src.object, src.options[best], src.pip})
+			append(&taps, Mana_Tap{src.object, src.options[best], src.pip, surplus[i]})
 		}
 		return taps, true
 	}
@@ -253,6 +262,16 @@ pay_mana :: proc(g: ^Game, p: types.PlayerId, cost: types.ManaCost, exclude: typ
 	for t in taps {
 		if t.object == nil do spend_pool_mana(&g.state, p, t.pip)
 		else do t.object.tapped = true
+		if t.surplus > 0 {
+			// CR 106.4: the rest of the mana stays in the pool. A choice of color is the engine's for now, as is the
+			// choice of what to tap: the first it could make.
+			color: types.ManaType
+			for c in t.option.colors {
+				color = c
+				break
+			}
+			add_pool_mana(&g.state, p, color, t.object.id if t.object != nil else 0, t.surplus)
+		}
 	}
 	for t in taps do if t.object != nil do mana_rider(g, p, t.object, t.option)
 	return true
@@ -285,6 +304,10 @@ activate_mana_ability :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject,
 	o.tapped = true
 	add_pool_mana(&g.state, p, color, o.id, option.amount)
 	mana_rider(g, p, o, option)
+	// CR 405.6c, 117.3c: the player who had priority gets it again, after state-based actions and triggers (CR
+	// 117.5); having acted, earlier passes no longer count (CR 117.4).
+	g.state.priority_passes = nil
+	give_priority(g, p)
 	return true
 }
 

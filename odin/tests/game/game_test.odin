@@ -1712,3 +1712,64 @@ spell_is_on_the_stack_while_cast :: proc(t: ^testing.T) {
 	k, _ := e.kind.(types.StackEntryKind_Spell)
 	testing.expect(t, k.ability != nil, "the full entry, with its targets")
 }
+
+@(test)
+mana_ability_alone_then_priority :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 405.6c, 117.3c: after a mana ability activated with priority resolves, its player gets priority again,
+	// state-based actions first (CR 117.5): Ancient Tomb at 2 life loses the game at once (CR 704.5a).
+	g := new_game()
+	s := &g.state
+	tomb := add(t, g, "Ancient Tomb", 0, .Battlefield) // {T}: Add {C}{C}. This deals 2 damage to you.
+	game.player(s, 0).life = 2
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = tomb.id, ability_index = 0}))
+	_, over := s.waiting_for.(types.WaitingFor_GameOver)
+	testing.expect(t, over, "0 life: the game is over before anything else")
+
+	// CR 117.4: a player who acts resets the passes: A casts, A passes, B taps a land, B passes: A gets priority
+	// back and the spell is still on the stack.
+	g2 := new_game()
+	s2 := &g2.state
+	add(t, g2, "Mountain", 0, .Battlefield)
+	forest := add(t, g2, "Forest", 1, .Battlefield)
+	shock := add(t, g2, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g2, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	testing.expect(t, game.apply(g2, 0, types.GameAction_PassPriority{}))
+	testing.expect(t, game.apply(g2, 1, types.GameAction_ActivateAbility{source_id = forest.id, ability_index = 0}))
+	testing.expect(t, s2.priority_player == 1, "B keeps priority after the mana ability")
+	testing.expect(t, game.apply(g2, 1, types.GameAction_PassPriority{}))
+	testing.expect(t, types.pvec_len(s2.stack) == 1 && s2.priority_player == 0, "A gets priority again; nothing resolved")
+}
+
+@(test)
+surplus_mana_stays_in_the_pool :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 106.4: mana made beyond what a cost needs stays in the pool: Sol Ring's {C}{C} paying {1}.
+	g := new_game()
+	s := &g.state
+	add(t, g, "Sol Ring", 0, .Battlefield)
+	ring := add(t, g, "Sol Ring", 0, .Hand) // {1}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = ring.id}))
+	pool := game.player(s, 0).mana_pool.mana
+	testing.expect(t, len(pool) == 1 && pool[0].color == .Colorless, "one {C} left over")
+}
+
+@(test)
+flashback_spell_cant_target_itself :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 115.5: a spell can't target itself; cast from the graveyard by flashback (CR 702.34a), Mystic Retrieval
+	// ("Return target instant or sorcery card from your graveyard to your hand") isn't among its own targets.
+	g := new_game()
+	retrieval := add(t, g, "Mystic Retrieval", 0, .Graveyard)
+	if !game.card_supported(&card(t, "Mystic Retrieval").face) do return
+	for _ in 0 ..< 4 do add(t, g, "Mountain", 0, .Battlefield)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_CastSpell{object_id = retrieval.id}), "no other target: can't be cast")
+	opt := add(t, g, "Opt", 0, .Graveyard)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = retrieval.id}))
+	w, choosing := g.state.waiting_for.(types.WaitingFor_TargetSelection)
+	if choosing {
+		for t2 in w.selection.current_legal_targets do if o, ok := t2.(types.TargetRef_Object); ok do testing.expect(t, o._0 != retrieval.id, "not itself")
+	}
+	_ = opt
+}
