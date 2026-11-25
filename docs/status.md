@@ -2941,6 +2941,10 @@ Progress:
   5,807 -> 5,825.
 - "When you do" after a mandatory instruction (sacrifice, zone change, token, counters, mill, discard, destroy):
   it triggers if that instruction did something (CR 603.12); the SNC tri-lands and others. 5,825 -> 5,834.
+- Fight (CR 701.14: "target creature you control fights target creature", "this creature fights"; neither
+  deals damage if either is gone or illegal) and bite ("deals damage equal to its power to target creature": the
+  first target, a TargetOnly, is the source). A fight's two targets are two parts of one instruction's slots.
+  5,834 -> 5,885.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

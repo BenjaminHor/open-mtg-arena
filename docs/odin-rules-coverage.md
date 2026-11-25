@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 286 of 2880 rules implemented (10%), 131 of them tested.**
+**In scope (100-799): 288 of 2880 rules implemented (10%), 132 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -107,7 +107,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 615 prevention effects | 15 | 2 (13%) | 1 |
 | 616 interaction of replacement and or prevention effects | 9 | 1 (11%) | 0 |
 | 700 general | 36 | 6 (17%) | 4 |
-| 701 keyword actions | 305 | 26 (9%) | 9 |
+| 701 keyword actions | 305 | 28 (9%) | 10 |
 | 702 keyword abilities | 774 | 31 (4%) | 7 |
 | 703 turn based actions | 20 | 1 (5%) | 0 |
 | 704 state based actions | 40 | 12 (30%) | 7 |
@@ -1803,7 +1803,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 700.16 Some cards refer to worthy creatures. A creature is worthy if it’s legendary, isn’t a Villain, and is red a...
 - ⬜ 700.17 Some abilities trigger when a player “faces a dilemma.” A player faces a dilemma whenever they choose one o...
 
-### 701 keyword actions (26/305)
+### 701 keyword actions (28/305)
 
 - ⬜ 701.1 Most actions described in a card’s rules text use the standard English definitions of the verbs within, but...
 - ⬜ 701.2 Activate
@@ -1858,8 +1858,8 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - 🟡 701.13 Exile
 - ✅ 701.13a To exile an object, move it to the exile zone from wherever it is. See rule 406, “Exile.”
 - ⬜ 701.14 Fight
-- ⬜ 701.14a A spell or ability may instruct a creature to fight another creature or it may instruct two creatures to fi...
-- ⬜ 701.14b If one or both creatures instructed to fight are no longer on the battlefield or are no longer creatures, n...
+- ✅ 701.14a A spell or ability may instruct a creature to fight another creature or it may instruct two creatures to fi...
+- 🟡 701.14b If one or both creatures instructed to fight are no longer on the battlefield or are no longer creatures, n...
 - ⬜ 701.14c If a creature fights itself, it deals damage to itself equal to twice its power.
 - ⬜ 701.14d The damage dealt when a creature fights isn’t combat damage.
 - ⬜ 701.15 Goad

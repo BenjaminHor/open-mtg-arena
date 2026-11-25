@@ -161,9 +161,21 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 	#partial switch x in e {
 	case types.Effect_DealDamage:
 		fixed := quantity_supported(x.amount)
-		// To a target, to "you", or to "that creature's controller".
+		// To a target, to "you", or to "that creature's controller". "Target creature you control deals damage
+		// equal to its power to target creature" (bite): the source is the first target, chosen by a TargetOnly.
 		_, parent_controller := x.target.(types.TargetFilter_ParentTargetController)
-		return fixed && x.damage_source == nil && x.excess == nil && (filter_supported(x.target) || is_controller(x.target) || parent_controller)
+		if src, has := x.damage_source.?; has {
+			if src != .Target || !is_power_of_target(x.amount) do return false
+			fixed = true
+		}
+		return fixed && x.excess == nil && (filter_supported(x.target) || is_controller(x.target) || parent_controller)
+	case types.Effect_TargetOnly:
+		// "Choose target creature": a target for the instructions after it, doing nothing itself.
+		return filter_supported(x.target) && !may_name_player(x.target)
+	case types.Effect_Fight:
+		// CR 701.14a: "Target creature you control fights target creature you don't control", "this creature fights".
+		subject_ok := is_self(x.subject) || (filter_supported(x.subject) && !may_name_player(x.subject))
+		return subject_ok && filter_supported(x.target) && !may_name_player(x.target)
 	case types.Effect_Pump:
 		pf, tf := pump_value_supported(x.power), pump_value_supported(x.toughness)
 		d, has := duration.?
@@ -375,6 +387,10 @@ effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 	case types.Effect_GainControl:
 		f = x.target
 	case types.Effect_Draw:
+		f = x.target
+	case types.Effect_TargetOnly:
+		f = x.target
+	case types.Effect_Fight:
 		f = x.target
 	case types.Effect_LoseLife:
 		f = x.target.? or_else nil
@@ -957,6 +973,13 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		n, _ := fixed_quantity(x.count)
 		return ask_scry(g, controller, n, true)
 	case types.Effect_DealDamage:
+		if src, has := x.damage_source.?; has && src == .Target {
+			// The first target deals it, its power as the amount (CR 608.2h): nothing if it's no longer legal.
+			dealer := first_target_object(g)
+			if dealer == nil do return
+			if t, ok := target.?; ok do deal_damage(g, dealer.id, t, power_of(dealer))
+			return
+		}
 		n := amount(g, x.amount, controller, source, target)
 		if is_controller(x.target) do deal_damage(g, source, types.TargetRef_Player{controller}, n) // "to you"
 		else if t, has := target.?; has do deal_damage(g, source, t, n)
@@ -1360,6 +1383,27 @@ gain_control :: proc(g: ^Game, o: ^types.GameObject, controller: types.PlayerId,
 	o.summoning_sick = true
 	remove_from_combat(&g.state, o.id)
 	apply_continuous_effects(g)
+}
+
+is_power_of_target :: proc(q: types.QuantityExpr) -> bool {
+	r, is_ref := q.(types.QuantityExpr_Ref)
+	if !is_ref do return false
+	p, is_power := r.qty.(types.QuantityRef_Power)
+	if !is_power do return false
+	_, of_target := p.scope.(types.ObjectScope_Target)
+	return of_target
+}
+
+// The resolving spell's or ability's first target, while it's still a legal one on the battlefield (CR 608.2b).
+first_target_object :: proc(g: ^Game) -> ^types.GameObject {
+	s := &g.state
+	top := g.resolution.top
+	if top == nil || len(top.targets) == 0 || slice.contains(top.illegal_target_slots[:], 0) do return nil
+	id, ok := target_object(top.targets[0])
+	if !ok do return nil
+	o := object(s, id)
+	if o == nil || o.zone != .Battlefield do return nil
+	return o
 }
 
 // ---- Conditions on instructions ("if ...", CR 608.2c) ---------------------------------------------------------

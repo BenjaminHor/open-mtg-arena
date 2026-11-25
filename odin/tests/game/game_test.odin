@@ -3161,3 +3161,38 @@ when_you_do_after_a_sacrifice :: proc(t: ^testing.T) {
 	testing.expect(t, hideout.zone == .Graveyard, "sacrificed")
 	testing.expect(t, plains.zone == .Battlefield && plains.tapped, "then the Plains, tapped")
 }
+
+@(test)
+fight_and_bite :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 701.14a: Prey Upon, "Target creature you control fights target creature you don't control": each deals
+	// damage equal to its power to the other. Bite Down: "Target creature you control deals damage equal to its
+	// power to target creature or planeswalker you don't control": one way only.
+	testing.expect(t, game.card_supported(&card(t, "Prey Upon").face))
+	testing.expect(t, game.card_supported(&card(t, "Bite Down").face))
+	cast_two :: proc(t: ^testing.T, g: ^game.Game, name: string, a, b: types.ObjectId) {
+		s := &g.state
+		spell := add(t, g, name, 0, .Hand)
+		ok := game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id})
+		testing.expectf(t, ok, "cast %s: %v", name, game.rejection)
+		for pick in ([]types.ObjectId{a, b}) {
+			if _, asked := s.waiting_for.(types.WaitingFor_TargetSelection); asked {
+				testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{pick}}))
+			}
+		}
+		for types.pvec_len(s.stack) > 0 do game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	g := new_game()
+	for _ in 0 ..< 2 do add(t, g, "Forest", 0, .Battlefield)
+	mine := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	giant := add(t, g, "Hill Giant", 1, .Battlefield) // 3/3
+	cast_two(t, g, "Prey Upon", mine.id, giant.id)
+	testing.expect(t, mine.zone == .Graveyard && giant.zone == .Battlefield && giant.damage_marked == 2, "fought: 2 to the Giant, 3 to the Bears")
+
+	g2 := new_game()
+	for _ in 0 ..< 2 do add(t, g2, "Forest", 0, .Battlefield)
+	mine2 := add(t, g2, "Grizzly Bears", 0, .Battlefield)
+	theirs := add(t, g2, "Grizzly Bears", 1, .Battlefield)
+	cast_two(t, g2, "Bite Down", mine2.id, theirs.id)
+	testing.expect(t, theirs.zone == .Graveyard && mine2.zone == .Battlefield && mine2.damage_marked == 0, "bitten: one way")
+}

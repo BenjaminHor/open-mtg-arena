@@ -11,6 +11,7 @@ Target_Slot :: struct {
 	filter:   types.TargetFilter,
 	optional: bool,
 	group:    int, // which targeting instruction it belongs to, in order
+	part:     int, // within one instruction, which of its different targets (a fight's two creatures)
 }
 
 // Progress through the slots: the targets chosen so far and how many each instruction took.
@@ -27,6 +28,13 @@ slot_list :: proc(a: ^types.AbilityDefinition) -> [dynamic]Target_Slot {
 	for x := a; x != nil; x = x.sub_ability {
 		if x != a && is_reflexive(x) do break // its targets are chosen when it triggers (CR 603.12)
 		if x.effect == nil do continue
+		if fight, is_fight := x.effect^.(types.Effect_Fight); is_fight && !is_self(fight.subject) {
+			// "Target creature you control fights target creature you don't control": two targets, one instruction.
+			append(&out, Target_Slot{filter = fight.subject, group = group})
+			append(&out, Target_Slot{filter = fight.target, group = group, part = 1})
+			group += 1
+			continue
+		}
 		f, ok := effect_target(x.effect^)
 		if !ok do continue
 		least, most := 1, 1
@@ -96,7 +104,7 @@ slots_fillable :: proc(s: ^types.GameState, slots: []Target_Slot, controller: ty
 		if slot.optional do continue
 		// The required slots of an instruction come first; the n-th needs n distinct legal targets.
 		n := 1
-		for j := i - 1; j >= 0 && slots[j].group == slot.group; j -= 1 do n += 1
+		for j := i - 1; j >= 0 && slots[j].group == slot.group; j -= 1 do if slots[j].part == slot.part do n += 1
 		if len(legal_targets(s, slot.filter, controller, source)) < n do return false
 	}
 	return true

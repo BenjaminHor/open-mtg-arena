@@ -29,6 +29,7 @@ Resolution :: struct {
 	events_mark:  int, // where that instruction's events began (it may have paused for a choice since)
 	did_something: bool, // that instruction moved, made or put counters on something: "when you do" after it
 	current:      ^types.ResolvedAbility, // the instruction being carried out (the one before, once the next starts)
+	top:          ^types.ResolvedAbility, // the first instruction
 }
 
 // The spell or ability as it goes on the stack: one node per instruction, each with the targets chosen for it (CR
@@ -86,8 +87,12 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 		clear(&n.illegal_target_slots)
 		f, targets_one := effect_target(n.effect)
 		if !targets_one && refers_to_parent_target(n.effect) do continue // a delayed ability's "it": not a target
+		fight, is_fight := n.effect.(types.Effect_Fight)
 		for t, i in n.targets {
 			any_target = true
+			// "Target creature you control fights target creature": the first target is the subject's.
+			if is_fight && i == 0 && !is_self(fight.subject) do f = fight.subject
+			else if is_fight do f = fight.target
 			// CR 608.2b: a target that changed zones (a new object, CR 400.7) or no longer fits is illegal.
 			if targets_one && same_object_as_chosen(s, n, i) && target_still_legal(s, t, f, controller, source) do any_legal = true
 			else do append(&n.illegal_target_slots, i)
@@ -100,6 +105,7 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 	g.resolution.found = make([dynamic]types.ObjectId)
 	g.resolution.moved = make([dynamic]types.ObjectId)
 	g.resolution.events_mark = -1
+	g.resolution.top = top
 	for n := top; n != nil; n = n.sub_ability do append(&g.resolution.all_targets, ..n.targets[:])
 	// A delayed ability's "it" (CR 603.7c): only while it's the same object it was.
 	if refers_to_parent_target(top.effect) {
@@ -133,6 +139,11 @@ continue_resolution :: proc(g: ^Game) -> bool {
 				r.next = nil
 				continue
 			}
+		}
+		if fight, is_fight := x.effect.(types.Effect_Fight); is_fight {
+			r.events_mark = len(g.events)
+			do_fight(g, x, fight)
+			continue
 		}
 		affected := make([dynamic]Maybe(types.TargetRef), context.temp_allocator)
 		if _, targets_one := effect_target(x.effect); targets_one {
@@ -563,4 +574,30 @@ note_moved :: proc(g: ^Game, events_before: int) {
 		if e.kind == .Zone_Change && e.from != e.to do append(&r.moved, e.object)
 		if e.kind == .Zone_Change || e.kind == .Counter_Added || e.kind == .Sacrificed do r.did_something = true
 	}
+}
+
+// CR 701.14a-b: each creature deals damage equal to its power to the other, at once and not as combat damage
+// (701.14d); with either gone, no longer a creature, or an illegal target, neither does.
+do_fight :: proc(g: ^Game, x: ^types.ResolvedAbility, fight: types.Effect_Fight) {
+	s := &g.state
+	r := &g.resolution
+	a, b: ^types.GameObject
+	legal :: proc(s: ^types.GameState, x: ^types.ResolvedAbility, i: int) -> ^types.GameObject {
+		if i >= len(x.targets) || slice.contains(x.illegal_target_slots[:], i) do return nil
+		id, ok := target_object(x.targets[i])
+		if !ok do return nil
+		return object(s, id)
+	}
+	if is_self(fight.subject) {
+		a = same_source(g, r.source)
+		b = legal(s, x, 0)
+	} else {
+		a = legal(s, x, 0)
+		b = legal(s, x, 1)
+	}
+	if a == nil || b == nil do return
+	if a.zone != .Battlefield || b.zone != .Battlefield || !is_type(a, .Creature) || !is_type(b, .Creature) do return
+	pa, pb := power_of(a), power_of(b)
+	deal_damage(g, a.id, types.TargetRef_Object{b.id}, pa)
+	deal_damage(g, b.id, types.TargetRef_Object{a.id}, pb)
 }
