@@ -13,13 +13,13 @@ activated_supported :: proc(a: types.AbilityDefinition) -> bool {
 	if a.activator_filter != nil || a.activation_mana_payment_restriction != nil do return false
 	if a.cost_reduction != nil do return false // "costs {1} less for each ..." (channel): not applied yet
 	// From the hand: abilities that discard the card itself as their cost (cycling, CR 702.29a). From the
-	// graveyard: those that exile it from there (CR 113.6j: a cost payable only there).
+	// graveyard: abilities whose text puts them there, "return this card from your graveyard" (CR 113.6b), or
+	// whose cost exiles the card from there (CR 113.6j).
 	if zone, has := a.activation_zone.?; has {
 		#partial switch zone {
 		case .Hand:
 			if !discards_itself(a) do return false
 		case .Graveyard:
-			if !exiles_itself(a) do return false
 		case:
 			return false
 		}
@@ -363,16 +363,6 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 	}
 	s.priority_passes = nil
 	give_priority(g, p)
-}
-
-// Whether the ability's cost includes exiling the card it's on from the graveyard.
-exiles_itself :: proc(a: types.AbilityDefinition) -> bool {
-	cost, has := a.cost.?
-	if !has do return false
-	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
-	cost_parts(cost, &parts)
-	for part in parts do if x, ok := part.(types.AbilityCost_Exile); ok && cost_supported(x) do return true
-	return false
 }
 
 // Whether the ability's cost includes discarding the card it's on.

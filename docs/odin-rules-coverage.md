@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 234 of 2880 rules implemented (8%), 89 of them tested.**
+**In scope (100-799): 235 of 2880 rules implemented (8%), 90 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -25,7 +25,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 110 permanents | 14 | 2 (14%) | 0 |
 | 111 tokens | 35 | 12 (34%) | 5 |
 | 112 spells | 7 | 0 (0%) | 0 |
-| 113 abilities | 41 | 2 (5%) | 1 |
+| 113 abilities | 41 | 3 (7%) | 2 |
 | 114 emblems | 5 | 0 (0%) | 0 |
 | 115 targets | 26 | 5 (19%) | 4 |
 | 116 special actions | 15 | 0 (0%) | 0 |
@@ -439,7 +439,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 112.3 A noncopy spell’s characteristics are the same as those printed on its card, as modified by any continuous ...
 - ⬜ 112.4 If an effect of a resolving spell or ability changes any characteristics of a permanent spell, the effect c...
 
-### 113 abilities (2/41)
+### 113 abilities (3/41)
 
 - ⬜ 113.1 An ability can be one of three things:
 - ⬜ 113.1a An ability can be a characteristic an object has that lets it affect the game. An object’s abilities are de...
@@ -459,7 +459,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 113.5 Some activated abilities are loyalty abilities. Loyalty abilities follow special rules: A player may activa...
 - ⬜ 113.6 Abilities of an instant or sorcery spell usually function only while that object is on the stack. Abilities...
 - ⬜ 113.6a Characteristic-defining abilities function everywhere, even outside the game and before the game begins. (S...
-- ⬜ 113.6b An ability that states which zones it functions in functions only from those zones.
+- ✅ 113.6b An ability that states which zones it functions in functions only from those zones.
 - ⬜ 113.6c An ability that states which zones it doesn’t function in functions everywhere except for the specified zon...
 - ⬜ 113.6d An object’s ability that allows a player to pay an alternative cost rather than its mana cost or otherwise ...
 - ⬜ 113.6e An object’s ability that restricts or modifies how that particular object can be played or cast functions i...

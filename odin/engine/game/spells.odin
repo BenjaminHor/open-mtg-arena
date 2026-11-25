@@ -1012,7 +1012,7 @@ card_gaps :: proc(face: ^types.CardFace) -> [dynamic]string {
 			if _, _, ok := tap_mana_ability(a); !ok && !activated_supported(a) {
 				if a.effect != nil && !ability_supported(a) do ability_gaps(&out, a, "activated")
 				else if cost, has := a.cost.?; has && !cost_supported(cost) do append(&out, name("cost:", cost))
-				else do append(&out, "activated: restriction")
+				else do append(&out, activated_gap(a))
 			}
 		case .Database, .BeginGame, .Mulligan:
 			append(&out, fmt.tprintf("ability:%v", a.kind))
@@ -1350,4 +1350,20 @@ pay_additional_cost :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) {
 		n, _ := fixed_quantity(life.amount)
 		lose_life(&g.state, p, n) // CR 119.4
 	}
+}
+
+// Why an activated ability whose effect and cost are supported still isn't: for the gap report.
+@(private = "file")
+activated_gap :: proc(a: types.AbilityDefinition) -> string {
+	if a.activator_filter != nil do return "activated: another player activates"
+	if a.activation_mana_payment_restriction != nil do return "activated: mana payment restriction"
+	if a.cost_reduction != nil do return "activated: cost reduction"
+	if zone, has := a.activation_zone.?; has do return fmt.tprintf("activated: from %v", zone)
+	for r in a.activation_restrictions do if !restriction_supported(r) {
+		if c, ok := r.(types.ActivationRestriction_RequiresCondition); ok {
+			if cond, has := c.condition.?; has do return fmt.tprintf("activated: only if %v", reflect.union_variant_typeid(cond))
+		}
+		return fmt.tprintf("activated: restriction %v", reflect.union_variant_typeid(r))
+	}
+	return "activated: other"
 }

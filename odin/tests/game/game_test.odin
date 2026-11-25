@@ -2055,3 +2055,23 @@ sacrifice_one_of_two_kinds :: proc(t: ^testing.T) {
 	game.apply(g, 1, types.GameAction_PassPriority{})
 	testing.expect(t, ring.zone == .Graveyard && types.pvec_len(game.player(s, 0).hand) == hand + 1, "sacrificed, and a card drawn")
 }
+
+@(test)
+return_this_card_from_the_graveyard :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 113.6b: "{2}{B}: Return this card from your graveyard to the battlefield. Activate only as a sorcery and
+	// only if you have one or fewer cards in hand." (Dread Wanderer) works from the graveyard, under its
+	// restrictions (CR 602.5); it enters tapped (its own replacement, CR 614.1c).
+	g := new_game()
+	s := &g.state
+	testing.expect(t, game.card_supported(&card(t, "Dread Wanderer").face))
+	for _ in 0 ..< 3 do add(t, g, "Swamp", 0, .Battlefield)
+	wanderer := add(t, g, "Dread Wanderer", 0, .Graveyard)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ActivateAbility{source_id = wanderer.id, ability_index = 0}), "seven cards in hand")
+	hand := &game.player(s, 0).hand
+	for types.pvec_len(hand^) > 1 do game.move_object(g, types.pvec_get(hand^, 0), .Library)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = wanderer.id, ability_index = 0}), "one card in hand")
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expect(t, wanderer.zone == .Battlefield && wanderer.tapped, "back on the battlefield, tapped")
+}
