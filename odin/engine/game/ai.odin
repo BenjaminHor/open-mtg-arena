@@ -78,6 +78,22 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		for id in w.creatures do if toughness_of(object(s, id)) > int(w.counters) do append(&survivors, id)
 		from := survivors[:] if len(survivors) > 0 else w.creatures[:]
 		return types.GameAction_SelectCards{cards = least_valuable(g, from, 1)}, true
+	case types.WaitingFor_CostTypeChoice:
+		// The counter it's best rid of: a -1/-1 or stun counter first; a +1/+1, shield or loyalty counter last.
+		kinds, is_counters := w.choice_type.(types.ChoiceType_CounterKind)
+		if !is_counters || len(w.options) == 0 do return types.GameAction_CancelCast{}, true
+		best, best_rank := 0, max(int)
+		for k, i in kinds.options {
+			rank := 1
+			#partial switch _ in k {
+			case types.CounterType_Minus1Minus1, types.CounterType_Stun:
+				rank = 0
+			case types.CounterType_Plus1Plus1, types.CounterType_Shield, types.CounterType_Loyalty:
+				rank = 2
+			}
+			if rank < best_rank && i < len(w.options) do best, best_rank = i, rank
+		}
+		return types.GameAction_ChooseOption{choice = w.options[best]}, true
 	case types.WaitingFor_CollectEvidenceChoice:
 		// The fewest cards: the highest mana values first, until the total is enough.
 		Valued :: struct {
@@ -96,6 +112,9 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		}
 		return types.GameAction_SelectCards{cards = out}, true
 	case types.WaitingFor_PayCost:
+		if removal, removes := w.kind.(types.PayCostKind_RemoveCounter); removes && removal.selection == .AmongObjects {
+			return types.GameAction_ChooseRemoveCounterCostDistribution{distribution = ai_counter_distribution(g, w, removal)}, true
+		}
 		// The least valuable: tokens first, then the lowest mana value. For a tap cost, permanents that make no
 		// mana first, so the mana can still be paid (as additional_cost_payable checked).
 		Ranked :: struct {
@@ -454,22 +473,20 @@ choose_blocks :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.Tuple2(type
 	return out
 }
 
-// An activated ability worth its cost: no sacrifice or life payment, and every effect a gain (a card, a creature,
-// life, or damage or destruction with a good target).
+// An activated ability worth its cost: no sacrifice, life payment or exiling of a permanent, and every effect a gain
+// (a card, a creature, life, or damage or destruction with a good target).
 ability_worth_using :: proc(g: ^Game, p: types.PlayerId, a: ^types.AbilityDefinition) -> bool {
 	s := &g.state
 	cost, _ := a.cost.?
-	if comp, ok := cost.(types.AbilityCost_Composite); ok {
-		for part in comp.costs {
-			#partial switch _ in part {
-			case types.AbilityCost_Sacrifice, types.AbilityCost_PayLife:
-				return false
-			}
+	parts: []types.AbilityCost = {cost}
+	if comp, ok := cost.(types.AbilityCost_Composite); ok do parts = comp.costs[:]
+	for part in parts {
+		#partial switch x in part {
+		case types.AbilityCost_Sacrifice, types.AbilityCost_PayLife:
+			return false
+		case types.AbilityCost_Exile:
+			if x.zone == nil do return false // "exile this creature", "exile a creature you control"
 		}
-	}
-	#partial switch _ in cost {
-	case types.AbilityCost_Sacrifice, types.AbilityCost_PayLife:
-		return false
 	}
 	for x := a; x != nil; x = x.sub_ability {
 		if x.effect == nil do continue
@@ -655,4 +672,35 @@ ai_mana_color :: proc(g: ^Game, p: types.PlayerId, options: []types.ManaType) ->
 		if n > best_n do best, best_n = c, n
 	}
 	return best
+}
+
+// "Remove three counters from among creatures you control": the counters it's best rid of first (-1/-1 and stun
+// counters), +1/+1, shield and loyalty counters last, from the permanents in the order offered.
+@(private = "file")
+ai_counter_distribution :: proc(g: ^Game, w: types.WaitingFor_PayCost, removal: types.PayCostKind_RemoveCounter) -> [dynamic]types.CounterCostChoice {
+	out: [dynamic]types.CounterCostChoice
+	left := int(removal.count)
+	rank :: proc(k: types.CounterType) -> int {
+		#partial switch _ in k {
+		case types.CounterType_Minus1Minus1, types.CounterType_Stun:
+			return 0
+		case types.CounterType_Plus1Plus1, types.CounterType_Shield, types.CounterType_Loyalty:
+			return 2
+		}
+		return 1
+	}
+	for pass in 0 ..= 2 {
+		for id in w.choices {
+			if left == 0 do return out
+			o := object(&g.state, id)
+			for k in counter_kinds_left(o, nil) {
+				if left == 0 || rank(k.kind) != pass do continue
+				if named, of_type := removal.counter_type.(types.CounterMatch_OfType); of_type && !same_counter(named._0, k.kind) do continue
+				n := min(k.n, left)
+				append(&out, types.CounterCostChoice{object_id = id, counter_type = k.kind, count = u32(n)})
+				left -= n
+			}
+		}
+	}
+	return out
 }

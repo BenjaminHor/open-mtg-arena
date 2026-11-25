@@ -3270,6 +3270,14 @@ Progress:
   Confirmed by the review: "becomes the target" once for a permanent one spell targets twice (official rulings:
   Battle Mammoth, heroic). Noted: copy exceptions (copy_exceptions) live outside GameState. Test:
   `eighth_review_fixes`. Coverage 7,863.
+- Activation costs (agent, merged): tapping untapped permanents (CR 701.26a, 302.6 not applying), "costs {1} less
+  to activate" (601.2f, 118.7a; one activation_mana_cost), power-up (702.193; hybrid refused), removing counters
+  (of a chosen kind, from a creature you control, distributed "from among"), exiling itself or a creature, blight
+  and evidence, returning permanents, putting a counter on itself. Fixed: every object chosen for a cost used to be
+  sacrificed (payment now by kind, pay_cost_objects); cancelling an activation's prompt cleared the source's X and
+  modes. Refused: exert, two chosen costs, a choice of costs, reductions reading the target; Daniels and Tetzimoc
+  misparsed. Mana abilities with these costs stay refused. Client prompts (CostTypeChoice, remove-counter
+  distribution) checked in its code only, not in the running app. Coverage 7,988.
 - Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
   decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
   cards to be triaged against the CR (next step for the fixtures).

@@ -1592,9 +1592,11 @@ review_two_regressions :: proc(t: ^testing.T) {
 			testing.expect(t, game.castable(&g.state, 0, rebirth, g.card_db), "Treasure plus a Mountain: castable")
 		}
 	}
-	// Support gate: a comparison against a target's amount (Fell the Mighty), and a channel cost reduction.
+	// Support gate: a comparison against a target's amount (Fell the Mighty), and a cost reduction that reads the
+	// ability's target (Raft Security Officer). (Channel's "costs {1} less for each legendary creature you control"
+	// is applied now: channel_costs_less_for_each_legendary_creature.)
 	testing.expect(t, !game.card_supported(&card(t, "Fell the Mighty").face), "Fell the Mighty: target's power")
-	testing.expect(t, !game.card_supported(&card(t, "Eiganjo, Seat of the Empire").face), "channel cost reduction")
+	testing.expect(t, !game.card_supported(&card(t, "Raft Security Officer").face), "a reduction that reads the target")
 }
 
 @(test)
@@ -7342,4 +7344,453 @@ eighth_review_fixes :: proc(t: ^testing.T) {
 		testing.expect(t, bears.zone == .Graveyard, "dies as the pump ends")
 		testing.expect(t, s.phase == .Cleanup && s.turn_number == 2, "priority in the cleanup step, the turn not over")
 	}
+}
+
+// Activation costs (CR 602.2b, 118): tapping untapped permanents, cost reductions and power-up, removing counters,
+// exiling the permanent itself, blighting, collecting evidence, sacrificing a token, a card of several kinds.
+
+// The cards chosen for a cost prompt, as an action.
+@(private = "file")
+select_ids :: proc(ids: ..types.ObjectId) -> types.GameAction {
+	cards: [dynamic]types.ObjectId
+	append(&cards, ..ids)
+	return types.GameAction_SelectCards{cards = cards}
+}
+
+@(test)
+tap_untapped_creatures_as_a_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Siege Zombie: "Tap three untapped creatures you control: Each opponent loses 1 life." CR 701.26a, 118.3: only
+	// untapped permanents can be tapped to pay. The summoning sickness rule (CR 302.6) is about {T} costs only, so a
+	// creature that just arrived can be tapped for it, and the Zombie can tap itself.
+	g := new_game()
+	s := &g.state
+	zombie := add(t, g, "Siege Zombie", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	fresh := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	fresh.summoning_sick = true
+	bears.tapped = true
+	testing.expect(t, !game.can_activate(g, 0, zombie, 0), "two untapped creatures: can't pay")
+	bears.tapped = false
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = zombie.id, ability_index = 0}))
+	w, asked := s.waiting_for.(types.WaitingFor_PayCost)
+	_, taps := w.kind.(types.PayCostKind_TapCreatures)
+	testing.expect(t, asked && taps && w.count == 3 && len(w.choices) == 3, "asked which three to tap")
+	if !asked do return
+	testing.expect(t, game.apply(g, 0, select_ids(zombie.id, bears.id, fresh.id)))
+	testing.expect(t, zombie.tapped && bears.tapped && fresh.tapped, "tapped as the cost is paid")
+	resolve_stack(g)
+	testing.expect(t, game.player(s, 1).life == 19, "then each opponent loses 1 life")
+}
+
+@(test)
+tap_cost_besides_tap_symbol_needs_another :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Town Gossipmonger: "{T}, Tap an untapped creature you control: Transform this creature." Paying {T} taps it, so
+	// it can't also be the untapped creature tapped (CR 118.3, 701.26a); alone, it can't pay. A mana ability with
+	// such a cost (Springleaf Drum) isn't carried out yet.
+	g := new_game()
+	s := &g.state
+	gossip := add(t, g, "Town Gossipmonger", 0, .Battlefield)
+	testing.expect(t, !game.can_activate(g, 0, gossip, 0), "nothing else to tap")
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = gossip.id, ability_index = 0}))
+	w, asked := s.waiting_for.(types.WaitingFor_PayCost)
+	testing.expect(t, asked && len(w.choices) == 1 && w.choices[0] == bears.id, "only the Bears is a choice")
+	testing.expect(t, !game.card_supported(&card(t, "Springleaf Drum").face), "a mana ability with a tap cost isn't yet")
+}
+
+@(test)
+ability_costs_less_for_each :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Battlefield Butcher: "{5}, {T}: Each opponent loses 2 life. This ability costs {1} less to activate for each
+	// creature card in your graveyard." CR 602.2b, 601.2f: the total cost is the activation cost less reductions;
+	// CR 118.7a: generic mana only.
+	g := new_game()
+	s := &g.state
+	butcher := add(t, g, "Battlefield Butcher", 0, .Battlefield)
+	forests := [2]^types.GameObject{add(t, g, "Forest", 0, .Battlefield), add(t, g, "Forest", 0, .Battlefield)}
+	add(t, g, "Grizzly Bears", 0, .Graveyard)
+	add(t, g, "Grizzly Bears", 0, .Graveyard)
+	add(t, g, "Shock", 0, .Graveyard) // not a creature card
+	testing.expect(t, !game.can_activate(g, 0, butcher, 0), "{3} with two lands")
+	add(t, g, "Siege Zombie", 0, .Graveyard)
+	mana, _ := game.activation_mana_cost(s, 0, butcher, game.activated_ability(butcher, 0))
+	c := mana.(types.ManaCost_Cost)
+	testing.expectf(t, c.generic == 2 && len(c.shards) == 0, "{5} less three: %v", c)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = butcher.id, ability_index = 0}))
+	testing.expect(t, forests[0].tapped && forests[1].tapped && butcher.tapped, "paid {2} and {T}")
+	resolve_stack(g)
+	testing.expect(t, game.player(s, 1).life == 18)
+}
+
+@(test)
+ability_costs_less_during_your_turn :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Hylda's Crown of Winter: "{1}, {T}: Tap target creature. This ability costs {1} less to activate during your
+	// turn." CR 601.2f: reduced to {0} on its controller's turn, not on the opponent's.
+	g := new_game()
+	s := &g.state
+	crown := add(t, g, "Hylda's Crown of Winter", 0, .Battlefield)
+	add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, game.can_activate(g, 0, crown, 0), "{0} on its controller's turn")
+	s.active_player = 1
+	testing.expect(t, !game.can_activate(g, 0, crown, 0), "{1}, with no mana, on the opponent's turn")
+}
+
+@(test)
+power_up_reduced_by_the_mana_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Bold Biochemist ({1}{U}): "Power-up — {5}{U}: ...". CR 702.193a: if it entered this turn, the cost is reduced by
+	// its mana cost; CR 702.193b: its {U} reduces the {U}, its {1} the generic: {4}, which four Forests pay. A
+	// power-up of a hybrid mana cost (Abomination, Terrifying Titan) asks a choice (CR 118.7e) that isn't yet.
+	g := new_game()
+	s := &g.state
+	chemist := add(t, g, "Bold Biochemist", 0, .Battlefield)
+	for _ in 0 ..< 4 do add(t, g, "Forest", 0, .Battlefield)
+	chemist.entered_battlefield_turn = s.turn_number - 1
+	testing.expect(t, !game.can_activate(g, 0, chemist, 0), "{5}{U}: not with four Forests")
+	chemist.entered_battlefield_turn = s.turn_number
+	mana, _ := game.activation_mana_cost(s, 0, chemist, game.activated_ability(chemist, 0))
+	c := mana.(types.ManaCost_Cost)
+	testing.expectf(t, c.generic == 4 && len(c.shards) == 0, "{4}: %v", c)
+	testing.expect(t, game.can_activate(g, 0, chemist, 0), "entered this turn: {4}")
+	testing.expect(t, !game.card_supported(&card(t, "Abomination, Terrifying Titan").face), "hybrid: not yet")
+}
+
+@(test)
+remove_a_counter_of_any_kind :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Gnarlbark Elm: "{2}{B}, Remove two counters from this creature: Target creature gets -2/-2 until end of turn."
+	// Counters of any kind; with more kinds than it must remove, the player chooses which (CR 601.2h by 602.2b), and
+	// with too few, it can't pay (CR 118.3).
+	g := new_game()
+	s := &g.state
+	elm := add(t, g, "Gnarlbark Elm", 0, .Battlefield)
+	for _ in 0 ..< 3 do add(t, g, "Swamp", 0, .Battlefield)
+	target := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	game.add_counters(elm, types.CounterType_Minus1Minus1{}, 1)
+	testing.expect(t, !game.can_activate(g, 0, elm, 0), "one counter: can't remove two")
+	game.add_counters(elm, types.CounterType_Minus1Minus1{}, 1)
+	game.add_counters(elm, types.CounterType_Keyword{.Flying}, 1)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = elm.id, ability_index = 0}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{target.id}}))
+	w, asked := s.waiting_for.(types.WaitingFor_CostTypeChoice)
+	testing.expect(t, asked && len(w.options) == 2, "asked which kind: -1/-1 or flying")
+	if !asked do return
+	// The client's prompt (its option picker) round-trips as JSON.
+	b := strings.builder_make(context.temp_allocator)
+	types.encode_WaitingFor(&b, s.waiting_for)
+	root, err := json.parse(transmute([]byte)strings.to_string(b))
+	decoded: types.WaitingFor
+	testing.expect(t, err == nil && types.decode_WaitingFor(root, &decoded), "the prompt encodes and decodes")
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ChooseOption{choice = "+1/+1"}), "not a kind it has")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseOption{choice = "flying"}))
+	// The second counter: only -1/-1 counters are left, so no choice.
+	testing.expect(t, game.counter_count(elm, types.CounterType_Keyword{.Flying}) == 0, "the flying counter removed")
+	testing.expect(t, game.counter_count(elm, types.CounterType_Minus1Minus1{}) == 1, "and one -1/-1 counter")
+	resolve_stack(g)
+	testing.expect(t, target.zone == .Graveyard, "the Bears got -2/-2")
+}
+
+@(test)
+remove_a_counter_of_its_only_kind :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Moonlit Lamenter: "{1}{W}, Remove a counter from this creature: Draw a card." Its only counters are -1/-1
+	// counters: nothing to choose.
+	g := new_game()
+	s := &g.state
+	lamenter := add(t, g, "Moonlit Lamenter", 0, .Battlefield)
+	for _ in 0 ..< 2 do add(t, g, "Plains", 0, .Battlefield)
+	testing.expect(t, !game.can_activate(g, 0, lamenter, 0), "no counter to remove")
+	game.add_counters(lamenter, types.CounterType_Minus1Minus1{}, 1)
+	hand := types.pvec_len(game.player(s, 0).hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = lamenter.id, ability_index = 0}))
+	testing.expect(t, len(lamenter.counters) == 0, "the -1/-1 counter removed")
+	resolve_stack(g)
+	testing.expect(t, types.pvec_len(game.player(s, 0).hand) == hand + 1, "a card drawn")
+}
+
+@(test)
+remove_a_counter_from_a_creature_you_control :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Shapers of Nature: "{2}{U}, Remove a +1/+1 counter from a creature you control: Draw a card." The player
+	// chooses a creature of theirs that has one (CR 118.3).
+	g := new_game()
+	s := &g.state
+	shapers := add(t, g, "Shapers of Nature", 0, .Battlefield)
+	for _ in 0 ..< 3 do add(t, g, "Island", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	game.add_counters(theirs, types.CounterType_Plus1Plus1{}, 1)
+	testing.expect(t, !game.can_activate(g, 0, shapers, 1), "no creature of theirs has one")
+	game.add_counters(bears, types.CounterType_Plus1Plus1{}, 1)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = shapers.id, ability_index = 1}))
+	w, asked := s.waiting_for.(types.WaitingFor_PayCost)
+	_, removes := w.kind.(types.PayCostKind_RemoveCounter)
+	testing.expect(t, asked && removes && len(w.choices) == 1 && w.choices[0] == bears.id, "only their Bears")
+	if !asked do return
+	testing.expect(t, game.apply(g, 0, select_ids(bears.id)))
+	testing.expect(t, len(bears.counters) == 0 && bears.zone == .Battlefield, "the counter removed, the Bears stays")
+	testing.expect(t, game.counter_count(theirs, types.CounterType_Plus1Plus1{}) == 1)
+}
+
+@(test)
+exile_this_creature_as_a_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Hanged Executioner: "{3}{W}, Exile this creature: Exile target creature." CR 602.2b, 601.2h: exiled as the cost
+	// is paid; the ability resolves without it (CR 113.7a).
+	g := new_game()
+	executioner := add(t, g, "Hanged Executioner", 0, .Battlefield)
+	target := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	for _ in 0 ..< 3 do add(t, g, "Plains", 0, .Battlefield)
+	testing.expect(t, !game.can_activate(g, 0, executioner, 0), "{3}{W} with three lands")
+	add(t, g, "Plains", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = executioner.id, ability_index = 0}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{target.id}}))
+	testing.expect(t, executioner.zone == .Exile, "exiled to pay")
+	resolve_stack(g)
+	testing.expect(t, target.zone == .Exile, "then the target")
+}
+
+@(test)
+blight_as_an_activation_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Evershrike's Gift, from the graveyard: "{1}{W}, Blight 2: Return this card from your graveyard to your hand."
+	// CR 701.68a: two -1/-1 counters on a creature you control; CR 701.68b: without one, it can't be paid.
+	g := new_game()
+	s := &g.state
+	gift := add(t, g, "Evershrike's Gift", 0, .Graveyard)
+	for _ in 0 ..< 2 do add(t, g, "Plains", 0, .Battlefield)
+	testing.expect(t, !game.can_activate(g, 0, gift, 0), "no creature to blight")
+	ogre := add(t, g, "Siege Zombie", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = gift.id, ability_index = 0}))
+	w, asked := s.waiting_for.(types.WaitingFor_BlightChoice)
+	testing.expect(t, asked && w.counters == 2 && len(w.creatures) == 1, "asked which creature")
+	if !asked do return
+	testing.expect(t, game.apply(g, 0, select_ids(ogre.id)))
+	testing.expect(t, ogre.zone != .Battlefield || game.counter_count(ogre, types.CounterType_Minus1Minus1{}) == 2, "two -1/-1 counters")
+	resolve_stack(g)
+	in_hand := false
+	for id in game.ids_of(game.player(s, 0).hand) do if id == gift.id do in_hand = true
+	testing.expect(t, in_hand || gift.zone == .Hand, "the Gift returns to its owner's hand")
+}
+
+@(test)
+collect_evidence_as_an_activation_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Forensic Researcher: "{T}, Collect evidence 3: Tap target creature you don't control." CR 701.59a: cards from
+	// the graveyard with total mana value 3 or greater; with less, it can't be paid (CR 701.59b).
+	g := new_game()
+	s := &g.state
+	researcher := add(t, g, "Forensic Researcher", 0, .Battlefield)
+	target := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Graveyard) // mana value 2
+	testing.expect(t, !game.can_activate(g, 0, researcher, 1), "total mana value 2")
+	shock := add(t, g, "Shock", 0, .Graveyard) // 1
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = researcher.id, ability_index = 1}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{target.id}}))
+	_, asked := s.waiting_for.(types.WaitingFor_CollectEvidenceChoice)
+	testing.expect(t, asked, "asked which cards")
+	if !asked do return
+	testing.expect(t, !game.apply(g, 0, select_ids(bears.id)), "2 isn't enough")
+	testing.expect(t, game.apply(g, 0, select_ids(bears.id, shock.id)))
+	testing.expect(t, bears.zone == .Exile && shock.zone == .Exile && researcher.tapped)
+	resolve_stack(g)
+	testing.expect(t, target.tapped)
+}
+
+@(test)
+sacrifice_a_token_as_a_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Hardened Tactician: "{1}, Sacrifice a token: Draw a card." Only a token can be sacrificed for it (CR 701.21a).
+	g := new_game()
+	s := &g.state
+	tactician := add(t, g, "Hardened Tactician", 0, .Battlefield)
+	add(t, g, "Forest", 0, .Battlefield)
+	card_bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	testing.expect(t, !game.can_activate(g, 0, tactician, 0), "no token")
+	token := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	token.is_token = true
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = tactician.id, ability_index = 0}))
+	w, asked := s.waiting_for.(types.WaitingFor_PayCost)
+	testing.expect(t, asked && len(w.choices) == 1 && w.choices[0] == token.id, "only the token")
+	if !asked do return
+	testing.expect(t, game.apply(g, 0, select_ids(token.id)))
+	testing.expect(t, card_bears.zone == .Battlefield)
+}
+
+@(test)
+exile_a_card_of_either_kind_as_a_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Tome Shredder: "{T}, Exile an instant or sorcery card from your graveyard: Put a +1/+1 counter on this
+	// creature." A card of either kind, from its controller's own graveyard.
+	g := new_game()
+	s := &g.state
+	shredder := add(t, g, "Tome Shredder", 0, .Battlefield)
+	add(t, g, "Grizzly Bears", 0, .Graveyard)
+	add(t, g, "Shock", 1, .Graveyard) // the opponent's
+	testing.expect(t, !game.can_activate(g, 0, shredder, 0), "no instant or sorcery card in its controller's graveyard")
+	shock := add(t, g, "Shock", 0, .Graveyard)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = shredder.id, ability_index = 0}))
+	w, asked := s.waiting_for.(types.WaitingFor_PayCost)
+	testing.expect(t, asked && len(w.choices) == 1 && w.choices[0] == shock.id, "only the Shock")
+	if !asked do return
+	testing.expect(t, game.apply(g, 0, select_ids(shock.id)))
+	resolve_stack(g)
+	testing.expect(t, shock.zone == .Exile && game.counter_count(shredder, types.CounterType_Plus1Plus1{}) == 1)
+}
+
+@(test)
+channel_costs_less_for_each_legendary_creature :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Otawara, Soaring City, from the hand: "Channel — {3}{U}, Discard this card: Return target artifact, creature,
+	// enchantment, or planeswalker to its owner's hand. This ability costs {1} less to activate for each legendary
+	// creature you control." CR 602.2b, 601.2f, 118.7a.
+	g := new_game()
+	otawara := add(t, g, "Otawara, Soaring City", 0, .Hand)
+	channel := -1
+	for &a, i in otawara.abilities^ do if a.activation_zone != nil do channel = i
+	for _ in 0 ..< 3 do add(t, g, "Island", 0, .Battlefield)
+	target := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, !game.can_activate(g, 0, otawara, channel), "{3}{U} with three Islands")
+	add(t, g, "Kumena, Tyrant of Orazca", 0, .Battlefield) // legendary
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = otawara.id, ability_index = channel}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{target.id}}))
+	testing.expect(t, otawara.zone == .Graveyard, "discarded to pay {2}{U}")
+	resolve_stack(g)
+	testing.expect(t, target.zone == .Hand)
+}
+
+@(test)
+return_a_permanent_to_hand_as_a_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Wirewood Symbiote: "Return an Elf you control to its owner's hand: Untap target creature. Activate only once
+	// each turn." CR 602.2b, 601.2h: the Elf is returned as the cost is paid; without one, it can't be (CR 118.3).
+	g := new_game()
+	s := &g.state
+	symbiote := add(t, g, "Wirewood Symbiote", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	bears.tapped = true
+	testing.expect(t, !game.can_activate(g, 0, symbiote, 0), "no Elf to return")
+	elf := add(t, g, "Llanowar Elves", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = symbiote.id, ability_index = 0}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	w, asked := s.waiting_for.(types.WaitingFor_PayCost)
+	_, returns := w.kind.(types.PayCostKind_ReturnToHand)
+	testing.expect(t, asked && returns && len(w.choices) == 1 && w.choices[0] == elf.id, "asked which Elf")
+	if !asked do return
+	testing.expect(t, game.apply(g, 0, select_ids(elf.id)))
+	testing.expect(t, elf.zone == .Hand, "returned to its owner's hand")
+	resolve_stack(g)
+	testing.expect(t, !bears.tapped, "then the Bears untaps")
+}
+
+@(test)
+put_a_counter_on_itself_as_a_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Devoted Druid: "Put a -1/-1 counter on this creature: Untap this creature." CR 601.2h: the counter is put on
+	// as the cost is paid, before the ability resolves.
+	g := new_game()
+	druid := add(t, g, "Devoted Druid", 0, .Battlefield)
+	druid.tapped = true
+	untap := -1
+	for &a, i in druid.abilities^ do if !game.adds_mana(a) do untap = i
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = druid.id, ability_index = untap}))
+	testing.expect(t, game.counter_count(druid, types.CounterType_Minus1Minus1{}) == 1, "the counter, as the cost")
+	testing.expect(t, druid.tapped, "not untapped yet")
+	resolve_stack(g)
+	testing.expect(t, !druid.tapped && druid.zone == .Battlefield, "untapped; a 0/1 now")
+}
+
+@(test)
+exile_a_permanent_you_control_as_a_cost :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Altar of Bhaal: "{2}{B}, {T}, Exile a creature you control: Return target creature card from your graveyard to
+	// the battlefield." CR 602.2b, 601.2h; with no creature to exile, it can't be paid (CR 118.3).
+	g := new_game()
+	s := &g.state
+	altar := add(t, g, "Altar of Bhaal // Bone Offering", 0, .Battlefield)
+	for _ in 0 ..< 3 do add(t, g, "Swamp", 0, .Battlefield)
+	zombie := add(t, g, "Siege Zombie", 0, .Graveyard)
+	testing.expect(t, !game.can_activate(g, 0, altar, 0), "no creature to exile")
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = altar.id, ability_index = 0}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{zombie.id}}))
+	w, asked := s.waiting_for.(types.WaitingFor_PayCost)
+	_, exiles := w.kind.(types.PayCostKind_ExilePermanent)
+	testing.expect(t, asked && exiles && len(w.choices) == 1 && w.choices[0] == bears.id, "asked which creature")
+	if !asked do return
+	testing.expect(t, game.apply(g, 0, select_ids(bears.id)))
+	testing.expect(t, bears.zone == .Exile, "exiled to pay")
+	resolve_stack(g)
+	testing.expect(t, zombie.zone == .Battlefield)
+}
+
+
+@(test)
+remove_counters_from_among_permanents :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Lieutenant Commander Data: "{1}, Remove three counters from among creatures you control: Draw a card." The
+	// player says how many of which kind come off which creature, three in all (CR 601.2h by 602.2b); with fewer
+	// than three among them, it can't be paid (CR 118.3).
+	g := new_game()
+	s := &g.state
+	data := add(t, g, "Lieutenant Commander Data", 0, .Battlefield)
+	add(t, g, "Forest", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	other := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	game.add_counters(bears, types.CounterType_Plus1Plus1{}, 2)
+	index := -1
+	for &a, i in data.abilities^ do if a.kind == .Activated do index = i
+	testing.expect(t, !game.can_activate(g, 0, data, index), "two counters among them")
+	game.add_counters(other, types.CounterType_Stun{}, 1)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = data.id, ability_index = index}))
+	w, asked := s.waiting_for.(types.WaitingFor_PayCost)
+	removal, removes := w.kind.(types.PayCostKind_RemoveCounter)
+	testing.expect(t, asked && removes && removal.selection == .AmongObjects && removal.count == 3 && len(w.choices) == 2, "asked how many from which")
+	if !asked do return
+	testing.expect(t, !game.apply(g, 0, select_ids(bears.id, other.id, data.id)), "how many of which kind, not a selection")
+	short: [dynamic]types.CounterCostChoice
+	append(&short, types.CounterCostChoice{object_id = bears.id, counter_type = types.CounterType_Plus1Plus1{}, count = 2})
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ChooseRemoveCounterCostDistribution{distribution = short}), "two isn't three")
+	too_many: [dynamic]types.CounterCostChoice
+	append(&too_many, types.CounterCostChoice{object_id = bears.id, counter_type = types.CounterType_Plus1Plus1{}, count = 3})
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ChooseRemoveCounterCostDistribution{distribution = too_many}), "the Bears has two")
+	right: [dynamic]types.CounterCostChoice
+	append(&right, types.CounterCostChoice{object_id = bears.id, counter_type = types.CounterType_Plus1Plus1{}, count = 2})
+	append(&right, types.CounterCostChoice{object_id = other.id, counter_type = types.CounterType_Stun{}, count = 1})
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseRemoveCounterCostDistribution{distribution = right}))
+	testing.expect(t, len(bears.counters) == 0 && len(other.counters) == 0, "the counters removed")
+	hand := types.pvec_len(game.player(s, 0).hand)
+	resolve_stack(g)
+	testing.expect(t, types.pvec_len(game.player(s, 0).hand) == hand + 1, "a card drawn")
+}
+
+@(test)
+additional_cost_exile_a_creature_you_control :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Necrotic Fumes: "As an additional cost to cast this spell, exile a creature you control. Exile target creature
+	// or planeswalker." CR 601.2h: the creature is chosen and exiled as the spell is cast; without one, it can't be
+	// cast (CR 601.2f, 118.3).
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Swamp", 0, .Battlefield)
+	fumes := add(t, g, "Necrotic Fumes", 0, .Hand)
+	target := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, game.card_supported(&card(t, "Necrotic Fumes").face))
+	testing.expect(t, !game.castable(s, 0, fumes, g.card_db), "no creature to exile")
+	mine := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = fumes.id}))
+	if _, targeting := s.waiting_for.(types.WaitingFor_TargetSelection); targeting {
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{target.id}}))
+	}
+	w, asked := s.waiting_for.(types.WaitingFor_PayCost)
+	_, exiles := w.kind.(types.PayCostKind_ExilePermanent)
+	testing.expect(t, asked && exiles && len(w.choices) == 1 && w.choices[0] == mine.id, "which creature of its caster's to exile")
+	if !asked do return
+	testing.expect(t, game.apply(g, 0, select_ids(mine.id)))
+	testing.expect(t, mine.zone == .Exile && fumes.zone == .Stack, "exiled as it was cast")
+	resolve_stack(g)
+	testing.expect(t, target.zone == .Exile)
 }

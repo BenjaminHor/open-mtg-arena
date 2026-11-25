@@ -78,6 +78,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_CollectEvidenceChoice:
 		return w.player, true
+	case types.WaitingFor_CostTypeChoice:
+		return w.player, true
 	}
 	return 0, false
 }
@@ -321,9 +323,20 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			if blight, is_blight := w.(types.WaitingFor_BlightChoice); is_blight do return answer_blight_choice(g, p, blight, a.cards[:])
 			return answer_evidence_choice(g, p, w.(types.WaitingFor_CollectEvidenceChoice), a.cards[:])
 		case types.GameAction_CancelCast:
-			forget_cast_choices(object(s, g.pending.object))
-			withdraw_spell(s, g.pending.object) // CR 734: the cast is reversed
+			// CR 734: the cast or activation is reversed (an activated ability's source keeps what it was cast with).
+			if g.pending.ability_index < 0 do forget_cast_choices(object(s, g.pending.object))
+			withdraw_spell(s, g.pending.object)
 			g.pending = {}
+			give_priority(g, p)
+			return true
+		}
+	case types.WaitingFor_CostTypeChoice:
+		// "Remove a counter from this creature": the kind of counter (activated.odin, ask_counter_kind).
+		#partial switch a in action {
+		case types.GameAction_ChooseOption:
+			return answer_counter_kind(g, p, w, a.choice)
+		case types.GameAction_CancelCast:
+			g.pending = {} // CR 734.1: the activation is reversed; nothing was paid yet
 			give_priority(g, p)
 			return true
 		}
@@ -331,6 +344,8 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		#partial switch a in action {
 		case types.GameAction_SelectCards:
 			return answer_cost_choice(g, p, w, a.cards[:])
+		case types.GameAction_ChooseRemoveCounterCostDistribution:
+			return answer_counter_distribution(g, p, w, a.distribution[:])
 		case types.GameAction_CancelCast:
 			// CR 734.1: an activation or cast that can't be finished is reversed entirely.
 			withdraw_spell(s, g.pending.object)
@@ -529,6 +544,9 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		for i in 0 ..< len(w.branches) do append(&out, types.GameAction_ChooseBranch{index = i})
 	case types.WaitingFor_NamedChoice:
 		for name in w.options do append(&out, types.GameAction_ChooseOption{choice = name})
+	case types.WaitingFor_CostTypeChoice:
+		for name in w.options do append(&out, types.GameAction_ChooseOption{choice = name})
+		append(&out, types.GameAction_CancelCast{})
 	case types.WaitingFor_ProliferateChoice:
 		// Any subset is an answer; offered: all of them, and none.
 		append(&out, types.GameAction_SelectTargets{targets = slice.clone_to_dynamic(w.eligible[:], context.temp_allocator)})

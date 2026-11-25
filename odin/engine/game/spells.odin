@@ -85,6 +85,7 @@ card_supported :: proc(face: ^types.CardFace, back_face := false) -> bool {
 	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !cost_modifier_supported(st) do return false
 	for t in face.triggers do if !trigger_supported(t) do return false
 	if !additional_cost_supported(face) || len(face.casting_options) > 0 || !modal_supported(face) do return false
+	if !power_up_supported(face) do return false
 	// Not yet: "cast only during ..." (CR 601.3), strive (an ability word, CR 207.2c), cleave (CR 702.148), a
 	// Case's "to solve" (CR 720.3a).
 	if len(face.casting_restrictions) > 0 || face.strive_cost != nil || face.cleave_variant != nil || face.solve_condition != nil do return false
@@ -1063,6 +1064,8 @@ Pending_Cast :: struct {
 	cost_objects:  [dynamic]types.ObjectId, // the permanents to sacrifice or cards to discard for the cost, once chosen
 	cost_kind:     Object_Cost_Kind, // what's done with them (tapped, beheld, ...), from the prompt that asked
 	cost_chosen:   bool,
+	counter_kinds: [dynamic]types.CounterType, // "remove a counter from this", of any kind: the kind chosen for each
+	counter_removals: [dynamic]types.CounterCostChoice, // "remove N counters from among ...": how many off which
 	division:      [dynamic]u32, // CR 601.2d: each target's share of what's divided, in target order
 	division_decided: bool,
 }
@@ -1543,6 +1546,7 @@ card_gaps :: proc(face: ^types.CardFace, back_face := false) -> [dynamic]string 
 	}
 	x_defined = false
 	if !additional_cost_supported(face) do append(&out, "additional cost")
+	if !power_up_supported(face) do append(&out, "activated: power-up of a hybrid mana cost")
 	if !modal_supported(face) do append(&out, "modal")
 	if len(face.casting_options) > 0 do append(&out, "casting option")
 	if len(face.casting_restrictions) > 0 do append(&out, "casting restriction")
@@ -2254,28 +2258,7 @@ additional_cost_payable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^type
 pay_additional_cost :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) {
 	cost, has := spell_additional_cost(o)
 	if !has do return
-	s := &g.state
-	together := begin_together() // paid at once ("sacrifice two creatures")
-	switch g.pending.cost_kind {
-	case .Sacrifice, .Discard, .Exile_From_Graveyard, .Collect_Evidence:
-		for id in g.pending.cost_objects do pay_with_object(g, id) // evidence: exiled from the graveyard (CR 701.59a)
-	case .Tap:
-		for id in g.pending.cost_objects do tap_permanent(object(s, id)) // CR 701.26a
-	case .Behold, .Reveal:
-		// CR 701.20a: a card from the hand is shown to all players and stays where it is (701.20b); a permanent
-		// beheld is only chosen (CR 701.4a).
-		revealed := make([dynamic]types.ObjectId)
-		names := make([dynamic]string)
-		for id in g.pending.cost_objects do if c := object(s, id); c.zone == .Hand {
-			append(&revealed, id)
-			append(&names, c.name)
-		}
-		if len(revealed) > 0 do report(types.GameEvent_CardsRevealed{player = p, card_ids = revealed, card_names = names})
-	case .Blight:
-		// CR 701.68a: N -1/-1 counters on the chosen creature.
-		if b, ok := cost.(types.AbilityCost_Blight); ok do for id in g.pending.cost_objects do add_counters(object(s, id), types.CounterType_Minus1Minus1{}, b.count)
-	}
-	end_together(together)
+	pay_cost_objects(g, p, cost)
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
 	cost_parts_of(cost, &parts)
 	for part in parts do if life, ok := part.(types.AbilityCost_PayLife); ok {
@@ -2287,6 +2270,7 @@ pay_additional_cost :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject) {
 // Why an activated ability whose effect and cost are supported still isn't: for the gap report.
 @(private = "file")
 activated_gap :: proc(a: types.AbilityDefinition) -> string {
+	if adds_mana(a) do return "activated: mana ability (its cost or extra effect)" // mana.odin's mana_ability_option
 	if a.activator_filter != nil do return "activated: another player activates"
 	if a.activation_mana_payment_restriction != nil do return "activated: mana payment restriction"
 	if a.cost_reduction != nil do return "activated: cost reduction"
