@@ -67,6 +67,11 @@ Game :: struct {
 	// that simultaneous damage is prevented too (CR 122.1c, 510.2).
 	shielded:          [dynamic]types.ObjectId,
 	exile_instead:     [dynamic]Control_Change, // "if it would die this turn, exile it instead" (prevention.odin)
+	free_cast:         Free_Cast, // a spell cast while another resolves (cast_during_resolution.odin, CR 608.2g)
+	exiled_from_stack: map[types.ObjectId]u64, // spells to exile instead of putting into a graveyard, as they were then
+	cast_by_effect:    map[types.ObjectId]u64, // spells cast without paying their mana cost by a resolving effect, as they were then
+	cast_snapshots:    map[types.ObjectId]Cast_Snapshot, // this turn's spells as cast, for "copy that spell" (copy_spell.odin)
+	copy_retarget:     Copy_Retarget, // a copy of a spell whose new targets are being chosen (CR 707.10c)
 	dealing_combat:    bool,
 }
 

@@ -64,6 +64,18 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		append(&out, ..w.cards[:min(int(w.primary_count), len(w.cards))])
 		return types.GameAction_SelectCards{cards = out}, true
 	case types.WaitingFor_OptionalCostChoice:
+		if g.pending.asking_alternative {
+			// An alternative cost of mana alone (a Bringer's {W}{U}{B}{R}{G}, "without paying its mana cost"); one that
+			// takes life, cards or permanents only when the mana cost can't be paid.
+			if choice, is_choice := w.cost.(types.AdditionalCost_Choice); is_choice && len(choice._0) > 0 {
+				if _, mana_only := choice._0[0].(types.AbilityCost_Mana); mana_only do return types.GameAction_DecideOptionalCost{index = 0}, true
+			}
+			o := object(s, g.pending.object)
+			if o != nil && additional_cost_payable(s, p, o) {
+				if _, payable := plan_payment(s, p, spell_cost(s, o, p), 0, nil, Payment{o, true}); payable do return types.GameAction_DecideOptionalCost{index = 1}, true
+			}
+			return types.GameAction_DecideOptionalCost{index = 0}, true
+		}
 		if choice, is_choice := w.cost.(types.AdditionalCost_Choice); is_choice {
 			// The first cost it can pay.
 			if o := object(&g.state, g.pending.object); o != nil do for _, i in choice._0 do if option_payable(&g.state, p, o, i) do return types.GameAction_DecideOptionalCost{index = i}, true
@@ -173,6 +185,8 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		// The front face: a modal double-faced card's main face (its back is often a land).
 		return types.GameAction_ChooseModalFace{back_face = false}, true
 	case types.WaitingFor_CastOffer:
+		// A spell cast for free while another resolves: the most expensive one (cast_during_resolution.odin).
+		if k, window := w.kind.(types.CastOfferKind_FreeCastWindow); window do return types.GameAction_FreeCastWindowChoice{selection = ai_free_cast(g, k)}, true
 		// The Adventure first: the creature can be cast from exile afterwards (CR 716.3d).
 		return types.GameAction_ChooseAdventureFace{creature = false}, true
 	case types.WaitingFor_UnlessPayment:
@@ -186,6 +200,8 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		// What the returning Aura enchants: one of its own player's permanents if it can, else the first offered.
 		for t in w.legal_targets do if id, ok := target_object(t); ok && object(s, id).controller == p do return types.GameAction_ChooseTarget{target = t}, true
 		return types.GameAction_ChooseTarget{target = w.legal_targets[0]}, true
+	case types.WaitingFor_CopyRetarget:
+		return ai_copy_target(g, p, w), true // copy_spell.odin
 	case types.WaitingFor_CopyTargetChoice:
 		// The biggest creature to copy.
 		best: types.ObjectId
@@ -354,8 +370,8 @@ chosen_target :: proc(g: ^Game, p: types.PlayerId, legal: []types.TargetRef, a: 
 			if !helps do damage = int(-tg._0)
 		case types.Effect_GenericEffect:
 			helps = generic_helps(e)
-		case types.Effect_Attach:
-			helps = true
+		case types.Effect_Attach, types.Effect_CastFromZone:
+			helps = true // a card of its own to cast
 		case types.Effect_ChangeZone:
 			// Getting a card back is good for its owner; exiling or bouncing a permanent is aimed at an opponent's.
 			origin, _ := e.origin.?
@@ -373,6 +389,11 @@ chosen_target :: proc(g: ^Game, p: types.PlayerId, legal: []types.TargetRef, a: 
 			if x._0 != p && !helps do score = 1 + (20 - int(player(s, x._0).life)) // burn to the face when nothing better
 		case types.TargetRef_Object:
 			o := object(s, x._0)
+			if o == nil {
+				// An ability on the stack ("counter target activated or triggered ability"): an opponent's.
+				if e, on_stack := stack_entry_of(s, x._0); on_stack && (e.controller == p) == helps do score = 10
+				break
+			}
 			mine := o.controller == p
 			if helps == mine {
 				score = 10 + power_of(o) + mana_value(o.mana_cost)

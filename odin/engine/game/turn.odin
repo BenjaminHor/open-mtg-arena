@@ -143,6 +143,8 @@ cleanup :: proc(g: ^Game) {
 
 give_priority :: proc(g: ^Game, p: types.PlayerId) {
 	s := &g.state
+	// CR 608.2g: a spell cast while another resolves: no one gets priority; the resolution goes on.
+	if resume_after_free_cast(g) do return
 	g.priority_after = p // kept while a player chooses a trigger's modes or targets
 	// Choices made as a permanent entered, first (CR 614.12).
 	if ask_entry_copy(g, p) do return

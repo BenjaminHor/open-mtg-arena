@@ -34,14 +34,8 @@ property_supported :: proc(p: types.FilterProp) -> bool {
 		return x.zone == .Battlefield // "you control" on the battlefield (graveyard filters are read by graveyard_filter)
 	case types.FilterProp_Targets:
 		// "A spell that targets this creature" (CR 601.2c: its targets are chosen as it's cast).
-		if x.filter == nil do return false
-		#partial switch y in x.filter^ {
-		case types.TargetFilter_SelfRef:
-			return true
-		case types.TargetFilter_Typed:
-			return typed_supported(y._0)
-		}
-		return false
+		// "That targets you or a creature you control" too (target_fits_description).
+		return x.filter != nil && spell_targets_filter_supported(x.filter^)
 	case types.FilterProp_Another, types.FilterProp_Tapped, types.FilterProp_Untapped, types.FilterProp_Token,
 	     types.FilterProp_NonToken, types.FilterProp_HasColor, types.FilterProp_NotColor, types.FilterProp_HasSupertype,
 	     types.FilterProp_NotSupertype, types.FilterProp_Blocking, types.FilterProp_Named:
@@ -359,15 +353,31 @@ spell_targets_one :: proc(s: ^types.GameState, spell: types.ObjectId, f: types.T
 		k, is_spell := e.kind.(types.StackEntryKind_Spell)
 		if !is_spell || k.ability == nil do return false
 		for node := k.ability; node != nil; node = node.sub_ability do for t in node.targets {
-			id, is_object := t.(types.TargetRef_Object)
-			if !is_object do continue
-			#partial switch x in f {
-			case types.TargetFilter_SelfRef:
-				if id._0 == source do return true
-			case types.TargetFilter_Typed:
-				if o := object(s, id._0); o != nil && object_matches(s, o, x._0, chooser, source) do return true
-			}
+			if target_fits_description(s, t, f, chooser, source) do return true
 		}
+	}
+	return false
+}
+
+// Whether one target of a spell fits "this creature", "you" (the player `chooser`), "a permanent you control", or
+// either of such.
+target_fits_description :: proc(s: ^types.GameState, t: types.TargetRef, f: types.TargetFilter, chooser: types.PlayerId, source: types.ObjectId) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Controller:
+		p, is_player := t.(types.TargetRef_Player)
+		return is_player && p._0 == chooser
+	case types.TargetFilter_Or:
+		for y in x.filters do if target_fits_description(s, t, y, chooser, source) do return true
+		return false
+	}
+	id, is_object := t.(types.TargetRef_Object)
+	if !is_object do return false
+	#partial switch x in f {
+	case types.TargetFilter_SelfRef:
+		return id._0 == source
+	case types.TargetFilter_Typed:
+		o := object(s, id._0)
+		return o != nil && object_matches(s, o, x._0, chooser, source)
 	}
 	return false
 }

@@ -3334,6 +3334,23 @@ Progress:
   (DigBottomOrder); battlefield digs that could find an Aura still refused (CR 303.4f). Refused: Hatchery Spider,
   Storm the Festival, United Battlefront, Neoform (misparsed). Prompts not tried in the app. Tests:
   mana_library_test.odin. Coverage 8,370.
+- Casting, copies and counters (agent, merged; casting_options.odin, cast_during_resolution.odin, copy_spell.odin,
+  counter.odin, cost_modifiers.odin): alternative costs offered through OptionalCostChoice (CR 118.9: Force of Will's
+  exile-from-hand, life, sacrifice, tapping, returning; "if it's not your turn", "if you control ..."), conditional
+  flash and flash for {2} more (CR 601.3c-d); colored and conditional cost reductions (CR 118.7, 601.2f); free casts
+  while a spell resolves (CR 608.2g, prompt CastOffer FreeCastWindow: the Expertise cycle, Torrential Gearhulk with its
+  exile rider); copies of spells (CR 707.10: modes, X, additional costs and divided damage kept; permanent-spell copies
+  become tokens; new targets one at a time with prompt CopyRetarget; "copy that spell" uses a snapshot so a countered
+  spell is still copied, per Double Vision's rulings); counterspells by mana value, color, controller, "that
+  targets ...", abilities on the stack (Stifle), and "instead" destinations (Remand, Memory Lapse, Force of Negation's
+  exile as a replacement, CR 616.1f with flashback). Fixed: `cast_by_flashback` was true for any graveyard cast; two
+  crashes when a target was an ability on the stack. 11 misparsed cards refused (Dissonant Wave, Lucky Clover, Show
+  of Confidence...; Narset's Reversal parked: returning a spell from the stack isn't built). Two of its tests used
+  Mystical Tether, refused since the ninth review (until-leaves exile): moved to Rout and Ghitu Fire. Prompts not
+  tried in the app. Tests: casting_test.odin. Coverage 8,483.
+  Found, not fixed (Known issues): Omen cards (Chilling Screech and 15 others, "adventure" layout without the
+  Adventure subtype) count as supported but their Omen half can't be cast; an optional free cast asks twice; a free
+  cast always uses the main face; with several alternative costs only the first is offered.
 - Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
   decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
   cards to be triaged against the CR (next step for the fixtures).
@@ -3381,6 +3398,9 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   gap recordings only once the engine is fleshed out (ask then).
 
 ## Known issues
+- (Odin, 2026-11-25) Omen cards (Chilling Screech and 15 others) come through as layout "adventure" without the
+  Adventure subtype; the creature is supported but the Omen half can never be cast (has_adventure). Should be
+  refused or built (CR 715 analogue for Omen; look up the rule).
 
 - (Odin, 2026-11-25) "Tap enchanted creature" with the data's Stack timing (Mesmerizing Dose, Sleep with the Fishes, So
   Shiny) is treated as a target: ward triggers on it and hexproof makes it fizzle; the enchanted creature isn't

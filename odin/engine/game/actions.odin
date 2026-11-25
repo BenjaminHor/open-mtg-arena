@@ -48,6 +48,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_CopyTargetChoice:
 		return w.player, true
+	case types.WaitingFor_CopyRetarget:
+		return w.player, true
 	case types.WaitingFor_AbilityModeChoice:
 		return w.player, true
 	case types.WaitingFor_AssignCombatDamage:
@@ -223,8 +225,12 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		a, ok := action.(types.GameAction_DistributeAmong)
 		return ok && answer_division(g, p, w, a.distribution[:])
 	case types.WaitingFor_CastOffer:
-		a, ok := action.(types.GameAction_ChooseAdventureFace)
-		return ok && answer_adventure_offer(g, p, w, a.creature)
+		#partial switch a in action {
+		case types.GameAction_ChooseAdventureFace:
+			return answer_adventure_offer(g, p, w, a.creature)
+		case types.GameAction_FreeCastWindowChoice:
+			return answer_free_cast(g, p, a.selection) // CR 608.2g (cast_during_resolution.odin)
+		}
 	case types.WaitingFor_ModalFaceChoice:
 		#partial switch a in action {
 		case types.GameAction_ChooseModalFace:
@@ -260,6 +266,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_OptionalCostChoice:
 		#partial switch a in action {
 		case types.GameAction_DecideOptionalCost:
+			if g.pending.asking_alternative do return decide_alternative_cost(g, p, a.index) // casting_options.odin
 			if _, is_choice := w.cost.(types.AdditionalCost_Choice); is_choice do return decide_additional_choice(g, p, a.index)
 			return decide_kicker(g, p, a.index)
 		case types.GameAction_CancelCast:
@@ -306,6 +313,14 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_CopyTargetChoice:
 		a, ok := action.(types.GameAction_ChooseTarget)
 		return ok && answer_entry_copy(g, p, w, a.target)
+	case types.WaitingFor_CopyRetarget:
+		// CR 707.10c: a new target for the copy of a spell, or keep the current one(s) (copy_spell.odin).
+		#partial switch a in action {
+		case types.GameAction_ChooseTarget:
+			return answer_copy_target(g, p, a.target)
+		case types.GameAction_KeepAllCopyTargets:
+			return keep_copy_targets(g, p)
+		}
 	case types.WaitingFor_ReturnAsAuraTarget:
 		a, ok := action.(types.GameAction_ChooseTarget)
 		return ok && answer_aura_host(g, p, w, a.target) // zone_effects.odin
@@ -533,7 +548,13 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		slot := w.selection.current_slot
 		if slot < len(w.target_slots) && w.target_slots[slot].optional do append(&out, types.GameAction_ChooseTarget{})
 	case types.WaitingFor_OptionalCostChoice:
-		if choice, is_choice := w.cost.(types.AdditionalCost_Choice); is_choice {
+		if g.pending.asking_alternative {
+			// The alternative cost (offered only when it can be paid), or the mana cost if it can (casting_options.odin).
+			append(&out, types.GameAction_DecideOptionalCost{index = 0})
+			if o := object(s, g.pending.object); o != nil && additional_cost_payable(s, p, o) {
+				if _, payable := plan_payment(s, p, spell_cost(s, o, p), 0, nil, Payment{o, true}); payable do append(&out, types.GameAction_DecideOptionalCost{index = 1})
+			}
+		} else if choice, is_choice := w.cost.(types.AdditionalCost_Choice); is_choice {
 			// One of the costs the player can pay.
 			if o := object(s, g.pending.object); o != nil do for _, i in choice._0 do if option_payable(s, p, o, i) do append(&out, types.GameAction_DecideOptionalCost{index = i})
 		} else {
@@ -552,6 +573,12 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 	case types.WaitingFor_CopyTargetChoice:
 		for id in w.valid_targets do append(&out, types.GameAction_ChooseTarget{target = types.TargetRef_Object{id}})
 		append(&out, types.GameAction_ChooseTarget{}) // copy nothing
+	case types.WaitingFor_CopyRetarget:
+		if w.current_slot < len(w.target_slots) {
+			for t in w.target_slots[w.current_slot].legal_alternatives do append(&out, types.GameAction_ChooseTarget{target = t})
+		}
+		append(&out, types.GameAction_ChooseTarget{}) // keep this one
+		append(&out, types.GameAction_KeepAllCopyTargets{})
 	case types.WaitingFor_ReturnAsAuraTarget:
 		for t in w.legal_targets do append(&out, types.GameAction_ChooseTarget{target = t})
 	case types.WaitingFor_CrewVehicle:
@@ -602,6 +629,10 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 		if k, adventure := w.kind.(types.CastOfferKind_Adventure); adventure {
 			append(&out, types.GameAction_ChooseAdventureFace{creature = true})
 			append(&out, types.GameAction_ChooseAdventureFace{creature = false})
+		}
+		if k, window := w.kind.(types.CastOfferKind_FreeCastWindow); window {
+			for id in k.candidates do append(&out, types.GameAction_FreeCastWindowChoice{selection = id})
+			append(&out, types.GameAction_FreeCastWindowChoice{})
 		}
 	case types.WaitingFor_DeclareAttackers:
 		append(&out, types.GameAction_DeclareAttackers{})

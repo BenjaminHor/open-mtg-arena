@@ -20,9 +20,14 @@ flashback_castable :: proc(o: ^types.GameObject, p: types.PlayerId) -> bool {
 	return has
 }
 
-cast_by_flashback :: proc(o: ^types.GameObject) -> bool {
+// Cast from the graveyard by its flashback ability: not by another effect's permission (cast_during_resolution.odin),
+// for which no flashback cost was paid (CR 702.34a).
+cast_by_flashback :: proc(g: ^Game, o: ^types.GameObject) -> bool {
 	z, has := o.cast_from_zone.?
-	return has && z == .Graveyard && o.zone == .Stack
+	if !has || z != .Graveyard || o.zone != .Stack do return false
+	if inc, by_effect := g.cast_by_effect[o.id]; by_effect && inc == o.incarnation do return false
+	_, flashback := flashback_cost(o)
+	return flashback
 }
 
 // Where a spell goes as it leaves the stack (CR 608.2n, 701.6a): its owner's graveyard, or exile after flashback.
@@ -30,7 +35,8 @@ spell_leaves_stack :: proc(g: ^Game, id: types.ObjectId) {
 	o := object(&g.state, id)
 	exiles_itself := g.spell_exiles_itself == id // "Exile [this spell]" (zone_effects.odin)
 	g.spell_exiles_itself = 0
-	if o != nil && (cast_by_flashback(o) || exiles_itself) {
+	// CR 702.34a; or "if that spell would be put into your graveyard, exile it instead" (cast_during_resolution.odin).
+	if o != nil && (cast_by_flashback(g, o) || exiles_itself || exiled_instead_of_graveyard_after_cast(g, o)) {
 		move_object(g, id, .Exile)
 		return
 	}

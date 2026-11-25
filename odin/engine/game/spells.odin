@@ -108,6 +108,18 @@ MISPARSED_CARDS :: [?]string{
 	"The Promise of Kahless", // "all other" read as other than the spell: the sacrificed card comes back too
 	// Library effects and mana abilities (2026-11-25).
 	"Neoform", // "with an additional +1/+1 counter on it" lost from the card it puts onto the battlefield
+	// Casting, countering and copying (2026-11-25).
+	"Dissonant Wave", // "from a noncreature source" lost from "counter target activated or triggered ability"
+	"Runescale Stormbrood", // "or a Dragon spell" lost from its cast trigger
+	"Security Rhox", // "Spend only mana produced by Treasures to cast it this way" lost from its alternative cost
+	"Bilbo, Thief in the Night", // "from anywhere other than your hand" lost from its cost reduction
+	"Scholar of the Lost Trove", // "if an instant or sorcery spell cast this way" read as any spell cast this way
+	"In Search of Greatness", // "equal to 1 plus the greatest mana value among other permanents you control" read as 1
+	"Lucky Clover", // "an Adventure instant or sorcery spell" read as an Adventure instant or any sorcery
+	"Show of Confidence", // "copy it for each other instant and sorcery spell you've cast this turn" read as one copy
+	"Errant, Street Artist", // "that wasn't cast" lost from "copy target spell you control"
+	"Banish into Fable", // "from your hand" lost from "when you cast this spell"
+	"Narset's Reversal", // "return it to its owner's hand": returning a spell from the stack isn't carried out yet
 }
 
 misparsed :: proc(name: string) -> bool {
@@ -133,7 +145,7 @@ card_supported :: proc(face: ^types.CardFace, back_face := false) -> bool {
 	}
 	for st in face.static_abilities do if !static_supported(st) && !static_mode_supported(st) && !cost_modifier_supported(st) do return false
 	for t in face.triggers do if !trigger_supported(t) do return false
-	if !additional_cost_supported(face) || len(face.casting_options) > 0 || !modal_supported(face) do return false
+	if !additional_cost_supported(face) || !casting_options_supported(face) || !modal_supported(face) do return false
 	if !power_up_supported(face) do return false
 	// Not yet: "cast only during ..." (CR 601.3), strive (an ability word, CR 207.2c), cleave (CR 702.148), a
 	// Case's "to solve" (CR 720.3a).
@@ -425,6 +437,10 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return you && fixed && !x.enters_attacking && (is_self(x.target) || (filter_supported(x.target) && !may_name_player(x.target)))
 	case types.Effect_Counter:
 		return counter_supported(x)
+	case types.Effect_CastFromZone:
+		return cast_from_zone_supported(x) // cast_during_resolution.odin
+	case types.Effect_CopySpell:
+		return copy_spell_supported(x) // copy_spell.odin
 	case types.Effect_Investigate:
 		return true // a Clue token (CR 701.16a)
 	case types.Effect_Proliferate:
@@ -535,7 +551,7 @@ effect_target :: proc(e: types.Effect) -> (types.TargetFilter, bool) {
 	#partial switch _ in f {
 	case types.TargetFilter_Any, types.TargetFilter_Player, types.TargetFilter_Opponent, types.TargetFilter_Typed, types.TargetFilter_Or:
 		return f, true
-	case types.TargetFilter_StackSpell, types.TargetFilter_And:
+	case types.TargetFilter_StackSpell, types.TargetFilter_And, types.TargetFilter_StackAbility:
 		return f, is_spell_target(f)
 	}
 	return nil, false
@@ -666,6 +682,10 @@ effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 		f = x.target
 	case types.Effect_Sacrifice:
 		if player, edict := edict_player(x.target); edict do f = player // "target opponent sacrifices a creature"
+	case types.Effect_CastFromZone:
+		f, _ = cast_from_zone_target(x) // a card targeted in a graveyard; one chosen from the hand isn't a target
+	case types.Effect_CopySpell:
+		f = x.target // "target instant or sorcery spell", "that spell", "this spell"
 	case types.Effect_Token:
 		if other_token_maker(x.owner) do f = x.owner // "target opponent creates": a target player (tokens.odin)
 		else if host, attached := x.attach_to.?; attached do f = host // a Role's creature: a target, or "it"
@@ -751,7 +771,7 @@ legal_targets :: proc(s: ^types.GameState, f: types.TargetFilter, controller: ty
 		for p in s.players do append(&out, types.TargetRef_Player{p.id})
 	case types.TargetFilter_Opponent:
 		for p in s.players do if p.id != controller do append(&out, types.TargetRef_Player{p.id})
-	case types.TargetFilter_StackSpell, types.TargetFilter_And:
+	case types.TargetFilter_StackSpell, types.TargetFilter_And, types.TargetFilter_StackAbility:
 		spell_targets(s, f, controller, source, &out)
 	case types.TargetFilter_Or:
 		if is_spell_target(f) {
@@ -803,9 +823,11 @@ spell_ability :: proc(o: ^types.GameObject) -> ^types.AbilityDefinition {
 
 // CR 117.1a, 307.1: a player may cast an instant (or a spell with flash, CR 702.8) whenever they have priority, and
 // any other spell only in their main phase, on their own turn, with the stack empty.
-can_cast_now :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject) -> bool {
+// `flash_for_a_cost`: counting "you may cast this spell as though it had flash if you pay {2} more" (CR 601.3c).
+can_cast_now :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, flash_for_a_cost := true) -> bool {
 	if is_type(o, .Land) do return false
 	if is_type(o, .Instant) || has_keyword(o, types.Keyword_Flash) || has_own_flash_rule(o) do return true
+	if has_conditional_flash(s, p, o) || (flash_for_a_cost && has_flash_for_a_cost(o)) do return true // casting_options.odin
 	return sorcery_timing(s, p)
 }
 
@@ -821,12 +843,16 @@ castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c
 	if adventure_permission(o, p) do from_exile = true // CR 716.3d: the creature, after its Adventure
 	if _, prepared := prepared_source(s, o, p); prepared do from_exile = true // CR 723.3c: a prepared permanent's copy
 	if is_type(o, .Land) do from_exile = false // a land is played, not cast
-	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander) || flashback_castable(o, p) || from_exile) do return refuse("not castable from its zone")
+	// A resolving effect's permission to cast it now, from where it is (CR 608.2g: cast_during_resolution.odin).
+	free := cast_free(o)
+	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander) || flashback_castable(o, p) || from_exile || free) do return refuse("not castable from its zone")
 	if !object_supported(o, card_db) do return refuse_unsupported(o)
-	if !can_cast_now(s, p, o) do return refuse("not now (timing or priority)")
+	if !free && !can_cast_now(s, p, o) do return refuse("not now (timing or priority)")
 	if is_modal(o) {
 		if !modes_castable(s, p, o) do return refuse("no castable modes")
 	} else if !slots_fillable(s, spell_slot_list(o)[:], p, o.id) do return refuse("no legal targets")
+	// Its costs, or an alternative cost it has (CR 118.9).
+	if _, alternative := available_alternative(s, p, o); alternative && !free do return true
 	if !additional_cost_payable(s, p, o) do return refuse("additional cost unpayable")
 	_, payable := plan_payment(s, p, spell_cost(s, o, p), 0, nil, Payment{o, true})
 	return payable || refuse("mana cost unpayable")
@@ -879,22 +905,28 @@ spell_cost :: proc(s: ^types.GameState, o: ^types.GameObject, p: types.PlayerId)
 	if o.zone == .Graveyard {
 		if f, has := flashback_cost(o); has do base = f // CR 702.34a: instead of its mana cost
 	}
+	alternative := false
+	if alt, has := alternative_mana(o); has {
+		base = alt // CR 118.9: rather than its mana cost; CR 118.9d: what changes the cost changes this
+		alternative = true
+	}
 	c, is_cost := base.(types.ManaCost_Cost)
 	if !is_cost do return base
+	if extra, has := flash_extra_cost(s, p, o); has do add_mana(&c, extra) // CR 601.3c (casting_options.odin)
 	add_kicker_cost(o, &c) // CR 702.33a: an additional cost
 	add_chosen_option_cost(o, &c) // "or pay {3}" (CR 601.2f)
 	add_mode_costs(o, &c) // spree, tiered, entwine (CR 700.2h, 702.42a)
-	generic := int(c.generic) + cost_change(s, p, o)
-	if has_x(o.mana_cost) {
-		// CR 107.3a: each {X} is the announced value (0 before it's announced).
-		x := int(o.cost_x_paid.? or_else 0)
-		shards := make([dynamic]types.ManaCostShard, context.temp_allocator)
-		for shard in c.shards {
-			if shard == .X do generic += x
-			else do append(&shards, shard)
-		}
-		c.shards = shards
+	change := cost_change(s, p, o)
+	generic := int(c.generic) + change.generic
+	x := int(o.cost_x_paid.? or_else 0) if has_x(o.mana_cost) && !alternative else 0 // CR 107.3a: X as announced
+	shards := make([dynamic]types.ManaCostShard, context.temp_allocator)
+	for shard in c.shards {
+		if shard == .X do generic += x
+		else do append(&shards, shard)
 	}
+	append(&shards, ..change.more[:])
+	for less in change.less do reduce_by_shard(&shards, &generic, less) // CR 118.7b-c (cost_modifiers.odin)
+	c.shards = shards
 	if o.zone == .Command do generic += 2 * int(s.commander_cast_count[o.id])
 	c.generic = u32(max(generic, 0))
 	return c
@@ -991,7 +1023,8 @@ object_face :: proc(o: ^types.GameObject) -> types.CardFace {
 
 // CR 601.2: casting. The card moves to the stack (601.2a), its targets are chosen (601.2c; when the action didn't
 // name them, the player is asked, one target at a time), the cost is paid (601.2g-h) and the spell becomes cast.
-cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []types.TargetRef, adventure_decided := false, face_decided := false) -> bool {
+// `free`: cast without paying its mana cost while a spell or ability resolves (cast_during_resolution.odin).
+cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []types.TargetRef, adventure_decided := false, face_decided := false, free := false) -> bool {
 	s := &g.state
 	o := object(s, id)
 	if o == nil do return false
@@ -1003,9 +1036,18 @@ cast_spell :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []t
 		// CR 716.3: the creature or its Adventure (adventure.odin).
 		if handled, ok := offer_adventure(g, p, o); handled do return ok
 	}
-	if !castable(s, p, o, g.card_db) do return false
+	forget_alternative(id)
+	if free {
+		casting_alternative = {spell = id, free = true}
+		if has_x(o.mana_cost) do o.cost_x_paid = 0 // CR 107.3b
+	}
+	if !castable(s, p, o, g.card_db) {
+		if free do forget_cast_choices(o)
+		return false
+	}
 	slots := spell_slot_list(o)
-	g.pending = Pending_Cast{object = id, ability_index = -1}
+	g.pending = Pending_Cast{object = id, ability_index = -1, alternative_decided = free}
+	note_flash_cost(s, p, o) // CR 601.3c: as though it had flash, for the extra cost (casting_options.odin)
 	announce_spell(s, p, o)
 	// Targets named with the action fill the slots in order.
 	for t in targets {
@@ -1061,12 +1103,15 @@ forget_cast_choices :: proc(o: ^types.GameObject) {
 	o.additional_cost_payment_count = 0
 	clear(&o.additional_cost_payments)
 	o.chosen_modes = nil
+	o.cast_timing_permission = nil
+	forget_alternative(o.id)
 }
 
 // CR 601.2b: the announcements in order: kicker, then X; then targets (601.2c) and paying (601.2h).
 continue_casting :: proc(g: ^Game, p: types.PlayerId) {
 	s := &g.state
 	o := object(s, g.pending.object)
+	if ask_alternative_cost(g, p, o) do return // CR 601.2b, 118.9 (casting_options.odin)
 	if ask_additional_choice(g, p, o) do return
 	if ask_kicker(g, p, o) do return
 	if has_x(o.mana_cost) && o.cost_x_paid == nil {
@@ -1164,6 +1209,9 @@ Pending_Cast :: struct {
 	modes:         [dynamic]int, // a modal spell's chosen modes, in printed order (CR 700.2d)
 	modes_chosen:  bool,
 	kicker_decided: bool,
+	alternative_decided: bool, // CR 601.2b: whether an alternative cost (casting_options.odin) was offered or isn't
+	asking_alternative: bool, // the player is choosing between the alternative cost and the mana cost
+	alternative_offered: int, // which casting option that alternative is
 	ability_index: int, // an activated ability being activated, or -1 for a spell being cast
 	cost_objects:  [dynamic]types.ObjectId, // the permanents to sacrifice or cards to discard for the cost, once chosen
 	cost_kind:     Object_Cost_Kind, // what's done with them (tapped, beheld, ...), from the prompt that asked
@@ -1241,6 +1289,8 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	pay_mana(g, p, spell_cost(s, o, p), 0, used_up, Payment{o, true})
 	cost_targets = {}
 	pay_additional_cost(g, p, o)
+	forget_alternative(id) // the cost is paid (CR 601.2h)
+	o.cast_timing_permission = nil
 	from := o.zone // where it was cast from: flashback's exile reads it (CR 702.34a)
 	if o.zone == .Command {
 		s.commander_cast_count[o.id] += 1
@@ -1255,7 +1305,9 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	record_division(resolved, g.pending.division[:])
 	variant: types.CastingVariant = types.CastingVariant_Normal{}
 	if showing_adventure(o) do variant = types.CastingVariant_Adventure{} // CR 716.3b
-	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = id, controller = p, kind = types.StackEntryKind_Spell{card_id = o.card_id, ability = resolved, casting_variant = variant}}, copy_entry)
+	entry := types.StackEntry{id = id, source_id = id, controller = p, kind = types.StackEntryKind_Spell{card_id = o.card_id, ability = resolved, casting_variant = variant}}
+	types.pvec_push(&s.stack, entry, copy_entry)
+	note_cast_snapshot(g, o, entry) // "copy that spell", even once it's gone (copy_spell.odin)
 	record_spell_cast(s, p, o, from)
 	note_targeted(g, id, p, targets) // CR 601.2c
 	append(&g.events, Event{kind = .Spell_Cast, object = id, controller = p}) // CR 601.2i
@@ -1300,8 +1352,12 @@ resolve_top_of_stack :: proc(g: ^Game) {
 			id, _ := target_object(spell.ability.targets[0])
 			host = object(s, id)
 		}
-		// CR 608.3: a permanent spell resolving becomes a permanent on the battlefield under its controller.
+		// CR 608.3: a permanent spell resolving becomes a permanent on the battlefield under its controller; a copy of
+		// one becomes a token (CR 608.3f, copy_spell.odin).
+		copy := o.is_copy
+		if copy do become_token_from_copy(g, o, entered = false)
 		move_object(g, o.id, .Battlefield)
+		if copy do become_token_from_copy(g, o, entered = true)
 		o.controller = entry.controller
 		if host != nil do attach(s, o, host)
 		return
@@ -1322,6 +1378,8 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		do_more_effect(g, effect, controller, source, target)
 		return
 	}
+	// "If that spell would be put into your graveyard, exile it instead": applied to the spell (spell_leaves_stack).
+	if _, moves := effect.(types.Effect_ChangeZone); moves && current_is_cast_rider(g) do return
 	#partial switch x in effect {
 	case types.Effect_Attach:
 		return do_attach(g, x, controller, source, target)
@@ -1428,8 +1486,14 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 			o := create_copy_token(g, original, controller, x.tapped, copy_token_exceptions(x)[:])
 			copy_token_entry_counters(o, x) // tokens.odin
 		}
+	case types.Effect_CastFromZone:
+		return do_cast_from_zone(g, x, controller, source, target) // CR 608.2g (cast_during_resolution.odin)
+	case types.Effect_CopySpell:
+		return do_copy_spell(g, x, controller, source, target) // CR 707.10 (copy_spell.odin)
 	case types.Effect_Counter:
-		if id, ok := target_object(target); ok do counter_spell(g, id)
+		zone := x.countered_spell_zone
+		if zone == nil && exiled_instead_of_graveyard(g.resolution.next) do zone = types.SpellStackToGraveyardReplacement_Exile{} // counter.odin
+		if id, ok := target_object(target); ok do counter_spell(g, id, zone)
 	case types.Effect_Shuffle:
 		shuffle_library(g, controller)
 	case types.Effect_Bounce:
@@ -1628,6 +1692,7 @@ end_until_end_of_turn_effects :: proc(g: ^Game) {
 	clear(&g.preventions) // CR 514.2: "this turn" prevention ends
 	end_permissions(g)
 	clear(&g.exile_instead)
+	clear(&g.cast_snapshots) // the turn's spells as cast (copy_spell.odin)
 	// CR 514.2: "until end of turn" control ends; the permanent goes back to who controlled it before, if it's still
 	// the same object.
 	kept := make([dynamic]Control_Change)
@@ -1839,7 +1904,8 @@ record_target_incarnations :: proc(s: ^types.GameState, resolved: ^types.Resolve
 	clear(&resolved.target_incarnations)
 	for t in resolved.targets {
 		ref: types.ObjectIncarnationRef
-		if o, is_object := t.(types.TargetRef_Object); is_object {
+		// An ability on the stack is no object; its stack id is never reused.
+		if o, is_object := t.(types.TargetRef_Object); is_object && object(s, o._0) != nil {
 			ref = types.ObjectIncarnationRef{object_id = o._0, incarnation = object(s, o._0).incarnation}
 		}
 		append(&resolved.target_incarnations, ref)
@@ -1849,7 +1915,9 @@ record_target_incarnations :: proc(s: ^types.GameState, resolved: ^types.Resolve
 same_object_as_chosen :: proc(s: ^types.GameState, resolved: ^types.ResolvedAbility, i: int) -> bool {
 	o, is_object := resolved.targets[i].(types.TargetRef_Object)
 	if !is_object || i >= len(resolved.target_incarnations) do return true
-	return object(s, o._0).incarnation == resolved.target_incarnations[i].incarnation
+	x := object(s, o._0)
+	if x == nil do return true // an ability on the stack (its stack id is never reused): target_still_legal looks for it
+	return x.incarnation == resolved.target_incarnations[i].incarnation
 }
 
 // The object or player an effect's target is, if it has one (and is that kind).
@@ -2365,6 +2433,9 @@ paid_cost_has_targets :: proc(face: ^types.CardFace) -> bool {
 }
 
 spell_additional_cost :: proc(o: ^types.GameObject) -> (types.AbilityCost, bool) {
+	// An alternative cost's part other than mana ("sacrifice two Mountains rather than pay"), paid the same way; only
+	// for spells without an additional cost of their own (casting_options_supported).
+	if rest, has := alternative_rest(o); has do return rest, true
 	f := object_face(o)
 	if cost, optional := optional_additional_cost(&f); optional {
 		// Once the player announces they'll pay it (CR 601.2b).

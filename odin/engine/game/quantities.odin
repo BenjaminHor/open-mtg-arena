@@ -740,6 +740,7 @@ spell_record_filter_supported :: proc(f: types.TargetFilter) -> bool {
 	case types.TargetFilter_Typed:
 		if len(x._0.properties) > 0 || x._0.controller != nil || len(x._0.type_filters) == 0 do return false
 		for t in x._0.type_filters {
+			if _, card := t.(types.TypeFilter_Card); card do continue // any spell cast (a copy isn't cast, CR 707.10)
 			if n, is_non := t.(types.TypeFilter_Non); is_non {
 				if n._0 == nil || !record_type_supported(n._0^) do return false
 			} else if !record_type_supported(t) do return false
@@ -755,7 +756,10 @@ spell_record_filter_supported :: proc(f: types.TargetFilter) -> bool {
 spell_record_matches :: proc(rec: types.SpellCastRecord, f: types.TargetFilter) -> bool {
 	#partial switch x in f {
 	case types.TargetFilter_Typed:
-		for t in x._0.type_filters do if !types_match(rec.core_types[:], rec.subtypes[:], t) do return false
+		for t in x._0.type_filters {
+			if _, card := t.(types.TypeFilter_Card); card do continue
+			if !types_match(rec.core_types[:], rec.subtypes[:], t) do return false
+		}
 		return true
 	case types.TargetFilter_Or:
 		for y in x.filters do if spell_record_matches(rec, y) do return true

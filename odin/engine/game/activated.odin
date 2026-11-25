@@ -396,6 +396,7 @@ Object_Cost_Kind :: enum {
 	Return_To_Hand, // "return an Elf you control to its owner's hand"
 	Exile_Permanent, // "exile a creature you control"
 	Remove_Counters_Among, // "remove three counters from among creatures you control": how many from which
+	Exile_From_Hand, // "exile a blue card from your hand rather than pay this spell's mana cost" (casting_options.odin)
 }
 
 Object_Cost :: struct {
@@ -451,6 +452,19 @@ object_cost_of :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObj
 				c := Object_Cost{kind = .Exile_Permanent, count = int(x.count)}
 				c.choices = make([dynamic]types.ObjectId, context.temp_allocator)
 				for perm in permanents_of(s, p) do if sacrifice_filter_matches(s, x.filter.?, perm, p, o.id) do append(&c.choices, perm.id)
+				return c, true
+			}
+			if zone == .Hand {
+				// "Exile a blue card from your hand" (an alternative cost, casting_options.odin): not the spell being cast,
+				// which is on the stack (CR 601.2a).
+				c := Object_Cost{kind = .Exile_From_Hand, count = int(x.count)}
+				c.choices = make([dynamic]types.ObjectId, context.temp_allocator)
+				f, has_filter := x.filter.?
+				for id in ids_of(player(s, p).hand) {
+					if id == o.id do continue
+					if has_filter && !cost_card_matches(s, f, object(s, id), p, o.id) do continue
+					append(&c.choices, id)
+				}
 				return c, true
 			}
 			if zone != .Graveyard do continue
@@ -857,6 +871,8 @@ ask_cost_objects :: proc(g: ^Game, p: types.PlayerId, c: Object_Cost) {
 		kind = types.PayCostKind_Discard{}
 	case .Exile_From_Graveyard:
 		kind = types.PayCostKind_ExileFromZone{zone = .Graveyard}
+	case .Exile_From_Hand:
+		kind = types.PayCostKind_ExileFromZone{zone = .Hand}
 	case .Tap:
 		kind = types.PayCostKind_TapCreatures{mode = types.TapCreaturesSelectionMode_Fixed{}}
 	case .Behold:
@@ -985,7 +1001,7 @@ pay_cost_objects :: proc(g: ^Game, p: types.PlayerId, cost: types.AbilityCost) {
 		for id in g.pending.cost_objects do tap_permanent(object(s, id)) // CR 701.26a
 	case .Return_To_Hand:
 		for id in g.pending.cost_objects do move_object(g, id, .Hand) // to its owner's hand
-	case .Exile_Permanent:
+	case .Exile_Permanent, .Exile_From_Hand:
 		for id in g.pending.cost_objects do move_object(g, id, .Exile) // CR 701.13a
 	case .Behold, .Reveal:
 		// CR 701.20a: a card from the hand is shown to all players and stays where it is (701.20b); a permanent
