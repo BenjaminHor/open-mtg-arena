@@ -3078,6 +3078,9 @@ Progress:
   drawer's count before it. 6,999 -> 7,035.
 - "Can't be blocked by [creatures with power N or less / Walls / artifact creatures / ...]" (CR 509.1b, a blocking
   restriction; static_modes.odin). 7,035 -> 7,070.
+- Static prevention: "prevent all [combat] damage that would be dealt to [this / creatures / enchanted creature]"
+  and "... dealt by enchanted creature" (CR 615.1a, 615.6; prevention.odin). One whose limit the card data drops
+  ("3 or less damage") stays unsupported. 7,070 -> 7,078.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

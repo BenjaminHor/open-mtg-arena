@@ -8,6 +8,7 @@ import "core:strings"
 import types "../types"
 
 replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
+	if static_prevention_supported(r) do return true // prevention.odin
 	if _, moved := r.event.(types.ReplacementEvent_Moved); !moved do return false
 	if _, may_pay := entry_payment(r); may_pay do return true
 	if _, copy := entry_copy_filter(r); copy do return true

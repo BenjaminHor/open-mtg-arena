@@ -1247,6 +1247,7 @@ deal_damage :: proc(g: ^Game, source: types.ObjectId, target: types.TargetRef, n
 	s := &g.state
 	src := object(s, source)
 	if damage_prevented(g, target, combat) do return // CR 615.6
+	if statically_prevented(g, source, target, combat) do return // CR 615.1a, 615.6
 	if t, is_object := target.(types.TargetRef_Object); is_object && protected_from(object(s, t._0), src) do return // CR 702.16e
 	if t, is_object := target.(types.TargetRef_Object); is_object {
 		// CR 122.1c: "If damage would be dealt to this permanent, prevent that damage and remove a shield counter

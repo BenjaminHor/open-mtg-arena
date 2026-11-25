@@ -4741,3 +4741,32 @@ cant_be_blocked_by_big_creatures :: proc(t: ^testing.T) {
 	testing.expect(t, !game.can_block(g, big, kithkin), "power 3 may not")
 	testing.expect(t, game.can_block(g, big, bears), "only what it affects")
 }
+
+@(test)
+static_prevention_of_damage :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Bubble Matrix: "Prevent all damage that would be dealt to creatures." CR 615.1a, 615.6: a prevention effect
+	// from a static ability; prevented damage isn't dealt. Players aren't creatures.
+	testing.expect(t, game.card_supported(&card(t, "Bubble Matrix").face))
+	g := new_game()
+	s := &g.state
+	bubble := add(t, g, "Bubble Matrix", 1, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	game.deal_damage(g, bubble.id, types.TargetRef_Object{bears.id}, 3)
+	testing.expect(t, bears.damage_marked == 0, "the creature is dealt none")
+	game.deal_damage(g, bubble.id, types.TargetRef_Player{0}, 3)
+	testing.expect(t, s.players[0].life == 17, "a player isn't protected")
+	// Gaseous Form: "Prevent all combat damage that would be dealt to and dealt by enchanted creature."
+	testing.expect(t, game.card_supported(&card(t, "Gaseous Form").face))
+	g2 := new_game()
+	form := add(t, g2, "Gaseous Form", 0, .Battlefield)
+	host := add(t, g2, "Grizzly Bears", 0, .Battlefield)
+	other := add(t, g2, "Grizzly Bears", 1, .Battlefield)
+	game.attach(&g2.state, form, host)
+	game.deal_damage(g2, other.id, types.TargetRef_Object{host.id}, 2, true)
+	testing.expect(t, host.damage_marked == 0, "combat damage to it prevented")
+	game.deal_damage(g2, host.id, types.TargetRef_Object{other.id}, 2, true)
+	testing.expect(t, other.damage_marked == 0, "combat damage by it prevented")
+	game.deal_damage(g2, other.id, types.TargetRef_Object{host.id}, 1, false)
+	testing.expect(t, host.damage_marked == 1, "noncombat damage isn't")
+}

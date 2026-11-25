@@ -3,6 +3,7 @@
 // 615.6: no event, no lifelink).
 package game
 
+import "core:slice"
 import types "../types"
 
 Prevention :: struct {
@@ -109,6 +110,76 @@ exiled_instead :: proc(g: ^Game, o: ^types.GameObject) -> bool {
 	for c, i in g.exile_instead do if c.object == o.id && c.incarnation == o.incarnation {
 		ordered_remove(&g.exile_instead, i)
 		return true
+	}
+	return false
+}
+
+// ---- Static prevention (CR 615.1a, 615.6): "Prevent all damage that would be dealt to this creature", "... to
+// creatures", "prevent all combat damage that would be dealt by enchanted creature" ----
+
+// The replacement's part this engine reads: a permanent's static "prevent all [combat] damage" naming what it
+// protects (`to`: this, a kind of permanent, the enchanted creature) and/or what deals it (`by`).
+static_prevention_supported :: proc(r: types.ReplacementDefinition) -> bool {
+	if _, damage := r.event.(types.ReplacementEvent_DamageDone); !damage do return false
+	if _, mandatory := r.mode.(types.ReplacementMode_Mandatory); !mandatory do return false
+	shield, prevents := r.shield_kind.(types.ShieldKind_Prevention)
+	if !prevents do return false
+	if _, all := shield.amount.(types.PreventionAmount_All); !all do return false
+	if r.execute != nil || r.condition != nil || r.damage_modification != nil || r.damage_target_filter != nil || r.redirect_target != nil do return false
+	if len(r.active_zones) > 0 && !slice.contains(r.active_zones[:], types.Zone.Battlefield) do return false
+	// Neither side named: a restriction the card data didn't keep ("3 or less damage"); not read.
+	if r.valid_card == nil && r.damage_source_filter == nil do return false
+	if f, has := r.valid_card.?; has && !prevention_side_supported(f) do return false
+	if f, has := r.damage_source_filter.?; has && !prevention_side_supported(f) do return false
+	return true
+}
+
+@(private = "file")
+prevention_side_supported :: proc(f: types.TargetFilter) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_SelfRef, types.TargetFilter_AttachedTo:
+		return true
+	case types.TargetFilter_Typed:
+		return typed_supported(x._0)
+	}
+	return false
+}
+
+// Whether `o` is what a side of the prevention names, for the permanent `holder` with the ability.
+@(private = "file")
+prevention_side_matches :: proc(s: ^types.GameState, f: types.TargetFilter, o: ^types.GameObject, holder: ^types.GameObject) -> bool {
+	if o == nil do return false
+	#partial switch x in f {
+	case types.TargetFilter_SelfRef:
+		return o.id == holder.id
+	case types.TargetFilter_AttachedTo:
+		host := host_of(s, holder)
+		return host != nil && host.id == o.id
+	case types.TargetFilter_Typed:
+		return o.zone == .Battlefield && object_matches(s, o, x._0, holder.controller, holder.id)
+	}
+	return false
+}
+
+// Whether a permanent's static ability prevents this damage (CR 615.6: prevented damage isn't dealt).
+statically_prevented :: proc(g: ^Game, source: types.ObjectId, target: types.TargetRef, combat: bool) -> bool {
+	s := &g.state
+	src := object(s, source)
+	recipient: ^types.GameObject
+	if t, is_object := target.(types.TargetRef_Object); is_object do recipient = object(s, t._0)
+	for id in ids_of(s.battlefield) {
+		holder := object(s, id)
+		if holder.replacement_definitions == nil do continue
+		for r in (^[dynamic]types.ReplacementDefinition)(holder.replacement_definitions)^ {
+			if !static_prevention_supported(r) do continue
+			if scope, has := r.combat_scope.?; has {
+				if scope == .CombatOnly && !combat do continue
+				if scope == .NoncombatOnly && combat do continue
+			}
+			if f, has := r.valid_card.?; has && !prevention_side_matches(s, f, recipient, holder) do continue
+			if f, has := r.damage_source_filter.?; has && !prevention_side_matches(s, f, src, holder) do continue
+			return true
+		}
 	}
 	return false
 }
