@@ -55,6 +55,9 @@ change_zone_supported :: proc(x: types.Effect_ChangeZone) -> bool {
 	if has_origin && origin == .Library && is_any(x.target) do return x.destination != .Library // the found cards
 	// "Return it to the battlefield": the earlier instruction's target, wherever that put it (CR 608.2c).
 	if _, parent := x.target.(types.TargetFilter_ParentTarget); parent do return true
+	// "Exile it, then return that card to the battlefield": what the instruction before moved (CR 400.7j), after one
+	// that moves cards.
+	if _, tracked := x.target.(types.TargetFilter_TrackedSet); tracked do return previous_instruction != nil && moves_cards(previous_instruction^)
 	if _, from_graveyard := graveyard_filter(x.target); from_graveyard do return !has_origin || origin == .Graveyard
 	if either, is_or := x.target.(types.TargetFilter_Or); is_or && has_origin && origin == .Graveyard {
 		// "Target instant or sorcery card from your graveyard".
@@ -206,12 +209,33 @@ answer_hand_choice :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_Effe
 // Moves the affected object; CR 400.7 makes it a new object in its new zone.
 do_change_zone :: proc(g: ^Game, x: types.Effect_ChangeZone, controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) {
 	s := &g.state
+	if _, tracked := x.target.(types.TargetFilter_TrackedSet); tracked {
+		// CR 400.7j: an effect that moved an object to a public zone can find it there; one now in a hidden zone (or
+		// a token that ceased to exist, CR 111.8) can't be found.
+		together := begin_together()
+		for id in slice.clone(g.resolution.moved[:], context.temp_allocator) {
+			o := object(s, id)
+			if o == nil || o.zone == .Hand || o.zone == .Library do continue
+			if origin, has := x.origin.?; has && o.zone != origin do continue
+			change_zone_of(g, x, o, controller, source)
+		}
+		end_together(together)
+		return
+	}
 	moved: ^types.GameObject
 	if id, ok := target_object(target); ok do moved = object(s, id)
 	else if is_self(x.target) do moved = same_source(g, source)
 	if moved == nil do return
 	if origin, has := x.origin.?; has && moved.zone != origin do return // it left that zone: nothing to move
 	if is_self(x.target) && moved.zone == .Stack do return
+	change_zone_of(g, x, moved, controller, source)
+}
+
+// Moves one object as the instruction says: to its destination, and onto the battlefield under the control, tapped
+// and with the counters it names.
+@(private = "file")
+change_zone_of :: proc(g: ^Game, x: types.Effect_ChangeZone, moved: ^types.GameObject, controller: types.PlayerId, source: types.ObjectId) {
+	s := &g.state
 	move_object(g, moved.id, x.destination)
 	if x.destination == .Battlefield {
 		// CR 110.2a: under the control the instruction states: "under your control" (the card data's enters_under),
@@ -226,4 +250,13 @@ do_change_zone :: proc(g: ^Game, x: types.Effect_ChangeZone, controller: types.P
 		}
 		if x.enters_attacking && moved.zone == .Battlefield do enter_attacking(s, moved)
 	}
+}
+
+// Instructions that move cards, which "that card" / "those cards" after them can read (resolution.odin's moved).
+moves_cards :: proc(e: types.Effect) -> bool {
+	#partial switch _ in e {
+	case types.Effect_ChangeZone, types.Effect_ChangeZoneAll, types.Effect_ExileTop, types.Effect_Bounce, types.Effect_Mill:
+		return true
+	}
+	return false
 }

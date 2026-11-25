@@ -3185,6 +3185,11 @@ Progress:
   hand asks for most. Test: `mana_of_any_color_chosen_as_it_resolves`. Coverage 7,506. Still blocked for that gap:
   spend restrictions of the chosen type (Cavern of Souls, Unclaimed Territory), mana riders (Delighted Halfling),
   amounts read from a target (Sacrifice).
+- "Exile it, then return that card": a zone change whose target is what the instruction before moved
+  (TrackedSet) finds those cards while they're in a public zone (CR 400.7j), returning them under their owner's
+  control (CR 110.2a) or as stated. Tests: `exile_then_return_that_card` (Cloudshift, the ParentTarget form),
+  `return_the_card_the_instruction_before_moved` (Eldrazi Displacer). Coverage 7,522. Next in this family: "put up
+  to N of those cards into your hand" (TrackedSetFiltered, up_to: 18 cards).
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 

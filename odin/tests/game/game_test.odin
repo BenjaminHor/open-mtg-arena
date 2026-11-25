@@ -5521,3 +5521,54 @@ mana_of_any_color_chosen_as_it_resolves :: proc(t: ^testing.T) {
 	_, priority := s.waiting_for.(types.WaitingFor_Priority)
 	testing.expect(t, priority, "the game carries on")
 }
+
+// Cloudshift: "Exile target creature you control, then return that card to the battlefield under your control."
+// CR 400.7j: the effect finds the card it exiled; it returns as a new object (CR 400.7): no damage, summoning sick
+// (CR 302.6), and its "when this enters" ability triggers again (Elvish Visionary draws a card). Grizzly Bears
+// carries the damage.
+@(test)
+exile_then_return_that_card :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Cloudshift").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Plains", 0, .Battlefield)
+	shift := add(t, g, "Cloudshift", 0, .Hand)
+	elf := add(t, g, "Elvish Visionary", 0, .Battlefield)
+	hand_before := types.pvec_len(s.players[0].hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shift.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{elf.id}}))
+	settle_stack(g)
+	testing.expect(t, elf.zone == .Battlefield && elf.controller == 0, "back on the battlefield")
+	testing.expect(t, elf.summoning_sick, "a new object")
+	// Cloudshift left the hand; the Visionary's trigger drew one.
+	testing.expect_value(t, types.pvec_len(s.players[0].hand), hand_before - 1 + 1)
+	// Damage marked doesn't follow the card to its new object.
+	add(t, g, "Plains", 0, .Battlefield)
+	shift2 := add(t, g, "Cloudshift", 0, .Hand)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	bears.damage_marked = 1
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shift2.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	settle_stack(g)
+	testing.expect(t, bears.zone == .Battlefield && bears.damage_marked == 0, "no damage on the new object")
+}
+
+// Eldrazi Displacer: "{2}{C}: Exile another target creature, then return it to the battlefield tapped under its
+// owner's control." The data names "it" as the card the exile moved (CR 400.7j); it returns tapped, under its owner's
+// control (CR 110.2a), even when the opponent's.
+@(test)
+return_the_card_the_instruction_before_moved :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Eldrazi Displacer").face))
+	g := new_game()
+	displacer := add(t, g, "Eldrazi Displacer", 0, .Battlefield)
+	add(t, g, "Wastes", 0, .Battlefield)
+	add(t, g, "Plains", 0, .Battlefield)
+	add(t, g, "Plains", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = displacer.id, ability_index = 0}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	settle_stack(g)
+	testing.expect(t, bears.zone == .Battlefield && bears.tapped && bears.controller == 1, "back, tapped, under its owner's control")
+}
