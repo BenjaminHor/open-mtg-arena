@@ -364,7 +364,10 @@ submit_ai_action_proposal :: proc(b: ^strings.Builder, args: []json.Value) {
 supported_cards :: proc(b: ^strings.Builder, names: json.Value) {
 	out := make([dynamic]string)
 	for n in names.items {
-		if e, ok := find_card(n.text); ok && game.card_supported(&e.face) do append(&out, n.text)
+		e, ok := find_card(n.text)
+		if !ok || !game.card_supported(&e.face) do continue
+		if _, multi := game.layout_gap(e, n.text); multi do continue
+		append(&out, n.text)
 	}
 	strings.write_string(b, `{"ok":`)
 	write_strings(b, out[:])
@@ -382,7 +385,9 @@ card_gaps :: proc(b: ^strings.Builder, names: json.Value) {
 		first = false
 		json.write_string(b, n.text)
 		strings.write_byte(b, ':')
-		write_strings(b, game.card_gaps(&e.face)[:])
+		gaps := game.card_gaps(&e.face)
+		if gap, multi := game.layout_gap(e, n.text); multi do append(&gaps, gap)
+		write_strings(b, gaps[:])
 	}
 	strings.write_string(b, "}}")
 }

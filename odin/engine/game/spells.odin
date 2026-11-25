@@ -713,6 +713,16 @@ card_entry_of :: proc(o: ^types.GameObject) -> (^types.CardExportEntry, bool) {
 	return e, e != nil
 }
 
+// A card with more than one half (CR 709 split, 712 double-faced, 715 adventurer, 702.xxx prepare and the like): fully
+// supported only once the way its other half is used is, and that half is supported too. None is yet: the gap names
+// the layout. `name` is the card's name as the pool spells it ("Fire // Ice").
+layout_gap :: proc(e: ^types.CardExportEntry, name: string) -> (gap: string, has_gap: bool) {
+	layout, has_layout := e.layout.?
+	if !has_layout && !strings.contains(name, "//") do return "", false
+	if !has_layout || layout == "" do layout = "multi-face"
+	return strings.concatenate({"layout:", layout}, context.temp_allocator), true
+}
+
 // Whether this engine can carry out everything the object has (CR 109.3: its characteristics are its own, whatever
 // card it came from).
 object_supported :: proc(o: ^types.GameObject, card_db: Card_Lookup) -> bool {
