@@ -50,6 +50,9 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			return player_scope_supported(r.player)
 		case types.QuantityRef_ObjectManaValue:
 			return scope_supported(r.scope)
+		case types.QuantityRef_AttackedThisTurn:
+			// Raid, "if you attacked this turn": creatures declared as attackers this turn, by whoever controlled them.
+			return r.filter == nil && (r.scope == .Controller || r.scope == .All || r.scope == .Opponents)
 		case types.QuantityRef_SpellsCast:
 			// "The number of spells you've cast this turn": any spell, this turn only.
 			return r.filter == nil && r.window == .ThisTurn && (r.scope == .Controller || r.scope == .All || r.scope == .Opponents)
@@ -75,6 +78,10 @@ quantity_supported :: proc(q: types.QuantityExpr) -> bool {
 			#partial switch _ in r.filter {
 			case types.PlayerFilter_Controller, types.PlayerFilter_Opponent, types.PlayerFilter_All:
 				return true
+			case types.PlayerFilter_ControlsCount:
+				// "If an opponent controls more lands than you": players by what they control.
+				f := r.filter.(types.PlayerFilter_ControlsCount)
+				return f.count != nil && mass_filter_supported(f.filter) && quantity_supported(f.count^)
 			}
 			return false
 		case types.QuantityRef_BasicLandTypeCount:
@@ -156,6 +163,18 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 		case types.QuantityRef_ObjectManaValue:
 			// CR 202.3: the mana value of the object.
 			if o := scope_object(s, r.scope, source, target); o != nil do return object_mana_value(o)
+		case types.QuantityRef_AttackedThisTurn:
+			// CR 508.1: a creature attacked when it was declared as an attacker (CR 508.3a); counted by its controller then.
+			n := 0
+			for rec in s.attacker_declarations_this_turn {
+				c := rec.lki.controller
+				switch {
+				case r.scope == .Controller && c != controller, r.scope == .Opponents && c == controller:
+					continue
+				}
+				n += 1
+			}
+			return n
 		case types.QuantityRef_SpellsCast:
 			// CR 601.2i: a spell becomes cast once its costs are paid; the count is of those cast this turn.
 			n := 0
@@ -228,6 +247,19 @@ quantity_value :: proc(s: ^types.GameState, q: types.QuantityExpr, controller: t
 				return 1
 			case types.PlayerFilter_Opponent:
 				return len(s.players) - 1
+			case types.PlayerFilter_ControlsCount:
+				f := r.filter.(types.PlayerFilter_ControlsCount)
+				want := quantity_value(s, f.count^, controller, source, target)
+				n := 0
+				for p in s.players {
+					if f.relation == .Opponent && p.id == controller do continue
+					if f.relation == .Controller && p.id != controller do continue
+					// The permanents that player controls among those matching the filter.
+					have := 0
+					for o in affected_permanents(s, f.filter, controller, source) do if o.controller == p.id do have += 1
+					if compare(have, f.comparator, want) do n += 1
+				}
+				return n
 			}
 			return len(s.players)
 		case types.QuantityRef_BasicLandTypeCount:

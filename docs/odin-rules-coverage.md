@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 257 of 2880 rules implemented (9%), 108 of them tested.**
+**In scope (100-799): 257 of 2880 rules implemented (9%), 109 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -83,7 +83,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 505 main phase | 10 | 2 (20%) | 1 |
 | 506 combat phase | 29 | 3 (10%) | 1 |
 | 507 beginning of combat step | 2 | 1 (50%) | 0 |
-| 508 declare attackers step | 39 | 9 (23%) | 2 |
+| 508 declare attackers step | 39 | 9 (23%) | 3 |
 | 509 declare blockers step | 23 | 3 (13%) | 1 |
 | 510 combat damage step | 10 | 4 (40%) | 2 |
 | 511 end of combat step | 3 | 1 (33%) | 0 |
@@ -1295,7 +1295,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 
 ### 508 declare attackers step (9/39)
 
-- 🟡 508.1 First, the active player declares attackers. This turn-based action doesn’t use the stack. To declare attac...
+- ✅ 508.1 First, the active player declares attackers. This turn-based action doesn’t use the stack. To declare attac...
 - 🟡 508.1a The active player chooses which creatures that they control, if any, will attack. The chosen creatures must...
 - ⬜ 508.1b If the defending player controls any planeswalkers, is the protector of any battles, or the game allows the...
 - ⬜ 508.1c The active player checks each creature they control to see whether it’s affected by any restrictions (effec...

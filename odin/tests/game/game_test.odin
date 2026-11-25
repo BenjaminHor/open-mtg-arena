@@ -2493,3 +2493,57 @@ mana_ability_restrictions_and_two_symbols :: proc(t: ^testing.T) {
 	}
 	testing.expect(t, len(pool) == 2 && has(pool, .White) && has(pool, .Blue), "{W}{U} in the pool")
 }
+
+@(test)
+raid_if_you_attacked_this_turn :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 508.1: a creature attacked this turn when it was declared as an attacker. Deadeye Rig-Hauler: "Raid -
+	// When this creature enters, if you attacked this turn, you may return target creature to its owner's hand"
+	// (an intervening "if", CR 603.4).
+	run :: proc(t: ^testing.T, attack: bool) -> int {
+		g := new_game()
+		s := &g.state
+		bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+		add(t, g, "Grizzly Bears", 1, .Battlefield)
+		for _ in 0 ..< 4 do add(t, g, "Island", 0, .Battlefield)
+		hauler := add(t, g, "Deadeye Rig-Hauler", 0, .Hand)
+		if attack {
+			game.begin_step(g, .DeclareAttackers)
+			attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{bears.id, types.AttackTarget_Player{1}}}
+			testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
+		}
+		game.begin_step(g, .PostCombatMain)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = hauler.id}))
+		game.apply(g, 0, types.GameAction_PassPriority{})
+		game.apply(g, 1, types.GameAction_PassPriority{})
+		if _, asked := s.waiting_for.(types.WaitingFor_TriggerTargetSelection); asked {
+			a, _ := game.ai_action(g, 0)
+			game.apply(g, 0, a)
+		}
+		return types.pvec_len(s.stack)
+	}
+	testing.expect(t, game.card_supported(&card(t, "Deadeye Rig-Hauler").face))
+	testing.expect(t, run(t, true) == 1, "attacked: the Raid ability triggers")
+	testing.expect(t, run(t, false) == 0, "no attack: it doesn't")
+}
+
+@(test)
+opponent_controls_more_lands :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Knight of the White Orchid: "When this creature enters, if an opponent controls more lands than you, you may
+	// search your library for a Plains card ..." (an intervening "if", CR 603.4): counted as it enters.
+	run :: proc(t: ^testing.T, their_lands: int) -> int {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 2 do add(t, g, "Plains", 0, .Battlefield)
+		for _ in 0 ..< their_lands do add(t, g, "Forest", 1, .Battlefield)
+		knight := add(t, g, "Knight of the White Orchid", 0, .Hand) // {W}{W}
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = knight.id}))
+		game.apply(g, 0, types.GameAction_PassPriority{})
+		game.apply(g, 1, types.GameAction_PassPriority{})
+		return types.pvec_len(s.stack)
+	}
+	testing.expect(t, game.card_supported(&card(t, "Knight of the White Orchid").face))
+	testing.expect(t, run(t, 3) == 1, "three lands to two: it triggers")
+	testing.expect(t, run(t, 2) == 0, "two to two: it doesn't")
+}

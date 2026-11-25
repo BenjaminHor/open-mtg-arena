@@ -1,6 +1,7 @@
 // Combat (CR 506-511) and state-based actions (CR 704).
 package game
 
+import "core:slice"
 import types "../types"
 
 power_of :: proc(o: ^types.GameObject) -> int {return int(o.power.? or_else 0)}
@@ -56,6 +57,11 @@ declare_attackers :: proc(g: ^Game, attacks: []types.Tuple2(types.ObjectId, type
 		if !has_keyword(o, types.Keyword_Vigilance) do tap_permanent(o)
 		append(&combat.attackers, types.AttackerInfo{object_id = a._0, defending_player = defender, attack_target = a._1})
 		append(&g.events, Event{kind = .Attack, object = a._0, controller = o.controller}) // CR 508.3a
+		// "If you attacked this turn" (Raid): the attackers as they were declared.
+		rec := types.AttackDeclarationRecord{object_id = o.id, incarnation = o.incarnation, is_token = o.is_token, is_commander = o.is_commander}
+		rec.lki.name, rec.lki.controller, rec.lki.owner = o.name, o.controller, o.owner
+		append(&s.attacker_declarations_this_turn, rec)
+		if !slice.contains(s.players_attacked_this_turn[:], s.active_player) do append(&s.players_attacked_this_turn, s.active_player)
 	}
 	// CR 508.3d: "whenever you attack" triggers if one or more creatures were declared as attackers.
 	if len(attacks) > 0 do append(&g.events, Event{kind = .You_Attack, controller = s.active_player})
