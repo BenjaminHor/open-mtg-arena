@@ -125,8 +125,14 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 event_reference :: proc(s: ^types.GameState, e: types.Effect, event: Trigger_Event) -> (Maybe(types.TargetRef), bool) {
 	#partial switch _ in effect_target_filter(e) {
 	case types.TargetFilter_TriggeringSource:
+		if event.object == 0 do return nil, true
 		o := object(s, event.object)
-		if o == nil || event.object == 0 || o.incarnation != event.incarnation do return nil, true
+		if o == nil {
+			// An ability on the stack ("that spell or ability", ward), while it's still there.
+			if _, on_stack := stack_entry_of(s, event.object); on_stack do return types.TargetRef(types.TargetRef_Object{event.object}), true
+			return nil, true
+		}
+		if o.incarnation != event.incarnation do return nil, true
 		return types.TargetRef(types.TargetRef_Object{o.id}), true
 	case types.TargetFilter_TriggeringSourceController:
 		if event.object == 0 do return nil, true
@@ -286,10 +292,10 @@ ask_unless_payment :: proc(g: ^Game, x: ^types.ResolvedAbility, target: Maybe(ty
 	s := &g.state
 	id, is_object := target_object(target)
 	if !is_object do return false
-	spell := object(s, id)
-	if spell == nil do return false
+	entry, on_stack := stack_entry_of(s, id)
+	if !on_stack do return false
 	u := x.unless_pay.?
-	payer := spell.controller
+	payer := entry.controller // the spell's or ability's controller
 	cost := u.cost.(types.AbilityCost_Mana).cost
 	if _, payable := plan_payment(s, payer, cost); !payable do return false
 	g.resolution.unless_node = x

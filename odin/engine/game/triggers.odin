@@ -20,6 +20,7 @@ Event_Kind :: enum {
 	Card_Drawn, // controller drew a card (CR 121.2: each card is its own draw)
 	Sacrificed, // controller sacrificed object, a permanent moved from the battlefield to the graveyard (CR 701.21a)
 	Counter_Added, // amount counters of kind counter put on object, which had before of them (CR 122.6)
+	Became_Target, // object became a target of stack_entry, a spell or ability controller controls (CR 115.1)
 }
 
 // Something that happened that an ability may trigger on (CR 603.2).
@@ -37,6 +38,7 @@ Event :: struct {
 	before:     int,
 	group:      int, // zone changes with the same group happened at the same time (state-based actions, CR 704.3)
 	incarnation: u64, // Counter_Added: the object as it was (CR 400.7)
+	stack_entry: types.ObjectId, // Became_Target: the spell or ability that targets it
 }
 
 // What a triggered ability's trigger event was about, for its instructions: "that much damage", "that creature",
@@ -339,6 +341,13 @@ event_about :: proc(s: ^types.GameState, e: Event) -> Trigger_Event {
 			if e.kind == .Zone_Change || e.kind == .Sacrificed do out.object_controller = e.controller // as it last existed
 		}
 	}
+	if e.kind == .Became_Target {
+		// "That spell or ability" and "that player": the targeting stack object and its controller.
+		out.object = e.stack_entry
+		if o := object(s, e.stack_entry); o != nil do out.incarnation = o.incarnation
+		out.player = e.controller
+		return out
+	}
 	#partial switch e.kind {
 	case .Spell_Cast, .Life_Gained, .Card_Drawn, .Zone_Change, .Sacrificed, .Attack:
 		out.player = e.controller
@@ -465,6 +474,8 @@ collect_triggers :: proc(g: ^Game) {
 				}
 			}
 			prowess_triggers(g, spell, e.controller) // CR 702.108a
+		case .Became_Target:
+			ward_triggers(g, e) // CR 702.21a
 		case .Damage:
 			source := object(s, e.object)
 			watchers := make([dynamic]^types.GameObject, context.temp_allocator)
@@ -871,6 +882,7 @@ push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerI
 	s.next_object_id += 1
 	resolved := resolved_tree(s, a, targets, counts, controller, source)
 	record_division(resolved, division)
+	defer note_targeted(g, id, controller, targets) // CR 115.1: its targets become targets as it's put on the stack
 	g.stack_abilities[id] = a
 	src := object(s, source)
 	kind: types.StackEntryKind

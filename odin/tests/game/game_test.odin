@@ -3801,3 +3801,65 @@ prowess_on_noncreature_spells :: proc(t: ^testing.T) {
 	game.cleanup(g)
 	testing.expect(t, spear.power.? == 1 && spear.toughness.? == 2, "back to 1/2")
 }
+
+@(test)
+ward_counters_unless_paid :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.21a: Ward {3}, "Whenever this creature becomes the target of a spell or ability an opponent controls,
+	// counter it unless that player pays {3}." Rimeshield Frost Giant, a 4/5.
+	testing.expect(t, game.card_supported(&card(t, "Rimeshield Frost Giant").face))
+	for mountains in ([]int{1, 4}) {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< mountains do add(t, g, "Mountain", 0, .Battlefield)
+		giant := add(t, g, "Rimeshield Frost Giant", 1, .Battlefield)
+		shock := add(t, g, "Shock", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{giant.id}}))
+		testing.expect(t, types.pvec_len(s.stack) == 2, "ward triggered above Shock")
+		for _ in 0 ..< 8 {
+			if w, asked := s.waiting_for.(types.WaitingFor_UnlessPayment); asked {
+				testing.expect(t, w.player == 0, "Shock's controller pays")
+				game.apply(g, 0, types.GameAction_PayUnlessCost{pay = true})
+				continue
+			}
+			if types.pvec_len(s.stack) == 0 do break
+			game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+		}
+		if mountains == 1 {
+			testing.expect(t, shock.zone == .Graveyard && giant.damage_marked == 0, "can't pay: Shock is countered")
+		} else {
+			testing.expect(t, giant.damage_marked == 2, "paid {3}: Shock resolves")
+		}
+	}
+	// Its controller's own spells don't trigger it.
+	g := new_game()
+	s := &g.state
+	add(t, g, "Mountain", 1, .Battlefield)
+	giant := add(t, g, "Rimeshield Frost Giant", 1, .Battlefield)
+	shock := add(t, g, "Shock", 1, .Hand)
+	s.active_player, s.priority_player = 1, 1
+	s.waiting_for = types.WaitingFor_Priority{player = 1}
+	testing.expect(t, game.apply(g, 1, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g, 1, types.GameAction_ChooseTarget{target = types.TargetRef_Object{giant.id}}))
+	testing.expect(t, types.pvec_len(s.stack) == 1, "no ward trigger")
+}
+
+@(test)
+ward_counters_an_ability :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Ward counters a targeting ability as well as a spell (CR 702.21a, 701.6a: it's removed from the stack).
+	// Prodigal Sorcerer: "{T}: This creature deals 1 damage to any target."
+	testing.expect(t, game.card_supported(&card(t, "Prodigal Sorcerer").face))
+	g := new_game()
+	s := &g.state
+	sorcerer := add(t, g, "Prodigal Sorcerer", 0, .Battlefield)
+	giant := add(t, g, "Rimeshield Frost Giant", 1, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = sorcerer.id, ability_index = 0}))
+	if _, asked := s.waiting_for.(types.WaitingFor_TargetSelection); asked {
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{giant.id}}))
+	}
+	testing.expect(t, types.pvec_len(s.stack) == 2, "ward triggered above the ability")
+	settle_stack(g)
+	testing.expect(t, types.pvec_len(s.stack) == 0 && giant.damage_marked == 0, "no mana to pay: the ability is countered")
+}

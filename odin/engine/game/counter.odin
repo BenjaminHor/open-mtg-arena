@@ -74,7 +74,21 @@ counter_supported :: proc(x: types.Effect_Counter) -> bool {
 counter_spell :: proc(g: ^Game, id: types.ObjectId) {
 	s := &g.state
 	o := object(s, id)
-	if o == nil || o.zone != .Stack || has_rule(g, o, .Cant_Be_Countered) do return
+	if o == nil {
+		// CR 701.6a: a countered ability is removed from the stack (ward counters abilities too).
+		if _, on_stack := stack_entry_of(s, id); !on_stack do return
+		kept: types.PVec(types.StackEntry)
+		for i in 0 ..< types.pvec_len(s.stack) {
+			e := types.pvec_get(s.stack, i)
+			if e.id != id do types.pvec_push(&kept, e, copy_entry)
+		}
+		s.stack = kept
+		delete_key(&g.stack_abilities, id)
+		delete_key(&g.stack_events, id)
+		delete_key(&g.stack_conditions, id)
+		return
+	}
+	if o.zone != .Stack || has_rule(g, o, .Cant_Be_Countered) do return
 	kept: types.PVec(types.StackEntry)
 	for i in 0 ..< types.pvec_len(s.stack) {
 		e := types.pvec_get(s.stack, i)

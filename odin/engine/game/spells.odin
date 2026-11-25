@@ -83,6 +83,8 @@ keyword_supported :: proc(k: types.Keyword) -> bool {
 		return true
 	case types.Keyword_Crew:
 		return k.once_per_turn == nil // CR 702.122 (crew.odin)
+	case types.Keyword_Ward:
+		return ward_supported(k) // ward.odin
 	case types.Keyword_Enchant:
 		// CR 702.5a: an Aura enchants a permanent of a kind (enchanting players isn't modelled yet).
 		t, typed := k._0.(types.TargetFilter_Typed)
@@ -968,6 +970,7 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	record_division(resolved, g.pending.division[:])
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = id, controller = p, kind = types.StackEntryKind_Spell{card_id = o.card_id, ability = resolved}}, copy_entry)
 	record_spell_cast(s, p, o, from)
+	note_targeted(g, id, p, targets) // CR 601.2c
 	append(&g.events, Event{kind = .Spell_Cast, object = id, controller = p}) // CR 601.2i
 	s.priority_passes = nil
 	give_priority(g, p)
