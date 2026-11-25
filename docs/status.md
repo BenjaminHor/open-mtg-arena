@@ -3070,6 +3070,10 @@ Progress:
 - Proliferate (CR 701.34a, proliferate.odin): the player chooses any of the permanents and players with counters
   (loyalty, poison, energy and player counters included); the AI picks its own permanents' counters other than
   -1/-1, the opponent's -1/-1 counters and poison. 6,930 -> 6,976.
+- Mana added by a resolving spell or triggered ability ("Add {B}{B}{B}", "when this enters, add {R}{G}"; CR 605.5a-b:
+  not mana abilities, they use the stack; the mana goes to the pool, CR 106.4). Fixed and colorless amounts; any
+  color, restricted or lasting mana not yet. An activated ability that adds mana is never handled as an ordinary
+  activated ability (CR 605.1a). 6,976 -> 6,999.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

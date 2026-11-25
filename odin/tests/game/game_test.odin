@@ -4686,3 +4686,23 @@ proliferate_chosen_permanents_and_players :: proc(t: ^testing.T) {
 	testing.expect(t, s.players[1].poison_counters == 3, "one more poison counter")
 	testing.expect(t, spell.zone == .Graveyard, "then the rest of the spell")
 }
+
+@(test)
+a_spell_that_adds_mana :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Dark Ritual: "Add {B}{B}{B}." CR 605.5b: a spell is never a mana ability; it resolves like any other, and its
+	// mana goes into its controller's pool (CR 106.4), there to pay for a spell.
+	testing.expect(t, game.card_supported(&card(t, "Dark Ritual").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Swamp", 0, .Battlefield)
+	ritual := add(t, g, "Dark Ritual", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = ritual.id}))
+	settle_stack(g)
+	black := 0
+	for u in s.players[0].mana_pool.mana do if u.color == .Black do black += 1
+	testing.expect(t, black == 3, "three black mana")
+	corpse := add(t, g, "Walking Corpse", 0, .Hand) // {1}{B}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = corpse.id}), "paid from the pool")
+	testing.expect(t, len(s.players[0].mana_pool.mana) == 1, "one left")
+}

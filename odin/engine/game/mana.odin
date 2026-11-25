@@ -686,3 +686,28 @@ phrase_alternatives :: proc(phrase: string) -> []string {
 	either, _ := strings.replace_all(phrase, " and ", " or ", context.temp_allocator)
 	return strings.split(either, " or ", context.temp_allocator)
 }
+
+// Mana a spell or a triggered ability adds as it resolves: "Add {B}{B}{B}{B}", "When this creature enters, add
+// {R}{G}" (CR 605.5a-b: not mana abilities; they use the stack, and the mana goes into the controller's pool, CR
+// 106.4). Mana with riders (restrictions, granted abilities, mana that lasts) not yet.
+resolving_mana_supported :: proc(x: types.Effect_Mana) -> bool {
+	if len(x.restrictions) > 0 || len(x.grants) > 0 || x.expiry != nil || x.target != nil do return false
+	#partial switch p in x.produced {
+	case types.ManaProduction_Fixed:
+		return p.contribution == .Base && len(p.colors) > 0
+	case types.ManaProduction_Colorless:
+		return quantity_supported(p.count) && !quantity_reads_target(p.count)
+	}
+	return false
+}
+
+add_resolving_mana :: proc(g: ^Game, x: types.Effect_Mana, controller: types.PlayerId, source: types.ObjectId) {
+	s := &g.state
+	#partial switch p in x.produced {
+	case types.ManaProduction_Fixed:
+		for c in p.colors do add_pool_mana(s, controller, types.ManaType(c), source, 1)
+	case types.ManaProduction_Colorless:
+		n := quantity_value(s, p.count, controller, source, 0)
+		if n > 0 do add_pool_mana(s, controller, .Colorless, source, n)
+	}
+}

@@ -274,6 +274,8 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return true // a Clue token (CR 701.16a)
 	case types.Effect_Proliferate:
 		return true // CR 701.34a (proliferate.odin)
+	case types.Effect_Mana:
+		return resolving_mana_supported(x)
 	case types.Effect_Amass:
 		return amass_supported(x) // amass.odin
 	case types.Effect_Transform:
@@ -1194,6 +1196,8 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		return do_bounce(g, x, controller, source, target)
 	case types.Effect_Proliferate:
 		return start_proliferate(g, controller)
+	case types.Effect_Mana:
+		add_resolving_mana(g, x, controller, source)
 	case types.Effect_GenericEffect:
 		targeted: ^types.GameObject
 		if id, ok := target_object(target); ok do targeted = object(s, id)
