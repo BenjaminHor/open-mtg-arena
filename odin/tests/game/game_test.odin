@@ -5495,3 +5495,29 @@ excess_damage_dealt_this_way :: proc(t: ^testing.T) {
 		testing.expect_value(t, blood_tokens(g), 2 + int(marked))
 	}
 }
+
+// Lotus Cobra: "Landfall — Whenever a land you control enters, add one mana of any color." A triggered ability
+// that adds mana is a mana ability only when it triggers from a mana ability or from mana being added (CR 605.1b),
+// so this one resolves from the stack; its controller chooses the color as it resolves (CR 608.2d), into their pool.
+@(test)
+mana_of_any_color_chosen_as_it_resolves :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Lotus Cobra").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Lotus Cobra", 0, .Battlefield)
+	land := add(t, g, "Forest", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = land.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	w, choosing := s.waiting_for.(types.WaitingFor_ChooseManaColor)
+	testing.expect(t, choosing && w.player == 0, "its controller chooses the color")
+	if !choosing do return
+	testing.expect(t, !game.apply(g, 1, types.GameAction_ChooseManaColor{choice = types.ManaChoice_SingleColor{.Red}, count = 1}), "only its controller")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseManaColor{choice = types.ManaChoice_SingleColor{.Red}, count = 1}))
+	red := 0
+	for u in s.players[0].mana_pool.mana do if u.color == .Red do red += 1
+	testing.expect_value(t, red, 1)
+	_, priority := s.waiting_for.(types.WaitingFor_Priority)
+	testing.expect(t, priority, "the game carries on")
+}

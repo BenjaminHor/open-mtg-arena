@@ -3180,6 +3180,11 @@ Progress:
   each 1 excess damage dealt this way", "if a Werewolf was dealt damage this way"). Supported only when the
   instruction before produces that number. Tests: `life_lost_this_way`, `excess_damage_dealt_this_way`. Coverage
   7,491. Also fixed: `tools/rules/rule.mjs` couldn't find the rules file (its root was one level short).
+- "Add one mana of any color" while a spell or ability resolves (Lotus Cobra's landfall): its controller picks the
+  color on the existing ChooseManaColor prompt (CR 608.2d), with a ResolvingEffect context; the AI picks the color its
+  hand asks for most. Test: `mana_of_any_color_chosen_as_it_resolves`. Coverage 7,506. Still blocked for that gap:
+  spend restrictions of the chosen type (Cavern of Souls, Unclaimed Territory), mana riders (Delighted Halfling),
+  amounts read from a target (Sacrifice).
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 

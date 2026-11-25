@@ -1244,7 +1244,7 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 	case types.Effect_PutAtLibraryPosition:
 		do_library_position(g, x, source, target)
 	case types.Effect_Mana:
-		add_resolving_mana(g, x, controller, source)
+		return add_resolving_mana(g, x, controller, source)
 	case types.Effect_GenericEffect:
 		targeted: ^types.GameObject
 		if id, ok := target_object(target); ok do targeted = object(s, id)

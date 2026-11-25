@@ -295,6 +295,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		return ok && select_trigger_modes(g, p, w, a.indices[:])
 	case types.WaitingFor_ChooseManaColor:
 		a, ok := action.(types.GameAction_ChooseManaColor)
+		if _, resolving := w.context_.(types.ManaChoiceContext_ResolvingEffect); resolving do return ok && answer_mana_color(g, p, w, a.choice)
 		return ok && choose_mana_color(g, p, w, a.choice)
 	case types.WaitingFor_ChooseXValue:
 		#partial switch a in action {

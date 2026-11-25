@@ -697,11 +697,23 @@ resolving_mana_supported :: proc(x: types.Effect_Mana) -> bool {
 		return p.contribution == .Base && len(p.colors) > 0
 	case types.ManaProduction_Colorless:
 		return quantity_supported(p.count) && !quantity_reads_target(p.count)
+	case types.ManaProduction_AnyOneColor:
+		return quantity_supported(p.count) && !quantity_reads_target(p.count)
 	}
 	return false
 }
 
-add_resolving_mana :: proc(g: ^Game, x: types.Effect_Mana, controller: types.PlayerId, source: types.ObjectId) {
+// "Add N mana of any one color" while a spell or ability resolves: how much, for whom, from what, while its
+// controller chooses the color.
+Mana_Color_Choice :: struct {
+	amount:     int,
+	controller: types.PlayerId,
+	source:     types.ObjectId,
+}
+
+// Adds the mana an instruction makes. True while its controller chooses a color (CR 608.2d: the choice is made as
+// the instruction is carried out).
+add_resolving_mana :: proc(g: ^Game, x: types.Effect_Mana, controller: types.PlayerId, source: types.ObjectId) -> (asked: bool) {
 	s := &g.state
 	#partial switch p in x.produced {
 	case types.ManaProduction_Fixed:
@@ -709,5 +721,33 @@ add_resolving_mana :: proc(g: ^Game, x: types.Effect_Mana, controller: types.Pla
 	case types.ManaProduction_Colorless:
 		n := quantity_value(s, p.count, controller, source, 0)
 		if n > 0 do add_pool_mana(s, controller, .Colorless, source, n)
+	case types.ManaProduction_AnyOneColor:
+		n := quantity_value(s, p.count, controller, source, 0)
+		if n <= 0 do return false
+		options := make([dynamic]types.ManaType)
+		for c in p.color_options do append(&options, types.ManaType(c))
+		if len(options) == 0 do append(&options, types.ManaType.White, .Blue, .Black, .Red, .Green)
+		if len(options) == 1 {
+			add_pool_mana(s, controller, options[0], source, n)
+			return false
+		}
+		g.mana_color_choice = {amount = n, controller = controller, source = source}
+		s.priority_player = controller
+		s.waiting_for = types.WaitingFor_ChooseManaColor{player = controller, choice = types.ManaChoicePrompt_SingleColor{options = options}, context_ = types.ManaChoiceContext_ResolvingEffect{g.resolution.current}}
+		return true
 	}
+	return false
+}
+
+// The color chosen; the resolution carries on.
+answer_mana_color :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_ChooseManaColor, choice: types.ManaChoice) -> bool {
+	c, single := choice.(types.ManaChoice_SingleColor)
+	prompt, is_single := w.choice.(types.ManaChoicePrompt_SingleColor)
+	if !single || !is_single || p != w.player || !slice.contains(prompt.options[:], c._0) do return false
+	m := g.mana_color_choice
+	add_pool_mana(&g.state, m.controller, c._0, m.source, m.amount)
+	g.mana_color_choice = {}
+	g.state.waiting_for = nil
+	if continue_resolution(g) do after_resolution(g)
+	return true
 }

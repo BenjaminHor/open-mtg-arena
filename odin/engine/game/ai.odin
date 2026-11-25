@@ -61,9 +61,9 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 	case types.WaitingFor_ChooseXValue:
 		return types.GameAction_ChooseX{value = w.max}, true // as much as it can pay
 	case types.WaitingFor_ChooseManaColor:
-		// The first color offered (it doesn't activate these itself; this answers a prompt it finds itself in).
+		// The color its hand asks for most.
 		if prompt, single := w.choice.(types.ManaChoicePrompt_SingleColor); single && len(prompt.options) > 0 {
-			return types.GameAction_ChooseManaColor{choice = types.ManaChoice_SingleColor{prompt.options[0]}, count = 1}, true
+			return types.GameAction_ChooseManaColor{choice = types.ManaChoice_SingleColor{ai_mana_color(g, p, prompt.options[:])}, count = 1}, true
 		}
 	case types.WaitingFor_PayCost:
 		// The least valuable: tokens first, then the lowest mana value.
@@ -588,4 +588,16 @@ least_valuable :: proc(g: ^Game, cards: []types.ObjectId, n: int) -> [dynamic]ty
 	out := make([dynamic]types.ObjectId, context.temp_allocator)
 	for r in ranked[:min(n, len(ranked))] do append(&out, r.id)
 	return out
+}
+
+// The color the cards in its hand ask for most, among those offered.
+ai_mana_color :: proc(g: ^Game, p: types.PlayerId, options: []types.ManaType) -> types.ManaType {
+	s := &g.state
+	best, best_n := options[0], -1
+	for c in options {
+		n := 0
+		for id in ids_of(player(s, p).hand) do for col in object(s, id).color do if types.ManaType(col) == c do n += 1
+		if n > best_n do best, best_n = c, n
+	}
+	return best
 }
