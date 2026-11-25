@@ -23,6 +23,7 @@ note_back_face :: proc(o: ^types.GameObject, card: ^types.CardExportEntry) {
 	if back := transform_back_face(card); back != nil do o.back_face = types.BackFaceData{name = back.face.name}
 	else if adventure := adventure_face(card); adventure != nil do o.back_face = types.BackFaceData{name = adventure.face.name, card_types = adventure.face.card_type}
 	else if back := modal_back_face(card); back != nil do o.back_face = types.BackFaceData{name = back.face.name, card_types = back.face.card_type}
+	else if prep := prepare_face(card); prep != nil do o.back_face = types.BackFaceData{name = prep.face.name, card_types = prep.face.card_type} // CR 723.2
 }
 
 transform_supported :: proc(x: types.Effect_Transform) -> bool {

@@ -161,6 +161,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 			targets := make([dynamic]types.TargetRef, context.temp_allocator)
 			for t in a.targets do append(&targets, types.TargetRef_Object{t})
 			return cast_spell(g, p, a.object_id, targets[:])
+		case types.GameAction_CastPreparedCopy:
+			c := prepared_copy_of(s, a.source) // CR 723.3c
+			return c != nil && cast_spell(g, p, c.id, nil)
 		case types.GameAction_ActivateAbility:
 			return activate_ability(g, p, a.source_id, a.ability_index)
 		case types.GameAction_CrewVehicle:
@@ -440,6 +443,9 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 			o := object(s, id)
 			if can_play_land(g, p, o) && object_supported(o, g.card_db) {
 				append(&out, types.GameAction_PlayLand{object_id = id, card_id = o.card_id})
+			} else if src, is_copy := o.prepared_copy_source.?; is_copy {
+				// CR 723.3c: the prepared permanent's copy, offered as that permanent's action.
+				if castable(s, p, o, g.card_db) do append(&out, types.GameAction_CastPreparedCopy{source = src})
 			} else if castable(s, p, o, g.card_db) || adventure_castable(g, p, o) {
 				append(&out, types.GameAction_CastSpell{object_id = id, card_id = o.card_id})
 			} else if _, back := mdfc_faces_usable(g, p, o); back {
@@ -577,6 +583,7 @@ castable_zone_ids :: proc(s: ^types.GameState, p: types.PlayerId) -> [dynamic]ty
 	for id in ids_of(s.exile) {
 		o := object(s, id)
 		if _, ok := exile_permission(o, p); ok || adventure_permission(o, p) do append(&out, id) // CR 716.3d
+		else if _, prepared := prepared_source(s, o, p); prepared do append(&out, id) // CR 723.3c
 	}
 	return out
 }

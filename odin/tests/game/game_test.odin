@@ -5657,3 +5657,45 @@ gets_bigger_for_each_poison_counter_opponents_have :: proc(t: ^testing.T) {
 	testing.expect_value(t, game.power_of(fiend), 5)
 	testing.expect_value(t, game.toughness_of(fiend), 5)
 }
+
+// Adventurous Eater (preparation card, CR 723): "This creature enters prepared." Its prepare spell is Have a Bite
+// ({B} sorcery: "Put a +1/+1 counter on target creature. You gain 1 life."). As it becomes prepared, a copy with only
+// the prepare spell's characteristics is created in exile (CR 723.3c); its controller may cast the copy, which
+// unprepares the creature as it becomes cast (601.2i); the copy, a copy of a card, ceases to exist once it's off the
+// stack (704.5e). Leaving the battlefield takes the copy away too.
+@(test)
+preparation_card_casts_its_prepare_spell :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Adventurous Eater").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 4 do add(t, g, "Swamp", 0, .Battlefield)
+	eater := add(t, g, "Adventurous Eater", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = eater.id}))
+	settle_stack(g)
+	testing.expect(t, eater.zone == .Battlefield && eater.prepared != nil, "it entered prepared")
+	copy := game.prepared_copy_of(s, eater.id)
+	testing.expect(t, copy != nil && copy.name == "Have a Bite", "the prepare spell's copy is in exile")
+	offered := false
+	for a in game.legal_actions(g, 0) do if c, ok := a.(types.GameAction_CastPreparedCopy); ok && c.source == eater.id do offered = true
+	testing.expect(t, offered, "casting the copy is offered as the creature's action")
+	testing.expect(t, !game.apply(g, 1, types.GameAction_CastPreparedCopy{source = eater.id}), "only its controller")
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastPreparedCopy{source = eater.id}))
+	if _, choosing := s.waiting_for.(types.WaitingFor_TargetSelection); choosing {
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{eater.id}}))
+	}
+	testing.expect(t, eater.prepared == nil, "unprepared as the copy is cast")
+	settle_stack(g)
+	testing.expect(t, game.counter_count(eater, types.CounterType_Plus1Plus1{}) == 1 && s.players[0].life == 21, "Have a Bite resolved")
+	testing.expect(t, copy.zone != .Graveyard || !slice.contains(game.ids_of(s.players[0].graveyard), copy.id), "the copy ceased to exist")
+	testing.expect(t, game.prepared_copy_of(s, eater.id) == nil, "no copy left in exile")
+	// A second one leaves the battlefield while prepared: its copy is no longer kept in exile (CR 723.3c, 704.5e).
+	second := add(t, g, "Adventurous Eater", 0, .Hand)
+	for _ in 0 ..< 3 do add(t, g, "Swamp", 0, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = second.id}))
+	settle_stack(g)
+	testing.expect(t, game.prepared_copy_of(s, second.id) != nil, "its copy is in exile")
+	game.move_object(g, second.id, .Graveyard)
+	game.check_state_based_actions(g)
+	testing.expect(t, game.prepared_copy_of(s, second.id) == nil, "gone with the creature")
+}

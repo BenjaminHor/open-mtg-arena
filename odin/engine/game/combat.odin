@@ -387,6 +387,7 @@ check_state_based_actions :: proc(g: ^Game) {
 			changed = true
 		}
 		if remove_departed_tokens(g) do changed = true
+		if remove_departed_copies(g) do changed = true // CR 704.5e (prepare.odin)
 		if attachment_state_actions(g) do changed = true
 		// CR 903.9a: a commander put into a graveyard or exile goes back to the command zone (its owner may choose
 		// this; this engine always does).

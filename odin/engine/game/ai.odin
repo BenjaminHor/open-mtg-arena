@@ -180,7 +180,10 @@ priority_action :: proc(g: ^Game, p: types.PlayerId) -> types.GameAction {
 		if !castable(s, p, o, g.card_db) || !worth_casting(g, p, o) do continue
 		if best == nil || mana_value(o.mana_cost) > mana_value(best.mana_cost) do best = o
 	}
-	if best != nil do return types.GameAction_CastSpell{object_id = best.id, card_id = best.card_id}
+	if best != nil {
+		if src, is_copy := best.prepared_copy_source.?; is_copy do return types.GameAction_CastPreparedCopy{source = src}
+		return types.GameAction_CastSpell{object_id = best.id, card_id = best.card_id}
+	}
 	// Before combat, equip an unattached Equipment to its best creature.
 	if s.active_player == p && s.phase == .PreCombatMain && types.pvec_len(s.stack) == 0 {
 		for o in permanents_of(s, p) {

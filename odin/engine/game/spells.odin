@@ -314,6 +314,10 @@ effect_supported :: proc(e: types.Effect, duration: Maybe(types.Duration)) -> bo
 		return library_position_supported(x)
 	case types.Effect_Mana:
 		return resolving_mana_supported(x)
+	case types.Effect_BecomePrepared:
+		return prepare_effect_supported(x.target, x.scope) // prepare.odin
+	case types.Effect_BecomeUnprepared:
+		return prepare_effect_supported(x.target, x.scope)
 	case types.Effect_Amass:
 		return amass_supported(x) // amass.odin
 	case types.Effect_Transform:
@@ -678,6 +682,7 @@ castable :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, c
 	// (CR 702.34a).
 	_, from_exile := exile_permission(o, p)
 	if adventure_permission(o, p) do from_exile = true // CR 716.3d: the creature, after its Adventure
+	if _, prepared := prepared_source(s, o, p); prepared do from_exile = true // CR 723.3c: a prepared permanent's copy
 	if is_type(o, .Land) do from_exile = false // a land is played, not cast
 	if o.owner != p || !(o.zone == .Hand || (o.zone == .Command && o.is_commander) || flashback_castable(o, p) || from_exile) do return refuse("not castable from its zone")
 	if !object_supported(o, card_db) do return refuse_unsupported(o)
@@ -794,6 +799,13 @@ layout_gap :: proc(e: ^types.CardExportEntry, name: string) -> (gap: string, has
 		adventure := adventure_face(e)
 		if adventure == nil do return "layout:adventure (no Adventure)", true
 		if !card_supported(&adventure.face) do return "adventure", true
+		return "", false
+	}
+	if has_layout && layout == "prepare" {
+		// A preparation card (prepare.odin): supported when its prepare spell is (CR 723.3c: cast as a copy).
+		prep := prepare_face(e)
+		if prep == nil do return "layout:prepare (no prepare spell)", true
+		if !card_supported(&prep.face) do return "prepare spell", true
 		return "", false
 	}
 	if !has_layout || layout == "" do layout = "multi-face"
@@ -1095,6 +1107,8 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	record_spell_cast(s, p, o, from)
 	note_targeted(g, id, p, targets) // CR 601.2c
 	append(&g.events, Event{kind = .Spell_Cast, object = id, controller = p}) // CR 601.2i
+	// CR 723.3c, 601.2i: the prepared permanent loses its designation as its copy becomes cast.
+	if src, is_copy := o.prepared_copy_source.?; is_copy do become_unprepared(object(s, src))
 	report(types.GameEvent_SpellCast{card_id = o.card_id, controller = p, object_id = id})
 	s.priority_passes = nil
 	give_priority(g, p)
@@ -1245,6 +1259,10 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		do_library_position(g, x, source, target)
 	case types.Effect_Mana:
 		return add_resolving_mana(g, x, controller, source)
+	case types.Effect_BecomePrepared:
+		if o := same_source(g, source); o != nil && o.zone == .Battlefield do become_prepared(s, o) // CR 723.3a
+	case types.Effect_BecomeUnprepared:
+		if o := same_source(g, source); o != nil && o.zone == .Battlefield do become_unprepared(o) // CR 723.3b
 	case types.Effect_GenericEffect:
 		targeted: ^types.GameObject
 		if id, ok := target_object(target); ok do targeted = object(s, id)

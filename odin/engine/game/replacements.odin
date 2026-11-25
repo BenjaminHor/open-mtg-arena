@@ -23,6 +23,8 @@ replacement_supported :: proc(r: types.ReplacementDefinition) -> bool {
 	#partial switch e in r.execute.effect^ {
 	case types.Effect_SetTapState:
 		return is_self(e.target) && e.state == .Tap && e.scope == .Single
+	case types.Effect_BecomePrepared:
+		return prepare_effect_supported(e.target, e.scope) // "this creature enters prepared" (CR 723.3a)
 	case types.Effect_PutCounter:
 		// A number, or an amount as it enters: "X +1/+1 counters" (the spell's X, CR 107.3m), "a counter for each".
 		amount_ok := quantity_supported(e.count) && !quantity_reads_target(e.count)
@@ -291,6 +293,8 @@ apply_entering_replacements :: proc(s: ^types.GameState, o: ^types.GameObject) {
 		#partial switch e in r.execute.effect^ {
 		case types.Effect_SetTapState:
 			o.tapped = true
+		case types.Effect_BecomePrepared:
+			become_prepared(s, o)
 		case types.Effect_PutCounter:
 			n := quantity_value(s, e.count, o.controller, o.id, 0)
 			if n > 0 do add_counters(o, e.counter_type, u32(n))

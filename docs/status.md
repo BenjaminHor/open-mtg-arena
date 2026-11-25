@@ -3200,6 +3200,13 @@ Progress:
   N times ("for each ..., create a token"; `repeat_supported`, only instructions that don't prompt, not over earlier
   targets). Fixed: the resolved tree didn't copy `repeat_for`. Test: `for_each_creature_destroyed_this_way`
   (Fumigate, Blood Money). Coverage 7,549.
+- Preparation cards (CR 723, prepare.odin): the prepare spell is linked like an Adventure (back_face); "enters
+  prepared" / "becomes prepared" / "becomes unprepared"; as it becomes prepared a copy with the prepare spell's
+  characteristics is made in exile (723.3c), cast through the client's CastPreparedCopy action, unpreparing the
+  permanent as it becomes cast (601.2i); the copy ceases to exist off the stack, or when its permanent leaves or is
+  unprepared (704.5e, checked with the state-based actions). The AI casts it like a spell in hand. Test:
+  `preparation_card_casts_its_prepare_spell`. Coverage 7,585 (+35). Also: player counters ("for each poison counter
+  your opponents have") and counters on a group of permanents as amounts (7,550).
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 
