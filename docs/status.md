@@ -3060,6 +3060,24 @@ but reverted untested; then the executed-blocker list (`translate-report` with O
   gap recordings only once the engine is fleshed out (ask then).
 
 ## Known issues
+- (2026-11-25, third rules review of the Odin engine, commits ab9fdef..2791da2) To fix, most severe first; each
+  gets a test:
+  1. Clone that copied something keeps the copied card's values after it leaves the battlefield (CR 707.2, 400.7):
+     replacements.odin writes the base values too.
+  2. A modal trigger with fewer choosable modes than it needs still asks, and nothing can answer (CR 700.2b,
+     603.3c: it's removed).
+  3. "You may have it fight" is always done: the fight branch in continue_resolution skips optional, conditions
+     and "instead" (CR 603.5, 608.2d).
+  4. A fight whose subject is "it" (ParentTarget, ~39 cards such as Epic Confrontation) becomes a target slot that
+     can never be filled; an "enchanted creature" subject becomes a target (CR 115.1).
+  5. Clone may be told to copy a token, which is then refused: the AI loops (CR 707.2, 111.3).
+  6. Clone chooses after entering, not as it enters (CR 707.5, 614.12): the copied "enters with" doesn't apply and
+     creatures entering with it are offered.
+  7. Combat damage goes to the attacked planeswalker's id even after it changed zones or controller (CR 506.4).
+  8. Crew makes the Vehicle a creature even if it left and came back since (CR 400.7).
+  9. "Becomes a [type] creature" removes planeswalker subtypes and Siege too (CR 205.1b, 205.3j).
+  10. After a modal trigger's modes (and a trigger's targets) are chosen, priority goes to the active player, not
+      the player who had it (CR 117.3c).
 - (2026-11-25, found while building the Odin engine) The Rust engine may read Book Devourer's "discard all the cards
   in your hand. If you do, draw that many cards" as the combat damage: its "that many" (EventContextAmount)
   checks the triggering event's amount before the preceding instruction's count (quantity.rs
