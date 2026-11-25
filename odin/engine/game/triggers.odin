@@ -864,11 +864,12 @@ decline_trigger_target :: proc(g: ^Game, p: types.PlayerId) -> bool {
 }
 
 // Puts an ability on the stack: a new stack object (CR 113.7a) whose definition the game keeps to resolve it.
-push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, a: ^types.AbilityDefinition, targets: []types.TargetRef, triggered: bool, counts: []int = nil, description: Maybe(string) = nil) -> types.ObjectId {
+push_ability :: proc(g: ^Game, source: types.ObjectId, controller: types.PlayerId, a: ^types.AbilityDefinition, targets: []types.TargetRef, triggered: bool, counts: []int = nil, description: Maybe(string) = nil, division: []u32 = nil) -> types.ObjectId {
 	s := &g.state
 	id := types.ObjectId(s.next_object_id)
 	s.next_object_id += 1
 	resolved := resolved_tree(s, a, targets, counts, controller, source)
+	record_division(resolved, division)
 	g.stack_abilities[id] = a
 	src := object(s, source)
 	kind: types.StackEntryKind

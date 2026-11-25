@@ -58,10 +58,13 @@ multi_target_supported :: proc(a: types.AbilityDefinition) -> bool {
 	if !has_max || !fixed_min do return false
 	most, fixed_max := fixed_quantity(most_q)
 	if !fixed_max || least < 0 || most < max(least, 1) || most > 10 || a.effect == nil do return false
-	#partial switch _ in a.effect^ {
+	#partial switch x in a.effect^ {
 	case types.Effect_DealDamage, types.Effect_Destroy, types.Effect_Pump, types.Effect_GenericEffect, types.Effect_ChangeZone,
-	     types.Effect_Bounce, types.Effect_PutCounter, types.Effect_SetTapState:
+	     types.Effect_Bounce, types.Effect_PutCounter, types.Effect_SetTapState, types.Effect_TargetOnly:
 		return true
+	case types.Effect_Fight:
+		// "This creature fights up to one target creature": the one target, if chosen (CR 701.14a, 115.1).
+		return most == 1 && !fight_subject_targeted(x)
 	}
 	return false
 }

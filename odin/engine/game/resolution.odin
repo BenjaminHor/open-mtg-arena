@@ -58,6 +58,7 @@ resolved_tree :: proc(s: ^types.GameState, a: ^types.AbilityDefinition, targets:
 		node.multi_target = x.multi_target
 		node.player_scope = x.player_scope
 		node.unless_pay = x.unless_pay
+		node.distribute = x.distribute
 		if x.effect != nil && !reflexive {
 			if _, targets_one := effect_target(x.effect^); targets_one {
 				n := counts[k] if k < len(counts) else 1
@@ -262,6 +263,13 @@ continue_resolution :: proc(g: ^Game) -> bool {
 			}
 		}
 		r.events_mark = len(g.events)
+		if division, divided := x.distribution.?; divided {
+			// CR 601.2d, 608.2b: each legal target gets the share announced for it.
+			for d in division do if slice.contains(affected[:], Maybe(types.TargetRef)(d._0)) {
+				do_effect(g, with_share(x.effect, int(d._1)), x.duration, r.controller, r.source, d._0)
+			}
+			continue
+		}
 		for t in affected do if do_effect(g, x.effect, x.duration, r.controller, r.source, t) do return false // waiting for a choice
 	}
 	if r.spell != 0 do spell_leaves_stack(g, r.spell) // CR 608.2n (exile after flashback, CR 702.34a)

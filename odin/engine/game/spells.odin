@@ -124,7 +124,7 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	if a.reads_chosen_group != nil || a.starting_with != nil do return false
 	if scope, has := a.player_scope.?; has && !player_scope_ok(scope, a) do return false
 	if a.target_chooser != nil || a.optional_player != nil || a.optional_for != nil do return false
-	if !multi_target_supported(a) || a.distribute != nil || a.repeat_for != nil || !unless_pay_supported(a) do return false
+	if !multi_target_supported(a) || !distribute_supported(a) || a.repeat_for != nil || !unless_pay_supported(a) do return false
 	if a.else_ability != nil do return false
 	if !effect_supported(a.effect^, a.duration) do return false
 	if refers_to_parent_target(a.effect^) && !after_target do return false
@@ -808,6 +808,7 @@ next_target_or_finish :: proc(g: ^Game, p: types.PlayerId) {
 		ask_target(g, p)
 		return
 	}
+	if ask_division(g, p) do return // CR 601.2d: announced after the targets
 	if g.pending.ability_index >= 0 {
 		pay_activation(g, p)
 		return
@@ -884,6 +885,8 @@ Pending_Cast :: struct {
 	ability_index: int, // an activated ability being activated, or -1 for a spell being cast
 	cost_objects:  [dynamic]types.ObjectId, // the permanents to sacrifice or cards to discard for the cost, once chosen
 	cost_chosen:   bool,
+	division:      [dynamic]u32, // CR 601.2d: each target's share of what's divided, in target order
+	division_decided: bool,
 }
 
 // The ability whose targets are being chosen: the spell's, or the activated ability's.
@@ -962,6 +965,7 @@ finish_cast :: proc(g: ^Game, p: types.PlayerId, id: types.ObjectId, targets: []
 	o.controller = p
 	chain := chosen_mode_chain(o, g.pending.modes[:]) if is_modal(o) else spell_ability(o)
 	resolved := resolved_tree(s, chain, targets, g.pending.counts[:], p, id)
+	record_division(resolved, g.pending.division[:])
 	types.pvec_push(&s.stack, types.StackEntry{id = id, source_id = id, controller = p, kind = types.StackEntryKind_Spell{card_id = o.card_id, ability = resolved}}, copy_entry)
 	record_spell_cast(s, p, o, from)
 	append(&g.events, Event{kind = .Spell_Cast, object = id, controller = p}) // CR 601.2i
@@ -1328,7 +1332,8 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 	}
 	if a.optional_targeting do append(out, "spell:optional")
 	if a.modal != nil do append(out, "spell:modal")
-	if !multi_target_supported(a) || a.distribute != nil do append(out, "spell:multiple targets")
+	if !multi_target_supported(a) do append(out, "spell:multiple targets")
+	if !distribute_supported(a) do append(out, "spell:divided")
 	if a.repeat_for != nil do append(out, "spell:repeat")
 	if !unless_pay_supported(a) do append(out, "spell:unless pay")
 	if a.else_ability != nil do append(out, "spell:otherwise")

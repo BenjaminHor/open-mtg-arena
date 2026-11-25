@@ -94,6 +94,8 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		return types.GameAction_ChooseTarget{target = t}, true
 	case types.WaitingFor_OptionalEffectChoice:
 		return types.GameAction_DecideOptionalEffect{accept = true}, true
+	case types.WaitingFor_DistributeAmong:
+		return types.GameAction_DistributeAmong{distribution = ai_division(w)}, true
 	case types.WaitingFor_UnlessPayment:
 		return types.GameAction_PayUnlessCost{pay = true}, true // keep its spell (it's asked only when it can pay)
 	case types.WaitingFor_AbilityModeChoice:

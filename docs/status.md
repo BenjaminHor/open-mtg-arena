@@ -2984,6 +2984,10 @@ Progress:
 - "Counter target spell unless its controller pays {N}" (CR 118.12a): the spell's controller is asked as the
   counterspell resolves (WaitingFor_UnlessPayment / PayUnlessCost, the client's existing prompt), only if they can
   pay; the AI pays. Other "unless" forms (other payers, other costs) not yet. 6,267 -> 6,301.
+- Third rules review fixed (Known issues); "fights up to one target creature" and "choose up to N targets" (6,308);
+  damage or counters divided among targets (CR 601.2d: WaitingFor_DistributeAmong after the targets, each at least
+  one; each legal target gets its share as it resolves; the AI gives one each and the rest to its first target).
+  6,300 -> 6,327.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

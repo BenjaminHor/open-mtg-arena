@@ -3712,3 +3712,67 @@ flickered_planeswalker_isnt_dealt_the_damage :: proc(t: ^testing.T) {
 	}
 	testing.expect(t, jace.loyalty.? == loyalty && game.player(s, 0).life == 20, "no damage to the new Jace or its controller")
 }
+
+@(test)
+fights_up_to_one_target :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Wicked Wolf: "When this creature enters, it fights up to one target creature you don't control." The target is
+	// optional (CR 115.1, 601.2c); chosen, they fight (CR 701.14a); with none, nothing happens.
+	testing.expect(t, game.card_supported(&card(t, "Wicked Wolf").face))
+	for choose in ([]bool{true, false}) {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 4 do add(t, g, "Forest", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+		wolf := add(t, g, "Wicked Wolf", 0, .Hand) // 3/3
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = wolf.id}))
+		for _ in 0 ..< 10 {
+			if _, asked := s.waiting_for.(types.WaitingFor_TriggerTargetSelection); asked {
+				target: Maybe(types.TargetRef)
+				if choose do target = types.TargetRef_Object{bears.id}
+				testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = target}))
+				continue
+			}
+			if types.pvec_len(s.stack) == 0 && wolf.zone == .Battlefield do break
+			game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+		}
+		if choose do testing.expect(t, bears.zone == .Graveyard && wolf.damage_marked == 2, "they fought")
+		else do testing.expect(t, bears.zone == .Battlefield && wolf.damage_marked == 0, "no target: no fight")
+	}
+}
+
+@(test)
+damage_divided_among_targets :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Arc Lightning: "Arc Lightning deals 3 damage divided as you choose among one, two, or three targets." CR
+	// 601.2d: the division is announced after the targets, each target getting at least one.
+	testing.expect(t, game.card_supported(&card(t, "Arc Lightning").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 3 do add(t, g, "Mountain", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	arc := add(t, g, "Arc Lightning", 0, .Hand) // {2}{R}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = arc.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	game.apply(g, 0, types.GameAction_ChooseTarget{target = nil}) // no third target
+	w, asked := s.waiting_for.(types.WaitingFor_DistributeAmong)
+	testing.expect(t, asked && w.total == 3 && len(w.targets) == 2, "asked to divide 3 between the two")
+	d := func_division(bears.id, 3, 0)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_DistributeAmong{distribution = d}), "each target gets at least one")
+	d = func_division(bears.id, 2, 2)
+	testing.expect(t, !game.apply(g, 0, types.GameAction_DistributeAmong{distribution = d}), "the shares add up to 3")
+	d = func_division(bears.id, 2, 1)
+	testing.expect(t, game.apply(g, 0, types.GameAction_DistributeAmong{distribution = d}))
+	testing.expect(t, arc.zone == .Stack, "cast")
+	settle_stack(g)
+	testing.expect(t, bears.zone == .Graveyard && s.players[1].life == 19, "2 to the Bears, 1 to the player")
+}
+
+@(private = "file")
+func_division :: proc(creature: types.ObjectId, to_creature, to_player: u32) -> [dynamic]types.Tuple2(types.TargetRef, u32) {
+	out: [dynamic]types.Tuple2(types.TargetRef, u32)
+	append(&out, types.Tuple2(types.TargetRef, u32){types.TargetRef_Object{creature}, to_creature})
+	append(&out, types.Tuple2(types.TargetRef, u32){types.TargetRef_Player{1}, to_player})
+	return out
+}
