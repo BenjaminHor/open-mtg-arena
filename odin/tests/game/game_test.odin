@@ -5706,13 +5706,13 @@ preparation_card_casts_its_prepare_spell :: proc(t: ^testing.T) {
 // The seventh rules review's fixes (2026-11-25). Refused until done right: Mysterio's tokens and "those tokens"
 // straight after them (the data lost "when Mysterio leaves the battlefield", CR 603.6c); "then return them" after two
 // exiles (CR 608.2c: both cards, which the last instruction alone didn't move); a mana ability whose mana comes after
-// another instruction (CR 605.1a: it doesn't use the stack); returning a permanent that could be an Aura (CR
-// 303.4f: what it enchants is chosen as it enters). Excess damage (CR 120.4a): beyond 1 from a deathtouch source,
-// beyond a planeswalker's loyalty, none to a player.
+// another instruction (CR 605.1a: it doesn't use the stack). (Returning a permanent that could be an Aura, refused
+// then, is done since: CR 303.4f, flickered_aura_chooses_what_it_enchants.) Excess damage (CR 120.4a): beyond 1 from a
+// deathtouch source, beyond a planeswalker's loyalty, none to a player.
 @(test)
 seventh_review_fixes :: proc(t: ^testing.T) {
 	if !load_db() do return
-	for name in ([]string{"Mysterio, Master of Illusion", "Don & Leo, Problem Solvers", "Empowered Autogenerator", "Flicker"}) {
+	for name in ([]string{"Mysterio, Master of Illusion", "Don & Leo, Problem Solvers", "Empowered Autogenerator"}) {
 		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s stays unsupported", name)
 	}
 	g := new_game()
@@ -6043,9 +6043,11 @@ same_mode_that_asks_while_resolving :: proc(t: ^testing.T) {
 same_mode_with_a_follow_up_instruction :: proc(t: ^testing.T) {
 	if !load_db() do return
 	// Eldrazi Confluence's second mode, "exile target nonland permanent, then return it to the battlefield tapped",
-	// could return an Aura, which needs what it enchants chosen as it enters (CR 303.4f): refused until that's built
-	// (seventh rules review). Repeated modes with a follow-up instruction are covered by Verdant Confluence's search.
-	testing.expect(t, !game.card_supported(&card(t, "Eldrazi Confluence").face))
+	// could return an Aura, which needs what it enchants chosen as it enters (CR 303.4f): refused until that was built
+	// (seventh rules review); now it is (zone_effects.odin's choose_aura_hosts, tested by
+	// flickered_aura_chooses_what_it_enchants). Repeated modes with a follow-up instruction are covered by Verdant
+	// Confluence's search.
+	testing.expect(t, game.card_supported(&card(t, "Eldrazi Confluence").face))
 }
 
 @(test)
@@ -7793,4 +7795,644 @@ additional_cost_exile_a_creature_you_control :: proc(t: ^testing.T) {
 	testing.expect(t, mine.zone == .Exile && fumes.zone == .Stack, "exiled as it was cast")
 	resolve_stack(g)
 	testing.expect(t, target.zone == .Exile)
+}
+
+// ---- Zone changes and attaching (zone_effects.odin, more_effects.odin, attachments.odin) ----------------------------
+
+// Plays the game until the stack is empty, answering each target prompt with `target`, each "you may" with `accept`,
+// and each choice of cards with `pick` (none when 0).
+@(private = "file")
+settle_answering :: proc(t: ^testing.T, g: ^game.Game, target: types.ObjectId = 0, accept := true, pick: types.ObjectId = 0) {
+	s := &g.state
+	for _ in 0 ..< 16 {
+		#partial switch w in s.waiting_for {
+		case types.WaitingFor_TriggerTargetSelection, types.WaitingFor_TargetSelection:
+			testing.expect(t, game.apply(g, s.priority_player, types.GameAction_ChooseTarget{target = types.TargetRef_Object{target}}), "the target is legal")
+			continue
+		case types.WaitingFor_OptionalEffectChoice:
+			testing.expect(t, game.apply(g, w.player, types.GameAction_DecideOptionalEffect{accept = accept}))
+			continue
+		case types.WaitingFor_EffectZoneChoice:
+			chosen := make([dynamic]types.ObjectId, context.temp_allocator)
+			if pick != 0 do append(&chosen, pick)
+			testing.expect(t, game.apply(g, w.player, types.GameAction_SelectCards{cards = chosen}), "the choice is accepted")
+			continue
+		case types.WaitingFor_DiscardChoice:
+			first := make([dynamic]types.ObjectId, context.temp_allocator)
+			append(&first, ..w.cards[:min(w.count, len(w.cards))])
+			testing.expect(t, game.apply(g, w.player, types.GameAction_SelectCards{cards = first}), "the discard is accepted")
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 do return
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+}
+
+// CR 702.6a: "Equip [cost]" means "[Cost]: Attach this permanent to target creature you control." Bonesplitter's equip
+// targets as it's activated (CR 602.2b): a creature with shroud can't be chosen (CR 702.18a), nor an opponent's.
+@(test)
+equip_targets_a_creature_you_control :: proc(t: ^testing.T) {
+	if !load_db() do return
+	g := new_game()
+	s := &g.state
+	add(t, g, "Forest", 0, .Battlefield)
+	splitter := add(t, g, "Bonesplitter", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	shrouded := add(t, g, "Argothian Enchantress", 0, .Battlefield)
+	theirs := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = splitter.id, ability_index = 0}))
+	_, targeting := s.waiting_for.(types.WaitingFor_TargetSelection)
+	testing.expect(t, targeting, "the target is chosen as it's activated")
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{shrouded.id}}), "shroud")
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{theirs.id}}), "not theirs")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}}))
+	settle_answering(t, g)
+	testing.expect(t, game.host_of(s, splitter) == bears, "equipped")
+	// CR 301.5b, 701.3b: an Equipment can't be attached to a noncreature; it doesn't move.
+	land := add(t, g, "Forest", 0, .Battlefield)
+	game.attach_if_legal(s, splitter, land)
+	testing.expect(t, game.host_of(s, splitter) == bears, "still on the Bears")
+}
+
+// Bladed Battle-Fan: "When this Equipment enters, attach it to target creature you control. That creature gains
+// indestructible until end of turn." "It" is the Equipment that entered; the creature is a target (CR 115.1, 603.3d),
+// and "that creature" is it (CR 608.2c). A target gone by resolution leaves the Equipment unattached (CR 608.2b).
+@(test)
+equipment_enters_attached_to_target_creature :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Bladed Battle-Fan").face))
+	testing.expect(t, game.card_supported(&card(t, "Embercleave").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 2 do add(t, g, "Swamp", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+	fan := add(t, g, "Bladed Battle-Fan", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = fan.id}))
+	settle_answering(t, g, bears.id)
+	testing.expect(t, game.host_of(s, fan) == bears, "attached to the target")
+	testing.expect(t, game.has_keyword(bears, types.Keyword_Indestructible), "that creature gains indestructible")
+	// The target leaves before the ability resolves: nothing is attached.
+	g2 := new_game()
+	s2 := &g2.state
+	for _ in 0 ..< 2 do add(t, g2, "Swamp", 0, .Battlefield)
+	bears2 := add(t, g2, "Grizzly Bears", 0, .Battlefield)
+	add(t, g2, "Grizzly Bears", 0, .Battlefield) // two choices: the target is asked for
+	fan2 := add(t, g2, "Bladed Battle-Fan", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = fan2.id}))
+	for _ in 0 ..< 4 {
+		if _, asked := s2.waiting_for.(types.WaitingFor_TriggerTargetSelection); asked {
+			testing.expect(t, game.apply(g2, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears2.id}}))
+			break
+		}
+		game.apply(g2, s2.priority_player, types.GameAction_PassPriority{})
+	}
+	game.destroy(g2, bears2)
+	settle_answering(t, g2)
+	testing.expect(t, fan2.zone == .Battlefield && game.host_of(s2, fan2) == nil, "unattached")
+}
+
+// Inventor's Goggles: "Whenever an Artificer you control enters, you may attach this Equipment to it." "It" is the
+// creature the trigger event names (CR 603.2, 608.2c), only while it's the same object (CR 400.7).
+@(test)
+attach_to_the_creature_that_entered :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Inventor's Goggles").face))
+	for leaves in ([]bool{false, true}) {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 2 do add(t, g, "Island", 0, .Battlefield)
+		goggles := add(t, g, "Inventor's Goggles", 0, .Battlefield)
+		sculptor := add(t, g, "Etherium Sculptor", 0, .Hand) // a Vedalken Artificer
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = sculptor.id}))
+		for _ in 0 ..< 4 {
+			if types.pvec_len(s.stack) == 1 && sculptor.zone == .Battlefield do break
+			game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+		}
+		testing.expect(t, sculptor.zone == .Battlefield && types.pvec_len(s.stack) == 1, "the Goggles' ability on the stack")
+		if leaves do game.move_object(g, sculptor.id, .Hand)
+		settle_answering(t, g)
+		if leaves do testing.expect(t, game.host_of(s, goggles) == nil, "a new object: not attached")
+		else do testing.expect(t, game.host_of(s, goggles) == sculptor, "attached to the Artificer")
+	}
+}
+
+// Kazuul's Toll Collector: "{0}: Attach target Equipment you control to this creature." The Equipment is the target
+// (CR 115.1); one an opponent controls isn't a legal choice.
+@(test)
+attach_target_equipment_to_this_creature :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Kazuul's Toll Collector").face))
+	g := new_game()
+	s := &g.state
+	ogre := add(t, g, "Kazuul's Toll Collector", 0, .Battlefield)
+	splitter := add(t, g, "Bonesplitter", 0, .Battlefield)
+	theirs := add(t, g, "Bonesplitter", 1, .Battlefield)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = ogre.id, ability_index = 0}))
+	testing.expect(t, !game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{theirs.id}}), "not theirs")
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{splitter.id}}))
+	settle_answering(t, g)
+	testing.expect(t, game.host_of(s, splitter) == ogre && game.host_of(s, theirs) == nil, "the Toll Collector is equipped")
+}
+
+// Resolute Strike: "Target creature gets +2/+2 until end of turn. If it's a Warrior, you may attach an Equipment you
+// control to it." The Equipment is chosen as the spell resolves (CR 608.2d), not targeted; on a non-Warrior nothing
+// is attached (CR 608.2c).
+@(test)
+attach_an_equipment_you_control_to_it :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Resolute Strike").face))
+	for warrior in ([]bool{true, false}) {
+		g := new_game()
+		s := &g.state
+		add(t, g, "Plains", 0, .Battlefield)
+		creature := add(t, g, "Kazuul's Toll Collector" if warrior else "Grizzly Bears", 0, .Battlefield)
+		add(t, g, "Bonesplitter", 0, .Battlefield)
+		second := add(t, g, "Bonesplitter", 0, .Battlefield)
+		strike := add(t, g, "Resolute Strike", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = strike.id}))
+		settle_answering(t, g, creature.id, pick = second.id)
+		if warrior do testing.expect(t, game.host_of(s, second) == creature, "the chosen Equipment is attached")
+		else do testing.expect(t, game.host_of(s, second) == nil, "not a Warrior: nothing attached")
+	}
+}
+
+// Shapes still refused: "return this card ... attached to target creature / a creature you control" (the card enters
+// attached, CR 303.4f, 301.5e: not done yet), a host chosen as the ability resolves (Breath of Fury), "attach any
+// number of Equipment" (Armed and Armored, Beatrix).
+@(test)
+attach_shapes_still_refused :: proc(t: ^testing.T) {
+	if !load_db() do return
+	for name in ([]string{"Eagle's Rescue", "One Last Job", "Breath of Fury", "Armed and Armored", "Beatrix, Loyal General"}) {
+		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s stays unsupported", name)
+	}
+}
+
+// Splendid Reclamation: "Return all land cards from your graveyard to the battlefield tapped." All at once (CR
+// 608.2c), only the caster's own graveyard ("your": the cards it owns, CR 404.1, 400.3), tapped; an opponent's land card stays.
+@(test)
+return_all_land_cards_from_your_graveyard :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Splendid Reclamation").face))
+	g := new_game()
+	for _ in 0 ..< 4 do add(t, g, "Forest", 0, .Battlefield)
+	mine := add(t, g, "Swamp", 0, .Graveyard)
+	bears := add(t, g, "Grizzly Bears", 0, .Graveyard)
+	theirs := add(t, g, "Island", 1, .Graveyard)
+	spell := add(t, g, "Splendid Reclamation", 0, .Hand)
+	cast_and_resolve(t, g, spell)
+	testing.expect(t, mine.zone == .Battlefield && mine.tapped && mine.controller == 0, "the land card returns tapped")
+	testing.expect(t, bears.zone == .Graveyard, "not a land card")
+	testing.expect(t, theirs.zone == .Graveyard, "not from the opponent's graveyard")
+}
+
+// Rise of the Dark Realms: "Put all creature cards from all graveyards onto the battlefield under your control." CR
+// 110.2a: under the caster's control, the opponent's creature card too.
+@(test)
+all_creature_cards_from_all_graveyards :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Rise of the Dark Realms").face))
+	g := new_game()
+	for _ in 0 ..< 9 do add(t, g, "Swamp", 0, .Battlefield)
+	mine := add(t, g, "Grizzly Bears", 0, .Graveyard)
+	theirs := add(t, g, "Walking Corpse", 1, .Graveyard)
+	land := add(t, g, "Island", 1, .Graveyard)
+	spell := add(t, g, "Rise of the Dark Realms", 0, .Hand)
+	cast_and_resolve(t, g, spell)
+	testing.expect(t, mine.zone == .Battlefield && theirs.zone == .Battlefield && theirs.controller == 0, "both, under the caster's control")
+	testing.expect(t, land.zone == .Graveyard, "not a creature card")
+}
+
+// Tormod's Crypt: "{T}, Sacrifice this artifact: Exile target player's graveyard." The player is the target (CR
+// 115.1); the other player's graveyard is untouched. Go Blank: "Target player discards two cards. Then exile that
+// player's graveyard": "that player" is the earlier target (CR 608.2c).
+@(test)
+exile_target_players_graveyard :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Tormod's Crypt").face))
+	testing.expect(t, game.card_supported(&card(t, "Go Blank").face))
+	g := new_game()
+	s := &g.state
+	crypt := add(t, g, "Tormod's Crypt", 0, .Battlefield)
+	theirs := add(t, g, "Grizzly Bears", 1, .Graveyard)
+	mine := add(t, g, "Grizzly Bears", 0, .Graveyard)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = crypt.id, ability_index = 0}))
+	if _, asked := s.waiting_for.(types.WaitingFor_TargetSelection); asked {
+		testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	}
+	settle_answering(t, g)
+	testing.expect(t, theirs.zone == .Exile && mine.zone == .Graveyard, "only the target player's graveyard")
+
+	g2 := new_game()
+	s2 := &g2.state
+	for _ in 0 ..< 3 do add(t, g2, "Swamp", 0, .Battlefield)
+	old := add(t, g2, "Grizzly Bears", 1, .Graveyard)
+	add(t, g2, "Island", 1, .Hand)
+	add(t, g2, "Island", 1, .Hand)
+	blank := add(t, g2, "Go Blank", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = blank.id}))
+	if _, asked := s2.waiting_for.(types.WaitingFor_TargetSelection); asked {
+		testing.expect(t, game.apply(g2, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	}
+	settle_answering(t, g2)
+	testing.expect(t, old.zone == .Exile, "that player's graveyard is exiled")
+	testing.expect_value(t, types.pvec_len(s2.players[1].graveyard), 0)
+	testing.expect(t, blank.zone == .Graveyard, "Go Blank itself goes to its owner's graveyard afterwards (CR 608.2n)")
+}
+
+// The Mending of Dominaria, chapter III: "Return all land cards from your graveyard to the battlefield, then shuffle
+// your graveyard into your library." CR 701.24a: the cards left go into the library, which is shuffled.
+@(test)
+shuffle_your_graveyard_into_your_library :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "The Mending of Dominaria").face))
+	g := new_game()
+	s := &g.state
+	saga := add(t, g, "The Mending of Dominaria", 0, .Battlefield)
+	game.add_counters(saga, types.CounterType_Lore{}, 2)
+	land := add(t, g, "Swamp", 0, .Graveyard)
+	bears := add(t, g, "Grizzly Bears", 0, .Graveyard)
+	theirs := add(t, g, "Grizzly Bears", 1, .Graveyard)
+	library := types.pvec_len(s.players[0].library)
+	game.begin_step(g, .PreCombatMain) // the third lore counter
+	settle_answering(t, g)
+	testing.expect(t, land.zone == .Battlefield, "the land card returns")
+	testing.expect(t, bears.zone == .Library && types.pvec_len(s.players[0].library) == library + 1, "the rest is shuffled into the library")
+	testing.expect(t, theirs.zone == .Graveyard, "not the opponent's graveyard")
+}
+
+// Corpse Churn: "Mill three cards, then you may return a creature card from your graveyard to your hand." No
+// "target": the card is chosen as the instruction is carried out (CR 115.10a, 608.2d), after the mill, so a card just
+// milled can be chosen; nothing is targeted as it's cast (CR 601.2c). Only the caster's own graveyard is offered.
+@(test)
+card_chosen_from_your_graveyard_as_it_resolves :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Corpse Churn").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 2 do add(t, g, "Swamp", 0, .Battlefield)
+	theirs := add(t, g, "Grizzly Bears", 1, .Graveyard)
+	already := add(t, g, "Grizzly Bears", 0, .Graveyard)
+	milled := add(t, g, "Walking Corpse", 0, .Library) // on top
+	churn := add(t, g, "Corpse Churn", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = churn.id}))
+	_, targeting := s.waiting_for.(types.WaitingFor_TargetSelection)
+	testing.expect(t, !targeting, "nothing is targeted")
+	offered: [dynamic]types.ObjectId
+	for _ in 0 ..< 8 {
+		#partial switch w in s.waiting_for {
+		case types.WaitingFor_OptionalEffectChoice:
+			testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalEffect{accept = true}))
+			continue
+		case types.WaitingFor_EffectZoneChoice:
+			offered = w.cards
+			one := make([dynamic]types.ObjectId, context.temp_allocator)
+			append(&one, milled.id)
+			testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = one}))
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, len(offered) == 2 && slice.contains(offered[:], milled.id) && slice.contains(offered[:], already.id), "the caster's creature cards, one milled just before")
+	testing.expect(t, !slice.contains(offered[:], theirs.id), "not the opponent's")
+	testing.expect(t, milled.zone == .Hand && already.zone == .Graveyard, "the chosen one returned to the hand")
+}
+
+// Ghoulraiser: "When this creature enters, return a Zombie card at random from your graveyard to your hand." Chosen at
+// random (CR 608.2d), among the Zombie cards only.
+@(test)
+card_at_random_from_your_graveyard :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Ghoulraiser").face))
+	g := new_game()
+	for _ in 0 ..< 3 do add(t, g, "Swamp", 0, .Battlefield)
+	zombie := add(t, g, "Walking Corpse", 0, .Graveyard)
+	bears := add(t, g, "Grizzly Bears", 0, .Graveyard)
+	raiser := add(t, g, "Ghoulraiser", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = raiser.id}))
+	settle_answering(t, g)
+	testing.expect(t, zombie.zone == .Hand && bears.zone == .Graveyard, "the Zombie card, the only one")
+}
+
+// Aegis Sculptor: "At the beginning of your upkeep, you may exile two cards from your graveyard. If you do, put a +1/+1
+// counter on this creature." Two cards, chosen as it resolves; with fewer, the option can't be taken (CR 608.2d), so
+// "if you do" doesn't happen.
+@(test)
+exile_two_cards_from_your_graveyard :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Aegis Sculptor").face))
+	for cards in ([]int{1, 3}) {
+		g := new_game()
+		s := &g.state
+		sculptor := add(t, g, "Aegis Sculptor", 0, .Battlefield)
+		gy := make([dynamic]^types.GameObject, context.temp_allocator)
+		for _ in 0 ..< cards do append(&gy, add(t, g, "Grizzly Bears", 0, .Graveyard))
+		game.begin_step(g, .Upkeep)
+		for _ in 0 ..< 8 {
+			#partial switch w in s.waiting_for {
+			case types.WaitingFor_OptionalEffectChoice:
+				testing.expect(t, game.apply(g, 0, types.GameAction_DecideOptionalEffect{accept = true}))
+				continue
+			case types.WaitingFor_EffectZoneChoice:
+				testing.expect(t, w.count == 2 && w.min_count == 2, "two cards")
+				two := make([dynamic]types.ObjectId, context.temp_allocator)
+				append(&two, gy[0].id, gy[1].id)
+				testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = two}))
+				continue
+			}
+			if types.pvec_len(s.stack) == 0 do break
+			game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+		}
+		p1 := types.CounterType(types.CounterType_Plus1Plus1{})
+		if cards == 1 {
+			testing.expect(t, gy[0].zone == .Graveyard && game.counter_count(sculptor, p1) == 0, "one card: nothing exiled, no counter")
+		} else {
+			testing.expect(t, gy[0].zone == .Exile && gy[1].zone == .Exile && gy[2].zone == .Graveyard, "two exiled")
+			testing.expect_value(t, game.counter_count(sculptor, p1), 1)
+		}
+	}
+}
+
+// Ainok Wayfarer: "When this creature enters, mill three cards. You may put a land card from among them into your hand.
+// If you don't, put a +1/+1 counter on this creature." Only the milled cards (CR 701.17c); "if you don't" reads
+// whether one was put (CR 608.2c).
+@(test)
+put_a_card_from_among_the_milled_ones :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Ainok Wayfarer").face))
+	for take in ([]bool{true, false}) {
+		g := new_game()
+		s := &g.state
+		for _ in 0 ..< 2 do add(t, g, "Forest", 0, .Battlefield)
+		earlier := add(t, g, "Plains", 0, .Graveyard) // in the graveyard before the mill
+		top := add(t, g, "Swamp", 0, .Library)
+		ainok := add(t, g, "Ainok Wayfarer", 0, .Hand)
+		hand := types.pvec_len(s.players[0].hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = ainok.id}))
+		for _ in 0 ..< 8 {
+			if w, asked := s.waiting_for.(types.WaitingFor_EffectZoneChoice); asked {
+				testing.expect(t, len(w.cards) == 3 && !slice.contains(w.cards[:], earlier.id), "the three milled lands only")
+				chosen := make([dynamic]types.ObjectId, context.temp_allocator)
+				if take do append(&chosen, top.id)
+				testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = chosen}))
+				continue
+			}
+			if types.pvec_len(s.stack) == 0 && ainok.zone == .Battlefield do break
+			game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+		}
+		p1 := types.CounterType(types.CounterType_Plus1Plus1{})
+		if take {
+			testing.expect(t, top.zone == .Hand && types.pvec_len(s.players[0].hand) == hand, "the land in hand (Ainok left it)")
+			testing.expect_value(t, game.counter_count(ainok, p1), 0)
+		} else {
+			testing.expect(t, top.zone == .Graveyard && game.counter_count(ainok, p1) == 1, "declined: the counter")
+		}
+	}
+}
+
+// Cantankerous Keepers: "When this creature enters, mill four cards, then put all Elf cards from among them into your
+// hand." All the milled Elf cards (CR 701.17c), not an Elf card that was already in the graveyard.
+@(test)
+put_all_cards_from_among_the_milled_ones :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Cantankerous Keepers").face))
+	g := new_game()
+	for _ in 0 ..< 6 do add(t, g, "Forest", 0, .Battlefield)
+	earlier := add(t, g, "Llanowar Elves", 0, .Graveyard)
+	elf := add(t, g, "Llanowar Elves", 0, .Library)
+	bears := add(t, g, "Grizzly Bears", 0, .Library)
+	keepers := add(t, g, "Cantankerous Keepers", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = keepers.id}))
+	settle_answering(t, g)
+	testing.expect(t, elf.zone == .Hand && bears.zone == .Graveyard, "the milled Elf card only")
+	testing.expect(t, earlier.zone == .Graveyard, "not the one already there")
+}
+
+// Flicker of Fate: "Exile target creature or enchantment, then return it to the battlefield under its owner's
+// control." CR 303.4f: an Aura returned this way isn't cast, so as it enters its owner chooses what it enchants among
+// what its enchant ability allows; that isn't targeting (CR 115.1), so the opponent's hexproof creature is a choice.
+@(test)
+flickered_aura_chooses_what_it_enchants :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Flicker of Fate").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 2 do add(t, g, "Plains", 0, .Battlefield)
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	scout := add(t, g, "Gladecover Scout", 1, .Battlefield) // hexproof
+	pacifism := add(t, g, "Pacifism", 0, .Battlefield)
+	game.attach(s, pacifism, bears)
+	flicker := add(t, g, "Flicker of Fate", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = flicker.id}))
+	asked: types.WaitingFor_ReturnAsAuraTarget
+	for _ in 0 ..< 8 {
+		#partial switch w in s.waiting_for {
+		case types.WaitingFor_TargetSelection:
+			testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{pacifism.id}}))
+			continue
+		case types.WaitingFor_ReturnAsAuraTarget:
+			asked = w
+			testing.expect(t, !game.apply(g, 1, types.GameAction_ChooseTarget{target = types.TargetRef_Object{scout.id}}), "its owner chooses")
+			testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{scout.id}}))
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, asked.player == 0 && asked.returned_id == pacifism.id && len(asked.legal_targets) == 2, "asked of its owner: either creature")
+	testing.expect(t, pacifism.zone == .Battlefield && game.host_of(s, pacifism) == scout, "it enters enchanting the hexproof creature")
+}
+
+// Perennation: "Return target permanent card from your graveyard to the battlefield with a hexproof counter and an
+// indestructible counter on it." An Aura with nothing to enchant stays in the graveyard (CR 303.4g); with one
+// creature, it enters attached to it, the only choice (CR 303.4f).
+@(test)
+aura_returned_from_the_graveyard :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Perennation").face))
+	for creature in ([]bool{false, true}) {
+		g := new_game()
+		s := &g.state
+		for name in ([]string{"Plains", "Swamp", "Forest", "Forest", "Forest", "Forest"}) do add(t, g, name, 0, .Battlefield)
+		bears: ^types.GameObject
+		if creature do bears = add(t, g, "Grizzly Bears", 1, .Battlefield)
+		pacifism := add(t, g, "Pacifism", 0, .Graveyard)
+		spell := add(t, g, "Perennation", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = spell.id}))
+		settle_answering(t, g, pacifism.id)
+		if creature do testing.expect(t, pacifism.zone == .Battlefield && game.host_of(s, pacifism) == bears, "enters attached")
+		else do testing.expect(t, pacifism.zone == .Graveyard, "nothing to enchant: it stays")
+	}
+}
+
+// Luminous Broodmoth: "Whenever a creature you control without flying dies, return it to the battlefield under its
+// owner's control with a flying counter on it." The ability finds the card in the graveyard (CR 400.7e) and returns it
+// as a new object (CR 400.7) with the counter (CR 122.6); once the card has left the graveyard, it's a different
+// object and nothing returns.
+@(test)
+return_the_card_that_died :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Luminous Broodmoth").face))
+	testing.expect(t, game.card_supported(&card(t, "Minion's Return").face))
+	for leaves in ([]bool{false, true}) {
+		g := new_game()
+		s := &g.state
+		add(t, g, "Luminous Broodmoth", 0, .Battlefield)
+		bears := add(t, g, "Grizzly Bears", 0, .Battlefield)
+		game.destroy(g, bears)
+		game.give_priority(g, 0)
+		testing.expect(t, bears.zone == .Graveyard && types.pvec_len(s.stack) == 1, "the ability on the stack")
+		if leaves do game.move_object(g, bears.id, .Exile)
+		settle_answering(t, g)
+		flying := types.CounterType(types.CounterType_Keyword{.Flying})
+		if leaves {
+			testing.expect(t, bears.zone == .Exile, "a new object: not returned")
+		} else {
+			testing.expect(t, bears.zone == .Battlefield && bears.controller == 0 && bears.summoning_sick, "back, a new object")
+			testing.expect_value(t, game.counter_count(bears, flying), 1)
+		}
+	}
+	// A token that dies ceases to exist (CR 111.8, 704.5d): nothing returns.
+	g := new_game()
+	s := &g.state
+	add(t, g, "Luminous Broodmoth", 0, .Battlefield)
+	game.create_token(g, types.Effect_Token{name = "Soldier", power = types.PtValue_Fixed{1}, toughness = types.PtValue_Fixed{1}, types = make([dynamic]string, context.temp_allocator), count = types.QuantityExpr_Fixed{1}, owner = types.TargetFilter_Controller{}}, 0)
+	token: ^types.GameObject
+	for id in game.ids_of(s.battlefield) do if o := game.object(s, id); o.is_token do token = o
+	testing.expect(t, token != nil, "a token")
+	if token != nil {
+		append(&token.card_types.core_types, types.CoreType.Creature)
+		game.destroy(g, token)
+		game.give_priority(g, 0)
+		game.check_state_based_actions(g)
+		settle_answering(t, g)
+		tokens := 0
+		for id in game.ids_of(s.battlefield) do if game.object(s, id).is_token do tokens += 1
+		testing.expect_value(t, tokens, 0)
+	}
+	// Thunderbolts Conspiracy's "That creature is a Hero" after the return names the returned object, which the
+	// trigger event no longer does (CR 400.7): refused.
+	testing.expect(t, !game.card_supported(&card(t, "Thunderbolts Conspiracy").face))
+}
+
+// Ancestral Katana: "Whenever a Samurai or Warrior you control attacks alone, you may pay {1}. When you do, attach this
+// Equipment to it." "It" in the reflexive ability (CR 603.12) is the attacker the first ability's event named. "Attacks
+// alone" belongs to the trigger event: as the ability resolves it isn't checked again to be false (CR 603.4 rechecks
+// only an intervening "if" about the game; this was read inverted before).
+@(test)
+reflexive_ability_attaches_to_the_attacker :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Ancestral Katana").face))
+	for pay in ([]bool{true, false}) {
+		g := new_game()
+		s := &g.state
+		add(t, g, "Plains", 0, .Battlefield)
+		katana := add(t, g, "Ancestral Katana", 0, .Battlefield)
+		warrior := add(t, g, "Kazuul's Toll Collector", 0, .Battlefield) // an Ogre Warrior
+		game.begin_step(g, .DeclareAttackers)
+		attacks := []types.Tuple2(types.ObjectId, types.AttackTarget){{warrior.id, types.AttackTarget_Player{1}}}
+		testing.expect(t, game.apply(g, 0, types.GameAction_DeclareAttackers{attacks = attacks_dynamic(attacks)}))
+		settle_answering(t, g, accept = pay)
+		if pay do testing.expect(t, game.host_of(s, katana) == warrior, "attached to the attacker")
+		else do testing.expect(t, game.host_of(s, katana) == nil, "not paid: not attached")
+	}
+}
+
+// Mind Roots: "Target player discards two cards. Put up to one land card discarded this way onto the battlefield
+// tapped under your control." Only the cards just discarded (CR 400.7j); the caster puts it onto the battlefield, so
+// it's under the caster's control (CR 110.2a), though the opponent owns it.
+@(test)
+put_a_discarded_card_onto_the_battlefield :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Mind Roots").face))
+	g := new_game()
+	s := &g.state
+	for name in ([]string{"Swamp", "Forest", "Forest"}) do add(t, g, name, 0, .Battlefield)
+	earlier := add(t, g, "Island", 1, .Graveyard)
+	roots := add(t, g, "Mind Roots", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = roots.id}))
+	put: ^types.GameObject
+	offered: [dynamic]types.ObjectId
+	for _ in 0 ..< 12 {
+		#partial switch w in s.waiting_for {
+		case types.WaitingFor_TargetSelection:
+			testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+			continue
+		case types.WaitingFor_DiscardChoice:
+			two := make([dynamic]types.ObjectId, context.temp_allocator)
+			append(&two, ..w.cards[:2])
+			testing.expect(t, game.apply(g, 1, types.GameAction_SelectCards{cards = two}))
+			continue
+		case types.WaitingFor_EffectZoneChoice:
+			offered = w.cards
+			put = game.object(s, w.cards[0])
+			one := make([dynamic]types.ObjectId, context.temp_allocator)
+			append(&one, w.cards[0])
+			testing.expect(t, game.apply(g, 0, types.GameAction_SelectCards{cards = one}))
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect(t, len(offered) == 2 && !slice.contains(offered[:], earlier.id), "the two discarded lands only")
+	testing.expect(t, put != nil && put.zone == .Battlefield && put.tapped && put.controller == 0 && put.owner == 1, "tapped, under the caster's control")
+}
+
+// Titania's Command, first mode: "Exile target player's graveyard. You gain 1 life for each card exiled this way."
+// The count is what the exile moved (CR 608.2c).
+@(test)
+life_for_each_card_exiled_this_way :: proc(t: ^testing.T) {
+	if !load_db() do return
+	testing.expect(t, game.card_supported(&card(t, "Titania's Command").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 6 do add(t, g, "Forest", 0, .Battlefield)
+	for _ in 0 ..< 3 do add(t, g, "Grizzly Bears", 1, .Graveyard)
+	mine := add(t, g, "Grizzly Bears", 0, .Graveyard)
+	command := add(t, g, "Titania's Command", 0, .Hand)
+	life := s.players[0].life
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = command.id}))
+	for _ in 0 ..< 12 {
+		#partial switch w in s.waiting_for {
+		case types.WaitingFor_ModeChoice:
+			modes := make([dynamic]int, context.temp_allocator)
+			append(&modes, 0, 2) // exile a graveyard; two Bear tokens
+			testing.expect(t, game.apply(g, 0, types.GameAction_SelectModes{indices = modes}))
+			continue
+		case types.WaitingFor_TargetSelection:
+			testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 do break
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+	testing.expect_value(t, types.pvec_len(s.players[1].graveyard), 0)
+	testing.expect(t, mine.zone == .Graveyard, "not the caster's graveyard")
+	testing.expect_value(t, s.players[0].life, life + 3)
+}
+
+// Still refused: an Aura could come back among several (CR 303.4f, Brilliant Restoration); "target opponent's" and
+// "all opponents'" graveyards come as the same data (Release to Memory, Phyrexian Scriptures); the data lost words
+// (Shadow of the Grave's "that you cycled or discarded this turn", Skywarp Skaab's "two", Speak Secrets' mandatory
+// "put"); Koya, Death from Above's "if you don't, return that card" sits after its delayed ability, not in it (CR
+// 603.7: it would return the card at once); a permanent card put from the hand that could be an Aura (Kona, Rescue
+// Beastie: CR 303.4f isn't asked for hand choices yet).
+@(test)
+zone_change_shapes_still_refused :: proc(t: ^testing.T) {
+	if !load_db() do return
+	for name in ([]string{"Brilliant Restoration", "Triumphant Reckoning", "Release to Memory", "Phyrexian Scriptures", "Shadow of the Grave", "Skywarp Skaab", "Reap the Past", "Sparring Dummy", "Koya, Death from Above", "Kona, Rescue Beastie"}) {
+		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s stays unsupported", name)
+	}
+}
+
+// "Put a +1/+1 counter on a creature you control" chosen as the ability resolves isn't a target (CR 115.1, 608.2d);
+// this engine reads only zone changes that way, so such abilities stay refused (Ajani Fells the Godsire,
+// Tilonalli's Crown), while "return a creature card from your graveyard" chosen as it resolves is carried out.
+@(test)
+choices_made_as_it_resolves_are_not_targets :: proc(t: ^testing.T) {
+	if !load_db() do return
+	for name in ([]string{"Ajani Fells the Godsire", "Tilonalli's Crown"}) {
+		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s stays unsupported", name)
+	}
+	testing.expect(t, game.card_supported(&card(t, "Corpse Churn").face))
 }

@@ -107,21 +107,134 @@ change_zone_all_supported :: proc(x: types.Effect_ChangeZoneAll) -> bool {
 		if _, you := c.(types.ControllerRef_You); !you do return false
 	}
 	if x.enters_attacking || len(x.enter_with_counters) > 0 || x.face_down_profile != nil || x.library_position != nil || x.random_order do return false
-	if x.enter_tapped == .Untapped || !mass_filter_supported(x.target) do return false
+	if x.enter_tapped == .Untapped do return false
 	origin := x.origin.? or_else .Battlefield
 	#partial switch origin {
 	case .Battlefield:
 		#partial switch x.destination {
 		case .Hand, .Graveyard, .Exile:
-			return true
+			return mass_filter_supported(x.target)
 		}
 	case .Graveyard:
-		#partial switch x.destination {
-		case .Hand, .Battlefield, .Exile:
-			return true
-		}
+		return graveyard_mass_supported(x)
 	}
 	return false
+}
+
+// Cards leaving graveyards all at once: "return all land cards from your graveyard to the battlefield tapped", "put
+// all creature cards from all graveyards onto the battlefield under your control", "exile each opponent's
+// graveyard", "exile target player's graveyard", "then exile that player's graveyard", "shuffle your graveyard into
+// your library".
+@(private = "file")
+graveyard_mass_supported :: proc(x: types.Effect_ChangeZoneAll) -> bool {
+	#partial switch x.destination {
+	case .Hand, .Exile:
+	case .Battlefield:
+		// An Aura put onto the battlefield needs what it enchants chosen as it enters (CR 303.4f): not yet.
+		if may_match_aura(x.target) do return false
+	case .Library:
+		// "Shuffle your graveyard into your library" (CR 701.24a), only into its owner's own library.
+		shuffled := x.library_shuffle == .TerminalShuffle
+		return shuffled && is_controller(x.target)
+	case:
+		return false
+	}
+	#partial switch y in x.target {
+	case types.TargetFilter_Player:
+		return true // a target player's whole graveyard
+	case types.TargetFilter_ParentTarget:
+		// "That player's graveyard": the player the instruction before targeted.
+		return previous_instruction != nil && is_player_filter(effect_target_filter(previous_instruction^))
+	case types.TargetFilter_Controller:
+		return true
+	case types.TargetFilter_TrackedSetFiltered:
+		// "Mill four cards, then put all Elf cards from among them into your hand" (CR 701.17c): what the mill moved,
+		// after nothing else that moved cards.
+		if y.filter == nil || previous_instruction == nil || !among_filter_supported(y.filter^) do return false
+		if instruction_before_previous != nil && moves_counted_cards(instruction_before_previous^) do return false
+		mill, milled := previous_instruction^.(types.Effect_Mill)
+		cause, has_cause := y.caused_by.?
+		return milled && mill.destination == .Graveyard && (!has_cause || cause == .Milled)
+	case types.TargetFilter_Typed:
+		return graveyard_cards_filter(y._0)
+	case types.TargetFilter_Or:
+		for f in y.filters {
+			typed, ok := f.(types.TargetFilter_Typed)
+			if !ok || !graveyard_cards_filter(typed._0) do return false
+		}
+		return len(y.filters) > 0
+	}
+	return false
+}
+
+// "Land cards from your graveyard", "cards from all graveyards", "creature cards an opponent owns in a graveyard": a
+// typed filter of graveyard cards, its controller meaning the graveyard's owner (a card goes to its owner's graveyard,
+// CR 404.1, 400.3).
+// "Target opponent's graveyard" and "all opponents' graveyards" come as the same data (no cards named, an opponent),
+// so a filter naming no card type isn't read.
+@(private = "file")
+graveyard_cards_filter :: proc(f: types.TypedFilter) -> bool {
+	if len(f.type_filters) == 0 do return false
+	if c, has := f.controller.?; has {
+		#partial switch _ in c {
+		case types.ControllerRef_You, types.ControllerRef_Opponent:
+		case:
+			return false
+		}
+	}
+	_, in_graveyard := graveyard_filter(types.TargetFilter_Typed{f})
+	return in_graveyard
+}
+
+// Whether a graveyard card fits a graveyard_cards_filter: its owner as the filter's controller says (a card in a
+// graveyard is its owner's, CR 404.1, 400.3), and the rest as for any object.
+@(private = "file")
+graveyard_card_matches :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.TargetFilter, controller: types.PlayerId, source: types.ObjectId) -> bool {
+	#partial switch x in f {
+	case types.TargetFilter_Typed:
+		plain := x._0
+		if c, has := plain.controller.?; has {
+			#partial switch _ in c {
+			case types.ControllerRef_You:
+				if o.owner != controller do return false
+			case types.ControllerRef_Opponent:
+				if o.owner == controller do return false
+			}
+		}
+		plain.controller = nil
+		return object_matches(s, o, plain, controller, source)
+	case types.TargetFilter_Or:
+		for y in x.filters do if graveyard_card_matches(s, o, y, controller, source) do return true
+	}
+	return false
+}
+
+// The graveyard cards a "return/exile all ... from graveyards" instruction moves, decided as it resolves (CR 608.2c).
+@(private = "file")
+graveyard_cards_moving :: proc(g: ^Game, x: types.Effect_ChangeZoneAll, controller: types.PlayerId, source: types.ObjectId, target: Maybe(types.TargetRef)) -> [dynamic]^types.GameObject {
+	s := &g.state
+	out := make([dynamic]^types.GameObject, context.temp_allocator)
+	whole_graveyard_of: Maybe(types.PlayerId) // "target player's graveyard", "that player's", "your"
+	#partial switch y in x.target {
+	case types.TargetFilter_TrackedSetFiltered:
+		// "All Elf cards from among them": those the mill just moved (CR 701.17c).
+		for id in among_moved(g, y.filter^, controller, source) do append(&out, object(s, id))
+		return out
+	case types.TargetFilter_Player, types.TargetFilter_ParentTarget:
+		p, ok := target_player(target)
+		if !ok do return out
+		whole_graveyard_of = p
+	case types.TargetFilter_Controller:
+		whole_graveyard_of = controller
+	}
+	for &p in s.players {
+		if who, whole := whole_graveyard_of.?; whole && p.id != who do continue
+		for id in ids_of(p.graveyard) {
+			o := object(s, id)
+			if _, whole := whole_graveyard_of.?; whole || graveyard_card_matches(s, o, x.target, controller, source) do append(&out, o)
+		}
+	}
+	return out
 }
 
 // "Each opponent", "each player", "you": the players an each-player instruction reaches.
@@ -244,9 +357,7 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 		if origin == .Battlefield {
 			append(&moving, ..affected_permanents(s, x.target, controller, source)[:])
 		} else {
-			for &p in s.players do for id in ids_of(p.graveyard) {
-				if o := object(s, id); mass_filter_matches(s, o, x.target, controller, source) do append(&moving, o)
-			}
+			append(&moving, ..graveyard_cards_moving(g, x, controller, source, target)[:])
 		}
 		together := begin_together()
 		for o in moving {
@@ -257,6 +368,8 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 			}
 		}
 		end_together(together)
+		// "Shuffle your graveyard into your library": then that library is shuffled (CR 701.24a).
+		if x.destination == .Library do shuffle_library(g, controller)
 	case types.Effect_BounceAll:
 		// To their owners' hands (CR 400.3), all at once.
 		together := begin_together()

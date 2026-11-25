@@ -100,6 +100,9 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	saved_x := x_defined
 	x_defined = self_entering(t)
 	defer x_defined = saved_x
+	saved_entering := attaching_self_entering // "attach it": the permanent that entered (attachments.odin)
+	attaching_self_entering = self_entering(t)
+	defer attaching_self_entering = saved_entering
 	event_amount_defined = trigger_has_amount(t)
 	defer event_amount_defined = false
 	event_object_defined, event_player_defined = trigger_has_object(t), trigger_has_player(t)
@@ -1060,6 +1063,9 @@ trigger_condition_holds :: proc(s: ^types.GameState, source: types.ObjectId, con
 		for y in x.conditions do if trigger_condition_holds(s, source, controller, y) do return true
 		return false
 	case types.TriggerCondition_Not:
+		// "Attacks alone" (not with one other attacker) belongs to the trigger event, settled when it triggered: as it
+		// resolves the inner condition reads true (above), so its negation must too.
+		if _, event_only := x.condition^.(types.TriggerCondition_MinCoAttackers); event_only && rechecking_on_resolution do return true
 		return !trigger_condition_holds(s, source, controller, x.condition^)
 	}
 	return false

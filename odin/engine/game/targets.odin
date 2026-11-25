@@ -40,7 +40,7 @@ slot_list :: proc(a: ^types.AbilityDefinition) -> [dynamic]Target_Slot {
 			group += 1
 			continue
 		}
-		f, ok := effect_target(x.effect^)
+		f, ok := instruction_target(x.effect^, x.target_choice_timing)
 		if !ok do continue
 		least, most := 1, 1
 		if m, multi := x.multi_target.?; multi {
@@ -79,9 +79,13 @@ multi_target_supported :: proc(a: types.AbilityDefinition) -> bool {
 	}
 	if least < 0 || most < max(least, 1) || a.effect == nil do return false
 	#partial switch x in a.effect^ {
-	case types.Effect_DealDamage, types.Effect_Destroy, types.Effect_Pump, types.Effect_GenericEffect, types.Effect_ChangeZone,
+	case types.Effect_DealDamage, types.Effect_Destroy, types.Effect_Pump, types.Effect_GenericEffect,
 	     types.Effect_Bounce, types.Effect_PutCounter, types.Effect_SetTapState, types.Effect_TargetOnly:
 		return true
+	case types.Effect_ChangeZone:
+		// Several targets that could be Auras put onto the battlefield: what each enchants is asked as it enters (CR
+		// 303.4f), which resolution does for one target at a time only (zone_effects.odin).
+		return x.destination != .Battlefield || most == 1 || !may_match_aura(x.target)
 	case types.Effect_Fight:
 		// "This creature fights up to one target creature": the one target, if chosen (CR 701.14a, 115.1).
 		return most == 1 && !fight_subject_targeted(x)

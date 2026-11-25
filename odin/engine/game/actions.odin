@@ -44,6 +44,8 @@ acting_player :: proc(s: ^types.GameState) -> (types.PlayerId, bool) {
 		return w.player, true
 	case types.WaitingFor_CrewVehicle:
 		return w.player, true
+	case types.WaitingFor_ReturnAsAuraTarget:
+		return w.player, true
 	case types.WaitingFor_CopyTargetChoice:
 		return w.player, true
 	case types.WaitingFor_AbilityModeChoice:
@@ -264,7 +266,7 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_EffectZoneChoice:
 		a, ok := action.(types.GameAction_SelectCards)
 		if !ok do return false
-		if w.effect_kind == .ChangeZone do return answer_hand_choice(g, p, w, a.cards[:])
+		if w.effect_kind == .ChangeZone do return answer_zone_choice(g, p, w, a.cards[:])
 		if w.effect_kind == .Bounce do return answer_bounce(g, p, w, a.cards[:])
 		if w.effect_kind == .Attach do return answer_attach(g, p, w, a.cards[:])
 		if w.effect_kind == .Amass do return answer_amass(g, p, w, a.cards[:])
@@ -286,6 +288,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 	case types.WaitingFor_CopyTargetChoice:
 		a, ok := action.(types.GameAction_ChooseTarget)
 		return ok && answer_entry_copy(g, p, w, a.target)
+	case types.WaitingFor_ReturnAsAuraTarget:
+		a, ok := action.(types.GameAction_ChooseTarget)
+		return ok && answer_aura_host(g, p, w, a.target) // zone_effects.odin
 	case types.WaitingFor_ReplacementChoice:
 		a, ok := action.(types.GameAction_ChooseReplacement)
 		return ok && answer_entry_payment(g, p, w, a.index)
@@ -529,6 +534,8 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 	case types.WaitingFor_CopyTargetChoice:
 		for id in w.valid_targets do append(&out, types.GameAction_ChooseTarget{target = types.TargetRef_Object{id}})
 		append(&out, types.GameAction_ChooseTarget{}) // copy nothing
+	case types.WaitingFor_ReturnAsAuraTarget:
+		for t in w.legal_targets do append(&out, types.GameAction_ChooseTarget{target = t})
 	case types.WaitingFor_CrewVehicle:
 		// The client picks the creatures (any set with enough power); every eligible one is a valid answer to offer.
 		append(&out, types.GameAction_CrewVehicle{vehicle_id = w.vehicle_id, creature_ids = slice.clone_to_dynamic(w.eligible_creatures[:], context.temp_allocator)})

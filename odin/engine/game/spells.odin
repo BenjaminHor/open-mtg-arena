@@ -28,6 +28,14 @@ MISPARSED_CARDS :: [?]string{
 	"Phelia, Exuberant Shepherd", // its +1/+1 counter sits outside the delayed ability and without its condition
 	"Shallow Grave", // "the top creature card of your graveyard" is read as a target
 	"Vizier of Deferment", // "if it attacked or blocked this turn" is dropped
+	"Shadow of the Grave", // "that you cycled or discarded this turn" is dropped from "all cards in your graveyard"
+	"Skywarp Skaab", // "two" is dropped from "exile two creature cards from your graveyard"
+	"Reap the Past", // "X" is dropped from "return X cards at random"
+	"Sparring Dummy", // "if a Lesson card is milled this way" reads as the card put into the hand, not the mill
+	"Speak Secrets", // "then put an instant or sorcery card from among them" (not "you may") reads as up to one
+	"Free the Fae", // the same
+	"Bind to Life", // the same
+	"Silvan Rally", // "two" is dropped from "put up to two land cards from among them"
 	// Fifth rules review (2026-11-25): parts of the Oracle text the data dropped or changed.
 	"Guardian Naga", // "during your turn" on its prevention
 	"Captivating Crossroads", // "during your first three turns ... if you were the starting player"
@@ -216,7 +224,14 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	// "Up to two target creature cards with total mana value 3 or less", "from a single graveyard": conditions on
 	// the targets together (CR 115.1, 601.2c) this engine doesn't check yet.
 	if len(a.target_constraints) > 0 do return false
+	// "Put a +1/+1 counter on a creature you control", chosen as it resolves (the data's Resolution timing): not a
+	// target (CR 115.1, 608.2d), so it can't be read as one. Only the zone changes that choose as they resolve
+	// (instruction_target) are carried out that way.
+	if a.target_choice_timing == .Resolution && a.effect != nil {
+		if _, targeted := instruction_target(a.effect^, a.target_choice_timing); targeted do return false
+	}
 	if a.else_ability != nil do return false
+	if !attach_host_timing_supported(a) || !zone_choice_timing_supported(a) || !after_event_card_returned_supported(a) do return false
 	if !effect_supported(a.effect^, a.duration) do return false
 	if refers_to_parent_target(a.effect^) && !after_target do return false
 	// "It deals damage equal to its power": the creature an earlier instruction targeted (CR 608.2c); with none
@@ -226,7 +241,7 @@ ability_supported :: proc(a: types.AbilityDefinition, after_target := false, aft
 	}
 	if d, delayed := a.effect^.(types.Effect_CreateDelayedTrigger); delayed && !delayed_trigger_supported(d, after_target, followed = a.sub_ability != nil) do return false
 	if moves_found_cards(a.effect^) && !after_search do return false
-	_, targets := effect_target(a.effect^)
+	_, targets := instruction_target(a.effect^, a.target_choice_timing)
 	_, searches := a.effect^.(types.Effect_SearchLibrary)
 	if a.sub_ability != nil && is_reflexive(a.sub_ability) {
 		// CR 603.12: "You may X. When you do, Y": Y is a triggered ability of its own, with its own targets. Read
@@ -599,10 +614,17 @@ effect_target_filter :: proc(e: types.Effect) -> types.TargetFilter {
 		f = x.target.? or_else nil
 	case types.Effect_ChangeZone:
 		f = x.target
+	case types.Effect_ChangeZoneAll:
+		// "Exile target player's graveyard", "that player's graveyard", "your graveyard": the player whose graveyard
+		// it is. (A filter of the cards moved isn't a target.)
+		#partial switch _ in x.target {
+		case types.TargetFilter_Player, types.TargetFilter_ParentTarget, types.TargetFilter_Controller:
+			f = x.target
+		}
 	case types.Effect_Bounce:
 		if x.selection == .Targeted do f = x.target // a chosen one isn't targeted
 	case types.Effect_Attach:
-		if _, chosen := x.selection.(types.AttachSelection_AtResolution); !chosen do f = x.target // chosen as it resolves: not targeted
+		f = attach_target_filter(x) // attachments.odin
 	case types.Effect_PutCounter:
 		f = x.target
 	case types.Effect_PutAtLibraryPosition:
@@ -676,7 +698,7 @@ target_slots :: proc(a: ^types.AbilityDefinition) -> [dynamic]types.TargetFilter
 	out := make([dynamic]types.TargetFilter, context.temp_allocator)
 	for x := a; x != nil; x = x.sub_ability {
 		if x.effect == nil do continue
-		if f, ok := effect_target(x.effect^); ok do append(&out, f)
+		if f, ok := instruction_target(x.effect^, x.target_choice_timing); ok do append(&out, f)
 	}
 	return out
 }
@@ -1325,7 +1347,11 @@ do_effect :: proc(g: ^Game, effect: types.Effect, duration: Maybe(types.Duration
 		if moves_found_cards(effect) do move_found_cards(g, x, controller)
 		else if _, from_hand := hand_choice(x); from_hand {
 			if start_hand_choice(g, x, controller, source) do return true
-		} else do do_change_zone(g, x, controller, source, target)
+		} else if n := g.resolution.current; n != nil && chosen_from_graveyard(x, n.target_choice_timing) {
+			if start_graveyard_choice(g, x, n, controller, source) do return true
+		} else if among, is_among := x.target.(types.TargetFilter_TrackedSetFiltered); is_among {
+			if start_among_moved_choice(g, x, among, controller, source) do return true
+		} else if do_change_zone(g, x, controller, source, target) do return true
 	case types.Effect_SearchLibrary:
 		start_search(g, x, controller, source)
 		return true
@@ -1626,10 +1652,12 @@ card_gaps :: proc(face: ^types.CardFace, back_face := false) -> [dynamic]string 
 			event_object_defined, event_player_defined = trigger_has_object(t), trigger_has_player(t)
 			event_attack_defined, event_damaged_defined = trigger_has_attack(t), trigger_has_damaged(t)
 			triggering_filter = t.valid_card.? or_else (t.valid_source.? or_else nil) // as trigger_supported reads it
+			attaching_self_entering = self_entering(t)
 			if t.execute != nil && !ability_supported(t.execute^) do ability_gaps(&out, t.execute^, "trigger")
 			else do append(&out, name("trigger condition:", t.mode))
 			event_amount_defined, event_object_defined, event_player_defined, event_attack_defined, event_damaged_defined = false, false, false, false, false
 			triggering_filter = nil
+			attaching_self_entering = false
 		case:
 			append(&out, name("trigger:", t.mode))
 		}
@@ -1702,10 +1730,16 @@ ability_gaps :: proc(out: ^[dynamic]string, a: types.AbilityDefinition, prefix: 
 	if a.modal != nil do append(out, "spell:modal")
 	if !multi_target_supported(a) do append(out, "spell:multiple targets")
 	if len(a.target_constraints) > 0 do append(out, "spell:target constraints")
+	if a.target_choice_timing == .Resolution && a.effect != nil {
+		if _, targeted := instruction_target(a.effect^, a.target_choice_timing); targeted do append(out, "spell:chosen as it resolves")
+	}
 	if !distribute_supported(a) do append(out, "spell:divided")
 	if !repeat_supported(a) do append(out, "spell:repeat")
 	if !unless_pay_supported(a) do append(out, "spell:unless pay")
 	if a.else_ability != nil do append(out, "spell:otherwise")
+	if a.effect != nil && !attach_host_timing_supported(a) do append(out, "effect:Attach (host chosen as it resolves)")
+	if a.effect != nil && !zone_choice_timing_supported(a) do append(out, "effect:ChangeZone (card chosen as it resolves)")
+	if a.effect != nil && !after_event_card_returned_supported(a) do append(out, "spell:that creature after it returned")
 	if a.effect != nil && !effect_supported(a.effect^, a.duration) {
 		full := fmt.tprintf("%v", reflect.union_variant_typeid(a.effect^))
 		if i := strings.last_index_byte(full, '_'); i >= 0 do full = full[i + 1:]

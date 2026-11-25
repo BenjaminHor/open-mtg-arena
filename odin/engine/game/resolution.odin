@@ -35,6 +35,7 @@ Resolution :: struct {
 	unless_node:  ^types.ResolvedAbility, // an "unless [a player] pays" instruction whose payer was asked...
 	unless_paid:  bool, // ...and whether they paid
 	fizzled:      bool, // every target illegal: it didn't resolve (CR 608.2b)
+	aura_hosts:   [dynamic]Aura_Host, // what each Aura the current instruction returns will enchant (zone_effects.odin)
 }
 
 // The spell or ability as it goes on the stack: one node per instruction, each with the targets chosen for it (CR
@@ -59,12 +60,14 @@ resolved_tree :: proc(s: ^types.GameState, a: ^types.AbilityDefinition, targets:
 		node.description = x.description
 		node.optional = x.optional
 		node.multi_target = x.multi_target
+		node.target_choice_timing = x.target_choice_timing // "a card from your graveyard": chosen as it resolves
+		node.target_selection_mode = x.target_selection_mode // "at random"
 		node.player_scope = x.player_scope
 		node.unless_pay = x.unless_pay
 		node.distribute = x.distribute
 		node.repeat_for = x.repeat_for
 		if x.effect != nil && !reflexive {
-			if _, targets_one := effect_target(x.effect^); targets_one {
+			if _, targets_one := instruction_target(x.effect^, x.target_choice_timing); targets_one {
 				n := counts[k] if k < len(counts) else 1
 				k += 1
 				for _ in 0 ..< n do if next < len(targets) {
@@ -93,7 +96,7 @@ start_resolution :: proc(g: ^Game, top: ^types.ResolvedAbility, controller: type
 	any_target, any_legal := false, false
 	for n := top; n != nil; n = n.sub_ability {
 		clear(&n.illegal_target_slots)
-		f, targets_one := effect_target(n.effect)
+		f, targets_one := instruction_target(n.effect, n.target_choice_timing)
 		if !targets_one && (refers_to_parent_target(n.effect) || reads_tracked_set(n.effect)) do continue // a delayed ability's "it", "those cards": not targets
 		fight, is_fight := n.effect.(types.Effect_Fight)
 		for t, i in n.targets {
@@ -209,7 +212,7 @@ continue_resolution :: proc(g: ^Game) -> bool {
 		}
 		parent_targets := slice.clone(r.last_targets[:], context.temp_allocator) // "it fights ...": the one before's
 		affected := make([dynamic]Maybe(types.TargetRef), context.temp_allocator)
-		if _, targets_one := effect_target(x.effect); targets_one {
+		if _, targets_one := instruction_target(x.effect, x.target_choice_timing); targets_one {
 			clear(&r.last_targets)
 			for t, i in x.targets do if !slice.contains(x.illegal_target_slots[:], i) {
 				append(&r.last_targets, t)
@@ -738,6 +741,8 @@ optional_possible :: proc(g: ^Game, x: ^types.ResolvedAbility, controller: types
 		return false
 	case types.Effect_PayCost:
 		return cost_payable_now(g, e, controller, source)
+	case types.Effect_ChangeZone:
+		return graveyard_choice_possible(g, x, controller, source) // "you may exile a creature card from your graveyard"
 	}
 	return true
 }
@@ -803,7 +808,12 @@ reflexive_trigger :: proc(g: ^Game, x: ^types.ResolvedAbility) {
 	execute.condition = nil
 	t := new(types.TriggerDefinition)
 	t.execute = execute
+	// "When you do, attach this Equipment to it": "it" is what the creating ability's trigger event was about (CR
+	// 603.12, 603.7c), only while it's the same object.
+	outer := collecting_event
+	collecting_event = r.event
 	add_trigger(g, r.source, r.controller, t)
+	collecting_event = outer
 }
 
 // The objects the instruction just carried out moved from one zone to another (its zone-change events).

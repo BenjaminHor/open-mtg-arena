@@ -26,17 +26,16 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		return types.GameAction_SelectCards{cards = worst_cards(g, p, w.count)}, true
 	case types.WaitingFor_EffectZoneChoice:
 		if w.effect_kind == .ChangeZone {
-			// A card to put onto the battlefield: the first offered.
-			one := make([dynamic]types.ObjectId, context.temp_allocator)
-			append(&one, w.cards[0])
-			return types.GameAction_SelectCards{cards = one}, true
+			// Cards to move from its hand or graveyard: the first offered, as few as it must and at least one.
+			n := min(max(w.min_count, 1), w.count, len(w.cards))
+			some := make([dynamic]types.ObjectId, context.temp_allocator)
+			append(&some, ..w.cards[:n])
+			return types.GameAction_SelectCards{cards = some}, true
 		}
 		if w.effect_kind == .Attach {
-			// What to attach the Equipment to: the strongest creature.
-			best := w.cards[0]
-			for id in w.cards do if power_of(object(s, id)) > power_of(object(s, best)) do best = id
+			// Which Equipment to attach ("attach an Equipment you control to it"): the first offered.
 			one := make([dynamic]types.ObjectId, context.temp_allocator)
-			append(&one, best)
+			append(&one, w.cards[0])
 			return types.GameAction_SelectCards{cards = one}, true
 		}
 		// What to sacrifice: the least valuable.
@@ -167,6 +166,10 @@ ai_action :: proc(g: ^Game, p: types.PlayerId) -> (types.GameAction, bool) {
 		chosen := make([dynamic]int, context.temp_allocator)
 		for i in 0 ..< w.modal.mode_count do if len(chosen) < w.modal.min_choices && !slice.contains(w.unavailable_modes[:], i) do append(&chosen, i)
 		return types.GameAction_SelectModes{indices = chosen}, true
+	case types.WaitingFor_ReturnAsAuraTarget:
+		// What the returning Aura enchants: one of its own player's permanents if it can, else the first offered.
+		for t in w.legal_targets do if id, ok := target_object(t); ok && object(s, id).controller == p do return types.GameAction_ChooseTarget{target = t}, true
+		return types.GameAction_ChooseTarget{target = w.legal_targets[0]}, true
 	case types.WaitingFor_CopyTargetChoice:
 		// The biggest creature to copy.
 		best: types.ObjectId

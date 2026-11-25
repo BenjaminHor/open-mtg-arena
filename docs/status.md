@@ -3302,6 +3302,16 @@ Progress:
   never worked; a token copy took granted abilities (CR 707.2); "named X" filters now case-insensitive. Refused:
   Extravagant Replication (a copy that could be an Aura, CR 303.4f, deliberate), 12 misparsed cards (lost "up to one
   target", Chainer's Torment). New token_test.odin (17 tests). Coverage 8,195.
+- Zone changes and attaching (agent, merged): equip is targeting (CR 702.6a; it wasn't), Equipment entering attached,
+  "attach it to that creature", "attach target Equipment to this", attach legality (CR 701.3b, 301.5, 303.4d,
+  702.16c-d); CR 303.4f built (an Aura entering other than by resolving: its controller chooses what it enchants,
+  ReturnAsAuraTarget; 303.4g stays put); ChangeZoneAll from graveyards ("return all land cards", "exile target
+  player's graveyard", shuffle graveyard into library); cards chosen as the instruction resolves from your graveyard
+  (no longer targets), "mill N, you may put a card from among them", "return that card" from a dies trigger. Fixed:
+  reflexive abilities carry the trigger event; "attacks alone" was inverted at resolution. Nine cards refused as
+  corrections; six misparsed. Found and fixed here: counters/damage chosen as the ability resolves were read as
+  targets (Ajani Fells the Godsire, Tilonalli's Crown): refused. Still to check: searches/digs putting a possible
+  Aura onto the battlefield (CR 303.4f). Coverage 8,258.
 - Owner asked (2026-11-25): how we know the fixtures capture correct behaviour, given Rust may have bugs. Answer and
   decision D-189: they don't guarantee it; the CR decides, the fixtures are a cross-check; disagreements on supported
   cards to be triaged against the CR (next step for the fixtures).
