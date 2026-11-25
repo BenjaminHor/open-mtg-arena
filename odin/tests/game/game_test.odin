@@ -2210,3 +2210,46 @@ that_much_damage :: proc(t: ^testing.T) {
 	testing.expectf(t, game.player(s, 1).life == 20 - i32(power), "the damage: %d", power)
 	testing.expectf(t, types.pvec_len(game.player(s, 0).hand) == hand + power - 1, "drew %d, discarded 1", power)
 }
+
+@(test)
+gain_life_draw_and_damage_triggers :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 603.2: "whenever you gain life" (Ajani's Pridemate: a +1/+1 counter), "whenever you draw a card" (Psychosis
+	// Crawler: each opponent loses 1 life), each card drawn its own event (CR 121.2). Revitalize: gain 3 life,
+	// draw a card.
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 2 do add(t, g, "Plains", 0, .Battlefield)
+	pridemate := add(t, g, "Ajani's Pridemate", 0, .Battlefield)
+	add(t, g, "Psychosis Crawler", 0, .Battlefield)
+	revitalize := add(t, g, "Revitalize", 0, .Hand)
+	resolve :: proc(g: ^game.Game) {
+		for _ in 0 ..< 16 {
+			who, _ := game.acting_player(&g.state)
+			if _, choosing := g.state.waiting_for.(types.WaitingFor_TriggerTargetSelection); choosing {
+				a, _ := game.ai_action(g, who) // a trigger's target, before it goes on the stack (CR 603.3d)
+				game.apply(g, who, a)
+				continue
+			}
+			if types.pvec_len(g.state.stack) == 0 do break
+			game.apply(g, who, types.GameAction_PassPriority{})
+		}
+	}
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = revitalize.id}))
+	resolve(g)
+	testing.expect(t, game.player(s, 0).life == 23, "3 life")
+	testing.expect(t, len(pridemate.counters) == 1, "the Pridemate's counter")
+	testing.expect(t, game.player(s, 1).life == 19, "the Crawler: 1 life for the card drawn")
+
+	// CR 120.3: "Whenever this creature is dealt damage, it deals that much damage to any target." (Boros Reckoner)
+	g2 := new_game()
+	s2 := &g2.state
+	add(t, g2, "Mountain", 0, .Battlefield)
+	reckoner := add(t, g2, "Boros Reckoner", 1, .Battlefield)
+	shock := add(t, g2, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g2, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{reckoner.id}}))
+	resolve(g2)
+	testing.expect(t, reckoner.damage_marked == 2 || reckoner.zone == .Graveyard)
+	testing.expectf(t, game.player(s2, 0).life == 18, "2 damage back (the AI aims at its opponent): life %d", game.player(s2, 0).life)
+}

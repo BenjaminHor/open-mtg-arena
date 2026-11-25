@@ -231,6 +231,8 @@ draw_card :: proc(s: ^types.GameState, p: ^types.Player) -> bool {
 	types.pvec_push(&p.hand, id, copy_id)
 	s.objects.inner[id].zone = .Hand
 	p.cards_drawn_this_turn += 1
+	// CR 121.2: each card drawn is its own event ("whenever you draw a card").
+	if action_events != nil do append(action_events, Event{kind = .Card_Drawn, controller = p.id, amount = 1})
 	return true
 }
 

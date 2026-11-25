@@ -939,6 +939,8 @@ gain_life :: proc(s: ^types.GameState, p: types.PlayerId, n: int) {
 	pl := player(s, p)
 	pl.life += i32(n)
 	pl.life_gained_this_turn += u32(n)
+	// CR 119.9: a gain of 0 life isn't an event abilities trigger on.
+	if n > 0 && action_events != nil do append(action_events, Event{kind = .Life_Gained, controller = p, amount = n})
 }
 
 lose_life :: proc(s: ^types.GameState, p: types.PlayerId, n: int) {

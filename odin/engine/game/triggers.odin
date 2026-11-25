@@ -14,6 +14,8 @@ Event_Kind :: enum {
 	Spell_Cast,
 	Damage,
 	You_Attack, // a player attacked with one or more creatures (CR 508.3d)
+	Life_Gained, // controller gained amount life (CR 119.9: never 0)
+	Card_Drawn, // controller drew a card (CR 121.2: each card is its own draw)
 }
 
 // Something that happened that an ability may trigger on (CR 603.2).
@@ -62,10 +64,21 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	_, is_cast := t.mode.(types.TriggerMode_SpellCast)
 	_, is_damage := t.mode.(types.TriggerMode_DamageDone)
 	if _, batched := t.mode.(types.TriggerMode_DamageDoneOnceByController); batched do is_damage = true
+	if _, received := t.mode.(types.TriggerMode_DamageReceived); received do is_damage = true
 	// A zone-change trigger's valid_target is the parser's note of its effect's target ("When this enters, it deals 1
 	// damage to target opponent"): the event is matched on the card alone, the target chosen by the effect.
-	_, is_zone_change := t.mode.(types.TriggerMode_ChangesZone)
-	if !is_cast && !is_damage && !is_zone_change && t.valid_target != nil do return false
+	is_zone_change := false
+	#partial switch _ in t.mode {
+	case types.TriggerMode_ChangesZone, types.TriggerMode_LeavesBattlefield, types.TriggerMode_EntersOrAttacks:
+		is_zone_change = true
+	}
+	// "Whenever you gain life", "whenever you draw a card": the player is valid_target.
+	is_player_event := false
+	#partial switch _ in t.mode {
+	case types.TriggerMode_LifeGained, types.TriggerMode_Drawn:
+		is_player_event = true
+	}
+	if !is_cast && !is_damage && !is_zone_change && !is_player_event && t.valid_target != nil do return false
 	if !is_damage && t.valid_source != nil do return false
 	if len(t.origin_zones) > 0 || len(t.zone_change_clauses) > 0 || t.counter_filter != nil || t.saga_chapter != nil do return false
 	if c, has := t.constraint.?; has {
@@ -92,6 +105,23 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	case types.TriggerMode_YouAttack:
 		// "Whenever you attack": the plain form (CR 508.3d).
 		return t.valid_card == nil && t.attack_target_filter == nil
+	case types.TriggerMode_EntersOrAttacks:
+		// "Whenever this creature enters or attacks" (CR 603.6a, 508.3a).
+		f, has := t.valid_card.?
+		return has && is_self(f) && t.attack_target_filter == nil
+	case types.TriggerMode_LeavesBattlefield:
+		// "When this leaves the battlefield" (CR 603.6c, 603.10a).
+		if dest, has := t.destination.?; has && dest == .Battlefield do return false
+		if f, has := t.valid_card.?; has do return subject_filter_supported(f)
+		return false
+	case types.TriggerMode_LifeGained, types.TriggerMode_Drawn:
+		if t.valid_card != nil || t.life_amount != nil do return false
+		if v, has := t.valid_target.?; has && !is_you(v) && !is_an_opponent(v) && !is_any_player(v) do return false
+		return true
+	case types.TriggerMode_DamageReceived:
+		// "Whenever this creature is dealt damage" (CR 120.3).
+		f, has := t.valid_card.?
+		return has && is_self(f) && t.valid_source == nil && t.damage_amount == nil && t.damage_kind != .NoncombatOnly
 	case types.TriggerMode_DamageDone, types.TriggerMode_DamageDoneOnceByController:
 		// "Whenever [this / a creature you control / enchanted creature] deals [combat] damage to [a player / an
 		// opponent / a creature / you]"; "whenever one or more creatures you control deal combat damage to a
@@ -234,8 +264,11 @@ subject_filter_supported :: proc(f: types.TargetFilter) -> bool {
 
 // Whether the trigger's event has an amount its effect can call "that much": damage dealt to or by one object.
 trigger_has_amount :: proc(t: types.TriggerDefinition) -> bool {
-	_, dmg := t.mode.(types.TriggerMode_DamageDone)
-	return dmg
+	#partial switch _ in t.mode {
+	case types.TriggerMode_DamageDone, types.TriggerMode_DamageReceived, types.TriggerMode_LifeGained:
+		return true
+	}
+	return false
 }
 
 // ---- Collecting ---------------------------------------------------------------------------------------------
@@ -339,6 +372,42 @@ collect_triggers :: proc(g: ^Game) {
 			for &entry in trigger_definitions(o) {
 				t := &entry.definition
 				if _, attacks := t.mode.(types.TriggerMode_Attacks); attacks && trigger_supported(t^) do add_trigger(g, o.id, o.controller, t)
+				if _, either := t.mode.(types.TriggerMode_EntersOrAttacks); either && trigger_supported(t^) do add_trigger(g, o.id, o.controller, t)
+			}
+		case .Life_Gained, .Card_Drawn:
+			for id in ids_of(s.battlefield) {
+				o := object(s, id)
+				for &entry in trigger_definitions(o) {
+					t := &entry.definition
+					#partial switch _ in t.mode {
+					case types.TriggerMode_LifeGained:
+						if e.kind != .Life_Gained do continue
+					case types.TriggerMode_Drawn:
+						if e.kind != .Card_Drawn do continue
+					case:
+						continue
+					}
+					if !trigger_supported(t^) || !turn_constraint_met(s, t^, o.controller) do continue
+					// Whose: "you", "an opponent", or any player.
+					if v, has := t.valid_target.?; has {
+						if is_you(v) && e.controller != o.controller do continue
+						if is_an_opponent(v) && e.controller == o.controller do continue
+					}
+					add_trigger(g, o.id, o.controller, t, nil, e.amount)
+				}
+			}
+		}
+		if e.kind == .Damage {
+			// "Whenever this creature is dealt damage": the recipient's own trigger, with the amount.
+			if id, is_object := target_object(e.target); is_object {
+				if o := object(s, id); o != nil && o.zone == .Battlefield {
+					for &entry in trigger_definitions(o) {
+						t := &entry.definition
+						if _, received := t.mode.(types.TriggerMode_DamageReceived); !received || !trigger_supported(t^) do continue
+						if t.damage_kind == .CombatOnly && !e.combat do continue
+						add_trigger(g, o.id, o.controller, t, nil, e.amount)
+					}
+				}
 			}
 		}
 	}
@@ -348,9 +417,19 @@ collect_triggers :: proc(g: ^Game) {
 @(private = "file")
 zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.TriggerDefinition, e: Event, is_self: bool) {
 	s := &g.state
-	if _, zc := t.mode.(types.TriggerMode_ChangesZone); !zc || !trigger_supported(t^) do return
-	if origin, has := t.origin.?; has && origin != e.from do return
-	if dest, has := t.destination.?; has && dest != e.to do return
+	#partial switch _ in t.mode {
+	case types.TriggerMode_ChangesZone:
+		if origin, has := t.origin.?; has && origin != e.from do return
+		if dest, has := t.destination.?; has && dest != e.to do return
+	case types.TriggerMode_LeavesBattlefield:
+		if e.from != .Battlefield do return
+		if dest, has := t.destination.?; has && dest != e.to do return
+	case types.TriggerMode_EntersOrAttacks:
+		if !is_self || e.to != .Battlefield do return
+	case:
+		return
+	}
+	if !trigger_supported(t^) do return
 	subject, _ := t.valid_card.?
 	controller, matched := zone_change_subject(g, source, t, subject, e, is_self)
 	if !matched do return
