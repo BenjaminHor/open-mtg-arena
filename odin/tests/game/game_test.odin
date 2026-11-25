@@ -3776,3 +3776,28 @@ func_division :: proc(creature: types.ObjectId, to_creature, to_player: u32) -> 
 	append(&out, types.Tuple2(types.TargetRef, u32){types.TargetRef_Player{1}, to_player})
 	return out
 }
+
+@(test)
+prowess_on_noncreature_spells :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.108a: Prowess, "Whenever you cast a noncreature spell, this creature gets +1/+1 until end of turn."
+	testing.expect(t, game.card_supported(&card(t, "Monastery Swiftspear").face))
+	g := new_game()
+	s := &g.state
+	spear := add(t, g, "Monastery Swiftspear", 0, .Battlefield) // 1/2
+	for _ in 0 ..< 3 do add(t, g, "Mountain", 0, .Battlefield)
+	add(t, g, "Forest", 0, .Battlefield)
+	add(t, g, "Forest", 0, .Battlefield)
+	shock := add(t, g, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	testing.expect(t, game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}}))
+	testing.expect(t, types.pvec_len(s.stack) == 2, "prowess triggered above Shock")
+	settle_stack(g)
+	testing.expect(t, spear.power.? == 2 && spear.toughness.? == 3, "2/3 until end of turn")
+	bears := add(t, g, "Grizzly Bears", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = bears.id}))
+	testing.expect(t, types.pvec_len(s.stack) == 1, "a creature spell: no trigger")
+	settle_stack(g)
+	game.cleanup(g)
+	testing.expect(t, spear.power.? == 1 && spear.toughness.? == 2, "back to 1/2")
+}

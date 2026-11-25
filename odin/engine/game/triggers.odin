@@ -464,6 +464,7 @@ collect_triggers :: proc(g: ^Game) {
 					add_trigger(g, w.id, w.controller, t)
 				}
 			}
+			prowess_triggers(g, spell, e.controller) // CR 702.108a
 		case .Damage:
 			source := object(s, e.object)
 			watchers := make([dynamic]^types.GameObject, context.temp_allocator)

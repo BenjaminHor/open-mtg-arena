@@ -2988,6 +2988,8 @@ Progress:
   damage or counters divided among targets (CR 601.2d: WaitingFor_DistributeAmong after the targets, each at least
   one; each legal target gets its share as it resolves; the AI gives one each and the rest to its first target).
   6,300 -> 6,327.
+- Prowess (CR 702.108): the card data lists only the keyword; keywords.odin supplies the trigger, once per
+  instance (702.108b). 6,327 -> 6,371.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.
