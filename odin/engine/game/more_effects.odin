@@ -209,11 +209,13 @@ do_more_effect :: proc(g: ^Game, e: types.Effect, controller: types.PlayerId, so
 		if pid, ok := target_player(target); ok do who = pid
 		n, _ := fixed_quantity(x.count)
 		pl := player(s, who)
+		together := begin_together() // the cards are milled at the same time ("one or more cards", CR 603.2c)
 		for _ in 0 ..< n {
 			count := types.pvec_len(pl.library)
 			if count == 0 do break
 			move_object(g, types.pvec_get(pl.library, count - 1), .Graveyard)
 		}
+		end_together(together)
 	case types.Effect_PumpAll:
 		// CR 608.2h: worked out once, then the same for each creature.
 		p, t := pump_value(g, x.power, controller, source, nil), pump_value(g, x.toughness, controller, source, nil)

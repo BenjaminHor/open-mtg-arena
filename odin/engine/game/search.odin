@@ -97,6 +97,8 @@ answer_search :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_SearchCho
 // Moves the found cards (CR 608.2c: "put it onto the battlefield tapped", "put that card into your hand").
 move_found_cards :: proc(g: ^Game, x: types.Effect_ChangeZone, controller: types.PlayerId) {
 	s := &g.state
+	together := begin_together() // the found cards are put there at the same time (CR 603.2c: one event)
+	defer end_together(together)
 	for id in g.resolution.found {
 		o := object(s, id)
 		if o == nil || o.zone != .Library do continue

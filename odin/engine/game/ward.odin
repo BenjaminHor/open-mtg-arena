@@ -17,12 +17,20 @@ ward_supported :: proc(k: types.Keyword_Ward) -> bool {
 
 // A spell or ability on the stack targets these: each permanent it targets "becomes the target" (CR 702.21a,
 // 115.1). `entry` is its stack object.
+// A permanent targeted more than once by the same spell or ability becomes its target once: one event (CR 603.2c).
 note_targeted :: proc(g: ^Game, entry: types.ObjectId, controller: types.PlayerId, targets: []types.TargetRef) {
-	for t in targets {
+	by_spell := false
+	if e, on_stack := stack_entry_of(&g.state, entry); on_stack {
+		_, by_spell = e.kind.(types.StackEntryKind_Spell)
+	}
+	for t, i in targets {
 		id, is_object := target_object(t)
 		if !is_object do continue
+		again := false
+		for earlier in targets[:i] do if other, ok := target_object(earlier); ok && other == id do again = true
+		if again do continue
 		if o := object(&g.state, id); o != nil && o.zone == .Battlefield {
-			append(&g.events, Event{kind = .Became_Target, object = id, controller = controller, stack_entry = entry})
+			append(&g.events, Event{kind = .Became_Target, object = id, controller = controller, stack_entry = entry, by_spell = by_spell})
 		}
 	}
 }

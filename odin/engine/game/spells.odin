@@ -57,6 +57,8 @@ MISPARSED_CARDS :: [?]string{
 	"Tectonic Split", // "half the lands you control" lost
 	"Soul Immolation", // "blight X" read as blight 1
 	"Vitu-Ghazi Inspector", // the intervening "if evidence was collected" (CR 603.4) read as the effect's: it targets anyway
+	"Lo and Li, Royal Advisors", // "or mills one or more cards" lost from its discard trigger
+	"Shipwreck Sifters", // "or a card with disturb" lost from its discard trigger
 }
 
 misparsed :: proc(name: string) -> bool {
@@ -1511,7 +1513,9 @@ card_gaps :: proc(face: ^types.CardFace, back_face := false) -> [dynamic]string 
 		     types.TriggerMode_SpellCast, types.TriggerMode_DamageDone, types.TriggerMode_DamageDoneOnceByController,
 		     types.TriggerMode_EntersOrAttacks, types.TriggerMode_LeavesBattlefield, types.TriggerMode_Taps,
 		     types.TriggerMode_LifeGained, types.TriggerMode_Drawn, types.TriggerMode_DamageReceived,
-		     types.TriggerMode_Sacrificed, types.TriggerMode_CounterAdded:
+		     types.TriggerMode_Sacrificed, types.TriggerMode_CounterAdded, types.TriggerMode_Discarded, types.TriggerMode_Cycled,
+		     types.TriggerMode_CycledOrDiscarded, types.TriggerMode_DiscardedAll, types.TriggerMode_ChangesZoneAll,
+		     types.TriggerMode_BecomesTarget:
 			event_amount_defined = trigger_has_amount(t)
 			event_object_defined, event_player_defined = trigger_has_object(t), trigger_has_player(t)
 			if t.execute != nil && !ability_supported(t.execute^) do ability_gaps(&out, t.execute^, "trigger")

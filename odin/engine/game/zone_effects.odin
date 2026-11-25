@@ -115,7 +115,9 @@ do_bounce :: proc(g: ^Game, x: types.Effect_Bounce, controller: types.PlayerId, 
 answer_bounce :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_EffectZoneChoice, chosen: []types.ObjectId) -> bool {
 	if !g.resolution.active || len(chosen) != w.count || has_duplicates(chosen) do return false
 	for id in chosen do if !slice.contains(w.cards[:], id) do return false
+	together := begin_together() // at the same time (CR 603.2c)
 	for id in chosen do move_object(g, id, .Hand)
+	end_together(together)
 	g.state.waiting_for = nil
 	if continue_resolution(g) do after_resolution(g)
 	return true
@@ -200,6 +202,7 @@ answer_hand_choice :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_Effe
 	if !g.resolution.active || len(chosen) < w.min_count || len(chosen) > w.count || has_duplicates(chosen) do return false
 	for id in chosen do if !slice.contains(w.cards[:], id) do return false
 	to := w.destination.? or_else .Battlefield
+	together := begin_together() // at the same time (CR 603.2c)
 	for id in chosen {
 		move_object(g, id, to)
 		if to == .Battlefield {
@@ -209,6 +212,7 @@ answer_hand_choice :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_Effe
 			if w.enters_attacking do enter_attacking(&g.state, o)
 		}
 	}
+	end_together(together)
 	g.state.waiting_for = nil
 	if continue_resolution(g) do after_resolution(g)
 	return true

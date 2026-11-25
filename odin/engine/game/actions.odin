@@ -338,7 +338,9 @@ apply_action :: proc(g: ^Game, p: types.PlayerId, action: types.GameAction) -> b
 		a, ok := action.(types.GameAction_SelectCards)
 		if !ok || len(a.cards) != w.count || has_duplicates(a.cards[:]) do return false
 		for id in a.cards do if !slice.contains(w.cards[:], id) do return false
-		for id in a.cards do discard_card(g, id) // CR 514.1
+		together := begin_together() // CR 514.1: discarded at the same time
+		for id in a.cards do discard_card(g, id)
+		end_together(together)
 		cleanup(g)
 		return true
 	}

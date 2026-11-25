@@ -6474,3 +6474,372 @@ targets_chosen_only_when_kicked :: proc(t: ^testing.T) {
 	}
 	testing.expect(t, game.card_supported(&card(t, "Burst Lightning").face))
 }
+
+// Passes priority until the stack is empty, answering every "you may" with `accept`.
+@(private = "file")
+resolve_stack :: proc(g: ^game.Game, accept := true) {
+	s := &g.state
+	for _ in 0 ..< 20 {
+		if _, may := s.waiting_for.(types.WaitingFor_OptionalEffectChoice); may {
+			game.apply(g, s.priority_player, types.GameAction_DecideOptionalEffect{accept = accept})
+			continue
+		}
+		if types.pvec_len(s.stack) == 0 do return
+		game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	}
+}
+
+// The index of a card's ability that works from the hand (cycling).
+@(private = "file")
+hand_ability :: proc(o: ^types.GameObject) -> int {
+	for &a, i in o.abilities^ do if a.activation_zone != nil do return i
+	return -1
+}
+
+@(private = "file")
+tokens_of :: proc(g: ^game.Game, p: types.PlayerId) -> int {
+	n := 0
+	for id in game.ids_of(g.state.battlefield) do if o := game.object(&g.state, id); o.is_token && o.controller == p do n += 1
+	return n
+}
+
+@(test)
+whenever_a_player_discards :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 701.9a, 603.2c: each card discarded is an event; "whenever an opponent discards a card" triggers for each,
+	// "whenever you discard one or more cards" once for the cards discarded together, with "that many" their number.
+	// Raiders' Wake: "Whenever an opponent discards a card, that player loses 2 life." Marauding Mako: "Whenever
+	// you discard one or more cards, put that many +1/+1 counters on this creature."
+	testing.expect(t, game.card_supported(&card(t, "Raiders' Wake").face))
+	testing.expect(t, game.card_supported(&card(t, "Marauding Mako").face))
+	testing.expect(t, !game.card_supported(&card(t, "Lo and Li, Royal Advisors").face), "\"or mills\" is lost from its data")
+	g := new_game()
+	s := &g.state
+	add(t, g, "Raiders' Wake", 0, .Battlefield)
+	mako := add(t, g, "Marauding Mako", 1, .Battlefield)
+	own_mako := add(t, g, "Marauding Mako", 0, .Battlefield)
+	for _ in 0 ..< 3 do add(t, g, "Swamp", 0, .Battlefield)
+	rot := add(t, g, "Mind Rot", 0, .Hand) // target player discards two cards
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = rot.id}))
+	game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}})
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	w, asked := s.waiting_for.(types.WaitingFor_DiscardChoice)
+	testing.expect(t, asked && w.player == 1)
+	if !asked do return
+	two: [dynamic]types.ObjectId
+	append(&two, w.cards[0], w.cards[1])
+	testing.expect(t, game.apply(g, 1, types.GameAction_SelectCards{cards = two}))
+	testing.expectf(t, types.pvec_len(s.stack) == 3, "two Raiders' Wake triggers and one Mako trigger, got %d", types.pvec_len(s.stack))
+	resolve_stack(g)
+	testing.expectf(t, game.player(s, 1).life == 16, "2 life for each card, got %d", game.player(s, 1).life)
+	testing.expect(t, game.counter_count(mako, types.CounterType_Plus1Plus1{}) == 2, "that many: two counters, once")
+	// "You": player 0's Mako doesn't see player 1's discards, and the Wake doesn't see its controller's own.
+	testing.expect(t, game.counter_count(own_mako, types.CounterType_Plus1Plus1{}) == 0, "not its controller's discard")
+	testing.expect(t, game.player(s, 0).life == 20)
+}
+
+@(test)
+discards_in_the_cleanup_step_trigger_there :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 514.3a: abilities that trigger in the cleanup step (on the discard to hand size, CR 514.1) go on the stack
+	// and players get priority before the turn ends. Raiders' Wake sees player 1 discard two cards.
+	g := new_game()
+	s := &g.state
+	add(t, g, "Raiders' Wake", 0, .Battlefield)
+	s.active_player, s.priority_player = 1, 1
+	for types.pvec_len(game.player(s, 1).hand) < 9 do add(t, g, "Forest", 1, .Hand)
+	turn := s.turn_number
+	game.begin_step(g, .Cleanup)
+	w, asked := s.waiting_for.(types.WaitingFor_DiscardToHandSize)
+	testing.expect(t, asked && w.count == 2, "discard down to seven")
+	if !asked do return
+	two: [dynamic]types.ObjectId
+	append(&two, w.cards[0], w.cards[1])
+	testing.expect(t, game.apply(g, 1, types.GameAction_SelectCards{cards = two}))
+	testing.expect(t, s.turn_number == turn && s.phase == .Cleanup && types.pvec_len(s.stack) == 2, "the triggers wait in the cleanup step")
+	resolve_stack(g)
+	testing.expect(t, game.player(s, 1).life == 16, "2 life for each card")
+	// Everyone passes with an empty stack: another cleanup step, then the next turn.
+	game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	game.apply(g, s.priority_player, types.GameAction_PassPriority{})
+	testing.expect(t, s.turn_number == turn + 1 && s.active_player == 0, "the next turn")
+}
+
+@(test)
+when_you_cycle :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.29c: "when you cycle this card" triggers from the graveyard it went to, before the cycling draw
+	// resolves. Renewed Faith: "When you cycle this card, you may gain 2 life." Drannith Healer: "Whenever you cycle
+	// another card, you gain 1 life."
+	testing.expect(t, game.card_supported(&card(t, "Renewed Faith").face))
+	testing.expect(t, game.card_supported(&card(t, "Drannith Healer").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 2 do add(t, g, "Plains", 0, .Battlefield)
+	add(t, g, "Drannith Healer", 0, .Battlefield)
+	faith := add(t, g, "Renewed Faith", 0, .Hand)
+	hand := types.pvec_len(game.player(s, 0).hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = faith.id, ability_index = hand_ability(faith)}))
+	testing.expectf(t, types.pvec_len(s.stack) == 3, "the draw, then two triggers above it: %d", types.pvec_len(s.stack))
+	if types.pvec_len(s.stack) == 3 {
+		_, top_is_trigger := types.pvec_get(s.stack, 2).kind.(types.StackEntryKind_TriggeredAbility)
+		testing.expect(t, top_is_trigger, "the triggers resolve first")
+	}
+	resolve_stack(g)
+	testing.expectf(t, game.player(s, 0).life == 23, "2 + 1 life, got %d", game.player(s, 0).life)
+	testing.expect(t, types.pvec_len(game.player(s, 0).hand) == hand, "one card out, one drawn")
+
+	// A card discarded otherwise isn't cycled: neither ability triggers (Mind Rot makes player 1 discard).
+	g2 := new_game()
+	s2 := &g2.state
+	add(t, g2, "Drannith Healer", 1, .Battlefield)
+	for _ in 0 ..< 3 do add(t, g2, "Swamp", 0, .Battlefield)
+	for id in game.ids_of(game.player(s2, 1).hand) do game.move_object(g2, id, .Library)
+	add(t, g2, "Renewed Faith", 1, .Hand)
+	add(t, g2, "Forest", 1, .Hand)
+	rot := add(t, g2, "Mind Rot", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = rot.id}))
+	game.apply(g2, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}})
+	resolve_stack(g2)
+	testing.expect(t, types.pvec_len(game.player(s2, 1).graveyard) == 2 && types.pvec_len(s2.stack) == 0, "discarded, no trigger")
+	testing.expect(t, game.player(s2, 1).life == 20)
+}
+
+@(test)
+first_cycle_each_turn :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// Valiant Rescuer: "Whenever you cycle another card for the first time each turn, create a 1/1 white Human
+	// Soldier creature token." The first cycle of the turn (CR 603.2), counted even before the Rescuer arrived.
+	testing.expect(t, game.card_supported(&card(t, "Valiant Rescuer").face))
+	g := new_game()
+	for _ in 0 ..< 6 do add(t, g, "Plains", 0, .Battlefield)
+	add(t, g, "Valiant Rescuer", 0, .Battlefield)
+	for _ in 0 ..< 2 {
+		faith := add(t, g, "Renewed Faith", 0, .Hand)
+		testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = faith.id, ability_index = hand_ability(faith)}))
+		resolve_stack(g, accept = false)
+	}
+	testing.expect(t, tokens_of(g, 0) == 1, "one token for two cycles")
+
+	g2 := new_game()
+	for _ in 0 ..< 6 do add(t, g2, "Plains", 0, .Battlefield)
+	first := add(t, g2, "Renewed Faith", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_ActivateAbility{source_id = first.id, ability_index = hand_ability(first)}))
+	resolve_stack(g2, accept = false)
+	add(t, g2, "Valiant Rescuer", 0, .Battlefield)
+	second := add(t, g2, "Renewed Faith", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_ActivateAbility{source_id = second.id, ability_index = hand_ability(second)}))
+	resolve_stack(g2, accept = false)
+	testing.expect(t, tokens_of(g2, 0) == 0, "not the first cycle of the turn")
+}
+
+@(test)
+becomes_the_target :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 115.1, 601.2c, 603.2: a permanent becomes the target of a spell or ability as it's put on the stack.
+	// Thorn Lieutenant: "Whenever this creature becomes the target of a spell or ability an opponent controls, create
+	// a 1/1 green Elf Warrior creature token." Goldspan Dragon: "... becomes the target of a spell, create a Treasure."
+	testing.expect(t, game.card_supported(&card(t, "Thorn Lieutenant").face))
+	testing.expect(t, !game.card_supported(&card(t, "Stormchaser Drake").face), "\"a spell you control\": the controller is lost")
+	testing.expect(t, !game.card_supported(&card(t, "Heartfire Hero").face), "valiant's \"first time each turn\" isn't once per turn")
+	g := new_game()
+	s := &g.state
+	add(t, g, "Mountain", 0, .Battlefield)
+	add(t, g, "Mountain", 1, .Battlefield)
+	lieutenant := add(t, g, "Thorn Lieutenant", 1, .Battlefield) // 2/3
+	shock := add(t, g, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{lieutenant.id}})
+	testing.expect(t, types.pvec_len(s.stack) == 2, "triggered above Shock")
+	resolve_stack(g)
+	testing.expect(t, tokens_of(g, 1) == 1, "an Elf Warrior")
+	// Its controller's own spell: no trigger.
+	s.active_player, s.priority_player = 1, 1
+	s.waiting_for = types.WaitingFor_Priority{player = 1}
+	own := add(t, g, "Shock", 1, .Hand)
+	testing.expect(t, game.apply(g, 1, types.GameAction_CastSpell{object_id = own.id}))
+	game.apply(g, 1, types.GameAction_ChooseTarget{target = types.TargetRef_Object{lieutenant.id}})
+	testing.expect(t, types.pvec_len(s.stack) == 1, "no trigger")
+
+	// A spell, not an ability.
+	g2 := new_game()
+	s2 := &g2.state
+	dragon := add(t, g2, "Goldspan Dragon", 1, .Battlefield)
+	sorcerer := add(t, g2, "Prodigal Sorcerer", 0, .Battlefield)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_ActivateAbility{source_id = sorcerer.id, ability_index = 0}))
+	if _, choosing := s2.waiting_for.(types.WaitingFor_TargetSelection); choosing {
+		game.apply(g2, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{dragon.id}})
+	}
+	testing.expect(t, types.pvec_len(s2.stack) == 1, "an ability: no Treasure")
+	resolve_stack(g2)
+	add(t, g2, "Mountain", 0, .Battlefield)
+	shock2 := add(t, g2, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_CastSpell{object_id = shock2.id}))
+	game.apply(g2, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{dragon.id}})
+	resolve_stack(g2)
+	testing.expect(t, tokens_of(g2, 1) == 1, "a spell: a Treasure")
+}
+
+@(test)
+its_power_after_it_was_sacrificed :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 608.2h: Myriad Construct, "When this creature becomes the target of a spell, sacrifice it and create a
+	// number of 1/1 colorless Construct artifact creature tokens equal to its power": its power as it last existed.
+	testing.expect(t, game.card_supported(&card(t, "Myriad Construct").face))
+	g := new_game()
+	add(t, g, "Mountain", 0, .Battlefield)
+	construct := add(t, g, "Myriad Construct", 1, .Battlefield) // 4/4
+	game.add_counters(construct, types.CounterType_Plus1Plus1{}, 2)
+	game.apply_continuous_effects(g)
+	shock := add(t, g, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{construct.id}})
+	resolve_stack(g)
+	testing.expect(t, construct.zone == .Graveyard)
+	testing.expectf(t, tokens_of(g, 1) == 6, "six Constructs, got %d", tokens_of(g, 1))
+}
+
+@(test)
+one_or_more_creatures_die :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 603.2c: "whenever one or more creatures die" triggers once for creatures that die at the same time (Day of
+	// Judgment destroys all creatures at once, CR 701.8), and again for a later death. Chainsaw: "Whenever one or
+	// more creatures die, put a rev counter on this Equipment."
+	testing.expect(t, game.card_supported(&card(t, "Chainsaw").face))
+	g := new_game()
+	saw := add(t, g, "Chainsaw", 0, .Battlefield)
+	for _ in 0 ..< 3 do add(t, g, "Grizzly Bears", 1, .Battlefield)
+	for _ in 0 ..< 4 do add(t, g, "Plains", 0, .Battlefield)
+	wrath := add(t, g, "Day of Judgment", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = wrath.id}))
+	resolve_stack(g)
+	rev := types.CounterType_Generic{"rev"}
+	testing.expectf(t, game.counter_count(saw, rev) == 1, "three creatures died together: one counter, got %d", game.counter_count(saw, rev))
+	bears := add(t, g, "Grizzly Bears", 1, .Battlefield)
+	add(t, g, "Mountain", 0, .Battlefield)
+	shock := add(t, g, "Shock", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+	game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Object{bears.id}})
+	resolve_stack(g)
+	testing.expect(t, bears.zone == .Graveyard && game.counter_count(saw, rev) == 2, "a later death: another counter")
+}
+
+@(test)
+one_or_more_cards_leave_your_graveyard :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 603.2c, 603.10a: Desecrated Tomb, "Whenever one or more creature cards leave your graveyard, create a 1/1
+	// black Bat creature token with flying": once for cards that leave together; not for an opponent's graveyard.
+	testing.expect(t, game.card_supported(&card(t, "Desecrated Tomb").face))
+	g := new_game()
+	add(t, g, "Desecrated Tomb", 0, .Battlefield)
+	mine := [2]^types.GameObject{add(t, g, "Grizzly Bears", 0, .Graveyard), add(t, g, "Grizzly Bears", 0, .Graveyard)}
+	theirs := add(t, g, "Grizzly Bears", 1, .Graveyard)
+	together := game.begin_together()
+	for o in mine do game.move_object(g, o.id, .Exile)
+	game.end_together(together)
+	game.move_object(g, theirs.id, .Exile)
+	game.give_priority(g, 0)
+	resolve_stack(g)
+	testing.expectf(t, tokens_of(g, 0) == 1, "one Bat, got %d", tokens_of(g, 0))
+}
+
+@(test)
+abilities_that_work_from_the_graveyard :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 113.6b: an ability that states the zone it functions in works only there. Bloodghast: "Whenever a land you
+	// control enters, you may return this card from your graveyard to the battlefield."
+	testing.expect(t, game.card_supported(&card(t, "Bloodghast").face))
+	testing.expect(t, !game.card_supported(&card(t, "Furious Forebear").face), "\"dies while this card is in your graveyard\" looks back")
+	g := new_game()
+	s := &g.state
+	ghast := add(t, g, "Bloodghast", 0, .Graveyard)
+	land := add(t, g, "Swamp", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = land.id}))
+	testing.expect(t, types.pvec_len(s.stack) == 1, "Bloodghast triggered from the graveyard")
+	resolve_stack(g)
+	testing.expect(t, ghast.zone == .Battlefield, "returned")
+	// On the battlefield the ability doesn't work.
+	s.lands_played_this_turn = 0
+	game.player(s, 0).lands_played_this_turn = 0
+	other := add(t, g, "Swamp", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_PlayLand{object_id = other.id}))
+	testing.expect(t, types.pvec_len(s.stack) == 0, "no trigger from the battlefield")
+	// An opponent's land isn't "a land you control".
+	g2 := new_game()
+	add(t, g2, "Bloodghast", 1, .Graveyard)
+	land2 := add(t, g2, "Swamp", 0, .Hand)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_PlayLand{object_id = land2.id}))
+	testing.expect(t, types.pvec_len(g2.state.stack) == 0, "no trigger for the opponent's land")
+	// CR 400.7: a card that left the graveyard before the ability resolves is a new object; nothing returns.
+	g3 := new_game()
+	ghast3 := add(t, g3, "Bloodghast", 0, .Graveyard)
+	land3 := add(t, g3, "Swamp", 0, .Hand)
+	testing.expect(t, game.apply(g3, 0, types.GameAction_PlayLand{object_id = land3.id}))
+	game.move_object(g3, ghast3.id, .Exile)
+	game.move_object(g3, ghast3.id, .Graveyard)
+	resolve_stack(g3)
+	testing.expect(t, ghast3.zone == .Graveyard, "a new object: it stays")
+}
+
+@(test)
+arclight_phoenix_returns_at_the_beginning_of_combat :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 113.6b, 603.4: Arclight Phoenix, "At the beginning of combat on your turn, if you've cast three or more
+	// instant and sorcery spells this turn, return this card from your graveyard to the battlefield."
+	testing.expect(t, game.card_supported(&card(t, "Arclight Phoenix").face))
+	for spells in ([]int{2, 3}) {
+		g := new_game()
+		s := &g.state
+		phoenix := add(t, g, "Arclight Phoenix", 0, .Graveyard)
+		for _ in 0 ..< spells {
+			add(t, g, "Mountain", 0, .Battlefield)
+			shock := add(t, g, "Shock", 0, .Hand)
+			testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = shock.id}))
+			game.apply(g, 0, types.GameAction_ChooseTarget{target = types.TargetRef_Player{1}})
+			resolve_stack(g)
+		}
+		game.begin_step(g, .BeginCombat)
+		resolve_stack(g)
+		if spells == 3 do testing.expect(t, phoenix.zone == .Battlefield, "three spells: it returns")
+		else do testing.expect(t, phoenix.zone == .Graveyard && types.pvec_len(s.stack) == 0, "two: it stays")
+	}
+}
+
+@(test)
+cycle_or_discard_triggers_once :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 702.29d: "whenever you cycle or discard a card" triggers only once when a card is cycled. Flameblade Adept:
+	// "Whenever you cycle or discard a card, this creature gets +1/+0 until end of turn."
+	testing.expect(t, game.card_supported(&card(t, "Flameblade Adept").face))
+	g := new_game()
+	s := &g.state
+	for _ in 0 ..< 2 do add(t, g, "Plains", 0, .Battlefield)
+	adept := add(t, g, "Flameblade Adept", 0, .Battlefield) // 1/2
+	faith := add(t, g, "Renewed Faith", 0, .Hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_ActivateAbility{source_id = faith.id, ability_index = hand_ability(faith)}))
+	testing.expectf(t, types.pvec_len(s.stack) == 3, "the draw, Renewed Faith's trigger and one Adept trigger: %d", types.pvec_len(s.stack))
+	resolve_stack(g, accept = false)
+	testing.expectf(t, game.power_of(adept) == 2, "+1/+0 once, got %d", game.power_of(adept))
+}
+
+@(test)
+one_or_more_die_seen_by_one_dying_with_them :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 603.10a, 603.2c: Morbid Opportunist, "Whenever one or more other creatures die, draw a card. This ability
+	// triggers only once each turn", destroyed with two other creatures, looks back and triggers once.
+	testing.expect(t, game.card_supported(&card(t, "Morbid Opportunist").face))
+	g := new_game()
+	s := &g.state
+	add(t, g, "Morbid Opportunist", 0, .Battlefield)
+	for _ in 0 ..< 2 do add(t, g, "Grizzly Bears", 1, .Battlefield)
+	for _ in 0 ..< 4 do add(t, g, "Plains", 0, .Battlefield)
+	wrath := add(t, g, "Day of Judgment", 0, .Hand)
+	hand := types.pvec_len(game.player(s, 0).hand)
+	testing.expect(t, game.apply(g, 0, types.GameAction_CastSpell{object_id = wrath.id}))
+	game.apply(g, 0, types.GameAction_PassPriority{})
+	game.apply(g, 1, types.GameAction_PassPriority{})
+	testing.expectf(t, types.pvec_len(s.stack) == 1, "one trigger, got %d", types.pvec_len(s.stack))
+	resolve_stack(g)
+	testing.expect(t, types.pvec_len(game.player(s, 0).hand) == hand, "the wrath out of the hand, one card drawn")
+}

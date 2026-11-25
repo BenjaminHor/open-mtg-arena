@@ -521,7 +521,11 @@ scope_object :: proc(s: ^types.GameState, scope: types.ObjectScope, source, targ
 	#partial switch _ in scope {
 	case types.ObjectScope_Source:
 		if source_was_now != nil && source_was_now.id == source do return source_was_now
-		return object(s, source)
+		// "Sacrifice it and create tokens equal to its power": a source that left the battlefield during this
+		// resolution, as it last existed there (CR 608.2h).
+		o := object(s, source)
+		if was := last_known(source); was != nil && o != nil && o.zone != .Battlefield do return was
+		return o
 	case types.ObjectScope_Target:
 		if target == 0 do return nil
 		// "Its power" of a target that has left the battlefield: as it last existed there (CR 608.2h).

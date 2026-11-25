@@ -556,7 +556,10 @@ finish_activation :: proc(g: ^Game, p: types.PlayerId, source: types.ObjectId, i
 		case types.AbilityCost_Sacrifice:
 			if is_self(x._0.target) do sacrifice_permanent(g, source)
 		case types.AbilityCost_Discard:
-			if x.self_scope == .SourceCard do discard_card(g, source) // "discard this card" (CR 702.29a)
+			// "Discard this card" (CR 702.29a); for a cycling or typecycling ability, that card is cycled (CR 702.29c,
+			// 702.29f), which "when you cycle" abilities trigger on.
+			tag, tagged := a.ability_tag.?
+			if x.self_scope == .SourceCard do discard_card(g, source, cycling = tagged && tag == .Cycling)
 		case types.AbilityCost_Exile:
 			if f, has := x.filter.?; has && is_self(f) do move_object(g, source, .Exile) // "exile this card from your graveyard" (CR 701.13a)
 		}

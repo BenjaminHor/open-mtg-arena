@@ -193,16 +193,30 @@ pay_with_object :: proc(g: ^Game, id: types.ObjectId) {
 }
 
 // CR 701.9a: a card is discarded, from its owner's hand to their graveyard; counted for "if you discarded a card
-// this turn".
-discard_card :: proc(g: ^Game, id: types.ObjectId) {
+// this turn". That is an event of its own, which "whenever you discard a card" abilities trigger on.
+// `cycling`: discarded to pay the cost of a cycling ability (CR 702.29c, 702.29f), which "when you cycle" abilities
+// trigger on; such a card is discarded too (CR 702.29d).
+discard_card :: proc(g: ^Game, id: types.ObjectId, cycling := false) {
 	s := &g.state
 	o := object(s, id)
 	if o == nil || o.zone != .Hand do return
 	owner := o.owner
 	report(types.GameEvent_Discarded{player_id = owner, object_id = id})
 	report_told_move(id)
+	before := s.cards_discarded_this_turn_by_player[owner] or_else 0
+	cycles_before := 0
+	if cycling {
+		// The game's record of cycled cards, for "the first time each turn" (and "cycled ... this game").
+		cycles := s.cycles_completed_this_game_by_player[owner]
+		for i in 0 ..< types.pvec_len(cycles) do if types.pvec_get(cycles, i).turn == s.turn_number do cycles_before += 1
+		types.pvec_push(&cycles, types.CyclingRecord{name = o.name, turn = s.turn_number}, proc(x: types.CyclingRecord) -> types.CyclingRecord {return x})
+		s.cycles_completed_this_game_by_player[owner] = cycles
+	}
 	move_object(g, id, .Graveyard)
-	s.cards_discarded_this_turn_by_player[owner] = (s.cards_discarded_this_turn_by_player[owner] or_else 0) + 1
+	s.cards_discarded_this_turn_by_player[owner] = before + 1
+	moved := g.events[len(g.events) - 1]
+	if moved.kind != .Zone_Change || moved.object != id do return
+	append(&g.events, Event{kind = .Discarded, object = id, from = .Hand, to = moved.to, controller = owner, group = moved.group, before = int(before), cycled = cycling, cycles_before = cycles_before})
 }
 
 // The zone changes of the turn, each with the object as it was (CR 603.10, 608.2h): "if a creature died this turn".

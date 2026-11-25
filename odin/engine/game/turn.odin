@@ -115,12 +115,19 @@ begin_step :: proc(g: ^Game, step: types.Phase) {
 	give_priority(g, s.active_player)
 }
 
-// CR 514.2: damage wears off and "until end of turn" effects end; then the turn is over (CR 514.3: no player gets
-// priority unless something happened, which this engine's cleanup doesn't yet cause).
+// CR 514.2: damage wears off and "until end of turn" effects end; then the turn is over (CR 514.3), unless abilities
+// triggered during the step (a discard to hand size, CR 514.1): then they go on the stack and the active player gets
+// priority, and once the stack is empty and all pass, another cleanup step begins (CR 514.3a).
 cleanup :: proc(g: ^Game) {
 	s := &g.state
 	for id in ids_of(s.battlefield) do object(s, id).damage_marked = 0
 	end_until_end_of_turn_effects(g)
+	collect_triggers(g)
+	if len(g.pending_triggers) > 0 {
+		s.priority_passes = nil
+		give_priority(g, s.active_player)
+		return
+	}
 	s.turn_number += 1
 	begin_turn(g, opponent(s, s.active_player))
 }
@@ -182,7 +189,8 @@ pass_priority :: proc(g: ^Game, p: types.PlayerId) {
 	}
 	step, same_turn := next_step(s.phase)
 	if !same_turn {
-		cleanup(g)
+		// Players had priority in the cleanup step: another cleanup step begins (CR 514.3a).
+		begin_step(g, .Cleanup)
 		return
 	}
 	begin_step(g, step)

@@ -3246,6 +3246,15 @@ Progress:
   Resilience) were accepted though the engine asks for every target (CR 601.2c, 702.33g); now refused. Tests:
   behold/blight/evidence/tap/kicker/reveal tests, `targets_chosen_only_when_kicked`. Coverage 7,649. Known issue
   (agent): a game restored mid blight/evidence prompt can't resume (the in-progress cast isn't saved).
+- Triggers (agent, merged): discards ("whenever you/a player discards", "one or more", first time each turn; a
+  .Discarded event), cycling (CR 702.29c-f, "cycle or discard" once per card), becomes the target (spells or
+  abilities, by controller; CR 115.1), batched "one or more creatures die / cards leave your graveyard" (CR 603.2c,
+  603.10a; one instruction's moves grouped as simultaneous), abilities that work from the graveyard (CR 113.6b:
+  Bloodghast, Arclight Phoenix). Also: cleanup-step triggers give priority and a new cleanup step (CR 514.3a); a
+  source that left during resolution read as it last existed (CR 608.2h). A permanent a spell targets twice
+  "becomes the target" once (ward too): from judge-forum readings, not an official ruling (to confirm). "For the
+  first time each turn" is read as "only once each turn" by older trigger modes: possible bug (known issue).
+  12 tests. Coverage 7,770.
 - Owner asked (2026-11-25): "Are we getting close to supporting that entire pool of cards?" Answer: no, about
   halfway: 7,470 of the 14,013 target (15,772 pool). Recent pace ~600 cards a session, family by family.
 

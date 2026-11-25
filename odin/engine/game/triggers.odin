@@ -22,6 +22,7 @@ Event_Kind :: enum {
 	Counter_Added, // amount counters of kind counter put on object, which had before of them (CR 122.6)
 	Became_Target, // object became a target of stack_entry, a spell or ability controller controls (CR 115.1)
 	Life_Lost, // controller lost amount life (CR 119.3)
+	Discarded, // controller discarded object, a card moved from their hand to their graveyard (CR 701.9a)
 }
 
 // Something that happened that an ability may trigger on (CR 603.2).
@@ -41,6 +42,11 @@ Event :: struct {
 	incarnation: u64, // Counter_Added: the object as it was (CR 400.7)
 	stack_entry: types.ObjectId, // Became_Target: the spell or ability that targets it
 	excess:      int, // Damage: how much of it was excess damage (CR 120.4a, 120.10)
+	by_spell:    bool, // Became_Target: the targeting stack object is a spell, not an ability
+	// Discarded: the card was discarded to pay a cycling cost, "cycled" (CR 702.29c, 702.29f); then how many cards
+	// its owner had cycled earlier this turn. `before` is how many cards they had discarded earlier this turn.
+	cycled:        bool,
+	cycles_before: int,
 }
 
 // What a triggered ability's trigger event was about, for its instructions: "that much damage", "that creature",
@@ -101,7 +107,14 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		if !ability_supported(t.execute.sub_ability^) do return false
 	}
 	if c, has := t.condition.?; has && !trigger_condition_supported(c) do return false
-	if t.batched do return false
+	// "One or more": a batch of simultaneous events, read by the modes that collect them (CR 603.2c).
+	if t.batched {
+		#partial switch _ in t.mode {
+		case types.TriggerMode_ChangesZoneAll, types.TriggerMode_DiscardedAll:
+		case:
+			return false
+		}
+	}
 	if u, has := t.unless_pay.?; has {
 		// "When this land enters, sacrifice it unless you pay {1}": carried by the ability (unless_ability).
 		if t.execute == nil || t.execute.unless_pay != nil do return false
@@ -118,27 +131,34 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 	// damage to target opponent"): the event is matched on the card alone, the target chosen by the effect.
 	is_zone_change := false
 	#partial switch _ in t.mode {
-	case types.TriggerMode_ChangesZone, types.TriggerMode_LeavesBattlefield, types.TriggerMode_EntersOrAttacks, types.TriggerMode_Sacrificed:
+	case types.TriggerMode_ChangesZone, types.TriggerMode_LeavesBattlefield, types.TriggerMode_EntersOrAttacks, types.TriggerMode_Sacrificed,
+	     types.TriggerMode_ChangesZoneAll:
 		is_zone_change = true
 	}
-	// Other permanents' events are watched from the battlefield only: an ability that works from another zone
-	// ("when you sacrifice a Clue, return this card from your graveyard") isn't watched there yet. An object's
-	// own zone change is seen wherever it went (CR 603.6, 603.10a).
+	// Other objects' events are watched from the battlefield, or from the graveyard by an ability that works only
+	// there (CR 113.6b, 113.6k): "whenever a land you control enters, you may return this card from your graveyard",
+	// "at the beginning of combat on your turn, ... return this card from your graveyard". Abilities that work from
+	// other zones ("when you sacrifice a Clue, return this card from your graveyard") aren't watched yet. An
+	// object's own zone change is seen wherever it went (CR 603.6, 603.10a).
 	if len(t.trigger_zones) > 0 && !has_zone(t.trigger_zones[:], .Battlefield) {
 		f, has := t.valid_card.?
-		if !has || !is_self(f) do return false
+		if !(has && is_self(f)) && !graveyard_watcher_supported(t) do return false
 	}
 	// "Whenever you gain life", "whenever you draw a card": the player is valid_target.
 	is_player_event := false
 	#partial switch _ in t.mode {
-	case types.TriggerMode_LifeGained, types.TriggerMode_Drawn:
+	case types.TriggerMode_LifeGained, types.TriggerMode_Drawn, types.TriggerMode_Discarded, types.TriggerMode_DiscardedAll,
+	     types.TriggerMode_Cycled, types.TriggerMode_CycledOrDiscarded:
 		is_player_event = true
 	}
 	if !is_cast && !is_damage && !is_zone_change && !is_player_event && t.valid_target != nil do return false
-	if !is_damage && t.valid_source != nil do return false
+	// "Becomes the target of a spell or ability [an opponent controls]": the targeting spell or ability.
+	_, is_targeted := t.mode.(types.TriggerMode_BecomesTarget)
+	if !is_damage && !is_targeted && t.valid_source != nil do return false
 	_, counter_mode := t.mode.(types.TriggerMode_CounterAdded)
 	if len(t.origin_zones) > 0 || len(t.zone_change_clauses) > 0 do return false
 	if !counter_mode && (t.counter_filter != nil || t.saga_chapter != nil) do return false
+	if !first_time_readable(t) do return false
 	if c, has := t.constraint.?; has {
 		#partial switch x in c {
 		case types.TriggerConstraint_OnlyDuringYourTurn, types.TriggerConstraint_OnlyDuringOpponentsTurn:
@@ -231,6 +251,12 @@ trigger_supported :: proc(t: types.TriggerDefinition) -> bool {
 		if !has_src || !damage_source_supported(src) do return false
 		if v, has := t.valid_target.?; has && !damage_recipient_supported(v) do return false
 		return true
+	case types.TriggerMode_Discarded, types.TriggerMode_Cycled, types.TriggerMode_CycledOrDiscarded, types.TriggerMode_DiscardedAll:
+		return discard_trigger_supported(t)
+	case types.TriggerMode_ChangesZoneAll:
+		return batched_zone_change_supported(t)
+	case types.TriggerMode_BecomesTarget:
+		return becomes_target_supported(t)
 	case types.TriggerMode_SpellCast:
 		// "Whenever you cast a [kind of] spell", or "when you cast this spell".
 		if v, has := t.valid_target.?; has && !is_you(v) && !is_any_player(v) && !is_an_opponent(v) do return false
@@ -354,6 +380,83 @@ spell_matches :: proc(s: ^types.GameState, spell: ^types.GameObject, f: types.Ta
 	return false
 }
 
+// "Whenever one or more [cards / creatures] [leave your graveyard / die / are put into your graveyard from
+// anywhere]": a batch of zone changes made at the same time (CR 603.2c), matched like a single one.
+batched_zone_change_supported :: proc(t: types.TriggerDefinition) -> bool {
+	f, has := t.valid_card.?
+	if !has do return false
+	typed, ok := f.(types.TargetFilter_Typed)
+	if !ok || !filter_supported(f) do return false
+	if t.origin == nil && t.destination == nil do return false
+	// "One or more creatures enter": tokens made by one instruction aren't yet grouped as entering together.
+	if dest, has_dest := t.destination.?; has_dest && dest == .Battlefield do return false
+	for p in typed._0.properties {
+		// "Attacking legendary creatures die": a creature leaving the battlefield is removed from combat first (CR
+		// 506.4), so that isn't read from its last known information here.
+		#partial switch _ in p {
+		case types.FilterProp_Attacking, types.FilterProp_Blocking:
+			return false
+		}
+	}
+	// "Into your graveyard": the data also notes the player as valid_target; read only beside the card's owner.
+	if v, has_v := t.valid_target.?; has_v {
+		if !is_you(v) do return false
+		owned := false
+		for p in typed._0.properties do if o, is_owned := p.(types.FilterProp_Owned); is_owned {
+			_, you := o.controller.(types.ControllerRef_You)
+			owned = you
+		}
+		if !owned do return false
+	}
+	return true
+}
+
+// Whether an ability watches other objects' events from where its object is (CR 113.6, 113.6b): a permanent's from
+// the battlefield unless it states other zones; from a graveyard, only the shapes graveyard_watcher_supported reads.
+watches_from :: proc(t: types.TriggerDefinition, zone: types.Zone) -> bool {
+	#partial switch zone {
+	case .Battlefield:
+		return len(t.trigger_zones) == 0 || has_zone(t.trigger_zones[:], .Battlefield)
+	case .Graveyard:
+		return graveyard_watcher_supported(t)
+	}
+	return false
+}
+
+// An ability that works only from its card's graveyard and watches other objects (CR 113.6b): "whenever a [kind of
+// permanent] enters" or "at the beginning of [a step]". Other kinds of event aren't watched from there yet.
+graveyard_watcher_supported :: proc(t: types.TriggerDefinition) -> bool {
+	if len(t.trigger_zones) != 1 || t.trigger_zones[0] != .Graveyard do return false
+	#partial switch _ in t.mode {
+	case types.TriggerMode_ChangesZone:
+		// "Whenever a [kind of permanent] enters": checked after the event. "Whenever a creature you control dies while
+		// this card is in your graveyard" looks back in time (CR 603.10a), when a card dying with it wasn't there yet;
+		// that isn't read.
+		f, has := t.valid_card.?
+		if !has || t.origin != nil do return false
+		if dest, has_dest := t.destination.?; !has_dest || dest != .Battlefield do return false
+		_, typed := f.(types.TargetFilter_Typed)
+		return typed
+	case types.TriggerMode_Phase:
+		return true
+	}
+	return false
+}
+
+// The cards in the players' graveyards with an ability that works from there and watches other objects.
+graveyard_watchers :: proc(s: ^types.GameState) -> [dynamic]^types.GameObject {
+	out := make([dynamic]^types.GameObject, context.temp_allocator)
+	for &p in s.players do for id in ids_of(p.graveyard) {
+		o := object(s, id)
+		for &entry in trigger_definitions(o) do if has_zone(entry.definition.trigger_zones[:], .Graveyard) {
+			if f, has := entry.definition.valid_card.?; has && is_self(f) do continue
+			append(&out, o)
+			break
+		}
+	}
+	return out
+}
+
 // The objects a trigger watches: itself, or permanents of a kind (and controller).
 subject_filter_supported :: proc(f: types.TargetFilter) -> bool {
 	#partial switch x in f {
@@ -393,7 +496,7 @@ attack_subject_matches :: proc(s: ^types.GameState, f: types.TargetFilter, attac
 event_about :: proc(s: ^types.GameState, e: Event) -> Trigger_Event {
 	out: Trigger_Event
 	#partial switch e.kind {
-	case .Zone_Change, .Spell_Cast, .Damage, .Attack, .Tapped, .Counter_Added, .Sacrificed:
+	case .Zone_Change, .Spell_Cast, .Damage, .Attack, .Tapped, .Counter_Added, .Sacrificed, .Discarded:
 		if o := object(s, e.object); o != nil {
 			out.object, out.incarnation, out.object_controller = o.id, o.incarnation, o.controller
 			if e.kind == .Zone_Change || e.kind == .Sacrificed do out.object_controller = e.controller // as it last existed
@@ -407,7 +510,7 @@ event_about :: proc(s: ^types.GameState, e: Event) -> Trigger_Event {
 		return out
 	}
 	#partial switch e.kind {
-	case .Spell_Cast, .Life_Gained, .Card_Drawn, .Zone_Change, .Sacrificed, .Attack:
+	case .Spell_Cast, .Life_Gained, .Card_Drawn, .Zone_Change, .Sacrificed, .Attack, .Discarded:
 		out.player = e.controller
 	case .Step_Begin:
 		out.player = s.active_player
@@ -430,9 +533,12 @@ trigger_has_object :: proc(t: types.TriggerDefinition) -> bool {
 	#partial switch _ in t.mode {
 	case types.TriggerMode_ChangesZone, types.TriggerMode_LeavesBattlefield, types.TriggerMode_SpellCast,
 	     types.TriggerMode_DamageDone, types.TriggerMode_Taps, types.TriggerMode_Attacks, types.TriggerMode_Sacrificed,
-	     types.TriggerMode_CounterAdded, types.TriggerMode_EntersOrAttacks:
-		return true
+	     types.TriggerMode_CounterAdded, types.TriggerMode_EntersOrAttacks, types.TriggerMode_Discarded,
+	     types.TriggerMode_Cycled, types.TriggerMode_CycledOrDiscarded:
+		return true // "that card": the card discarded or cycled
 	}
+	// A batch ("one or more") names no single object; "becomes the target" names two (the target and what targets
+	// it), which the card data doesn't tell apart (EventTarget).
 	return false
 }
 
@@ -440,8 +546,10 @@ trigger_has_player :: proc(t: types.TriggerDefinition) -> bool {
 	#partial switch _ in t.mode {
 	case types.TriggerMode_SpellCast, types.TriggerMode_DamageDone, types.TriggerMode_DamageReceived,
 	     types.TriggerMode_LifeGained, types.TriggerMode_Drawn, types.TriggerMode_Phase, types.TriggerMode_ChangesZone,
-	     types.TriggerMode_LeavesBattlefield, types.TriggerMode_Sacrificed, types.TriggerMode_Attacks:
-		return true
+	     types.TriggerMode_LeavesBattlefield, types.TriggerMode_Sacrificed, types.TriggerMode_Attacks,
+	     types.TriggerMode_Discarded, types.TriggerMode_Cycled, types.TriggerMode_CycledOrDiscarded,
+	     types.TriggerMode_DiscardedAll, types.TriggerMode_BecomesTarget:
+		return true // the discarding player; the controller of the targeting spell or ability
 	}
 	return false
 }
@@ -450,6 +558,8 @@ trigger_has_amount :: proc(t: types.TriggerDefinition) -> bool {
 	#partial switch _ in t.mode {
 	case types.TriggerMode_DamageDone, types.TriggerMode_DamageReceived, types.TriggerMode_LifeGained:
 		return true
+	case types.TriggerMode_DiscardedAll:
+		return true // "that many": the number of cards discarded together
 	}
 	return false
 }
@@ -471,6 +581,7 @@ has_zone :: proc(zones: []types.Zone, z: types.Zone) -> bool {
 collect_triggers :: proc(g: ^Game) {
 	s := &g.state
 	fired := make([dynamic]^types.TriggerDefinition, context.temp_allocator) // batched triggers already triggered
+	batches := make([dynamic]Batch_Key, context.temp_allocator) // "one or more" abilities, by event group
 	defer collecting_event = {}
 	for e, index in g.events {
 		collecting_event = event_about(s, e)
@@ -479,11 +590,17 @@ collect_triggers :: proc(g: ^Game) {
 			moved := object(s, e.object)
 			// The moved object's own abilities, as it is now (it entered) or as it last existed (it left): CR 603.6a,
 			// 603.10a. Then every other permanent watching for such an event.
-			for &entry in trigger_definitions(moved) do zone_change_trigger(g, moved, &entry.definition, e, true)
+			for &entry in trigger_definitions(moved) do zone_change_trigger(g, moved, &entry.definition, e, true, &batches)
 			for id in ids_of(s.battlefield) {
 				if id == e.object do continue
 				watcher := object(s, id)
-				for &entry in trigger_definitions(watcher) do zone_change_trigger(g, watcher, &entry.definition, e, false)
+				for &entry in trigger_definitions(watcher) do zone_change_trigger(g, watcher, &entry.definition, e, false, &batches)
+			}
+			// Cards whose abilities work from a graveyard ("whenever a land you control enters, return this card from
+			// your graveyard", CR 113.6b).
+			for watcher in graveyard_watchers(s) {
+				if watcher.id == e.object do continue
+				for &entry in trigger_definitions(watcher) do if watches_from(entry.definition, .Graveyard) do zone_change_trigger(g, watcher, &entry.definition, e, false, &batches)
 			}
 			// Permanents that were on the battlefield for the event but have left since, or left at the same time
 			// (CR 603.10a: leaves-the-battlefield abilities look back; "whenever another creature dies" sees one
@@ -491,15 +608,19 @@ collect_triggers :: proc(g: ^Game) {
 			for f, later in g.events {
 				if f.kind != .Zone_Change || f.from != .Battlefield || f.lki == nil || f.object == e.object do continue
 				if later <= index && !(f.group == e.group && e.from == .Battlefield) do continue
-				for &entry in trigger_definitions(f.lki) do zone_change_trigger(g, f.lki, &entry.definition, e, false, f.lki)
+				for &entry in trigger_definitions(f.lki) do zone_change_trigger(g, f.lki, &entry.definition, e, false, &batches, f.lki)
 			}
 		case .Step_Begin:
 			trigger_delayed(g, e.step)
-			for id in ids_of(s.battlefield) {
-				o := object(s, id)
+			// Permanents' "at the beginning of" abilities, and those of cards that work from a graveyard (CR 113.6b:
+			// "return this card from your graveyard to the battlefield"), controlled by the card's owner.
+			watchers := make([dynamic]^types.GameObject, context.temp_allocator)
+			for id in ids_of(s.battlefield) do append(&watchers, object(s, id))
+			append(&watchers, ..graveyard_watchers(s)[:])
+			for o in watchers {
 				for &entry in trigger_definitions(o) {
 					t := &entry.definition
-					if _, phase := t.mode.(types.TriggerMode_Phase); !phase || !trigger_supported(t^) do continue
+					if _, phase := t.mode.(types.TriggerMode_Phase); !phase || !watches_from(t^, o.zone) || !trigger_supported(t^) do continue
 					step, _ := t.phase.?
 					if step != e.step || !turn_constraint_met(s, t^, o.controller) do continue
 					add_trigger(g, o.id, o.controller, t)
@@ -535,6 +656,9 @@ collect_triggers :: proc(g: ^Game) {
 		case .Life_Lost: // no "whenever you lose life" triggers yet; read by "this way" (resolution.odin)
 		case .Became_Target:
 			ward_triggers(g, e) // CR 702.21a
+			became_target_triggers(g, e)
+		case .Discarded:
+			discard_triggers(g, e, &batches) // CR 701.9a, 702.29c
 		case .Damage:
 			source := object(s, e.object)
 			watchers := make([dynamic]^types.GameObject, context.temp_allocator)
@@ -669,7 +793,7 @@ collect_triggers :: proc(g: ^Game) {
 }
 
 @(private = "file")
-zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.TriggerDefinition, e: Event, is_self: bool, watcher_gone: Maybe(^types.GameObject) = nil) {
+zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.TriggerDefinition, e: Event, is_self: bool, batches: ^[dynamic]Batch_Key, watcher_gone: Maybe(^types.GameObject) = nil) {
 	s := &g.state
 	// A sacrifice is also a zone change (CR 701.21a); a sacrifice trigger sees only the sacrifice event, the others
 	// only the zone change.
@@ -678,6 +802,11 @@ zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.Trigg
 	#partial switch _ in t.mode {
 	case types.TriggerMode_Sacrificed:
 	case types.TriggerMode_ChangesZone:
+		if origin, has := t.origin.?; has && origin != e.from do return
+		if dest, has := t.destination.?; has && dest != e.to do return
+	case types.TriggerMode_ChangesZoneAll:
+		// "Whenever one or more cards are put into a library from anywhere": a move within a zone isn't one.
+		if e.from == e.to do return
 		if origin, has := t.origin.?; has && origin != e.from do return
 		if dest, has := t.destination.?; has && dest != e.to do return
 	case types.TriggerMode_LeavesBattlefield:
@@ -693,6 +822,13 @@ zone_change_trigger :: proc(g: ^Game, source: ^types.GameObject, t: ^types.Trigg
 	controller, matched := zone_change_subject(g, source, t, subject, e, is_self)
 	if !matched do return
 	if !turn_constraint_met(s, t^, controller) do return
+	if _, all := t.mode.(types.TriggerMode_ChangesZoneAll); all {
+		// "Whenever one or more creatures die": once for the objects that moved at the same time (CR 603.2c), the
+		// watcher seen once whether it watched from the battlefield or, leaving with them, looking back (CR 603.10a).
+		key := Batch_Key{t, e.group, 0}
+		for b in batches do if b == key do return
+		append(batches, key)
+	}
 	// CR 603.10a: a leaves-the-battlefield ability looks back at the permanent as it last existed.
 	lki := e.lki if is_self && e.from == .Battlefield else nil
 	if gone, has := watcher_gone.?; has && !is_self do lki = gone
@@ -717,7 +853,7 @@ zone_change_subject :: proc(g: ^Game, source: ^types.GameObject, t: ^types.Trigg
 		if is_self {
 			if e.from != .Battlefield && e.to != .Battlefield do return
 			if e.from == .Battlefield do controller = e.controller
-		} else if source.zone != .Battlefield do return
+		} else if !watches_from(t^, source.zone) do return
 		// The moved object as it was for the event (CR 603.10a: one that left, as it last existed on the
 		// battlefield), with its controller then.
 		as_was := e.lki^ if e.lki != nil else object(s, e.object)^
@@ -1181,7 +1317,9 @@ create_token :: proc(g: ^Game, e: types.Effect_Token, controller: types.PlayerId
 	types.pvec_push(&s.battlefield, o.id, copy_id)
 	if e.enters_attacking do enter_attacking(s, o)
 	// CR 111.10 (and 603.6a): a token entering the battlefield is an event like any other.
-	append(&g.events, Event{kind = .Zone_Change, object = o.id, from = .Command, to = .Battlefield, controller = controller})
+	// Its own group of simultaneous zone changes, unless created with others at once (zones.odin).
+	if !moving_together do event_group += 1
+	append(&g.events, Event{kind = .Zone_Change, object = o.id, from = .Command, to = .Battlefield, controller = controller, group = event_group})
 	report(types.GameEvent_ZoneChanged{object_id = o.id, to = .Battlefield})
 	report(types.GameEvent_TokenCreated{object_id = o.id, name = o.name, source_id = source})
 }

@@ -451,11 +451,13 @@ answer_scry :: proc(g: ^Game, p: types.PlayerId, looked: []types.ObjectId, keep:
 	if !surveil do for id in others do types.pvec_push(&pl.library, id, copy_id) // the bottom is the front
 	for id in rest do types.pvec_push(&pl.library, id, copy_id)
 	for i := len(keep) - 1; i >= 0; i -= 1 do types.pvec_push(&pl.library, keep[i], copy_id) // first kept ends on top
+	together := begin_together() // CR 701.25a: put into the graveyard at the same time
 	if surveil do for id in others {
 		// Back in the library list for the zone move to take it from there.
 		types.pvec_push(&pl.library, id, copy_id)
 		move_object(g, id, .Graveyard)
 	}
+	end_together(together)
 	s.waiting_for = nil
 	if continue_resolution(g) do after_resolution(g)
 	return true
@@ -469,6 +471,9 @@ start_discard :: proc(g: ^Game, p: types.PlayerId, n: int, random: bool, source:
 	s := &g.state
 	hand := ids_of(player(s, p).hand)
 	if n <= 0 || len(hand) == 0 do return false
+	// The cards are discarded at the same time: one event for "whenever you discard one or more cards" (CR 603.2c).
+	together := begin_together()
+	defer end_together(together)
 	if len(hand) <= n {
 		for id in hand do discard_card(g, id)
 		return false
@@ -494,7 +499,9 @@ answer_discard :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_DiscardC
 		for c in w.cards do if c == id do found = true
 		if !found do return false
 	}
+	together := begin_together() // at the same time (CR 603.2c)
 	for id in chosen do discard_card(g, id)
+	end_together(together)
 	g.state.waiting_for = nil
 	if continue_resolution(g) do after_resolution(g)
 	return true
@@ -556,6 +563,8 @@ answer_dig :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_DigChoice, k
 	pl := player(s, p)
 	kept_to, _ := w.kept_destination.?
 	rest_to := w.rest_destination.? or_else .Library
+	// One instruction puts the cards where they go at the same time (CR 603.2c: one event).
+	together := begin_together()
 	for id in kept {
 		move_object(g, id, kept_to)
 		// "Put it onto the battlefield tapped": it enters tapped as the ability says (CR 110.5b); it doesn't become
@@ -584,6 +593,7 @@ answer_dig :: proc(g: ^Game, p: types.PlayerId, w: types.WaitingFor_DigChoice, k
 	} else {
 		for id in rest do move_object(g, id, rest_to)
 	}
+	end_together(together)
 	s.waiting_for = nil
 	if continue_resolution(g) do after_resolution(g)
 	return true
