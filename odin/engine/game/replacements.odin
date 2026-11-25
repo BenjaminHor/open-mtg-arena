@@ -57,6 +57,11 @@ entry_condition_holds :: proc(s: ^types.GameState, o: ^types.GameObject, c: type
 		for perm in permanents_of(s, o.controller) do if perm.id != o.id && object_matches(s, perm, f, o.controller, o.id) do n += 1
 		return n
 	}
+	count_matching :: proc(s: ^types.GameState, o: ^types.GameObject, f: types.TargetFilter) -> int {
+		n := 0
+		for perm in permanents_of(s, o.controller) do if perm.id != o.id && mass_filter_matches(s, perm, f, o.controller, o.id) do n += 1
+		return n
+	}
 	#partial switch x in c {
 	case types.ReplacementCondition_UnlessControlsSubtype:
 		for perm in permanents_of(s, o.controller) do if perm.id != o.id {
@@ -66,9 +71,9 @@ entry_condition_holds :: proc(s: ^types.GameState, o: ^types.GameObject, c: type
 	case types.ReplacementCondition_UnlessControlsOtherLeq:
 		return count(s, o, x.filter) > int(x.count)
 	case types.ReplacementCondition_UnlessControlsMatching:
-		return count(s, o, x.filter.(types.TargetFilter_Typed)._0) == 0
+		return count_matching(s, o, x.filter) == 0
 	case types.ReplacementCondition_UnlessControlsCountMatching:
-		return count(s, o, x.filter.(types.TargetFilter_Typed)._0) < int(x.minimum)
+		return count_matching(s, o, x.filter) < int(x.minimum)
 	case types.ReplacementCondition_UnlessPlayerLifeAtMost:
 		for &p in s.players do if p.life <= i32(x.amount) do return false
 		return true

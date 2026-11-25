@@ -344,7 +344,7 @@ legal_actions :: proc(g: ^Game, p: types.PlayerId) -> [dynamic]types.GameAction 
 			for &a, i in o.abilities^ {
 				if can_activate(g, p, o, i) {
 					append(&out, types.GameAction_ActivateAbility{source_id = o.id, ability_index = i})
-				} else if option, is_mana := mana_ability_option(a); is_mana && (option.mana_cost != nil || !option.taps) && object_supported(o, g.card_db) && mana_ability_activatable(g, p, o, &a) {
+				} else if option, is_mana := mana_ability_option(a); is_mana && (option.mana_cost != nil || !option.taps || option.each) && object_supported(o, g.card_db) && mana_ability_activatable(g, p, o, &a) {
 					// CR 605.3a: mana abilities automatic payment doesn't use ("{1}, {T}: Add one mana of any color").
 					append(&out, types.GameAction_ActivateAbility{source_id = o.id, ability_index = i})
 				}

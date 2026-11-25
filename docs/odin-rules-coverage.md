@@ -6,7 +6,7 @@ a test cites it too (odin/tests). A citation is the code's claim, checked by rul
 say every case of the rule is handled. Multiplayer (800-811) and casual variants (900s) are out of scope for the
 two-player game the app plays.
 
-**In scope (100-799): 256 of 2880 rules implemented (9%), 107 of them tested.**
+**In scope (100-799): 257 of 2880 rules implemented (9%), 108 of them tested.**
 
 Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪 a test cites it, the code doesn't · ⬜ not yet
 
@@ -91,7 +91,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 | 513 end step | 3 | 1 (33%) | 0 |
 | 514 cleanup step | 4 | 3 (75%) | 2 |
 | 601 casting spells | 27 | 10 (37%) | 7 |
-| 602 activating activated abilities | 19 | 4 (21%) | 2 |
+| 602 activating activated abilities | 19 | 5 (26%) | 3 |
 | 603 handling triggered abilities | 47 | 13 (28%) | 6 |
 | 604 handling static abilities | 8 | 2 (25%) | 1 |
 | 605 mana abilities | 13 | 4 (31%) | 2 |
@@ -1427,7 +1427,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 601.7b If the spell instructs its controller and another player to do something at the same time as the spell is b...
 - ⬜ 601.8 Casting a spell that alters costs won’t affect spells and abilities that are already on the stack.
 
-### 602 activating activated abilities (4/19)
+### 602 activating activated abilities (5/19)
 
 - ⬜ 602.1 Activated abilities have a cost and an effect. They are written as “[Cost]: [Effect.] [Activation instructi...
 - ⬜ 602.1a The activation cost is everything before the colon (:). An ability’s activation cost must be paid by the pl...
@@ -1444,7 +1444,7 @@ Legend: ✅ implemented and tested · 🟡 implemented, no test cites it · 🧪
 - ⬜ 602.4 Activating an ability that alters costs won’t affect spells and abilities that are already on the stack.
 - ✅ 602.5 A player can’t begin to activate an ability that’s prohibited from being activated.
 - ⬜ 602.5a A creature’s activated ability with the tap symbol ({T}) or the untap symbol ({Q}) in its activation cost c...
-- 🧪 602.5b If an activated ability has a restriction on its use (for example, “Activate only once each turn”), the res...
+- ✅ 602.5b If an activated ability has a restriction on its use (for example, “Activate only once each turn”), the res...
 - ⬜ 602.5c If an object acquires an activated ability with a restriction on its use from another object, that restrict...
 - 🟡 602.5d Activated abilities that read “Activate only as a sorcery” mean the player must follow the timing rules for...
 - ⬜ 602.5e Activated abilities that read “Activate only as an instant” mean the player must follow the timing rules fo...

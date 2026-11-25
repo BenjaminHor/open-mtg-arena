@@ -46,8 +46,7 @@ restriction_supported :: proc(r: types.ActivationRestriction) -> bool {
 	return false
 }
 
-restriction_met :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: int, r: types.ActivationRestriction) -> bool {
-	s := &g.state
+restriction_met :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, index: int, r: types.ActivationRestriction) -> bool {
 	#partial switch x in r {
 	case types.ActivationRestriction_AsSorcery:
 		return sorcery_timing(s, p) // CR 602.5d
@@ -245,7 +244,7 @@ can_activate :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, index: i
 	} else if o.zone != .Battlefield || o.controller != p do return refuse("not activatable from its zone")
 	if _, _, mana := tap_mana_ability(a^); mana do return refuse("a mana ability (activated through mana payment)")
 	if !activated_supported(a^) do return refuse("ability not supported")
-	for r in a.activation_restrictions do if !restriction_met(g, p, o, index, r) do return refuse("activation restriction")
+	for r in a.activation_restrictions do if !restriction_met(&g.state, p, o, index, r) do return refuse("activation restriction")
 	parts := make([dynamic]types.AbilityCost, context.temp_allocator)
 	cost, _ := a.cost.?
 	cost_parts(cost, &parts)

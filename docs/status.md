@@ -2876,6 +2876,9 @@ Progress:
   incarnation (CR 400.7); "whenever a counter is put" triggers once per counter (CR 603.2c). Still open from it:
   tests for a Saga played through real turns, an opponent's Saga in your main phase, a countered last chapter,
   and Carrot Cake's own sacrifice.
+- Mana abilities with "activate only if / only once each turn" (CR 602.5; the Verges, Temple of the False God),
+  "add {W}{U}" (each symbol, CR 106.4; activated by the player, not by automatic payment yet), and "each/all" and
+  counts over "A or B" ("a Swamp or a Mountain", "artifacts and enchantments"): coverage 5,116 -> 5,182.
 - Next: rank the unsupported refusals by missing piece and build from the top; the state kept outside GameState
   (until-end-of-turn pumps and effects, pending triggers, a cast or resolution in progress: setup.odin's Game) into
   the state, for saves and for fixtures that start with such an effect; TapLandForMana; mana pool order.

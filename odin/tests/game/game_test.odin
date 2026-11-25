@@ -130,10 +130,10 @@ no_mana_cost_is_unpayable :: proc(t: ^testing.T) {
 @(test)
 unsupported_riders_and_alternate_payments :: proc(t: ^testing.T) {
 	if !load_db() do return
-	// Supported means every part is carried out: "activate only if" (CR 602.5), Phyrexian mana (CR 107.4f), and a
-	// mass pump misparsed as a single "any target" pump aren't yet. Damage to you as a mana ability resolves (CR
-	// 605.3b: Ancient Tomb, the painlands) is.
-	for name in ([]string{"Temple of the False God", "Gut Shot", "Defensive Maneuvers"}) {
+	// Supported means every part is carried out: Phyrexian mana (CR 107.4f) and a mass pump misparsed as a single
+	// "any target" pump aren't yet. Damage to you as a mana ability resolves (CR 605.3b: Ancient Tomb, the
+	// painlands) is.
+	for name in ([]string{"Gut Shot", "Defensive Maneuvers"}) {
 		testing.expectf(t, !game.card_supported(&card(t, name).face), "%s isn't supported yet", name)
 	}
 	for name in ([]string{"Grizzly Bears", "Shock", "Scrubland", "Llanowar Elves", "Ancient Tomb", "Karplusan Forest"}) {
@@ -2453,4 +2453,43 @@ saga_last_chapter_without_target :: proc(t: ^testing.T) {
 	game.begin_step(g, .PreCombatMain)
 	_, has_priority := s.waiting_for.(types.WaitingFor_Priority)
 	testing.expect(t, has_priority && types.pvec_len(s.stack) == 0 && saga.zone == .Graveyard, "gone before anyone has priority")
+}
+
+@(test)
+mana_ability_restrictions_and_two_symbols :: proc(t: ^testing.T) {
+	if !load_db() do return
+	// CR 602.5: "Activate only if you control a Swamp or a Mountain" (Blazemire Verge's {T}: Add {R}) applies to a
+	// mana ability too. Azorius Signet: "{1}, {T}: Add {W}{U}" adds both (CR 106.4).
+	testing.expect(t, game.card_supported(&card(t, "Blazemire Verge").face))
+	testing.expect(t, game.card_supported(&card(t, "Azorius Signet").face))
+	g := new_game()
+	add(t, g, "Blazemire Verge", 0, .Battlefield)
+	_, red := game.plan_payment(&g.state, 0, cost_of(t, "Shock")) // {R}
+	_, black := game.plan_payment(&g.state, 0, cost_of(t, "Duress")) // {B}
+	testing.expect(t, !red && black, "without a Swamp or Mountain, only {B}")
+	add(t, g, "Swamp", 0, .Battlefield)
+	_, red = game.plan_payment(&g.state, 0, cost_of(t, "Shock"))
+	testing.expect(t, red, "with a Swamp, {R} too")
+
+	// Temple of the False God: "{T}: Add {C}{C}. Activate only if you control five or more lands."
+	g3 := new_game()
+	add(t, g3, "Temple of the False God", 0, .Battlefield)
+	for _ in 0 ..< 3 do add(t, g3, "Forest", 0, .Battlefield)
+	_, five := game.plan_payment(&g3.state, 0, cost_of(t, "Hill Giant")) // {3}{R}: no red, so only to check {C}
+	_, four_lands := game.plan_payment(&g3.state, 0, types.ManaCost(types.ManaCost_Cost{generic = 5}))
+	testing.expect(t, !four_lands, "four lands: the Temple can't be activated")
+	add(t, g3, "Forest", 0, .Battlefield)
+	_, five_lands := game.plan_payment(&g3.state, 0, types.ManaCost(types.ManaCost_Cost{generic = 6}))
+	testing.expect(t, five_lands && !five, "five lands: {C}{C} and four {G} pay {6}")
+
+	g2 := new_game()
+	add(t, g2, "Plains", 0, .Battlefield)
+	signet := add(t, g2, "Azorius Signet", 0, .Battlefield)
+	testing.expect(t, game.apply(g2, 0, types.GameAction_ActivateAbility{source_id = signet.id, ability_index = 0}))
+	pool := game.player(&g2.state, 0).mana_pool.mana
+	has := proc(pool: [dynamic]types.ManaUnit, c: types.ManaType) -> bool {
+		for u in pool do if u.color == c do return true
+		return false
+	}
+	testing.expect(t, len(pool) == 2 && has(pool, .White) && has(pool, .Blue), "{W}{U} in the pool")
 }

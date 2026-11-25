@@ -36,6 +36,23 @@ Mana_Option :: struct {
 	mana_cost:    types.ManaCost,
 	// "Spend this mana only to cast a creature spell" (CR 106.6): what the mana may pay for.
 	restrictions: []types.ManaRestriction,
+	index:        int, // the ability's index on its object, for "only once each turn" (CR 602.5b)
+	// "Add {W}{U}": every listed symbol at once, not one of them. The player activates such abilities on their own;
+	// automatic payment doesn't use them yet.
+	each:         bool,
+}
+
+// Whether a mana ability's "activate only ..." restrictions allow it now (CR 602.5).
+mana_restrictions_met :: proc(s: ^types.GameState, p: types.PlayerId, o: ^types.GameObject, index: int, a: types.AbilityDefinition) -> bool {
+	for r in a.activation_restrictions do if !restriction_met(s, p, o, index, r) do return false
+	return true
+}
+
+// Counts the activation for "only once each turn" and "only once" (CR 602.5b).
+record_mana_activation :: proc(s: ^types.GameState, o: ^types.GameObject, index: int) {
+	if o.abilities == nil || index < 0 || index >= len(o.abilities^) || len(o.abilities^[index].activation_restrictions) == 0 do return
+	record_activation(&s.activated_abilities_this_turn, o, index)
+	record_activation(&s.activated_abilities_this_game, o, index)
 }
 
 // What a payment is for, which mana with a spending restriction reads (CR 106.6): a spell being cast, or an
@@ -53,9 +70,11 @@ tap_mana_ability :: proc(a: types.AbilityDefinition) -> (colors: bit_set[types.M
 
 mana_ability_option :: proc(a: types.AbilityDefinition) -> (option: Mana_Option, ok: bool) {
 	if a.kind != .Activated || a.effect == nil do return
-	// Not yet: "activate only if" (CR 602.5), spending restrictions (CR 106.6), extra effects other than damage to
-	// you. Such abilities aren't supported rather than half done.
-	if len(a.activation_restrictions) > 0 || a.condition != nil || a.activation_zone != nil do return
+	// "Activate only if you control a Swamp", "only once each turn" (CR 602.5): checked where the ability is used,
+	// with the state at hand (mana_restrictions_met). Not yet: conditions, other zones, extra effects other than
+	// damage to you. Such abilities aren't supported rather than half done.
+	for r in a.activation_restrictions do if !restriction_supported(r) do return
+	if a.condition != nil || a.activation_zone != nil do return
 	if sub := a.sub_ability; sub != nil {
 		// "This land deals 1 damage to you."
 		if sub.sub_ability != nil || sub.condition != nil || sub.effect == nil do return
@@ -93,6 +112,9 @@ mana_ability_option :: proc(a: types.AbilityDefinition) -> (option: Mana_Option,
 	option.taps = taps
 	colors, amount := produced_mana(a)
 	option.colors, option.amount = colors, amount
+	if effect, is_mana := a.effect.(types.Effect_Mana); is_mana {
+		if fixed, is_fixed := effect.produced.(types.ManaProduction_Fixed); is_fixed && card(colors) > 1 do option.each = true
+	}
 	if effect, is_mana := a.effect.(types.Effect_Mana); is_mana && len(effect.restrictions) > 0 {
 		rs := make([]types.ManaRestriction, len(effect.restrictions), context.temp_allocator)
 		for r, i in effect.restrictions do rs[i] = pool_restriction(r)
@@ -111,7 +133,6 @@ produced_mana :: proc(a: types.AbilityDefinition) -> (colors: bit_set[types.Mana
 		// "Add {G}" (one color, once per symbol) or "Add {W}{U}" (each listed symbol).
 		for c in p.colors do colors += {types.ManaType(c)}
 		amount = len(p.colors)
-		if card(colors) > 1 do return {}, 0 // several different symbols at once: not yet
 		return colors, amount
 	case types.ManaProduction_Colorless:
 		n, fixed := fixed_quantity(p.count)
@@ -162,9 +183,11 @@ mana_sources :: proc(s: ^types.GameState, p: types.PlayerId, exclude: types.Obje
 		// CR 605.3a: any of its mana abilities; each costs {T}, so one per tap. Only those whose rider is no worse
 		// than `worst`.
 		src := Mana_Source{object = o, options = make([dynamic]Mana_Option, context.temp_allocator)}
-		for a in o.abilities^ {
+		for a, index in o.abilities^ {
 			option, ok := mana_ability_option(a)
-			if ok && (option.mana_cost != nil || !option.taps) do ok = false // activated by the player, not here
+			option.index = index
+			if ok && (option.mana_cost != nil || !option.taps || option.each) do ok = false // activated by the player, not here
+			if ok && !mana_restrictions_met(s, p, o, index, a) do ok = false
 			if ok && !restrictions_allow(s, option.restrictions, paying) do ok = false
 			// CR 119.4: life can be paid only up to the player's life total.
 			if ok && option.rider == .Life && int(player(s, p).life) < option.rider_amount do ok = false
@@ -289,7 +312,10 @@ pay_mana :: proc(g: ^Game, p: types.PlayerId, cost: types.ManaCost, exclude: typ
 	if !ok do return false
 	for t in taps {
 		if t.object == nil do spend_pool_mana(&g.state, p, t.pip)
-		else do tap_permanent(t.object)
+		else {
+			tap_permanent(t.object)
+			record_mana_activation(&g.state, t.object, t.option.index)
+		}
 		if t.surplus > 0 {
 			// CR 106.4: the rest of the mana stays in the pool. A choice of color is the engine's for now, as is the
 			// choice of what to tap: the first it could make.
@@ -324,9 +350,19 @@ mana_rider :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, option: Ma
 activate_mana_ability :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObject, a: ^types.AbilityDefinition) -> bool {
 	if !mana_ability_activatable(g, p, o, a) do return false
 	option, _ := mana_ability_option(a^)
+	record_mana_activation(&g.state, o, ability_index_of(o, a))
 	// CR 602.2b, 601.2h: the costs are paid: {T}, and mana for "{1}, {T}: Add ..." (from other sources, CR 605.3a).
 	if option.taps do tap_permanent(o)
 	if option.mana_cost != nil do pay_mana(g, p, option.mana_cost, o.id, nil, Payment{o, false})
+	if option.each {
+		// "Add {W}{U}": the mana of each symbol, into the mana pool (CR 106.4).
+		fixed := a.effect.(types.Effect_Mana).produced.(types.ManaProduction_Fixed)
+		for c in fixed.colors do add_pool_mana(&g.state, p, types.ManaType(c), o.id, 1, option.restrictions)
+		mana_rider(g, p, o, option)
+		g.state.priority_passes = nil
+		give_priority(g, p)
+		return true
+	}
 	if card(option.colors) > 1 {
 		// "One mana of any color": the color is chosen as it resolves (CR 605.3b), which is at once.
 		pending := new(types.PendingManaAbility)
@@ -349,6 +385,7 @@ mana_ability_activatable :: proc(g: ^Game, p: types.PlayerId, o: ^types.GameObje
 	option, is_mana := mana_ability_option(a^)
 	if !is_mana do return false
 	if o.zone != .Battlefield || o.controller != p do return refuse("not activatable from its zone")
+	if !mana_restrictions_met(&g.state, p, o, ability_index_of(o, a), a^) do return refuse("activation restriction") // CR 602.5
 	if option.taps && !can_tap_for_cost(o) do return refuse("can't tap") // CR 302.6
 	if option.rider == .Life && int(player(&g.state, p).life) < option.rider_amount do return refuse("not enough life") // CR 119.4
 	if option.mana_cost != nil {
